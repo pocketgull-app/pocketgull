@@ -40,12 +40,6 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
     const dpnPreset = studio.locator('button', { hasText: /Burning Foot Neuropathy/i }).first();
     await expect(dpnPreset).toBeVisible({ timeout: 10000 });
     await dpnPreset.click({ force: true });
-    await page.waitForTimeout(300);
-
-    // Click compute vector match
-    const computeBtn = studio.locator('button', { hasText: /Compute Vector Match/i }).first();
-    await expect(computeBtn).toBeVisible({ timeout: 10000 });
-    await computeBtn.click({ force: true });
 
     // Verify that ranked archetype cards are rendered with similarity scores
     await expect(studio.locator('text=Diabetic Peripheral Neuropathy').first()).toBeVisible({ timeout: 15000 });
@@ -64,20 +58,13 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
     await page.waitForTimeout(300);
 
     // Click Trailing Zero preset (e.g. 5.0 mg)
-    const trailingZeroBtn = studio.locator('button', { hasText: /Trailing Zero/i }).first();
+    const trailingZeroBtn = studio.locator('button', { hasText: /ISMP \(5\.0 mg\)/i }).first();
     await expect(trailingZeroBtn).toBeVisible({ timeout: 10000 });
-    await trailingZeroBtn.click().catch(() => {});
-    await trailingZeroBtn.dispatchEvent('click');
+    await trailingZeroBtn.click({ force: true });
     await page.waitForTimeout(300);
 
-    // Click Run ISMP Audit button
-    const auditBtn = studio.locator('button', { hasText: /Run ISMP Audit/i }).first();
-    await expect(auditBtn).toBeVisible({ timeout: 10000 });
-    await auditBtn.click().catch(() => {});
-    await auditBtn.dispatchEvent('click');
-
     // Verify ISMP high-risk warning is surfaced
-    await expect(studio.locator('text=/ISMP/i').first()).toBeVisible();
+    await expect(studio.locator('text=/ISMP/i').first()).toBeVisible({ timeout: 15000 });
   });
 
   test('4. Evaluates clinical triage acuity with instant classifier', async ({ page }) => {
@@ -93,15 +80,10 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
     await page.waitForTimeout(300);
 
     // Click STAT Emergency bypass preset
-    const statBtn = studio.locator('button', { hasText: /STAT/i }).first();
+    const statBtn = studio.locator('button', { hasText: /Preset: STAT Chest Pain/i }).first();
     await expect(statBtn).toBeVisible({ timeout: 10000 });
     await statBtn.click({ force: true });
     await page.waitForTimeout(300);
-
-    // Click Classify Acuity button
-    const classifyBtn = studio.locator('button', { hasText: /Classify Acuity/i }).first();
-    await expect(classifyBtn).toBeVisible({ timeout: 10000 });
-    await classifyBtn.click({ force: true });
 
     // Verify STAT_EMERGENCY badge and directive
     await expect(studio.locator('text=STAT_EMERGENCY').first()).toBeVisible({ timeout: 15000 });

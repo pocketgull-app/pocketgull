@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, computed, ViewEncapsulation, signal, OnDestroy, effect, viewChild, ElementRef, untracked, output, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, ViewEncapsulation, signal, OnDestroy, effect, viewChild, ElementRef, untracked, output, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { ClinicalIntelligenceService, ITranscriptEntry, AnalysisLens } from '../services/clinical-intelligence.service';
 import { PatientStateService } from '../services/patient-state.service';
@@ -2057,6 +2057,7 @@ export class AnalysisReportComponent implements OnDestroy {
   protected readonly skepticalService = inject(SkepticalEpistemologyService);
   protected readonly fhirIntegration = inject(FhirIntegrationService);
   protected readonly avsService = inject(AvsEngineService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   setAvsBitrate(tier: AvsBitrateTier): void {
     this.avsService.setBitrateTier(tier);
@@ -3771,6 +3772,7 @@ export class AnalysisReportComponent implements OnDestroy {
     if (el) {
       el.scrollTop = 0;
     }
+    this.cdr.markForCheck();
   }
 
 
