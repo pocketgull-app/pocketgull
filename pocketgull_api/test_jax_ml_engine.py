@@ -88,8 +88,7 @@ def test_orbax_checkpoint_roundtrip(tmp_path: Optional[Path] = None):
     model = ClinicalRiskScorer(in_features=32, hidden_dim=64, out_features=1, rngs=rngs)
 
     # Save
-    atomicity_opts = ocp.options.AtomicityOptions(mode=ocp.options.AtomicityMode.COMMIT_FILE)
-    checkpointer = ocp.StandardCheckpointer(atomicity_options=atomicity_opts)
+    checkpointer = ocp.StandardCheckpointer()
     _, state = nnx.split(model)
     checkpointer.save(str(ckpt_dir), state, force=True)
     checkpointer.wait_until_finished()

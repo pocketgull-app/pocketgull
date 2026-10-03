@@ -5,7 +5,6 @@ Unit tests for Seven Generations Protocol & Epigenetic Longevity Model
 import os
 import sys
 sys.modules['numexpr'] = None
-import pytest
 import numpy as np
 import pandas as pd
 import joblib
