@@ -1747,6 +1747,7 @@ export class MdcpGovernanceHubComponent {
   readonly edi278Document = signal<IEdiDocumentMetadata | null>(null);
   readonly edi837pDocument = signal<IEdiDocumentMetadata | null>(null);
   readonly schoolIepPackage = signal<ISchoolIepPackage | null>(null);
+  private appealGenerationRequestId = 0;
 
   // ---------------------------------------------------------------------------
   // OPTION 2 & C: AEROMEDICAL CORRIDORS, WEATHER CLEARANCE & OXYGEN MATH
@@ -1920,6 +1921,7 @@ export class MdcpGovernanceHubComponent {
   }
 
   public async generateEpsdtAppeal(): Promise<void> {
+    const requestId = ++this.appealGenerationRequestId;
     const currentState = this.selectedStateWaiver();
     const corridor = this.currentCorridor();
     let aeromedicalNote: string | undefined = undefined;
@@ -1943,6 +1945,11 @@ export class MdcpGovernanceHubComponent {
       dictatedClinicalEvents: this.dictatedText().trim() || undefined,
       aeromedicalCorridorNote: aeromedicalNote
     });
+
+    if (requestId !== this.appealGenerationRequestId) {
+      return;
+    }
+
     this.epsdtPackage.set(pkg);
 
     // Generate X12 EDI 278 Prior Authorization Request
