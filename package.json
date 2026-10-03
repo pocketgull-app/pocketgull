@@ -154,8 +154,8 @@
     "kube:stop": "minikube stop"
   },
   "dependencies": {
-    "@angular/build": "~22.1.7",
-    "@angular/cli": "^22.1.7",
+    "@angular/build": "~22.2.0",
+    "@angular/cli": "^22.2.0",
     "@angular/common": "^22.2.1",
     "@angular/compiler": "^22.2.1",
     "@angular/compiler-cli": "^22.2.1",
