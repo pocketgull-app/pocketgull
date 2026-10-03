@@ -208,9 +208,9 @@ export class DictationService {
         return true;
       }
 
-      // SMoE Adaptive Canvas Command
-      if (lower.includes('canvas') || lower.includes('smoe')) {
-        this.lastCommand.set('Switching to SMoE Adaptive Canvas');
+      // Synoptic Canvas (Adaptive Multi-Specialist View) Command
+      if (lower.includes('synoptic') || lower.includes('canvas') || lower.includes('smoe')) {
+        this.lastCommand.set('Switching to Synoptic Canvas');
         if (this.moeRouter) this.moeRouter.analysisViewMode.set('canvas');
         setTimeout(() => this.lastCommand.set(null), 2500);
         return true;

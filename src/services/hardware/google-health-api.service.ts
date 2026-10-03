@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { PatientManagementService } from '../patient-management.service';
 import { IBiometricEntry } from '../patient.types';
+import { TippssIngestionGuardService } from './tippss-ingestion-guard.service';
 
 export type HealthSyncProvider = 'GOOGLE_HEALTH_API' | 'ANDROID_HEALTH_CONNECT' | 'PIXEL_WATCH_BLE';
 
@@ -30,6 +31,7 @@ export interface IGoogleHealthConnectionStatus {
   consentTimestamp?: string;
   isHealthConnectAvailableOnDevice: boolean;
   lastSyncTimestamp?: string;
+  tippssVerified?: boolean;
 }
 
 @Injectable({
@@ -37,6 +39,8 @@ export interface IGoogleHealthConnectionStatus {
 })
 export class GoogleHealthApiService {
   private patientMgmt = inject(PatientManagementService, { optional: true });
+  private tippssGuard = inject(TippssIngestionGuardService, { optional: true });
+  private packetCounter = 0;
 
   readonly isSyncing = signal<boolean>(false);
   readonly connectionStatus = signal<IGoogleHealthConnectionStatus>({
@@ -103,8 +107,27 @@ export class GoogleHealthApiService {
         syncedAt: new Date().toISOString()
       };
 
+      let tippssOk = true;
+      if (this.tippssGuard) {
+        const hrResult = this.tippssGuard.verifyAndSanitize({
+          deviceId: 'FDA-UDI-00840244700025-PIXELPHONE',
+          patientId: 'PATIENT-SELF-01',
+          timestampMs: Date.now(),
+          sequenceNumber: ++this.packetCounter,
+          modality: 'heart_rate',
+          value: updated.restingHeartRateBpm,
+          signalQualityIndex: 98,
+          leadOffDetected: false
+        });
+        tippssOk = hrResult.isApproved;
+      }
+
       this.liveBiometrics.set(updated);
-      this.connectionStatus.update(s => ({ ...s, lastSyncTimestamp: new Date().toISOString() }));
+      this.connectionStatus.update(s => ({
+        ...s,
+        lastSyncTimestamp: new Date().toISOString(),
+        tippssVerified: tippssOk
+      }));
       return updated;
     } finally {
       this.isSyncing.set(false);

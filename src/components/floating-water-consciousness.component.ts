@@ -165,7 +165,8 @@ export class FloatingWaterConsciousnessComponent implements AfterViewInit, OnDes
 
   ngAfterViewInit() {
     if (typeof window === 'undefined') return;
-    const canvas = this.canvasRef.nativeElement;
+    const canvas = this.canvasRef?.nativeElement;
+    if (!canvas || typeof canvas.getContext !== 'function') return;
     this.ctx = canvas.getContext('2d');
     this.resizeCanvas();
     window.addEventListener('resize', this.onResize);

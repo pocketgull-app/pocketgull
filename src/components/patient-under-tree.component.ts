@@ -235,7 +235,7 @@ export class PatientUnderTreeComponent implements AfterViewInit, OnDestroy {
   });
 
   ngAfterViewInit() {
-    if (this.canvasRef?.nativeElement) {
+    if (this.canvasRef?.nativeElement && typeof this.canvasRef.nativeElement.getContext === 'function') {
       this.initLandscapeAnimation();
     }
   }

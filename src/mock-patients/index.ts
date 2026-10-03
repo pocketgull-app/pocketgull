@@ -17,3 +17,4 @@ export * from './p_srinivasa_ramanujan';
 export * from './p_default_patient';
 export * from './p_poms_adolescent';
 export * from './p_loms_elder';
+export * from './p_ada_lovelace';

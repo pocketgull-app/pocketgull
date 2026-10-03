@@ -1,4 +1,8 @@
-import { OnDeviceEmbedderService } from './on-device-embedder.service';
+import {
+  OnDeviceEmbedderService,
+  POCKETGULL_11_CLINICAL_LENSES,
+  DEFAULT_CLINICAL_KNOWLEDGE_CORPUS
+} from './on-device-embedder.service';
 
 describe('OnDeviceEmbedderService', () => {
   let service: OnDeviceEmbedderService;
@@ -134,5 +138,91 @@ describe('OnDeviceEmbedderService', () => {
     const hrvMatch = await service.searchIndexed('Heart rate variability parasympathetic vagal tone', 1);
     expect(hrvMatch.length).toBe(1);
     expect(hrvMatch[0].id).toBe('CLIN_10D_NEUROLOGICAL');
+  });
+
+  it('11. Generates 512-dim BioMedCLIP normalized unit vector with biomedical subword decomposition', () => {
+    const vec512 = service.embedBioMedClip('Cytochrome c Oxidase mitochondrial photobiomodulation 810nm laser', 512);
+    expect(vec512).toBeInstanceOf(Float32Array);
+    expect(vec512.length).toBe(512);
+
+    let norm = 0;
+    for (let i = 0; i < vec512.length; i++) {
+      norm += vec512[i] * vec512[i];
+    }
+    expect(Math.sqrt(norm)).toBeCloseTo(1.0, 3);
+  });
+
+  it('12. Executes sub-15ms client-side semantic search across all 11 Pocket-Gull clinical lenses', async () => {
+    const query = 'Fasting blood glucose insulin resistance HbA1c mitochondrial zone 2 lactate';
+    const result = await service.matchClinicalLenses(query, 5);
+
+    expect(result.latencyMs).toBeLessThan(15);
+    expect(result.matches.length).toBe(5);
+    expect(result.topLens.lensId).toBe('LENS_03_METABOLIC_MITOCHONDRIAL');
+    expect(result.topLens.loincCode).toBe('4548-4');
+    expect(result.topLens.snomedId).toBe('73211009');
+    expect(result.backend).toBeDefined();
+  });
+
+  it('13. Performs direct zero-shot grounding against LOINC, SNOMED-CT, and RxNorm without cloud latency', async () => {
+    const query = 'Warfarin adverse bleeding risk CYP2C19 drug interaction ISMP safety';
+    const grounding = await service.groundToClinicalTaxonomies(query);
+
+    expect(grounding.latencyMs).toBeLessThan(15);
+    expect(grounding.associatedLens).toContain('Pharmacogenomics');
+    expect(grounding.loinc.code).toBe('79713-4');
+    expect(grounding.snomed.id).toBe('427814002');
+    expect(grounding.rxNorm?.id).toBe('11289');
+    expect(grounding.rxNorm?.name).toBe('Warfarin');
+    expect(grounding.confidence).toBeGreaterThan(0.7);
+    expect(grounding.integrityDigest).toMatch(/^0x_biomed_[a-f0-9]{32}$/);
+  });
+
+  it('14. Grounds pediatric complex care and Form 2603 PDN respite to accurate taxonomies', async () => {
+    const query = 'Pediatric MDCP Medicaid waiver Form 2603 Private Duty Nursing PDN respite';
+    const grounding = await service.groundToClinicalTaxonomies(query);
+
+    expect(grounding.latencyMs).toBeLessThan(15);
+    expect(grounding.associatedLens).toContain('Pediatric MDCP');
+    expect(grounding.loinc.code).toBe('78453-8');
+    expect(grounding.snomed.id).toBe('410604004');
+    expect(grounding.rxNorm?.id).toBe('1009146');
+    expect(grounding.confidence).toBeGreaterThan(0.7);
+    expect(grounding.integrityDigest).toBeDefined();
+  });
+
+  it('15. Grounds 810nm photobiomodulation & Cytochrome c Oxidase with sub-15ms latency', async () => {
+    const query = '810nm near infrared laser photobiomodulation Cytochrome c Oxidase vagal HRV tone';
+    const grounding = await service.groundToClinicalTaxonomies(query);
+
+    expect(grounding.latencyMs).toBeLessThan(15);
+    expect(grounding.associatedLens).toContain('Autonomic Pacing & Photobiomodulation');
+    expect(grounding.loinc.code).toBe('80404-7');
+    expect(grounding.snomed.id).toBe('365979007');
+    expect(grounding.rxNorm?.id).toBe('855332');
+    expect(grounding.integrityDigest).toMatch(/^0x_biomed_/);
+  });
+
+  it('16. Verifies all 11 Clinical Lenses are defined with complete taxonomy codes and axioms', () => {
+    expect(POCKETGULL_11_CLINICAL_LENSES.length).toBe(11);
+    for (const lens of POCKETGULL_11_CLINICAL_LENSES) {
+      expect(lens.lensId).toMatch(/^LENS_\d{2}_/);
+      expect(lens.loincCode).toBeTruthy();
+      expect(lens.snomedId).toBeTruthy();
+      expect(lens.clinicalAxiom).toBeTruthy();
+      expect(lens.keywords.length).toBeGreaterThan(5);
+    }
+  });
+
+  it('17. Detects and reports the active execution backend signal', () => {
+    const backend = service.activeBackend();
+    expect(['CHROME_BUILTIN_AI', 'BIOMEDCLIP_ONNX_EMBEDDER', 'DETERMINISTIC_SIMD']).toContain(backend);
+  });
+
+  it('18. Handles empty and whitespace queries gracefully in matchClinicalLenses', async () => {
+    const emptyResult = await service.matchClinicalLenses('');
+    expect(emptyResult.matches).toEqual([]);
+    expect(emptyResult.topLens).toBeDefined();
+    expect(emptyResult.latencyMs).toBeLessThan(15);
   });
 });

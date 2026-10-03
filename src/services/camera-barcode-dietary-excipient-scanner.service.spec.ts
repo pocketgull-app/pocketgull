@@ -8,7 +8,8 @@ describe('CameraBarcodeDietaryExcipientScannerService', () => {
 
   beforeEach(() => {
     spiritualService = new SpiritualDietaryConductService();
-    scannerService = new CameraBarcodeDietaryExcipientScannerService(spiritualService);
+    scannerService = new CameraBarcodeDietaryExcipientScannerService();
+    scannerService.setSpiritualService(spiritualService);
   });
 
   it('should initialize and provide demo UPC items', () => {

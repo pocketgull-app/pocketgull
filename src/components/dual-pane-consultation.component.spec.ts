@@ -44,7 +44,15 @@ describe('DualPaneConsultationComponent', () => {
   });
 
   it('4. Updates activeConditions when vitals and history change', () => {
-    patientState.vitals.update(v => ({ ...v, bp: '150/95', hr: '98', spO2: '97%' }));
+    patientState.vitals.update(v => ({
+      temp: '98.6',
+      weight: '70kg',
+      height: '175cm',
+      ...v,
+      bp: '150/95',
+      hr: '98',
+      spO2: '97%'
+    }));
     fixture.detectChanges();
 
     const conds = component.activeConditions();

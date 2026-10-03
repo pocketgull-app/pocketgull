@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type ClinicalIconName = 
@@ -22,7 +22,7 @@ export type ClinicalIconName =
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <span class="inline-flex items-center justify-center text-xl pointer-events-none select-none">
-      @switch (name()) {
+      @switch (iconName()) {
         @case ('seagull') {
           <svg class="w-6 h-6 text-amber-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
             <!-- Dieter Rams Origami Seagull Clean Lines -->
@@ -98,5 +98,14 @@ export type ClinicalIconName =
   `
 })
 export class PocketgullIconComponent {
-  name = input.required<ClinicalIconName>();
+  readonly iconName = signal<ClinicalIconName>('heart');
+
+  @Input()
+  set name(val: ClinicalIconName) {
+    this.iconName.set(val);
+  }
+
+  get name(): ClinicalIconName {
+    return this.iconName();
+  }
 }

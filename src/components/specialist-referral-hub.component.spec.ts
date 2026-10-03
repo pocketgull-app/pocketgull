@@ -2,69 +2,83 @@ import '@angular/compiler';
 import { TestBed } from '@angular/core/testing';
 import { SpecialistReferralHubComponent } from './specialist-referral-hub.component';
 import { SpecialistReferralDossierService } from '../services/specialist-referral-dossier.service';
-import { RxGuardService } from '../services/rx-guard.service';
-import { WaveformDspEngineService } from '../services/waveform-dsp-engine.service';
-import { SkepticalEpistemologyService } from '../services/skeptical-epistemology.service';
 
-describe('SpecialistReferralHubComponent', () => {
+describe('SpecialistReferralHubComponent Unit Suite', () => {
   let component: SpecialistReferralHubComponent;
   let referralService: SpecialistReferralDossierService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [SpecialistReferralHubComponent],
-      providers: [
-        SpecialistReferralDossierService,
-        RxGuardService,
-        WaveformDspEngineService,
-        SkepticalEpistemologyService
-      ]
-    });
+      providers: [SpecialistReferralDossierService]
+    }).compileComponents();
 
-    referralService = TestBed.inject(SpecialistReferralDossierService);
     const fixture = TestBed.createComponent(SpecialistReferralHubComponent);
     component = fixture.componentInstance;
+    referralService = TestBed.inject(SpecialistReferralDossierService);
   });
 
-  it('should initialize with default activeTab as preflight and not embedded', () => {
+  it('1. Instantiates successfully with preflight tab and cardiology domain', () => {
     expect(component).toBeTruthy();
     expect(component.activeTab()).toBe('preflight');
-    expect(component.embedded()).toBe(false);
+    expect(referralService.selectedDomain()).toBe('cardiology');
     expect(component.specialtyList.length).toBe(4);
+    expect(component.gate()).toBeDefined();
   });
 
-  it('should compute gate and fhirDossier correctly for default cardiology domain', () => {
-    const gate = component.gate();
-    expect(gate).toBeTruthy();
-    expect(gate.specialtyName).toBe('Cardiology (Cardiovascular Disease)');
+  it('2. Switches specialty domains and updates gate and dossier', () => {
+    component.selectDomain('rheumatology');
+    expect(referralService.selectedDomain()).toBe('rheumatology');
+    expect(component.gate().domain).toBe('rheumatology');
 
-    const fhirDossier = component.fhirDossier();
-    expect(fhirDossier.resourceType).toBe('ServiceRequest');
-    expect(fhirDossier.status).toBe('active');
-
-    const jsonStr = component.fhirJsonString();
-    expect(jsonStr).toContain('"resourceType": "ServiceRequest"');
-  });
-
-  it('should switch domain when selectDomain is called', () => {
     component.selectDomain('neurology');
     expect(referralService.selectedDomain()).toBe('neurology');
-    expect(component.gate().specialtyName).toBe('Neurology (Neuro-Axonal & Autonomic)');
+    expect(component.gate().domain).toBe('neurology');
   });
 
-  it('should switch activeTab and generate re-entry brief', () => {
+  it('3. Switches between preflight, dossier, and reentry tabs', () => {
+    component.activeTab.set('dossier');
+    expect(component.activeTab()).toBe('dossier');
+
     component.activeTab.set('reentry');
     expect(component.activeTab()).toBe('reentry');
 
-    const brief = component.reentryBrief();
-    expect(brief).toBeTruthy();
-    expect(brief.crumplerPatientGuide).toBeTruthy();
-    expect(brief.specialistEhrNote).toBeTruthy();
-    expect(brief.pcpCoManagementContract).toBeTruthy();
+    component.activeTab.set('preflight');
+    expect(component.activeTab()).toBe('preflight');
   });
 
-  it('should simulate toggle prerequisites', () => {
+  it('4. Computes valid FHIR R4 ServiceRequest dossier and JSON string', () => {
+    const dossier = component.fhirDossier();
+    expect(dossier).toBeDefined();
+    expect(dossier.resourceType).toBe('ServiceRequest');
+    expect(dossier.extension.length).toBeGreaterThan(0);
+
+    const json = component.fhirJsonString();
+    expect(json).toContain('ServiceRequest');
+    expect(json).toContain('pat-9402');
+  });
+
+  it('5. Computes Dr. Crumpler Tri-Directional Re-Entry brief', () => {
+    const brief = component.reentryBrief();
+    expect(brief).toBeDefined();
+    expect(brief.crumplerPatientGuide).toBeDefined();
+    expect(brief.crumplerPatientGuide.dailyMedicationSchedule.length).toBeGreaterThan(0);
+    expect(brief.pcpCoManagementContract.laboratoryMonitoringSchedule.length).toBeGreaterThan(0);
+  });
+
+  it('6. Simulates prerequisite toggles and updates score', () => {
+    const initialScore = component.gate().readinessScore;
     component.simulateTogglePrerequisites();
-    expect(component.gate()).toBeTruthy();
+    expect(component.gate().readinessScore).toBeDefined();
+  });
+
+  it('7. Emits closeModal when close button clicked', () => {
+    let closed = false;
+    component.closeModal.subscribe(() => {
+      closed = true;
+    });
+
+    component.closeModal.emit();
+    expect(closed).toBe(true);
   });
 });

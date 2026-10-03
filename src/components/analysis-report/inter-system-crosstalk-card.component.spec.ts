@@ -56,7 +56,15 @@ describe('InterSystemCrosstalkCardComponent', () => {
 
   it('4. Updates axis status when patient has oral or cardiovascular issues', () => {
     patientState.reasonForVisit.set('Bleeding gums and severe periodontitis');
-    patientState.vitals.update(v => ({ ...v, bp: '150/95', hr: '94' }));
+    patientState.vitals.update(v => ({
+      temp: '98.6',
+      spO2: '98%',
+      weight: '70kg',
+      height: '175cm',
+      ...v,
+      bp: '150/95',
+      hr: '94'
+    }));
     fixture.detectChanges();
 
     const oralAxis = component.systemsAxes().find(a => a.id === 'oral-cardio');

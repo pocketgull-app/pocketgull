@@ -2099,7 +2099,7 @@ export class AnalysisReportComponent implements OnDestroy {
     setTimeout(() => this.flowToastMessage.set(null), 3000);
   }
 
-  protected readonly cdsReport = computed(() => {
+  readonly cdsReport = computed(() => {
     const lens = this.activeLens();
     const issuesCount = Object.keys(this.state.issues() || {}).length;
     return this.skepticalService.evaluateCdsCompliance(lens, issuesCount);

@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { SpiritualDietaryConductService, FaithTraditionKey } from './spiritual-dietary-conduct.service';
 
 export interface IBarcodeProductRecord {
@@ -74,7 +74,19 @@ export class CameraBarcodeDietaryExcipientScannerService {
     }
   };
 
-  constructor(private spiritualService: SpiritualDietaryConductService) {}
+  private spiritualService: SpiritualDietaryConductService;
+
+  constructor() {
+    try {
+      this.spiritualService = inject(SpiritualDietaryConductService, { optional: true }) ?? new SpiritualDietaryConductService();
+    } catch {
+      this.spiritualService = new SpiritualDietaryConductService();
+    }
+  }
+
+  setSpiritualService(service: SpiritualDietaryConductService): void {
+    this.spiritualService = service;
+  }
 
   toggleCameraSimulation(active: boolean): void {
     this.isCameraActiveState.set(active);

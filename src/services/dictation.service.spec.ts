@@ -147,15 +147,15 @@ describe('DictationService & Voice Simulation Suite', () => {
       expect(selectedId()).toBeNull();
     });
 
-    it('routes SMoE adaptive canvas view switching', () => {
+    it('routes Synoptic Canvas view switching', () => {
       const viewMode = signal<'canvas' | 'lenses' | 'suites'>('lenses');
       const service = createService({
         moeRouter: { analysisViewMode: viewMode }
       });
 
-      const handled = service.processVoiceCommand('Gull canvas');
+      const handled = service.processVoiceCommand('Gull synoptic');
       expect(handled).toBe(true);
-      expect(service.lastCommand()).toBe('Switching to SMoE Adaptive Canvas');
+      expect(service.lastCommand()).toBe('Switching to Synoptic Canvas');
       expect(viewMode()).toBe('canvas');
     });
 

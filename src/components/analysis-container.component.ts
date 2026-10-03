@@ -136,11 +136,11 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
 
               <button type="button" (click)="viewMode.set('canvas')"
                 data-testid="toggle-canvas"
-                title="Sparse Mixture of UI Experts (SMoE) Adaptive Canvas"
+                title="Synoptic Canvas (Adaptive Multi-Specialist Care Synthesis)"
                 [class]="viewMode() === 'canvas'
                   ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-emerald-500 text-zinc-950 transition cursor-pointer shadow-md'
                   : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-emerald-400 hover:text-emerald-300 hover:bg-zinc-850 transition cursor-pointer'">
-                <span>⚡ SMoE CANVAS</span>
+                <span>🌐 SYNOPTIC CANVAS</span>
               </button>
             </div>
 

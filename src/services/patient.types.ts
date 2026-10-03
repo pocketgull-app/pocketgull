@@ -126,6 +126,7 @@ export interface ICmpLabs {
     bun?: string;
     sodium?: string;
     potassium?: string;
+    chloride?: string;
     // Gastric / Metabolic
     glucose?: string;
     hba1c?: string;

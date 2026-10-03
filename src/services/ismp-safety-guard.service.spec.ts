@@ -110,4 +110,36 @@ describe('IsmpSafetyGuardService - ISMP / FDA Pharmacological Safety Suite', () 
     expect(vincaCard?.tallManB).toBe('vinCRIStine');
     expect(vincaCard?.criticalSafetyWarning).toContain('paralysis');
   });
+
+  it('11. formatIsmpNumber strictly enforces leading zeros and prohibits trailing zeros', () => {
+    // Leading zero mandated for values < 1
+    expect(service.formatIsmpNumber(0.5, 'mg')).toBe('0.5 mg');
+    expect(service.formatIsmpNumber('.25', 'mg')).toBe('0.25 mg');
+    expect(service.formatIsmpNumber(-0.125)).toBe('-0.125');
+
+    // Trailing zero strictly prohibited for whole numbers
+    expect(service.formatIsmpNumber(5.0, 'mg')).toBe('5 mg');
+    expect(service.formatIsmpNumber('10.00', 'mL')).toBe('10 mL');
+    expect(service.formatIsmpNumber(20.0)).toBe('20');
+  });
+
+  it('12. formatIsmpNumber standardizes metric units and avoids floating point leakage', () => {
+    expect(service.formatIsmpNumber(0.1 + 0.2, 'mg')).toBe('0.3 mg');
+    expect(service.formatIsmpNumber(50, 'ug')).toBe('50 mcg');
+    expect(service.formatIsmpNumber(15, 'ml')).toBe('15 mL');
+    expect(service.formatIsmpNumber(2.5000, 'g')).toBe('2.5 g');
+  });
+
+  it('13. formatIsmpMathFormula formats PK formulas with slashed zero subscripts and ISMP decimals', () => {
+    const rawFormula = 'C_0 = 100 mg/L, C(t) = C_0 * e^(-k_0 * t), dose = .5 mg, max = 5.0 mg';
+    const formatted = service.formatIsmpMathFormula(rawFormula);
+
+    expect(formatted).toContain('C_{0̸}');
+    expect(formatted).toContain('k_{0̸}');
+    expect(formatted).toContain('0.5 mg');
+    expect(formatted).toContain('5 mg');
+    expect(formatted).not.toMatch(/(^|[^\d])\.5\s*mg/);
+    expect(formatted).not.toMatch(/\b5\.0\s*mg/);
+  });
 });
+

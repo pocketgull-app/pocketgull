@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, Optional } from '@angular/core';
 import * as DOMPurify from 'dompurify';
 import { PatientStateService } from './patient-state.service';
 
@@ -25,16 +25,11 @@ export interface ISoapNote {
 export class SoapNoteGeneratorService {
   private patientState?: PatientStateService | null;
 
-  constructor(patientState?: PatientStateService) {
-    if (patientState) {
-      this.patientState = patientState;
-    } else {
-      try {
-        this.patientState = inject(PatientStateService, { optional: true });
-      } catch (e) {
-        console.debug('[SoapNoteGenerator] PatientStateService DI fallback:', (e as Error)?.message);
-        this.patientState = null;
-      }
+  constructor() {
+    try {
+      this.patientState = inject(PatientStateService, { optional: true });
+    } catch {
+      this.patientState = null;
     }
   }
 

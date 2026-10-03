@@ -348,6 +348,13 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
                       <div class="text-[10px] text-zinc-400 font-normal">Three.js Tri-Plane Slicer</div>
                     </div>
                   </button>
+                  <button type="button" (click)="openBiophysicalLenses.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🫀</span>
+                    <div>
+                      <div>Biophysical 3D Lenses &amp; Phenotypers</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Cardio • Pulm • Hepato • Renal • Neuro</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openSmartHealthPass.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">📱</span>
                     <div>
@@ -877,6 +884,10 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
               <span class="text-base">🩻</span> <span>3D Joint Hologram HUD</span>
             </button>
 
+            <button type="button" (click)="openBiophysicalLenses.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🫀</span> <span>Biophysical 3D Lenses &amp; Phenotypers</span>
+            </button>
+
             <button type="button" (click)="openResearchDividend.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🧬</span> <span>Ethical Open Science Commons</span>
             </button>
@@ -1037,6 +1048,7 @@ export class MainHeaderNavComponent {
   openSocraticRounds = output<void>();
   openBarrowsWorkbench = output<void>();
   openKneeHologram = output<void>();
+  openBiophysicalLenses = output<void>();
   openSmartHealthPass = output<void>();
   openSocraticIntake = output<void>();
   openModelGarden = output<void>();

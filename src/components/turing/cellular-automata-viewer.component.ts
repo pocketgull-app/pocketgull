@@ -175,6 +175,10 @@ export class CellularAutomataViewerComponent implements AfterViewInit, OnDestroy
   private lastTime = 0;
   private fps = 12;
 
+  constructor() {
+    this.initGrid();
+  }
+
   ngAfterViewInit() {
     if (!isPlatformBrowser(this.platformId)) return;
     this.initGrid();

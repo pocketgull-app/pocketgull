@@ -1,5 +1,5 @@
-import { Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, computed, inject, ChangeDetectionStrategy, ElementRef, viewChild, AfterViewInit, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientStateService } from '../../services/patient-state.service';
 import { GlobalHealingParadigmsService } from '../../services/global-healing-paradigms.service';
@@ -254,27 +254,100 @@ export interface ISowaRigpaNode {
             </div>
           }
 
-          <!-- Radial Pulse & Urine Diagnostic Quick Panel (Gyushi Four Tantras Spec) -->
-          <div class="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 space-y-2.5 text-xs">
-            <div class="flex items-center gap-2 font-bold font-mono text-zinc-200">
-              <span>🩺</span>
-              <span>12-Vector Radial Pulse & Urine Stage HUD</span>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-2 font-mono text-[11px]">
-              <div class="p-2 rounded bg-zinc-950 border border-zinc-800/80">
-                <span class="text-sky-400 font-bold block">Left Wrist Pulse:</span>
-                <span class="text-zinc-400 text-[10px]">Heart / Small Intestine (Index), Spleen / Stomach (Middle), Kidney (Ring)</span>
+          <!-- Real-Time Sowa-Rigpa 3D Humoral Pulse Waveform Shader HUD (Gyushi Four Tantras Spec) -->
+          <div class="p-4 rounded-xl bg-zinc-900/90 border border-teal-500/30 space-y-3 text-xs">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+              <div class="flex items-center gap-2 font-bold font-mono text-zinc-200">
+                <span class="text-base">🫀</span>
+                <span>Sowa-Rigpa 3D Humoral Pulse Waveform Engine</span>
               </div>
-              <div class="p-2 rounded bg-zinc-950 border border-zinc-800/80">
-                <span class="text-amber-400 font-bold block">Right Wrist Pulse:</span>
-                <span class="text-zinc-400 text-[10px]">Lungs / Large Intestine (Index), Liver / Gallbladder (Middle), Kidney (Ring)</span>
+              <div class="flex items-center gap-1.5 font-mono text-[10px] text-teal-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>HRV Synced: {{ heartRate() }} bpm • {{ hrv() }} ms</span>
               </div>
             </div>
 
-            <div class="p-2 rounded bg-zinc-950 border border-zinc-800/80 text-[11px] font-mono">
+            <!-- Humor Mode Filter Tabs -->
+            <div class="flex items-center gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800 text-[10px] font-mono">
+              <button
+                type="button"
+                (click)="activeHumorPulse.set('all')"
+                [class.bg-teal-600]="activeHumorPulse() === 'all'"
+                [class.text-white]="activeHumorPulse() === 'all'"
+                [class.text-zinc-400]="activeHumorPulse() !== 'all'"
+                class="px-2 py-1 rounded transition cursor-pointer font-bold"
+              >
+                🌊 Trihumoral
+              </button>
+              <button
+                type="button"
+                (click)="activeHumorPulse.set('rlung')"
+                [class.bg-sky-600]="activeHumorPulse() === 'rlung'"
+                [class.text-white]="activeHumorPulse() === 'rlung'"
+                [class.text-zinc-400]="activeHumorPulse() !== 'rlung'"
+                class="px-2 py-1 rounded transition cursor-pointer font-bold"
+              >
+                💨 rLung (Wind)
+              </button>
+              <button
+                type="button"
+                (click)="activeHumorPulse.set('mkhrispa')"
+                [class.bg-amber-600]="activeHumorPulse() === 'mkhrispa'"
+                [class.text-white]="activeHumorPulse() === 'mkhrispa'"
+                [class.text-zinc-400]="activeHumorPulse() !== 'mkhrispa'"
+                class="px-2 py-1 rounded transition cursor-pointer font-bold"
+              >
+                🔥 mKhris-pa (Bile)
+              </button>
+              <button
+                type="button"
+                (click)="activeHumorPulse.set('badkan')"
+                [class.bg-slate-600]="activeHumorPulse() === 'badkan'"
+                [class.text-white]="activeHumorPulse() === 'badkan'"
+                [class.text-zinc-400]="activeHumorPulse() !== 'badkan'"
+                class="px-2 py-1 rounded transition cursor-pointer font-bold"
+              >
+                💧 Bad-kan (Phlegm)
+              </button>
+            </div>
+
+            <!-- Waveform Canvas Display -->
+            <div class="relative w-full h-28 rounded-xl bg-zinc-950 border border-teal-500/30 overflow-hidden shadow-inner flex items-center justify-center">
+              <canvas #pulseShaderCanvas width="400" height="112" class="w-full h-full block"></canvas>
+              
+              <!-- Telemetry Grid Overlay Labels -->
+              <div class="absolute top-1 left-2 pointer-events-none text-[9px] font-mono text-zinc-500 flex gap-4">
+                <span>V_arterial: {{ (1.2 + (heartRate() / 100)).toFixed(2) }} m/s</span>
+                <span>Modulation: {{ (hrv() / 60).toFixed(2) }}</span>
+                <span>Dicrotic Notch: {{ (0.35 + (hrv() * 0.005)).toFixed(2) }}</span>
+              </div>
+            </div>
+
+            <!-- Classical Gyushi Tactile Descriptor -->
+            <div class="p-2 rounded-lg bg-zinc-950/80 border border-zinc-800 text-[10.5px] font-mono space-y-1">
+              <div class="text-teal-400 font-bold flex items-center justify-between">
+                <span>Tactile Radial Descriptor (Gyushi Spec):</span>
+                <span class="text-[9px] text-zinc-500 font-normal">Gyushi Four Tantras</span>
+              </div>
+              <p class="text-zinc-300 italic leading-snug">
+                "{{ currentPulseDescriptor() }}"
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 font-mono text-[10px]">
+              <div class="p-2 rounded bg-zinc-950 border border-zinc-800/80">
+                <span class="text-sky-400 font-bold block">Left Wrist Radial:</span>
+                <span class="text-zinc-400">Heart (Index), Spleen (Middle), Kidney (Ring)</span>
+              </div>
+              <div class="p-2 rounded bg-zinc-950 border border-zinc-800/80">
+                <span class="text-amber-400 font-bold block">Right Wrist Radial:</span>
+                <span class="text-zinc-400">Lungs (Index), Liver (Middle), Kidney (Ring)</span>
+              </div>
+            </div>
+
+            <div class="p-2 rounded bg-zinc-950 border border-zinc-800/80 text-[10px] font-mono">
               <span class="text-teal-300 font-bold">Urine Diagnosis (Dri-chu):</span>
-              <span class="text-zinc-400 text-[10px] block mt-0.5">Stage 1: Fresh Vapor & Color • Stage 2: Bubble Dynamics • Stage 3: Sediment & Foam Dissipation</span>
+              <span class="text-zinc-400 block mt-0.5">Stage 1: Vapor/Color • Stage 2: Bubble Dynamics • Stage 3: Sediment</span>
             </div>
           </div>
 
@@ -283,15 +356,46 @@ export interface ISowaRigpaNode {
     </div>
   `
 })
-export class SowaRigpaTreeSpatialViewerComponent {
+export class SowaRigpaTreeSpatialViewerComponent implements AfterViewInit, OnDestroy {
   readonly patientState = inject(PatientStateService);
   readonly paradigms = inject(GlobalHealingParadigmsService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   readonly selectedTree = signal<'physiology' | 'diagnosis' | 'therapeutics'>('physiology');
   readonly is3dPerspective = signal<boolean>(true);
   readonly tiltX = signal<number>(12);
   readonly tiltY = signal<number>(-8);
   readonly selectedNode = signal<ISowaRigpaNode | null>(null);
+
+  readonly pulseShaderCanvas = viewChild<ElementRef<HTMLCanvasElement>>('pulseShaderCanvas');
+  readonly activeHumorPulse = signal<'all' | 'rlung' | 'mkhrispa' | 'badkan'>('all');
+  private animFrameId: number | null = null;
+  private animTime = 0;
+
+  readonly heartRate = computed(() => {
+    const v = this.patientState.vitals();
+    return v?.heartRate || 72;
+  });
+
+  readonly hrv = computed(() => {
+    const v = this.patientState.vitals();
+    return v?.hrv || 45;
+  });
+
+  readonly currentPulseDescriptor = computed(() => {
+    const humor = this.activeHumorPulse();
+    switch (humor) {
+      case 'rlung':
+        return 'Floating, rapid, hollow like a dry feather swept along water — indicating Wind agitation and sympathetic autonomic elevation.';
+      case 'mkhrispa':
+        return 'Overflowing, rapid, taut like a tight bowstring — reflecting metabolic heat, hepatic drive, and bile pressure.';
+      case 'badkan':
+        return 'Sunken, sluggish, soft and broad like a wave under ice — denoting phlegmatic viscosity, lymphatic congestion, and cold stagnation.';
+      case 'all':
+      default:
+        return 'Harmonic trihumoral radial confluence: rLung tremolo superficial, mKhris-pa intermediate tension, and Bad-kan basal glide.';
+    }
+  });
 
   /** Curated Sowa-Rigpa Medical Tree Nodes across Physiology, Diagnosis & Therapeutics */
   readonly allTreeNodes = signal<ISowaRigpaNode[]>([
@@ -576,4 +680,121 @@ export class SowaRigpaTreeSpatialViewerComponent {
     if (humor === 'badkan') return 'bg-slate-500/20 text-slate-200 border-slate-500/40';
     return 'bg-teal-500/20 text-teal-300 border-teal-500/40';
   }
+
+  ngAfterViewInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.startPulseAnimation();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.animFrameId !== null && typeof cancelAnimationFrame !== 'undefined') {
+      cancelAnimationFrame(this.animFrameId);
+      this.animFrameId = null;
+    }
+  }
+
+  startPulseAnimation(): void {
+    const loop = () => {
+      this.drawPulseFrame();
+      if (typeof requestAnimationFrame !== 'undefined') {
+        this.animFrameId = requestAnimationFrame(loop);
+      }
+    };
+    if (typeof requestAnimationFrame !== 'undefined') {
+      this.animFrameId = requestAnimationFrame(loop);
+    }
+  }
+
+  drawPulseFrame(): void {
+    const canvasRef = this.pulseShaderCanvas();
+    if (!canvasRef || !canvasRef.nativeElement) return;
+    const canvas = canvasRef.nativeElement;
+    if (typeof canvas.getContext !== 'function') return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const width = canvas.width || 400;
+    const height = canvas.height || 112;
+
+    this.animTime += 0.04;
+    const time = this.animTime;
+    const hr = this.heartRate();
+    const hrv = this.hrv();
+    const mode = this.activeHumorPulse();
+
+    // Clear background
+    ctx.fillStyle = '#09090b';
+    ctx.fillRect(0, 0, width, height);
+
+    // Subtle grid lines
+    ctx.strokeStyle = '#18181b';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < width; x += 40) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+    for (let y = 0; y < height; y += 20) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+
+    // Baseline center
+    const midY = height / 2;
+    const hrFreq = (hr / 60) * 2.5;
+    const hrvMod = (hrv / 100);
+
+    // Waveform simulation (Gyushi Four Tantras Spec)
+    // 1. rLung (Wind): Cyan #38bdf8 - rapid fluttering ripples + high-frequency tremolo
+    if (mode === 'all' || mode === 'rlung') {
+      ctx.beginPath();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = mode === 'rlung' ? 2.5 : 1.5;
+      for (let x = 0; x < width; x++) {
+        const t = (x / 50) * hrFreq - time * 3;
+        const flutter = Math.sin(t * 4.5) * (8 * (1 + hrvMod * 0.3));
+        const wave = Math.sin(t) * 16 + flutter;
+        const y = midY - wave * (mode === 'rlung' ? 1.4 : 0.8);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    // 2. mKhris-pa (Bile): Amber #fbbf24 - sharp high systolic spike, taut bowstring
+    if (mode === 'all' || mode === 'mkhrispa') {
+      ctx.beginPath();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = mode === 'mkhrispa' ? 2.5 : 1.5;
+      for (let x = 0; x < width; x++) {
+        const t = (x / 50) * hrFreq - time * 3;
+        const rawSine = Math.sin(t);
+        const peaked = Math.sign(rawSine) * Math.pow(Math.abs(rawSine), 0.6) * 28;
+        const y = midY - peaked * (mode === 'mkhrispa' ? 1.3 : 0.7);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    // 3. Bad-kan (Phlegm): Slate #e2e8f0 - slow, rounded, heavy viscous wave
+    if (mode === 'all' || mode === 'badkan') {
+      ctx.beginPath();
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = mode === 'badkan' ? 2.5 : 1.5;
+      for (let x = 0; x < width; x++) {
+        const t = (x / 75) * (hrFreq * 0.7) - time * 1.5;
+        const smooth = Math.sin(t) * 22;
+        const y = midY + 4 - smooth * (mode === 'badkan' ? 1.3 : 0.6);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
 }
+

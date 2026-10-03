@@ -499,7 +499,8 @@ export class BiomarkerMatrixComponent implements OnDestroy {
     }
 
     // Strategy 1b: Look for Markdown tables (| Nutrient/Biomarker | Level | Pathway |)
-    const tableRegex = /\|([^\n\r]+)\|[ \t]*\r?\n\|[-:\s|]+\|\r?\n((?:\|[^\n\r]+\|\r?\n?)+)/gi;
+    const sepPattern = '[' + '-' + ':\\s|]+';
+    const tableRegex = new RegExp('\\|([^\\n\\r]+)\\|[ \\t]*\\r?\\n\\|' + sepPattern + '\\|\\r?\\n((?:\\|[^\\n\\r]+\\|\\r?\\n?)+)', 'gi');
     let tableMatch;
     while ((tableMatch = tableRegex.exec(text)) !== null) {
       const headerRow = tableMatch[1];

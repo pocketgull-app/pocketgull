@@ -1989,7 +1989,7 @@ Pocket-Gull has activated the **Specialist Referral & Co-Management Hub** (HL7 F
 2. **SBAR Handoff Generation**: Compiles an Epistemic Situation-Background-Assessment-Recommendation brief for the consulting sub-specialist.
 3. **Dr. Rebecca Lee Crumpler Re-Entry Protocol**: Generates structured post-consultation return guidance for the referring primary care provider.
 
-*To inspect or transmit referrals, click the **Specialist Referral** expert slot in the SMoE canvas or select the **Referral Hub** modal.*`;
+*To inspect or transmit referrals, click the **Specialist Referral** expert slot in the Synoptic Canvas or select the **Referral Hub** modal.*`;
         }
 
         // 0c. Finding People: NIH ClinicalTrials.gov TrialFinder
@@ -2001,7 +2001,7 @@ Pocket-Gull connects to the **NIH ClinicalTrials.gov** active trial registry wit
 2. **Principal Investigator Contacts**: Provides direct study coordinator email addresses and clinical center recruitment phone numbers.
 3. **Stepped-Care Bridge**: Seamlessly couples investigational biologics and gene therapy trials with ongoing primary care posology.
 
-*To browse nearby trial sites, open the **Clinical Trials** expert card in the SMoE canvas.*`;
+*To browse nearby trial sites, open the **Clinical Trials** expert card in the Synoptic Canvas.*`;
         }
 
         // 0d. Finding People & Resources: Social Determinants of Health (SDOH) Navigator
@@ -2013,7 +2013,7 @@ Pocket-Gull automatically screens and addresses health-related social needs:
 2. **$4 Generic Pharmacy Benchmark**: Direct retail price transparent alternatives at Walmart, Kroger, and Cost Plus Drugs to eliminate financial copay toxicity.
 3. **Closed-Loop Social Assistance**: Instant generation of FHIR R4 ServiceRequests for SNAP Produce Prescriptions, LIHEAP energy aid, and local Medical-Legal Partnerships.
 
-*To view community assistance options, inspect the **SDOH Navigator** expert in the SMoE canvas.*`;
+*To view community assistance options, inspect the **SDOH Navigator** expert in the Synoptic Canvas.*`;
         }
 
         if (lower.includes('rationale') || lower.includes('explain') || lower.includes('why')) {
