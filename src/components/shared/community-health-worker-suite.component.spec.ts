@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommunityHealthWorkerSuiteComponent } from './community-health-worker-suite.component';
 import { WhoEssentialMedicinesService } from '../../services/who-essential-medicines.service';
 import { WhoEssentialDiagnosticsService } from '../../services/who-essential-diagnostics.service';
+import { AustereMeshSyncService } from '../../services/austere-mesh-sync.service';
+import { PediatricDosingEngineService } from '../../services/pediatric-dosing-engine.service';
 
 describe('CommunityHealthWorkerSuiteComponent', () => {
   let component: CommunityHealthWorkerSuiteComponent;
@@ -10,7 +12,12 @@ describe('CommunityHealthWorkerSuiteComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CommunityHealthWorkerSuiteComponent],
-      providers: [WhoEssentialMedicinesService, WhoEssentialDiagnosticsService]
+      providers: [
+        WhoEssentialMedicinesService,
+        WhoEssentialDiagnosticsService,
+        AustereMeshSyncService,
+        PediatricDosingEngineService
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CommunityHealthWorkerSuiteComponent);
@@ -278,6 +285,165 @@ describe('CommunityHealthWorkerSuiteComponent', () => {
 
       const telem = component.edlService.coldChainTelemetry();
       expect(telem.projectedAutonomyHours).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Local Wi-Fi Mesh Synchronization & P2P Triage Roster', () => {
+    it('should switch activeTab to austere_mesh_sync and show mesh network status', () => {
+      component.activeTab.set('austere_mesh_sync');
+      fixture.detectChanges();
+
+      expect(component.activeTab()).toBe('austere_mesh_sync');
+      expect(component.meshSync.connectionStatus()).toBe('MESH_CONNECTED');
+      expect(component.meshSync.meshSsid()).toBe('MSF_AUSTERE_MESH_5G');
+      expect(component.meshSync.activePeerCount()).toBeGreaterThanOrEqual(3);
+    });
+
+    it('should broadcast cold-chain emergency alert and display in active banner', () => {
+      component.activeTab.set('austere_mesh_sync');
+      fixture.detectChanges();
+
+      const alert = component.meshSync.broadcastColdChainAlert({
+        fridgeUnit: 'Field Cooler Bravo',
+        temperatureCelsius: -2.0,
+        statusTier: 'FREEZE_HAZARD',
+        alertMessage: 'Sub-zero freezing alert on HepB supply!'
+      });
+
+      expect(component.meshSync.activeEmergencyAlertCount()).toBe(1);
+      expect(alert.statusTier).toBe('FREEZE_HAZARD');
+
+      // Acknowledge alert
+      component.meshSync.acknowledgeColdChainAlert(alert.alertId);
+      expect(component.meshSync.activeEmergencyAlertCount()).toBe(0);
+    });
+
+    it('should synchronize patient triage roster across local mesh nodes', () => {
+      component.activeTab.set('austere_mesh_sync');
+      const prevCount = component.meshSync.triageQueue().length;
+
+      const patient = component.meshSync.enqueueTriagePatient({
+        patientToken: 'Patient #109 (Infant F, 9m)',
+        ageMonths: 9,
+        weightKg: 8.0,
+        gender: 'FEMALE',
+        muacMm: 118,
+        acuityTier: 'YELLOW',
+        chiefComplaint: 'Fast breathing 52 bpm, MAM nutrition',
+        clinicalCategory: 'Moderate Acute Malnutrition'
+      });
+
+      expect(component.meshSync.triageQueue().length).toBe(prevCount + 1);
+      expect(patient.status).toBe('WAITING');
+
+      // Transition to IN_CONSULT
+      component.meshSync.updateTriageStatus(patient.ticketId, 'IN_CONSULT', 'Dr. Amina (MSF)');
+      const inConsult = component.meshSync.triageQueue().find(t => t.ticketId === patient.ticketId);
+      expect(inConsult?.status).toBe('IN_CONSULT');
+      expect(inConsult?.assignedClinician).toBe('Dr. Amina (MSF)');
+
+      // Transition to DISCHARGED
+      component.meshSync.updateTriageStatus(patient.ticketId, 'DISCHARGED');
+      const discharged = component.meshSync.triageQueue().find(t => t.ticketId === patient.ticketId);
+      expect(discharged?.status).toBe('DISCHARGED');
+      expect(discharged?.completedIso).toBeDefined();
+    });
+  });
+
+  describe('WHO Model List of Essential Medicines for Children (EMLc & IMCI) Pediatric Dosing', () => {
+    it('should switch activeTab to pediatric_dosing and calibrate child weight', () => {
+      component.activeTab.set('pediatric_dosing');
+      component.pediatricDosing.setWeightKg(11.0);
+      component.pediatricDosing.setAgeMonths(18);
+      fixture.detectChanges();
+
+      expect(component.activeTab()).toBe('pediatric_dosing');
+      expect(component.pediatricDosing.childWeightKg()).toBe(11.0);
+      expect(component.pediatricDosing.childAgeMonths()).toBe(18);
+    });
+
+    it('should calculate Artemether + Lumefantrine (Coartem) weight bands and 6-dose schedule', () => {
+      component.activeTab.set('pediatric_dosing');
+      component.pediatricDosing.setSelectedMedication('artemether_lumefantrine');
+
+      // 10 kg toddler: 1 tab per dose, 6 doses total
+      component.pediatricDosing.setWeightKg(10.0);
+      fixture.detectChanges();
+
+      const alDose = component.pediatricDosing.artemetherLumefantrine();
+      expect(alDose.isEligible).toBe(true);
+      expect(alDose.tabletsPerDose).toBe(1);
+      expect(alDose.totalTablets).toBe(6);
+      expect(alDose.weightBandLabel).toContain('5 to <15 kg');
+      expect(alDose.scheduleHours).toEqual([0, 8, 24, 36, 48, 60]);
+
+      // 18 kg child: 2 tabs per dose, 12 doses total
+      component.pediatricDosing.setWeightKg(18.0);
+      fixture.detectChanges();
+
+      const alDose2 = component.pediatricDosing.artemetherLumefantrine();
+      expect(alDose2.tabletsPerDose).toBe(2);
+      expect(alDose2.totalTablets).toBe(12);
+      expect(alDose2.weightBandLabel).toContain('15 to <25 kg');
+    });
+
+    it('should calculate WHO Reduced Osmolarity ORS Plan B 4-hour rehydration volume', () => {
+      component.activeTab.set('pediatric_dosing');
+      component.pediatricDosing.setSelectedMedication('ors_rehydration');
+      component.pediatricDosing.setWeightKg(10.0);
+      component.pediatricDosing.setOrsPlan('PLAN_B');
+      fixture.detectChanges();
+
+      const ors = component.pediatricDosing.orsCalculation();
+      expect(ors.plan).toBe('PLAN_B');
+      expect(ors.totalVolumeMl4Hours).toBe(750); // 10 kg * 75 mL = 750 mL
+      expect(ors.hourlyRateMlHour).toBe(188);
+      expect(ors.zincAdjunctRequired).toBe(true);
+      expect(ors.mixingInstructions).toContain('1.0 Liter');
+    });
+
+    it('should calculate Zinc Sulfate 14-day pediatric diarrhea course', () => {
+      component.activeTab.set('pediatric_dosing');
+      component.pediatricDosing.setSelectedMedication('zinc_sulfate');
+
+      // Under 6 months
+      component.pediatricDosing.setAgeMonths(4);
+      fixture.detectChanges();
+      let zinc = component.pediatricDosing.zincDose();
+      expect(zinc.dailyDoseMg).toBe(10);
+      expect(zinc.tabletFractionLabel).toBe('1/2 tablet');
+      expect(zinc.durationDays).toBe(14);
+      expect(zinc.totalTabletsDispensed).toBe(7);
+
+      // Over 6 months
+      component.pediatricDosing.setAgeMonths(20);
+      fixture.detectChanges();
+      zinc = component.pediatricDosing.zincDose();
+      expect(zinc.dailyDoseMg).toBe(20);
+      expect(zinc.tabletFractionLabel).toBe('1 tablet');
+      expect(zinc.totalTabletsDispensed).toBe(14);
+    });
+
+    it('should calculate Amoxicillin dispersible tablets for fast-breathing pneumonia', () => {
+      component.activeTab.set('pediatric_dosing');
+      component.pediatricDosing.setSelectedMedication('amoxicillin_dispersible');
+
+      // Under 10 kg & under 12 months: 1 tablet BID
+      component.pediatricDosing.setWeightKg(8.0);
+      component.pediatricDosing.setAgeMonths(6);
+      fixture.detectChanges();
+      let amox = component.pediatricDosing.amoxicillinDose();
+      expect(amox.tabletsPerDose).toBe(1);
+      expect(amox.doseMg).toBe(250);
+      expect(amox.totalTabletsDispensed).toBe(10); // 1 tab x 2 x 5d
+
+      // 10 kg and above: 2 tablets BID
+      component.pediatricDosing.setWeightKg(14.0);
+      fixture.detectChanges();
+      amox = component.pediatricDosing.amoxicillinDose();
+      expect(amox.tabletsPerDose).toBe(2);
+      expect(amox.doseMg).toBe(500);
+      expect(amox.totalTabletsDispensed).toBe(20); // 2 tabs x 2 x 5d
     });
   });
 });

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WhoEssentialMedicinesService } from '../../services/who-essential-medicines.service';
 import { WhoEssentialDiagnosticsService } from '../../services/who-essential-diagnostics.service';
+import { AustereMeshSyncService } from '../../services/austere-mesh-sync.service';
+import { PediatricDosingEngineService } from '../../services/pediatric-dosing-engine.service';
 import { generate } from 'lean-qr';
 import {
   FrontlineVernacularVoiceService,
@@ -11,7 +13,7 @@ import {
   ITriageVoiceContext
 } from '../../services/frontline-vernacular-voice.service';
 
-export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain';
+export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain' | 'austere_mesh_sync' | 'pediatric_dosing';
 
 export interface IMuacTriageResult {
   muacMm: number;
@@ -196,6 +198,24 @@ export interface IDehydrationTriageResult {
                 [class.text-zinc-400]="activeTab() !== 'cold_chain'"
                 class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
           <span>❄️</span> 7. Cold-Chain &amp; Solar Watchdog
+        </button>
+
+        <button type="button"
+                (click)="activeTab.set('austere_mesh_sync')"
+                [class.bg-indigo-600]="activeTab() === 'austere_mesh_sync'"
+                [class.text-white]="activeTab() === 'austere_mesh_sync'"
+                [class.text-zinc-400]="activeTab() !== 'austere_mesh_sync'"
+                class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
+          <span>📡</span> 8. Local Wi-Fi Mesh Sync
+        </button>
+
+        <button type="button"
+                (click)="activeTab.set('pediatric_dosing')"
+                [class.bg-teal-600]="activeTab() === 'pediatric_dosing'"
+                [class.text-white]="activeTab() === 'pediatric_dosing'"
+                [class.text-zinc-400]="activeTab() !== 'pediatric_dosing'"
+                class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
+          <span>⚖️</span> 9. Pediatric Dosing (IMCI)
         </button>
       </nav>
 
@@ -1208,6 +1228,556 @@ export interface IDehydrationTriageResult {
         </section>
       }
 
+
+      <!-- MODULE 8: Local Wi-Fi Mesh Synchronization & P2P Triage Roster -->
+      @if (activeTab() === 'austere_mesh_sync') {
+        <section class="mt-4 p-4 sm:p-6 bg-zinc-900/60 rounded-3xl border border-zinc-800 space-y-6 animate-in fade-in duration-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                <span>📡</span> Local Wi-Fi Mesh Synchronization &amp; P2P Triage Roster
+              </h3>
+              <p class="text-xs text-zinc-400">
+                Zero-internet offline synchronization across austere clinic tablets, cold-chain depots &amp; triage tents
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-800/60 font-bold flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Mesh Connected: {{ meshSync.meshSsid() }}
+              </span>
+              <span class="text-[10px] font-mono text-zinc-400">
+                Ping: {{ meshSync.meshLatencyMs() }}ms
+              </span>
+            </div>
+          </div>
+
+          <!-- Active Emergency Cold-Chain Broadcast Alarm (If Any) -->
+          @if (meshSync.activeEmergencyAlertCount() > 0) {
+            <div class="space-y-2">
+              @for (alert of meshSync.activeColdChainAlerts(); track alert.alertId) {
+                @if (!alert.acknowledged) {
+                  <div class="p-4 rounded-2xl bg-rose-950/80 border-2 border-rose-600 text-rose-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-pulse shadow-lg">
+                    <div class="flex items-center gap-3">
+                      <span class="text-2xl">🚨</span>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <strong class="text-xs uppercase font-mono font-bold tracking-wider">
+                            CRITICAL COLD-CHAIN MESH ALARM: {{ alert.fridgeUnit }} ({{ alert.temperatureCelsius }}°C)
+                          </strong>
+                          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-rose-900 border border-rose-700">
+                            {{ alert.statusTier }}
+                          </span>
+                        </div>
+                        <p class="text-xs text-rose-200 mt-0.5">
+                          {{ alert.alertMessage }}
+                        </p>
+                      </div>
+                    </div>
+                    <button type="button"
+                            (click)="meshSync.acknowledgeColdChainAlert(alert.alertId)"
+                            class="px-3 py-1.5 rounded-xl bg-white text-rose-950 hover:bg-zinc-200 font-mono text-xs font-bold transition shrink-0 cursor-pointer shadow-sm">
+                      ✓ Acknowledge Alert
+                    </button>
+                  </div>
+                }
+              }
+            </div>
+          }
+
+          <!-- Node Identification & Network Statistics -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-1">
+              <span class="text-[10px] uppercase font-mono font-bold text-zinc-400 block">Local Node Station</span>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-zinc-100">{{ meshSync.localNode().nodeName }}</span>
+                <span class="text-[10px] font-mono text-emerald-400 font-bold">ONLINE</span>
+              </div>
+              <div class="text-[11px] font-mono text-zinc-400">
+                IP: {{ meshSync.localNode().ipAddress }} | Batt: {{ meshSync.localNode().batteryPct }}%
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-1">
+              <span class="text-[10px] uppercase font-mono font-bold text-zinc-400 block">Mesh Peers Discovered</span>
+              <div class="flex items-center justify-between">
+                <span class="text-base font-black font-mono text-indigo-300">{{ meshSync.activePeerCount() }} Active Nodes</span>
+                <button type="button"
+                        (click)="meshSync.sendHeartbeat()"
+                        class="text-[10px] font-mono text-teal-400 hover:text-teal-300 underline cursor-pointer">
+                  Sync Ping
+                </button>
+              </div>
+              <div class="text-[11px] font-mono text-zinc-400">
+                TX: {{ meshSync.packetsTransmittedCount() }} pkts | RX: {{ meshSync.packetsReceivedCount() }} pkts
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-1">
+              <span class="text-[10px] uppercase font-mono font-bold text-zinc-400 block">Emergency Test Broadcast</span>
+              <button type="button"
+                      (click)="meshSync.broadcastColdChainAlert({
+                        fridgeUnit: 'Vaccine Solar Depot Refrig #1',
+                        temperatureCelsius: -1.4,
+                        statusTier: 'FREEZE_HAZARD',
+                        alertMessage: 'Freeze damage risk: Refrigerator sub-zero temp detected! Perform WHO Shake Test.'
+                      })"
+                      class="w-full py-1.5 px-2 rounded-xl bg-rose-950 hover:bg-rose-900 border border-rose-700/80 text-rose-300 font-mono text-[11px] font-bold transition cursor-pointer">
+                ⚠️ Trigger Test Cold-Chain Alarm
+              </button>
+            </div>
+          </div>
+
+          <!-- Connected Mesh Peers List -->
+          <div class="space-y-2">
+            <span class="text-xs font-bold text-zinc-300 uppercase tracking-wider block">
+              Active Mesh Peer Nodes (Local Area Network)
+            </span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              @for (peer of meshSync.peerNodes(); track peer.nodeId) {
+                <div class="p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 flex items-center justify-between">
+                  <div class="space-y-0.5">
+                    <span class="text-xs font-bold text-zinc-200 block truncate">{{ peer.nodeName }}</span>
+                    <span class="text-[10px] font-mono text-zinc-400 block">{{ peer.ipAddress }} • {{ peer.role }}</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-[10px] font-mono text-emerald-400 font-bold block">{{ peer.signalStrengthDbm }} dBm</span>
+                    <span class="text-[9px] font-mono text-zinc-500">Batt: {{ peer.batteryPct }}%</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Synchronized Patient Triage Roster -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                Synchronized Clinic Triage Queue ({{ meshSync.waitingTriageCount() }} Waiting)
+              </span>
+              <button type="button"
+                      (click)="meshSync.enqueueTriagePatient({
+                        patientToken: 'Patient #' + (meshSync.triageQueue().length + 101) + ' (Child, ' + childWeightKg() + 'kg)',
+                        ageMonths: 18,
+                        weightKg: childWeightKg(),
+                        gender: 'FEMALE',
+                        muacMm: muacMm(),
+                        acuityTier: muacTriage().statusTier === 'SEVERE_ACUTE_MALNUTRITION' ? 'RED' : 'YELLOW',
+                        chiefComplaint: 'Rapid triage assessment from field unit',
+                        clinicalCategory: muacTriage().statusLabel
+                      })"
+                      class="px-2.5 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-mono text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-xs">
+                <span>➕</span> Enqueue Current Patient
+              </button>
+            </div>
+
+            <div class="space-y-2">
+              @for (tkt of meshSync.triageQueue(); track tkt.ticketId) {
+                <div class="p-3.5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+                     [ngClass]="{
+                       'bg-rose-950/30 border-rose-600/50': tkt.acuityTier === 'RED',
+                       'bg-amber-950/30 border-amber-600/50': tkt.acuityTier === 'YELLOW',
+                       'bg-zinc-950/60 border-zinc-800': tkt.acuityTier === 'GREEN'
+                     }">
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-bold text-zinc-100 font-mono">{{ tkt.patientToken }}</span>
+                      <span class="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded font-bold"
+                            [class.bg-rose-900]="tkt.acuityTier === 'RED'"
+                            [class.bg-amber-900]="tkt.acuityTier === 'YELLOW'"
+                            [class.bg-emerald-900]="tkt.acuityTier === 'GREEN'">
+                        {{ tkt.acuityTier }} ACUITY
+                      </span>
+                      <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-bold uppercase">
+                        {{ tkt.status.replace('_', ' ') }}
+                      </span>
+                    </div>
+                    <p class="text-xs text-zinc-300">
+                      <strong>{{ tkt.clinicalCategory }}:</strong> {{ tkt.chiefComplaint }}
+                    </p>
+                    @if (tkt.assignedClinician) {
+                      <span class="text-[10px] font-mono text-teal-300 block">
+                        Assigned Clinician: {{ tkt.assignedClinician }}
+                      </span>
+                    }
+                  </div>
+
+                  <!-- Quick Status Transition Buttons -->
+                  <div class="flex items-center gap-1.5 shrink-0 font-mono text-[10px]">
+                    @if (tkt.status === 'WAITING') {
+                      <button type="button"
+                              (click)="meshSync.updateTriageStatus(tkt.ticketId, 'IN_CONSULT', 'Field Clinician Station')"
+                              class="px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold transition cursor-pointer">
+                        Start Consult
+                      </button>
+                    }
+                    @if (tkt.status === 'IN_CONSULT') {
+                      <button type="button"
+                              (click)="meshSync.updateTriageStatus(tkt.ticketId, 'DISCHARGED')"
+                              class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition cursor-pointer">
+                        Discharge
+                      </button>
+                      <button type="button"
+                              (click)="meshSync.updateTriageStatus(tkt.ticketId, 'REFERRED', 'District Hospital Transfer')"
+                              class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold transition cursor-pointer">
+                        Refer STAT
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- MODULE 9: Expand Pediatric Dosing Engine (WHO EDL-4 & IMCI Formulary) -->
+      @if (activeTab() === 'pediatric_dosing') {
+        <section class="mt-4 p-4 sm:p-6 bg-zinc-900/60 rounded-3xl border border-zinc-800 space-y-6 animate-in fade-in duration-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                <span>⚖️</span> WHO Model List of Essential Medicines for Children (EMLc &amp; IMCI)
+              </h3>
+              <p class="text-xs text-zinc-400">
+                Weight- and age-banded calculation widgets: Artemether-Lumefantrine, Reduced Osmolarity ORS &amp; Zinc Dispersible
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-teal-950 text-teal-300 border border-teal-800/60 font-bold">
+                WHO EMLc 9th Ed.
+              </span>
+              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-800/60 font-bold">
+                ISMP Safety Compliant
+              </span>
+            </div>
+          </div>
+
+          <!-- Patient Weight & Age Calibration HUD -->
+          <div class="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-4">
+            <span class="text-xs font-bold text-zinc-200 uppercase tracking-wider block">
+              Patient Anthropometric Calibration
+            </span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Child Weight Slider -->
+              <div class="space-y-1.5">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-zinc-400">Child Weight (kg):</span>
+                  <span class="font-bold font-mono text-sm text-teal-400 tabular-nums">
+                    {{ pediatricDosing.childWeightKg() }} kg
+                  </span>
+                </div>
+                <input type="range" min="3.0" max="40.0" step="0.5"
+                       [ngModel]="pediatricDosing.childWeightKg()"
+                       (ngModelChange)="pediatricDosing.setWeightKg($event)"
+                       class="w-full accent-teal-500 cursor-pointer h-2 bg-zinc-800 rounded-lg">
+                <div class="flex justify-between text-[10px] font-mono text-zinc-500">
+                  <span>3 kg (Infant)</span>
+                  <span>10 kg (Toddler)</span>
+                  <span>25 kg (Child)</span>
+                  <span>40 kg (Adolescent)</span>
+                </div>
+              </div>
+
+              <!-- Child Age Slider -->
+              <div class="space-y-1.5">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-zinc-400">Child Age (Months):</span>
+                  <span class="font-bold font-mono text-sm text-amber-400 tabular-nums">
+                    {{ pediatricDosing.childAgeMonths() }} Months ({{ (pediatricDosing.childAgeMonths() / 12).toFixed(1) }}y)
+                  </span>
+                </div>
+                <input type="range" min="1" max="60" step="1"
+                       [ngModel]="pediatricDosing.childAgeMonths()"
+                       (ngModelChange)="pediatricDosing.setAgeMonths($event)"
+                       class="w-full accent-amber-500 cursor-pointer h-2 bg-zinc-800 rounded-lg">
+                <div class="flex justify-between text-[10px] font-mono text-zinc-500">
+                  <span>1m (Neonate)</span>
+                  <span>6m (Weaning)</span>
+                  <span>24m (2 years)</span>
+                  <span>60m (5 years)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medication Selector Tabs -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+            <button type="button"
+                    (click)="pediatricDosing.setSelectedMedication('artemether_lumefantrine')"
+                    [class.bg-teal-600]="pediatricDosing.selectedMedication() === 'artemether_lumefantrine'"
+                    [class.text-white]="pediatricDosing.selectedMedication() === 'artemether_lumefantrine'"
+                    [class.border-teal-400]="pediatricDosing.selectedMedication() === 'artemether_lumefantrine'"
+                    class="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 text-left transition hover:border-zinc-700 cursor-pointer">
+              <span class="block text-sm mb-1">🦟</span>
+              <span class="font-bold block truncate">Coartem (ACT)</span>
+              <span class="text-[10px] text-zinc-400 block">Artemether/Lumefantrine</span>
+            </button>
+
+            <button type="button"
+                    (click)="pediatricDosing.setSelectedMedication('ors_rehydration')"
+                    [class.bg-teal-600]="pediatricDosing.selectedMedication() === 'ors_rehydration'"
+                    [class.text-white]="pediatricDosing.selectedMedication() === 'ors_rehydration'"
+                    [class.border-teal-400]="pediatricDosing.selectedMedication() === 'ors_rehydration'"
+                    class="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 text-left transition hover:border-zinc-700 cursor-pointer">
+              <span class="block text-sm mb-1">💧</span>
+              <span class="font-bold block truncate">WHO ORS (245)</span>
+              <span class="text-[10px] text-zinc-400 block">Plans A, B &amp; C Resus</span>
+            </button>
+
+            <button type="button"
+                    (click)="pediatricDosing.setSelectedMedication('zinc_sulfate')"
+                    [class.bg-teal-600]="pediatricDosing.selectedMedication() === 'zinc_sulfate'"
+                    [class.text-white]="pediatricDosing.selectedMedication() === 'zinc_sulfate'"
+                    [class.border-teal-400]="pediatricDosing.selectedMedication() === 'zinc_sulfate'"
+                    class="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 text-left transition hover:border-zinc-700 cursor-pointer">
+              <span class="block text-sm mb-1">🛡️</span>
+              <span class="font-bold block truncate">Zinc Dispersible</span>
+              <span class="text-[10px] text-zinc-400 block">14-Day Diarrhea Bundle</span>
+            </button>
+
+            <button type="button"
+                    (click)="pediatricDosing.setSelectedMedication('amoxicillin_dispersible')"
+                    [class.bg-teal-600]="pediatricDosing.selectedMedication() === 'amoxicillin_dispersible'"
+                    [class.text-white]="pediatricDosing.selectedMedication() === 'amoxicillin_dispersible'"
+                    [class.border-teal-400]="pediatricDosing.selectedMedication() === 'amoxicillin_dispersible'"
+                    class="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 text-left transition hover:border-zinc-700 cursor-pointer">
+              <span class="block text-sm mb-1">🫁</span>
+              <span class="font-bold block truncate">Amox Dispersible</span>
+              <span class="text-[10px] text-zinc-400 block">IMCI Fast-Breathing</span>
+            </button>
+          </div>
+
+          <!-- Active Medication Dosing Card Display -->
+          <!-- 1. Artemether + Lumefantrine Card -->
+          @if (pediatricDosing.selectedMedication() === 'artemether_lumefantrine') {
+            <div class="p-5 rounded-2xl bg-zinc-950/90 border border-teal-600/50 space-y-4 shadow-lg">
+              <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div>
+                  <h4 class="text-sm font-bold text-teal-300 font-mono">
+                    Artemether 20 mg + Lumefantrine 120 mg Dispersible Tablet
+                  </h4>
+                  <span class="text-xs text-zinc-400">
+                    WHO Weight Band: <strong class="text-zinc-200">{{ pediatricDosing.artemetherLumefantrine().weightBandLabel }}</strong>
+                  </span>
+                </div>
+                <span class="text-xs font-mono font-bold uppercase px-2.5 py-1 rounded-xl bg-teal-900/80 text-teal-200 border border-teal-700">
+                  {{ pediatricDosing.artemetherLumefantrine().tabletsPerDose }} Tab(s) per Dose
+                </span>
+              </div>
+
+              @if (!pediatricDosing.artemetherLumefantrine().isEligible) {
+                <div class="p-3.5 rounded-xl bg-rose-950/80 border border-rose-600 text-rose-200 text-xs font-mono">
+                  {{ pediatricDosing.artemetherLumefantrine().specialWarning }}
+                </div>
+              } @else {
+                <!-- 6-Dose Schedule Visual Timeline -->
+                <div class="space-y-2">
+                  <span class="text-xs font-mono uppercase font-bold text-zinc-400 block">
+                    WHO Standard 6-Dose Schedule Over 3 Days ({{ pediatricDosing.artemetherLumefantrine().totalTablets }} Tablets Total):
+                  </span>
+                  <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center text-xs font-mono">
+                    @for (hr of pediatricDosing.artemetherLumefantrine().scheduleHours; track hr; let idx = $index) {
+                      <div class="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800">
+                        <span class="block text-[10px] text-zinc-500 font-bold uppercase">Dose {{ idx + 1 }}</span>
+                        <strong class="text-teal-300 block text-sm">Hour {{ hr }}</strong>
+                        <span class="text-[10px] text-zinc-400 block">{{ pediatricDosing.artemetherLumefantrine().tabletsPerDose }} Tab</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Administration & Vomit Protocol -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs leading-relaxed">
+                  <div class="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800 space-y-1">
+                    <strong class="text-teal-400 block font-mono text-[11px] uppercase">Preparation &amp; Dietary Guidance:</strong>
+                    <p class="text-zinc-300">{{ pediatricDosing.artemetherLumefantrine().preparationAdvice }}</p>
+                  </div>
+                  <div class="p-3 rounded-xl bg-rose-950/40 border border-rose-700/60 space-y-1">
+                    <strong class="text-rose-400 block font-mono text-[11px] uppercase">1-Hour Vomit Protocol:</strong>
+                    <p class="text-rose-200">{{ pediatricDosing.artemetherLumefantrine().vomitRuleAdvice }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- 2. Oral Rehydration Salts (ORS) Card -->
+          @if (pediatricDosing.selectedMedication() === 'ors_rehydration') {
+            <div class="p-5 rounded-2xl bg-zinc-950/90 border border-teal-600/50 space-y-4 shadow-lg">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-3">
+                <div>
+                  <h4 class="text-sm font-bold text-teal-300 font-mono">
+                    WHO Reduced Osmolarity ORS (Total Osmolarity: 245 mOsm/L)
+                  </h4>
+                  <span class="text-xs text-zinc-400">
+                    Clinical Protocol: <strong class="text-zinc-200">{{ pediatricDosing.orsCalculation().planLabel }}</strong>
+                  </span>
+                </div>
+                <!-- Plan Toggle Buttons -->
+                <div class="flex items-center gap-1.5 font-mono text-xs">
+                  <button type="button"
+                          (click)="pediatricDosing.setOrsPlan('PLAN_A')"
+                          [class.bg-teal-600]="pediatricDosing.orsPlan() === 'PLAN_A'"
+                          [class.text-white]="pediatricDosing.orsPlan() === 'PLAN_A'"
+                          class="px-2.5 py-1 rounded-lg border border-zinc-800 bg-zinc-900 cursor-pointer">
+                    Plan A (Home)
+                  </button>
+                  <button type="button"
+                          (click)="pediatricDosing.setOrsPlan('PLAN_B')"
+                          [class.bg-teal-600]="pediatricDosing.orsPlan() === 'PLAN_B'"
+                          [class.text-white]="pediatricDosing.orsPlan() === 'PLAN_B'"
+                          class="px-2.5 py-1 rounded-lg border border-zinc-800 bg-zinc-900 cursor-pointer">
+                    Plan B (Facility)
+                  </button>
+                  <button type="button"
+                          (click)="pediatricDosing.setOrsPlan('PLAN_C')"
+                          [class.bg-rose-600]="pediatricDosing.orsPlan() === 'PLAN_C'"
+                          [class.text-white]="pediatricDosing.orsPlan() === 'PLAN_C'"
+                          class="px-2.5 py-1 rounded-lg border border-zinc-800 bg-zinc-900 cursor-pointer">
+                    Plan C (STAT IV)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Dosing Quantities based on Plan -->
+              @if (pediatricDosing.orsPlan() === 'PLAN_B') {
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-center">
+                  <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                    <span class="text-[10px] text-zinc-500 uppercase font-bold block">4-Hour Target Volume</span>
+                    <strong class="text-teal-300 text-lg">{{ pediatricDosing.orsCalculation().totalVolumeMl4Hours }} mL</strong>
+                    <span class="text-[10px] text-zinc-400 block">(75 mL/kg formula)</span>
+                  </div>
+                  <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                    <span class="text-[10px] text-zinc-500 uppercase font-bold block">Hourly Ingestion Rate</span>
+                    <strong class="text-teal-300 text-lg">{{ pediatricDosing.orsCalculation().hourlyRateMlHour }} mL/hr</strong>
+                    <span class="text-[10px] text-zinc-400 block">Sip slowly with spoon</span>
+                  </div>
+                  <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                    <span class="text-[10px] text-zinc-500 uppercase font-bold block">Sachets to Prepare</span>
+                    <strong class="text-teal-300 text-lg">{{ pediatricDosing.orsCalculation().sachetsToPrepare }} Sachet(s)</strong>
+                    <span class="text-[10px] text-zinc-400 block">In 1.0L clean water</span>
+                  </div>
+                </div>
+              } @else if (pediatricDosing.orsPlan() === 'PLAN_A') {
+                <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono space-y-1">
+                  <span class="text-teal-400 font-bold block uppercase">Maintenance Fluid Volume (Home):</span>
+                  <p class="text-zinc-200 text-sm font-bold">{{ pediatricDosing.orsCalculation().perStoolVolumeMl }}</p>
+                  <p class="text-zinc-400">{{ pediatricDosing.orsCalculation().clinicalMonitoringRule }}</p>
+                </div>
+              } @else {
+                <div class="p-4 rounded-xl bg-rose-950/60 border border-rose-600 text-xs font-mono space-y-2">
+                  <span class="text-rose-300 font-bold block uppercase text-sm">🚨 Emergent IV Fluid Resuscitation:</span>
+                  <div class="grid grid-cols-2 gap-2 text-center">
+                    <div class="p-2 rounded bg-black/40 border border-rose-800">
+                      <span class="text-[10px] text-zinc-400 block">Phase 1 (30 mL/kg)</span>
+                      <strong class="text-rose-200">{{ pediatricDosing.orsCalculation().firstPhaseDuration }}</strong>
+                    </div>
+                    <div class="p-2 rounded bg-black/40 border border-rose-800">
+                      <span class="text-[10px] text-zinc-400 block">Phase 2 (70 mL/kg)</span>
+                      <strong class="text-rose-200">{{ pediatricDosing.orsCalculation().secondPhaseDuration }}</strong>
+                    </div>
+                  </div>
+                  <p class="text-rose-200 text-[11px]">{{ pediatricDosing.orsCalculation().clinicalMonitoringRule }}</p>
+                </div>
+              }
+
+              <!-- Mixing Monograph -->
+              <div class="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs space-y-1">
+                <strong class="text-teal-400 font-mono text-[11px] uppercase block">WHO Solution Monograph:</strong>
+                <p class="text-zinc-300">{{ pediatricDosing.orsCalculation().mixingInstructions }}</p>
+              </div>
+            </div>
+          }
+
+          <!-- 3. Zinc Sulfate Dispersible Card -->
+          @if (pediatricDosing.selectedMedication() === 'zinc_sulfate') {
+            <div class="p-5 rounded-2xl bg-zinc-950/90 border border-teal-600/50 space-y-4 shadow-lg">
+              <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div>
+                  <h4 class="text-sm font-bold text-teal-300 font-mono">
+                    Zinc Sulfate 20 mg Dispersible Pediatric Tablet
+                  </h4>
+                  <span class="text-xs text-zinc-400">
+                    Age Group: <strong class="text-zinc-200">{{ pediatricDosing.childAgeMonths() < 6 ? 'Infant Under 6 Months' : 'Child 6 Months to 5 Years' }}</strong>
+                  </span>
+                </div>
+                <span class="text-xs font-mono font-bold uppercase px-2.5 py-1 rounded-xl bg-teal-900/80 text-teal-200 border border-teal-700">
+                  {{ pediatricDosing.zincDose().dailyDoseMg }} mg Daily ({{ pediatricDosing.zincDose().tabletFractionLabel }})
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-center">
+                <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                  <span class="text-[10px] text-zinc-500 uppercase font-bold block">Daily Dosage</span>
+                  <strong class="text-teal-300 text-lg">{{ pediatricDosing.zincDose().dailyDoseMg }} mg / Day</strong>
+                  <span class="text-[10px] text-zinc-400 block">{{ pediatricDosing.zincDose().tabletFractionLabel }}</span>
+                </div>
+                <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                  <span class="text-[10px] text-zinc-500 uppercase font-bold block">Course Duration</span>
+                  <strong class="text-teal-300 text-lg">{{ pediatricDosing.zincDose().durationDays }} Full Days</strong>
+                  <span class="text-[10px] text-zinc-400 block">Mandatory completion</span>
+                </div>
+                <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                  <span class="text-[10px] text-zinc-500 uppercase font-bold block">Total Dispensed</span>
+                  <strong class="text-teal-300 text-lg">{{ pediatricDosing.zincDose().totalTabletsDispensed }} Tablets</strong>
+                  <span class="text-[10px] text-zinc-400 block">Blister pack</span>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs space-y-1">
+                <strong class="text-teal-400 font-mono text-[11px] uppercase block">Rapid Dissolution Guide:</strong>
+                <p class="text-zinc-300">{{ pediatricDosing.zincDose().administrationGuidance }}</p>
+                <p class="text-zinc-400 text-[11px] mt-1">{{ pediatricDosing.zincDose().clinicalImpactSummary }}</p>
+              </div>
+            </div>
+          }
+
+          <!-- 4. Amoxicillin Dispersible Card -->
+          @if (pediatricDosing.selectedMedication() === 'amoxicillin_dispersible') {
+            <div class="p-5 rounded-2xl bg-zinc-950/90 border border-teal-600/50 space-y-4 shadow-lg">
+              <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div>
+                  <h4 class="text-sm font-bold text-teal-300 font-mono">
+                    Amoxicillin 250 mg Dispersible Tablet (WHO IMCI Fast-Breathing)
+                  </h4>
+                  <span class="text-xs text-zinc-400">
+                    Dosage: <strong class="text-zinc-200">{{ pediatricDosing.amoxicillinDose().doseMg }} mg Twice Daily (BID)</strong>
+                  </span>
+                </div>
+                <span class="text-xs font-mono font-bold uppercase px-2.5 py-1 rounded-xl bg-teal-900/80 text-teal-200 border border-teal-700">
+                  {{ pediatricDosing.amoxicillinDose().tabletsPerDose }} Tablet(s) BID
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-center">
+                <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                  <span class="text-[10px] text-zinc-500 uppercase font-bold block">Dose Amount</span>
+                  <strong class="text-teal-300 text-lg">{{ pediatricDosing.amoxicillinDose().doseMg }} mg</strong>
+                  <span class="text-[10px] text-zinc-400 block">{{ pediatricDosing.amoxicillinDose().tabletsPerDose }} x 250mg tab</span>
+                </div>
+                <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                  <span class="text-[10px] text-zinc-500 uppercase font-bold block">Course Duration</span>
+                  <strong class="text-teal-300 text-lg">{{ pediatricDosing.amoxicillinDose().durationDays }} Days</strong>
+                  <span class="text-[10px] text-zinc-400 block">Every 12 hours</span>
+                </div>
+                <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+                  <span class="text-[10px] text-zinc-500 uppercase font-bold block">Total Dispensed</span>
+                  <strong class="text-teal-300 text-lg">{{ pediatricDosing.amoxicillinDose().totalTabletsDispensed }} Tablets</strong>
+                  <span class="text-[10px] text-zinc-400 block">Complete full course</span>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs space-y-1">
+                <strong class="text-teal-400 font-mono text-[11px] uppercase block">Administration &amp; Reassessment:</strong>
+                <p class="text-zinc-300">{{ pediatricDosing.amoxicillinDose().administrationGuidance }}</p>
+                <p class="text-zinc-400 text-[11px] mt-1">{{ pediatricDosing.amoxicillinDose().clinicalIndication }}</p>
+              </div>
+            </div>
+          }
+        </section>
+      }
+
       <!-- Offline QR Handoff Modal Overlay -->
       @if (showQrModal()) {
         <div class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
@@ -1250,6 +1820,8 @@ export class CommunityHealthWorkerSuiteComponent {
   readonly emlService = inject(WhoEssentialMedicinesService);
   readonly voiceService = inject(FrontlineVernacularVoiceService);
   readonly edlService = inject(WhoEssentialDiagnosticsService, { optional: true }) ?? new WhoEssentialDiagnosticsService();
+  readonly meshSync = inject(AustereMeshSyncService, { optional: true }) ?? new AustereMeshSyncService();
+  readonly pediatricDosing = inject(PediatricDosingEngineService, { optional: true }) ?? new PediatricDosingEngineService();
   readonly close = output<void>();
 
   hasCloseButton = true;
