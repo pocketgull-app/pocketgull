@@ -37,7 +37,7 @@ jobs:
 
     - name: Setup Python & Dependencies
       if: matrix.language == 'python'
-      uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       with:
         python-version: '3.11'
 
@@ -48,12 +48,12 @@ jobs:
         pip install -r pocketgull_api/requirements.txt || true
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@6ba5c05dce207b48ae07f8791b4313069c63fc2b # v3.26.6
+      uses: github/codeql-action/init@4dd16135b69a43b6c8efb853346f8437d92d3c93 # v3.26.6
       with:
         languages: ${{ matrix.language }}
         config-file: .github/codeql/codeql-config.yml
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@6ba5c05dce207b48ae07f8791b4313069c63fc2b # v3.26.6
+      uses: github/codeql-action/analyze@4dd16135b69a43b6c8efb853346f8437d92d3c93 # v3.26.6
       with:
         category: "/language:${{ matrix.language }}"

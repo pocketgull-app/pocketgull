@@ -29,7 +29,7 @@ jobs:
 
       - name: Dependency Review
         continue-on-error: true
-        uses: actions/dependency-review-action@c74b580d73376b7750d3d2a50bfb8adc2c937507 # v4.5.0
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v4.5.0
         with:
           fail-on-severity: critical
           comment-summary-in-pr: always
