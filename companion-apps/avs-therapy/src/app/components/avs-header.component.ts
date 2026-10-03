@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ViewMode } from './avs.constants';
+import { AvsWatchBleService } from '../services/avs-watch-ble.service';
 
 @Component({
   selector: 'app-avs-header',
@@ -20,9 +21,29 @@ import { ViewMode } from './avs.constants';
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
+        <!-- Pixel Watch 2 Web Bluetooth HUD -->
+        @if (watchBle.isConnected()) {
+          <div class="flex items-center gap-2 bg-teal-950/50 border border-teal-500/40 px-2.5 py-1 rounded-lg text-[10px] text-teal-300 font-mono shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+            <span class="font-bold text-white">{{ watchBle.heartRate() }} bpm</span>
+            <span class="text-teal-500/50">|</span>
+            <span>{{ watchBle.cedaMicrosiemens() }} µS</span>
+            <span class="text-teal-500/50">|</span>
+            <span>{{ watchBle.skinTempCelsius() }}°C</span>
+            <button (click)="watchBle.disconnect()" class="ml-1 text-zinc-400 hover:text-red-400 transition-colors cursor-pointer" title="Disconnect Watch">✕</button>
+          </div>
+        } @else {
+          <button (click)="watchBle.connect()"
+                  [disabled]="watchBle.isConnecting()"
+                  class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-teal-500/10 text-teal-400 border border-teal-500/30 hover:bg-teal-500/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50">
+            <span>⌚</span>
+            <span>{{ watchBle.isConnecting() ? 'Connecting...' : 'Connect PW2' }}</span>
+          </button>
+        }
+
         <!-- Dual-Use View Toggle -->
-        <div class="flex bg-gray-100 dark:bg-zinc-900 rounded-lg p-0.5 border border-gray-200 dark:border-zinc-800 mr-4">
+        <div class="flex bg-gray-100 dark:bg-zinc-900 rounded-lg p-0.5 border border-gray-200 dark:border-zinc-800 mr-2">
           <button (click)="viewModeChange.emit('clinician')"
                   class="px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
                   [class.bg-orange-500]="viewMode === 'clinician'" [class.text-white]="viewMode === 'clinician'"
@@ -52,4 +73,6 @@ export class AvsHeaderComponent {
   @Input() isActive = false;
   @Input() viewMode: ViewMode = 'clinician';
   @Output() viewModeChange = new EventEmitter<ViewMode>();
+
+  readonly watchBle = inject(AvsWatchBleService);
 }

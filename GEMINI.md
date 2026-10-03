@@ -46,6 +46,8 @@ Pocket-Gull is a real-time medical Care Plan Strategy and Live AI Consult engine
   3. `Sentinel Security & Egress Audit` (`node scripts/sentinel_security_guard.mjs`)
   4. `CycloneDX 1.6 SBOM Verification` (`npm run sbom`)
   5. `Mozilla HTTP Observatory 125 Security Guard` (`npm run observatory:audit`)
+  6. `IEEE P2933™ TIPPSS Cross-Language Parity Guard` (`npm run tippss:audit`)
+  7. `HIPAA §164.514 Safe Harbor PHI Taint Boundary Guard` (`npm run taint:audit`)
   If any test or security check fails, the deployment must immediately abort.
 - **Mozilla HTTP Observatory 125 Standard (Grade A+)**: All web entrypoints (Express, SSR, FastAPI sidecars, custom domains) MUST maintain a score of 125 / 100 on Mozilla HTTP Observatory:
   - **Middleware #1 Rule**: Security headers MUST execute as the very first middleware before any route, domain dispatcher, or static handler to eliminate route short-circuiting.
@@ -139,6 +141,18 @@ export class MetricCardComponent {
   - **Canada**: PIPEDA, Ontario PHIPA, Alberta HIA, FHIR CA Baseline, 988 Suicide Crisis Helpline.
   - **Australia**: Privacy Act 1988 (APPs), My Health Record Act 2012, TGA SaMD, FHIR AU Base, Lifeline 13 11 14.
   - **New Zealand**: Health Information Privacy Code 2020 (HIPC), NZ HISO 10029/10064, FHIR NZ Base, 1737 Need to Talk.
+
+## IEEE P2933™ TIPPSS & Circular IoMT Standard
+- **6-Pillar Statutory Trust**: All connected wearables, IoMT sensors, and bedside kiosks MUST strictly verify IEEE P2933™ Trust, Identity, Privacy, Protection, Safety, and Security before vital ingestion:
+  - *Trust*: Hardware Root of Trust attestation (Titan M2, Apple Secure Enclave, ARM TrustZone).
+  - *Identity*: Non-spoofable cryptographic patient-to-device binding tokens.
+  - *Privacy*: Fine-grained micro-consents per biometric modality; zero-raw-waveform egress by default.
+  - *Protection*: Monotonic hardware counters and RSSI proximity gating (&ge; -85 dBm) preventing wireless relay attacks.
+  - *Safety*: Optical/lead detachment detection and physiological SQI bounds inhibiting erroneous clinical alarms.
+  - *Security*: FDA 21 CFR Part 11 compliant SHA-256 integrity digests stamped on every clinical transaction.
+- **Monorepo Contract Parity (TS &harr; Dart &harr; Python)**: 100% field, type, and unit parity is continuously enforced via `npm run tippss:audit`.
+- **Zero-PHI Taint Boundary**: Outbound data egress to the Python ML sidecar (`pocketgull_api`) MUST be strictly de-identified via `npm run taint:audit` (HIPAA &sect;164.514 Safe Harbor).
+- **Circular Hardware Lifecycle & Anti-Data Landfill**: Protect lithium-ion pouch cells from continuous-charge swelling via the Web Battery API (20%&ndash;80% cycling guidance), decouple replaceable sensors from host displays (+3.0 to +6.5 years lifespan extension), and buffer waveforms at the edge to eliminate 99.5% of raw data egress.
 
 ## Institutional Thin-Client & Multi-Device Resilience Standard
 - **Cross-Form Factor Parity**: Every clinical interface MUST render with zero horizontal blowout and full feature parity across:
@@ -269,5 +283,19 @@ Every new feature, component, API endpoint, or clinical model shipped in Pocket-
   11. `FALSE_DILEMMA`: Exploring stepped-care conservative therapies before invasive interventions.
   12. `AUTOMATION_BIAS`: Guarding against uncritical algorithmic deference with mandatory physical exam corroboration.
 - **Respectful Cost Transparency Terminology**: Enforce **"Standard Retail Benchmark"** and **"Estimated Out-of-Pocket Total"** across all cost and pricing views. Strictly prohibit adversarial labels. Position AI as a supportive assistant that amplifies clinician autonomy and frontline Community Health Workers (CHWs).
+
+## Cognitive Triad Standard: DSRP Systems, Oakley Neuroarchitecture & Seligman Agency
+- **The Epistemic Triad Mandate**: All research writing, care plans, clinical decision support (CDS) outputs, and patient consult interfaces MUST integrate:
+  1. **DSRP Systems Thinking (Cabrera)** for Structural Truth: Enforce explicit boundaries/distinctions ($D$), modular part-whole decomposition ($S$), causal biophysical feedbacks ($R$), and multi-stakeholder perspectives ($P$, including falsification passes).
+  2. **Oakley Neuroarchitecture** for Biological Bandwidth: Enforce the 4-slot working memory ceiling (`WM_SLOT_MAX = 4`), 3-step micro-chunk paragraphs (Anchor $\to$ Mechanism/Metaphor $\to$ Boundary), mandatory physical analogies for abstract mathematics/cascades, and interactive "Look-Away" retrieval practice over passive reading.
+  3. **Seligman Positive Psychology** for Voice & Agency: Eliminate learned helplessness by systematically reversing the 3 Ps in all patient interactions:
+     - *Permanence $\to$ Transience*: Reframe flares as temporary physiological feedback loops with clear trajectories.
+     - *Pervasiveness $\to$ Specificity*: Isolate specific affected physiological subsystems from the patient's identity.
+     - *Personalization $\to$ External Biophysical Feedback*: Reframe symptoms as natural biological responses, not personal faults.
+     - *Strengths-Based Micro-Wins (PERMA)*: Anchor care plans to existing character strengths and conclude every consult with an immediate, achievable micro-action.
+- **The Quiet Workshop Voice**: Clinical communication must convey deep warmth, craft-oriented reassurance, and grounded competence—eliminating panic-inducing red-alert language and therapeutic nihilism.
+- **"Tell, Don't Ask" Domain Chunks in Code**: Encapsulate related telemetry and state within services, exposing cohesive computed domain objects (e.g. `perfusionProfile`) rather than leaking multiple raw primitive signals into component templates.
+- **Canonical Specification**: Full details codified in [OAKLEY_CHUNKING_STANDARD.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/OAKLEY_CHUNKING_STANDARD.md).
+
 
 

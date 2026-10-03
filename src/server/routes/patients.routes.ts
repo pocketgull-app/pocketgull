@@ -10,6 +10,7 @@ import { Router, json as expressJson } from 'express';
 import type { Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import { join } from 'node:path';
 import { sanitizeLogInput, securePathResolve } from '../../utils/security-helper';
 
@@ -166,6 +167,122 @@ export function createPatientsRouter(): Router {
       const message = err instanceof Error ? err.message : String(err);
       console.error('[API] Error syncing patient to database:', sanitizeLogInput(message));
       res.status(500).json({ error: 'Internal server error while syncing patient' });
+    }
+  });
+
+  // GET /api/patients/export/fhir (FHIR R4 Bundle export with SHA-256 integrity seal)
+  router.get('/export/fhir', limiter, (req: Request, res: Response) => {
+    try {
+      const dbPath = getSafePatientsDbPath();
+      let patients: Record<string, any>[] = [];
+      try {
+        const data = fs.readFileSync(dbPath, 'utf8');
+        patients = JSON.parse(data);
+      } catch {
+        patients = [];
+      }
+
+      const fhirEntries = patients.map((p) => {
+        const pId = String(p['id'] || 'anonymous');
+        const entries: Array<Record<string, unknown>> = [];
+
+        // 1. Patient Resource
+        entries.push({
+          fullUrl: `urn:uuid:${pId}`,
+          resource: {
+            resourceType: 'Patient',
+            id: pId,
+            active: true,
+            gender: p['gender'] || 'unknown',
+            meta: {
+              profile: ['http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient'],
+              lastUpdated: new Date().toISOString()
+            }
+          }
+        });
+
+        // 2. Observations for Vitals
+        if (p['vitals'] && typeof p['vitals'] === 'object') {
+          const vitals = p['vitals'] as Record<string, unknown>;
+          for (const [vKey, vVal] of Object.entries(vitals)) {
+            if (vVal === null || vVal === undefined) continue;
+            entries.push({
+              fullUrl: `urn:uuid:${pId}-obs-${vKey}`,
+              resource: {
+                resourceType: 'Observation',
+                status: 'final',
+                category: [{
+                  coding: [{
+                    system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+                    code: 'vital-signs',
+                    display: 'Vital Signs'
+                  }]
+                }],
+                code: {
+                  coding: [{
+                    system: 'http://loinc.org',
+                    code: vKey === 'heartRate' ? '8867-4' : vKey === 'spO2' ? '59408-5' : '9279-1',
+                    display: vKey
+                  }]
+                },
+                subject: { reference: `urn:uuid:${pId}` },
+                effectiveDateTime: new Date().toISOString(),
+                valueQuantity: typeof vVal === 'number' ? { value: vVal, unit: vKey === 'heartRate' ? 'beats/min' : '%' } : undefined,
+                valueString: typeof vVal === 'string' ? vVal : undefined
+              }
+            });
+          }
+        }
+
+        // 3. Conditions
+        if (Array.isArray(p['conditions'])) {
+          p['conditions'].forEach((c: any, idx: number) => {
+            const condName = typeof c === 'string' ? c : c?.name || 'Clinical Observation';
+            entries.push({
+              fullUrl: `urn:uuid:${pId}-cond-${idx}`,
+              resource: {
+                resourceType: 'Condition',
+                clinicalStatus: {
+                  coding: [{
+                    system: 'http://terminology.hl7.org/CodeSystem/condition-clinical',
+                    code: 'active'
+                  }]
+                },
+                subject: { reference: `urn:uuid:${pId}` },
+                code: { text: condName },
+                recordedDate: new Date().toISOString()
+              }
+            });
+          });
+        }
+
+        return entries;
+      }).flat();
+
+      const rawBundleJson = JSON.stringify(fhirEntries);
+      const sha256Digest = crypto.createHash('sha256').update(rawBundleJson).digest('hex');
+
+      const fhirBundle = {
+        resourceType: 'Bundle',
+        type: 'collection',
+        timestamp: new Date().toISOString(),
+        total: fhirEntries.length,
+        meta: {
+          tag: [
+            { system: 'https://pocketgull.app/fhir/sovereignty', code: 'FVEY-COMPLIANT' },
+            { system: 'https://pocketgull.app/fhir/integrity-sha256', code: sha256Digest }
+          ]
+        },
+        entry: fhirEntries
+      };
+
+      res.setHeader('Content-Type', 'application/fhir+json; charset=utf-8');
+      res.setHeader('X-FHIR-Integrity-SHA256', sha256Digest);
+      res.status(200).json(fhirBundle);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('[API] Error exporting FHIR R4 Bundle:', sanitizeLogInput(message));
+      res.status(500).json({ error: 'Internal server error while exporting FHIR bundle' });
     }
   });
 

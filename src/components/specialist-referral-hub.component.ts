@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, output } from '@angular/core';
+import { Component, inject, signal, computed, output, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SpecialistReferralDossierService, SpecialistDomain, ISpecialtyReadinessGate, IFhirServiceRequestDossier, ITriDirectionalReEntryBrief } from '../services/specialist-referral-dossier.service';
 
@@ -7,8 +7,28 @@ import { SpecialistReferralDossierService, SpecialistDomain, ISpecialtyReadiness
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="fixed inset-0 z-[120] bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Specialist Referral & Co-Management Dossier Hub">
-      <div class="relative w-full max-w-5xl bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
+    <div
+      [class.fixed]="!embedded()"
+      [class.inset-0]="!embedded()"
+      [class.z-[120]]="!embedded()"
+      [class.bg-black/85]="!embedded()"
+      [class.backdrop-blur-md]="!embedded()"
+      [class.flex]="!embedded()"
+      [class.items-center]="!embedded()"
+      [class.justify-center]="!embedded()"
+      [class.p-3]="!embedded()"
+      [class.sm:p-6]="!embedded()"
+      [class.overflow-y-auto]="!embedded()"
+      [class.w-full]="embedded()"
+      [class.h-full]="embedded()"
+      role="dialog"
+      [attr.aria-modal]="!embedded() ? 'true' : null"
+      aria-label="Specialist Referral & Co-Management Dossier Hub">
+      <div class="relative w-full bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+           [class.max-w-5xl]="!embedded()"
+           [class.my-auto]="!embedded()"
+           [class.max-h-[92vh]]="!embedded()"
+           [class.h-full]="embedded()">
         
         <!-- Header -->
         <div class="p-4 sm:p-6 border-b border-zinc-800/80 bg-gradient-to-r from-zinc-900/90 via-zinc-900/40 to-teal-950/30 flex items-center justify-between shrink-0">
@@ -24,13 +44,15 @@ import { SpecialistReferralDossierService, SpecialistDomain, ISpecialtyReadiness
               <p class="text-xs text-zinc-400 mt-0.5">Diagnostic Pre-Flight Gates • Epistemic SBAR • Chou-Talalay Safety • Dr. Crumpler Re-Entry</p>
             </div>
           </div>
-          <button
-            type="button"
-            (click)="closeModal.emit()"
-            class="w-9 h-9 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700/80 flex items-center justify-center text-sm font-bold transition shadow cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-400"
-            aria-label="Close Specialist Referral Hub">
-            ✕
-          </button>
+          @if (!embedded()) {
+            <button
+              type="button"
+              (click)="closeModal.emit()"
+              class="w-9 h-9 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700/80 flex items-center justify-center text-sm font-bold transition shadow cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-400"
+              aria-label="Close Specialist Referral Hub">
+              ✕
+            </button>
+          }
         </div>
 
         <!-- Specialty Selector Ribbon -->
@@ -384,6 +406,7 @@ import { SpecialistReferralDossierService, SpecialistDomain, ISpecialtyReadiness
   `
 })
 export class SpecialistReferralHubComponent {
+  public readonly embedded = input<boolean>(false);
   public readonly referralService = inject(SpecialistReferralDossierService);
   public readonly closeModal = output<void>();
 

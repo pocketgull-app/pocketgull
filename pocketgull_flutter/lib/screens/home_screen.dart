@@ -6,6 +6,7 @@ import '../widgets/lean/lean_care_plan_tab.dart';
 import '../widgets/lean/lean_vitals_tab.dart';
 import '../widgets/lean/lean_consult_tab.dart';
 import '../widgets/lean/lean_medical_id_tab.dart';
+import 'research_data_dividend_screen.dart';
 
 /// Pocket-Gull Mobile Companion Home Screen.
 /// Clean, focused 4-tab navigation shell delivering immediate clinical clarity:
@@ -215,6 +216,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           const SizedBox(width: 12),
+
+          // Research Data Dividend Button
+          IconButton(
+            icon: const Icon(Icons.currency_exchange, size: 20, color: Color(0xFF047857)),
+            tooltip: 'Ethical Research Data Dividend',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ResearchDataDividendScreen()),
+              );
+            },
+          ),
+          const SizedBox(width: 4),
 
           // Offline Ready Indicator Badge
           Container(

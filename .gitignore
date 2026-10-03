@@ -162,13 +162,14 @@ model.sav
 trained_models/
 lora_*/
 checkpoint-*/
-pocketgull_api/models/
+pocketgull_api/models/*
 pocketgull_api/*.joblib
 pocketgull_api/*.pkl
 pocketgull_api/*.pt
 !**/lib/models/**
 !**/core/models/**
 !**/src/models/**
+!pocketgull_api/models/*.py
 
 # ------------------------------------------------------------------------------
 # 7. Mobile Suite (Flutter / Dart / Android / iOS)
@@ -372,8 +373,25 @@ src/partners/hidden/
 scripts/.taskbar_state.json
 .pocketgull_a11y.json
 scripts/test_cur_*.ps1
-
-
+_*_env/
+_coat_env/
+_d4_env/
+d4_input/
+diagnostics/
+*.npz
+*receipt.json
+btkd_*.json
 
 # Sandboxing descriptor (local host tooling)
 .sandbox.json
+
+# Ephemeral debug, scratch, and hotfix scripts
+fix*.js
+fix*.cjs
+patch*.js
+patch*.cjs
+*.tmp
+*.temp
+scripts/*.log
+scripts/output/
+

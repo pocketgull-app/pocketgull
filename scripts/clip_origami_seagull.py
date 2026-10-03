@@ -35,7 +35,8 @@ def clip_right_seagull(src_path: str, dst1: str, dst2: str):
     print("Clean PNG clip saved to", dst1)
 
 if __name__ == "__main__":
-    src = r"c:\Users\philg\Pocketgull\pocketgull\docs\images\social\square-1080x1080.png"
-    dst1 = r"c:\Users\philg\Pocketgull\pocketgull\public\images\origami-seagull-right.png"
-    dst2 = r"c:\Users\philg\Pocketgull\pocketgull\docs\images\social\origami-seagull-right.png"
+    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    src = os.path.join(ROOT_DIR, "docs", "images", "social", "square-1080x1080.png")
+    dst1 = os.path.join(ROOT_DIR, "public", "images", "origami-seagull-right.png")
+    dst2 = os.path.join(ROOT_DIR, "docs", "images", "social", "origami-seagull-right.png")
     clip_right_seagull(src, dst1, dst2)

@@ -14,11 +14,7 @@ ENV NODE_ENV=production
 
 # Install ONLY production dependencies (Zero devDependencies, zero esbuild in cloud)
 COPY package*.json ./
-COPY packages/core-sdk/package*.json ./packages/core-sdk/
-COPY packages/pocketgull-github-app/package*.json ./packages/pocketgull-github-app/
-COPY companion-apps/avs-therapy/package*.json ./companion-apps/avs-therapy/
-COPY pocketgull_api/package*.json ./pocketgull_api/
-RUN npm install --omit=dev --legacy-peer-deps --include-workspace-root --workspaces
+RUN npm ci --omit=dev --legacy-peer-deps --no-workspaces
 
 # Copy pre-compiled distribution from local build (100% free local CPU)
 COPY dist ./dist

@@ -5,7 +5,8 @@ Inspect PocketGull-Math font binary metrics, cmap coverage, and OpenType MATH ta
 import os
 from fontTools.ttLib import TTFont
 
-FONT_PATH = r"c:\Users\philg\Pocketgull\pocketgull-typeface\PocketGull-Math.ttf"
+ECOSYSTEM_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+FONT_PATH = os.path.join(ECOSYSTEM_DIR, "pocketgull-typeface", "PocketGull-Math.ttf")
 
 if not os.path.exists(FONT_PATH):
     print(f"[ERROR] Font not found at {FONT_PATH}")

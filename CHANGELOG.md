@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.39.0] - 2026-09-28
+
+**🌲 Sowa-Rigpa 3D Living Tree Spatial Engine, ICD-11 Primary Internal Clinical Ontology with Projected ICD-10-CM/SNOMED CT Mappings, Global Decad of Healing Systems Spectrum, and WHO-NIH Strategic Alignment Hub**
+
+### Added
+- **[Sowa-Rigpa 3D Living Tree Spatial Engine & Gyushi Triad Visualization] (`src/components/shared/sowa-rigpa-tree-spatial-viewer.component.ts`, `src/components/shared/sowa-rigpa-tree-spatial-viewer.component.spec.ts`)**:
+  - **Interactive 3D Parallax Gyushi Triad**: Full spatial rendering of the 3 Classical Trees of Sowa-Rigpa:
+    - **Tree I (Physiology & Pathology)**: 8 branches and 224 diagnostic leaves modeling tri-humoral *Nyepa Sum* balance (*rLung* wind/motility, *mKhris-pa* fire/metabolism, *Bad-kan* earth-water/structure).
+    - **Tree II (Diagnostic Triad)**: Visual inspection (Tongue & Sclera), 12-vector radial pulse reading with interactive tactile depth layers (*Tson*, *Kan*, *Chag*), and Urinalysis (*Dri-chu*) color/vapor HUD.
+    - **Tree III (Therapeutic Modalities)**: 4 branches encompassing Diet, Behavior/Lifestyle, Botanical Pharmacology, and External Therapies (*Moxibustion*, *Ku-Nye* oil massage).
+  - **Tri-Humoral Resonance & Color Dynamics**: Azure Blue (*rLung*), Amber Gold (*mKhris-pa*), and Pearl White (*Bad-kan*) dynamic color gradients with interactive hover cards and clinical leaf inspection.
+  - **3D Anatomy Viewer & Decad Integration**: Embedded directly into `BodyViewerComponent` (`src/components/anatomy-3d/body-viewer.component.ts`) and `GlobalDecadHealingSpectrumComponent`.
+- **[ICD-11 Primary Internal Ontology with Projected ICD-10-CM & SNOMED CT Layer] (`src/models/global-healing-paradigms.model.ts`, `src/services/global-healing-paradigms.service.ts`, `src/services/fhir-who-ictm-serializer.service.ts`)**:
+  - **Modern Biochemical Internal Reasoning**: Internal Clinical Decision Support (CDS) engines and diagnostic crosswalks standardized on **WHO ICD-11 MMS** stem codes (`BA00` Essential Hypertension, `5A11` Type 2 Diabetes, `MG22` Chronic Fatigue Syndrome, etc.) and WHO ICTM Chapter 26 Traditional Medicine codes.
+  - **Seamless Legacy Clearinghouse Projection**: Automated multi-coding projection in FHIR R4 Condition bundles emitting both `http://id.who.int/icd/release/11/mms` and `http://hl7.org/fhir/sid/icd-10-cm` alongside SNOMED CT (`http://snomed.info/sct`), guaranteeing zero billing/superbill disruptions or EDI X12 clearinghouse rejections.
+  - **Expanded Clinical AI Prompts**: Grounded AI reasoning prompts in `src/services/clinical-prompts.ts` covering Sowa-Rigpa and the Global Decad.
+- **[Global Decad of Healing Systems & WHO-NIH Strategic Alignment Hub] (`src/components/shared/who-nih-healing-alignment-hub.component.ts`, `src/components/shared/global-decad-healing-spectrum.component.ts`, `src/models/who-nih-healing-goals.model.ts`)**:
+  - **10-Paradigm Healing Systems Spectrum**: Consilience hub spanning Biomedicine, Osteopathic, TCM, Ayurveda, Sowa-Rigpa, Unani Tibb, Kampo, African Traditional, First Nations Seven Generations, and Integrative Longevity.
+  - **Strategic Alignment Hub**: SDG-3 / NCD premature mortality reduction targets, Conformal Prediction 95% uncertainty quantification (UQ) coverage badges, and automated 1-click FHIR R4 ICTM bundle export.
+  - **Circadian ODE Simulator & Multimodal Vision**: Differential equation circadian pacing (`src/services/circadian-ode-simulator.service.ts`) and multimodal integrative vision services (`src/services/multimodal-integrative-vision.service.ts`).
+- **[Playwright Multi-Device E2E Test Suite] (`e2e/global-decad-and-who-nih-alignment.spec.ts`)**:
+  - Automated 18-case E2E validation across 5 distinct institutional form factors (`mobile-iphone`, `mobile-chrome`, `tablet-ipad-exam-room`, `chromebook-school-library`, `clinical-cow-workstation`).
+
+### Changed
+- **[RxGuard PGx & Botanicals Lens Modernization] (`src/components/rx-guard-lens.component.ts`)**:
+  - Refactored component state to modern Angular 22 Signals (`signal`, `computed`) and template `@let` declarations with accessible focus rings and zero layout shift.
+
 ## [1.38.0] - 2026-09-23
 
 **🔬 Universal De-Identified Case Studies Commons, 3B Innovation Architecture (Breaking, Bending, Blending), Enterprise EHR Sidecar (Epic/Cerner/MEDITECH), Hyperscaler Symbiosis, and 21st Century Cures Act Safe Harbor**

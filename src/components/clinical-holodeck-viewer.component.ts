@@ -1,5 +1,5 @@
-import { Component, ElementRef, viewChild, AfterViewInit, OnDestroy, signal, computed, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ElementRef, viewChild, AfterViewInit, OnDestroy, signal, computed, ChangeDetectionStrategy, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
@@ -93,15 +93,22 @@ export type ToolMode = 'inspect' | 'laser_pbm' | 'scalpel_resect' | 'synovial_la
             </div>
             <div class="flex items-center justify-between gap-4 text-[11px] text-zinc-400">
               <span>Cytokine Load (IL-1β): <strong class="text-rose-400">{{ cytokineLoad() }} pg/mL</strong></span>
-              <span>Photons: <strong class="text-emerald-400">{{ photonsDelivered() }} J/cm²</strong></span>
+              <span>CCO Activation: <strong class="text-emerald-400">{{ cytochromeCOxidaseActivation() }}%</strong></span>
             </div>
           </div>
 
           <!-- Fire Laser Instruction Overlay -->
           @if (activeTool() === 'laser_pbm') {
-            <div class="absolute bottom-3 left-3 right-3 bg-rose-950/80 backdrop-blur-md p-2.5 rounded-xl border border-rose-500/40 flex items-center justify-between text-xs font-mono text-rose-200">
-              <span>🎯 Click on the glowing Meniscus/ACL tear to discharge 810nm laser photobiomodulation!</span>
-              <span class="text-rose-400 font-bold tabular-nums">{{ photonsDelivered() }} J/cm²</span>
+            <div class="absolute bottom-3 left-3 right-3 bg-rose-950/85 backdrop-blur-md p-2.5 rounded-xl border border-rose-500/40 flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-rose-200">
+              <div class="flex items-center gap-2">
+                <span>🎯</span>
+                <span>810nm PBM Beam: <strong class="text-white">{{ targetFluence() }} J/cm²</strong> at Target Depth | Total: <strong class="text-emerald-400">{{ photonsDelivered() }} J/cm²</strong></span>
+              </div>
+              <button 
+                (click)="dischargePbmLaser(4.0)"
+                class="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-[11px] uppercase transition cursor-pointer active:scale-95 shadow-md">
+                ⚡ Discharge Pulse (4 J/cm²)
+              </button>
             </div>
           }
         </div>
@@ -193,7 +200,37 @@ export class ClinicalHolodeckViewerComponent implements AfterViewInit, OnDestroy
   readonly layerDepth = signal<number>(85);
   readonly cytokineLoad = signal<number>(48.5); // pg/mL
   readonly photonsDelivered = signal<number>(0); // J/cm2
+  readonly cytochromeCOxidaseActivation = signal<number>(12); // % mitochondrial enzyme excitation
 
+  readonly targetFluence = computed(() => {
+    // Optical attenuation at depth z: Kubelka-Munk / Beer-Lambert surrogate
+    // mu_eff = 0.367 mm^-1 for 810nm near-infrared laser in human musculoskeletal tissue
+    const depthMm = (this.layerDepth() / 100) * 15; // 0 to 15mm tissue depth
+    const delivered = this.photonsDelivered();
+    if (delivered === 0) return '0.00';
+    const effective = delivered * Math.exp(-0.367 * depthMm);
+    return effective.toFixed(2);
+  });
+
+  dischargePbmLaser(dosageJoules: number = 4.0): void {
+    this.photonsDelivered.update(p => Number((p + dosageJoules).toFixed(1)));
+    const depthMm = (this.layerDepth() / 100) * 15;
+    const effectiveAtTarget = dosageJoules * Math.exp(-0.367 * depthMm);
+
+    // Mitochondrial Cytochrome c Oxidase excitation
+    this.cytochromeCOxidaseActivation.update(a => Math.min(99, Number((a + effectiveAtTarget * 8.5).toFixed(1))));
+
+    // Downregulate IL-1beta and TNF-alpha inflammatory cytokine load
+    this.cytokineLoad.update(c => Math.max(7.5, Number((c - effectiveAtTarget * 4.2).toFixed(1))));
+
+    // Modulate Three.js cytokine particle opacity if initialized
+    if (this.particleCloud && this.particleCloud.material) {
+      const mat = this.particleCloud.material as THREE.PointsMaterial;
+      mat.opacity = Math.max(0.15, this.cytokineLoad() / 50.0);
+    }
+  }
+
+  private readonly platformId = inject(PLATFORM_ID);
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
@@ -207,6 +244,7 @@ export class ClinicalHolodeckViewerComponent implements AfterViewInit, OnDestroy
   private laserBeam!: THREE.Line;
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     this.initThree();
     this.buildHolodeckLayers();
     this.buildCytokineParticles();

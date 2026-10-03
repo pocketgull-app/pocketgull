@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, computed, ViewEncapsulation, signal, OnDestroy, effect, viewChild, ElementRef, untracked, output, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, ViewEncapsulation, signal, OnDestroy, effect, viewChild, ElementRef, untracked, output, HostListener, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, TitleCasePipe } from '@angular/common';
 import { ClinicalIntelligenceService, ITranscriptEntry, AnalysisLens } from '../services/clinical-intelligence.service';
 import { PatientStateService } from '../services/patient-state.service';
@@ -320,7 +320,8 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
             <!-- Compact Action Controls Cluster -->
             <div class="relative shrink-0 flex items-center gap-1.5 pr-1">
               <button (click)="showAllLensesMenu.set(!showAllLensesMenu())"
-                class="py-1 px-2.5 bg-zinc-900 hover:bg-zinc-800 text-purple-300 border border-purple-500/40 text-[10px] font-mono font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 rounded">
+                type="button" aria-label="Toggle Clinical Vault Lenses Menu"
+                class="min-h-[44px] px-2.5 bg-zinc-900 hover:bg-zinc-800 text-purple-300 border border-purple-500/40 text-[10px] font-mono font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 rounded-lg touch-manipulation">
                 <span>[VAULT ▾]</span>
               </button>
 
@@ -328,8 +329,9 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                 <div class="absolute right-0 top-full mt-1 w-64 p-1.5 bg-zinc-950 border border-purple-500/40 shadow-2xl z-50 flex flex-col gap-1 max-h-80 overflow-y-auto font-mono text-xs rounded-lg">
                   @for (lens of availableLenses; track lens) {
                     <button (click)="changeLens(lens); showAllLensesMenu.set(false)"
+                      type="button"
                       [class]="activeLens() === lens ? 'bg-purple-600 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-900'"
-                      class="px-2.5 py-1.5 text-left text-xs font-mono transition flex items-center justify-between cursor-pointer rounded">
+                      class="min-h-[44px] px-2.5 py-2 text-left text-xs font-mono transition flex items-center justify-between cursor-pointer rounded-lg touch-manipulation">
                       <span [class.text-white]="activeLens() === lens" [class.text-zinc-300]="activeLens() !== lens">{{ lens }}</span>
                       @if (activeLens() === lens) { <span class="text-white">✓</span> }
                     </button>
@@ -341,25 +343,27 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
               <div class="inline-flex items-center rounded-lg border border-zinc-200/80 dark:border-zinc-800 bg-zinc-100/80 dark:bg-zinc-900/80 p-0.5 text-[10px] font-mono shrink-0 shadow-xs">
                 <button (click)="bionicReading.toggleBionicReading()"
                         type="button"
+                        aria-label="Toggle Bionic Reading Mode"
                         [class.bg-amber-500]="bionicReading.isBionicReadingEnabled()"
                         [class.text-white]="bionicReading.isBionicReadingEnabled()"
                         [class.shadow-xs]="bionicReading.isBionicReadingEnabled()"
                         [class.text-zinc-600]="!bionicReading.isBionicReadingEnabled()"
                         [class.dark:text-zinc-400]="!bionicReading.isBionicReadingEnabled()"
-                        class="px-2 py-0.5 rounded font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1"
+                        class="min-h-[44px] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 touch-manipulation"
                         title="Toggle Bionic Reading Mode">
                   <span>👁️</span>
                   <span>Bionic</span>
                 </button>
                 <button (click)="themeService.togglePhilocardia()"
                         type="button"
+                        aria-label="Toggle Philocardia Heart-Centered Mode"
                         id="btn-philocardia-lens"
                         [class.bg-rose-500]="themeService.isPhilocardiaEnabled()"
                         [class.text-white]="themeService.isPhilocardiaEnabled()"
                         [class.shadow-xs]="themeService.isPhilocardiaEnabled()"
                         [class.text-zinc-600]="!themeService.isPhilocardiaEnabled()"
                         [class.dark:text-zinc-400]="!themeService.isPhilocardiaEnabled()"
-                        class="px-2 py-0.5 rounded font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1"
+                        class="min-h-[44px] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 touch-manipulation"
                         title="Toggle Philocardia Heart-Centered Mode (0.1Hz Vagal Mayer Pacing)">
                   <span>{{ themeService.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
                   <span>Philo</span>
@@ -368,7 +372,9 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
 
               <!-- Unified Clinical Export & Portability Hub Quick Trigger -->
               <button (click)="showClinicalToolsModal.set(true)"
-                      class="py-1 px-2.5 bg-zinc-900 hover:bg-zinc-800 text-indigo-300 border border-indigo-500/40 text-[10px] font-mono font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0 rounded"
+                      type="button"
+                      aria-label="Open Clinical Tools & Export Hub"
+                      class="min-h-[44px] px-2.5 bg-zinc-900 hover:bg-zinc-800 text-indigo-300 border border-indigo-500/40 text-[10px] font-mono font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0 rounded-lg touch-manipulation"
                       title="Open Clinical Tools & Export Hub">
                 <span>[EXPORT]</span>
               </button>
@@ -380,7 +386,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
     }
 
     <!--Content Area-->
-    <div #contentArea (click)="handleContentAreaClick($event)" class="flex-1 mx-2 sm:mx-8 mb-6 mt-2 overflow-y-auto max-md:overflow-y-auto max-md:h-full max-md:min-h-[450px] overflow-x-hidden bg-white dark:bg-[#09090b] rounded-xl shadow-sm border border-slate-200 dark:border-zinc-800 min-h-0 relative">
+    <div #contentArea (click)="handleContentAreaClick($event)" class="flex-1 mx-2 sm:mx-8 mb-6 mt-2 overflow-y-auto max-md:overflow-y-auto max-md:h-full max-md:min-h-[450px] overflow-x-hidden bg-white dark:bg-obsidian rounded-xl shadow-sm border border-slate-200 dark:border-zinc-800 min-h-0 relative">
       <!-- Dieter Rams Industrial Precision Ventilation Grill -->
       <div class="h-1 flex gap-[1.5px] opacity-25 px-4 pt-1.5 no-print">
         <div class="flex-1 bg-slate-400 dark:bg-zinc-600 rounded-full h-0.5"></div>
@@ -786,7 +792,8 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                   <!-- QALY Tool -->
                   @if (state.getToolState('qaly') !== 'hidden') {
                     <button (click)="handleAuxToolClick('qaly')" (dblclick)="handleAuxToolDblClick('qaly')"
-                            [class.bg-[#10B981]]="state.getToolState('qaly') === 'prescribed'"
+                            type="button"
+                            [class.bg-emerald-500]="state.getToolState('qaly') === 'prescribed'"
                             [class.text-white]="state.getToolState('qaly') === 'prescribed'"
                             [class.bg-orange-500]="activeAuxTool() === 'qaly' && state.getToolState('qaly') !== 'prescribed'"
                             [class.text-zinc-950]="activeAuxTool() === 'qaly' && state.getToolState('qaly') !== 'prescribed'"
@@ -794,7 +801,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                             [class.dark:bg-zinc-900]="activeAuxTool() !== 'qaly' && state.getToolState('qaly') === 'unassigned'"
                             [class.text-zinc-800]="activeAuxTool() !== 'qaly' && state.getToolState('qaly') === 'unassigned'"
                             [class.dark:text-zinc-300]="activeAuxTool() !== 'qaly' && state.getToolState('qaly') === 'unassigned'"
-                            class="px-3 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-800 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5"
+                            class="min-h-[44px] px-3.5 py-2 rounded-xl border border-zinc-300 dark:border-zinc-800 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 touch-manipulation"
                             title="Single-click to view. Double-click to prescribe to care plan.">
                       <span>⏳ QALY Epigenetic</span>
                       @if (state.getToolState('qaly') === 'prescribed') { <span class="text-[10px] font-black px-1.5 py-0.5 rounded bg-white text-emerald-950">💊 Prescribed</span> }
@@ -806,7 +813,8 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                   <!-- Vagal Tool -->
                   @if (state.getToolState('vagal') !== 'hidden') {
                     <button (click)="handleAuxToolClick('vagal')" (dblclick)="handleAuxToolDblClick('vagal')"
-                            [class.bg-[#10B981]]="state.getToolState('vagal') === 'prescribed'"
+                            type="button"
+                            [class.bg-emerald-500]="state.getToolState('vagal') === 'prescribed'"
                             [class.text-white]="state.getToolState('vagal') === 'prescribed'"
                             [class.bg-orange-500]="activeAuxTool() === 'vagal' && state.getToolState('vagal') !== 'prescribed'"
                             [class.text-zinc-950]="activeAuxTool() === 'vagal' && state.getToolState('vagal') !== 'prescribed'"
@@ -814,7 +822,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                             [class.dark:bg-zinc-900]="activeAuxTool() !== 'vagal' && state.getToolState('vagal') === 'unassigned'"
                             [class.text-zinc-800]="activeAuxTool() !== 'vagal' && state.getToolState('vagal') === 'unassigned'"
                             [class.dark:text-zinc-300]="activeAuxTool() !== 'vagal' && state.getToolState('vagal') === 'unassigned'"
-                            class="px-3 py-1.5 rounded-xl border border-zinc-300 dark:border-zinc-800 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5"
+                            class="min-h-[44px] px-3.5 py-2 rounded-xl border border-zinc-300 dark:border-zinc-800 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 touch-manipulation"
                             title="Single-click to view. Double-click to prescribe to care plan.">
                       <span>🫁 Vagal HRV Dock</span>
                       @if (state.getToolState('vagal') === 'prescribed') { <span class="text-[10px] font-black px-1.5 py-0.5 rounded bg-white text-emerald-950">💊 Prescribed</span> }
@@ -895,12 +903,12 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
 
         @if (intel.isLoading() && !hasAnyReport()) {
           <div class="h-64 flex flex-col items-center justify-center opacity-50 no-print">
-            <div class="w-8 h-8 border-2 border-[#EEEEEE] dark:border-zinc-800 border-t-[#1C1C1C] dark:border-t-zinc-100 rounded-full animate-spin mb-4"></div>
+            <div class="w-8 h-8 border-2 border-zinc-200 dark:border-zinc-800 border-t-zinc-900 dark:border-t-zinc-100 rounded-full animate-spin mb-4"></div>
             <div class="flex flex-col items-center gap-2">
               <div class="flex items-center gap-2">
-                <span class="text-xs uppercase tracking-widest text-[#689F38] dark:text-[#8bc34a] font-bold">{{ activeLens() }}</span>
+                <span class="text-xs uppercase tracking-widest text-[#2e7d32] dark:text-[#8bc34a] font-bold">{{ activeLens() }}</span>
                 @if (intel.isLoading() && isTextEmpty(activeReport())) {
-                  <span class="flex h-1.5 w-1.5 rounded-full bg-[#689F38] dark:bg-[#8bc34a] animate-pulse"></span>
+                  <span class="flex h-1.5 w-1.5 rounded-full bg-[#2e7d32] dark:bg-[#8bc34a] animate-pulse"></span>
                   <span class="text-[12px] uppercase tracking-tighter text-gray-500 dark:text-zinc-400">{{ activeAgentName() }} is synthesizing...</span>
                 }
               </div>
@@ -911,7 +919,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                 </div>
               }
             </div>
-            <p class="text-xs font-bold uppercase tracking-widest text-[#1C1C1C] dark:text-zinc-200 mt-2">Processing Comprehensive Analysis</p>
+            <p class="text-xs font-bold uppercase tracking-widest text-zinc-900 dark:text-zinc-200 mt-2">Processing Comprehensive Analysis</p>
           </div>
         }
         
@@ -1115,6 +1123,12 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                       class="px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer">
                       <span>{{ state.isAvsSessionActive() ? '⏸ Pause AVS Therapy' : '▶ Start AVS Co-Regulation' }}</span>
                     </button>
+                    <a href="http://localhost:4205" target="_blank" rel="noopener noreferrer"
+                      class="px-3.5 py-2 rounded-md bg-zinc-800 hover:bg-zinc-700 text-indigo-300 border border-indigo-500/30 text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                      title="Launch Standalone AVS Therapy Companion Console (Port 4205)">
+                      <span>🎛️</span>
+                      <span>AVS Companion Console</span>
+                    </a>
 
                       <!-- AVS Session Duration & Countdown Selector -->
                       <div class="flex items-center gap-1.5 bg-zinc-950 p-1.5 rounded-md border border-zinc-800 text-xs text-zinc-300">
@@ -1741,7 +1755,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
               </div>
             </div>
 
-            <button (click)="showClinicalToolsModal.set(false)" class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold flex items-center justify-center transition cursor-pointer">
+            <button (click)="showClinicalToolsModal.set(false)" type="button" aria-label="Close Clinical Tools & Exports Modal" class="min-h-[44px] min-w-[44px] rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold flex items-center justify-center transition cursor-pointer touch-manipulation">
               ✕
             </button>
           </div>
@@ -1830,7 +1844,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
           </div>
 
           <div class="pt-3 border-t border-zinc-800 flex justify-end">
-            <button (click)="showClinicalToolsModal.set(false)" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+            <button (click)="showClinicalToolsModal.set(false)" type="button" class="min-h-[44px] px-5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer touch-manipulation">
               Close
             </button>
           </div>
@@ -2043,6 +2057,7 @@ export class AnalysisReportComponent implements OnDestroy {
   protected readonly skepticalService = inject(SkepticalEpistemologyService);
   protected readonly fhirIntegration = inject(FhirIntegrationService);
   protected readonly avsService = inject(AvsEngineService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   setAvsBitrate(tier: AvsBitrateTier): void {
     this.avsService.setBitrateTier(tier);
@@ -2091,7 +2106,7 @@ export class AnalysisReportComponent implements OnDestroy {
     setTimeout(() => this.flowToastMessage.set(null), 3000);
   }
 
-  protected readonly cdsReport = computed(() => {
+  readonly cdsReport = computed(() => {
     const lens = this.activeLens();
     const issuesCount = Object.keys(this.state.issues() || {}).length;
     return this.skepticalService.evaluateCdsCompliance(lens, issuesCount);
@@ -3757,6 +3772,7 @@ export class AnalysisReportComponent implements OnDestroy {
     if (el) {
       el.scrollTop = 0;
     }
+    this.cdr.markForCheck();
   }
 
 

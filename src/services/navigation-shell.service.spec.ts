@@ -34,17 +34,5 @@ describe('NavigationShellService Suite', () => {
     expect(nav.activeTab()).toBe('chart');
     expect(nav.showGlossaryModal()).toBe(false);
     expect(nav.showDictationModal()).toBe(false);
-    expect(nav.showFederalUswdsPortal()).toBe(false);
-  });
-
-  it('toggles USWDS Federal Health Workstation portal modal', () => {
-    const nav = new NavigationShellService();
-    expect(nav.showFederalUswdsPortal()).toBe(false);
-
-    nav.openFederalUswdsPortal();
-    expect(nav.showFederalUswdsPortal()).toBe(true);
-
-    nav.closeFederalUswdsPortal();
-    expect(nav.showFederalUswdsPortal()).toBe(false);
   });
 });

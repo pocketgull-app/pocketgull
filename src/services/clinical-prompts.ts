@@ -35,11 +35,21 @@ FORMATTING RULES (you MUST follow these exactly):
 ANNOTATION SYNTAX (place on a NEW LINE after the relevant paragraph or list item, never inline):
 [[suggestion: Short actionable suggestion]]
 [[proposed: Full replacement text for the paragraph above]]
-`;export const PHILOSOPHY_INSTRUCTIONS: Record<'western' | 'eastern' | 'ayurvedic' | 'seven_generations', string> = {
+`;
+
+export const PHILOSOPHY_INSTRUCTIONS: Record<'western' | 'eastern' | 'ayurvedic' | 'seven_generations' | 'sowa_rigpa' | 'global_decad' | 'who_nih', string> = {
     western: `CLINICAL PARADIGM: Western (Allopathic) Medicine.
 - Focus on standard FDA, WHO, and peer-reviewed allopathic clinical guidelines.
 - Focus on conventional pharmacology, evidence-based diagnostics, standard metabolic pathways, and structured healthcare interventions.
 - Ensure recommendations are backed by randomized controlled trials (RCTs) and clinical reference models.`,
+
+    who_nih: `CLINICAL PARADIGM: Global Health & NIH/GARD Rare Disease Screener.
+- ZEBRA HUNTING: Shift the diagnostic lens to actively screen for rare, orphan, and complex multi-systemic diseases. Ignore the "horses" (common illnesses) unless definitively proven.
+- NIH GARD INTEGRATION: Cross-reference patient symptom clusters against the National Institutes of Health (NIH) Genetic and Rare Diseases Information Center (GARD) databases.
+- WHO GLOBAL HEALTH ALIGNMENT: Screen against WHO infectious disease databases, neglected tropical diseases (NTDs), and global health epidemiological data.
+- MULTI-SYSTEMIC CASCADES: Analyze how a failure in one organ system (e.g., metabolic, renal) is triggering autoimmune or inflammatory cascades across other systems.
+- AGGRESSIVE DIFFERENTIAL: Provide the top 3 rare differential diagnoses that fit the symptoms. Do not settle for functional labels if a deeper molecular, genetic, or infectious root cause exists.
+- INVESTIGATIONAL THERAPIES: Highlight Phase II/III clinical trials, off-label considerations, and experimental WHO protocols applicable to the differential.`,
 
     eastern: `CLINICAL PARADIGM: Eastern (Traditional Chinese Medicine - TCM).
 - FRAME WORK & 8 PRINCIPLES: Frame the clinical assessment and care plan using TCM diagnostic paradigms: identify Zang-Fu organ system imbalances and categorize them according to the Eight Principles (Yin/Yang, Interior/Exterior, Cold/Heat, Deficiency/Excess).
@@ -95,7 +105,29 @@ ANNOTATION SYNTAX (place on a NEW LINE after the relevant paragraph or list item
 - Frame all clinical interventions with a 150-year (~7 generations) horizon.
 - Focus on transgenerational epigenetics (histone methylation, microRNA regulatory pathways, and mitochondrial inheritance).
 - Emphasize open, vendor-neutral FHIR R4 interoperability and non-toxic environmental stewardship (WHO GLASS antimicrobial preservation, non-toxic food guardrails, AQI/PM2.5 protection).
-- Include an Epistemological Bound Notice highlighting unprovable model assumptions requiring direct FHIR lab telemetry.`
+- Include an Epistemological Bound Notice highlighting unprovable model assumptions requiring direct FHIR lab telemetry.`,
+
+    sowa_rigpa: `CLINICAL PARADIGM: Sowa-Rigpa (Himalayan Medicine & The Three Trees).
+- FRAMEWORK OF THE 3 LIVING TREES: Structure clinical reasoning according to the Gyushi Four Tantras:
+  1. Tree of Physiology & Pathology (Lus kyi rTsa-ba): 3 Humors (Nyepa Sum - rLung/Wind, mKhris-pa/Bile, Bad-kan/Phlegm), 7 Bodily Constituents (Lus-zungs bdun: Chyme, Blood, Muscle, Fat, Bone, Marrow, Regenerative Essence), and 3 Excretions.
+  2. Tree of Diagnosis (bTag-pa rTsa-ba): Visual Inspection (Tongue coat & 3-stage Urinalysis/Dri-chu), Palpation (12-Vector Radial Pulse Reading/Reg-pa), and Socratic Interrogation (sDri-ba).
+  3. Tree of Therapeutics (gSo-ba rTsa-ba): Stepped order of Diet (Zas), Lifestyle Conduct (sPyod-lam), Polyherbal Formulations (sMan), and External Interventions (dPyad: Moxibustion/Metsa, Ku-Nye medicinal oil massage, medicinal herbal steam/Lum).
+- WHO ICD-11 CHAPTER 26 (TM1) DUAL CODING: Map tri-humoral imbalances to WHO TM1 codes (TM1-RLU-01 rLung, TM1-MKH-01 mKhris-pa, TM1-BAD-01 Bad-kan) alongside Allopathic ICD-10 diagnostics.
+- BIOMEDICAL CONVERGENCE: Translate rLung to Autonomic Vagal/CNS tone, mKhris-pa to Hepatic-Biliary Thermogenesis and digestion, and Bad-kan to Lymphatic clearance and mucosal barrier integrity.`,
+
+    global_decad: `CLINICAL PARADIGM: Global Decad of Healing Systems (10 Traditions Consensus).
+- MULTI-PARADIGM SYNTHESIS: Synthesize clinical insights across all 10 healing systems:
+  1. Allopathic MD: Evidence-based pharmacology, surgical acuity, USPSTF preventive screening.
+  2. Osteopathic DO: TART somatic dysfunctions, craniosacral rhythm (CRI), thoracoabdominal diaphragm pump.
+  3. Naturopathic ND: 7-Tier Therapeutic Order (Vis Medicatrix Naturae) establishing foundational conditions before synthetic escalation.
+  4. Traditional Chinese Medicine (TCM): Zang-Fu organ disharmonies, Eight Principles, meridian acupoints (ST36, Four Gates).
+  5. Ayurvedic Medicine: Tridosha (Vata/Pitta/Kapha), Agni/Ama metabolic fire, Saptadhatu tissue penetration.
+  6. Functional & Systems Biology: Network biology, intestinal barrier zonulin, mitochondrial bioenergetics.
+  7. Unani-Tibb: Greco-Arabic humors (Akhlat: Dam, Balgham, Safra, Sauda), temperament (Mizaj), Quwwat-e-Mudabbira.
+  8. Indigenous TEK & Ethnomedicine: Bioregional botanicals, seasonal harvesting, holistic communal stewardship.
+  9. Siddha & Sowa-Rigpa: Kaya Kalpa rejuvenation, Sowa-Rigpa 3 Living Trees, 12-vector radial pulse reading.
+  10. Chronobiology & Exposomics: SCN central circadian clock, melatonin/cortisol gating, environmental toxicant elimination.
+- WHO & NIH STRATEGIC GOALS: Align all clinical plans with WHO SDG-3 (Premature Mortality Reduction) and NIH Strategic Plans with 95% Conformal Prediction Uncertainty Quantification.`
 };
 
 export const SYSTEM_INSTRUCTIONS: Record<AnalysisLens, string> = {

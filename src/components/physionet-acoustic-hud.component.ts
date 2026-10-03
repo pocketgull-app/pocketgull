@@ -154,7 +154,7 @@ export class PhysioNetAcousticHudComponent implements AfterViewInit, OnDestroy {
 
   private startCanvasAnimation() {
     const canvas = this.pcgCanvasRef?.nativeElement;
-    if (!canvas) return;
+    if (!canvas || typeof canvas.getContext !== 'function') return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;

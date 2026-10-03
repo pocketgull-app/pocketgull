@@ -1,4 +1,11 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { 
+  SocraticDemystifier, 
+  TrajectoryBuilder, 
+  IDemystifiedExplanation, 
+  ISocraticQuestionCard, 
+  IThreeActTrajectory 
+} from '../../packages/open-scribe/src/index';
 
 export interface IScribeDialogueTurn {
   id: string;
@@ -90,6 +97,42 @@ export class AmbientScribeService {
   readonly latestTurn = computed(() => {
     const turns = this.dialogueTurns();
     return turns.length > 0 ? turns[turns.length - 1] : null;
+  });
+
+  readonly fullDialogueText = computed(() => {
+    return this.dialogueTurns().map(t => `${t.speakerName}: ${t.text}`).join(' ');
+  });
+
+  readonly demystifiedJargon = computed<IDemystifiedExplanation[]>(() => {
+    const text = this.fullDialogueText();
+    const soap = this.soapNote();
+    const combined = `${text} ${soap?.assessment.primaryDiagnosis || ''} ${soap?.plan.pharmacotherapy.map(p => p.drug).join(' ') || ''}`;
+    return SocraticDemystifier.demystify(combined);
+  });
+
+  readonly socraticQuestions = computed<ISocraticQuestionCard[]>(() => {
+    const text = this.fullDialogueText();
+    const soap = this.soapNote();
+    const combined = `${text} ${soap?.assessment.primaryDiagnosis || ''} ${soap?.plan.pharmacotherapy.map(p => p.drug).join(' ') || ''}`;
+    return SocraticDemystifier.generateSocraticInquiry(combined);
+  });
+
+  readonly naturalFrequencySummary = computed<string>(() => {
+    return SocraticDemystifier.toNaturalFrequency(92, 100);
+  });
+
+  readonly teaspoonSummary = computed<string>(() => {
+    const text = this.fullDialogueText();
+    return SocraticDemystifier.generateTeaspoonSummary(text);
+  });
+
+  readonly threeActTrajectory = computed<IThreeActTrajectory>(() => {
+    const text = this.fullDialogueText();
+    const soap = this.soapNote();
+    const bp = soap?.objective.vitals.bloodPressure || '120/80';
+    const hr = soap?.objective.vitals.heartRate || 72;
+    const spo2 = soap?.objective.vitals.oxygenSaturation || 98;
+    return TrajectoryBuilder.build(text, { hr, bp, spo2 });
   });
 
   // Pre-configured Clinical Simulation Scenarios
@@ -270,6 +313,93 @@ export class AmbientScribeService {
           nullHypothesisPValue: 0.001,
           cpicGeneChecked: 'SLC22A1 (OCT1) Metformin transporter normal expression',
           confidenceScore: 0.98
+        }
+      }
+    },
+    {
+      id: 'knee-pivot-shift-trauma',
+      title: 'Orthopedic Sports: Acute Knee Pivot-Shift, Lachman 3+ & Joint Effusion',
+      specialty: 'Orthopedic Surgery & Sports Medicine',
+      dialogue: [
+        { speaker: 'clinician', text: "Hello Marcus. I understand you had a sudden non-contact twisting injury while pivoting on your right knee during soccer yesterday. Tell me what you experienced.", delayMs: 600 },
+        { speaker: 'patient', text: "I planted my right foot to cut left, and I felt a loud audible pop followed by my knee giving way completely. Within two hours, my joint swelled up like a grapefruit and I couldn't bear full weight.", delayMs: 1200 },
+        { speaker: 'clinician', text: "Let's perform a careful physical examination. There is a tense 3+ hemarthrosis and ballottable patella. Lachman test is distinctly positive with soft endpoint (3+ laxity). Pivot-shift test reproduces the subluxation clunk, and there is tenderness along the medial joint line with positive McMurray test.", delayMs: 1600 },
+        { speaker: 'patient', text: "Is my ACL torn? Do I need surgery immediately, or can we start with prehabilitation and an MRI?", delayMs: 1800 },
+        { speaker: 'clinician', text: "The clinical presentation is pathognomonic for an acute full-thickness ACL rupture with concurrent medial meniscal ramp tear. We will obtain a high-resolution 3.0T non-contrast knee MRI, aspirate the acute effusion for pain relief if needed, fit you in a hinged knee brace locked at 0-90 degrees, and start auxiliary metabolic bridge anti-inflammatory pacing.", delayMs: 2200 }
+      ],
+      expectedSoap: {
+        subjective: {
+          chiefComplaint: 'Acute right knee trauma after non-contact pivoting injury with audible "pop", immediate giving way, and rapid tense effusion onset.',
+          historyOfPresentIllness: '24-year-old athlete sustained sudden deceleration/pivot-shift injury to right knee 24h prior. Reports severe weight-bearing inhibition, mechanical instability, and joint effusion.',
+          reviewOfSystems: ['Musculoskeletal: +acute knee pain (VAS 7/10), +mechanical instability, +effusion, -distal neurovascular deficit'],
+          reportedPainScale: 7,
+          duration: 'Acute (24 hours)'
+        },
+        objective: {
+          vitals: {
+            bloodPressure: '122/78 mmHg',
+            heartRate: 72,
+            respiratoryRate: 14,
+            oxygenSaturation: 99,
+            temperatureF: 98.4,
+            bmi: 23.5
+          },
+          physicalExam: [
+            'Right Knee: Large 3+ ballottable joint effusion with warm erythema.',
+            'Ligamentous Stability: Lachman test positive grade 3 with no distinct endpoint. Pivot shift test positive grade 2.',
+            'Meniscal Signs: Medial joint line focal tenderness; McMurray test eliciting medial clicking.',
+            'Neurovascular: Distal dorsalis pedis pulse 2+, sensation intact across peroneal/tibial nerve distributions.'
+          ],
+          telemetryObservations: ['Severe kinetic loading asymmetry (Right limb unweighted).']
+        },
+        assessment: {
+          primaryDiagnosis: 'Acute Full-Thickness Tear of Anterior Cruciate Ligament (ACL), Right Knee',
+          icd10Code: 'S83.511A',
+          differentialDiagnoses: [
+            {
+              condition: 'Medial Meniscus Ramp/Complex Tear, Right Knee',
+              icd10Code: 'S83.241A',
+              likelihood: 'high',
+              rationale: 'Positive McMurray clicking and medial joint line tenderness commonly co-occurring with acute pivot-shift ACL trauma.'
+            },
+            {
+              condition: 'Tibial Plateau Occult Bone Contusion / Micro-Fracture',
+              icd10Code: 'S82.101A',
+              likelihood: 'moderate',
+              rationale: 'High impaction forces during tibial translation frequently produce lateral compartment bone marrow lesions.'
+            }
+          ],
+          clinicalRiskTier: 'elevated'
+        },
+        plan: {
+          pharmacotherapy: [
+            {
+              drug: 'Meloxicam',
+              dosage: '15 mg',
+              frequency: 'Oral once daily with food x 10 days',
+              cpicGuidelineFlag: 'Short-course NSAID with gastroprotection.'
+            }
+          ],
+          diagnosticOrders: [
+            '3.0T High-Resolution Multi-Planar Knee MRI (Coronal, Sagittal, Axial PD-FSE)',
+            'Standard Bilateral Weight-Bearing 4-View Knee Radiographs (AP, Lateral, Merchant, Rosenberg)'
+          ],
+          patientInstructions: [
+            'Hinged knee brace locked at 0-90 degrees for weight-bearing protection.',
+            'Crutches with partial weight bearing as tolerated (PWBAT).',
+            'Cryotherapy (ice 20 min on/off) and leg elevation above heart level.',
+            'Prehabilitation quad isometric sets and straight leg raises without active pivoting.'
+          ],
+          followUpTimeline: '7 days post-MRI with Orthopedic Sports Medicine consultation',
+          suggestedCptCodes: [
+            { code: '99204', description: 'New Patient Comprehensive Orthopedic Consultation (High Complexity)', reimbursementTier: 'Level 4 E&M' },
+            { code: '73721', description: 'MRI Lower Extremity Joint (Knee) without Contrast', reimbursementTier: 'Diagnostic Radiology' }
+          ]
+        },
+        evidenceSummary: {
+          cochraneEvidenceLevel: 'Level A (MOON ACL Cohort & KANON Trial on Prehab vs Early Reconstruction)',
+          nullHypothesisPValue: 0.0001,
+          confidenceScore: 0.99
         }
       }
     }

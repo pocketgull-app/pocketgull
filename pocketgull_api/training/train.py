@@ -74,7 +74,10 @@ def train_step(
         return loss, logits
 
     (loss, logits), grads = nnx.value_and_grad(loss_fn, has_aux=True)(model)
-    optimizer.update(model, grads)
+    try:
+        optimizer.update(grads)
+    except TypeError:
+        optimizer.update(model, grads)
     return loss, logits
 
 
@@ -103,8 +106,7 @@ def run_training():
     checkpoint_dir = Path(__file__).parent.parent / "checkpoints" / "clinical_model"
     checkpoint_dir.parent.mkdir(parents=True, exist_ok=True)
     
-    atomicity_opts = ocp.options.AtomicityOptions(mode=ocp.options.AtomicityMode.COMMIT_FILE)
-    checkpointer = ocp.StandardCheckpointer(atomicity_options=atomicity_opts)
+    checkpointer = ocp.StandardCheckpointer()
     
     _, state = nnx.split(model)
     target_path = str(checkpoint_dir.resolve())

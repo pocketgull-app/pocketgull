@@ -346,10 +346,10 @@ export class HobbyDomainCompanionComponent {
   customMemories = '';
   selectedPhotoUrl = signal<string | null>(null);
 
-  eventSearchQuery = '';
+  eventSearchQuery = signal('');
   readonly allEvents = computed(() => this.companionService.allCommunityEvents());
   readonly filteredEvents = computed(() => {
-    return this.companionService.discoverLocalEvents('all', this.eventSearchQuery);
+    return this.companionService.discoverLocalEvents('all', this.eventSearchQuery());
   });
 
   selectBuddy(id: string): void {

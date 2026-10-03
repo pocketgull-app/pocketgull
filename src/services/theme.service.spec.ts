@@ -21,7 +21,7 @@ describe('ThemeService (App Themes & Accessibility Cycles)', () => {
     expect(service.currentTheme()).toBe('light');
   });
 
-  it('2. Cycles theme through light -> dark -> system -> spark -> light', () => {
+  it('2. Cycles theme through light -> dark -> system -> spark -> dream-team -> light', () => {
     expect(service.currentTheme()).toBe('light');
     
     service.cycleTheme();
@@ -32,6 +32,9 @@ describe('ThemeService (App Themes & Accessibility Cycles)', () => {
 
     service.cycleTheme();
     expect(service.currentTheme()).toBe('spark');
+
+    service.cycleTheme();
+    expect(service.currentTheme()).toBe('dream-team');
 
     service.cycleTheme();
     expect(service.currentTheme()).toBe('light');

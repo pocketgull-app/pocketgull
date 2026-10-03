@@ -9,6 +9,10 @@ module.exports = {
     theme: {
         extend: {
             colors: {
+                obsidian: '#09090b',
+                gearTeal: '#0d9488',
+                amberGold: '#d97706',
+                paperCream: '#fbf7ee',
                 brand: {
                     blue: {
                         50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa',

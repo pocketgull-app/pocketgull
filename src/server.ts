@@ -134,6 +134,7 @@ function getAngularApp(): AngularNodeAppEngine | null {
 }
 
 app.use(compression());
+  app.use((req, res, next) => { console.log('[Incoming]', req.method, req.url); next(); });
 
 const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test');
 const isProd = (process.env['NODE_ENV'] === 'production' || !!process.env['K_SERVICE']) && !isTestingEnv;
@@ -192,8 +193,8 @@ app.use((req, res, next) => {
     : `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cloud.google.com https://pay.google.com`;
 
   const connectSrc = isProd
-    ? `'self' https: wss: https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`
-    : `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://huggingface.co https://*.huggingface.co https://cdn-lfs.huggingface.co https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`;
+    ? `'self' https: wss: https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`
+    : `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`;
 
   const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com https://font.pocketgull.app data:`;
   const fontSrc = `'self' data: https://fonts.gstatic.com https://font.pocketgull.app`;
@@ -675,9 +676,9 @@ export async function fetchSecretFromSecretManager(secretName: string): Promise<
     if (!envPath.startsWith(rootDir)) continue;
     try {
       const localEnv = fs.readFileSync(envPath, 'utf8');
-      const regex = new RegExp(`${secretName}=["']?([^"'\r\n]+)["']?`);
+      const regex = new RegExp(`^\\s*${secretName}\\s*=\\s*["']?([^"'\\r\\n]+)["']?`, 'm');
       const match = localEnv.match(regex);
-      if (match) {
+      if (match && match[1]) {
         const val = match[1].trim();
         secretCache.set(secretName, val);
         process.env[secretName] = val;
@@ -735,7 +736,9 @@ export async function initializeRuntimeSecrets(): Promise<void> {
     'AWS_HEALTHLAKE_ENDPOINT',
     'ATHENAHEALTH_CLIENT_ID',
     'ORACLE_CERNER_CLIENT_ID',
-    'GOOGLE_HEALTH_CLIENT_SECRET'
+    'GOOGLE_HEALTH_CLIENT_ID',
+    'GOOGLE_HEALTH_CLIENT_SECRET',
+    'GOOGLE_HEALTH_REDIRECT_URI'
   ];
 
   console.log('[Secrets] Initializing runtime Secret Manager client (Zero container secret injections)...');
@@ -850,6 +853,13 @@ const apiLimiter = rateLimit({
   message: { error: 'Too many requests. Please try again later.' }
 });
 app.use('/api', apiLimiter);
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  next();
+});
 app.use('/api', express.json({ limit: '100mb' }));
 app.use('/api', express.urlencoded({ limit: '100mb', extended: true }));
 app.use('/docs', apiLimiter);

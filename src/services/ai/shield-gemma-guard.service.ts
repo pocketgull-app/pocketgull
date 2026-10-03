@@ -9,7 +9,7 @@
 import { Injectable } from '@angular/core';
 
 export interface IShieldGemmaScore {
-  category: 'PROMPT_INJECTION' | 'INDIRECT_PROMPT_INJECTION' | 'TOXICITY' | 'DATA_EXFILTRATION' | 'ISMP_VIOLATION' | 'SYSTEM_OVERRIDE';
+  category: 'PROMPT_INJECTION' | 'INDIRECT_PROMPT_INJECTION' | 'TOXICITY' | 'DATA_EXFILTRATION' | 'ISMP_VIOLATION' | 'SYSTEM_OVERRIDE' | 'HERB_DRUG_CONFLICT';
   violationDetected: boolean;
   confidenceScore: number; // 0.0 to 1.0
   rationale: string;
@@ -21,6 +21,14 @@ export interface IIsmpMedicationCorrection {
   ismpRule: string;
 }
 
+export interface ICrossParadigmConflict {
+  drug: string;
+  botanicalOrHerb: string;
+  riskMechanism: string;
+  severity: 'MODERATE' | 'HIGH' | 'CRITICAL';
+  clinicalDirective: string;
+}
+
 export interface IShieldGemmaEvaluation {
   isSafe: boolean;
   riskLevel: 'NEGLIGIBLE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
@@ -28,6 +36,7 @@ export interface IShieldGemmaEvaluation {
   sanitizedPrompt: string;
   mitigationApplied: string[];
   ismpCorrections?: IIsmpMedicationCorrection[];
+  herbDrugConflicts?: ICrossParadigmConflict[];
 }
 
 @Injectable({
@@ -134,6 +143,18 @@ export class ShieldGemmaGuardService {
       mitigations.push('Redacted sensitive credential tokens from prompt payload');
     }
 
+    // Step 6: Check cross-paradigm herb-drug-supplement interactions
+    const herbDrugConflicts = this.detectCrossParadigmConflicts(cleaned);
+    if (herbDrugConflicts.length > 0) {
+      scores.push({
+        category: 'HERB_DRUG_CONFLICT',
+        violationDetected: true,
+        confidenceScore: 0.95,
+        rationale: `Identified ${herbDrugConflicts.length} cross-paradigm herb-drug interaction risk(s): ${herbDrugConflicts.map(c => `${c.drug} + ${c.botanicalOrHerb}`).join('; ')}`
+      });
+      mitigations.push(...herbDrugConflicts.map(c => `Cross-Paradigm Conflict Directive: [${c.severity}] ${c.clinicalDirective} (${c.riskMechanism})`));
+    }
+
     const hasViolations = scores.some(s => s.violationDetected && (s.category === 'PROMPT_INJECTION' || s.category === 'INDIRECT_PROMPT_INJECTION'));
     const riskLevel: IShieldGemmaEvaluation['riskLevel'] = (injectionFound || indirectInjectionFound)
       ? 'CRITICAL' 
@@ -147,7 +168,8 @@ export class ShieldGemmaGuardService {
       scores,
       sanitizedPrompt: cleaned,
       mitigationApplied: mitigations,
-      ismpCorrections: medSanitization.correctionsApplied
+      ismpCorrections: medSanitization.correctionsApplied,
+      herbDrugConflicts
     };
   }
 
@@ -234,5 +256,87 @@ export class ShieldGemmaGuardService {
   public wrapClinicalDirectiveContext(directive: string): string {
     const evaluation = this.evaluatePrompt(directive);
     return `[CLINICAL DIRECTIVE CONTEXT]\n${evaluation.sanitizedPrompt}\n[/CLINICAL DIRECTIVE CONTEXT]`;
+  }
+
+  /**
+   * Evaluates clinical text for high-risk cross-paradigm herb-drug-supplement interactions
+   * (Western Pharmaceuticals + TCM Botanicals + Ayurvedic Rasayanas).
+   */
+  public detectCrossParadigmConflicts(text: string): ICrossParadigmConflict[] {
+    const conflicts: ICrossParadigmConflict[] = [];
+    const lower = text.toLowerCase();
+
+    // 1. Anticoagulants & Antiplatelets + High-Bleed Botanicals
+    const anticoagulants = ['warfarin', 'coumadin', 'apixaban', 'eliquis', 'rivaroxaban', 'xarelto', 'dabigatran', 'heparin', 'enoxaparin', 'plavix', 'clopidogrel', 'aspirin'];
+    const bleedHerbs = [
+      { name: 'dan shen', botanical: 'Salvia miltiorrhiza', risk: 'Additive platelet aggregation inhibition and prolonged INR/PT' },
+      { name: 'ginkgo biloba', botanical: 'Ginkgo biloba', risk: 'PAF (Platelet Activating Factor) antagonism increasing hemorrhage risk' },
+      { name: 'guggulu', botanical: 'Commiphora mukul', risk: 'Additive antiplatelet activity and hepatic metabolism modulation' },
+      { name: 'st. john\'s wort', botanical: 'Hypericum perforatum', risk: 'Strong CYP3A4/CYP2C9 induction drastically lowering anticoagulant serum levels and causing thrombosis' },
+      { name: 'garlic supplement', botanical: 'Allium sativum', risk: 'Additive allicin fibrinolytic activity with severe bleeding potential' }
+    ];
+
+    const hasAnticoagulant = anticoagulants.find(d => lower.includes(d));
+    if (hasAnticoagulant) {
+      for (const herb of bleedHerbs) {
+        if (lower.includes(herb.name) || lower.includes(herb.botanical.toLowerCase())) {
+          conflicts.push({
+            drug: hasAnticoagulant.toUpperCase(),
+            botanicalOrHerb: `${herb.name} (${herb.botanical})`,
+            riskMechanism: herb.risk,
+            severity: 'CRITICAL',
+            clinicalDirective: `Prohibit co-administration of ${hasAnticoagulant} with ${herb.name} without immediate coagulation INR monitoring.`
+          });
+        }
+      }
+    }
+
+    // 2. SSRIs/SNRIs/MAOIs + Serotonergic Botanicals
+    const serotonergics = ['sertraline', 'zoloft', 'fluoxetine', 'prozac', 'escitalopram', 'lexapro', 'citalopram', 'duloxetine', 'cymbalta', 'venlafaxine', 'phenelzine'];
+    const serotoninHerbs = [
+      { name: 'st. john\'s wort', botanical: 'Hypericum perforatum', risk: 'Non-selective reuptake inhibition of serotonin, dopamine, and norepinephrine triggering fatal Serotonin Syndrome' },
+      { name: '5-htp', botanical: '5-Hydroxytryptophan / Griffonia simplicifolia', risk: 'Direct precursor serotonin synthesis causing hyperthermia, clonus, and central autonomic instability' },
+      { name: 'kava', botanical: 'Piper methysticum', risk: 'Central CNS depression, GABA modulation, and potential hepatotoxicity' }
+    ];
+
+    const hasSerotonergic = serotonergics.find(s => lower.includes(s));
+    if (hasSerotonergic) {
+      for (const herb of serotoninHerbs) {
+        if (lower.includes(herb.name) || lower.includes(herb.botanical.toLowerCase())) {
+          conflicts.push({
+            drug: hasSerotonergic.toUpperCase(),
+            botanicalOrHerb: `${herb.name} (${herb.botanical})`,
+            riskMechanism: herb.risk,
+            severity: 'CRITICAL',
+            clinicalDirective: `Cease ${herb.name} immediately during ${hasSerotonergic} therapy to prevent Serotonin Syndrome.`
+          });
+        }
+      }
+    }
+
+    // 3. Levothyroxine + Binding Botanicals/Minerals
+    const thyroidMeds = ['levothyroxine', 'synthroid', 'armour thyroid', 'liothyronine'];
+    const thyroidInteractions = [
+      { name: 'calcium carbonate', botanical: 'Calcium carbonate / Coral calcium', risk: 'Forms insoluble chelate complexes preventing GI absorption of thyroid hormone' },
+      { name: 'soy isoflavones', botanical: 'Glycine max', risk: 'Inhibits intestinal uptake and thyroid peroxidase activity' },
+      { name: 'ashwagandha', botanical: 'Withania somnifera', risk: 'Stimulates endogenous thyroid hormone synthesis, potentially inducing subclinical thyrotoxicosis' }
+    ];
+
+    const hasThyroid = thyroidMeds.find(t => lower.includes(t));
+    if (hasThyroid) {
+      for (const item of thyroidInteractions) {
+        if (lower.includes(item.name) || lower.includes(item.botanical.toLowerCase())) {
+          conflicts.push({
+            drug: hasThyroid.toUpperCase(),
+            botanicalOrHerb: `${item.name} (${item.botanical})`,
+            riskMechanism: item.risk,
+            severity: 'HIGH',
+            clinicalDirective: `Separate administration of ${hasThyroid} and ${item.name} by at least 4 hours and monitor TSH.`
+          });
+        }
+      }
+    }
+
+    return conflicts;
   }
 }

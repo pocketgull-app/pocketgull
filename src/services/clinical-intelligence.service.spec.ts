@@ -31,6 +31,10 @@ describe('ClinicalIntelligenceService - Philosophy Modes', () => {
       vitals: signal<any>({}),
       patientGoals: signal<string>(''),
       issues: signal<any>({}),
+      medications: signal<any[]>([]),
+      reasonForVisit: signal<string>(''),
+      environmentalIndex: signal<any>(null),
+      oknProfile: signal<any>(null),
       selectPhilosophy(philosophy: 'western' | 'eastern' | 'ayurvedic') {
         this.activePhilosophy.set(philosophy);
       }
@@ -82,7 +86,8 @@ describe('ClinicalIntelligenceService - Philosophy Modes', () => {
           }
         },
         { provide: RulesEngineService, useValue: {
-            evaluateOnResponse: vi.fn().mockImplementation((res) => res)
+            evaluateOnResponse: vi.fn().mockImplementation((res) => res),
+            evaluateOnMessage: vi.fn().mockReturnValue(null)
           }
         }
       ]
@@ -268,4 +273,106 @@ describe('ClinicalIntelligenceService - Philosophy Modes', () => {
       expect(result.suggestedCorrections.some(s => s.toLowerCase().includes('authority') || s.toLowerCase().includes('fallacy'))).toBe(true);
     });
   });
+
+  describe('Watershed-Aware CDS Advisory Stream & OKN Graph Grounding', () => {
+    it('should detect joint pain triggers from patient state issues', () => {
+      mockPatientState.issues.set({
+        r_shin: [{
+          id: 'knee_r',
+          noteId: 'n1',
+          name: 'Right Knee',
+          painLevel: 7,
+          description: 'Severe medial joint line pain, crepitus, and Kellgren-Lawrence grade 3 osteoarthritis',
+          symptoms: ['knee stiffness', 'joint effusion']
+        }]
+      });
+      const trigger = service.detectWatershedClinicalTriggers();
+      expect(trigger).toBe('joint_pain');
+    });
+
+    it('should detect statin myopathy triggers when patient takes Atorvastatin and reports muscle pain', () => {
+      mockPatientState.medications.set([
+        { id: 'm1', name: 'Atorvastatin 40mg', value: 'daily' }
+      ]);
+      mockPatientState.issues.set({
+        glutes: [{
+          id: 'muscle_weakness',
+          noteId: 'n2',
+          name: 'Bilateral Thighs',
+          painLevel: 6,
+          description: 'SAMS muscle weakness and myalgia, suspect CoQ10 mitochondrial depletion',
+          symptoms: ['muscle aches', 'cramping']
+        }]
+      });
+      const trigger = service.detectWatershedClinicalTriggers();
+      expect(trigger).toBe('statin_myopathy');
+    });
+
+    it('should detect both triggers when patient presents with knee osteoarthritis and statin myopathy', () => {
+      mockPatientState.medications.set([
+        { id: 'm1', name: 'Rosuvastatin 20mg', value: 'daily' }
+      ]);
+      mockPatientState.issues.set({
+        r_shin: [{
+          id: 'knee_r',
+          noteId: 'n1',
+          name: 'Right Knee',
+          painLevel: 7,
+          description: 'Knee osteoarthritis with joint stiffness',
+          symptoms: ['arthralgia']
+        }],
+        upper_back: [{
+          id: 'sams_ache',
+          noteId: 'n2',
+          name: 'Upper Back',
+          painLevel: 5,
+          description: 'Diffuse statin myalgia and muscle aches',
+          symptoms: ['myopathy']
+        }]
+      });
+      const trigger = service.detectWatershedClinicalTriggers();
+      expect(trigger).toBe('both');
+    });
+
+    it('should evaluate watershed advisory with water hardness, UCMR5 data, and OKN graph traversal', async () => {
+      mockPatientState.reasonForVisit.set('Follow-up on worsening knee osteoarthritis and joint stiffness in Twin Cities');
+      mockPatientState.issues.set({
+        r_shin: [{
+          id: 'knee_r',
+          noteId: 'n1',
+          name: 'Right Knee',
+          painLevel: 8,
+          description: 'Cartilage degeneration and joint space narrowing',
+          symptoms: ['osteoarthritis', 'knee pain']
+        }]
+      });
+
+      const advisory = await service.evaluateWatershedCdsAdvisory();
+      expect(advisory).not.toBeNull();
+      expect(advisory!.trigger).toBe('joint_pain');
+      expect(advisory!.basin.name).toContain('Upper Mississippi');
+      expect(advisory!.basin.hardnessCaCO3).toBe(268.0);
+      expect(advisory!.hardnessCategory).toBe('Very Hard (>180 mg/L)');
+      expect(advisory!.epaMclExceedance).toBe(true);
+      expect(advisory!.oknTraversedPaths.length).toBeGreaterThan(0);
+      expect(advisory!.directiveContext).toContain('[WATERSHED EXPOSOME CDS ADVISORY]');
+      expect(advisory!.directiveContext).toContain('Upper Mississippi');
+      expect(advisory!.antonovskyRemedy.remedy).toContain('Reverse Osmosis');
+      expect(service.watershedCdsAdvisory()).toEqual(advisory);
+    });
+
+    it('should ground live consult sendChatMessage with watershed advisory when statin myopathy is discussed', async () => {
+      mockPatientState.medications.set([
+        { id: 'm1', name: 'Atorvastatin 80mg', value: 'daily' }
+      ]);
+      const response = await service.sendChatMessage('Doctor, the patient is experiencing severe muscle aches and myalgia on Atorvastatin');
+      expect(mockIntelligenceProvider.sendMessage).toHaveBeenCalled();
+      const sentMessageArg = mockIntelligenceProvider.sendMessage.mock.calls[0][0];
+      expect(sentMessageArg).toContain('[CLINICAL DIRECTIVE CONTEXT:');
+      expect(sentMessageArg).toContain('[WATERSHED EXPOSOME CDS ADVISORY]');
+      expect(sentMessageArg).toContain('Statin-Associated Muscle Symptoms');
+      expect(response).toBe('Response');
+    });
+  });
 });
+

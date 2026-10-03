@@ -845,6 +845,124 @@ export class ExportService {
     return obj;
   }
 
+  /**
+   * Transforms raw JSON biomarker code fences or arrays into structured clinical tables
+   * with inline SVG spectrum gauges. Prevents raw JSON code blocks from leaking into
+   * clinical care plan exports and print documents.
+   */
+  /**
+   * Transforms raw biomarker/biochemical JSON arrays (both markdown-fenced and raw unfenced arrays)
+   * into a structured, highly-legible clinical table with status chips and an optometric spectrum
+   * with inline SVG spectrum gauges. Prevents raw JSON code blocks from leaking into
+   * clinical care plan exports and print documents.
+   */
+  public transformBiomarkerJsonToClinicalView(content: string): string {
+    if (!content) return '';
+
+    const renderBiomarkerTable = (jsonStr: string): string | null => {
+      try {
+        let cleanStr = jsonStr.trim();
+        // Relax potential unclosed array or minor trailing comma issues
+        if (cleanStr.startsWith('[') && !cleanStr.endsWith(']')) {
+          const lastCurly = cleanStr.lastIndexOf('}');
+          if (lastCurly !== -1) {
+            cleanStr = cleanStr.substring(0, lastCurly + 1) + ']';
+          }
+        }
+        const parsed = JSON.parse(cleanStr);
+        if (!Array.isArray(parsed) || parsed.length === 0) return null;
+
+        const isBiomarkerArray = parsed.some(
+          item => item && typeof item === 'object' && item.name && (item.level || item.pathway)
+        );
+        if (!isBiomarkerArray) return null;
+
+        let rowsHtml = '';
+        parsed.forEach(item => {
+          if (!item || !item.name) return;
+          const name = String(item.name).trim();
+          const rawLevel = String(item.level || 'Normal').trim();
+          const pathway = String(item.pathway || 'Metabolic Pathway').trim();
+          const levelLower = rawLevel.toLowerCase();
+
+          let badgeClass = 'chip-optimal';
+          let gaugeDotPos = 62.5; // percentage along 0-100 scale
+          let dotColor = '#059669';
+
+          if (levelLower.includes('defic') || levelLower === 'low' || levelLower.includes('deplet')) {
+            badgeClass = 'chip-deficient';
+            gaugeDotPos = 12.5;
+            dotColor = '#DC2626';
+          } else if (levelLower.includes('sub-optimal') || levelLower.includes('low-normal') || levelLower.includes('borderline')) {
+            badgeClass = 'chip-low';
+            gaugeDotPos = 37.5;
+            dotColor = '#D97706';
+          } else if (levelLower.includes('high') || levelLower.includes('elevat') || levelLower.includes('excess')) {
+            badgeClass = 'chip-high';
+            gaugeDotPos = 87.5;
+            dotColor = '#7C3AED';
+          }
+
+          rowsHtml += `
+            <tr>
+              <td><strong>${name}</strong></td>
+              <td><span class="biomarker-chip ${badgeClass}">${rawLevel.toUpperCase()}</span></td>
+              <td>${pathway}</td>
+              <td style="vertical-align: middle;">
+                <svg width="100" height="14" viewBox="0 0 100 14" style="display:block;">
+                  <rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" />
+                  <rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" />
+                  <rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" />
+                  <rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" />
+                  <line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" />
+                  <circle cx="${gaugeDotPos}" cy="7" r="4.5" fill="${dotColor}" stroke="#FFFFFF" stroke-width="1.2" />
+                </svg>
+              </td>
+            </tr>`;
+        });
+
+        return `\n<div class="biomarker-matrix-export">
+  <div class="biomarker-chart-summary">
+    <div class="biomarker-chart-title">🔬 Biochemical &amp; Biomarker Telemetry</div>
+    <div class="biomarker-chart-subtitle">Orthomolecular Spectrum &amp; Physiological Pathways</div>
+  </div>
+  <table class="biomarker-table" style="width:100%; border-collapse:collapse; margin:0;">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Biomarker</th>
+        <th style="width: 20%;">Clinical Status</th>
+        <th style="width: 35%;">Targeted Pathway</th>
+        <th style="width: 20%;">Telemetry</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rowsHtml}
+    </tbody>
+  </table>
+</div>\n`;
+      } catch (e) {
+        console.debug('[ExportService] Could not parse biomarker JSON block, rendering raw:', (e as Error)?.message);
+        return null;
+      }
+    };
+
+    // 1. Matches markdown code blocks containing JSON arrays with biomarker objects
+    const fencedJsonRegex = /```(?:json)?\s*(\[\s*\{\s*["']name["'][\s\S]*?\}\s*\])\s*```/gi;
+    let result = content.replace(fencedJsonRegex, (_match, jsonStr) => {
+      const rendered = renderBiomarkerTable(jsonStr);
+      return rendered !== null ? rendered : _match;
+    });
+
+    // 2. Matches raw (unfenced) JSON arrays containing biomarker objects
+    const rawJsonRegex = /(?:^|\n)\s*(\[\s*\{\s*["']name["'][\s\S]*?\}\s*\])(?:\s*(?:\n|$))/gi;
+    result = result.replace(rawJsonRegex, (_match, jsonStr) => {
+      const rendered = renderBiomarkerTable(jsonStr);
+      return rendered !== null ? rendered : _match;
+    });
+
+    return result;
+  }
+
   private get markdownService(): MarkdownService | null {
     try {
       return inject(MarkdownService, { optional: true });
@@ -869,16 +987,17 @@ export class ExportService {
 
     const renderMd = (md: string): string => {
       if (!md) return '';
+      const transformedMd = this.transformBiomarkerJsonToClinicalView(md);
       try {
         if (typeof marked.parse === 'function') {
-          return marked.parse(md) as string;
+          return marked.parse(transformedMd) as string;
         } else if (typeof marked === 'function') {
-          return (marked as any)(md) as string;
+          return (marked as any)(transformedMd) as string;
         }
-        return `<p>${md}</p>`;
+        return `<p>${transformedMd}</p>`;
       } catch (e) {
         console.debug('[ExportService] Markdown parse fallback:', (e as Error)?.message);
-        return `<p>${md}</p>`;
+        return `<p>${transformedMd}</p>`;
       }
     };
 
@@ -887,32 +1006,12 @@ export class ExportService {
       hour: '2-digit', minute: '2-digit'
     });
 
-    const lensLabels: Record<string, string> = {
-      'Summary Overview': 'Summary Overview',
-      'Functional Protocols': 'Functional Protocols',
-      'Monitoring & Follow-up': 'Monitoring & Follow-up',
-      'Patient Education': 'Patient Education',
-    };
-
-    const lensIcons: Record<string, string> = {
-      'Summary Overview': ClinicalIcons.Assessment,
-      'Functional Protocols': ClinicalIcons.Medication,
-      'Monitoring & Follow-up': ClinicalIcons.FollowUp,
-      'Patient Education': ClinicalIcons.Education,
-    };
-
-    const lensColors: Record<string, string> = {
-      'Summary Overview': '#1C6AFF',
-      'Functional Protocols': '#059669',
-      'Monitoring & Follow-up': '#D97706',
-      'Patient Education': '#7C3AED',
-    };
-
     const isString = typeof data === 'string';
     const report = (!isString && data && typeof data.report === 'object') ? data.report : {};
     const summary = isString ? data : (data?.summary || '');
     const cognitiveLevel = (!isString && data?.cognitiveLevel) || 'standard';
     const language = (!isString && data?.language) || 'English';
+    const options = (!isString && data && (data as any).options) ? (data as any).options : { includeSideBySideComparison: true };
 
     const cognitiveBadgeHtml = (cognitiveLevel !== 'standard' || (language && language.toLowerCase() !== 'english')) ? `
             <div style="margin-bottom: 24px; padding: 12px 18px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px; font-family: monospace; font-size: 9pt; color: #c2410c; display: flex; align-items: center; justify-content: space-between;">
@@ -925,17 +1024,17 @@ export class ExportService {
               <span style="font-size: 8pt; background: rgba(234,88,12,0.15); padding: 2px 8px; border-radius: 4px; font-weight: 700;">HEALTH LITERACY EXPORT</span>
             </div>` : '';
 
-    const sectionsHtml = Object.entries(lensLabels).map(([key, label]) => {
-      const content = report[key] || '';
-      if (!content) return '';
-      const color = lensColors[key] || '#1C1C1C';
-      const icon = lensIcons[key] || '';
-      const renderedContent = renderMd(content);
+    const defaultColors = ['#1C6AFF', '#059669', '#D97706', '#7C3AED', '#DB2777', '#2563EB', '#0D9488'];
+    const sectionsHtml = Object.entries(report).map(([key, content], index) => {
+      if (!content || key === 'Summary Overview') return '';
+      const color = defaultColors[index % defaultColors.length];
+      const icon = ClinicalIcons.Assessment; // Fallback icon
+      const renderedContent = renderMd(content as string);
       return `
             <section class="lens-section" style="--accent: ${color}">
                 <div class="lens-header">
                     <span class="lens-icon" style="color: ${color}">${icon}</span>
-                    <h2 class="lens-title">${label}</h2>
+                    <h2 class="lens-title">${key}</h2>
                 </div>
                 <div class="lens-body rams-typography">
                     ${renderedContent}
@@ -943,7 +1042,7 @@ export class ExportService {
             </section>`;
     }).join('');
 
-    const sideBySideHtml = `
+    const sideBySideHtml = options.includeSideBySideComparison ? `
             <section class="lens-section" style="--accent: #059669">
                 <div class="lens-header">
                     <h2 class="lens-title">Multimodal Diagnostic Philosophy Side-by-Side Comparison</h2>
@@ -975,7 +1074,7 @@ export class ExportService {
                       </tbody>
                     </table>
                 </div>
-            </section>`;
+            </section>` : '';
 
     const summaryHtml = summary ? `
             <section class="lens-section summary-section" style="--accent: #1C1C1C">
@@ -1187,7 +1286,7 @@ export class ExportService {
       font-size: 7.5pt;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.04em;
       color: var(--ink-muted);
       margin: 24px 0 12px;
       padding-bottom: 0;
@@ -1247,6 +1346,49 @@ export class ExportService {
     }
     .rams-typography tr:nth-child(even) td { background: #FAFAFA; }
 
+    /* ─── Biomarker Matrix Export Styles ─────────────── */
+    .biomarker-matrix-export {
+      margin: 14px 0 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #FFFFFF;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    .biomarker-chart-summary {
+      padding: 10px 14px;
+      background: var(--surface-subtle);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .biomarker-chart-title {
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--brand-dark, #059669);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .biomarker-chart-subtitle {
+      font-size: 7pt;
+      color: var(--ink-muted);
+    }
+    .biomarker-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .chip-deficient { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .chip-low { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .chip-optimal { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .chip-high { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
     /* Blockquotes */
     .rams-typography blockquote {
       border-left: 3px solid var(--accent, var(--brand));
@@ -1288,11 +1430,22 @@ export class ExportService {
     /* ─── Print Overrides ───────────────────────────── */
     @media print {
       html { font-size: 9.5pt; }
-      body { background: white !important; }
+      body { 
+        background: white !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+      }
       .page-wrap { padding: 0; max-width: 100%; }
       .lens-section { page-break-inside: avoid; break-inside: avoid; margin-bottom: 20px; }
       h1, h2, h3, h4, h5 { page-break-after: avoid; break-after: avoid; }
       p, li, tr { page-break-inside: avoid; break-inside: avoid; }
+      .rams-typography h3, .rams-typography h4, .brand-tagline {
+        letter-spacing: 0.02em !important;
+      }
+      .biomarker-matrix-export, .biomarker-chip {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
       @page {
         size: letter portrait;
         margin: 0.75in 0.75in 1in 0.75in;
@@ -1348,10 +1501,10 @@ export class ExportService {
     <div class="print-bar-actions">
       <button class="btn-close" id="docBtnClose">Close</button>
       <button class="btn-print" id="docBtnPrint">Save as PDF / Print</button>
-      <script>
+      ${'<script>'}
         document.getElementById('docBtnClose')?.addEventListener('click', function() { window.close(); });
         document.getElementById('docBtnPrint')?.addEventListener('click', function() { window.print(); });
-      </script>
+      ${'</script>'}
     </div>
   </div>
 
@@ -1473,18 +1626,19 @@ export class ExportService {
 
     const renderMd = (md: string): string => {
       if (!md) return '';
+      const transformedMd = this.transformBiomarkerJsonToClinicalView(md);
       try {
         if (parser && typeof (parser as any).parse === 'function') {
-          return (parser as any).parse(md) as string;
+          return (parser as any).parse(transformedMd) as string;
         } else if (typeof marked.parse === 'function') {
-          return marked.parse(md) as string;
+          return marked.parse(transformedMd) as string;
         } else if (typeof marked === 'function') {
-          return (marked as any)(md) as string;
+          return (marked as any)(transformedMd) as string;
         }
-        return `<p>${md.replace(/\n/g, '<br/>')}</p>`;
+        return `<p>${transformedMd.replace(/\n/g, '<br/>')}</p>`;
       } catch (e) {
         console.debug('[ExportService] Markdown parse fallback:', (e as Error)?.message);
-        return `<p>${md.replace(/\n/g, '<br/>')}</p>`;
+        return `<p>${transformedMd.replace(/\n/g, '<br/>')}</p>`;
       }
     };
 
@@ -1602,6 +1756,7 @@ export class ExportService {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://font.pocketgull.app/fonts.css" media="all">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1617,7 +1772,7 @@ export class ExportService {
       --border: #E5E7EB;
       --border-accent: #A7F3D0;
       --radius: 8px;
-      --font: 'Inter', system-ui, -apple-system, sans-serif;
+      --font: 'PocketGull', 'Inter', system-ui, -apple-system, sans-serif;
     }
 
     /* Provide missing tailwind dimensions for inline icons */
@@ -1835,6 +1990,7 @@ export class ExportService {
     .care-plan-title {
       font-size: 10pt;
       font-weight: 700;
+      font-family: 'PocketGull Halftone', 'PocketGull', sans-serif;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--brand-dark);
@@ -1847,6 +2003,7 @@ export class ExportService {
     .care-plan-body h1, .care-plan-body h2 {
       font-size: 10pt;
       font-weight: 700;
+      font-family: 'PocketGull Halftone', 'PocketGull', sans-serif;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--ink);
@@ -1859,7 +2016,7 @@ export class ExportService {
       font-size: 7.5pt;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.04em;
       color: var(--ink-muted);
       margin: 18px 0 8px;
     }
@@ -1918,6 +2075,49 @@ export class ExportService {
       border-radius: 0;
     }
     .care-plan-body blockquote p { margin: 0; font-size: 9pt; color: #374151; }
+
+    /* ─── Biomarker Matrix Export Styles ─────────────── */
+    .biomarker-matrix-export {
+      margin: 14px 0 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    .biomarker-chart-summary {
+      padding: 10px 14px;
+      background: var(--surface-accent);
+      border-bottom: 1px solid var(--border-accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .biomarker-chart-title {
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--brand-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .biomarker-chart-subtitle {
+      font-size: 7pt;
+      color: var(--ink-muted);
+    }
+    .biomarker-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .chip-deficient { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .chip-low { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .chip-optimal { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .chip-high { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
 
     /* ─── Translation Matrix Layout ──────────────────── */
     .matrix-container {
@@ -2016,9 +2216,13 @@ export class ExportService {
       p, li, tr { page-break-inside: avoid; break-inside: avoid; }
       
       /* Preserve background colors and borders in PDF and paper output */
-      .vital-chip, .condition-tag, .care-plan-section, .care-plan-header, .matrix-analysis, blockquote {
+      .vital-chip, .condition-tag, .care-plan-section, .care-plan-header, .matrix-analysis, blockquote, .biomarker-matrix-export, .biomarker-chip {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+      }
+
+      .care-plan-body h3, .care-plan-body h4, .brand-tagline {
+        letter-spacing: 0.02em !important;
       }
 
       @page {
@@ -2082,16 +2286,16 @@ export class ExportService {
     }
   </style>
 </head>
-<body class="${isDyslexia ? 'dyslexia-mode' : ''}">
+<body class="eco-spore-traps ${isDyslexia ? 'dyslexia-mode eco-slow-reading' : ''}">
   <div class="print-bar">
     <span class="print-bar-title">Pocket Gull Care Plan — ${patientName}</span>
     <div class="print-bar-actions">
       <button class="btn-close" id="carePlanBtnClose">Close</button>
       <button class="btn-print" id="carePlanBtnPrint">Save as PDF / Print</button>
-      <script>
+      ${'<script>'}
         document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
         document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
-      </script>
+      ${'</script>'}
     </div>
   </div>
 
@@ -2168,13 +2372,13 @@ export class ExportService {
 
     </div>
   </div>
-  <script>
+  ${'<script>'}
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         window.print();
       }, 400);
     });
-  </script>
+  ${'</script>'}
 </body>
 </html>`;
 

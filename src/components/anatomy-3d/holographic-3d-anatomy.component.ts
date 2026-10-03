@@ -1,4 +1,4 @@
-import { Component, ElementRef, viewChild, AfterViewInit, OnDestroy, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ElementRef, viewChild, AfterViewInit, OnDestroy, effect, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -57,6 +57,28 @@ export type SpatialLensType = 'western' | 'tcm' | 'ayurveda' | 'unified';
           </button>
         </div>
 
+        <!-- ANS Vagal Tone 0.1Hz Pulse Toggle -->
+        <button (click)="toggleAnsVagal()" 
+          data-testid="btn-ans-vagal"
+          [class.bg-teal-500]="isAnsVagalActive()"
+          [class.text-zinc-950]="isAnsVagalActive()"
+          [class.text-teal-300]="!isAnsVagalActive()"
+          class="px-2 py-1 rounded-xl font-bold transition flex items-center gap-1 hover:bg-zinc-800 cursor-pointer text-[10px]">
+          <span>⚡</span>
+          <span>{{ isAnsVagalActive() ? '0.1Hz ON' : 'ANS Vagal' }}</span>
+        </button>
+
+        <!-- 32-Tooth Odontogram Toggle -->
+        <button (click)="toggleDentalArch()" 
+          data-testid="btn-dental-arch"
+          [class.bg-emerald-500]="isDentalArchActive()"
+          [class.text-zinc-950]="isDentalArchActive()"
+          [class.text-emerald-300]="!isDentalArchActive()"
+          class="px-2 py-1 rounded-xl font-bold transition flex items-center gap-1 hover:bg-zinc-800 cursor-pointer text-[10px]">
+          <span>🦷</span>
+          <span>{{ isDentalArchActive() ? 'Dental 32' : 'Odontogram' }}</span>
+        </button>
+
         <!-- 360° Auto-Spin Toggle -->
         <button (click)="toggleAutoSpin()" 
           data-testid="btn-360-spin"
@@ -73,6 +95,18 @@ export type SpatialLensType = 'western' | 'tcm' | 'ayurveda' | 'unified';
           🎯 Reset
         </button>
       </div>
+
+      <!-- ANS Vagal Tone Pacing & HRV Telemetry Banner -->
+      @if (isAnsVagalActive()) {
+        <div class="absolute top-16 left-3 z-30 p-2 px-3 rounded-xl bg-zinc-950/85 border border-teal-500/40 backdrop-blur-md font-mono text-[11px] text-teal-300 flex items-center gap-2 shadow-lg">
+          <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+          <span>ANS Vagal Resonance: <strong class="text-teal-200">0.10 Hz (10s cycle)</strong></span>
+          <span class="text-zinc-500">|</span>
+          <span>HRV: <strong class="text-white">{{ currentHrv() }} ms</strong></span>
+          <span class="text-zinc-500">|</span>
+          <span class="text-emerald-400 font-semibold">Parasympathetic Baroreflex</span>
+        </div>
+      }
 
       <!-- Telemetry Holographic Lens Badge -->
       <div data-testid="telemetry-lens-badge" class="absolute bottom-3 left-3 z-30 p-2.5 px-4 rounded-xl bg-zinc-950/80 border border-zinc-800 backdrop-blur-md font-mono text-xs">
@@ -132,6 +166,53 @@ export type SpatialLensType = 'western' | 'tcm' | 'ayurveda' | 'unified';
         </div>
       }
 
+      <!-- Teledentistry SIBI Cross-Talk Dossier Card -->
+      @if (selectedTooth(); as tooth) {
+        <div class="absolute bottom-16 right-3 sm:max-w-sm z-40 p-4 rounded-2xl bg-zinc-950/95 border border-emerald-500/50 backdrop-blur-xl shadow-2xl text-xs space-y-2.5 font-sans animate-in fade-in duration-200">
+          <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🦷</span>
+              <span class="font-bold text-emerald-400 uppercase tracking-wider font-mono text-[11px]">
+                FDI #{{ tooth.fdiCode }} {{ tooth.name }}
+              </span>
+            </div>
+            <button (click)="selectedTooth.set(null)" class="text-zinc-400 hover:text-white px-2 py-0.5 rounded font-mono hover:bg-zinc-800 transition">✕</button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-[10px] font-mono">
+            <div class="p-2 rounded-xl bg-zinc-900 border border-zinc-800">
+              <span class="text-zinc-500 block">Probing Depth</span>
+              <span class="text-sm font-bold" [class.text-rose-400]="tooth.ppd >= 4" [class.text-emerald-400]="tooth.ppd < 4">
+                {{ tooth.ppd }} mm
+              </span>
+            </div>
+            <div class="p-2 rounded-xl bg-zinc-900 border border-zinc-800">
+              <span class="text-zinc-500 block">Bleeding on Probing</span>
+              <span class="text-sm font-bold" [class.text-rose-400]="tooth.bop" [class.text-emerald-400]="!tooth.bop">
+                {{ tooth.bop ? 'POS (+)' : 'NEG (-)' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- SIBI Trajectory Cross-Talk -->
+          <div class="p-2.5 rounded-xl bg-teal-950/40 border border-teal-500/30 space-y-1">
+            <div class="flex justify-between items-center text-[10px] font-mono">
+              <span class="text-teal-300 font-bold uppercase">SIBI Index:</span>
+              <span class="text-teal-200 font-extrabold">{{ tooth.sibiScore }}/100</span>
+            </div>
+            <div class="text-[10px] text-zinc-300">
+              🫀 CV Risk Multiplier: <strong class="text-amber-300">{{ tooth.cvRiskMultiplier }}x</strong>
+            </div>
+            <div class="text-[10px] text-zinc-300">
+              🩸 HbA1c Trajectory: <strong class="text-rose-300">+{{ tooth.hba1cIncrease }}%</strong>
+            </div>
+            <div class="text-[9px] text-zinc-400 italic pt-1 border-t border-teal-500/20">
+              P. gingivalis trans-epithelial bacteremia cross-talk
+            </div>
+          </div>
+        </div>
+      }
+
       <!-- WebGL Test Environment Fallback Banner -->
       @if (isWebGLFallback()) {
         <div class="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center bg-zinc-950/90 backdrop-blur-md text-zinc-300">
@@ -159,15 +240,38 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
   private skeletalGroup = new THREE.Group();
   private tcmMeridianGroup = new THREE.Group();
   private ayurvedicChakraGroup = new THREE.Group();
+  private ansVagalGroup = new THREE.Group();
+  private dentalArchGroup = new THREE.Group();
   private symptomAnchorGroup = new THREE.Group();
   private targetCameraPos: THREE.Vector3 | null = null;
+  private vagusMaterial?: THREE.MeshPhysicalMaterial;
+  private spinalGateNodes: THREE.Mesh[] = [];
+  private pathologicalTeeth: THREE.Mesh[] = [];
 
   readonly isAutoSpinning = signal<boolean>(false);
   readonly isWebGLFallback = signal<boolean>(false);
   readonly activeLens = signal<SpatialLensType>('western');
+  readonly isAnsVagalActive = signal<boolean>(true);
+  readonly isDentalArchActive = signal<boolean>(true);
   readonly selectedAnatomicalNode = signal<{ id: string; name: string; position: string } | null>(null);
   readonly hoveredNode = signal<{ name: string; snomedCode: string; tcmClock: string; pranaFreq: string } | null>(null);
   readonly hoverPos = signal<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  readonly currentHrv = computed(() => {
+    const v = this.state.vitals()?.hrv;
+    return v ? parseInt(v, 10) || 65 : 65;
+  });
+
+  readonly selectedTooth = signal<{
+    fdiCode: number;
+    name: string;
+    ppd: number;
+    bop: boolean;
+    wearGrade: number;
+    sibiScore: number;
+    cvRiskMultiplier: string;
+    hba1cIncrease: string;
+  } | null>(null);
 
   private handlePointerDown(event: PointerEvent) {
     const el = this.rendererContainer()?.nativeElement;
@@ -179,13 +283,31 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const intersects = this.raycaster.intersectObjects(
-      [this.skeletalGroup, this.tcmMeridianGroup, this.ayurvedicChakraGroup],
+      [this.skeletalGroup, this.tcmMeridianGroup, this.ayurvedicChakraGroup, this.dentalArchGroup, this.ansVagalGroup],
       true
     );
 
     if (intersects.length > 0) {
       const hit = intersects[0];
       const point = hit.point;
+
+      // Check if user clicked on a 3D tooth in the dental arch
+      if (hit.object.userData?.isTooth) {
+        const u = hit.object.userData;
+        this.selectedTooth.set({
+          fdiCode: u.fdiCode,
+          name: u.name,
+          ppd: u.ppd,
+          bop: u.bop,
+          wearGrade: u.wearGrade,
+          sibiScore: u.sibiScore,
+          cvRiskMultiplier: u.cvRiskMultiplier,
+          hba1cIncrease: u.hba1cIncrease
+        });
+        // Smoothly focus camera onto oral cavity / jaw region
+        this.targetCameraPos = new THREE.Vector3(0, 1.80, 0.85);
+        return;
+      }
 
       // Add a glowing crimson 3D symptom anchor particle at intersection
       const anchorMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
@@ -273,10 +395,14 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
       this.buildProceduralSkeletalMesh();
       this.buildTCMMeridians();
       this.buildAyurvedicChakras();
+      this.buildAnsVagalToneNetwork();
+      this.buildTeledentistry32Arch();
 
       this.scene.add(this.skeletalGroup);
       this.scene.add(this.tcmMeridianGroup);
       this.scene.add(this.ayurvedicChakraGroup);
+      this.scene.add(this.ansVagalGroup);
+      this.scene.add(this.dentalArchGroup);
       this.scene.add(this.symptomAnchorGroup);
 
       el.addEventListener('pointerdown', (evt) => this.handlePointerDown(evt));
@@ -379,6 +505,7 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
       const gateNode = new THREE.Mesh(new THREE.SphereGeometry(0.02, 8, 8), gateMat);
       gateNode.position.set(0, y, 0.01);
       this.skeletalGroup.add(gateNode);
+      this.spinalGateNodes.push(gateNode);
     }
 
     // ==========================================
@@ -535,13 +662,25 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const intersects = this.raycaster.intersectObjects(
-      [this.skeletalGroup, this.tcmMeridianGroup, this.ayurvedicChakraGroup],
+      [this.skeletalGroup, this.tcmMeridianGroup, this.ayurvedicChakraGroup, this.dentalArchGroup, this.ansVagalGroup],
       true
     );
 
     if (intersects.length > 0) {
-      const point = intersects[0].point;
+      const hit = intersects[0];
+      const point = hit.point;
       this.hoverPos.set({ x: event.clientX, y: event.clientY });
+
+      if (hit.object.userData?.isTooth) {
+        const u = hit.object.userData;
+        this.hoveredNode.set({
+          name: `FDI #${u.fdiCode} ${u.name}`,
+          snomedCode: `PPD: ${u.ppd}mm | BOP: ${u.bop ? 'POS (+)' : 'NEG (-)'}`,
+          tcmClock: `SIBI Score: ${u.sibiScore}/100`,
+          pranaFreq: `CV Risk: ${u.cvRiskMultiplier}x | HbA1c: +${u.hba1cIncrease}%`
+        });
+        return;
+      }
 
       let name = 'Lumbar Vertebrae & Gate Control';
       let snomedCode = 'SNOMED 249688008';
@@ -614,11 +753,221 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
     });
   }
 
+  private buildAnsVagalToneNetwork() {
+    this.vagusMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x06b6d4,
+      emissive: 0x0891b2,
+      emissiveIntensity: 0.8,
+      roughness: 0.2,
+      metalness: 0.1,
+      clearcoat: 1.0,
+      transparent: true,
+      opacity: 0.85
+    });
+
+    // Bilateral Catmull-Rom Splines for Left & Right Vagus Nerve (Cranial Nerve X)
+    // Left Vagus Nerve (Cervical -> Cardiac Plexus -> Celiac Ganglion)
+    const leftVagusPoints = [
+      new THREE.Vector3(-0.05, 1.68, 0.04), // Jugular Foramen / Nodose Ganglion
+      new THREE.Vector3(-0.065, 1.50, 0.06), // Carotid Sheath / Cervical Vagus
+      new THREE.Vector3(-0.08, 1.30, 0.09), // Superior Thoracic Inflow
+      new THREE.Vector3(-0.09, 1.15, 0.12), // Cardiac Plexus & Sinoatrial Node Innervation
+      new THREE.Vector3(-0.07, 0.95, 0.10), // Pulmonary Plexus
+      new THREE.Vector3(-0.05, 0.78, 0.08), // Esophageal Hiatus / Gastric Branch
+      new THREE.Vector3(-0.035, 0.58, 0.05) // Celiac Plexus / Enteric Autonomic Inflow
+    ];
+    const leftVagusCurve = new THREE.CatmullRomCurve3(leftVagusPoints);
+    const leftVagusTube = new THREE.Mesh(
+      new THREE.TubeGeometry(leftVagusCurve, 48, 0.009, 8, false),
+      this.vagusMaterial
+    );
+    this.ansVagalGroup.add(leftVagusTube);
+
+    // Right Vagus Nerve (Cervical -> AV Node / Recurrent Branch -> Enteric Visceral Nexus)
+    const rightVagusPoints = [
+      new THREE.Vector3(0.05, 1.68, 0.04),
+      new THREE.Vector3(0.065, 1.50, 0.06),
+      new THREE.Vector3(0.08, 1.30, 0.09),
+      new THREE.Vector3(0.09, 1.15, 0.12),
+      new THREE.Vector3(0.07, 0.95, 0.10),
+      new THREE.Vector3(0.05, 0.78, 0.08),
+      new THREE.Vector3(0.035, 0.58, 0.05)
+    ];
+    const rightVagusCurve = new THREE.CatmullRomCurve3(rightVagusPoints);
+    const rightVagusTube = new THREE.Mesh(
+      new THREE.TubeGeometry(rightVagusCurve, 48, 0.009, 8, false),
+      this.vagusMaterial
+    );
+    this.ansVagalGroup.add(rightVagusTube);
+
+    // Vagal Ganglia Nodes (Nodose, Cardiac Plexus, Celiac)
+    const ganglionMat = new THREE.MeshPhysicalMaterial({
+      color: 0x38bdf8,
+      emissive: 0x0284c7,
+      emissiveIntensity: 1.1,
+      roughness: 0.1
+    });
+
+    const gangliaCoords = [
+      { x: -0.05, y: 1.68, z: 0.04 }, // L Nodose
+      { x: 0.05, y: 1.68, z: 0.04 },  // R Nodose
+      { x: -0.09, y: 1.15, z: 0.12 }, // L Cardiac
+      { x: 0.09, y: 1.15, z: 0.12 },  // R Cardiac
+      { x: 0.0, y: 0.75, z: 0.08 }    // Celiac / Enteric
+    ];
+
+    for (const g of gangliaCoords) {
+      const gMesh = new THREE.Mesh(new THREE.SphereGeometry(0.022, 10, 10), ganglionMat);
+      gMesh.position.set(g.x, g.y, g.z);
+      this.ansVagalGroup.add(gMesh);
+    }
+  }
+
+  private getToothName(fdi: number): string {
+    const toothNum = fdi % 10;
+    switch (toothNum) {
+      case 1: return 'Central Incisor';
+      case 2: return 'Lateral Incisor';
+      case 3: return 'Canine (Cuspid)';
+      case 4: return 'First Premolar (Bicuspid)';
+      case 5: return 'Second Premolar (Bicuspid)';
+      case 6: return 'First Molar';
+      case 7: return 'Second Molar';
+      case 8: return 'Third Molar (Wisdom Tooth)';
+      default: return 'Tooth';
+    }
+  }
+
+  private buildTeledentistry32Arch() {
+    const enamelMat = new THREE.MeshPhysicalMaterial({
+      color: 0xf8fafc,
+      emissive: 0x0284c7,
+      emissiveIntensity: 0.15,
+      roughness: 0.2,
+      metalness: 0.05,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1
+    });
+
+    const cariousRoseMat = new THREE.MeshPhysicalMaterial({
+      color: 0xf43f5e,
+      emissive: 0xe11d48,
+      emissiveIntensity: 1.0,
+      roughness: 0.3,
+      metalness: 0.1,
+      clearcoat: 0.8
+    });
+
+    const cariousAmberMat = new THREE.MeshPhysicalMaterial({
+      color: 0xf59e0b,
+      emissive: 0xd97706,
+      emissiveIntensity: 0.9,
+      roughness: 0.3,
+      metalness: 0.1,
+      clearcoat: 0.8
+    });
+
+    // FDI Upper Arch: 18..11, 21..28 (16 teeth)
+    const upperFdi = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
+    // FDI Lower Arch: 48..41, 31..38 (16 teeth)
+    const lowerFdi = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
+
+    const generateArch = (codes: number[], baseY: number, isUpper: boolean) => {
+      const count = codes.length;
+      for (let i = 0; i < count; i++) {
+        const code = codes[i];
+        const toothName = this.getToothName(code);
+        // Angle spanning across the 16 teeth
+        const normalized = (i - (count - 1) / 2) / ((count - 1) / 2); // -1 to +1
+        const angle = normalized * Math.PI * 0.42;
+
+        const radiusX = 0.065;
+        const radiusZ = 0.055;
+        const x = radiusX * Math.sin(angle);
+        const z = 0.14 + radiusZ * Math.cos(angle);
+        const y = baseY;
+
+        const isMolar = (code % 10) >= 6;
+        const isPremolar = (code % 10) === 4 || (code % 10) === 5;
+        const width = isMolar ? 0.016 : (isPremolar ? 0.013 : 0.010);
+        const height = 0.018;
+        const depth = isMolar ? 0.016 : 0.010;
+
+        let mat = enamelMat.clone();
+        let ppd = 2.0;
+        let bop = false;
+        let wearGrade = 1;
+        let sibiScore = 12;
+        let cvRiskMultiplier = '1.0';
+        let hba1cIncrease = '0.0';
+
+        // Pathological teeth setup:
+        // FDI 36 (US #19, Lower Left 1st Molar) - Severe localized periodontitis
+        if (code === 36) {
+          mat = cariousRoseMat.clone();
+          ppd = 6.0;
+          bop = true;
+          wearGrade = 3;
+          sibiScore = 48;
+          cvRiskMultiplier = '2.3';
+          hba1cIncrease = '0.6';
+        } else if (code === 16) {
+          // FDI 16 (US #3, Upper Right 1st Molar) - Moderate periodontitis
+          mat = cariousAmberMat.clone();
+          ppd = 4.5;
+          bop = true;
+          wearGrade = 2;
+          sibiScore = 32;
+          cvRiskMultiplier = '1.6';
+          hba1cIncrease = '0.3';
+        }
+
+        const toothGeo = new THREE.BoxGeometry(width, height, depth);
+        const toothMesh = new THREE.Mesh(toothGeo, mat);
+        toothMesh.position.set(x, y, z);
+        toothMesh.rotation.y = -angle * 0.5;
+
+        toothMesh.userData = {
+          isTooth: true,
+          fdiCode: code,
+          name: toothName,
+          ppd,
+          bop,
+          wearGrade,
+          sibiScore,
+          cvRiskMultiplier,
+          hba1cIncrease
+        };
+
+        if (code === 36 || code === 16) {
+          this.pathologicalTeeth.push(toothMesh);
+        }
+
+        this.dentalArchGroup.add(toothMesh);
+      }
+    };
+
+    generateArch(upperFdi, 1.71, true);
+    generateArch(lowerFdi, 1.66, false);
+  }
+
   private updateLensVisibility() {
     const lens = this.activeLens();
     this.skeletalGroup.visible = lens === 'western' || lens === 'unified';
     this.tcmMeridianGroup.visible = lens === 'tcm' || lens === 'unified';
     this.ayurvedicChakraGroup.visible = lens === 'ayurveda' || lens === 'unified';
+    this.ansVagalGroup.visible = this.isAnsVagalActive() && (lens === 'western' || lens === 'unified');
+    this.dentalArchGroup.visible = this.isDentalArchActive() && (lens === 'western' || lens === 'unified');
+  }
+
+  toggleAnsVagal() {
+    this.isAnsVagalActive.set(!this.isAnsVagalActive());
+    this.updateLensVisibility();
+  }
+
+  toggleDentalArch() {
+    this.isDentalArchActive.set(!this.isDentalArchActive());
+    this.updateLensVisibility();
   }
 
   toggleAutoSpin() {
@@ -706,6 +1055,31 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
       }
     }
 
+    // 0.1 Hz Autonomic Nervous System (ANS) Vagal Tone Pulse & Parasympathetic Entrainment
+    const tNow = performance.now() * 0.001;
+    if (this.isAnsVagalActive()) {
+      const vagalPulse = 0.5 + 0.5 * Math.sin(2 * Math.PI * 0.1 * tNow);
+      const hrvFactor = Math.min(Math.max(this.currentHrv() / 60, 0.5), 2.0);
+      if (this.vagusMaterial) {
+        this.vagusMaterial.emissiveIntensity = (0.35 + 0.65 * vagalPulse) * hrvFactor;
+      }
+
+      // Propagate descending inhibitory wave through dorsal horn spinal gates
+      for (let i = 0; i < this.spinalGateNodes.length; i++) {
+        const gate = this.spinalGateNodes[i];
+        const phase = 2 * Math.PI * 0.1 * tNow - (this.spinalGateNodes.length - 1 - i) * 0.22;
+        const gatePulse = 0.5 + 0.5 * Math.sin(phase);
+        gate.scale.setScalar(0.85 + 0.35 * gatePulse);
+      }
+    }
+
+    // Pathological tooth inflammatory pulsation (SIBI vascular cross-talk activity)
+    for (const pTooth of this.pathologicalTeeth) {
+      if (pTooth.material instanceof THREE.MeshPhysicalMaterial) {
+        pTooth.material.emissiveIntensity = 0.6 + 0.5 * Math.sin(tNow * 3.5);
+      }
+    }
+
     if (this.renderer && this.scene && this.camera) {
       this.renderer.render(this.scene, this.camera);
     }
@@ -715,5 +1089,28 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
     if (this.animationId) cancelAnimationFrame(this.animationId);
     if (this.renderer) this.renderer.dispose();
     if (this.controls) this.controls.dispose();
+
+    const disposeGroup = (group: THREE.Group) => {
+      group.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) {
+          obj.geometry.dispose();
+          if (Array.isArray(obj.material)) {
+            obj.material.forEach((m) => m.dispose());
+          } else if (obj.material) {
+            obj.material.dispose();
+          }
+        }
+      });
+    };
+
+    disposeGroup(this.skeletalGroup);
+    disposeGroup(this.tcmMeridianGroup);
+    disposeGroup(this.ayurvedicChakraGroup);
+    disposeGroup(this.ansVagalGroup);
+    disposeGroup(this.dentalArchGroup);
+    disposeGroup(this.symptomAnchorGroup);
+
+    this.spinalGateNodes = [];
+    this.pathologicalTeeth = [];
   }
 }

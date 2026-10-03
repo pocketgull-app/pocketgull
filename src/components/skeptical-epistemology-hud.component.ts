@@ -671,7 +671,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
               <h4 class="text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-2">
                 Clinical Logical Fallacy &amp; Cognitive Bias Auditor
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                  12 Canonical Fallacies Encoded
+                  {{ allFallacies().length }} Canonical Fallacies Encoded
                 </span>
               </h4>
               <p class="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -686,7 +686,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
               (click)="toggleFallacyCatalog()"
               class="px-2.5 py-1 text-xs font-mono font-medium rounded-lg border border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-300 bg-purple-50/50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/60 transition cursor-pointer"
             >
-              {{ isFallacyCatalogOpen() ? 'Hide Catalog' : '📚 Browse 12 Fallacies Catalog' }}
+              {{ isFallacyCatalogOpen() ? 'Hide Catalog' : '📚 Browse ' + allFallacies().length + ' Fallacies Catalog' }}
             </button>
             <button
               type="button"
@@ -1076,6 +1076,14 @@ export class SkepticalEpistemologyHudComponent {
     {
       label: 'AI Automation Deference (Automation Bias)',
       text: 'The AI algorithm predicted an 88% sepsis probability, so we must start broad-spectrum intravenous carbapenems immediately without clinical exam.'
+    },
+    {
+      label: 'DCA Decision Threshold (Over-Testing)',
+      text: 'The patient has mild knee aching with Kellgren-Lawrence Grade 1 radiograph, so we must order a routine 3.0T MRI and operate immediately to clean up the joint.'
+    },
+    {
+      label: 'Iatrogenic Panic (Manageability)',
+      text: 'Your municipal drinking water has toxic forever chemicals that will poison breast milk, so you are doomed to develop cancer unless you cease breastfeeding immediately.'
     },
     {
       label: 'Sound RCT Claim (Zero Fallacies)',

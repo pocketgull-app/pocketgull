@@ -126,6 +126,7 @@ jobs:
           PYTHONPATH: pocketgull_api:.
         run: |
           python3 pocketgull_api/train_clinical_risk_models.py || true
+          python3 pocketgull_api/train_seven_generations_model.py || true
           python3 pocketgull_api/run_tests.py
 
   test-e2e:

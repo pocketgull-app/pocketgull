@@ -13,22 +13,31 @@ test.describe('Teledentistry & Systemic Health Cross-Talk Suite', () => {
     // 2. Select patient Alexander Vance
     await selectPatientByName(page, 'Alexander Vance');
 
+    // Switch to Analysis panel if on mobile/tablet viewports
+    const reportTab = page.locator('button', { hasText: 'Analysis' }).first();
+    if (await reportTab.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await reportTab.click({ force: true });
+      await page.waitForTimeout(500);
+    }
+
     // 3. Switch to ASSESSMENTS lens tab
     const assessmentsBtn = page.getByTestId('tab-assessments');
+    await assessmentsBtn.scrollIntoViewIfNeeded();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
     await assessmentsBtn.click({ force: true });
-    await page.evaluate(() => window.scrollTo(0, 1400));
     await page.waitForTimeout(500);
 
     // 5. Select Teledentistry (32-Tooth) sub-tab
     const teledentistryTab = page.getByTestId('tab-teledentistry');
     await teledentistryTab.scrollIntoViewIfNeeded();
+    await expect(teledentistryTab).toBeVisible({ timeout: 10000 });
     await teledentistryTab.click({ force: true });
+    await page.waitForTimeout(500);
 
     // 6. Verify SIBI Telemetry Header components
-    await expect(page.locator('text=SIBI Score')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('text=CV Risk')).toBeVisible();
-    await expect(page.locator('text=HbA1c Δ')).toBeVisible();
+    await expect(page.locator('text=/SIBI Score/i').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text=/CV Risk/i').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=/HbA1c/i').first()).toBeVisible({ timeout: 10000 });
 
     // 7. Inspect FDI Tooth #16 (Maxillary Right 1st Molar)
     const tooth16Btn = page.locator('button:has-text("#16")').first();

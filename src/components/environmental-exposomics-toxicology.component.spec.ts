@@ -74,4 +74,17 @@ describe('EnvironmentalExposomicsToxicologyComponent', () => {
     expect(pfas.hepaticPhase2Protocols.length).toBeGreaterThan(0);
     expect(pfas.solubleBinderOrders.length).toBeGreaterThan(0);
   });
+
+  it('4. Computes NSF OKN environmental causal chain (USGS + EPA + NIH) with SHA-256 seal', () => {
+    const comp = createComponent();
+    const okn = comp.oknEnvironmentalChain();
+    expect(okn).toBeTruthy();
+    expect(okn.participatingAgencies).toContain('USGS');
+    expect(okn.participatingAgencies).toContain('EPA');
+    expect(okn.participatingAgencies).toContain('NIH');
+    expect(okn.pathDescription).toContain('Alluvial Groundwater Aquifer (USGS)');
+    expect(okn.pathDescription).toContain('Perfluorooctanoic Acid');
+    expect(okn.pathDescription).toContain('PPAR-Alpha Receptor');
+    expect(okn.auditTrailHash).toContain('sha256:');
+  });
 });

@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: pocketgull-agones
     app.kubernetes.io/part-of: discord-embedded-activity
 spec:
-  replicas: 3 # keep 3 warm pods ready
+  replicas: 0 # baseline 0; dynamic scaling driven by FleetAutoscaler buffer
   scheduling: Packed # group pods tightly on nodes
   template:
     metadata:
@@ -18,9 +18,11 @@ spec:
       ports:
       - name: websocket-port
         containerPort: 4200
+        protocol: TCP
         portPolicy: Dynamic # let Agones allocate a random node port for WebSocket media streams
       - name: discord-voice-port
         containerPort: 4201
+        protocol: UDP
         portPolicy: Dynamic # WebRTC media stream port for Discord voice entrainment
       health:
         initialDelaySeconds: 5

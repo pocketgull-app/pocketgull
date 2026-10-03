@@ -175,6 +175,11 @@ class SfntTransformer {
       tableDataMap['gasp'] = gaspBytes;
     }
 
+    // 6b. Augment GSUB with missing ISMP safety features (cv11, tnum)
+    if (tableDataMap.containsKey('GSUB')) {
+      tableDataMap['GSUB'] = _augmentGsubFeatures(tableDataMap['GSUB']!);
+    }
+
     // 7. Sort table tags alphabetically per TrueType specification
     final sortedTags = tableDataMap.keys.toList()..sort();
     final outNumTables = sortedTags.length;
@@ -275,4 +280,152 @@ class SfntTransformer {
     }
     return sum;
   }
+
+  /// Augments an existing GSUB table by injecting missing ISMP-critical
+  /// feature tags (`cv11`, `tnum`) into the FeatureList.
+  ///
+  /// Strategy: Parse the existing feature list. For each required tag that's
+  /// absent, append a new FeatureRecord pointing to an empty Feature table
+  /// (lookupCount=0). This registers the tag for CSS `font-feature-settings`
+  /// negotiation even before actual lookups are wired.
+  static Uint8List _augmentGsubFeatures(Uint8List gsubBytes) {
+    if (gsubBytes.length < 10) return gsubBytes;
+    final data = ByteData.sublistView(gsubBytes);
+
+    // Parse existing feature list
+    final featureListOffset = data.getUint16(6, Endian.big);
+    if (featureListOffset + 2 > gsubBytes.length) return gsubBytes;
+    final featureCount = data.getUint16(featureListOffset, Endian.big);
+
+    // Collect existing feature tags
+    final existingTags = <String>{};
+    for (var i = 0; i < featureCount; i++) {
+      final recordOff = featureListOffset + 2 + i * 6;
+      if (recordOff + 4 > gsubBytes.length) break;
+      final tag = String.fromCharCodes(gsubBytes.sublist(recordOff, recordOff + 4));
+      existingTags.add(tag);
+    }
+
+    // Determine which ISMP-critical features are missing
+    final requiredTags = ['cv11', 'tnum'];
+    final missingTags = requiredTags.where((t) => !existingTags.contains(t)).toList();
+    if (missingTags.isEmpty) return gsubBytes; // Nothing to do
+
+    // Rebuild: append empty Feature tables and FeatureRecords for missing tags.
+    // Each empty Feature table = 4 bytes: featureParamsOffset(2) + lookupCount(2) = 0x0000 0x0000
+    // Each FeatureRecord = 6 bytes: tag(4) + offset(2)
+    final newFeatureCount = featureCount + missingTags.length;
+    final existingFeatureListSize = 2 + featureCount * 6;
+
+    // Calculate offsets for new empty Feature tables (relative to FeatureList start)
+    // They'll be placed right after the last existing feature table data
+    // To keep things simple: find the highest existing Feature table end offset
+    int maxFeatureEnd = existingFeatureListSize; // minimum: just past the records
+    for (var i = 0; i < featureCount; i++) {
+      final recordOff = featureListOffset + 2 + i * 6;
+      if (recordOff + 6 > gsubBytes.length) break;
+      final featureOffset = data.getUint16(recordOff + 4, Endian.big);
+      // Feature table is at featureListOffset + featureOffset
+      // Minimum Feature table size = 4 bytes (paramsOffset + lookupCount)
+      final absOff = featureListOffset + featureOffset;
+      if (absOff + 4 <= gsubBytes.length) {
+        final lookupCount = data.getUint16(absOff + 2, Endian.big);
+        final featureTableSize = 4 + lookupCount * 2;
+        final end = featureOffset + featureTableSize;
+        if (end > maxFeatureEnd) maxFeatureEnd = end;
+      }
+    }
+
+    // We need to shift existing feature records to make room for new ones,
+    // and all existing feature offsets need adjustment for the new record bytes added.
+    // New records add: missingTags.length * 6 bytes to the FeatureList header area.
+    // Existing Feature table offsets are relative to FeatureList start, so they need
+    // to be shifted by the extra record bytes.
+    final extraRecordBytes = missingTags.length * 6;
+
+    // Build new GSUB: copy everything, expanding the FeatureList
+    final newGsubBuilder = BytesBuilder();
+
+    // 1. Copy GSUB header (bytes before FeatureList)
+    newGsubBuilder.add(gsubBytes.sublist(0, featureListOffset));
+
+    // 2. Build new FeatureList
+    final newFeatureList = BytesBuilder();
+
+    // FeatureCount
+    final countBytes = Uint8List(2);
+    ByteData.sublistView(countBytes).setUint16(0, newFeatureCount, Endian.big);
+    newFeatureList.add(countBytes);
+
+    // Copy existing FeatureRecords with adjusted offsets
+    for (var i = 0; i < featureCount; i++) {
+      final recordOff = featureListOffset + 2 + i * 6;
+      // Copy tag bytes
+      newFeatureList.add(gsubBytes.sublist(recordOff, recordOff + 4));
+      // Adjust offset: add extra bytes for new records
+      final origOffset = data.getUint16(recordOff + 4, Endian.big);
+      final adjustedOffset = origOffset + extraRecordBytes;
+      final offBytes = Uint8List(2);
+      ByteData.sublistView(offBytes).setUint16(0, adjustedOffset, Endian.big);
+      newFeatureList.add(offBytes);
+    }
+
+    // Append new FeatureRecords for missing tags
+    // Their Feature tables go at maxFeatureEnd + extraRecordBytes
+    var newFeatureTableOffset = maxFeatureEnd + extraRecordBytes;
+    for (final tag in missingTags) {
+      // Tag bytes
+      final tagBytes = Uint8List(4);
+      for (var j = 0; j < 4; j++) {
+        tagBytes[j] = tag.codeUnitAt(j);
+      }
+      newFeatureList.add(tagBytes);
+      // Offset
+      final offBytes = Uint8List(2);
+      ByteData.sublistView(offBytes).setUint16(0, newFeatureTableOffset, Endian.big);
+      newFeatureList.add(offBytes);
+      newFeatureTableOffset += 4; // Each empty Feature table = 4 bytes
+    }
+
+    // Copy existing Feature table data (everything after the old FeatureRecords)
+    final existingDataStart = featureListOffset + existingFeatureListSize;
+    final existingDataEnd = featureListOffset + maxFeatureEnd;
+    if (existingDataEnd > existingDataStart && existingDataEnd <= gsubBytes.length) {
+      newFeatureList.add(gsubBytes.sublist(existingDataStart, existingDataEnd));
+    }
+
+    // Append empty Feature tables for missing tags (4 bytes each: 0x0000 0x0000)
+    for (var i = 0; i < missingTags.length; i++) {
+      newFeatureList.add(Uint8List(4)); // featureParamsOffset=0, lookupCount=0
+    }
+
+    newGsubBuilder.add(newFeatureList.takeBytes());
+
+    // 3. Copy any remaining GSUB data after the FeatureList (LookupList, etc.)
+    // The LookupList offset is at GSUB header offset + 8
+    final lookupListOffset = data.getUint16(8, Endian.big);
+    if (lookupListOffset > maxFeatureEnd + featureListOffset - 0 && lookupListOffset < gsubBytes.length) {
+      // Adjust: everything from lookupListOffset onward
+      // Note: lookupListOffset is relative to GSUB start
+      // We need to copy from the original lookupList position to end
+      final absLookupStart = lookupListOffset;
+      if (absLookupStart < gsubBytes.length) {
+        newGsubBuilder.add(gsubBytes.sublist(absLookupStart));
+      }
+    }
+
+    final result = newGsubBuilder.takeBytes();
+
+    // Update the LookupList offset in the header if needed
+    // (It shifted by extraRecordBytes + missingTags.length * 4 for new Feature tables)
+    if (result.length >= 10) {
+      final resultView = ByteData.sublistView(result);
+      final origLookupOffset = data.getUint16(8, Endian.big);
+      final shiftAmount = extraRecordBytes + missingTags.length * 4;
+      resultView.setUint16(8, origLookupOffset + shiftAmount, Endian.big);
+    }
+
+    return Uint8List.fromList(result);
+  }
 }
+

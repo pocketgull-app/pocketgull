@@ -1,18 +1,20 @@
-import { Injector, runInInjectionContext } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { BleWearablesService } from './ble-wearables.service';
 import { PatientStateService } from '../patient-state.service';
+import { TippssIngestionGuardService } from './tippss-ingestion-guard.service';
 
 describe('BleWearablesService', () => {
   let service: BleWearablesService;
 
   beforeEach(() => {
-    const injector = Injector.create({
+    TestBed.configureTestingModule({
       providers: [
         { provide: PatientStateService, useValue: { updateVital: () => {} } },
+        TippssIngestionGuardService,
         BleWearablesService
       ]
     });
-    service = runInInjectionContext(injector, () => injector.get(BleWearablesService));
+    service = TestBed.inject(BleWearablesService);
   });
 
   it('1. Initializes with disconnected state and browser detection', () => {
@@ -66,5 +68,23 @@ describe('BleWearablesService', () => {
     expect(service.deviceName()).toBeNull();
     expect(service.heartRate()).toBeNull();
     expect(service.statusMessage()).toBe('Disconnected.');
+  });
+
+  it('5. Enrolls Google Pixel Watch 2 with Titan M2 Root of Trust (IEEE P2933 TIPPSS)', () => {
+    service.enrollPixelWatch2('PATIENT-SELF-01');
+    expect(service.deviceName()).toContain('Pixel Watch 2');
+    expect(service.statusMessage()).toContain('Titan M2 Root of Trust');
+  });
+
+  it('6. Enrolls Apple Watch with Apple Secure Enclave Root of Trust (IEEE P2933 TIPPSS)', () => {
+    service.enrollAppleWatch('PATIENT-SELF-01');
+    expect(service.deviceName()).toContain('Apple Watch');
+    expect(service.statusMessage()).toContain('Secure Enclave');
+  });
+
+  it('7. Enrolls Garmin Smartwatch with ARM TrustZone Root of Trust (IEEE P2933 TIPPSS)', () => {
+    service.enrollGarminWatch('PATIENT-SELF-01');
+    expect(service.deviceName()).toContain('Garmin Smartwatch');
+    expect(service.statusMessage()).toContain('ARM TrustZone');
   });
 });

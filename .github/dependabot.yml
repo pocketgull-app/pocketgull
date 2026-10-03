@@ -1,11 +1,29 @@
+# .github/dependabot.yml
+# OPSEC & FinOps Dependabot Governance Configuration
+#
+# Principles:
+# 1. FinOps: Group updates into consolidated monthly PRs (Sunday 03:00 PT) to eliminate
+#    CI matrix thrashing and runner minute waste. Hard cap of 1 open PR per ecosystem.
+# 2. OPSEC: Reject automated major version churn (semver-major ignored). Require soak
+#    window for community vetting against supply-chain injection attacks.
+# 3. Cognitive Load: Production vs development dependencies are separated into distinct groups
+#    so non-runtime tooling updates can be evaluated in seconds.
+
 version: 2
 updates:
-  # NPM — Root Angular/Express app (Monthly security & patch aggregation, zero breaking major upgrades)
+  # NPM — Root Angular 22 / Express SSR Monorepo
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "monthly"
+      day: "sunday"
+      time: "03:00"
+      timezone: "America/Los_Angeles"
     open-pull-requests-limit: 1
+    labels:
+      - "dependencies"
+      - "dependabot"
+      - "finops-batched"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -22,12 +40,19 @@ updates:
         patterns:
           - "*"
 
-  # GitHub Actions — Security SHA pinning updates
+  # GitHub Actions — Security SHA Pinning Updates
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
+      day: "sunday"
+      time: "03:00"
+      timezone: "America/Los_Angeles"
     open-pull-requests-limit: 1
+    labels:
+      - "ci"
+      - "dependencies"
+      - "finops-batched"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -38,12 +63,19 @@ updates:
         patterns:
           - "*"
 
-  # Docker — Base image security updates (Node 24 LTS pinned, ignore non-LTS Node 25)
+  # Docker — Base Image Security Updates (Node 24 LTS pinned, ignore non-LTS Node 25)
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "monthly"
+      day: "sunday"
+      time: "03:00"
+      timezone: "America/Los_Angeles"
     open-pull-requests-limit: 1
+    labels:
+      - "docker"
+      - "dependencies"
+      - "finops-batched"
     ignore:
       - dependency-name: "node"
         versions: ["25*"]
@@ -51,13 +83,24 @@ updates:
         update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "chore(docker)"
+    groups:
+      docker-images:
+        patterns:
+          - "*"
 
-  # Pip — Python FastAPI sidecar
+  # Pip — Python FastAPI ML Sidecar (pocketgull_api)
   - package-ecosystem: "pip"
     directory: "/pocketgull_api"
     schedule:
       interval: "monthly"
+      day: "sunday"
+      time: "03:00"
+      timezone: "America/Los_Angeles"
     open-pull-requests-limit: 1
+    labels:
+      - "python"
+      - "dependencies"
+      - "finops-batched"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
@@ -68,12 +111,19 @@ updates:
         patterns:
           - "*"
 
-  # Go — High-performance sidecar
+  # Go — High-Performance Kernel Sidecar (packages/pocketgull-go)
   - package-ecosystem: "gomod"
     directory: "/packages/pocketgull-go"
     schedule:
       interval: "monthly"
+      day: "sunday"
+      time: "03:00"
+      timezone: "America/Los_Angeles"
     open-pull-requests-limit: 1
+    labels:
+      - "go"
+      - "dependencies"
+      - "finops-batched"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]

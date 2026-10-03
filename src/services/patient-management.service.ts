@@ -149,7 +149,7 @@ export class PatientManagementService implements OnDestroy {
   readonly patients = signal<IPatient[]>(MOCK_PATIENTS);
   readonly rosterLoaded = signal(false);
   readonly selectedPatientId: WritableSignal<string | null> = signal(
-    MOCK_PATIENTS.find(p => p.id === 'p_default_patient')?.id || MOCK_PATIENTS.find(p => p.id === 'p012')?.id || MOCK_PATIENTS[0]?.id || null,
+    MOCK_PATIENTS.find(p => p.id === 'p_ada_lovelace')?.id || MOCK_PATIENTS.find(p => p.id === 'p_default_patient')?.id || MOCK_PATIENTS.find(p => p.id === 'p012')?.id || MOCK_PATIENTS[0]?.id || null,
   );
   readonly selectedPatient = computed(() => {
     const id = this.selectedPatientId();
@@ -184,7 +184,7 @@ export class PatientManagementService implements OnDestroy {
                 }
               }
               this.patients.set(merged);
-              const defaultId = merged.find(p => p.id === 'p_mara_santos')?.id || merged.find(p => p.id === 'p_default_patient')?.id || merged[0]?.id || null;
+              const defaultId = merged.find(p => p.id === 'p_ada_lovelace')?.id || merged.find(p => p.id === 'p_mara_santos')?.id || merged.find(p => p.id === 'p_default_patient')?.id || merged[0]?.id || null;
               const currentId = this.selectedPatientId();
               if (!currentId || !merged.some(p => p.id === currentId)) {
                 this.selectedPatientId.set(defaultId);

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ResearchConsentService } from '../services/research-consent.service';
@@ -465,8 +465,14 @@ export class ResearchDataDividendComponent {
   readonly dryRunResult = signal<IDryRunSqlQueryResult | null>(null);
 
 
-  constructor(researchService?: ResearchConsentService) {
-    this.researchService = researchService || inject(ResearchConsentService, { optional: true }) || new ResearchConsentService();
+  constructor(@Optional() researchService?: ResearchConsentService) {
+    this.researchService = researchService || (() => {
+      try {
+        return inject(ResearchConsentService, { optional: true }) || new ResearchConsentService();
+      } catch {
+        return new ResearchConsentService();
+      }
+    })();
   }
 
   toggleCohort(cohortId: string): void {

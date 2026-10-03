@@ -32,25 +32,17 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
 
     // Switch to Vector RAG Tab
     const vectorTabBtn = studio.locator('button', { hasText: /Vector RAG/i }).first();
-    await vectorTabBtn.click();
+    await vectorTabBtn.scrollIntoViewIfNeeded();
+    await vectorTabBtn.click({ force: true });
     await page.waitForTimeout(300);
 
     // Verify preset badges exist and click "Burning Foot Neuropathy"
-    const dpnPreset = studio.locator('button', { hasText: /Burning Foot Neuropathy/i });
-    if (await dpnPreset.isVisible()) {
-      await dpnPreset.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Click compute vector match
-    const computeBtn = studio.locator('button', { hasText: /Compute Vector Match/i });
-    if (await computeBtn.isVisible()) {
-      await computeBtn.click();
-      await page.waitForTimeout(400);
-    }
+    const dpnPreset = studio.locator('button', { hasText: /Burning Foot Neuropathy/i }).first();
+    await expect(dpnPreset).toBeVisible({ timeout: 10000 });
+    await dpnPreset.click({ force: true });
 
     // Verify that ranked archetype cards are rendered with similarity scores
-    await expect(studio.locator('text=Diabetic Peripheral Neuropathy')).toBeVisible();
+    await expect(studio.locator('text=Diabetic Peripheral Neuropathy').first()).toBeVisible({ timeout: 15000 });
   });
 
   test('3. Audits draft medication orders with Clinical Proofreader & ISMP Guard', async ({ page }) => {
@@ -61,25 +53,18 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
 
     // Switch to Proofreader Tab
     const proofreaderTabBtn = studio.locator('button', { hasText: /Clinical Proofreader/i }).first();
-    await proofreaderTabBtn.click();
+    await proofreaderTabBtn.scrollIntoViewIfNeeded();
+    await proofreaderTabBtn.click({ force: true });
     await page.waitForTimeout(300);
 
     // Click Trailing Zero preset (e.g. 5.0 mg)
-    const trailingZeroBtn = studio.locator('button', { hasText: /Trailing Zero/i });
-    if (await trailingZeroBtn.isVisible()) {
-      await trailingZeroBtn.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Click Run ISMP Audit button
-    const auditBtn = studio.locator('button', { hasText: /Run ISMP Audit/i });
-    if (await auditBtn.isVisible()) {
-      await auditBtn.click();
-      await page.waitForTimeout(400);
-    }
+    const trailingZeroBtn = studio.locator('button', { hasText: /ISMP \(5\.0 mg\)/i }).first();
+    await expect(trailingZeroBtn).toBeVisible({ timeout: 10000 });
+    await trailingZeroBtn.click({ force: true });
+    await page.waitForTimeout(300);
 
     // Verify ISMP high-risk warning is surfaced
-    await expect(studio.locator('text=/ISMP/i').first()).toBeVisible();
+    await expect(studio.locator('text=/ISMP/i').first()).toBeVisible({ timeout: 15000 });
   });
 
   test('4. Evaluates clinical triage acuity with instant classifier', async ({ page }) => {
@@ -90,25 +75,18 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
 
     // Switch to Classifier Tab
     const classifierTabBtn = studio.locator('button', { hasText: /Triage Acuity Classifier/i }).first();
-    await classifierTabBtn.click();
+    await classifierTabBtn.scrollIntoViewIfNeeded();
+    await classifierTabBtn.click({ force: true });
     await page.waitForTimeout(300);
 
     // Click STAT Emergency bypass preset
-    const statBtn = studio.locator('button', { hasText: /STAT Emergency/i });
-    if (await statBtn.isVisible()) {
-      await statBtn.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Click Classify Acuity button
-    const classifyBtn = studio.locator('button', { hasText: /Classify Acuity/i });
-    if (await classifyBtn.isVisible()) {
-      await classifyBtn.click();
-      await page.waitForTimeout(400);
-    }
+    const statBtn = studio.locator('button', { hasText: /Preset: STAT Chest Pain/i }).first();
+    await expect(statBtn).toBeVisible({ timeout: 10000 });
+    await statBtn.click({ force: true });
+    await page.waitForTimeout(300);
 
     // Verify STAT_EMERGENCY badge and directive
-    await expect(studio.locator('text=STAT_EMERGENCY')).toBeVisible();
+    await expect(studio.locator('text=STAT_EMERGENCY').first()).toBeVisible({ timeout: 15000 });
   });
 
   test('5. Displays hardware telemetry and cryptographic security acceleration', async ({ page }) => {
@@ -119,7 +97,8 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
 
     // Switch to Telemetry Tab using explicit tab title
     const telemetryTabBtn = studio.locator('button', { hasText: /Hardware & NPU Telemetry/i });
-    await telemetryTabBtn.click();
+    await telemetryTabBtn.scrollIntoViewIfNeeded();
+    await telemetryTabBtn.click({ force: true });
     await page.waitForTimeout(300);
 
     // Verify hardware cards

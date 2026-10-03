@@ -27,8 +27,9 @@ function getContrastRatio(hex1, hex2) {
 }
 
 const themeColorPairs = [
-  { name: 'Light Standard Mode', fg: '#1C1C1C', bg: '#FAFAFA', cardBg: '#FFFFFF', heading: '#0F172A' },
-  { name: 'Dark Obsidian Mode', fg: '#F3F4F6', bg: '#111827', cardBg: '#1F2937', heading: '#38BDF8' },
+  { name: 'Light Standard Mode (light)', fg: '#1C1C1C', bg: '#FAFAFA', cardBg: '#FFFFFF', heading: '#0F172A' },
+  { name: 'Dark Obsidian Mode (dark)', fg: '#F3F4F6', bg: '#111827', cardBg: '#1F2937', heading: '#38BDF8' },
+  { name: 'System OS Sync (system)', fg: '#F3F4F6', bg: '#111827', cardBg: '#1F2937', heading: '#38BDF8' },
   { name: 'Rice Papercraft (rice)', fg: '#18181B', bg: '#FAF8F0', cardBg: '#FFFFFF', heading: '#047857' },
   { name: 'Hemp Papercraft (hemp)', fg: '#1F1912', bg: '#F5EFE0', cardBg: '#FAF6ED', heading: '#B45309' },
   { name: 'Construction Papercraft (construction)', fg: '#0F172A', bg: '#ECEAE2', cardBg: '#F8F6F0', heading: '#0369A1' },
@@ -39,11 +40,24 @@ const themeColorPairs = [
   { name: 'Spark Ember (spark)', fg: '#FFF7ED', bg: '#0A0503', cardBg: '#170B07', heading: '#F97316' },
   { name: 'Ocean Pool Light (pool-light)', fg: '#0F172A', bg: '#7DD3FC', cardBg: '#FFFFFF', heading: '#0369A1' },
   { name: 'Ocean Pool Dark (pool-dark)', fg: '#F8FAFC', bg: '#081F3D', cardBg: '#0F172A', heading: '#38BDF8' },
-  { name: 'Mandala Solfeggio (mandala)', fg: '#F5F3FF', bg: '#16112D', cardBg: '#211A42', heading: '#C084FC' }
+  { name: 'Mandala Solfeggio (mandala)', fg: '#F5F3FF', bg: '#16112D', cardBg: '#211A42', heading: '#C084FC' },
+  { name: 'Curie Atomic Radium (curie)', fg: '#E2F8EE', bg: '#0F1416', cardBg: '#162025', heading: '#00FF66' },
+  { name: 'Hypertext 1991 (cern)', fg: '#000000', bg: '#F4F4F0', cardBg: '#FFFFFF', heading: '#000080' },
+  { name: 'PocketGull GearArts (pocketgull-geararts)', fg: '#F8FAFC', bg: '#0B0C10', cardBg: '#13151D', heading: '#2DD4BF' },
+  { name: 'Scotopic 650nm Red Mode (scotopic)', fg: '#FF6655', bg: '#050000', cardBg: '#0E0202', heading: '#FF2211' },
+  { name: 'Disaster Triage E-Paper (epaper)', fg: '#111111', bg: '#F5F5F0', cardBg: '#FFFFFF', heading: '#000000' },
+  { name: '1996 Dream Team Navy & Gold (dream-team)', fg: '#F8FAFC', bg: '#060B19', cardBg: '#0C152E', heading: '#F59E0B' },
+  { name: '1972 Miami Dolphins Aqua (dolphins-1972)', fg: '#F0FDFA', bg: '#031C26', cardBg: '#082937', heading: '#F0FDFA' },
+  { name: '1927 NY Yankees Murderers Row (yankees-1927)', fg: '#F8FAFC', bg: '#050D18', cardBg: '#09172A', heading: '#C49A45' },
+  { name: '2003-04 Arsenal Invincibles (arsenal-invincibles)', fg: '#FFFAF7', bg: '#0C0305', cardBg: '#14070A', heading: '#E5AF3A' },
+  { name: '1976-77 Montreal Canadiens (canadiens-1977)', fg: '#F0F9FF', bg: '#040917', cardBg: '#081026', heading: '#BAE6FD' },
+  { name: '1970 Brazil World Cup (brazil-1970)', fg: '#FEFCE8', bg: '#040C07', cardBg: '#08170D', heading: '#F7C800' },
+  { name: '2013 NZ All Blacks Silver Fern (all-blacks-2013)', fg: '#FFFFFF', bg: '#000000', cardBg: '#0A0A0A', heading: '#E5E7EB' },
+  { name: 'Y-BOCs Calm Mode (calm)', fg: '#292524', bg: '#F5F5F4', cardBg: '#FAF9F6', heading: '#44403C' }
 ];
 
 console.log('=============================================================================');
-console.log('  POCKET GULL WCAG 2.1 COLOR CONTRAST ANALYSIS REPORT (ALL 13 THEMES)');
+console.log(`  POCKET GULL WCAG 2.1/2.2 COLOR CONTRAST ANALYSIS REPORT (ALL ${themeColorPairs.length} THEMES)`);
 console.log('=============================================================================');
 
 let passCount = 0;
@@ -61,5 +75,5 @@ themeColorPairs.forEach(t => {
 });
 
 console.log('\n=============================================================================');
-console.log(`  SUMMARY: ${passCount} / ${themeColorPairs.length} themes pass strict WCAG 2.1 AAA compliance!`);
+console.log(`  SUMMARY: ${passCount} / ${themeColorPairs.length} themes pass strict WCAG 2.1/2.2 AAA compliance!`);
 console.log('=============================================================================');

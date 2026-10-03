@@ -26,11 +26,13 @@ import { GullSquadronShowcaseComponent } from './gull-squadron-showcase.componen
 import { GullNarrativeDispatchComponent } from './gull-narrative-dispatch.component';
 import { OnDeviceEmbedderService } from '../services/ai/on-device-embedder.service';
 import { GseExplorerService, IGseDataset } from '../services/gse-explorer.service';
-import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
+import { ClinicalMoERouterService, SHIFT_CARE_PLAN_ROSTER, IShiftPatientRecord } from '../services/clinical-moe-router.service';
 import { PhysicalGenomicsService } from '../services/physical-genomics.service';
-import { BionicReadingService } from '../services/bionic-reading.service';
 import { ThemeService } from '../services/theme.service';
+import { BionicReadingService } from '../services/bionic-reading.service';
 import { FovealReticleRsvpComponent } from './shared/foveal-reticle-rsvp.component';
+import { DecisionCurveViewerComponent } from './analytics/decision-curve-viewer.component';
+import { SmoeDecisionFlowExplorerComponent } from './smoe-decision-flow-explorer.component';
 import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
@@ -71,6 +73,8 @@ export interface IPubMedSearchResult {
     GullSquadronShowcaseComponent,
     GullNarrativeDispatchComponent,
     FovealReticleRsvpComponent,
+    DecisionCurveViewerComponent,
+    SmoeDecisionFlowExplorerComponent,
     BionicFormatPipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -84,33 +88,33 @@ export interface IPubMedSearchResult {
          role="dialog"
          aria-modal="true"
          aria-label="Clinical Evidence and Literature Drawer"
-         class="fixed inset-y-0 right-0 z-50 w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl bg-white dark:bg-[#09090b] shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+         class="fixed inset-y-0 right-0 z-50 w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl bg-white dark:bg-obsidian shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
       
       <!-- Drawer Header Bar -->
-      <div class="h-14 px-5 flex items-center justify-between bg-zinc-900 border-b border-zinc-800 shrink-0 select-none font-pocketgull-inter">
-        <div class="flex items-center gap-3">
-          <span class="text-base p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/30">🔬</span>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-teal-400 font-pocketgull-inter text-xs tracking-wide">
+      <div class="h-16 sm:h-14 px-4 sm:px-5 flex items-center justify-between bg-zinc-900 border-b border-zinc-800 shrink-0 select-none font-pocketgull-inter">
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <span class="text-base p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/30 shrink-0">🔬</span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap">
+              <span class="font-bold text-teal-400 font-pocketgull-inter text-xs tracking-wide shrink-0">
                 PocketGull
               </span>
-              <span class="text-xs text-zinc-600">/</span>
-              <h3 class="text-xs font-bold font-pocketgull-inter uppercase tracking-wider text-zinc-200">
-                Evidence &amp; Citation Drawer
+              <span class="text-xs text-zinc-600 hidden sm:inline">/</span>
+              <h3 class="text-xs font-bold font-pocketgull-inter uppercase tracking-wider text-zinc-200 truncate">
+                Evidence Drawer
               </h3>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40 shrink-0">
                 Level A Cochrane
               </span>
             </div>
-            <p class="text-[11px] text-zinc-400 font-sans">Peer-reviewed literature, RoB 2 risk-of-bias, and PubMed evidence grounding</p>
+            <p class="text-[11px] text-zinc-400 font-sans hidden sm:block truncate">Peer-reviewed literature, RoB 2 risk-of-bias, and PubMed evidence grounding</p>
           </div>
         </div>
         <button type="button" 
                 (click)="close()" 
                 aria-label="Close Evidence Drawer"
-                class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-mono font-bold transition flex items-center gap-1.5 cursor-pointer border border-zinc-700 active:scale-95">
-          <span>✕</span> Close
+                class="min-h-[44px] min-w-[44px] px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-mono font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border border-zinc-700 active:scale-95 shrink-0 touch-manipulation">
+          <span>✕</span> <span class="hidden sm:inline">Close</span>
         </button>
       </div>
 
@@ -166,7 +170,7 @@ export interface IPubMedSearchResult {
       </div>
 
       <!-- Toolbar -->
-      <div class="p-3 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-[#09090b]/50 shrink-0">
+      <div class="p-3 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-obsidian/50 shrink-0">
         <div class="flex flex-wrap items-center gap-2 md:flex-nowrap">
           <!-- Search Engine Toggle -->
           <div class="flex flex-wrap items-center bg-gray-200 dark:bg-zinc-800 rounded-md p-0.5 gap-0.5">
@@ -310,6 +314,26 @@ export interface IPubMedSearchResult {
                     [class.dark:text-zinc-400]="searchEngine() !== 'squadron'">
               🪺 Squadron
             </button>
+            <button (click)="setSearchEngine('dca')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'dca'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'dca'"
+                    [class.text-teal-700]="searchEngine() === 'dca'"
+                    [class.dark:text-teal-300]="searchEngine() === 'dca'"
+                    [class.text-gray-500]="searchEngine() !== 'dca'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'dca'">
+              ⚖️ DCA / Asymmetry
+            </button>
+            <button (click)="setSearchEngine('shift_plans')"
+                    class="px-2 py-0.5 text-[12px] font-bold rounded-md transition-colors cursor-pointer"
+                    [class.bg-white]="searchEngine() === 'shift_plans'"
+                    [class.dark:bg-zinc-600]="searchEngine() === 'shift_plans'"
+                    [class.text-emerald-700]="searchEngine() === 'shift_plans'"
+                    [class.dark:text-emerald-300]="searchEngine() === 'shift_plans'"
+                    [class.text-gray-500]="searchEngine() !== 'shift_plans'"
+                    [class.dark:text-zinc-400]="searchEngine() !== 'shift_plans'">
+              📋 Shift Plans (10)
+            </button>
           </div>
           <!-- Search Input -->
           <div class="w-full md:flex-1 order-last md:order-none mt-2 md:mt-0">
@@ -392,7 +416,7 @@ export interface IPubMedSearchResult {
 
       <!-- Bookmarks Bar -->
       @if (bookmarks().length > 0) {
-        <div class="p-2 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-[#09090b]/50 shrink-0 flex items-center gap-2 flex-wrap">
+        <div class="p-2 border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-obsidian/50 shrink-0 flex items-center gap-2 flex-wrap">
           @for(bookmark of bookmarks(); track bookmark.url) {
             <div class="group flex items-center">
                 <button (click)="loadUrl(bookmark.url)" 
@@ -556,6 +580,9 @@ export interface IPubMedSearchResult {
                     </button>
                     <button (click)="saveResultToActiveRoomNotes(res); $event.stopPropagation();" class="text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/40 rounded shadow-sm">
                       <span>📝</span> + Save to Active Room
+                    </button>
+                    <button (click)="routeToMoe(res); $event.stopPropagation();" class="text-xs font-bold text-cyan-700 dark:text-cyan-300 hover:text-cyan-900 dark:hover:text-cyan-100 transition-colors inline-flex items-center gap-1 px-2.5 py-1 bg-cyan-50 dark:bg-cyan-950/60 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-200 dark:border-cyan-800/40 rounded shadow-sm cursor-pointer" title="Route this research finding directly to the SMoE gating router">
+                      <span>⚡</span> Route to SMoE
                     </button>
                     <button (click)="loadUrl('https://pubmed.ncbi.nlm.nih.gov/' + res.id + '/'); $event.stopPropagation();" class="text-xs font-semibold text-gray-600 dark:text-zinc-300 hover:text-gray-800 dark:hover:text-white transition-colors inline-block px-2 py-1 bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 rounded">
                       Open in PubMed
@@ -731,10 +758,126 @@ export interface IPubMedSearchResult {
           <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
             <app-research-data-dividend></app-research-data-dividend>
           </div>
+        } @else if (searchEngine() === 'dca') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto">
+            <app-decision-curve-viewer></app-decision-curve-viewer>
+          </div>
         } @else if (searchEngine() === 'squadron') {
           <div class="p-4 max-w-5xl mx-auto overflow-y-auto space-y-6">
             <app-gull-squadron-showcase></app-gull-squadron-showcase>
             <app-gull-narrative-dispatch></app-gull-narrative-dispatch>
+          </div>
+        } @else if (searchEngine() === 'shift_plans') {
+          <div class="p-4 max-w-5xl mx-auto overflow-y-auto space-y-4">
+            <!-- Header Banner for Shift Care Plans Hub -->
+            <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/80 via-zinc-900 to-teal-950/80 border border-emerald-500/30 shadow-lg">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xl">📋</span>
+                    <h3 class="text-sm font-bold text-zinc-100 font-mono tracking-wide uppercase">
+                      12-Hour Shift Care Plan Evidence Hub (10 Canonical Patients)
+                    </h3>
+                  </div>
+                  <p class="text-xs text-zinc-300 mt-1 leading-relaxed">
+                    Evidence-grounded care plan artifacts synthesized from clinical intake screeners, cognitive literacy calibrations, and SMoE expert gating targets.
+                  </p>
+                </div>
+                <div class="flex items-center gap-2 font-mono text-xs flex-wrap">
+                  <span class="px-2.5 py-1 rounded-lg bg-zinc-950 border border-zinc-800 text-emerald-400 font-bold">
+                    100% De-Identified (HIPAA Safe Harbor)
+                  </span>
+                  <button
+                    type="button"
+                    (click)="showDecisionFlowExplorer.set(true)"
+                    class="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 text-xs font-mono transition flex items-center gap-1 cursor-pointer"
+                    title="Open SMoE Gating Network Decision Flow Explorer (All 10 Shift Patients)"
+                  >
+                    <span>🔬</span> Decision Flow Matrix
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 10 Patient Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              @for (patient of shiftRoster; track patient.id) {
+                <div class="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-emerald-500/40 shadow-sm transition-all flex flex-col justify-between gap-3">
+                  <div>
+                    <div class="flex items-start justify-between gap-2">
+                      <div>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                          <h4 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 font-mono">
+                            {{ patient.name }}
+                          </h4>
+                          <span class="text-xs text-zinc-500 font-mono">
+                            ({{ patient.age }}y, {{ patient.clinicalDomain }})
+                          </span>
+                        </div>
+                        <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/30">
+                            {{ patient.assessmentName }}
+                          </span>
+                          <span class="px-2 py-0.5 rounded text-[10px] font-mono text-zinc-400 bg-zinc-800 border border-zinc-700">
+                            Level: {{ patient.cognitiveLevel }}
+                          </span>
+                        </div>
+                      </div>
+                      <span class="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">
+                        {{ patient.id }}
+                      </span>
+                    </div>
+
+                    <div class="mt-2 text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                      <span class="font-bold text-zinc-700 dark:text-zinc-200">Goal:</span> {{ patient.intakeGoal }}
+                    </div>
+
+                    <div class="mt-2 flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+                      <span class="text-zinc-500 font-bold uppercase">SMoE Target:</span>
+                      <span class="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-teal-700 dark:text-teal-300 border border-zinc-200 dark:border-zinc-700">
+                        {{ patient.targetExpertId }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Actions -->
+                  <div class="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      (click)="routeShiftPatientToMoe(patient)"
+                      class="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-mono font-bold transition flex items-center gap-1 cursor-pointer"
+                      title="Route this patient into the Sparse Mixture of UI Experts (SMoE) Canvas"
+                    >
+                      <span>⚡</span> Route in SMoE
+                    </button>
+                    <button
+                      type="button"
+                      (click)="openPatientDecisionFlow(patient.id)"
+                      class="px-2.5 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-mono transition flex items-center gap-1 cursor-pointer"
+                      title="Inspect SMoE gating probabilities and Cross-Attention bridge for this patient"
+                    >
+                      <span>🔬</span> Trace
+                    </button>
+                    <button
+                      type="button"
+                      (click)="searchShiftPatientResearch(patient)"
+                      class="px-2.5 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-mono transition flex items-center gap-1 cursor-pointer"
+                      title="Search PubMed / Cochrane evidence for this patient's research query"
+                    >
+                      <span>🔬</span> Cochrane Search
+                    </button>
+                    <a
+                      [href]="'/' + patient.htmlPath"
+                      target="_blank"
+                      class="px-2.5 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-mono transition flex items-center gap-1"
+                      title="Open generated care plan HTML/PDF artifact"
+                    >
+                      <span>📄</span> Plan Artifact
+                    </a>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
         } @else if (!sanitizedUrl()) {
           <div class="w-full h-full flex items-center justify-center text-center text-gray-500 dark:text-zinc-400 p-4 relative z-20">
@@ -744,6 +887,15 @@ export interface IPubMedSearchResult {
       </div>
 
     </div>
+
+    <!-- SMoE Decision Flow Explorer Modal -->
+    @if (showDecisionFlowExplorer()) {
+      <app-smoe-decision-flow-explorer
+        [patientId]="selectedFlowPatientId()"
+        (closeModal)="showDecisionFlowExplorer.set(false)"
+        (patientSelected)="routeShiftPatientToMoeById($event)"
+      />
+    }
 
     <!-- FOVEA™ Clinical Speed Reader (600–900 WPM RSVP Reticle) -->
     <app-foveal-reticle-rsvp
@@ -801,8 +953,41 @@ export class ResearchFrameComponent implements OnDestroy {
   readonly isFovealOpen = signal<boolean>(false);
 
   isMobile = signal(false);
-  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist'>('google');
+  searchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist' | 'dca' | 'shift_plans'>('google');
   searchText = signal<string>('');
+
+  readonly shiftRoster = SHIFT_CARE_PLAN_ROSTER;
+  readonly showDecisionFlowExplorer = signal<boolean>(false);
+  readonly selectedFlowPatientId = signal<string | null>(null);
+
+  openPatientDecisionFlow(patientId: string): void {
+    this.selectedFlowPatientId.set(patientId);
+    this.showDecisionFlowExplorer.set(true);
+  }
+
+  routeShiftPatientToMoeById(patientId: string): void {
+    if (this.moeRouter) {
+      this.moeRouter.loadShiftPatient(patientId);
+    }
+  }
+
+  routeShiftPatientToMoe(patient: IShiftPatientRecord): void {
+    if (this.moeRouter) {
+      this.moeRouter.loadShiftPatient(patient.id);
+    }
+  }
+
+  routeToMoe(res: IPubMedSearchResult): void {
+    if (this.moeRouter) {
+      this.moeRouter.setTranscriptQuery(`${res.title} ${res.bottomLineTakeaway || ''}`);
+    }
+  }
+
+  searchShiftPatientResearch(patient: IShiftPatientRecord): void {
+    this.searchText.set(patient.researchQuery);
+    this.setSearchEngine('pubmed');
+    this.search();
+  }
 
   readonly activeLensName = computed(() => this.moeRouter?.activeLens() || 'Summary Overview');
   readonly gseResults = signal<IGseDataset[]>(this.gseService.gseCatalog());
@@ -1089,7 +1274,7 @@ export class ResearchFrameComponent implements OnDestroy {
 
 
   // --- Browser Actions ---
-  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist') {
+  setSearchEngine(engine: 'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | 'gse' | 'who_nih' | 'ms_cures' | 'exposome' | 'pediatrics' | 'geriatrics' | 'nutrition' | 'specialist' | 'dca' | 'shift_plans') {
     this.searchEngine.set(engine);
     if (engine === 'gse') {
       this.gseResults.set(this.gseService.searchGse(this.searchText().trim()));
@@ -1106,6 +1291,8 @@ export class ResearchFrameComponent implements OnDestroy {
       engine !== 'geriatrics' && 
       engine !== 'nutrition' && 
       engine !== 'specialist' && 
+      engine !== 'dca' && 
+      engine !== 'shift_plans' && 
       this.searchText().trim()
     ) {
       this.search();

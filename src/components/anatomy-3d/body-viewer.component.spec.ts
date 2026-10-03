@@ -26,7 +26,7 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
 
   beforeEach(() => {
     mockPatientState = {
-      bodyViewerMode: signal<'3d' | '2d' | 'quad' | 'cellular'>('3d'),
+      bodyViewerMode: signal<'3d' | '2d' | 'quad' | 'cellular' | 'decad'>('3d'),
       anatomyViewMode: signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost'>('skin'),
       activeRehabCondition: signal('lumbar_pelvic_alignment'),
       activeRehabProgress: signal(0),
@@ -83,6 +83,9 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
 
     mockPatientState.bodyViewerMode.set('quad');
     expect(mockPatientState.bodyViewerMode()).toBe('quad');
+
+    mockPatientState.bodyViewerMode.set('decad');
+    expect(mockPatientState.bodyViewerMode()).toBe('decad');
 
     mockPatientState.bodyViewerMode.set('3d');
     expect(mockPatientState.bodyViewerMode()).toBe('3d');

@@ -2,7 +2,8 @@ import json
 import re
 import os
 
-log_path = r'c:\Users\philg\Pocketgull\pocketgull\contests\rsna_knee_2026\kernel_output_v4\rsna-knee-2026-training-v4.log'
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+log_path = os.path.join(ROOT_DIR, 'contests', 'rsna_knee_2026', 'kernel_output_v4', 'rsna-knee-2026-training-v4.log')
 if not os.path.exists(log_path):
     print("File does not exist at:", log_path)
     exit(1)

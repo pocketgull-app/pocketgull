@@ -4,7 +4,7 @@
  * Enforces HIPAA §164.514 Safe Harbor de-identification and ONC HTI-1 explainable provenance.
  */
 
-export type OknAgencySource = 'NIH' | 'USGS' | 'NOAA' | 'NIJ' | 'EPA' | 'NSF' | 'CDC' | 'FDA' | 'WHO';
+export type OknAgencySource = 'NIH' | 'USGS' | 'NOAA' | 'NIJ' | 'EPA' | 'NSF' | 'CDC' | 'FDA' | 'WHO' | 'BMJ';
 
 export type OknKnowledgeDomain =
   | 'biomedical'

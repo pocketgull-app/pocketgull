@@ -536,6 +536,72 @@ export class IsmpSafetyGuardService {
   }
 
   /**
+   * Formats a numeric calculation or laboratory value according to strict ISMP posology rules:
+   * 1. Mandatory leading zero: values between -1 and 1 (non-zero) strictly include '0.' (e.g. 0.5, -0.25, never .5)
+   * 2. Absolute prohibition of trailing zeros: whole numbers or numbers ending in '.0' have trailing zeros stripped (e.g. 5, not 5.0)
+   * 3. Max significant decimals without trailing zeros: (e.g. 1.2500 -> 1.25)
+   * 4. Optional metric unit standardization (e.g. 'mL' capitalized, 'mcg' instead of 'ug')
+   */
+  formatIsmpNumber(value: number | string, unit?: string, maxDecimals: number = 3): string {
+    if (value === null || value === undefined || value === '') return '';
+    const num = typeof value === 'number' ? value : parseFloat(value.toString().trim());
+    if (isNaN(num)) return typeof value === 'string' ? value : '';
+
+    // Fix floating point epsilon (e.g. 0.5000000000000001 -> 0.5)
+    const factor = Math.pow(10, maxDecimals);
+    const rounded = Math.round((num + Number.EPSILON) * factor) / factor;
+
+    // Convert to string
+    let numStr = rounded.toString();
+
+    // Ensure leading zero if between -1 and 1 and non-zero
+    if (numStr.startsWith('.')) {
+      numStr = '0' + numStr;
+    } else if (numStr.startsWith('-.')) {
+      numStr = '-0' + numStr.substring(2);
+    }
+
+    // Strip trailing zeros if decimal is present
+    if (numStr.includes('.')) {
+      numStr = numStr.replace(/\.?0+$/, '');
+    }
+
+    if (!unit) return numStr;
+
+    // Standardize unit
+    let cleanUnit = unit.trim();
+    if (/^(ml|milliliters?)$/i.test(cleanUnit)) cleanUnit = 'mL';
+    if (/^(ug|µg|micrograms?)$/i.test(cleanUnit)) cleanUnit = 'mcg';
+    if (/^(mg|milligrams?)$/i.test(cleanUnit)) cleanUnit = 'mg';
+    if (/^(g|grams?)$/i.test(cleanUnit)) cleanUnit = 'g';
+
+    return `${numStr} ${cleanUnit}`;
+  }
+
+  /**
+   * Formats a mathematical or pharmacokinetic formula string to adhere to ISMP standards:
+   * 1. Replaces naked decimals with mandatory leading zero (.5 -> 0.5)
+   * 2. Strips trailing zeros from integers (5.0 -> 5)
+   * 3. Slashes mathematical zero subscripts (C_0 -> C_{0̸}, k_0 -> k_{0̸}) to disambiguate from O, \theta, \emptyset
+   */
+  formatIsmpMathFormula(formula: string): string {
+    if (!formula) return '';
+    let result = formula;
+
+    // 1. Mandatory leading zero for naked decimals in math (e.g., .5 or -.5 or = .5)
+    result = result.replace(/(^|[^0-9.])(\.\d+)/g, '$10$2');
+
+    // 2. Strip trailing zero for integers in math expressions (e.g., 5.0 -> 5, 10.00 -> 10)
+    result = result.replace(/(\b\d+)\.0+(?!\d)/g, '$1');
+
+    // 3. Slashed zero disambiguation for pharmacokinetics subscripts (C_0 -> C_{0̸}, k_0 -> k_{0̸})
+    result = result.replace(/\b([CA-Za-z])_0\b/g, '$1_{0̸}');
+    result = result.replace(/\b([CA-Za-z])_\{0\}\b/g, '$1_{0̸}');
+
+    return result;
+  }
+
+  /**
    * Formats a drug name using official FDA/ISMP Tall Man casing if present in catalog.
    */
   formatTallMan(drugName: string): string {

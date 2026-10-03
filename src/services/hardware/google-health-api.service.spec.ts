@@ -28,6 +28,7 @@ describe('GoogleHealthApiService', () => {
 
     expect(updated.totalDailySteps).toBeGreaterThan(prevSteps);
     expect(service.connectionStatus().lastSyncTimestamp).toBeDefined();
+    expect(service.connectionStatus().tippssVerified).toBe(true);
   });
 
   it('4. Converts live biometrics into FHIR R4 Observations', () => {

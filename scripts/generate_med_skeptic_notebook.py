@@ -46,14 +46,15 @@ def generate_notebook():
         "id": "cell-1-architecture",
         "metadata": {},
         "source": [
-            "## 2. Benchmark Architecture: 4 Diagnostic Dimensions\n",
+            "## 2. Benchmark Architecture: 5 Diagnostic Dimensions\n",
             "\n",
             "| Task | Clinical Objective | Test Design | Core Scoring Metrics |\n",
             "|:-----|:-------------------|:------------|:---------------------|\n",
             "| **Task 1: $H_0$ Falsification** | Identify underpowered or confounded clinical evidence | 1,200 clinical scenario pairs with underpowered cohorts ($n < 30$, $p \\in [0.05, 0.15]$) | Falsification Accuracy ($FA$), False-Acceptance Rate ($FAR$) |\n",
             "| **Task 2: Cochrane RoB 2** | Discount biased trials and rank evidence by CEBM tiers | 800 paired studies with deliberate selection, reporting, or measurement bias | Spearman Rank Correlation ($\\rho$), Bias Attribution $F_1$ |\n",
             "| **Task 3: Multimodal Grounding** | Detect contradictions between radiology notes & DICOM slices | 1,000 multi-plane DICOM volumes paired with matched vs. perturbed findings | Contradiction $F_1$, Spatial Localization IoU |\n",
-            "| **Task 4: Calibrated Deferral** | Measure epistemic uncertainty and trigger specialist referral | 600 un-resolvable, ambiguous clinical cases requiring biopsy/further imaging | Brier Calibration Score, Expected Calibration Error (ECE) |"
+            "| **Task 4: Calibrated Deferral** | Measure epistemic uncertainty and trigger specialist referral | 600 un-resolvable, ambiguous clinical cases requiring biopsy/further imaging | Brier Calibration Score, Expected Calibration Error (ECE) |\n",
+            "| **Task 5: DCA & Manageability** | Vickers & Elkin net utility and Antonovsky salutogenic manageability | 600 exposomic toxicant & invasive intervention threshold scenarios | DCA Net Utility (%), Salutogenic Manageability $F_1$ |"
         ]
     })
 
@@ -85,7 +86,7 @@ def generate_notebook():
             "# Kaggle Benchmarks SDK Standard Specification\n",
             "benchmark_spec = {\n",
             "    'name': 'med-skeptic',\n",
-            "    'version': '1.0.0',\n",
+            "    'version': '1.2.0',\n",
             "    'tasks': [\n",
             "        {\n",
             "            'id': 'task_1_null_hypothesis_falsification',\n",
@@ -110,6 +111,12 @@ def generate_notebook():
             "            'metric': 'brier_score',\n",
             "            'target': 'min',\n",
             "            'num_samples': 600\n",
+            "        },\n",
+            "        {\n",
+            "            'id': 'task_5_dca_salutogenic_manageability',\n",
+            "            'metric': 'dca_manageability_f1',\n",
+            "            'target': 'max',\n",
+            "            'num_samples': 600\n",
             "        }\n",
             "    ]\n",
             "}\n",
@@ -129,11 +136,11 @@ def generate_notebook():
         "source": [
             "# Simulated Baseline Model Leaderboard on MED-SKEPTIC\n",
             "results = pd.DataFrame([\n",
-            "    {'Model': 'Pocket-Gull Skeptic CDS (Ours)', 'Falsification Acc (%)': 88.4, 'Cochrane RoB Rho': 0.89, 'DICOM Grounding F1': 0.84, 'Brier Score (Lower=Better)': 0.082},\n",
-            "    {'Model': 'DeepSeek-R1 (Clinical CoT)', 'Falsification Acc (%)': 84.1, 'Cochrane RoB Rho': 0.82, 'DICOM Grounding F1': 0.76, 'Brier Score (Lower=Better)': 0.114},\n",
-            "    {'Model': 'Med-Gemma-27B', 'Falsification Acc (%)': 73.6, 'Cochrane RoB Rho': 0.74, 'DICOM Grounding F1': 0.71, 'Brier Score (Lower=Better)': 0.145},\n",
-            "    {'Model': 'Llama-3.1-70B-Instruct', 'Falsification Acc (%)': 68.2, 'Cochrane RoB Rho': 0.69, 'DICOM Grounding F1': 0.65, 'Brier Score (Lower=Better)': 0.182},\n",
-            "    {'Model': 'BioMistral-7B', 'Falsification Acc (%)': 52.0, 'Cochrane RoB Rho': 0.51, 'DICOM Grounding F1': 0.48, 'Brier Score (Lower=Better)': 0.245},\n",
+            "    {'Model': 'Pocket-Gull Skeptic CDS (Ours)', 'SEI': 90.4, 'Falsification Acc (%)': 88.4, 'Cochrane RoB Rho': 0.89, 'DICOM Grounding F1': 0.84, 'DCA Net Utility (%)': 93.8, 'Manageability (%)': 96.5, 'Brier Score': 0.082},\n",
+            "    {'Model': 'DeepSeek-R1 (Clinical CoT)', 'SEI': 82.9, 'Falsification Acc (%)': 84.1, 'Cochrane RoB Rho': 0.82, 'DICOM Grounding F1': 0.76, 'DCA Net Utility (%)': 81.2, 'Manageability (%)': 74.0, 'Brier Score': 0.114},\n",
+            "    {'Model': 'Med-Gemma-27B', 'SEI': 74.9, 'Falsification Acc (%)': 73.6, 'Cochrane RoB Rho': 0.74, 'DICOM Grounding F1': 0.71, 'DCA Net Utility (%)': 69.5, 'Manageability (%)': 62.1, 'Brier Score': 0.145},\n",
+            "    {'Model': 'Llama-3.1-70B-Instruct', 'SEI': 69.7, 'Falsification Acc (%)': 68.2, 'Cochrane RoB Rho': 0.69, 'DICOM Grounding F1': 0.65, 'DCA Net Utility (%)': 64.0, 'Manageability (%)': 55.4, 'Brier Score': 0.182},\n",
+            "    {'Model': 'BioMistral-7B', 'SEI': 54.6, 'Falsification Acc (%)': 52.0, 'Cochrane RoB Rho': 0.51, 'DICOM Grounding F1': 0.48, 'DCA Net Utility (%)': 44.5, 'Manageability (%)': 38.0, 'Brier Score': 0.245},\n",
             "])\n",
             "\n",
             "print('=== MED-SKEPTIC PRELIMINARY BENCHMARK LEADERBOARD ===')\n",

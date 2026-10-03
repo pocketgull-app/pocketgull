@@ -203,10 +203,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 🧮 PocketGull Math & Scientific Notation Stack (OpenType Math v3.100) */
+/* 🧮 PocketGull Math & Scientific Notation Stack (OpenType Math v3.100 • ISMP Safe) */
 .font-pocketgull-math {
   font-family: 'PocketGull Math', 'STIX Two Math', 'Cambria Math', 'Latin Modern Math', ui-monospace, monospace !important;
-  font-feature-settings: "tnum" 1, "zero" 1, "ssty" 1;
+  font-feature-settings: "cv08" 1, "cv05" 1, "ss02" 1, "cv11" 1, "tnum" 1, "zero" 1, "ssty" 1 !important;
+  font-variant-numeric: tabular-nums slashed-zero !important;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -216,7 +217,8 @@
 /* 🧪 PocketGull Clinical Chemistry & Pharmacology Stack */
 .font-pocketgull-chem {
   font-family: 'PocketGull Chem', 'PocketGull Math', 'PocketGull Mono', monospace !important;
-  font-feature-settings: "tnum" 1, "zero" 1, "subs" 1, "sups" 1;
+  font-feature-settings: "cv08" 1, "cv05" 1, "ss02" 1, "tnum" 1, "zero" 1, "subs" 1, "sups" 1 !important;
+  font-variant-numeric: tabular-nums slashed-zero !important;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -288,6 +290,8 @@
 .font-pocketgull-sans-clinical {
   font-family: var(--font-pocketgull-sans) !important;
   font-feature-settings: "cv05" 1, "cv08" 1, "ss01" 1, "ss02" 1, "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0.012em;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

@@ -9,13 +9,15 @@ import os
 import sys
 from fontTools.ttLib import TTFont
 
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 TARGET_DIRS = [
-    r"c:\Users\philg\Pocketgull\pocketgull\public\fonts",
-    r"c:\Users\philg\Pocketgull\pocketgull\public\brand\fonts",
-    r"c:\Users\philg\Pocketgull\pocketgull\public\assets\fonts",
-    r"c:\Users\philg\Pocketgull\pocketgull\public\fonts\google_fonts_submission\ofl\pocketgull",
-    r"c:\Users\philg\Pocketgull\pocketgull\src\assets\fonts",
-    r"c:\Users\philg\Pocketgull\pocketgull\wordpress-theme\pocketgull-articles\fonts",
+    os.path.join(ROOT_DIR, "public", "fonts"),
+    os.path.join(ROOT_DIR, "public", "brand", "fonts"),
+    os.path.join(ROOT_DIR, "public", "assets", "fonts"),
+    os.path.join(ROOT_DIR, "public", "fonts", "google_fonts_submission", "ofl", "pocketgull"),
+    os.path.join(ROOT_DIR, "src", "assets", "fonts"),
+    os.path.join(ROOT_DIR, "wordpress-theme", "pocketgull-articles", "fonts"),
 ]
 
 def sanitize_font_file(file_path):

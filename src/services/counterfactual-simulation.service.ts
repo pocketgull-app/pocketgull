@@ -52,18 +52,13 @@ export interface IOarsReadinessPrompt {
   providedIn: 'root'
 })
 export class CounterfactualSimulationService {
-  private patientState?: PatientStateService | null;
+  private patientState: PatientStateService | null = null;
 
-  constructor(patientState?: PatientStateService) {
-    if (patientState) {
-      this.patientState = patientState;
-    } else {
-      try {
-        this.patientState = inject(PatientStateService, { optional: true });
-      } catch (e) {
-        console.debug('[CounterfactualSimulation] PatientStateService DI fallback:', (e as Error)?.message);
-        this.patientState = null;
-      }
+  constructor() {
+    try {
+      this.patientState = inject(PatientStateService, { optional: true });
+    } catch {
+      this.patientState = null;
     }
   }
 

@@ -9,7 +9,7 @@ Generates a standalone, high-precision SVG & HTML test plate proving PocketGull 
 
 import os
 
-OUTPUT_DIR = r"c:\Users\philg\Pocketgull\pocketgull\scripts\output"
+OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 SVG_PATH = os.path.join(OUTPUT_DIR, "pocketgull_math_telemetry_plate.svg")
 HTML_PATH = os.path.join(OUTPUT_DIR, "pocketgull_math_telemetry_plate.html")

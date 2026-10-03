@@ -1,0 +1,118 @@
+# .github/workflows/dependabot-triage.yml
+name: "Dependabot Auto-Triage & FinOps Guard"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    name: "Triage Dependency PR"
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          disable-sudo: true
+          egress-policy: audit
+
+      - name: Fetch Dependabot Metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@d7267f607e9d3fb96fc2fbe83e0af444713e90b7 # v2.3.0
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Categorize & Label PR
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const depType = '${{ steps.metadata.outputs.dependency-type }}';
+            const updateType = '${{ steps.metadata.outputs.update-type }}';
+            const depNames = '${{ steps.metadata.outputs.dependency-names }}';
+
+            const labelsToAdd = ['dependencies', 'dependabot'];
+            if (depType === 'development') {
+              labelsToAdd.push('dev-dependencies');
+            } else if (depType === 'production') {
+              labelsToAdd.push('production-dependencies');
+            }
+
+            if (updateType.includes('patch')) {
+              labelsToAdd.push('patch');
+            } else if (updateType.includes('minor')) {
+              labelsToAdd.push('minor');
+            }
+
+            // Apply labels safely
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: labelsToAdd
+              });
+            } catch (err) {
+              core.warning(`Could not add labels: ${err.message}`);
+            }
+
+            // Post triage summary comment
+            const isDev = depType === 'development';
+            const body = [
+              '### 🛡️ Dependabot OPSEC & FinOps Triage Summary',
+              '',
+              `| Attribute | Value |`,
+              `| :--- | :--- |`,
+              `| **Ecosystem Type** | \`${depType || 'unknown'}\` |`,
+              `| **SemVer Level** | \`${updateType || 'unknown'}\` |`,
+              `| **Packages** | \`${depNames || 'batch-update'}\` |`,
+              '',
+              isDev 
+                ? '🟢 **Low Risk (Dev / Build-Time Only)**: These dependencies are build-time tooling. They do not ship in client-side bundles or execute on production Cloud Run instances. Safe for standard monthly batch merge.'
+                : '⚠️ **Review Required (Production Runtime)**: These dependencies are part of the production bundle or server runtime. Ensure all CI security audits (Sentinel, SBOM, Observatory, Vitest) pass before approving.',
+              '',
+              '> *Adheres to the PocketGull 7-Day Supply Chain Soak & Batch Stewardship Policy.*'
+            ].join('\n');
+
+            try {
+              // Avoid duplicate comments on synchronization
+              const existingComments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                per_page: 50
+              });
+
+              const botComment = existingComments.data.find(c => 
+                c.user.type === 'Bot' && c.body.includes('Dependabot OPSEC & FinOps Triage Summary')
+              );
+
+              if (botComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: body
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  body: body
+                });
+              }
+            } catch (err) {
+              core.warning(`Could not manage PR comment: ${err.message}`);
+            }

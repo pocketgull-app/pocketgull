@@ -397,7 +397,8 @@ notebook = {
   "nbformat_minor": 5
 }
 
-out_path = r'c:\Users\philg\Pocketgull\pocketgull\contests\rsna_knee_2026\training_v5\rsna_knee_train_v5.ipynb'
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+out_path = os.path.join(ROOT_DIR, 'contests', 'rsna_knee_2026', 'training_v5', 'rsna_knee_train_v5.ipynb')
 os.makedirs(os.path.dirname(out_path), exist_ok=True)
 with open(out_path, 'w', encoding='utf-8') as f:
     json.dump(notebook, f, indent=2)

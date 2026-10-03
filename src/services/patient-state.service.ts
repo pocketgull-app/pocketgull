@@ -38,6 +38,7 @@ import { StorageService } from './storage.service';
 import { GamificationService } from './gamification.service';
 import { ThemeService } from './theme.service';
 import { ActuarialLongevityService, IOccupationalHazardProfile } from './actuarial-longevity.service';
+import { DiagnosticModalityGeneratorService } from './diagnostic-modality-generator.service';
 import { CoppaPrivacyShieldService, IGuardianAttestation } from './coppa-privacy-shield.service';
 import { SecureStorageService } from './secure-storage.service';
 import { ConsentLineageService } from './consent-lineage.service';
@@ -54,6 +55,26 @@ export class PatientStateService {
   readonly coppaShield = inject(CoppaPrivacyShieldService, { optional: true });
   private secureStorage = inject(SecureStorageService, { optional: true });
   private consentLineage = inject(ConsentLineageService, { optional: true });
+  private modalityGenerator = inject(DiagnosticModalityGeneratorService, { optional: true });
+
+  // Exposing the diagnostic modalities as computed signals
+  public readonly patientEcgStrip = computed(() => {
+    const id = this.patientId();
+    if (!id || !this.modalityGenerator) return null;
+    return this.modalityGenerator.generateEcgStrip(Math.floor(Math.random() * 40) + 60);
+  });
+
+  public readonly patientDicomMetadata = computed(() => {
+    const id = this.patientId();
+    if (!id || !this.modalityGenerator) return null;
+    return this.modalityGenerator.generateDicomMetadata(id, 'MR');
+  });
+
+  public readonly patientGenomics = computed(() => {
+    const id = this.patientId();
+    if (!id || !this.modalityGenerator) return null;
+    return this.modalityGenerator.generateGenomicVariant('SCN5A', 'c.1234G>A');
+  });
 
   // --- UI State & Clinical Tool Prescription State Machine ---
   readonly isPlainLanguageMode = computed(() => this.themeService.isPlainLanguageMode());
@@ -385,7 +406,7 @@ export class PatientStateService {
   readonly requestedResearchQuery = signal<string | null>(null);
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
-  readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular'>('3d');
+  readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular' | 'decad'>('3d');
   readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing'>('skin');
   /** Active rehabilitation condition target for 3D kinematics and ghost mentoring */
   readonly activeRehabCondition = signal<string>('lumbar_pelvic_alignment');
@@ -416,7 +437,7 @@ export class PatientStateService {
   readonly isAudioPrimaryMode = signal<boolean>(false);
   readonly isGammaSyncActive = signal<boolean>(false);
   readonly sentinelScope = signal<'micro-patient' | 'macro-fleet'>('micro-patient');
-  readonly activePhilosophy = signal<'western' | 'eastern' | 'ayurvedic' | 'osteopathic'>('western');
+  readonly activePhilosophy = signal<'western' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'who_nih'>('western');
   readonly tcmIntake = signal<import('./patient.types').ITcmIntake>({
     tongueColor: 'pink',
     tongueCoating: 'thin-white',
@@ -988,7 +1009,7 @@ export class PatientStateService {
     this.selectedNoteId.set(noteId);
   }
 
-  selectPhilosophy(philosophy: 'western' | 'eastern' | 'ayurvedic' | 'osteopathic') {
+  selectPhilosophy(philosophy: 'western' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'who_nih') {
     this.activePhilosophy.set(philosophy);
     this.requestAnalysisUpdate();
   }

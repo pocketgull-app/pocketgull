@@ -24,6 +24,17 @@ def run_all_tests():
     evidence_tests = os.path.join(root_dir, "packages", "clinical-evidence-grade", "tests")
     sys.path.insert(0, evidence_src)
 
+    models_dir = os.path.join(api_dir, "models")
+    os.makedirs(models_dir, exist_ok=True)
+    seven_gen_path = os.path.join(models_dir, "seven_generations_protocol_model.joblib")
+    if not os.path.exists(seven_gen_path):
+        try:
+            print("[Pre-flight] Pre-training seven generations protocol model...")
+            import train_seven_generations_model
+            train_seven_generations_model.train_seven_generations_model()
+        except Exception as e:
+            print(f"[Warning] Could not pre-train seven generations model: {e}")
+
     test_files = [(api_dir, f) for f in os.listdir(api_dir) if f.startswith("test_") and f.endswith(".py")]
     tests_dir = os.path.join(api_dir, "tests")
     if os.path.exists(tests_dir):

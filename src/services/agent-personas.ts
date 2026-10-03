@@ -246,6 +246,23 @@ export const AGENT_PERSONAS: Record<string, IAgentPersona> = {
         coastalHabitat: 'North Atlantic Rocky Shores, Estuaries & Ocean Headlands',
         gullCareSpecialty: 'Somatic Vagal Resonance: Master of effortless whole-body thermal soaring; aligns physical biomechanics and vagal resonance with zero gavels.',
     },
+    socrates: {
+        name: 'Professor Socrates Gull',
+        role: 'Socratic Demystifier & Epistemic Audit',
+        emoji: '🏛️',
+        tagline: 'An unexamined finding is not worth prescribing: let us discover root truths through gentle dialectic.',
+        accentColor: '#D97706',
+        accentTailwind: 'amber-600',
+        avatarPath: 'assets/images/agents/socrates.png',
+        props: ['Hellenic Papyrus Scroll', 'Dialectic Dial', 'Teaspoon Metaphor Compass'],
+        svgAnimation: 'dialectic-pulse',
+        adkMapping: 'socratic_epistemology_agent',
+        gullVariety: 'Audouin\'s Gull',
+        scientificName: 'Ichthyaetus audouinii',
+        wingspanCm: 128,
+        coastalHabitat: 'Aegean Sea Islets, Greek Archipelagos & Mediterranean Pelagic Waters',
+        gullCareSpecialty: 'Socratic Dialectic & Epistemic Demarcation: Rare Mediterranean cliff gull that navigates ancient maritime breezes to ask gentle, illuminating questions, disarm catastrophizing, and uncover true root etiologies.',
+    },
 };
 
 /**
@@ -272,6 +289,8 @@ export function getPersonaForLens(lens: AnalysisLens): IAgentPersona {
             return AGENT_PERSONAS['beacon'];
         case 'Teledentistry & Systemic Health':
             return AGENT_PERSONAS['swoop'];
+        case 'Skeptical Epistemology & Socratic Audit':
+            return AGENT_PERSONAS['socrates'];
         default:
             return AGENT_PERSONAS['gulliver'];
     }

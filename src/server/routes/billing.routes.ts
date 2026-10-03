@@ -396,6 +396,39 @@ export function createBillingRouter() {
           }, { merge: true });
         }
         break;
+      case 'account.updated': {
+        const account = event.data.object as any;
+        console.log(`[Billing] Stripe Connect account updated: ${account.id}, payouts_enabled=${account.payouts_enabled}`);
+        if (account.metadata?.patient_id) {
+          try {
+            await getDb().collection('research_payout_accounts').doc(account.metadata.patient_id).set({
+              stripeAccountId: account.id,
+              payoutsEnabled: !!account.payouts_enabled,
+              detailsSubmitted: !!account.details_submitted,
+              updatedAt: new Date()
+            }, { merge: true });
+          } catch (e: any) {
+            console.error('[Billing] Error updating connect account document:', e.message);
+          }
+        }
+        break;
+      }
+      case 'transfer.created': {
+        const transfer = event.data.object as any;
+        console.log(`[Billing] Stripe Transfer created: ${transfer.id}, amount=${transfer.amount}, destination=${transfer.destination}`);
+        if (transfer.metadata?.ledger_entry_id) {
+          try {
+            await getDb().collection('research_dividend_ledgers').doc(transfer.metadata.ledger_entry_id).set({
+              status: 'paid_out',
+              stripeTransferId: transfer.id,
+              settledAt: new Date()
+            }, { merge: true });
+          } catch (e: any) {
+            console.error('[Billing] Error updating dividend ledger entry on transfer:', e.message);
+          }
+        }
+        break;
+      }
       default:
         console.log(`[Billing] Unhandled event type ${event.type}`);
     }

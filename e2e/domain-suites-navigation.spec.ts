@@ -17,10 +17,19 @@ test.describe('10-Dimensional Domain Suites E2E Verification', () => {
     // Perform full login and enter demo mode
     await enterDemoMode(page);
 
+    // Switch to Analysis panel if on mobile/tablet viewports
+    const reportTab = page.locator('button', { hasText: 'Analysis' }).first();
+    if (await reportTab.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await reportTab.click({ force: true });
+      await page.waitForTimeout(500);
+    }
+
     // Toggle viewMode to 'suites' in AnalysisContainerComponent
-    const domainSuitesToggle = page.locator('button').filter({ hasText: /Domain Suites/i }).first();
+    const domainSuitesToggle = page.getByTestId('toggle-suites').or(page.locator('button').filter({ hasText: /Domain Suites|SUITES/i })).first();
+    await domainSuitesToggle.scrollIntoViewIfNeeded();
     await expect(domainSuitesToggle).toBeVisible({ timeout: 45000 });
-    await domainSuitesToggle.click();
+    await domainSuitesToggle.click({ force: true });
+    await page.waitForTimeout(500);
 
     // Verify Unified Paradigm Synthesizer Card is rendered
     const synthesizerHeader = page.locator('h3:has-text("10-Dimensional Unified Paradigm Health Vector")');

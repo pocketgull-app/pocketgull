@@ -3,6 +3,7 @@ import { PatientStateService, BODY_PART_NAMES } from './patient-state.service';
 import { PatientManagementService } from './patient-management.service';
 import { PetAuditoryService } from './pet-auditory.service';
 import { AmbientLightingService } from './ambient-lighting.service';
+import { ClinicalMoERouterService } from './clinical-moe-router.service';
 
 declare var webkitSpeechRecognition: any;
 
@@ -14,6 +15,7 @@ export class DictationService {
   private patientMgmt = inject(PatientManagementService, { optional: true });
   private petAuditory = inject(PetAuditoryService, { optional: true });
   private lighting = inject(AmbientLightingService, { optional: true });
+  private moeRouter = inject(ClinicalMoERouterService, { optional: true });
 
   readonly isListening = signal(false);
   readonly isSidechainDuckingActive = computed(() => this.isListening());
@@ -131,73 +133,9 @@ export class DictationService {
 
       // --- COMMAND ROUTER (Intercept Voice Commands) ---
       if (final) {
-        const lowerFinal = final.toLowerCase().trim();
-
-        // --- EMERGENCY AVS OVERRIDE (High priority safety trigger, no wake word required) ---
-        const isEmergencyCommand = 
-            lowerFinal.includes('stop avs') || 
-            lowerFinal.includes('stop session') || 
-            lowerFinal.includes('seizure emergency') || 
-            lowerFinal.includes('emergency stop') ||
-            lowerFinal.includes('terminate avs') ||
-            lowerFinal.includes('shut down avs') ||
-            (lowerFinal.startsWith('gull') && (lowerFinal.includes('stop') || lowerFinal.includes('abort') || lowerFinal.includes('halt')));
-
-        if (isEmergencyCommand) {
-            console.warn("[Voice Command] EMERGENCY AVS STOP COMMAND DETECTED!");
-            this.lastCommand.set("EMERGENCY AVS STOPPED");
-            
-            // Shut down AVS and restore normal lighting and soundscapes
-            if (this.state) this.state.isAvsSessionActive.set(false);
-            if (this.lighting) this.lighting.setEmergencyOverride(false);
-            if (this.petAuditory) this.petAuditory.stop();
-            
-            setTimeout(() => this.lastCommand.set(null), 3000);
-            return; // Consume the command
-        }
-
-        // --- ENHANCED WAKE WORD ENGINE ("Hey Gulliver", "Sentinel", "Swoop", "Scribes") ---
-        const isHeyGull = lowerFinal.includes('hey gull') || lowerFinal.includes('hey gulliver') || lowerFinal.startsWith('gulliver') || lowerFinal.startsWith('gull');
-        const isSentinel = lowerFinal.includes('sentinel') || lowerFinal.includes('hey sentinel');
-        const isSwoop = lowerFinal.includes('swoop') || lowerFinal.includes('hey swoop');
-        const isScribes = lowerFinal.includes('scribes') || lowerFinal.includes('hey scribes');
-
-        if (isHeyGull || isSentinel || isSwoop || isScribes) {
-          const persona = isSentinel ? 'sentinel' : (isSwoop ? 'swoop' : (isScribes ? 'scribes' : 'gulliver'));
-          console.log(`[Wake Word Engine] Persona Wake Word Triggered: ${persona}`);
-          this.wakeWordDetected.set(persona);
-          this.lastCommand.set(`Wake Word: ${persona.toUpperCase()}`);
-          this.playPersonaAudioFx(persona === 'sentinel' ? 110 : (persona === 'swoop' ? 528 : (persona === 'scribes' ? 432 : 880)));
-          setTimeout(() => {
-            this.wakeWordDetected.set(null);
-            this.lastCommand.set(null);
-          }, 3000);
-        }
-
-        // Look for the wake word "gull" (or common mishearings like "goal", "go")
-        if (lowerFinal.startsWith('gull') || lowerFinal.startsWith('goal') || lowerFinal.startsWith('go ') || lowerFinal.startsWith('girl')) {
-            if (lowerFinal.includes('sync') || lowerFinal.includes('save')) {
-                console.log("[Voice Command] Triggering Sync...");
-                this.lastCommand.set("Data Synced");
-                if (this.patientMgmt) this.patientMgmt.syncToCloud();
-                
-                // Clear the feedback after 2s
-                setTimeout(() => this.lastCommand.set(null), 2000);
-                return; // Consume the command, don't pass to dictation
-            }
-
-            if (lowerFinal.includes('highlight') || lowerFinal.includes('select') || lowerFinal.includes('isolate')) {
-                const words = lowerFinal.split(' ');
-                for (const [partName, partKey] of bodyPartMap.entries()) {
-                    if (lowerFinal.includes(partName)) {
-                        console.log(`[Voice Command] Highlighting ${partName} (${partKey})`);
-                        this.lastCommand.set(`Highlighted ${partName}`);
-                        if (this.state) this.state.selectPart(partKey);
-                        setTimeout(() => this.lastCommand.set(null), 2000);
-                        return; // Consume
-                    }
-                }
-            }
+        const isCommandConsumed = this.processVoiceCommand(final);
+        if (isCommandConsumed) {
+          return; // Consume the command, don't pass to dictation
         }
       }
 
@@ -207,6 +145,183 @@ export class DictationService {
         if (interim) this.resultCallback(interim, false);
       }
     };
+  }
+
+  /**
+   * Processes a spoken command transcript and routes actions across
+   * clinical emergency safety, triage rosters, SMoE adaptive canvas,
+   * specialist referral, clinical trials, SDOH, environmental exposomics,
+   * anatomical Three.js shaders, and cloud synchronization.
+   * Returns true if the spoken phrase was consumed as a recognized voice command.
+   */
+  public processVoiceCommand(spokenText: string): boolean {
+    if (!spokenText) return false;
+    const lower = spokenText.toLowerCase().trim();
+
+    // 1. Emergency AVS Override (High-priority safety trigger, no wake word required)
+    const isEmergencyCommand = 
+      lower.includes('stop avs') || 
+      lower.includes('stop session') || 
+      lower.includes('seizure emergency') || 
+      lower.includes('emergency stop') ||
+      lower.includes('terminate avs') ||
+      lower.includes('shut down avs') ||
+      (lower.startsWith('gull') && (lower.includes('stop') || lower.includes('abort') || lower.includes('halt')));
+
+    if (isEmergencyCommand) {
+      console.warn('[Voice Command] EMERGENCY AVS STOP COMMAND DETECTED!');
+      this.lastCommand.set('EMERGENCY AVS STOPPED');
+      if (this.state) this.state.isAvsSessionActive.set(false);
+      if (this.lighting) this.lighting.setEmergencyOverride(false);
+      if (this.petAuditory) this.petAuditory.stop();
+      setTimeout(() => this.lastCommand.set(null), 3000);
+      return true;
+    }
+
+    // 2. Enhanced Persona Wake Words ("Hey Gulliver", "Sentinel", "Swoop", "Scribes")
+    const isHeyGull = lower.includes('hey gull') || lower.includes('hey gulliver') || lower.startsWith('gulliver') || lower.startsWith('gull');
+    const isSentinel = lower.includes('sentinel') || lower.includes('hey sentinel');
+    const isSwoop = lower.includes('swoop') || lower.includes('hey swoop');
+    const isScribes = lower.includes('scribes') || lower.includes('hey scribes');
+
+    if (isHeyGull || isSentinel || isSwoop || isScribes) {
+      const persona = isSentinel ? 'sentinel' : (isSwoop ? 'swoop' : (isScribes ? 'scribes' : 'gulliver'));
+      console.log(`[Wake Word Engine] Persona Wake Word Triggered: ${persona}`);
+      this.wakeWordDetected.set(persona);
+      this.lastCommand.set(`Wake Word: ${persona.toUpperCase()}`);
+      this.playPersonaAudioFx(persona === 'sentinel' ? 110 : (persona === 'swoop' ? 528 : (persona === 'scribes' ? 432 : 880)));
+      setTimeout(() => {
+        this.wakeWordDetected.set(null);
+        this.lastCommand.set(null);
+      }, 3000);
+    }
+
+    // 3. Clinical Navigation & Action Commands (prefixed with wake word or explicit intent)
+    const hasWakePrefix = lower.startsWith('gull') || lower.startsWith('goal') || lower.startsWith('go ') || lower.startsWith('girl') || lower.startsWith('hey gull');
+
+    if (hasWakePrefix || lower.includes('show triage') || lower.includes('open triage') || lower.includes('show canvas') || lower.includes('decision flow')) {
+      // Triage Command Center
+      if (lower.includes('triage') || lower.includes('roster')) {
+        this.lastCommand.set('Opening Triage Command Center');
+        if (this.patientMgmt) this.patientMgmt.selectedPatientId.set(null);
+        setTimeout(() => this.lastCommand.set(null), 2500);
+        return true;
+      }
+
+      // Synoptic Canvas (Adaptive Multi-Specialist View) Command
+      if (lower.includes('synoptic') || lower.includes('canvas') || lower.includes('smoe')) {
+        this.lastCommand.set('Switching to Synoptic Canvas');
+        if (this.moeRouter) this.moeRouter.analysisViewMode.set('canvas');
+        setTimeout(() => this.lastCommand.set(null), 2500);
+        return true;
+      }
+
+      // Decision Flow Explainability Trigger
+      if (lower.includes('decision flow') || lower.includes('explain flow')) {
+        this.lastCommand.set('Explaining Decision Flow');
+        if (this.state) {
+          const targetId = this.moeRouter?.activeShiftPatientId() || 'p001';
+          this.state.liveAgentInput.set(`Please explain the SMoE gating decision flow for patient ${targetId}.`);
+          this.state.isLiveAgentActive.set(true);
+        }
+        setTimeout(() => this.lastCommand.set(null), 2500);
+        return true;
+      }
+
+      // Specialist Referral Command
+      if (lower.includes('specialist') || lower.includes('referral')) {
+        this.lastCommand.set('Focusing Specialist Referral Hub');
+        if (this.moeRouter) this.moeRouter.pinExpert('specialist-referral');
+        setTimeout(() => this.lastCommand.set(null), 2500);
+        return true;
+      }
+
+      // Clinical Trials Command
+      if (lower.includes('trial') || lower.includes('trials')) {
+        this.lastCommand.set('Focusing Clinical Trials Matcher');
+        if (this.moeRouter) this.moeRouter.pinExpert('clinical-trials-matcher');
+        setTimeout(() => this.lastCommand.set(null), 2500);
+        return true;
+      }
+
+      // SDOH / Food / Produce Rx Command
+      if (lower.includes('sdoh') || lower.includes('food') || lower.includes('produce') || lower.includes('nutrition')) {
+        this.lastCommand.set('Focusing SDOH & Produce Rx Navigator');
+        if (this.moeRouter) this.moeRouter.pinExpert('sdoh-navigator');
+        setTimeout(() => this.lastCommand.set(null), 2500);
+        return true;
+      }
+
+      // Environmental Exposomics Command
+      if (lower.includes('air quality') || lower.includes('exposome') || lower.includes('environmental') || lower.includes('pollen')) {
+        this.lastCommand.set('Focusing Environmental Exposomics Radar');
+        if (this.moeRouter) this.moeRouter.pinExpert('environmental-exposomics');
+        setTimeout(() => this.lastCommand.set(null), 2500);
+        return true;
+      }
+
+      // Patient Switch Command
+      if (lower.includes('patient') || lower.includes('switch') || lower.includes('chart')) {
+        let patientId: string | null = null;
+        if (lower.includes('darwin') || lower.includes('charles')) patientId = 'p_charles_darwin';
+        else if (lower.includes('curie') || lower.includes('marie')) patientId = 'p_marie_curie';
+        else if (lower.includes('frida') || lower.includes('kahlo')) patientId = 'p_frida_kahlo';
+        else if (lower.includes('smith') || lower.includes('edwin')) patientId = 'p_edwin_smith_3';
+        else if (lower.includes('mara') || lower.includes('santos')) patientId = 'p_mara_santos';
+        else if (lower.includes('ramanujan') || lower.includes('srinivasa')) patientId = 'p_srinivasa_ramanujan';
+        else if (lower.includes('vance') || lower.includes('eleanor') || lower.includes('p001')) patientId = 'p001';
+        else if (lower.includes('jenkins') || lower.includes('sarah') || lower.includes('p002')) patientId = 'p002';
+        else if (lower.includes('wilson') || lower.includes('james') || lower.includes('p003')) patientId = 'p003';
+        else if (lower.includes('chen') || lower.includes('marcus') || lower.includes('p004')) patientId = 'p004';
+
+        if (patientId) {
+          this.lastCommand.set(`Switching Chart: ${patientId}`);
+          if (this.moeRouter) this.moeRouter.loadShiftPatient(patientId);
+          if (this.patientMgmt) this.patientMgmt.selectPatient(patientId);
+          setTimeout(() => this.lastCommand.set(null), 2500);
+          return true;
+        }
+      }
+
+      // Cloud Data Synchronization Command
+      if (lower.includes('sync') || lower.includes('save')) {
+        this.lastCommand.set('Data Synced');
+        if (this.patientMgmt) this.patientMgmt.syncToCloud();
+        setTimeout(() => this.lastCommand.set(null), 2000);
+        return true;
+      }
+
+      // 3D Spatial Anatomy Highlight Command
+      if (lower.includes('highlight') || lower.includes('select') || lower.includes('isolate')) {
+        const bodyPartMap = new Map<string, string>();
+        for (const [k, v] of Object.entries(BODY_PART_NAMES)) {
+          bodyPartMap.set(k.toLowerCase(), k);
+          bodyPartMap.set(v.toLowerCase(), k);
+        }
+        bodyPartMap.set('heart', 'chest');
+        bodyPartMap.set('cardiac', 'chest');
+        bodyPartMap.set('lungs', 'chest');
+        bodyPartMap.set('lung', 'chest');
+        bodyPartMap.set('brain', 'head');
+        bodyPartMap.set('skull', 'head');
+        bodyPartMap.set('stomach', 'abdomen');
+        bodyPartMap.set('liver', 'abdomen');
+        bodyPartMap.set('gut', 'abdomen');
+        bodyPartMap.set('knee', 'r_shin');
+        bodyPartMap.set('spine', 'upper_back');
+
+        for (const [alias, partKey] of bodyPartMap.entries()) {
+          if (lower.includes(alias)) {
+            this.lastCommand.set(`Highlighted ${alias}`);
+            if (this.state) this.state.selectPart(partKey);
+            setTimeout(() => this.lastCommand.set(null), 2000);
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   openDictationModal(initialText: string = '', onAccept: (text: string) => void) {

@@ -1055,7 +1055,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                     <!-- Single Canvas Container with Constant Dimensions (h-72 sm:h-80) -->
                     <div class="w-full h-72 sm:h-80 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-3 sm:p-4 flex flex-col shadow-sm relative overflow-hidden">
                       <div class="relative flex-1 min-h-0 w-full h-full">
-                        <canvas #unifiedChart></canvas>
+                        <div #unifiedChart class="w-full h-full"></div>
                       </div>
                     </div>
                   </section>
@@ -1330,7 +1330,7 @@ export class MedicalChartSummaryComponent {
   activeMetric = signal<'all' | 'pain' | 'bp' | 'hr' | 'spo2' | 'temp' | 'nutrients'>('all');
   activeNutrient = signal<'vitD3' | 'vitC' | 'magnesium' | 'zinc' | 'b12'>('vitD3');
   chartType = signal<'line' | 'bar' | 'radar'>('line');
-  unifiedChartRef = viewChild<ElementRef<HTMLCanvasElement>>('unifiedChart');
+  unifiedChartRef = viewChild<ElementRef<HTMLDivElement>>('unifiedChart');
   private unifiedChartInstance: any = null;
 
   getDemographicTargetDescription(): string {
@@ -1440,21 +1440,21 @@ export class MedicalChartSummaryComponent {
     const ref = this.unifiedChartRef();
     if (!p || !ref || !ref.nativeElement) return;
 
-    const { Chart, registerables } = await import('chart.js');
-    Chart.register(...registerables);
+    const echarts = await import('echarts');
+    
 
     if (this.unifiedChartInstance) {
-      this.unifiedChartInstance.destroy();
+      this.unifiedChartInstance.dispose();
       this.unifiedChartInstance = null;
     }
 
-    const existingChart = Chart.getChart(ref.nativeElement);
+    const existingChart = echarts.getInstanceByDom(ref.nativeElement);
     if (existingChart) {
-      existingChart.destroy();
+      existingChart.dispose();
     }
 
-    const ctx = ref.nativeElement.getContext('2d');
-    if (!ctx) return;
+    const dom = ref.nativeElement;
+    
 
     const dates: string[] = [];
     const painLevels: number[] = [];
@@ -1563,45 +1563,19 @@ export class MedicalChartSummaryComponent {
 
       const baselineTargetValues = [20, 120, 70, 99, 50, 50, 75]; // Demographic target values
 
-      this.unifiedChartInstance = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: radarLabels,
-          datasets: [
-            {
-              label: 'Patient Current Biometrics',
-              data: currentValues,
-              borderColor: '#8b5cf6',
-              backgroundColor: 'rgba(139, 92, 246, 0.25)',
-              borderWidth: 3,
-              pointBackgroundColor: '#8b5cf6'
-            },
-            {
-              label: 'Demographic Target Zone',
-              data: baselineTargetValues,
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.12)',
-              borderWidth: 2,
-              borderDash: [4, 4],
-              pointRadius: 0
-            }
-          ]
+      this.unifiedChartInstance = echarts.init(dom, null, { renderer: 'svg' });
+      this.unifiedChartInstance.setOption({
+        tooltip: { trigger: 'item' },
+        radar: {
+          indicator: radarLabels.map((name, i) => ({ name, max: i === 0 ? 100 : 200 }))
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            r: {
-              angleLines: { color: 'rgba(156, 163, 175, 0.2)' },
-              grid: { color: 'rgba(156, 163, 175, 0.2)' },
-              pointLabels: { font: { family: 'Inter', size: 10, weight: 'bold' }, color: '#9CA3AF' },
-              ticks: { display: false }
-            }
-          },
-          plugins: {
-            legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, usePointStyle: true } }
-          }
-        }
+        series: [{
+          type: 'radar',
+          data: [
+            { value: currentValues, name: 'Current Vitals' },
+            { value: baselineTargetValues, name: 'Target Baseline', lineStyle: { type: 'dashed' } }
+          ]
+        }]
       });
       return;
     }
@@ -1611,10 +1585,10 @@ export class MedicalChartSummaryComponent {
     const isBar = selectedType === 'bar';
 
     const buildGradient = (hex: string) => {
-      const g = ctx.createLinearGradient(0, 0, 0, 300);
-      g.addColorStop(0, hex + '50');
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      return g;
+      const g = hex;
+      
+      
+      return hex;
     };
 
     if (metric === 'all') {
@@ -1668,27 +1642,22 @@ export class MedicalChartSummaryComponent {
     if (this.showWHOBaseline()) pushBaseline('WHO Norm', '#689F38', metric === 'bp' ? 118 : (metric === 'hr' ? 70 : (metric === 'spo2' ? 97 : 75)));
     if (this.showBQBaseline()) pushBaseline('BigQuery OMOP', '#EA4335', metric === 'bp' ? 122 : (metric === 'hr' ? 74 : (metric === 'spo2' ? 98.5 : 82)));
 
-    this.unifiedChartInstance = new Chart(ctx, {
-      type: selectedType as any,
-      data: { labels: dates, datasets },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: false,
-            grid: { color: 'rgba(156, 163, 175, 0.1)' },
-            ticks: { font: { family: 'Inter', size: 10, weight: 'bold' }, color: '#9CA3AF' }
-          },
-          x: {
-            grid: { display: false },
-            ticks: { font: { family: 'Inter', size: 10, weight: 'bold' }, color: '#9CA3AF' }
-          }
-        },
-        plugins: {
-          legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, usePointStyle: true } }
-        }
-      }
+    this.unifiedChartInstance = echarts.init(dom, null, { renderer: 'svg' });
+    const eDatasets = datasets.map(d => ({
+       name: d.label,
+       type: selectedType === 'bar' ? 'bar' : 'line',
+       data: d.data,
+       itemStyle: { color: d.borderColor || d.backgroundColor },
+       smooth: 0.3
+    }));
+
+    this.unifiedChartInstance.setOption({
+      tooltip: { trigger: 'axis' },
+      legend: { show: true },
+      grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+      xAxis: { type: 'category', data: dates },
+      yAxis: { type: 'value' },
+      series: eDatasets
     });
   }
 

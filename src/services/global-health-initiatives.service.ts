@@ -68,6 +68,18 @@ export interface INihRecoverAssessment {
   pacingAndRecoveryDirectives: string[];
 }
 
+export interface IWhoInfectiousDiseaseResult {
+  differentialDiagnoses: Array<{
+    diseaseName: string;
+    whoIcd11Code: string;
+    matchProbability: number;
+    description: string;
+    keyCorrelatingSymptoms: string[];
+  }>;
+  epidemiologicalWarnings: string[];
+  recommendedDiagnostics: string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -488,5 +500,72 @@ export class GlobalHealthInitiativesService {
     if (parts.length < 2) return null;
     const val = parseInt(parts[1], 10);
     return isNaN(val) ? null : val;
+  }
+
+  /**
+   * 6. WHO/NIH GARD Database Query
+   * Mocks a vector search against the WHO Infectious Disease and NIH Genetic & Rare Diseases (GARD) databases
+   */
+  queryWhoInfectiousDiseaseDatabase(symptoms: string[], scope: string): IWhoInfectiousDiseaseResult {
+    // In a real application, this would dispatch a vector embedding search to the backend.
+    // For this prototype, we simulate a robust diagnostic engine discovering "zebras".
+    const symptomStr = symptoms.join(' ').toLowerCase();
+    const isFebrile = symptomStr.includes('pyrexia') || symptomStr.includes('fever') || symptomStr.includes('febrile');
+    const isWasting = symptomStr.includes('cachexia') || symptomStr.includes('wasting') || symptomStr.includes('weight loss');
+
+    const result: IWhoInfectiousDiseaseResult = {
+      differentialDiagnoses: [],
+      epidemiologicalWarnings: [
+        'Alert: Cross-reference travel history against recent WHO Disease Outbreak News (DONs).',
+        'Infection control: Institute airborne/contact precautions pending definitive diagnosis.'
+      ],
+      recommendedDiagnostics: [
+        'Comprehensive metabolic panel (CMP)',
+        'Erythrocyte sedimentation rate (ESR) and CRP',
+        'Next-generation metagenomic sequencing (mNGS) for unknown pathogens'
+      ]
+    };
+
+    if (isFebrile && isWasting) {
+      result.differentialDiagnoses.push({
+        diseaseName: 'Visceral Leishmaniasis (Kala-azar)',
+        whoIcd11Code: '1F54.0',
+        matchProbability: 0.82,
+        description: 'A disseminated protozoal infection transmitted by phlebotomine sandflies, characterized by irregular fever, weight loss, hepatosplenomegaly, and anemia.',
+        keyCorrelatingSymptoms: ['Remittent pyrexia', 'Cachexia']
+      });
+      result.differentialDiagnoses.push({
+        diseaseName: 'Disseminated Tuberculosis (Miliary TB)',
+        whoIcd11Code: '1B10.Z',
+        matchProbability: 0.78,
+        description: 'Widespread dissemination of Mycobacterium tuberculosis via hematogenous spread, often presenting with systemic wasting and fevers.',
+        keyCorrelatingSymptoms: ['Remittent pyrexia', 'Cachexia', 'Night sweats']
+      });
+      result.differentialDiagnoses.push({
+        diseaseName: 'Melioidosis (Burkholderia pseudomallei)',
+        whoIcd11Code: '1C14',
+        matchProbability: 0.65,
+        description: 'An infectious disease endemic to Southeast Asia and Northern Australia, which can present as a chronic consumptive illness mimicking tuberculosis.',
+        keyCorrelatingSymptoms: ['Remittent pyrexia', 'Cachexia']
+      });
+    } else {
+      // Generic rare diseases fallback
+      result.differentialDiagnoses.push({
+        diseaseName: 'Idiopathic Multicentric Castleman Disease (iMCD)',
+        whoIcd11Code: '3B3Z',
+        matchProbability: 0.60,
+        description: 'A rare, life-threatening lymphoproliferative disorder involving systemic inflammation, cytopenias, and organ dysfunction.',
+        keyCorrelatingSymptoms: symptoms.slice(0, 2)
+      });
+      result.differentialDiagnoses.push({
+        diseaseName: 'Adult-Onset Still\'s Disease (AOSD)',
+        whoIcd11Code: 'FA23.2',
+        matchProbability: 0.55,
+        description: 'A rare systemic autoinflammatory disease characterized by high spiking fevers, evanescent salmon-colored rash, and arthritis.',
+        keyCorrelatingSymptoms: symptoms.slice(0, 2)
+      });
+    }
+
+    return result;
   }
 }

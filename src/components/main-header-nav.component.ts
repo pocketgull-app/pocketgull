@@ -30,7 +30,7 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
   template: `
     <!-- Navbar: Pure utility & theme harmony -->
     <nav class="theme-nav-bar h-14 flex items-center justify-between px-3 sm:px-6 shrink-0 z-50 no-print relative">
-      <div class="flex items-center gap-3 min-w-0">
+      <div class="flex items-center gap-3 shrink-0">
         <a href="/" class="flex items-center gap-2.5 shrink-0 cursor-pointer group select-none">
           <app-pocketgull-brand-mark size="sm" [showSubtext]="false" />
         </a>
@@ -64,13 +64,93 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
         </div>
       </div>
 
+      <!-- Center Primary Navigation Tab Bar (Desktop / Thin-Clients) -->
+      <div class="hidden lg:flex items-center shrink-0 p-1 bg-zinc-100/90 dark:bg-zinc-900/90 rounded-lg border border-zinc-200 dark:border-zinc-800/80 shadow-xs font-mono text-xs">
+        <!-- 🩺 Chart Tab -->
+        <button
+          type="button"
+          (click)="navShell?.selectTab('chart')"
+          [class.bg-white]="navShell?.activeTab() === 'chart' && !state.showActiveRoom()"
+          [class.dark:bg-zinc-800]="navShell?.activeTab() === 'chart' && !state.showActiveRoom()"
+          [class.text-teal-900]="navShell?.activeTab() === 'chart' && !state.showActiveRoom()"
+          [class.dark:text-teal-200]="navShell?.activeTab() === 'chart' && !state.showActiveRoom()"
+          [class.shadow-xs]="navShell?.activeTab() === 'chart' && !state.showActiveRoom()"
+          [class.text-zinc-600]="navShell?.activeTab() !== 'chart' || state.showActiveRoom()"
+          [class.dark:text-zinc-400]="navShell?.activeTab() !== 'chart' || state.showActiveRoom()"
+          class="px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
+          <span>🩺</span>
+          <span>Chart</span>
+        </button>
+
+        <!-- 📊 Analysis Tab -->
+        <button
+          type="button"
+          (click)="navShell?.selectTab('analysis')"
+          [class.bg-white]="navShell?.activeTab() === 'analysis'"
+          [class.dark:bg-zinc-800]="navShell?.activeTab() === 'analysis'"
+          [class.text-teal-900]="navShell?.activeTab() === 'analysis'"
+          [class.dark:text-teal-200]="navShell?.activeTab() === 'analysis'"
+          [class.shadow-xs]="navShell?.activeTab() === 'analysis'"
+          [class.text-zinc-600]="navShell?.activeTab() !== 'analysis'"
+          [class.dark:text-zinc-400]="navShell?.activeTab() !== 'analysis'"
+          class="px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
+          <span>📊</span>
+          <span>Analysis</span>
+        </button>
+
+        <!-- 📋 Active Room Tab -->
+        <button
+          type="button"
+          (click)="toggleActiveRoomTab()"
+          [class.bg-teal-600]="state.showActiveRoom() || navShell?.activeTab() === 'tasks'"
+          [class.text-white]="state.showActiveRoom() || navShell?.activeTab() === 'tasks'"
+          [class.shadow-xs]="state.showActiveRoom() || navShell?.activeTab() === 'tasks'"
+          [class.text-zinc-600]="!state.showActiveRoom() && navShell?.activeTab() !== 'tasks'"
+          [class.dark:text-zinc-400]="!state.showActiveRoom() && navShell?.activeTab() !== 'tasks'"
+          class="px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
+          <span>📋</span>
+          <span>Room</span>
+        </button>
+
+        <!-- 🧩 MoCA 30-Pt Battery Tab -->
+        <button
+          type="button"
+          (click)="navShell?.openMocaSuite()"
+          [class.bg-teal-600]="navShell?.showMocaSuiteModal()"
+          [class.text-white]="navShell?.showMocaSuiteModal()"
+          [class.shadow-xs]="navShell?.showMocaSuiteModal()"
+          [class.text-zinc-600]="!navShell?.showMocaSuiteModal()"
+          [class.dark:text-zinc-400]="!navShell?.showMocaSuiteModal()"
+          class="px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
+          <span>🧩</span>
+          <span>MoCA 30-Pt</span>
+        </button>
+
+        <!-- 🔬 Research Tab -->
+        <button
+          type="button"
+          (click)="toggleResearchTab()"
+          [class.bg-white]="state.isResearchFrameVisible()"
+          [class.dark:bg-zinc-800]="state.isResearchFrameVisible()"
+          [class.text-teal-900]="state.isResearchFrameVisible()"
+          [class.dark:text-teal-200]="state.isResearchFrameVisible()"
+          [class.shadow-xs]="state.isResearchFrameVisible()"
+          [class.text-zinc-600]="!state.isResearchFrameVisible()"
+          [class.dark:text-zinc-400]="!state.isResearchFrameVisible()"
+          class="px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
+          <span>🔬</span>
+          <span>Research</span>
+        </button>
+      </div>
+
       <!-- Right Nav Action Suite -->
       <div class="flex items-center gap-2 shrink-0">
         <!-- 📋 Active Room Toggle Trigger (Desktop) -->
         <button 
           type="button" 
           id="btn-active-room-trigger"
-          (click)="state.toggleActiveRoom()"
+          data-testid="header-tab-room"
+          (click)="toggleActiveRoomTab()"
           aria-label="Toggle Active Room & Clinical Assessments"
           [class.bg-teal-600]="state.showActiveRoom()"
           [class.text-white]="state.showActiveRoom()"
@@ -84,46 +164,74 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
           <span>Active Room</span>
         </button>
 
-        <!-- 🎮 Arcade & Quests Trigger (Desktop) -->
+        <!-- 🧩 MoCA Cognitive Suite Trigger (Tablet / Compact viewports) -->
         <button 
           type="button" 
-          id="btn-arcade-hub-trigger"
-          (click)="navShell?.openArcadeHub()"
-          aria-label="Open PocketGull Arcade & Clinical Quests Hub"
-          class="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-          <span class="text-xs">🎮</span>
-          <span>Arcade Hub</span>
+          id="btn-moca-suite-trigger"
+          (click)="navShell?.openMocaSuite()"
+          aria-label="Open Montreal Cognitive Assessment Suite"
+          [class.bg-teal-600]="navShell?.showMocaSuiteModal()"
+          [class.text-white]="navShell?.showMocaSuiteModal()"
+          [class.border-teal-700]="navShell?.showMocaSuiteModal()"
+          [class.bg-teal-50]="!navShell?.showMocaSuiteModal()"
+          [class.dark:bg-teal-950/40]="!navShell?.showMocaSuiteModal()"
+          [class.text-teal-800]="!navShell?.showMocaSuiteModal()"
+          [class.dark:text-teal-200]="!navShell?.showMocaSuiteModal()"
+          class="hidden md:flex lg:hidden items-center gap-1.5 px-3 py-1.5 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">🧩</span>
+          <span>MoCA 30-Pt</span>
         </button>
 
-        <!-- ⚖️ Clinical Posology & Deprescribing Trigger (Desktop) -->
+        <!-- ⚖️ Clinical Posology & Deprescribing Trigger (Desktop 2XL) -->
         <button 
           type="button" 
           id="btn-posology-trigger"
           (click)="navShell?.openPosology()"
           aria-label="Open Clinical Posology & Deprescribing Engine"
-          class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          [class.bg-teal-600]="navShell?.showPosologyModal()"
+          [class.text-white]="navShell?.showPosologyModal()"
+          [class.border-teal-700]="navShell?.showPosologyModal()"
+          [class.bg-teal-50]="!navShell?.showPosologyModal()"
+          [class.dark:bg-teal-950/40]="!navShell?.showPosologyModal()"
+          [class.text-teal-800]="!navShell?.showPosologyModal()"
+          [class.dark:text-teal-200]="!navShell?.showPosologyModal()"
+          class="hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
           <span class="text-xs">⚖️</span>
           <span>Posology</span>
         </button>
 
-        <!-- 🏥 Specialist Referral Dossier Trigger (Desktop) -->
+        <!-- 🏥 Specialist Referral Dossier Trigger (Desktop 2XL) -->
         <button 
           type="button" 
           id="btn-specialist-referral-trigger"
           (click)="navShell?.openSpecialistReferralHub()"
           aria-label="Open Specialist Referral & Co-Management Dossier Hub"
-          class="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          [class.bg-teal-600]="navShell?.showSpecialistReferralModal()"
+          [class.text-white]="navShell?.showSpecialistReferralModal()"
+          [class.border-teal-700]="navShell?.showSpecialistReferralModal()"
+          [class.bg-teal-50]="!navShell?.showSpecialistReferralModal()"
+          [class.dark:bg-teal-950/40]="!navShell?.showSpecialistReferralModal()"
+          [class.text-teal-800]="!navShell?.showSpecialistReferralModal()"
+          [class.dark:text-teal-200]="!navShell?.showSpecialistReferralModal()"
+          class="hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
           <span class="text-xs">🏥</span>
           <span>Specialist Dossier</span>
         </button>
 
-        <!-- 💵 CMS RPM Superbill Trigger (Desktop) -->
+        <!-- 💵 CMS RPM Superbill Trigger (Desktop 2XL) -->
         <button 
           type="button" 
           id="btn-cms-superbill-trigger"
           (click)="navShell?.openCmsSuperbill()"
           aria-label="Generate CMS Remote Patient Monitoring Superbill"
-          class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          [class.bg-emerald-600]="navShell?.showCmsSuperbillModal()"
+          [class.text-white]="navShell?.showCmsSuperbillModal()"
+          [class.border-emerald-700]="navShell?.showCmsSuperbillModal()"
+          [class.bg-emerald-50]="!navShell?.showCmsSuperbillModal()"
+          [class.dark:bg-emerald-950/40]="!navShell?.showCmsSuperbillModal()"
+          [class.text-emerald-800]="!navShell?.showCmsSuperbillModal()"
+          [class.dark:text-emerald-200]="!navShell?.showCmsSuperbillModal()"
+          class="hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
           <span class="text-xs">💵</span>
           <span>RPM Superbill</span>
           @if (rpmService?.rpmSummary(); as rpm) {
@@ -135,53 +243,26 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
           }
         </button>
 
-        <!-- 📈 3-Act Trajectory Reader Trigger (Desktop) -->
+        <!-- 📈 3-Act Trajectory Reader Trigger (Desktop 2XL) -->
         <button 
           type="button" 
           id="btn-trajectory-reader-trigger"
           (click)="navShell?.openTrajectoryReader()"
           aria-label="Open 3-Act Clinical Trajectory Reader"
-          class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-200 border border-indigo-300 dark:border-indigo-700/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          [class.bg-indigo-600]="navShell?.showTrajectoryReaderModal()"
+          [class.text-white]="navShell?.showTrajectoryReaderModal()"
+          [class.border-indigo-700]="navShell?.showTrajectoryReaderModal()"
+          [class.bg-indigo-50]="!navShell?.showTrajectoryReaderModal()"
+          [class.dark:bg-indigo-950/40]="!navShell?.showTrajectoryReaderModal()"
+          [class.text-indigo-800]="!navShell?.showTrajectoryReaderModal()"
+          [class.dark:text-indigo-200]="!navShell?.showTrajectoryReaderModal()"
+          class="hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 border border-indigo-300 dark:border-indigo-700/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
           <span class="text-xs">📈</span>
           <span>3-Act Trajectory</span>
         </button>
 
-        <app-console-integrity-badge class="hidden lg:inline-flex" />
+        <app-console-integrity-badge class="hidden 2xl:inline-flex" />
 
-        @if (navShell?.developerMode()) {
-          <!-- 🌟 Experience by Role Demo Trigger (Desktop) -->
-          <button 
-            type="button" 
-            id="btn-role-demo-trigger"
-            (click)="navShell?.openRoleDemo()"
-            aria-label="Experience PocketGull by Clinical Role"
-            class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-            <span class="text-xs">✨</span>
-            <span>Role Demo</span>
-          </button>
-
-          <!-- 💼 Commercialization & Practice Growth Hub Trigger (Desktop) -->
-          <button 
-            type="button" 
-            id="btn-commercial-hub-trigger"
-            (click)="navShell?.openCommercialHub()"
-            aria-label="Open Commercialization & Monetization Hub"
-            class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-            <span class="text-xs">💼</span>
-            <span>Commercial Hub</span>
-          </button>
-        }
-
-        <!-- 🏛️ USWDS Federal Health Workstation Trigger (Desktop) -->
-        <button 
-          type="button" 
-          id="btn-federal-uswds-trigger"
-          (click)="navShell?.openFederalUswdsPortal()"
-          aria-label="Open USWDS Federal Health & CDS Workstation"
-          class="hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-[#005ea2] dark:text-blue-300 border border-blue-300 dark:border-blue-700/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
-          <span class="text-xs">🏛️</span>
-          <span>Federal Edition</span>
-        </button>
 
         <!-- 🌟 Clinical Apps & Portals Hub Dropdown Button (Desktop) -->
         <div class="relative hidden md:block">
@@ -265,6 +346,13 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
                     <div>
                       <div>3D Joint Hologram</div>
                       <div class="text-[10px] text-zinc-400 font-normal">Three.js Tri-Plane Slicer</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="openBiophysicalLenses.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                    <span class="text-sm">🫀</span>
+                    <div>
+                      <div>Biophysical 3D Lenses &amp; Phenotypers</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Cardio • Pulm • Hepato • Renal • Neuro</div>
                     </div>
                   </button>
                   <button type="button" (click)="openSmartHealthPass.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
@@ -376,6 +464,13 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
                         <div class="text-[10px] text-zinc-400 font-normal">Dieter Rams Display Mode</div>
                       </div>
                     </button>
+                    <button type="button" (click)="navShell?.openCommercialHub(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                      <span class="text-sm">💼</span>
+                      <div>
+                        <div>Commercial Hub</div>
+                        <div class="text-[10px] text-zinc-400 font-normal">Practice ROI &amp; Monetization</div>
+                      </div>
+                    </button>
                     <button type="button" (click)="openTypefaceSite.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                       <span class="text-sm">🔤</span>
                       <div>
@@ -388,14 +483,7 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
 
                 <!-- Section: Enterprise & Operations -->
                 <div class="space-y-1 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🏛️ Federal &amp; Enterprise</span>
-                  <button type="button" (click)="navShell?.openFederalUswdsPortal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-blue-700 dark:text-blue-300 cursor-pointer border border-blue-500/20 bg-blue-50/40 dark:bg-blue-950/20">
-                    <span class="text-sm">🏛️</span>
-                    <div>
-                      <div>USWDS Federal Health Edition</div>
-                      <div class="text-[10px] text-zinc-400 font-normal">21st Century IDEA • Section 508 • VA/CMS CDS</div>
-                    </div>
-                  </button>
+                  <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block px-1">🏛️ Enterprise &amp; Operations</span>
                   <button type="button" (click)="navShell?.openCommercialHub(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/20">
                     <span class="text-sm">💼</span>
                     <div>
@@ -526,10 +614,17 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
 
         <!-- Desktop Action Buttons (Hidden on mobile) -->
         <div class="hidden md:flex items-center gap-2 font-mono">
-          <button (click)="state.toggleResearchFrame()"
+          <button (click)="toggleResearchTab()"
                   id="tour-research-frame-trigger"
                   aria-label="Research"
-                  class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xs border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 text-xs font-bold uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer bg-white/80 dark:bg-zinc-900">
+                  [class.bg-teal-600]="state.isResearchFrameVisible()"
+                  [class.text-white]="state.isResearchFrameVisible()"
+                  [class.border-teal-700]="state.isResearchFrameVisible()"
+                  [class.bg-white/80]="!state.isResearchFrameVisible()"
+                  [class.dark:bg-zinc-900]="!state.isResearchFrameVisible()"
+                  [class.text-gray-700]="!state.isResearchFrameVisible()"
+                  [class.dark:text-zinc-300]="!state.isResearchFrameVisible()"
+                  class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xs border border-gray-300 dark:border-zinc-700 text-xs font-bold uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18c-2.29 0-4.43-.78-6.14-2.1C4.6 16.5 4 14.83 4 12c0-1.5.3-2.91.86-4.22L16.22 19.14A7.92 7.92 0 0 1 12 20m7.14-2.1C20.4 16.5 21 14.83 21 12c0-1.5-.3-2.91-.86-4.22L8.78 19.14C10.09 20.7 11.97 21.5 14 21.5c1.47 0 2.87-.42 4.14-1.14Z"/></svg>
             <span>Research</span>
           </button>
@@ -694,15 +789,48 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
             </button>
           </div>
 
+          <!-- Primary Clinical Workspace Navigation (Mobile) -->
+          <div class="grid grid-cols-2 gap-2 pb-2 border-b border-zinc-200 dark:border-zinc-800">
+            <button type="button" (click)="navShell?.selectTab('chart'); isMobileMenuOpen.set(false);" 
+                    [class.bg-teal-600]="navShell?.activeTab() === 'chart' && !state.showActiveRoom()"
+                    [class.text-white]="navShell?.activeTab() === 'chart' && !state.showActiveRoom()"
+                    [class.border-teal-700]="navShell?.activeTab() === 'chart' && !state.showActiveRoom()"
+                    [class.bg-zinc-100]="navShell?.activeTab() !== 'chart' || state.showActiveRoom()"
+                    [class.dark:bg-zinc-900]="navShell?.activeTab() !== 'chart' || state.showActiveRoom()"
+                    class="min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 font-bold text-xs uppercase tracking-wider cursor-pointer transition">
+              <span>🩺</span> <span>Chart</span>
+            </button>
+            <button type="button" (click)="navShell?.selectTab('analysis'); isMobileMenuOpen.set(false);" 
+                    [class.bg-teal-600]="navShell?.activeTab() === 'analysis'"
+                    [class.text-white]="navShell?.activeTab() === 'analysis'"
+                    [class.border-teal-700]="navShell?.activeTab() === 'analysis'"
+                    [class.bg-zinc-100]="navShell?.activeTab() !== 'analysis'"
+                    [class.dark:bg-zinc-900]="navShell?.activeTab() !== 'analysis'"
+                    class="min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 font-bold text-xs uppercase tracking-wider cursor-pointer transition">
+              <span>📊</span> <span>Analysis</span>
+            </button>
+          </div>
+
           <!-- Clinical Navigation Links (Fitts's Law 48px+ touch targets) -->
           <div class="space-y-2.5">
+            <!-- 🧩 Montreal Cognitive Assessment (MoCA 30-Point Suite) -->
+            <button type="button" (click)="navShell?.openMocaSuite(); isMobileMenuOpen.set(false);" 
+                    [class.bg-teal-600]="navShell?.showMocaSuiteModal()"
+                    [class.text-white]="navShell?.showMocaSuiteModal()"
+                    class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🧩</span> <span>MoCA 30-Point Assessment</span>
+            </button>
+
             <!-- 🎮 Arcade & Quests Hub -->
             <button type="button" (click)="navShell?.openArcadeHub(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🎮</span> <span>Arcade &amp; Clinical Quests Hub</span>
             </button>
 
             <!-- Active Room & Assessments Toggle -->
-            <button type="button" (click)="state.toggleActiveRoom(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+            <button type="button" (click)="toggleActiveRoomTab(); isMobileMenuOpen.set(false);" 
+                    [class.bg-teal-600]="state.showActiveRoom()"
+                    [class.text-white]="state.showActiveRoom()"
+                    class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">📋</span> <span>{{ state.showActiveRoom() ? 'Hide Active Room' : 'Open Active Room' }}</span>
             </button>
 
@@ -754,6 +882,10 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
 
             <button type="button" (click)="openKneeHologram.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 text-cyan-800 dark:text-cyan-200 border border-cyan-200 dark:border-cyan-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🩻</span> <span>3D Joint Hologram HUD</span>
+            </button>
+
+            <button type="button" (click)="openBiophysicalLenses.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🫀</span> <span>Biophysical 3D Lenses &amp; Phenotypers</span>
             </button>
 
             <button type="button" (click)="openResearchDividend.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
@@ -916,6 +1048,7 @@ export class MainHeaderNavComponent {
   openSocraticRounds = output<void>();
   openBarrowsWorkbench = output<void>();
   openKneeHologram = output<void>();
+  openBiophysicalLenses = output<void>();
   openSmartHealthPass = output<void>();
   openSocraticIntake = output<void>();
   openModelGarden = output<void>();
@@ -949,6 +1082,26 @@ export class MainHeaderNavComponent {
 
   openChwSuite(): void {
     this.navShell?.openChwSuite();
+  }
+
+  toggleActiveRoomTab(): void {
+    const next = !this.state.showActiveRoom();
+    this.state.toggleActiveRoom(next);
+    if (next) {
+      this.navShell?.selectTab('tasks');
+    } else {
+      this.navShell?.selectTab('chart');
+    }
+  }
+
+  toggleResearchTab(): void {
+    const next = !this.state.isResearchFrameVisible();
+    this.state.toggleResearchFrame(next);
+    if (next) {
+      this.navShell?.selectTab('research');
+    } else {
+      this.navShell?.selectTab('chart');
+    }
   }
 }
 

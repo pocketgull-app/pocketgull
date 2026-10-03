@@ -1060,6 +1060,74 @@ export const CLINICAL_FALLACIES_CATALOG: IClinicalFallacyDefinition[] = [
     clinicalRisk: 'Uncritical acceptance of automated misclassifications leading to inappropriate therapy or delayed intervention.',
     counterHypothesis: 'Algorithm outputs must be treated as provisional non-device clinical decision support, subject to direct bedside verification.',
     socraticQuestion: 'What direct clinical history and physical examination findings corroborate or challenge this automated score?'
+  },
+  {
+    id: 'DECISION_CURVE_THRESHOLD_FALLACY',
+    name: 'Decision Curve Threshold Fallacy (Over-Testing & Over-Treatment)',
+    category: 'INFORMAL_PROBABILISTIC',
+    formalLogicNotation: 'Net Benefit(p_t) ≤ 0 ⊬ Clinical Intervention Warranted',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Decision_curve_analysis',
+    description: 'Ordering high-risk diagnostics or invasive surgeries without evaluating patient threshold probability preferences, leading to net harm where false positives and procedure risks outweigh true positive benefit.',
+    clinicalExample: 'Ordering routine 3.0T MRI and arthroscopic debridement for degenerative meniscus tears in middle-aged patients with mild knee pain (KL Grade 1), where Decision Curve Analysis proves negative net clinical benefit (NB ≤ 0) compared to stepped conservative rehabilitation.',
+    epistemicCorrection: 'Apply Vickers & Elkin Decision Curve Analysis (DCA): calculate Net Benefit across decision threshold range p_t ∈ [0.05, 0.50] and verify unnecessary interventions avoided before ordering invasive interventions.',
+    detectionKeywords: [
+      'routine mri',
+      'clean up the joint',
+      'clean up joint',
+      'operate immediately',
+      'decision curve',
+      'negative net benefit',
+      'just in case surgery',
+      'unnecessary scan',
+      'arthroscopy for meniscus',
+      'immediate arthroscopy',
+      'immediate 3.0t'
+    ],
+    detectionRegexes: [
+      /\broutine\s+mri\b/i,
+      /\bclean\s+up\s+(the\s+)?joint\b/i,
+      /\boperate\s+immediately\b/i,
+      /\bnegative\s+net\s+benefit\b/i,
+      /\bimmediate\s+(3\.0t\s+)?mri\b/i
+    ],
+    severity: 'HIGH',
+    clinicalRisk: 'Iatrogenic surgical complications, overtreatment cascade, surgical mortality, and healthcare resource exhaustion.',
+    counterHypothesis: 'At threshold p_t < 0.15, conservative stepped-care yields superior or identical functional recovery while avoiding 40+ unneeded surgeries per 100 patients.',
+    socraticQuestion: 'What is the patient\'s decision threshold probability p_t, and does the Vickers & Elkin net benefit curve exceed conservative stepped care at that threshold?'
+  },
+  {
+    id: 'IATROGENIC_PANIC_CATASTROPHIZATION',
+    name: 'Iatrogenic Panic & Catastrophization Fallacy (The Salutogenic Violation)',
+    category: 'INFORMAL_COGNITIVE',
+    formalLogicNotation: 'Hazard Exposure > 0 ⊬ Incurable Catastrophe ∧ Unmanageable Harm',
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Salutogenesis',
+    description: 'Disclosing toxicological, environmental, or genetic vulnerability data with alarmist, catastrophic framing that induces patient terror while omitting accessible, low-cost Antonovsky manageability solutions.',
+    clinicalExample: 'Telling a postpartum mother that low-level municipal drinking water PFAS will "poison breast milk and cause irreversible cancer", urging immediate cessation of breastfeeding, rather than recommending an accessible ≤$25 NSF-53 certified carbon block filter while preserving life-saving breastfeeding.',
+    epistemicCorrection: 'Enforce the Antonovsky Manageability Invariant: every toxicant or vulnerability notification must immediately provide an actionable, low-cost, dignity-preserving remedy to maintain patient agency.',
+    detectionKeywords: [
+      'poison breast milk',
+      'forever chemicals destroy',
+      'irreversible genetic damage',
+      'toxic tap water',
+      'cease breastfeeding',
+      'doomed to develop',
+      'hopeless prognosis',
+      'iatrogenic panic',
+      'catastrophic poisoning',
+      'forever chemicals that poison'
+    ],
+    detectionRegexes: [
+      /\bpoison\s+breast\s+milk\b/i,
+      /\bcease\s+breastfeeding\b/i,
+      /\bdoomed\s+to\s+develop\b/i,
+      /\biatrogenic\s+panic\b/i,
+      /\bcatastrophic\s+poisoning\b/i,
+      /\btoxic\s+tap\s+water\b/i
+    ],
+    severity: 'HIGH',
+    clinicalRisk: 'Severe patient anxiety, discontinuation of essential health practices (e.g. breastfeeding), psychiatric destabilization, and vulnerability to expensive predatory pseudoscience.',
+    counterHypothesis: 'Trace environmental exposures rarely constitute acute lethal crises and are safely mitigated through accessible, validated household engineering and salutogenic pacing.',
+    socraticQuestion: 'What immediate, accessible, and low-cost Antonovsky manageability remedy is provided alongside this toxicological hazard disclosure?'
   }
 ];
 
@@ -1954,6 +2022,136 @@ ${flags.map(f => `• ATYPICAL CHECK (${f.demographicOrPhenotype}): Could this p
       findings: detected,
       bayesianInsight,
       timestamp: new Date().toISOString()
+    };
+  }
+
+  /**
+   * Audits clinical decision utility using Vickers & Elkin Decision Curve Analysis (DCA).
+   * Calculates Net Benefit of model/intervention vs. Treat All vs. Treat None at a specific threshold p_t.
+   */
+  public auditDecisionCurveUtility(params: {
+    prevalence: number;
+    sensitivity: number;
+    specificity: number;
+    thresholdProbability: number;
+    interventionName: string;
+    totalPopulation?: number;
+  }): {
+    thresholdProbability: number;
+    modelNetBenefit: number;
+    treatAllNetBenefit: number;
+    treatNoneNetBenefit: number;
+    isModelSuperior: boolean;
+    avoidedInterventionsPer100: number;
+    skepticalVerdict: string;
+  } {
+    const pt = Math.max(0.01, Math.min(0.99, params.thresholdProbability));
+    const prev = Math.max(0.0001, Math.min(0.9999, params.prevalence));
+    const sens = Math.max(0.0, Math.min(1.0, params.sensitivity));
+    const spec = Math.max(0.0, Math.min(1.0, params.specificity));
+
+    const weight = pt / (1.0 - pt);
+
+    // Theoretical true positive and false positive rates per patient
+    const tpRate = sens * prev;
+    const fpRate = (1.0 - spec) * (1.0 - prev);
+
+    const modelNb = tpRate - fpRate * weight;
+    const treatAllNb = prev - (1.0 - prev) * weight;
+    const treatNoneNb = 0.0;
+
+    const isSuperior = modelNb > Math.max(treatAllNb, treatNoneNb);
+    const avoidedPer100 = isSuperior && weight > 0
+      ? Math.max(0, Math.round(((modelNb - Math.max(treatAllNb, 0)) / weight) * 1000) / 10)
+      : 0;
+
+    let verdict = '';
+    if (modelNb <= 0 && modelNb <= treatNoneNb) {
+      verdict = `Skeptical Alert: At threshold preference p_t = ${(pt * 100).toFixed(1)}%, ${params.interventionName} yields zero or negative net clinical benefit (NB = ${modelNb.toFixed(4)}). Ordering this intervention produces net clinical harm compared to conservative non-intervention.`;
+    } else if (modelNb <= treatAllNb) {
+      verdict = `At threshold preference p_t = ${(pt * 100).toFixed(1)}%, ${params.interventionName} is non-superior to standard empiric management (Treat All NB = ${treatAllNb.toFixed(4)} vs Model NB = ${modelNb.toFixed(4)}).`;
+    } else {
+      verdict = `Clinical Decision Utility Confirmed: At threshold preference p_t = ${(pt * 100).toFixed(1)}%, ${params.interventionName} achieves superior net benefit (NB = ${modelNb.toFixed(4)}), avoiding approximately ${avoidedPer100} unnecessary interventions per 100 patients.`;
+    }
+
+    return {
+      thresholdProbability: pt,
+      modelNetBenefit: Math.round(modelNb * 10000) / 10000,
+      treatAllNetBenefit: Math.round(treatAllNb * 10000) / 10000,
+      treatNoneNetBenefit: treatNoneNb,
+      isModelSuperior: isSuperior,
+      avoidedInterventionsPer100: avoidedPer100,
+      skepticalVerdict: verdict
+    };
+  }
+
+  /**
+   * Audits clinical risk disclosures against Aaron Antonovsky's Salutogenic Manageability Invariant.
+   * Ensures every toxicant or vulnerability warning provides an accessible (<= $25) practical remedy.
+   */
+  public auditSalutogenicManageability(
+    hazardDisclosure: string,
+    proposedRemedy?: string
+  ): {
+    isManageable: boolean;
+    hasAccessibleRemedy: boolean;
+    salutogenicScore: number; // 0 - 100
+    recommendedAntonovskyRemedy: string;
+    clinicalGuidance: string;
+  } {
+    const lowerHazard = hazardDisclosure.toLowerCase();
+    const isToxicantOrExposome = lowerHazard.includes('pfas') ||
+      lowerHazard.includes('pfoa') ||
+      lowerHazard.includes('pfos') ||
+      lowerHazard.includes('hardness') ||
+      lowerHazard.includes('lead') ||
+      lowerHazard.includes('arsenic') ||
+      lowerHazard.includes('contaminant') ||
+      lowerHazard.includes('toxic') ||
+      lowerHazard.includes('water');
+
+    const hasRemedy = !!proposedRemedy && proposedRemedy.trim().length > 10;
+    const lowerRemedy = (proposedRemedy || '').toLowerCase();
+
+    const isLowCostAccessible = lowerRemedy.includes('filter') ||
+      lowerRemedy.includes('carbon') ||
+      lowerRemedy.includes('nsf') ||
+      lowerRemedy.includes('remineraliz') ||
+      lowerRemedy.includes('bicarbonate') ||
+      lowerRemedy.includes('magnesium') ||
+      lowerRemedy.includes('pitcher') ||
+      lowerRemedy.includes('lifestyle') ||
+      lowerRemedy.includes('breathing') ||
+      lowerRemedy.includes('exercise');
+
+    let score = 50;
+    let remedy = '';
+
+    if (isToxicantOrExposome) {
+      remedy = 'Deploy point-of-use NSF-53 certified activated carbon block gravity filter (cost <= $25, >95% PFAS reduction) and remineralize soft water with food-grade magnesium bicarbonate.';
+      if (hasRemedy && isLowCostAccessible) {
+        score = 95;
+      } else if (hasRemedy) {
+        score = 70;
+      } else {
+        score = 25;
+      }
+    } else {
+      remedy = 'Prescribe stepped-care conservative physical conditioning (0.1 Hz vagal pacing, quadriceps isometrics) and accessible home environmental hygiene.';
+      score = hasRemedy ? 85 : 40;
+    }
+
+    const isManageable = score >= 70;
+    const guidance = isManageable
+      ? 'Salutogenic Manageability Invariant satisfied: Patient agency preserved with dignified, low-cost practical intervention.'
+      : 'IATROGENIC RISK: Hazard disclosure lacks an immediate, accessible remedy, violating the Antonovsky Manageability Invariant. Attach recommended low-cost mitigation immediately to prevent catastrophic patient distress.';
+
+    return {
+      isManageable,
+      hasAccessibleRemedy: hasRemedy && isLowCostAccessible,
+      salutogenicScore: score,
+      recommendedAntonovskyRemedy: remedy,
+      clinicalGuidance: guidance
     };
   }
 }

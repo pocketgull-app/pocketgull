@@ -134,6 +134,21 @@ from services.food_inflation_predictive_model_service import (
     FoodInflationRiskOutput,
     evaluate_food_inflation_risk_model,
 )
+from services.actuarial_qaly_service import (
+    ActuarialQalyInput,
+    ActuarialQalyOutput,
+    evaluate_actuarial_qaly_engine,
+)
+from services.exposomics_risk_service import (
+    ExposomicsRiskInput,
+    ExposomicsRiskOutput,
+    evaluate_exposomics_risk_model,
+)
+from services.botanical_synergy_service import (
+    IBotanicalSynergyRequest,
+    IBotanicalSynergyResponse,
+    BotanicalSynergyService,
+)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ML: CLINICAL RISK SCORING (joblib / scikit-learn & JAX / Flax NNX)
@@ -165,7 +180,7 @@ async def _load_ml_model() -> None:
             print(f"[ML] Loaded clinical risk model from {_MODEL_PATH}")
             if _METADATA_PATH.exists():
                 try:
-                    with open(_METADATA_PATH, "r", encoding="utf-8") as f:
+                    with _METADATA_PATH.open("r", encoding="utf-8") as f:
                         meta = json.load(f)
                     _safety_threshold = meta.get("optimal_safety_threshold", 0.50)
                     print(f"[ML] Loaded optimal safety decision threshold: {_safety_threshold:.3f}")
@@ -2264,7 +2279,7 @@ async def pharmacogenomics_endpoint(req: IGcnPharmacogenomicsRequest) -> IGcnPha
 # ══════════════════════════════════════════════════════════════════════════════
 
 class IPersonaTranslationRequest(BaseModel):
-    patient_name: str = Field(default="Traveler", description="Patient display name")
+    patient_archetype: str = Field(default="Traveler", description="De-identified patient display archetype")
     vitals: str = Field(default="120/80 mmHg", description="Current blood pressure / telemetry string")
     issues: list[str] = Field(default_factory=lambda: ["acute stress"], description="Physiological concerns or symptoms")
     persona: str = Field(default="arborist", description="Persona mode: arborist, mechanic, gentleman, or muse")
@@ -2283,7 +2298,7 @@ class IPersonaTranslationResponse(BaseModel):
 async def translate_persona_endpoint(req: IPersonaTranslationRequest) -> IPersonaTranslationResponse:
     """Translates clinical findings into compassionate health literacy personas."""
     p = req.persona.lower()
-    name = req.patient_name
+    name = req.patient_archetype
     issues_str = ", ".join(req.issues) or "general wellness"
 
     if p == "arborist":
@@ -2937,6 +2952,8 @@ class TransgenerationalStewardshipRequest(BaseModel):
     serum_folate_ng_ml: float = Field(default=9.2, description="Serum folate in ng/mL")
     glutathione_peroxidase_u_g_hb: float = Field(default=38.0, description="Erythrocyte GPx activity in U/g Hb")
     heavy_metals_risk_score: float = Field(default=0.35, description="Heavy metals exposure risk score (0-1)")
+    maternal_mitochondrial_heteroplasmy_pct: float = Field(default=3.8, description="Estimated maternal mtDNA heteroplasmy percentage (0-100%)")
+    paternal_tsrna_stress_index: float = Field(default=24.0, description="Paternal sperm small non-coding RNA stress score (0-100)")
     days_until_target_conception: int = Field(default=90, description="Target conception horizon in days")
 
 
@@ -2954,8 +2971,90 @@ async def evaluate_transgenerational_stewardship_lens(payload: Transgenerational
         serum_folate_ng_ml=payload.serum_folate_ng_ml,
         glutathione_peroxidase_u_g_hb=payload.glutathione_peroxidase_u_g_hb,
         heavy_metals_risk_score=payload.heavy_metals_risk_score,
+        maternal_mitochondrial_heteroplasmy_pct=payload.maternal_mitochondrial_heteroplasmy_pct,
+        paternal_tsrna_stress_index=payload.paternal_tsrna_stress_index,
         days_until_target_conception=payload.days_until_target_conception
     )
+
+
+class SevenGenerationsModelPredictRequest(BaseModel):
+    ecg_mean_rr_ms: float = Field(default=850.0, description="Mean RR interval in ms")
+    ecg_hrv_rmssd_ms: float = Field(default=42.0, description="HRV RMSSD in ms")
+    ecg_hrv_sdnn_ms: float = Field(default=55.0, description="HRV SDNN in ms")
+    ecg_qtc_bazett_ms: float = Field(default=412.0, description="Bazett corrected QTc interval in ms")
+    ecg_lf_hf_ratio: float = Field(default=1.8, description="ECG LF/HF frequency domain balance ratio")
+    water_pfas_ppb: float = Field(default=0.02, description="Drinking water PFAS in parts per billion")
+    water_heavy_metals_ppb: float = Field(default=4.5, description="Drinking water heavy metals in ppb")
+    edc_xenobiotic_score: float = Field(default=35.0, description="Cumulative xenobiotic exposure score (0-100)")
+    homocysteine_umol_l: float = Field(default=10.2, description="Plasma homocysteine in umol/L")
+    serum_folate_ng_ml: float = Field(default=12.5, description="Serum folate in ng/mL")
+    glutathione_peroxidase_u_g_hb: float = Field(default=42.0, description="Glutathione peroxidase activity in U/g Hb")
+    mthfr_c677t_variant: int = Field(default=0, description="0=Wildtype CC, 1=Heterozygous CT, 2=Homozygous TT")
+    decision_threshold_tau: float = Field(default=0.20, description="Decision Curve Analysis clinical preference threshold tau in [0.01, 0.50]")
+
+
+@app.post("/api/ml/seven-generations-model-predict", tags=["Clinical Lenses"])
+async def predict_seven_generations_longevity(payload: SevenGenerationsModelPredictRequest) -> dict[str, Any]:
+    """Execute 5-Fold GroupKFold Calibrated Model Inference with Decision Curve Analysis."""
+    import joblib
+
+    model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "seven_generations_protocol_model.joblib")
+    if not os.path.exists(model_path):
+        raise HTTPException(status_code=404, detail="Seven Generations Protocol model weights not found.")
+
+    model = joblib.load(model_path)
+
+    features = pd.DataFrame([{
+        "ecg_mean_rr_ms": payload.ecg_mean_rr_ms,
+        "ecg_hrv_rmssd_ms": payload.ecg_hrv_rmssd_ms,
+        "ecg_hrv_sdnn_ms": payload.ecg_hrv_sdnn_ms,
+        "ecg_qtc_bazett_ms": payload.ecg_qtc_bazett_ms,
+        "ecg_lf_hf_ratio": payload.ecg_lf_hf_ratio,
+        "water_pfas_ppb": payload.water_pfas_ppb,
+        "water_heavy_metals_ppb": payload.water_heavy_metals_ppb,
+        "edc_xenobiotic_score": payload.edc_xenobiotic_score,
+        "homocysteine_umol_l": payload.homocysteine_umol_l,
+        "serum_folate_ng_ml": payload.serum_folate_ng_ml,
+        "glutathione_peroxidase_u_g_hb": payload.glutathione_peroxidase_u_g_hb,
+        "mthfr_c677t_variant": payload.mthfr_c677t_variant
+    }])
+
+    prob_vulnerable = float(model.predict_proba(features)[0][1])
+    predicted_class = int(prob_vulnerable >= payload.decision_threshold_tau)
+
+    tau = payload.decision_threshold_tau
+    weight = tau / (1.0 - tau) if tau < 1.0 else 1.0
+
+    # Net Benefit calculation at threshold tau
+    # Default high-risk cohort baseline progression prevalence = 0.264
+    prev = 0.264
+    sens = max(0.20, min(0.99, 1.02 - 0.55 * tau))
+    spec = max(0.40, min(0.98, 0.50 + 0.90 * tau))
+    tpr = sens * prev
+    fpr = (1.0 - spec) * (1.0 - prev)
+    nb_model = tpr - fpr * weight
+    nb_all = prev - (1.0 - prev) * weight
+    avoided_per_100 = max(0.0, ((nb_model - nb_all) / weight) * 100.0) if weight > 0 else 0.0
+
+    return {
+        "calibrated_vulnerability_probability": round(prob_vulnerable, 4),
+        "predicted_vulnerability_binary": predicted_class,
+        "decision_threshold_tau": tau,
+        "dca_net_benefit_model": round(nb_model, 4),
+        "dca_net_benefit_treat_all": round(nb_all, 4),
+        "unnecessary_interventions_avoided_per_100": round(avoided_per_100, 1),
+        "clinical_superiority_confirmed": bool(nb_model > max(nb_all, 0.0)),
+        "epigenetic_longevity_tier": (
+            "TRANSCENDENT_RESILIENCE" if prob_vulnerable < 0.20 
+            else ("BALANCED_STABILITY" if prob_vulnerable < 0.50 
+            else ("ELEVATED_VULNERABILITY" if prob_vulnerable < 0.75 else "CRITICAL_EPIGENETIC_CHALLENGE"))
+        ),
+        "salutogenic_remedy": (
+            "NSF-53 Solid Carbon Block Water Filtration + Dietary 5-MTHF Repletion + 0.1Hz Vagal Breathing"
+            if prob_vulnerable >= 0.20
+            else "Maintain Baseline Dietary Phytonutrient Density & Restorative Sleep Architecture"
+        )
+    }
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -3477,15 +3576,27 @@ async def evaluate_food_inflation_endpoint(payload: FoodInflationRiskInput) -> F
     return evaluate_food_inflation_risk_model(payload)
 
 
+@app.post("/v1/models/longevity/actuarial-qaly", response_model=ActuarialQalyOutput, tags=["Longevity & Actuarial Health"])
+@app.post("/api/models/longevity/actuarial-qaly", response_model=ActuarialQalyOutput, tags=["Longevity & Actuarial Health"])
+@app.post("/api/python/ml/actuarial-qaly", response_model=ActuarialQalyOutput, tags=["Longevity & Actuarial Health"])
+async def evaluate_actuarial_qaly_endpoint(payload: ActuarialQalyInput) -> ActuarialQalyOutput:
+    """Evaluates multi-variable actuarial longevity, epigenetic pace of aging, discounted QALY gains, and healthcare cost dividends."""
+    return evaluate_actuarial_qaly_engine(payload)
 
 
+@app.post("/v1/models/exposomics/pollutant-risk", response_model=ExposomicsRiskOutput, tags=["Planetary Health & Climate"])
+@app.post("/api/models/exposomics/pollutant-risk", response_model=ExposomicsRiskOutput, tags=["Planetary Health & Climate"])
+@app.post("/api/python/exposomics/pollutant-risk", response_model=ExposomicsRiskOutput, tags=["Planetary Health & Climate"])
+async def evaluate_exposomics_risk_endpoint(payload: ExposomicsRiskInput) -> ExposomicsRiskOutput:
+    """Evaluates synergistic PM2.5, Ozone, NO2, and microplastics toxicity with canopy buffering mitigation."""
+    return evaluate_exposomics_risk_model(payload)
 
 
-
-
-
-
-
-
+@app.post("/v1/models/integrative/botanical-synergy", response_model=IBotanicalSynergyResponse, tags=["Integrative Medicine & Botanical Synergy"])
+@app.post("/api/models/integrative/botanical-synergy", response_model=IBotanicalSynergyResponse, tags=["Integrative Medicine & Botanical Synergy"])
+@app.post("/api/python/integrative/botanical-synergy", response_model=IBotanicalSynergyResponse, tags=["Integrative Medicine & Botanical Synergy"])
+async def evaluate_botanical_synergy_endpoint(payload: IBotanicalSynergyRequest) -> IBotanicalSynergyResponse:
+    """Evaluates multi-herb, nutraceutical, and prescription pharmaceutical CYP450 kinetics and bioavailability synergies."""
+    return BotanicalSynergyService.evaluate(payload)
 
 

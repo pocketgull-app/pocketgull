@@ -12,7 +12,7 @@
 #>
 
 $ErrorActionPreference = "Continue"
-$Root = "c:\Users\philg\Pocketgull\pocketgull"
+$Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
 $TrainKernel = "philgear/rsna-knee-2026-training-v9"
@@ -20,7 +20,7 @@ $InferKernel = "philgear/rsna-knee-2026-pytorch-inference"
 $OutputDir = Join-Path $Root "contests\rsna_knee_2026\kernel_output_v9"
 $InferSubDir = Join-Path $Root "contests\rsna_knee_2026\kernel_v9_sub"
 $InferOutDir = Join-Path $Root "contests\rsna_knee_2026\inference_output_v9"
-$PythonExe = "C:\Users\philg\anaconda3\python.exe"
+$PythonExe = if (Test-Path (Join-Path $Root ".venv\Scripts\python.exe")) { Join-Path $Root ".venv\Scripts\python.exe" } elseif (Get-Command python -ErrorAction SilentlyContinue) { (Get-Command python).Source } else { "python" }
 $LogFile = Join-Path $Root "scripts\overnight_pipeline.log"
 
 function Log-Msg($msg) {

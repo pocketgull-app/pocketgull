@@ -114,10 +114,10 @@ export interface IChatEntry {
         }
     `],
     template: `
-        <div class="h-full bg-white dark:bg-[#09090b] z-10 flex flex-col no-print w-full spark-theme">
+        <div class="h-full bg-white dark:bg-obsidian z-10 flex flex-col no-print w-full spark-theme">
             
             <!-- Live Multimodal Clinical Consult Cockpit Header -->
-            <div class="flex items-center justify-between px-3.5 py-2.5 shrink-0 z-20 relative bg-white/95 dark:bg-[#09090b]/95 border-b border-gray-200/80 dark:border-zinc-800/80 backdrop-blur-md">
+            <div class="flex items-center justify-between px-3.5 py-2.5 shrink-0 z-20 relative bg-white/95 dark:bg-obsidian/95 border-b border-gray-200/80 dark:border-zinc-800/80 backdrop-blur-md">
                 <div class="flex items-center gap-2 min-w-0">
                     <!-- Live Connection Pulse Status -->
                     <span class="flex h-2.5 w-2.5 relative shrink-0">
@@ -414,12 +414,12 @@ export interface IChatEntry {
 
             <!-- MODE: SELECTION Placeholder -->
             @if (panelMode() === 'selection') {
-                <div class="flex-1 flex flex-col items-center justify-center gap-6 p-8 bg-white dark:bg-[#09090b] w-full"></div>
+                <div class="flex-1 flex flex-col items-center justify-center gap-6 p-8 bg-white dark:bg-obsidian w-full"></div>
             }
 
             <!-- MODE: CHAT -->
             @if (panelMode() === 'chat') {
-                <div class="flex-1 flex flex-col min-h-0 overflow-hidden bg-white dark:bg-[#09090b] w-full relative">
+                <div class="flex-1 flex flex-col min-h-0 overflow-hidden bg-white dark:bg-obsidian w-full relative">
                     
                     <!-- Centerpiece: Agent Avatar & Status (shown when empty) -->
                     @if (chatHistory().length === 0) {
@@ -648,7 +648,7 @@ export interface IChatEntry {
                     </div>
 
                     <!-- Input & Controls Shelf: SHRINK-0 (Zero Overlap with transcript!) -->
-                    <div class="shrink-0 z-20 border-t border-gray-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-[#09090b]/95 backdrop-blur-md p-3 space-y-2">
+                    <div class="shrink-0 z-20 border-t border-gray-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-obsidian/95 backdrop-blur-md p-3 space-y-2">
                         
                         <!-- Toolbar row: Quick Prompts Toggle, Bedside AAC, Barge-in Stop, SOAP Note -->
                         <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500">
@@ -1962,6 +1962,60 @@ Only include a rich-media block when the user explicitly requests visual or rese
 
     getDemoMockResponse(message: string): string {
         const lower = message.toLowerCase();
+
+        // 0. Sparse Mixture of UI Experts (SMoE) Decision Flow & Routing Explainability
+        if (lower.includes('smoe') || lower.includes('mixture of experts') || lower.includes('gating') || lower.includes('decision flow') || lower.includes('routing rationale') || lower.includes('cross-attention')) {
+            let targetId = this.intel.moeRouter.activeShiftPatientId() || 'p001';
+            if (lower.includes('p001') || lower.includes('alexander') || lower.includes('metabolic')) targetId = 'p001';
+            else if (lower.includes('p002') || lower.includes('sarah') || lower.includes('asthma') || lower.includes('pulmonary')) targetId = 'p002';
+            else if (lower.includes('p003') || lower.includes('eleanor') || lower.includes('cognitive') || lower.includes('moca')) targetId = 'p003';
+            else if (lower.includes('p004') || lower.includes('marcus') || lower.includes('autoimmune') || lower.includes('thyroid')) targetId = 'p004';
+            else if (lower.includes('darwin') || lower.includes('charles') || lower.includes('dysautonomia')) targetId = 'p_charles_darwin';
+            else if (lower.includes('frida') || lower.includes('kahlo') || lower.includes('neuropathic') || lower.includes('allodynia')) targetId = 'p_frida_kahlo';
+            else if (lower.includes('curie') || lower.includes('marie') || lower.includes('radiation') || lower.includes('hematology')) targetId = 'p_marie_curie';
+            else if (lower.includes('smith') || lower.includes('edwin') || lower.includes('orthopedic') || lower.includes('cervical')) targetId = 'p_edwin_smith_3';
+            else if (lower.includes('mara') || lower.includes('santos') || lower.includes('cystic') || lower.includes('fibrosis')) targetId = 'p_mara_santos';
+            else if (lower.includes('ramanujan') || lower.includes('srinivasa') || lower.includes('hepatic') || lower.includes('cachexia')) targetId = 'p_srinivasa_ramanujan';
+
+            return this.intel.moeRouter.explainDecisionFlow(targetId);
+        }
+
+        // 0b. Finding People: Specialist Referral & Co-Management Dossier Hub
+        if (lower.includes('specialist') || lower.includes('referral') || lower.includes('find doctor') || lower.includes('in-network subspecialist')) {
+            return `**🏥 Specialist Referral & Co-Management Dossier Hub:**
+
+Pocket-Gull has activated the **Specialist Referral & Co-Management Hub** (HL7 FHIR R4 standard):
+1. **Target Specialty Readiness**: Pre-flight gates ensure required imaging and lab panels (e.g., echocardiogram, metabolic panels, or ANA titers) are completed prior to booking.
+2. **SBAR Handoff Generation**: Compiles an Epistemic Situation-Background-Assessment-Recommendation brief for the consulting sub-specialist.
+3. **Dr. Rebecca Lee Crumpler Re-Entry Protocol**: Generates structured post-consultation return guidance for the referring primary care provider.
+
+*To inspect or transmit referrals, click the **Specialist Referral** expert slot in the Synoptic Canvas or select the **Referral Hub** modal.*`;
+        }
+
+        // 0c. Finding People: NIH ClinicalTrials.gov TrialFinder
+        if (lower.includes('clinical trial') || lower.includes('trial') || lower.includes('investigator') || lower.includes('recruiting study')) {
+            return `**🔬 TrialFinder: NIH & NCI Active Clinical Trials Matcher:**
+
+Pocket-Gull connects to the **NIH ClinicalTrials.gov** active trial registry within a 25–100 mile radius:
+1. **Diagnostic & Biomarker Matching**: Automatically matches active Phase 2 and Phase 3 recruiting trials based on condition, age, and biomarker criteria.
+2. **Principal Investigator Contacts**: Provides direct study coordinator email addresses and clinical center recruitment phone numbers.
+3. **Stepped-Care Bridge**: Seamlessly couples investigational biologics and gene therapy trials with ongoing primary care posology.
+
+*To browse nearby trial sites, open the **Clinical Trials** expert card in the Synoptic Canvas.*`;
+        }
+
+        // 0d. Finding People & Resources: Social Determinants of Health (SDOH) Navigator
+        if (lower.includes('sdoh') || lower.includes('social determinant') || lower.includes('housing') || lower.includes('food bank') || lower.includes('produce rx')) {
+            return `**🏘️ Social Determinants of Health (SDOH) & Community Care Navigator:**
+
+Pocket-Gull automatically screens and addresses health-related social needs:
+1. **CMS HRSN & PRAPARE Screening**: 5 core domains screened (Housing, Food, Transportation, Utilities, Interpersonal Safety) with 95% paperwork reduction under ACA Section 4302.
+2. **$4 Generic Pharmacy Benchmark**: Direct retail price transparent alternatives at Walmart, Kroger, and Cost Plus Drugs to eliminate financial copay toxicity.
+3. **Closed-Loop Social Assistance**: Instant generation of FHIR R4 ServiceRequests for SNAP Produce Prescriptions, LIHEAP energy aid, and local Medical-Legal Partnerships.
+
+*To view community assistance options, inspect the **SDOH Navigator** expert in the Synoptic Canvas.*`;
+        }
+
         if (lower.includes('rationale') || lower.includes('explain') || lower.includes('why')) {
             return `**Clinical Rationale (Simplified):**
 

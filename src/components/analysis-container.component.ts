@@ -27,6 +27,10 @@ import { SteeepQualityHudComponent } from './steeep-quality-hud/steeep-quality-h
 import { LensBiomolecularPhysicsComponent } from './turing/lens-biomolecular-physics.component';
 import { LensPhysicalGenomicsComponent } from './turing/lens-physical-genomics.component';
 import { HobbyDomainCompanionComponent } from './hobby-domain-companion.component';
+import { SparseClinicalCanvasComponent } from './sparse-clinical-canvas.component';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
+import { CaregiverCheatSheetModalComponent } from './modals/caregiver-cheat-sheet-modal.component';
+import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,7 +56,10 @@ import { HobbyDomainCompanionComponent } from './hobby-domain-companion.componen
     SteeepQualityHudComponent,
     LensBiomolecularPhysicsComponent,
     LensPhysicalGenomicsComponent,
-    HobbyDomainCompanionComponent
+    HobbyDomainCompanionComponent,
+    SparseClinicalCanvasComponent,
+    CaregiverCheatSheetModalComponent,
+    TraumaBurnModalComponent
   ],
   template: `
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)] bg-[#F3F4F6] dark:bg-zinc-950">
@@ -104,13 +111,32 @@ import { HobbyDomainCompanionComponent } from './hobby-domain-companion.componen
                 <span>AYURVEDIC</span>
               </button>
 
-              <!-- View Mode Switcher: Classic Lenses vs Functional Domain Suites -->
-              <button type="button" (click)="viewMode.set(viewMode() === 'lenses' ? 'suites' : 'lenses')"
-                title="Toggle between Classic Multi-Lens Report and Functional Domain Suites (Paradigm Diff Engine)"
+              <!-- View Mode Switcher: Classic Lenses vs Functional Domain Suites vs SMoE Canvas -->
+              <button type="button" (click)="viewMode.set('lenses')"
+                data-testid="toggle-lenses"
+                title="Classic Multi-Lens Clinical Report"
+                [class]="viewMode() === 'lenses'
+                  ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
+                <span>📄 LENSES</span>
+              </button>
+
+              <button type="button" (click)="viewMode.set('suites')"
+                data-testid="toggle-suites"
+                title="Functional Domain Suites (Paradigm Diff Engine)"
                 [class]="viewMode() === 'suites'
-                  ? 'flex items-center gap-1 px-3 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1 px-3 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
-                <span>{{ viewMode() === 'lenses' ? '🧬 DOMAIN SUITES' : '📄 LENSES' }}</span>
+                  ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
+                <span>🧬 DOMAIN SUITES</span>
+              </button>
+
+              <button type="button" (click)="viewMode.set('canvas')"
+                data-testid="toggle-canvas"
+                title="Synoptic Canvas (Adaptive Multi-Specialist Care Synthesis)"
+                [class]="viewMode() === 'canvas'
+                  ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-emerald-500 text-zinc-950 transition cursor-pointer shadow-md'
+                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-emerald-400 hover:text-emerald-300 hover:bg-zinc-850 transition cursor-pointer'">
+                <span>🌐 SYNOPTIC CANVAS</span>
               </button>
             </div>
 
@@ -177,11 +203,29 @@ import { HobbyDomainCompanionComponent } from './hobby-domain-companion.componen
                 <span>[WHAT-IF]</span>
               </button>
 
+              <!-- Caregiver Advocacy & Cheat Sheet Button -->
+              <button type="button" (click)="showCaregiverModal.set(!showCaregiverModal())"
+                title="Open Caregiver Advocacy & Plain-Language Doctor Visit Cheat Sheet (Flesch-Kincaid Grade 6)"
+                [class]="showCaregiverModal()
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-400 bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-500/40 bg-teal-500/10 text-teal-300 hover:bg-teal-600 hover:text-white transition cursor-pointer'">
+                <span>[👤 CHEAT SHEET]</span>
+              </button>
+
+              <!-- 3D Procedural Trauma & Burn Anatomy Button -->
+              <button type="button" (click)="showTraumaModal.set(!showTraumaModal())"
+                title="Open 3D Procedural Trauma & Burn Anatomy Lens (Wallace Rule of 9s, Parkland Fluid, Tourniquet)"
+                [class]="showTraumaModal()
+                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-400 bg-amber-500 text-zinc-950 transition cursor-pointer'
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-600 hover:text-white transition cursor-pointer'">
+                <span>[🩻 3D TRAUMA]</span>
+              </button>
+
               <!-- Clinical Studio Overflow Dropdown -->
               <div class="relative">
                 <button type="button" (click)="showToolsMenu.set(!showToolsMenu())"
                   title="Clinical Studio &amp; Advanced Analysis Tools"
-                  [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showEdgeAiModal() || showSteeepModal() || showBiophysicsModal() || showToolsMenu())
+                  [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showEdgeAiModal() || showSteeepModal() || showBiophysicsModal() || showCaregiverModal() || showTraumaModal() || showToolsMenu())
                     ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-600 bg-zinc-800 text-zinc-100 transition cursor-pointer'
                     : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
                   <span>STUDIO ▾</span>
@@ -189,6 +233,16 @@ import { HobbyDomainCompanionComponent } from './hobby-domain-companion.componen
 
                 @if (showToolsMenu()) {
                   <div class="absolute right-0 top-full mt-1 w-56 p-1.5 bg-zinc-950 border border-zinc-800 shadow-2xl z-50 flex flex-col gap-1 text-xs font-mono">
+                    <button (click)="showTraumaModal.set(!showTraumaModal()); showToolsMenu.set(false)"
+                      class="w-full text-left px-3 py-2 text-amber-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      <span>🩻 3D Trauma &amp; Burn Lens</span>
+                      @if (showTraumaModal()) { <span class="text-amber-400">✓</span> }
+                    </button>
+                    <button (click)="showCaregiverModal.set(!showCaregiverModal()); showToolsMenu.set(false)"
+                      class="w-full text-left px-3 py-2 text-teal-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
+                      <span>👤 Caregiver Action Plan</span>
+                      @if (showCaregiverModal()) { <span class="text-teal-400">✓</span> }
+                    </button>
                     <button (click)="showEdgeAiModal.set(!showEdgeAiModal()); showToolsMenu.set(false)"
                       class="w-full text-left px-3 py-2 text-teal-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
                       <span>⚡ Edge AI &amp; ONNX WebGPU</span>
@@ -320,6 +374,8 @@ import { HobbyDomainCompanionComponent } from './hobby-domain-companion.componen
             <div class="flex-1 flex flex-col min-h-0 min-w-0 h-full overflow-y-auto relative" [class.slide-in-panel]="isSlidingIn()">
                 @if (state.isEmergencyMode()) {
                   <app-analysis-report class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" #reportRef></app-analysis-report>
+                } @else if (viewMode() === 'canvas') {
+                  <app-sparse-clinical-canvas class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" />
                 } @else if (viewMode() === 'suites') {
                   <app-domain-suites-navigator class="w-full h-auto block overflow-visible" />
                 } @else {
@@ -424,6 +480,16 @@ import { HobbyDomainCompanionComponent } from './hobby-domain-companion.componen
     @if (showEvaluationHubModal()) {
       <app-clinical-ux-evaluation-hub (closed)="showEvaluationHubModal.set(false)"></app-clinical-ux-evaluation-hub>
     }
+
+    <!-- Caregiver Advocacy & "Doctor Visit Cheat Sheet" Modal (Flesch-Kincaid Grade 6) -->
+    @if (showCaregiverModal()) {
+      <app-caregiver-cheat-sheet-modal (close)="showCaregiverModal.set(false)"></app-caregiver-cheat-sheet-modal>
+    }
+
+    <!-- 3D Procedural Trauma & Burn Anatomy Modal (Wallace Rule of 9s & Parkland) -->
+    @if (showTraumaModal()) {
+      <app-trauma-burn-modal (close)="showTraumaModal.set(false)"></app-trauma-burn-modal>
+    }
   `,
   styles: [`
     :host { display: block; height: 100%; width: 100%; }
@@ -471,9 +537,10 @@ export class AnalysisContainerComponent {
   gcpHealthcare = inject(GcpHealthcareApiService);
   network = inject(NetworkStateService);
   ClinicalIcons = ClinicalIcons;
+  readonly moeRouter = inject(ClinicalMoERouterService);
 
   isSlidingIn = signal(true);
-  viewMode = signal<'lenses' | 'suites'>('lenses');
+  readonly viewMode = this.moeRouter.analysisViewMode;
   showSimulatorModal = signal(false);
   showSoapModal = signal(false);
   showEdgeAiModal = signal(false);
@@ -483,6 +550,8 @@ export class AnalysisContainerComponent {
   showCohortMatrixModal = signal(false);
   showHipaaPdfModal = signal(false);
   showEvaluationHubModal = signal(false);
+  showCaregiverModal = signal(false);
+  showTraumaModal = signal(false);
   showHobbyCompanionModal = signal(false);
   showMyChartModal = signal(false);
   showPedigreeModal = signal(false);

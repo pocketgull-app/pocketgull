@@ -3,7 +3,8 @@ import sys
 from fontTools.ttLib import TTFont
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 
-font_path = r'c:\Users\philg\Pocketgull\pocketgull\public\fonts\google_fonts_submission\ofl\pocketgull\PocketGull-Bold.ttf'
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+font_path = os.path.join(ROOT_DIR, 'public', 'fonts', 'google_fonts_submission', 'ofl', 'pocketgull', 'PocketGull-Bold.ttf')
 print(f"Fixing OpenType table headers and vertical metrics in {font_path}...")
 
 font = TTFont(font_path)

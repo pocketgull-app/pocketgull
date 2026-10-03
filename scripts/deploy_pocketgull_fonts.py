@@ -1,10 +1,11 @@
 import os
 import shutil
 
-SOURCE_DIR = r"c:\Users\philg\Pocketgull\pocketgull\public\fonts\google_fonts_submission\ofl\pocketgull"
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SOURCE_DIR = os.path.join(ROOT_DIR, "public", "fonts", "google_fonts_submission", "ofl", "pocketgull")
 TARGET_DIRS = [
-    r"c:\Users\philg\Pocketgull\pocketgull\public\assets\fonts",
-    r"c:\Users\philg\Pocketgull\pocketgull\public\fonts"
+    os.path.join(ROOT_DIR, "public", "assets", "fonts"),
+    os.path.join(ROOT_DIR, "public", "fonts")
 ]
 
 FONT_FILES = [

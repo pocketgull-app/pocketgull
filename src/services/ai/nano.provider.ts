@@ -4,6 +4,7 @@ import { IIntelligenceProvider } from './intelligence.provider';
 import { IClinicalMetrics } from '../clinical-intelligence.service';
 import { IVerificationIssue } from '../../components/analysis-report.types';
 import { AiCacheService } from '../ai-cache.service';
+import { IsmpSafetyGuardService, IIsmpSafetyAudit } from '../ismp-safety-guard.service';
 
 // Declare experimental Chrome Built-in AI API types (Gemma 4 & Gemini Nano)
 declare global {
@@ -66,6 +67,7 @@ declare global {
 export class NanoProvider implements IIntelligenceProvider {
   private chatSession: any = null;
   private cache = inject(AiCacheService);
+  private ismpGuard = inject(IsmpSafetyGuardService);
 
   readonly isAiSupported = signal<boolean>(
     typeof window !== 'undefined' && typeof (window as any).ai !== 'undefined' && !!(window as any).ai?.languageModel
@@ -176,7 +178,22 @@ export class NanoProvider implements IIntelligenceProvider {
   }
 
   async verifySection(lens: string, content: string, sourceData: string): Promise<{ status: string; issues: IVerificationIssue[] }> {
-    // 1. Try native Proofreader API if enabled via chrome://flags/#proofreader-api
+    const issues: IVerificationIssue[] = [];
+
+    // 1. Deterministic zero-egress ISMP safety audit (trailing zeroes, naked decimals, LASA drugs, dangerous abbreviations)
+    const ismpAudit = this.ismpGuard.auditPrescription(content);
+    if (ismpAudit.violations && ismpAudit.violations.length > 0) {
+      for (const v of ismpAudit.violations) {
+        issues.push({
+          severity: v.severity === 'CRITICAL_SAFETY_DEFECT' ? 'high' : 'medium',
+          message: `${v.rule}${v.clinicalDisambiguation ? ' ' + v.clinicalDisambiguation : ''}`,
+          suggestedFix: v.corrected,
+          claim: v.original
+        });
+      }
+    }
+
+    // 2. Try native Chrome Proofreader API if enabled via chrome://flags/#proofreader-api
     if (typeof ai !== 'undefined' && ai.proofreader) {
       try {
         const cap = await ai.proofreader.capabilities();
@@ -184,16 +201,17 @@ export class NanoProvider implements IIntelligenceProvider {
           const proofreader = await ai.proofreader.create();
           const result = await proofreader.proofread(content);
           if (result && result.corrections && result.corrections.length > 0) {
-            const issues: IVerificationIssue[] = result.corrections.map(c => ({
-              severity: 'low',
-              message: `Suggested phrasing: "${c.suggested}" (original: "${c.original}")`,
-              suggestedFix: c.suggested,
-              claim: c.original
-            }));
-            return {
-              status: `Verified by On-Device Built-in AI (${result.corrections.length} suggestions identified)`,
-              issues
-            };
+            for (const c of result.corrections) {
+              const alreadyFlagged = issues.some(i => i.claim === c.original);
+              if (!alreadyFlagged) {
+                issues.push({
+                  severity: 'low',
+                  message: `Suggested phrasing: "${c.suggested}" (original: "${c.original}")`,
+                  suggestedFix: c.suggested,
+                  claim: c.original
+                });
+              }
+            }
           }
         }
       } catch (e) {
@@ -201,7 +219,23 @@ export class NanoProvider implements IIntelligenceProvider {
       }
     }
 
-    return { status: 'Verified efficiently by On-Device Built-in AI (Gemma 4 / Nano)', issues: [] };
+    if (issues.length > 0) {
+      return {
+        status: `Verified by On-Device Built-in AI (${issues.length} safety/phrasing adjustments identified)`,
+        issues
+      };
+    }
+
+    return { status: 'Verified efficiently by On-Device Built-in AI (Gemma 4 / Nano - Zero ISMP Defects)', issues: [] };
+  }
+
+  /**
+   * On-device zero-egress ISMP medication safety proofreader.
+   * Catches trailing zeros (5.0 mg -> 5 mg), naked decimals (.5 mg -> 0.5 mg),
+   * error-prone abbreviations, and applies FDA Tall Man lettering.
+   */
+  auditPrescriptionSafety(prescriptionText: string): IIsmpSafetyAudit {
+    return this.ismpGuard.auditPrescription(prescriptionText);
   }
 
   async translateReadingLevel(

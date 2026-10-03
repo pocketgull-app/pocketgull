@@ -61,7 +61,7 @@ export class DiscordActivityService {
           isDiscordReferrer = false;
         }
       }
-      const isDiscordIframe = frameId !== null || window.name.includes('discord') || isDiscordReferrer;
+      const isDiscordIframe = frameId !== null || (typeof window.name === 'string' && window.name.includes('discord')) || isDiscordReferrer;
       
       if (isDiscordIframe) {
         this.isEmbedded.set(true);

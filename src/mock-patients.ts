@@ -15,11 +15,13 @@ import { p_edwin_smith_3 } from './mock-patients/p_edwin_smith_3';
 import { p_charles_darwin } from './mock-patients/p_charles_darwin';
 import { p_marie_curie } from './mock-patients/p_marie_curie';
 import { p_srinivasa_ramanujan } from './mock-patients/p_srinivasa_ramanujan';
+import { p_ada_lovelace } from './mock-patients/p_ada_lovelace';
 import { p_default_patient } from './mock-patients/p_default_patient';
 import { p_poms_adolescent } from './mock-patients/p_poms_adolescent';
 import { p_loms_elder } from './mock-patients/p_loms_elder';
 
 export const MOCK_PATIENTS: IPatient[] = [
+  p_ada_lovelace,
   p001,
   p002,
   p003,

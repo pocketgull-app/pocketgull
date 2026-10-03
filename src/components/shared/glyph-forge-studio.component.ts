@@ -249,7 +249,7 @@ export class GlyphForgeStudioComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const canvas = this.drawingCanvas()?.nativeElement;
-    if (canvas) {
+    if (canvas && typeof canvas.getContext === 'function') {
       this.ctx = canvas.getContext('2d');
       this.redrawCanvas();
       this.loadPreset('P');

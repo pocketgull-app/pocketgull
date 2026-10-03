@@ -66,7 +66,7 @@ export const generateMetricsFlow = ai.defineFlow(
     Return ONLY a JSON object with this exact structure:
     {"complexity": number, "stability": number, "certainty": number}`;
 
-    const response = await ai.generate({
+    const response = await (ai as any).generate({
       prompt,
       config: {
         temperature: 0,
@@ -107,7 +107,7 @@ export const detectClinicalChangesFlow = ai.defineFlow(
     
     SIGNIFICANT? (TRUE/FALSE):`;
 
-    const response = await ai.generate({
+    const response = await (ai as any).generate({
       prompt,
       config: {
         temperature: 0,
@@ -203,7 +203,7 @@ CRITICAL RULES:
 
       const prompt = `Please rewrite the following care plan text according to your system instructions:\n\n<clinical_text>\n${text}\n</clinical_text>`;
 
-      const response = await ai.generate({
+      const response = await (ai as any).generate({
         prompt,
         system: systemInstruction,
         config: {
@@ -260,7 +260,7 @@ ${translated}
 
 CRITIQUE:`;
 
-      const response = await ai.generate({
+      const response = await (ai as any).generate({
         prompt,
         config: { 
           temperature: 0.2,
@@ -303,7 +303,7 @@ Please provide:
 
 Note: This is an AI preliminary analysis for decision-support, not an official diagnostic read. Respond with clear, structured Markdown.`;
 
-      const response = await ai.generate({
+      const response = await (ai as any).generate({
         model: 'googleai/gemini-3.7-flash', // Using 3.7-flash for multimodal synthesis
         messages: [
           {
@@ -365,7 +365,7 @@ Return ONLY a JSON array of objects with this exact structure:
   { "id": "unique-id", "title": "Short Title", "content": "Detailed explanation", "type": "...", "confidence": 95 }
 ]`;
 
-      const response = await ai.generate({
+      const response = await (ai as any).generate({
         prompt,
         config: {
           temperature: 0.1,
@@ -452,7 +452,7 @@ Strictly map any extracted clinical issues or symptoms to one of the following e
 
 Return all results structured into the response schema.`;
 
-    const response = await ai.generate({
+    const response = await (ai as any).generate({
       model: 'googleai/gemini-3.8-flash',
       messages: [
         {
@@ -532,7 +532,7 @@ Perform a systematic visual assessment:
 ${anatomicalSite ? 'Anatomical Site: ' + anatomicalSite : ''}
 ${patientSymptoms ? 'Reported Symptoms: ' + patientSymptoms : ''}`;
 
-    const response = await ai.generate({
+    const response = await (ai as any).generate({
       model: 'googleai/gemini-3.8-flash',
       messages: [
         {

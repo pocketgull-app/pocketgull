@@ -34,6 +34,7 @@ import { WalkthroughTourService } from './services/walkthrough-tour.service';
 import { SecureSplashComponent } from './components/secure-splash.component';
 import { SessionStateService } from './services/session-state.service';
 import { RulesEngineService } from './services/rules-engine.service';
+import { ClinicalMoERouterService } from './services/clinical-moe-router.service';
 import { PocketGullInputComponent } from './components/shared/pocket-gull-input.component';
 import { ClinicalCdsDisclaimerBannerComponent } from './components/clinical-cds-disclaimer-banner.component';
 
@@ -97,12 +98,22 @@ import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governanc
 import { ClinicalCommercialHubComponent } from './components/shared/clinical-commercial-hub.component';
 import { RoleDemoModalComponent } from './components/role-demo-modal.component';
 import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
-import { FederalUswdsPortalComponent } from './components/federal-uswds-portal.component';
 import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component';
 import { PocketgullArchitectureAtlasComponent } from './components/shared/pocketgull-architecture-atlas.component';
 import { CommunityHealthWorkerSuiteComponent } from './components/shared/community-health-worker-suite.component';
 import { SpecialistReferralHubComponent } from './components/specialist-referral-hub.component';
 import { SocraticMultilingualTerminalComponent } from './components/socratic-multilingual-terminal.component';
+import { MocaSuiteComponent } from './components/moca/moca-suite.component';
+import { CardiacElectrophysiology3dLensComponent } from './components/anatomy-3d/cardiac-electrophysiology-3d-lens.component';
+import { AlveolarCapillary3dLensComponent } from './components/anatomy-3d/alveolar-capillary-3d-lens.component';
+import { HepaticSinusoid3dLensComponent } from './components/anatomy-3d/hepatic-sinusoid-3d-lens.component';
+import { GlomerularFiltration3dLensComponent } from './components/anatomy-3d/glomerular-filtration-3d-lens.component';
+import { KdigoAkiPhenotyperCardComponent } from './components/clinical/kdigo-aki-phenotyper-card.component';
+import { AutonomicBaroreflexCardComponent } from './components/clinical/autonomic-baroreflex-card.component';
+import { SepsisShockSofaCardComponent } from './components/clinical/sepsis-shock-sofa-card.component';
+import { GlycemicMinimalModelCardComponent } from './components/clinical/glycemic-minimal-model-card.component';
+import { PancreaticIslet3dLensComponent } from './components/anatomy-3d/pancreatic-islet-3d-lens.component';
+import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-matrix-card.component';
 
 @Component({
   selector: 'app-root',
@@ -182,7 +193,17 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
     ClinicalCommercialHubComponent,
     RoleDemoModalComponent,
     IntimacyRelationshipVitalityComponent,
-    FederalUswdsPortalComponent
+    MocaSuiteComponent,
+    CardiacElectrophysiology3dLensComponent,
+    AlveolarCapillary3dLensComponent,
+    HepaticSinusoid3dLensComponent,
+    GlomerularFiltration3dLensComponent,
+    KdigoAkiPhenotyperCardComponent,
+    AutonomicBaroreflexCardComponent,
+    SepsisShockSofaCardComponent,
+    GlycemicMinimalModelCardComponent,
+    PancreaticIslet3dLensComponent,
+    Cyp450DdiMatrixCardComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -222,7 +243,7 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
       
       @if (isDirectoryOpen() || !patientMgmt.selectedPatientId()) {
          @defer (on immediate) {
-           <app-patient-directory></app-patient-directory>
+           <app-patient-directory (closeDirectory)="isDirectoryOpen.set(false)"></app-patient-directory>
          }
       }
 
@@ -278,10 +299,6 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
         </div>
       }
 
-      <!-- USWDS Federal Health & Clinical Decision Support Workstation Modal -->
-      @if (navShell.showFederalUswdsPortal()) {
-        <app-federal-uswds-portal (closeModal)="navShell.closeFederalUswdsPortal()"></app-federal-uswds-portal>
-      }
 
       <!-- Specialist Referral & Co-Management Dossier Hub Modal -->
       @if (navShell.showSpecialistReferralModal()) {
@@ -364,7 +381,8 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
           (loadDemo)="loadDemoMode()"
           (unlockSession)="handleUnlockSession()"
           (selectAiStudio)="selectKey()"
-          (emergencyBypass)="handleEmergencyBypass()">
+          (emergencyBypass)="handleEmergencyBypass()"
+          (openTriageRoster)="handleOpenTriageRoster()">
         </app-secure-splash>
       } @else {
         @if (state.isEmergencyMode()) {
@@ -516,8 +534,8 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
                 <p class="text-[12px] text-green-600 dark:text-green-500/80">Patient demographics, historical conditions, and vital logs successfully archived in AWS HealthLake FHIR Store.</p>
               </div>
             </div>
-            <button (click)="showAwsSuccess.set(false)" class="p-1 hover:bg-green-100 dark:hover:bg-green-900/40 rounded transition-colors text-green-700 dark:text-green-400">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <button (click)="showAwsSuccess.set(false)" type="button" aria-label="Dismiss AWS HealthLake sync notification" class="min-h-[44px] min-w-[44px] p-2 hover:bg-green-100 dark:hover:bg-green-900/40 rounded-lg transition-colors text-green-700 dark:text-green-400 flex items-center justify-center touch-manipulation">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
         }
@@ -534,8 +552,8 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
                 <p class="text-[12px] text-red-600 dark:text-red-500/80">{{ errorMsg }}</p>
               </div>
             </div>
-            <button (click)="showAwsError.set(null)" class="p-1 hover:bg-red-100 dark:hover:bg-red-900/40 rounded transition-colors text-red-700 dark:text-red-400">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <button (click)="showAwsError.set(null)" type="button" aria-label="Dismiss AWS HealthLake sync error notification" class="min-h-[44px] min-w-[44px] p-2 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-lg transition-colors text-red-700 dark:text-red-400 flex items-center justify-center touch-manipulation">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
         }
@@ -558,6 +576,7 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
           (openTuringSuite)="navShell.selectTab('analysis')"
           (openSocraticRounds)="navShell.selectTab('analysis')"
           (openKneeHologram)="showKneeHologramModal.set(true)"
+          (openBiophysicalLenses)="showBiophysicalLensesModal.set(true)"
           (openResearchDividend)="showResearchDividendModal.set(true)"
           (openBarrowsWorkbench)="navShell.openBarrowsWorkbench()"
           (openSocraticIntake)="state.toggleSocraticIntake(true)"
@@ -616,19 +635,19 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
                   </button>
                 }
                 <div class="flex p-1.5 bg-gray-200 dark:bg-zinc-800 rounded-[10px] w-full border border-gray-300 dark:border-zinc-700/60 shadow-sm">
-                  <button (click)="mobileActiveTab.set('chart')" 
-                          class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
+                  <button (click)="selectMobileTab('chart')" 
+                          class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
                           [class.bg-white]="mobileActiveTab() === 'chart'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'chart'" [class.text-black]="mobileActiveTab() === 'chart'" [class.dark:text-white]="mobileActiveTab() === 'chart'"
                           [class.text-gray-700]="mobileActiveTab() !== 'chart'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'chart'">
                     🩺 Chart
                   </button>
-                  <button (click)="mobileActiveTab.set('analysis')"
-                          class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5"
+                  <button (click)="selectMobileTab('analysis')"
+                          class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
                           [class.bg-white]="mobileActiveTab() === 'analysis'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'analysis'" [class.text-black]="mobileActiveTab() === 'analysis'" [class.dark:text-white]="mobileActiveTab() === 'analysis'"
                           [class.text-gray-700]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'analysis'">
                     📊 Analysis
                   </button>
-                  <button (click)="mobileActiveTab.set('tasks'); state.toggleActiveRoom(true)"
+                  <button (click)="selectMobileTab('tasks')"
                           data-testid="mobile-tab-room"
                           class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
                           [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
@@ -1471,6 +1490,14 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
       </div>
     }
 
+    <!-- 🧩 Montreal Cognitive Assessment (MoCA 30-Point Battery) Modal -->
+    @if (navShell.showMocaSuiteModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Montreal Cognitive Assessment MoCA Suite">
+        <div class="relative w-full max-w-5xl my-auto">
+          <app-moca-suite (close)="navShell.closeMocaSuite()" />
+        </div>
+      </div>
+    }
 
     <!-- 3D Joint Hologram & Tri-Plane Slicer Modal -->
     @if (showKneeHologramModal()) {
@@ -1484,6 +1511,160 @@ import { SocraticMultilingualTerminalComponent } from './components/socratic-mul
             ✕
           </button>
           <app-knee-hologram-hud />
+        </div>
+      </div>
+    }
+
+    <!-- Biophysical 3D Lenses & Quantitative Clinical Phenotypers Studio Modal -->
+    @if (showBiophysicalLensesModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Biophysical 3D Lenses & Quantitative Clinical Phenotypers Studio">
+        <div class="relative w-full max-w-6xl my-auto bg-zinc-950 border border-zinc-800 rounded-3xl shadow-2xl p-4 sm:p-6 flex flex-col gap-4 font-sans max-h-[92vh] overflow-y-auto">
+          <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-xl">
+                🫀
+              </span>
+              <div>
+                <h2 class="text-sm sm:text-base font-bold text-zinc-100 uppercase tracking-wider font-mono">
+                  Biophysical 3D Lenses &amp; Quantitative Clinical Phenotypers Studio
+                </h2>
+                <p class="text-xs text-zinc-400">
+                  Three.js Procedural Biophysics • Microvascular Gas Exchange • Renal Sieve • Hepatic Disse • Sepsis &amp; Autonomic CDS
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              (click)="showBiophysicalLensesModal.set(false)"
+              class="w-9 h-9 rounded-full bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-2xl cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-400"
+              aria-label="Close Biophysical Lenses Studio">
+              ✕
+            </button>
+          </div>
+
+          <!-- Studio Navigation Switcher -->
+          <div class="flex flex-wrap items-center gap-2 p-1.5 bg-zinc-900/90 border border-zinc-800 rounded-2xl font-mono text-xs">
+            <div class="text-[10px] uppercase font-bold text-zinc-500 px-2">3D Biophysical Lenses:</div>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('cardiac')"
+              [class.bg-rose-500]="activeBiophysicalLensTab() === 'cardiac'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'cardiac'"
+              [class.text-rose-400]="activeBiophysicalLensTab() !== 'cardiac'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              ⚡ Cardiac Electrophysiology (V6)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('alveolar')"
+              [class.bg-cyan-500]="activeBiophysicalLensTab() === 'alveolar'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'alveolar'"
+              [class.text-cyan-400]="activeBiophysicalLensTab() !== 'alveolar'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🫁 Alveolar Gas Exchange (V7)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('hepatic')"
+              [class.bg-amber-500]="activeBiophysicalLensTab() === 'hepatic'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'hepatic'"
+              [class.text-amber-400]="activeBiophysicalLensTab() !== 'hepatic'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🔬 Hepatic Sinusoid &amp; Disse (V8)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('renal_3d')"
+              [class.bg-teal-500]="activeBiophysicalLensTab() === 'renal_3d'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'renal_3d'"
+              [class.text-teal-400]="activeBiophysicalLensTab() !== 'renal_3d'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🧬 Glomerular Sieve (V5)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('islet')"
+              [class.bg-emerald-500]="activeBiophysicalLensTab() === 'islet'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'islet'"
+              [class.text-emerald-400]="activeBiophysicalLensTab() !== 'islet'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🔬 Pancreatic Islet (V9)
+            </button>
+
+            <div class="h-4 w-px bg-zinc-700 mx-1 hidden sm:block"></div>
+            <div class="text-[10px] uppercase font-bold text-zinc-500 px-2">Clinical Phenotypers:</div>
+
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('kdigo_aki')"
+              [class.bg-blue-500]="activeBiophysicalLensTab() === 'kdigo_aki'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'kdigo_aki'"
+              [class.text-blue-400]="activeBiophysicalLensTab() !== 'kdigo_aki'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              💧 KDIGO AKI Phenotyper (P9)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('baroreflex')"
+              [class.bg-purple-500]="activeBiophysicalLensTab() === 'baroreflex'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'baroreflex'"
+              [class.text-purple-400]="activeBiophysicalLensTab() !== 'baroreflex'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🧠 Autonomic &amp; Baroreflex (P10)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('sepsis')"
+              [class.bg-rose-500]="activeBiophysicalLensTab() === 'sepsis'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'sepsis'"
+              [class.text-rose-400]="activeBiophysicalLensTab() !== 'sepsis'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🩸 Sepsis Shock SOFA-2 (P8)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('glycemic')"
+              [class.bg-emerald-500]="activeBiophysicalLensTab() === 'glycemic'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'glycemic'"
+              [class.text-emerald-400]="activeBiophysicalLensTab() !== 'glycemic'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🥞 Glycemic Minimal Model (P11)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('cyp450_ddi')"
+              [class.bg-rose-600]="activeBiophysicalLensTab() === 'cyp450_ddi'"
+              [class.text-white]="activeBiophysicalLensTab() === 'cyp450_ddi'"
+              [class.text-rose-400]="activeBiophysicalLensTab() !== 'cyp450_ddi'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              💊 CYP450 &amp; DDI Matrix (P12)
+            </button>
+          </div>
+
+          <!-- Active Panel Display -->
+          <div class="w-full">
+            @if (activeBiophysicalLensTab() === 'cardiac') {
+              <app-cardiac-electrophysiology-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'alveolar') {
+              <app-alveolar-capillary-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'hepatic') {
+              <app-hepatic-sinusoid-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'renal_3d') {
+              <app-glomerular-filtration-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'islet') {
+              <app-pancreatic-islet-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'kdigo_aki') {
+              <app-kdigo-aki-phenotyper-card />
+            } @else if (activeBiophysicalLensTab() === 'baroreflex') {
+              <app-autonomic-baroreflex-card />
+            } @else if (activeBiophysicalLensTab() === 'sepsis') {
+              <app-sepsis-shock-sofa-card />
+            } @else if (activeBiophysicalLensTab() === 'glycemic') {
+              <app-glycemic-minimal-model-card />
+            } @else if (activeBiophysicalLensTab() === 'cyp450_ddi') {
+              <app-cyp450-ddi-matrix-card />
+            }
+          </div>
         </div>
       </div>
     }
@@ -1538,6 +1719,8 @@ export class AppComponent implements OnDestroy {
   showGreenRoomLoungeModal = signal(false);
   showAustereHudModal = signal(false);
   showKneeHologramModal = signal(false);
+  showBiophysicalLensesModal = signal(false);
+  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi'>('cardiac');
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
@@ -1580,6 +1763,7 @@ export class AppComponent implements OnDestroy {
   }
 
   public navShell = inject(NavigationShellService);
+  private cdr = inject(ChangeDetectorRef);
   public tour = inject(WalkthroughTourService);
   public readonly petAuditory = inject(PetAuditoryService);
   private readonly stressIntervention = inject(StressInterventionService);
@@ -1597,6 +1781,7 @@ export class AppComponent implements OnDestroy {
   consentService = inject(ConsentService);
   hardware = inject(HardwareTelemetryService);
   readonly rules = inject(RulesEngineService);
+  readonly moeRouter = inject(ClinicalMoERouterService);
   private aiConfig = inject(AI_CONFIG, { optional: true });
   today = new Date();
   hasApiKey = signal<boolean>(!!this.aiConfig?.apiKey);
@@ -2060,13 +2245,13 @@ export class AppComponent implements OnDestroy {
     } else {
       displayLevel = `${cog} in ${lang}`;
     }
-    this.selectedReadingLevel.set(displayLevel);
 
     this.translationAnalysis.set('');
     this.translationError.set(null);
 
     if (cog === 'standard' && lang.toLowerCase() === 'english') {
       this.previewText.set(this.originalPreviewText());
+      this.selectedReadingLevel.set(displayLevel);
       return;
     }
 
@@ -2086,6 +2271,7 @@ export class AppComponent implements OnDestroy {
       this.previewText.set(fallback);
       this.translationAnalysis.set(`Cognitive Level: [${cog.toUpperCase()}] • Target Language: [${lang.toUpperCase()}] (Deterministic Local Adapter)`);
     } finally {
+      this.selectedReadingLevel.set(displayLevel);
       this.isTranslating.set(false);
     }
   }
@@ -2183,7 +2369,7 @@ export class AppComponent implements OnDestroy {
       };
 
       this.export.downloadCarePlanPdf(
-        '',
+        textToPrint,
         p?.name ?? 'Patient',
         {
           bp: vitals.bp || undefined,
@@ -2245,7 +2431,7 @@ export class AppComponent implements OnDestroy {
   }
 
   cycleTheme() {
-    const themes: AppTheme[] = ['light', 'dark', 'system', 'spark', 'papercraft', 'hemp', 'rice', 'construction', 'white-marble', 'black-marble', 'papyrus', 'pool', 'mandala', 'curie', 'cern'];
+    const themes: AppTheme[] = ['light', 'dark', 'system', 'spark', 'dream-team', 'papercraft', 'hemp', 'rice', 'construction', 'white-marble', 'black-marble', 'papyrus', 'pool', 'mandala', 'curie', 'cern', 'scotopic', 'epaper'];
     const current = this.theme.currentTheme();
     const nextIdx = (themes.indexOf(current) + 1) % themes.length;
     this.theme.setTheme(themes[nextIdx]);
@@ -2290,7 +2476,24 @@ export class AppComponent implements OnDestroy {
 
   goBackToChart(): void {
     this.state.selectPart(null);
-    this.mobileActiveTab.set('chart');
+    this.selectMobileTab('chart');
+  }
+
+  selectMobileTab(tab: 'chart' | 'analysis' | 'tasks'): void {
+    this.mobileActiveTab.set(tab);
+    if (tab === 'tasks') {
+      this.state.toggleActiveRoom(true);
+      this.navShell.selectTab('tasks');
+    } else if (tab === 'analysis') {
+      this.isAnalysisCollapsed.set(false);
+      this.isChartCollapsed.set(true);
+      this.navShell.selectTab('analysis');
+    } else {
+      this.isChartCollapsed.set(false);
+      this.isAnalysisCollapsed.set(false);
+      this.navShell.selectTab('chart');
+    }
+    this.cdr.markForCheck();
   }
 
   isViewingVisitDetails = computed(() => {
@@ -2337,6 +2540,36 @@ export class AppComponent implements OnDestroy {
       const text = this.originalPreviewText();
       untracked(() => {
         this.state.activePatientSummary.set(text || null);
+      });
+    });
+
+    // Reactive synchronization between navShell.activeTab and the workspace view state
+    effect(() => {
+      const tab = this.navShell.activeTab();
+      untracked(() => {
+        if (tab === 'chart') {
+          this.mobileActiveTab.set('chart');
+          this.isChartCollapsed.set(false);
+          this.isAnalysisCollapsed.set(false);
+          this.state.showActiveRoom.set(false);
+          this.state.toggleResearchFrame(false);
+        } else if (tab === 'analysis') {
+          this.mobileActiveTab.set('analysis');
+          this.isAnalysisCollapsed.set(false);
+          this.isChartCollapsed.set(true);
+          this.state.showActiveRoom.set(false);
+          this.state.toggleResearchFrame(false);
+        } else if (tab === 'tasks' || tab === 'intake') {
+          this.mobileActiveTab.set('tasks');
+          this.state.showActiveRoom.set(true);
+        } else if (tab === 'moca') {
+          this.navShell.openMocaSuite();
+        } else if (tab === 'research') {
+          this.state.toggleResearchFrame(true);
+        } else if (tab === 'directory') {
+          this.isDirectoryOpen.set(true);
+        }
+        this.cdr.markForCheck();
       });
     });
 
@@ -2499,6 +2732,7 @@ export class AppComponent implements OnDestroy {
     this.isDemoMode.set(true);
     this.state.isDemoMode.set(true);
     this.hasApiKey.set(true);
+    this.moeRouter.analysisViewMode.set('lenses');
     // Load demo patient (Charles Darwin – p_charles_darwin)
     this.patientMgmt.selectPatient('p_charles_darwin');
     // Inject pre-baked analysis outputs (no API call) synchronously
@@ -2508,6 +2742,17 @@ export class AppComponent implements OnDestroy {
     this.clinicalIntelligence.loadArchivedAnalysis(darwinReport as Partial<Record<AnalysisLens, string>>);
     this.clinicalIntelligence.lastActivePhilosophy.set('western');
     this.clinicalIntelligence.lastPatientData.set(this.state.getAllDataForPrompt());
+  }
+
+  handleOpenTriageRoster() {
+    this.session.isLocked.set(false);
+    this.session.isOnboardingComplete.set(true);
+    this.isDemoMode.set(true);
+    this.state.isDemoMode.set(true);
+    this.hasApiKey.set(true);
+    this.isDirectoryOpen.set(true);
+    this.patientMgmt.selectedPatientId.set(null);
+    this.moeRouter.analysisViewMode.set('canvas');
   }
 
   handleCaseStudyDeepLink(): void {
@@ -2835,3 +3080,4 @@ export class AppComponent implements OnDestroy {
     document.removeEventListener('mousemove', this.boundDoVoiceColDrag);
   }
 }
+

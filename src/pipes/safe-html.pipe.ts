@@ -10,10 +10,9 @@ import * as DOMPurify from 'dompurify';
 export class SafeHtmlPipe implements PipeTransform {
     private isBrowser: boolean;
     private platformId = inject(PLATFORM_ID);
+    private sanitizer = inject(DomSanitizer);
 
-    constructor(
-        private sanitizer: DomSanitizer
-    ) {
+    constructor() {
         this.isBrowser = isPlatformBrowser(this.platformId);
     }
 

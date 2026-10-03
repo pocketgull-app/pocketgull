@@ -1,0 +1,45 @@
+{
+  "name": "@pocketgull/ismp-clinical-guard",
+  "version": "1.0.0",
+  "description": "Zero-dependency, zero-latency on-device ISMP medication safety linter and FDA Tall Man lettering engine.",
+  "author": "Phillip Gear <leads@pocketgull.app> (PocketGull LLC)",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "ismp",
+    "medication-safety",
+    "fda-tall-man",
+    "clinical-linter",
+    "pharmacology",
+    "lasa",
+    "look-alike-sound-alike",
+    "posology",
+    "zero-dependency",
+    "on-device-ai",
+    "cds"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

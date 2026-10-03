@@ -124,6 +124,18 @@ export interface IPrintPageThumbnail {
               class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center">
               🦴 Osteopathic Medicine
             </button>
+            <button (click)="selectPhilosophy('who_nih')"
+              [class.bg-rose-600]="activePhilosophy() === 'who_nih'"
+              [class.text-white]="activePhilosophy() === 'who_nih'"
+              [class.bg-zinc-200]="activePhilosophy() !== 'who_nih'"
+              [class.text-zinc-700]="activePhilosophy() !== 'who_nih'"
+              [class.dark:bg-zinc-800]="activePhilosophy() !== 'who_nih'"
+              [class.dark:text-zinc-300]="activePhilosophy() !== 'who_nih'"
+              aria-label="Select NIH/GARD Rare Disease Screener"
+              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center relative overflow-hidden group">
+              <span class="absolute inset-0 bg-[url('/assets/textures/noise.svg')] opacity-20 pointer-events-none group-hover:opacity-30 transition-opacity"></span>
+              🌐 NIH/GARD Rare Disease
+            </button>
           </div>
 
           <!-- Cognitive Assessment Export Level Selector -->
@@ -664,7 +676,7 @@ export class CarePlanPrintPreviewComponent {
     this.isEditBoxOpen.update(v => !v);
   }
 
-  selectPhilosophy(philosophy: 'western' | 'eastern' | 'ayurvedic' | 'osteopathic') {
+  selectPhilosophy(philosophy: 'western' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'who_nih') {
     this.patientState.selectPhilosophy(philosophy);
   }
 

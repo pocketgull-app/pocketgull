@@ -92,6 +92,8 @@ export interface IResearchDividendLedgerEntry {
   patientRevenueSharePercent: number; // e.g. 85% goes directly to the contributing patient if escrowed
   status: 'accrued' | 'paid_out' | 'open_science_contributed';
   transactionHash: string;
+  stripeTransferId?: string; // Verified Stripe Transfer ID (tr_*)
+  dualCustodyAttestation?: string; // FDA 21 CFR Part 11 / Mandiant SHA-256 seal for disbursements >= $500
   researchFindingSummary?: string; // Summary of medical research discovery made with this query
   studyDoi?: string;
   openScienceImpactScore?: number;

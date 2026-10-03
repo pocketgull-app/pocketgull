@@ -332,6 +332,18 @@ import { BionicReadingService } from '../services/bionic-reading.service';
                     </button>
                   </div>
 
+                  <!-- 🚨 Instant Triaged Situation (All 19 Patients) Command Trigger -->
+                  <div class="w-full max-w-[260px] mt-1.5 z-30">
+                    <button 
+                      type="button"
+                      (click)="enterTriageCommand()" 
+                      class="w-full min-h-[38px] px-3 py-1.5 flex justify-center items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-300 border border-amber-500/40 transition-all rounded-xl shadow-xs active:scale-[0.98] cursor-pointer"
+                      aria-label="Enter Clinical Triage Command Center to view all patients sorted by acuity">
+                      <span class="text-xs">🚨</span>
+                      <span>Triaged Situation (All 19 Patients)</span>
+                    </button>
+                  </div>
+
                   <!-- NIST SP 800-63B Progressive Lockout & Biometric Feedback Banner -->
                   @if (isLockedOut()) {
                     <div class="w-full max-w-[260px] mt-2 p-2 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-600 dark:text-rose-400 text-[10.5px] font-bold flex items-center justify-center gap-1.5 text-center animate-pulse">
@@ -926,9 +938,17 @@ import { BionicReadingService } from '../services/bionic-reading.service';
                             <option value="pool">🌊 Ocean Reflection Pool</option>
                             <option value="mandala">🧘 Sacred Mandala</option>
                             <option value="spark">✨ Spark Mode</option>
-                            <option value="calm">🧘 Serene Calm</option>
-                            <option value="lent">✝️ Lent / Ascetic Reset</option>
+                            <option value="dream-team">🏀 1996 Dream Team</option>
+                            <option value="dolphins-1972">🐬 1972 Miami Dolphins (17-0 Perfect)</option>
+                            <option value="yankees-1927">⚾ 1927 NY Yankees (Murderers' Row)</option>
+                            <option value="arsenal-invincibles">⚽ 2003-04 Arsenal Invincibles</option>
+                            <option value="canadiens-1977">🏒 1976-77 Montreal Canadiens (+216)</option>
+                            <option value="brazil-1970">🇧🇷 1970 Brazil World Cup (Pelé)</option>
+                            <option value="all-blacks-2013">🏉 2013 NZ All Blacks (14-0 Perfect)</option>
                             <option value="curie">🔬 Madame Curie (Radium Lab)</option>
+                            <option value="cern">⚛️ Hypertext 1991</option>
+                            <option value="scotopic">🌑 Scotopic Red Night</option>
+                            <option value="epaper">📖 Reflective Slate E-Paper</option>
                           </select>
                         </div>
 
@@ -2156,6 +2176,7 @@ export class SecureSplashComponent implements OnInit {
   unlockSession = output<void>();
   selectAiStudio = output<void>();
   emergencyBypass = output<void>();
+  openTriageRoster = output<void>();
 
   handleUnlockSession() {
     this.session.isLocked.set(false);
@@ -2187,6 +2208,24 @@ export class SecureSplashComponent implements OnInit {
       } catch (e) { /* ignore */ }
     }
     this.loadDemo.emit();
+  }
+
+  /**
+   * Enter Clinical Triage Command Center directly from splash screen,
+   * showing all enrolled patients stratified by ESI 1-5 acuity and SMoE pre-allocation.
+   */
+  enterTriageCommand(): void {
+    this.playSuccessChime();
+    this.stopAmbientSoundscape();
+    this.session.isLocked.set(false);
+    this.session.isOnboardingComplete.set(true);
+    this.session.resetIdleTimer();
+    if (typeof sessionStorage !== 'undefined') {
+      try {
+        sessionStorage.setItem('pg_session_onboarded', '1');
+      } catch (e) { /* ignore */ }
+    }
+    this.openTriageRoster.emit();
   }
 
   // NIST SP 800-63B Rate Limiting & Progressive Account Lockout State

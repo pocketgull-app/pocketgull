@@ -1,14 +1,15 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClinicalAssessmentsService } from '../services/clinical-assessments/clinical-assessments.service';
 import { AssessmentType, IQuestionItem, ISeverityTier, IAssessmentDefinition } from '../services/clinical-assessments/types';
 import { getAssessment } from '../services/clinical-assessments/assessment-registry';
 import { PatientStateService } from '../services/patient-state.service';
+import { MocaSuiteComponent } from './moca/moca-suite.component';
 
 @Component({
   selector: 'app-clinical-assessments-suite',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MocaSuiteComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex flex-col gap-6 animate-in fade-in duration-300">
@@ -98,7 +99,8 @@ import { PatientStateService } from '../services/patient-state.service';
 
       <!-- Tab Navigation Row -->
       <div class="flex border-b border-zinc-200 dark:border-zinc-800 overflow-x-auto gap-1">
-        <button (click)="svc.activeTab.set('growthyself')"
+        <button type="button" (click)="switchTab('growthyself')"
+          data-testid="cas-tab-growthyself"
           [class.border-b-2]="svc.activeTab() === 'growthyself'"
           [class.border-emerald-500]="svc.activeTab() === 'growthyself'"
           [class.text-emerald-600]="svc.activeTab() === 'growthyself'"
@@ -107,7 +109,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🌱 Grow-Thyself (Life Index)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('phq9')"
+        <button type="button" (click)="switchTab('phq9')"
+          data-testid="cas-tab-phq9"
           [class.border-b-2]="svc.activeTab() === 'phq9'"
           [class.border-sky-500]="svc.activeTab() === 'phq9'"
           [class.text-sky-600]="svc.activeTab() === 'phq9'"
@@ -116,7 +119,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🧠 PHQ-9 (Depression)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('gad7')"
+        <button type="button" (click)="switchTab('gad7')"
+          data-testid="cas-tab-gad7"
           [class.border-b-2]="svc.activeTab() === 'gad7'"
           [class.border-emerald-500]="svc.activeTab() === 'gad7'"
           [class.text-emerald-600]="svc.activeTab() === 'gad7'"
@@ -125,7 +129,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🌿 GAD-7 (Anxiety)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('isi')"
+        <button type="button" (click)="switchTab('isi')"
+          data-testid="cas-tab-isi"
           [class.border-b-2]="svc.activeTab() === 'isi'"
           [class.border-amber-500]="svc.activeTab() === 'isi'"
           [class.text-amber-600]="svc.activeTab() === 'isi'"
@@ -134,7 +139,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🌙 ISI (Insomnia)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('cvsq')"
+        <button type="button" (click)="switchTab('cvsq')"
+          data-testid="cas-tab-cvsq"
           [class.border-b-2]="svc.activeTab() === 'cvsq'"
           [class.border-cyan-500]="svc.activeTab() === 'cvsq'"
           [class.text-cyan-600]="svc.activeTab() === 'cvsq'"
@@ -143,7 +149,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>👁️ CVS-Q (Vision Strain)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('mbi')"
+        <button type="button" (click)="switchTab('mbi')"
+          data-testid="cas-tab-mbi"
           [class.border-b-2]="svc.activeTab() === 'mbi'"
           [class.border-rose-500]="svc.activeTab() === 'mbi'"
           [class.text-rose-600]="svc.activeTab() === 'mbi'"
@@ -152,7 +159,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🔥 MBI (Burnout)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('cssrs')"
+        <button type="button" (click)="switchTab('cssrs')"
+          data-testid="cas-tab-cssrs"
           [class.border-b-2]="svc.activeTab() === 'cssrs'"
           [class.border-rose-500]="svc.activeTab() === 'cssrs'"
           [class.text-rose-600]="svc.activeTab() === 'cssrs'"
@@ -161,7 +169,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🚨 C-SSRS (Safety)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('ros14')"
+        <button type="button" (click)="switchTab('ros14')"
+          data-testid="cas-tab-ros14"
           [class.border-b-2]="svc.activeTab() === 'ros14'"
           [class.border-indigo-500]="svc.activeTab() === 'ros14'"
           [class.text-indigo-600]="svc.activeTab() === 'ros14'"
@@ -170,7 +179,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🩺 ROS-14 (Review Systems)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('phq15')"
+        <button type="button" (click)="switchTab('phq15')"
+          data-testid="cas-tab-phq15"
           [class.border-b-2]="svc.activeTab() === 'phq15'"
           [class.border-purple-500]="svc.activeTab() === 'phq15'"
           [class.text-purple-600]="svc.activeTab() === 'phq15'"
@@ -179,7 +189,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>⚡ PHQ-15 (Somatic)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('prapare')"
+        <button type="button" (click)="switchTab('prapare')"
+          data-testid="cas-tab-prapare"
           [class.border-b-2]="svc.activeTab() === 'prapare'"
           [class.border-teal-500]="svc.activeTab() === 'prapare'"
           [class.text-teal-600]="svc.activeTab() === 'prapare'"
@@ -188,7 +199,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🏘️ PRAPARE (SDOH Risk)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('ayurveda')"
+        <button type="button" (click)="switchTab('ayurveda')"
+          data-testid="cas-tab-ayurveda"
           [class.border-b-2]="svc.activeTab() === 'ayurveda'"
           [class.border-orange-500]="svc.activeTab() === 'ayurveda'"
           [class.text-orange-600]="svc.activeTab() === 'ayurveda'"
@@ -197,7 +209,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🛕 Ayurveda (Tridosha)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('tcm')"
+        <button type="button" (click)="switchTab('tcm')"
+          data-testid="cas-tab-tcm"
           [class.border-b-2]="svc.activeTab() === 'tcm'"
           [class.border-red-500]="svc.activeTab() === 'tcm'"
           [class.text-red-600]="svc.activeTab() === 'tcm'"
@@ -206,7 +219,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>☯️ TCM (Shi Wen)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('moca')"
+        <button type="button" (click)="switchTab('moca')"
+          data-testid="cas-tab-moca"
           [class.border-b-2]="svc.activeTab() === 'moca'"
           [class.border-cyan-500]="svc.activeTab() === 'moca'"
           [class.text-cyan-600]="svc.activeTab() === 'moca'"
@@ -215,7 +229,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🧩 MoCA (Cognition)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('auditc')"
+        <button type="button" (click)="switchTab('auditc')"
+          data-testid="cas-tab-auditc"
           [class.border-b-2]="svc.activeTab() === 'auditc'"
           [class.border-amber-500]="svc.activeTab() === 'auditc'"
           [class.text-amber-600]="svc.activeTab() === 'auditc'"
@@ -224,7 +239,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>🍷 AUDIT-C (Alcohol)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('sarcf')"
+        <button type="button" (click)="switchTab('sarcf')"
+          data-testid="cas-tab-sarcf"
           [class.border-b-2]="svc.activeTab() === 'sarcf'"
           [class.border-emerald-500]="svc.activeTab() === 'sarcf'"
           [class.text-emerald-600]="svc.activeTab() === 'sarcf'"
@@ -233,7 +249,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>💪 SARC-F (Sarcopenia)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('dn4')"
+        <button type="button" (click)="switchTab('dn4')"
+          data-testid="cas-tab-dn4"
           [class.border-b-2]="svc.activeTab() === 'dn4'"
           [class.border-rose-500]="svc.activeTab() === 'dn4'"
           [class.text-rose-600]="svc.activeTab() === 'dn4'"
@@ -242,7 +259,8 @@ import { PatientStateService } from '../services/patient-state.service';
           <span>⚡ DN4 (Neuropathic Pain)</span>
         </button>
 
-        <button (click)="svc.activeTab.set('sibi')"
+        <button type="button" (click)="switchTab('sibi')"
+          data-testid="cas-tab-sibi"
           [class.border-b-2]="svc.activeTab() === 'sibi'"
           [class.border-orange-500]="svc.activeTab() === 'sibi'"
           [class.text-orange-600]="svc.activeTab() === 'sibi'"
@@ -264,6 +282,13 @@ import { PatientStateService } from '../services/patient-state.service';
           title="Send current assessment findings & protocol recommendation directly to the Active Room notes & checklist">
           <span>📋 Send to Active Room</span>
         </button>
+
+        @if (svc.activeTab() === 'moca') {
+          <button (click)="showInteractiveMocaModal.set(true)"
+            class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white font-bold uppercase tracking-wider text-xs transition shadow-lg hover:shadow-xl active:scale-95 cursor-pointer">
+            <span>🧩 Launch Interactive 30-Pt MoCA Suite</span>
+          </button>
+        }
 
         @if (svc.activeTab() === 'gad7' && svc.gad7Score() >= 5) {
           <button (click)="triggerVagalBiofeedback()"
@@ -395,6 +420,15 @@ import { PatientStateService } from '../services/patient-state.service';
           }
         </div>
       </div>
+
+      <!-- Interactive 30-Point MoCA Suite Modal -->
+      @if (showInteractiveMocaModal()) {
+        <div class="fixed inset-0 z-[120] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Interactive MoCA 30-Point Suite">
+          <div class="relative w-full max-w-5xl my-auto">
+            <app-moca-suite (close)="showInteractiveMocaModal.set(false)" />
+          </div>
+        </div>
+      }
     </div>
   `,
   styles: [`
@@ -404,7 +438,14 @@ import { PatientStateService } from '../services/patient-state.service';
 export class ClinicalAssessmentsSuiteComponent {
   svc = inject(ClinicalAssessmentsService);
   patientState = inject(PatientStateService);
+  private cdr = inject(ChangeDetectorRef, { optional: true });
 
+  switchTab(tab: AssessmentType): void {
+    this.svc.activeTab.set(tab);
+    this.cdr?.markForCheck();
+  }
+
+  readonly showInteractiveMocaModal = signal<boolean>(false);
   readonly isHeaderFlipped = signal<boolean>(false);
   private lastHeaderFlipTime = 0;
 

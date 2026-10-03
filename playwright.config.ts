@@ -15,7 +15,7 @@ export default defineConfig({
   forbidOnly: !!process.env['CI'],
   retries: process.env['CI'] ? 1 : 0,
   workers: process.env['PLAYWRIGHT_WORKERS'] ? parseInt(process.env['PLAYWRIGHT_WORKERS'], 10) : 4,
-  reporter: process.env['CI'] ? [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]] : 'html',
+  reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
   use: {
     baseURL: process.env['BASE_URL'] || 'http://127.0.0.1:4000',
     trace: 'off',
@@ -64,15 +64,15 @@ export default defineConfig({
       },
     },
   ],
-  webServer: {
-    command: 'npm run preview',
-    url: 'http://127.0.0.1:4000',
-    reuseExistingServer: true,
-    timeout: 120 * 1000,
-    env: {
-      PORT: '4000',
-      NODE_ENV: 'production',
-      PLAYWRIGHT_TESTING: 'true',
-    },
-  },
+  // webServer: {
+  //   command: 'npm run preview',
+  //   url: 'http://127.0.0.1:4000',
+  //   reuseExistingServer: true,
+  //   timeout: 120 * 1000,
+  //   env: {
+  //     PORT: '4000',
+  //     NODE_ENV: 'production',
+  //     PLAYWRIGHT_TESTING: 'true',
+  //   },
+  // },
 });

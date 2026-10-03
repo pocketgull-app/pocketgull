@@ -263,27 +263,65 @@ export class AgronomicSoilProcurementCardComponent {
   private agronomicService = inject(AgronomicSoilProcurementService);
 
   activeSubTab = signal<'soil' | 'farm' | 'grocery'>('soil');
+  readonly stateVersion = signal(0);
 
   // Soil state
-  soilOrganicMatter = 4.5;
-  soilPh = 6.5;
-  cationExchangeCapacity = 20.0;
-  fungalToBacterialRatio = 1.1;
-  tillageIntensity: 'NO_TILL' | 'MINIMUM_TILL' | 'CONVENTIONAL_DEEP_TILL' = 'NO_TILL';
-  coverCropYears = 4;
+  private _soilOrganicMatter = 4.5;
+  get soilOrganicMatter(): number { return this._soilOrganicMatter; }
+  set soilOrganicMatter(val: number) { this._soilOrganicMatter = val; this.stateVersion.update(v => v + 1); }
+
+  private _soilPh = 6.5;
+  get soilPh(): number { return this._soilPh; }
+  set soilPh(val: number) { this._soilPh = val; this.stateVersion.update(v => v + 1); }
+
+  private _cationExchangeCapacity = 20.0;
+  get cationExchangeCapacity(): number { return this._cationExchangeCapacity; }
+  set cationExchangeCapacity(val: number) { this._cationExchangeCapacity = val; this.stateVersion.update(v => v + 1); }
+
+  private _fungalToBacterialRatio = 1.1;
+  get fungalToBacterialRatio(): number { return this._fungalToBacterialRatio; }
+  set fungalToBacterialRatio(val: number) { this._fungalToBacterialRatio = val; this.stateVersion.update(v => v + 1); }
+
+  private _tillageIntensity: 'NO_TILL' | 'MINIMUM_TILL' | 'CONVENTIONAL_DEEP_TILL' = 'NO_TILL';
+  get tillageIntensity(): 'NO_TILL' | 'MINIMUM_TILL' | 'CONVENTIONAL_DEEP_TILL' { return this._tillageIntensity; }
+  set tillageIntensity(val: 'NO_TILL' | 'MINIMUM_TILL' | 'CONVENTIONAL_DEEP_TILL') { this._tillageIntensity = val; this.stateVersion.update(v => v + 1); }
+
+  private _coverCropYears = 4;
+  get coverCropYears(): number { return this._coverCropYears; }
+  set coverCropYears(val: number) { this._coverCropYears = val; this.stateVersion.update(v => v + 1); }
 
   // Farm state
-  usdaZone = '6b';
-  tillableAcres = 25.0;
-  healthPriority: 'METABOLIC_DIABETES_REVERSAL' | 'PEDIATRIC_IMMUNITY' | 'GUT_BARRIER_HEALTH' = 'METABOLIC_DIABETES_REVERSAL';
+  private _usdaZone = '6b';
+  get usdaZone(): string { return this._usdaZone; }
+  set usdaZone(val: string) { this._usdaZone = val; this.stateVersion.update(v => v + 1); }
+
+  private _tillableAcres = 25.0;
+  get tillableAcres(): number { return this._tillableAcres; }
+  set tillableAcres(val: number) { this._tillableAcres = val; this.stateVersion.update(v => v + 1); }
+
+  private _healthPriority: 'METABOLIC_DIABETES_REVERSAL' | 'PEDIATRIC_IMMUNITY' | 'GUT_BARRIER_HEALTH' = 'METABOLIC_DIABETES_REVERSAL';
+  get healthPriority(): 'METABOLIC_DIABETES_REVERSAL' | 'PEDIATRIC_IMMUNITY' | 'GUT_BARRIER_HEALTH' { return this._healthPriority; }
+  set healthPriority(val: 'METABOLIC_DIABETES_REVERSAL' | 'PEDIATRIC_IMMUNITY' | 'GUT_BARRIER_HEALTH') { this._healthPriority = val; this.stateVersion.update(v => v + 1); }
 
   // Grocery state
-  storeType: 'COMMUNITY_COOP' | 'NEIGHBORHOOD_BODEGA' | 'REGIONAL_MARKET' = 'COMMUNITY_COOP';
-  weeklyShoppers = 1200;
-  produceSkuCount = 36;
-  refrigeratedFt = 40.0;
+  private _storeType: 'COMMUNITY_COOP' | 'NEIGHBORHOOD_BODEGA' | 'REGIONAL_MARKET' = 'COMMUNITY_COOP';
+  get storeType(): 'COMMUNITY_COOP' | 'NEIGHBORHOOD_BODEGA' | 'REGIONAL_MARKET' { return this._storeType; }
+  set storeType(val: 'COMMUNITY_COOP' | 'NEIGHBORHOOD_BODEGA' | 'REGIONAL_MARKET') { this._storeType = val; this.stateVersion.update(v => v + 1); }
+
+  private _weeklyShoppers = 1200;
+  get weeklyShoppers(): number { return this._weeklyShoppers; }
+  set weeklyShoppers(val: number) { this._weeklyShoppers = val; this.stateVersion.update(v => v + 1); }
+
+  private _produceSkuCount = 36;
+  get produceSkuCount(): number { return this._produceSkuCount; }
+  set produceSkuCount(val: number) { this._produceSkuCount = val; this.stateVersion.update(v => v + 1); }
+
+  private _refrigeratedFt = 40.0;
+  get refrigeratedFt(): number { return this._refrigeratedFt; }
+  set refrigeratedFt(val: number) { this._refrigeratedFt = val; this.stateVersion.update(v => v + 1); }
 
   readonly soilResult = computed(() => {
+    this.stateVersion();
     return this.agronomicService.evaluateSoilHealth({
       soilOrganicMatterPct: this.soilOrganicMatter,
       soilPh: this.soilPh,
@@ -295,6 +333,7 @@ export class AgronomicSoilProcurementCardComponent {
   });
 
   readonly farmResult = computed(() => {
+    this.stateVersion();
     return this.agronomicService.planFarmCropPortfolio({
       usdaHardinessZone: this.usdaZone,
       totalTillableAcres: this.tillableAcres,
@@ -304,6 +343,7 @@ export class AgronomicSoilProcurementCardComponent {
   });
 
   readonly groceryResult = computed(() => {
+    this.stateVersion();
     return this.agronomicService.planGroceryStocking({
       storeType: this.storeType,
       weeklyShopperVolume: this.weeklyShoppers,

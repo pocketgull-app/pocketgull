@@ -136,6 +136,41 @@ describe('FhirBundleFactoryService', () => {
     const lincExt = obs['extension'].find((x: any) => x.url === 'http://pocketgull.app/fhir/StructureDefinition/linc-mechanotransduction');
     expect(lincExt.extension.find((e: any) => e.url === 'mechanostate').valueString).toBe('STIFF_PRO_FIBROTIC_ONCOGENIC');
   });
+
+  it('8. Builds FHIR R4 CarePlan Bundle with Seven Generations Lineage & Exposomic Extensions', () => {
+    const bundle = factory.buildFhirR4CarePlanBundle(
+      {
+        patientId: 'p-7gen-001',
+        name: 'Haudenosaunee Steward',
+        vitals: { hr: 64, bp: '115/75' },
+        sevenGenerationsLineage: {
+          watershed: 'USGS-GW-REG-04 Alluvial Aquifer',
+          mtdnaStatus: 'OPTIMAL_MATRILINEAL_HOMOPLASMY',
+          paternalTsRnaStatus: 'STABLE_PATERNAL_EPIGENOME',
+          brierScore: 0.1546
+        }
+      },
+      'Seven Generations Stewardship'
+    );
+
+    expect(bundle['resourceType']).toBe('Bundle');
+    expect(bundle['entry'].length).toBe(4); // Patient + Observation + CarePlan + FamilyMemberHistory
+    
+    const famHistory = bundle['entry'].find((e: any) => e.resource.resourceType === 'FamilyMemberHistory')?.resource;
+    expect(famHistory).toBeDefined();
+    expect(famHistory.patient.reference).toBe('Patient/p-7gen-001');
+
+    const watershedExt = famHistory.extension.find((x: any) => x.url === 'http://pocketgull.app/fhir/StructureDefinition/watershed-exposome-source');
+    expect(watershedExt.valueString).toBe('USGS-GW-REG-04 Alluvial Aquifer');
+
+    const mtdnaExt = famHistory.extension.find((x: any) => x.url === 'http://pocketgull.app/fhir/StructureDefinition/mitochondrial-matrilineal-status');
+    expect(mtdnaExt.valueString).toBe('OPTIMAL_MATRILINEAL_HOMOPLASMY');
+
+    const brierExt = famHistory.extension.find((x: any) => x.url === 'http://pocketgull.app/fhir/StructureDefinition/seven-generations-brier-score');
+    expect(brierExt.valueDecimal).toBe(0.1546);
+
+    expect(famHistory.note[0].text).toContain('Manageability Invariant active');
+  });
 });
 
 

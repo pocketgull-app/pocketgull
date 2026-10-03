@@ -152,15 +152,35 @@ import { AmbientScribeService, IScribeDialogueTurn, IStructuredSoapNote } from '
           </div>
         </div>
 
-        <!-- Right Panel: Structured SOAP Note (7 cols) -->
+        <!-- Right Panel: Structured Documentation, Socratic Demystifier & 3-Act Trajectory (7 cols) -->
         <div class="lg:col-span-7 bg-stone-900/90 rounded-2xl border border-stone-800/80 p-5 flex flex-col h-[560px]">
           
-          <div class="flex items-center justify-between pb-3 border-b border-stone-800">
-            <div class="flex items-center gap-2">
-              <span class="text-base">📋</span>
-              <h3 class="text-xs font-semibold text-stone-300 uppercase tracking-wider">
-                Structured Clinical SOAP Note & Coding
-              </h3>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-stone-800 gap-2">
+            <!-- Tab Controls -->
+            <div class="flex items-center gap-1.5 p-1 bg-stone-950 rounded-xl border border-stone-800">
+              <button
+                (click)="activeTab.set('soap')"
+                class="px-3 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
+                [ngClass]="activeTab() === 'soap' ? 'bg-teal-600 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'">
+                <span>📋</span> Clinical SOAP
+              </button>
+              <button
+                (click)="activeTab.set('socratic')"
+                class="px-3 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
+                [ngClass]="activeTab() === 'socratic' ? 'bg-teal-600 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'">
+                <span>💡</span> Socratic Demystifier
+                @if (scribe.socraticQuestions().length > 0) {
+                  <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-teal-900 text-teal-200 font-mono">
+                    {{ scribe.socraticQuestions().length }}
+                  </span>
+                }
+              </button>
+              <button
+                (click)="activeTab.set('trajectory')"
+                class="px-3 py-1 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
+                [ngClass]="activeTab() === 'trajectory' ? 'bg-teal-600 text-white shadow-sm' : 'text-stone-400 hover:text-stone-200'">
+                <span>🌱</span> 3-Act Trajectory
+              </button>
             </div>
 
             @if (scribe.soapNote()) {
@@ -179,156 +199,316 @@ import { AmbientScribeService, IScribeDialogueTurn, IStructuredSoapNote } from '
             }
           </div>
 
-          <!-- SOAP Content Area -->
+          <!-- Tab Content Area -->
           <div class="flex-1 overflow-y-auto py-3 space-y-4 pr-1 text-xs">
-            @if (!scribe.soapNote()) {
-              <div class="flex flex-col items-center justify-center h-full text-center text-stone-500 space-y-2 p-8">
-                <span class="text-4xl">📝</span>
-                <p class="font-medium text-stone-400">No active SOAP synthesis generated yet.</p>
-                <p class="text-xs text-stone-600 max-w-sm">
-                  Run a simulation or converse in the audio stream to automatically synthesize clinical Subjective, Objective, Assessment, and Plan documentation.
-                </p>
-              </div>
-            } @else {
-              @let soap = scribe.soapNote()!;
-
-              <!-- S - Subjective -->
-              <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-teal-400 flex items-center gap-1.5 text-xs">
-                    <span class="w-4 h-4 rounded bg-teal-500/20 text-teal-300 flex items-center justify-center text-[10px]">S</span>
-                    SUBJECTIVE (Patient History & HPI)
-                  </span>
-                  @if (soap.subjective.reportedPainScale !== undefined) {
-                    <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-950/60 text-amber-300 border border-amber-800/40">
-                      Pain Scale: {{ soap.subjective.reportedPainScale }}/10
-                    </span>
-                  }
+            
+            <!-- 1. SOAP TAB -->
+            @if (activeTab() === 'soap') {
+              @if (!scribe.soapNote()) {
+                <div class="flex flex-col items-center justify-center h-full text-center text-stone-500 space-y-2 p-8">
+                  <span class="text-4xl">📝</span>
+                  <p class="font-medium text-stone-400">No active SOAP synthesis generated yet.</p>
+                  <p class="text-xs text-stone-600 max-w-sm">
+                    Run a simulation or converse in the audio stream to automatically synthesize clinical Subjective, Objective, Assessment, and Plan documentation.
+                  </p>
                 </div>
-                <div class="text-stone-300 text-[11px] space-y-1">
-                  <p><strong class="text-stone-400">Chief Complaint:</strong> {{ soap.subjective.chiefComplaint }}</p>
-                  <p><strong class="text-stone-400">HPI:</strong> {{ soap.subjective.historyOfPresentIllness }}</p>
-                  <div class="flex flex-wrap gap-1 mt-1">
-                    @for (ros of soap.subjective.reviewOfSystems; track ros) {
-                      <span class="px-2 py-0.5 rounded bg-stone-900 border border-stone-800 text-stone-400 text-[10px]">
-                        {{ ros }}
+              } @else {
+                @let soap = scribe.soapNote()!;
+
+                <!-- S - Subjective -->
+                <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-teal-400 flex items-center gap-1.5 text-xs">
+                      <span class="w-4 h-4 rounded bg-teal-500/20 text-teal-300 flex items-center justify-center text-[10px]">S</span>
+                      SUBJECTIVE (Patient History & HPI)
+                    </span>
+                    @if (soap.subjective.reportedPainScale !== undefined) {
+                      <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-950/60 text-amber-300 border border-amber-800/40">
+                        Pain Scale: {{ soap.subjective.reportedPainScale }}/10
+                      </span>
+                    }
+                  </div>
+                  <div class="text-stone-300 text-[11px] space-y-1">
+                    <p><strong class="text-stone-400">Chief Complaint:</strong> {{ soap.subjective.chiefComplaint }}</p>
+                    <p><strong class="text-stone-400">HPI:</strong> {{ soap.subjective.historyOfPresentIllness }}</p>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                      @for (ros of soap.subjective.reviewOfSystems; track ros) {
+                        <span class="px-2 py-0.5 rounded bg-stone-900 border border-stone-800 text-stone-400 text-[10px]">
+                          {{ ros }}
+                        </span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- O - Objective -->
+                <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-sky-400 flex items-center gap-1.5 text-xs">
+                      <span class="w-4 h-4 rounded bg-sky-500/20 text-sky-300 flex items-center justify-center text-[10px]">O</span>
+                      OBJECTIVE (Vitals & Physical Exam)
+                    </span>
+                  </div>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-stone-300">
+                    <div class="p-2 rounded bg-stone-900/60 border border-stone-800">
+                      <span class="text-[10px] text-stone-500 block">Blood Pressure</span>
+                      <span class="font-bold text-stone-200">{{ soap.objective.vitals.bloodPressure || 'N/A' }}</span>
+                    </div>
+                    <div class="p-2 rounded bg-stone-900/60 border border-stone-800">
+                      <span class="text-[10px] text-stone-500 block">Resting Pulse</span>
+                      <span class="font-bold text-stone-200">{{ soap.objective.vitals.heartRate ? soap.objective.vitals.heartRate + ' bpm' : 'N/A' }}</span>
+                    </div>
+                    <div class="p-2 rounded bg-stone-900/60 border border-stone-800">
+                      <span class="text-[10px] text-stone-500 block">SpO2 Oxygen</span>
+                      <span class="font-bold text-stone-200">{{ soap.objective.vitals.oxygenSaturation ? soap.objective.vitals.oxygenSaturation + '%' : 'N/A' }}</span>
+                    </div>
+                    <div class="p-2 rounded bg-stone-900/60 border border-stone-800">
+                      <span class="text-[10px] text-stone-500 block">BMI</span>
+                      <span class="font-bold text-stone-200">{{ soap.objective.vitals.bmi || 'N/A' }}</span>
+                    </div>
+                  </div>
+                  <div class="text-[11px] text-stone-300 space-y-0.5">
+                    @for (exam of soap.objective.physicalExam; track exam) {
+                      <p class="text-stone-400">• {{ exam }}</p>
+                    }
+                  </div>
+                </div>
+
+                <!-- A - Assessment -->
+                <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-amber-400 flex items-center gap-1.5 text-xs">
+                      <span class="w-4 h-4 rounded bg-amber-500/20 text-amber-300 flex items-center justify-center text-[10px]">A</span>
+                      ASSESSMENT & DIFFERENTIAL DIAGNOSES
+                    </span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-800/40">
+                      ICD-10: {{ soap.assessment.icd10Code }}
+                    </span>
+                  </div>
+                  <p class="text-stone-200 font-semibold text-[11px]">
+                    {{ soap.assessment.primaryDiagnosis }}
+                  </p>
+                  <div class="space-y-1">
+                    @for (diff of soap.assessment.differentialDiagnoses; track diff.icd10Code) {
+                      <div class="flex items-start justify-between text-[10px] p-1.5 rounded bg-stone-900/80 border border-stone-800">
+                        <div>
+                          <strong class="text-stone-300">{{ diff.condition }}</strong>
+                          <span class="text-stone-500 ml-1">({{ diff.icd10Code }})</span>
+                          <p class="text-stone-400 text-[9px] mt-0.5">{{ diff.rationale }}</p>
+                        </div>
+                        <span class="px-1.5 py-0.5 rounded text-[9px] uppercase font-bold"
+                          [ngClass]="diff.likelihood === 'high' ? 'bg-rose-950 text-rose-300' : 'bg-stone-800 text-stone-400'">
+                          {{ diff.likelihood }}
+                        </span>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- P - Plan -->
+                <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-emerald-400 flex items-center gap-1.5 text-xs">
+                      <span class="w-4 h-4 rounded bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[10px]">P</span>
+                      PLAN & PHARMACOTHERAPY
+                    </span>
+                    <span class="text-[10px] text-stone-400 font-mono">Follow-up: {{ soap.plan.followUpTimeline }}</span>
+                  </div>
+                  
+                  <!-- Prescriptions -->
+                  <div class="space-y-1">
+                    @for (rx of soap.plan.pharmacotherapy; track rx.drug) {
+                      <div class="p-2 rounded bg-stone-900 border border-stone-800 text-[11px]">
+                        <div class="flex items-center justify-between">
+                          <span class="font-bold text-stone-200">💊 {{ rx.drug }} {{ rx.dosage }}</span>
+                          <span class="text-[10px] text-stone-400">{{ rx.frequency }}</span>
+                        </div>
+                        @if (rx.cpicGuidelineFlag) {
+                          <span class="text-[9px] text-teal-400 block mt-0.5">🧬 CPIC: {{ rx.cpicGuidelineFlag }}</span>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Suggested Billing CPT Codes -->
+                  <div class="pt-2 border-t border-stone-800/80 flex flex-wrap items-center gap-1.5">
+                    <span class="text-[10px] text-stone-500 font-semibold">Suggested Billing:</span>
+                    @for (cpt of soap.plan.suggestedCptCodes; track cpt.code) {
+                      <span class="px-2 py-0.5 rounded-md bg-stone-900 border border-stone-700 text-stone-300 text-[10px] font-mono" title="{{ cpt.description }}">
+                        CPT {{ cpt.code }} ({{ cpt.reimbursementTier }})
                       </span>
                     }
                   </div>
                 </div>
-              </div>
 
-              <!-- O - Objective -->
-              <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-sky-400 flex items-center gap-1.5 text-xs">
-                    <span class="w-4 h-4 rounded bg-sky-500/20 text-sky-300 flex items-center justify-center text-[10px]">O</span>
-                    OBJECTIVE (Vitals & Physical Exam)
+                <!-- Global Evidence Footer -->
+                <div class="p-2.5 rounded-xl bg-teal-950/30 border border-teal-900/50 flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-teal-300 gap-2">
+                  <span class="flex items-center gap-1.5">
+                    <span>🏛️</span>
+                    <span>{{ soap.evidenceSummary.cochraneEvidenceLevel }}</span>
+                  </span>
+                  <span class="font-mono text-stone-400">
+                    H₀ p = {{ soap.evidenceSummary.nullHypothesisPValue }} | Conf: {{ (soap.evidenceSummary.confidenceScore * 100) | number:'1.0-0' }}%
                   </span>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-stone-300">
-                  <div class="p-2 rounded bg-stone-900/60 border border-stone-800">
-                    <span class="text-[10px] text-stone-500 block">Blood Pressure</span>
-                    <span class="font-bold text-stone-200">{{ soap.objective.vitals.bloodPressure || 'N/A' }}</span>
-                  </div>
-                  <div class="p-2 rounded bg-stone-900/60 border border-stone-800">
-                    <span class="text-[10px] text-stone-500 block">Resting Pulse</span>
-                    <span class="font-bold text-stone-200">{{ soap.objective.vitals.heartRate ? soap.objective.vitals.heartRate + ' bpm' : 'N/A' }}</span>
-                  </div>
-                  <div class="p-2 rounded bg-stone-900/60 border border-stone-800">
-                    <span class="text-[10px] text-stone-500 block">SpO2 Oxygen</span>
-                    <span class="font-bold text-stone-200">{{ soap.objective.vitals.oxygenSaturation ? soap.objective.vitals.oxygenSaturation + '%' : 'N/A' }}</span>
-                  </div>
-                  <div class="p-2 rounded bg-stone-900/60 border border-stone-800">
-                    <span class="text-[10px] text-stone-500 block">BMI</span>
-                    <span class="font-bold text-stone-200">{{ soap.objective.vitals.bmi || 'N/A' }}</span>
-                  </div>
-                </div>
-                <div class="text-[11px] text-stone-300 space-y-0.5">
-                  @for (exam of soap.objective.physicalExam; track exam) {
-                    <p class="text-stone-400">• {{ exam }}</p>
-                  }
-                </div>
-              </div>
+              }
+            }
 
-              <!-- A - Assessment -->
-              <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-amber-400 flex items-center gap-1.5 text-xs">
-                    <span class="w-4 h-4 rounded bg-amber-500/20 text-amber-300 flex items-center justify-center text-[10px]">A</span>
-                    ASSESSMENT & DIFFERENTIAL DIAGNOSES
-                  </span>
-                  <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-800/40">
-                    ICD-10: {{ soap.assessment.icd10Code }}
-                  </span>
-                </div>
-                <p class="text-stone-200 font-semibold text-[11px]">
-                  {{ soap.assessment.primaryDiagnosis }}
-                </p>
-                <div class="space-y-1">
-                  @for (diff of soap.assessment.differentialDiagnoses; track diff.icd10Code) {
-                    <div class="flex items-start justify-between text-[10px] p-1.5 rounded bg-stone-900/80 border border-stone-800">
-                      <div>
-                        <strong class="text-stone-300">{{ diff.condition }}</strong>
-                        <span class="text-stone-500 ml-1">({{ diff.icd10Code }})</span>
-                        <p class="text-stone-400 text-[9px] mt-0.5">{{ diff.rationale }}</p>
-                      </div>
-                      <span class="px-1.5 py-0.5 rounded text-[9px] uppercase font-bold"
-                        [ngClass]="diff.likelihood === 'high' ? 'bg-rose-950 text-rose-300' : 'bg-stone-800 text-stone-400'">
-                        {{ diff.likelihood }}
-                      </span>
-                    </div>
-                  }
-                </div>
-              </div>
-
-              <!-- P - Plan -->
-              <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-emerald-400 flex items-center gap-1.5 text-xs">
-                    <span class="w-4 h-4 rounded bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[10px]">P</span>
-                    PLAN & PHARMACOTHERAPY
-                  </span>
-                  <span class="text-[10px] text-stone-400 font-mono">Follow-up: {{ soap.plan.followUpTimeline }}</span>
-                </div>
+            <!-- 2. SOCRATIC DEMYSTIFIER TAB -->
+            @else if (activeTab() === 'socratic') {
+              <div class="space-y-4">
                 
-                <!-- Prescriptions -->
-                <div class="space-y-1">
-                  @for (rx of soap.plan.pharmacotherapy; track rx.drug) {
-                    <div class="p-2 rounded bg-stone-900 border border-stone-800 text-[11px]">
-                      <div class="flex items-center justify-between">
-                        <span class="font-bold text-stone-200">💊 {{ rx.drug }} {{ rx.dosage }}</span>
-                        <span class="text-[10px] text-stone-400">{{ rx.frequency }}</span>
+                <!-- Bayesian Cohort Frequency Banner -->
+                <div class="p-3.5 rounded-xl bg-gradient-to-r from-teal-950/60 to-stone-900 border border-teal-800/40 space-y-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-base">🏛️</span>
+                    <h4 class="text-xs font-bold text-teal-300 uppercase tracking-wider">
+                      Bayesian Population Cohort Grounding
+                    </h4>
+                  </div>
+                  <p class="text-stone-300 text-[11px] leading-relaxed">
+                    {{ scribe.naturalFrequencySummary() }}
+                  </p>
+                </div>
+
+                <!-- Socratic Dialogue & Call-and-Response Inquiry Cards -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-bold text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
+                      <span>💡</span> Socratic Inquiry & Partnership Dialogue
+                    </h4>
+                    <span class="text-[10px] text-stone-400">Call-and-Response Reflection</span>
+                  </div>
+
+                  @if (scribe.socraticQuestions().length === 0) {
+                    <div class="p-4 rounded-xl bg-stone-950/60 border border-stone-800 text-center text-stone-500">
+                      <p>No active dialogue questions detected yet. Run a clinical simulation to generate Socratic prompts.</p>
+                    </div>
+                  } @else {
+                    @for (card of scribe.socraticQuestions(); track card.term) {
+                      <div class="p-3.5 rounded-xl bg-stone-950/90 border border-stone-800 hover:border-teal-700/50 transition-all space-y-2">
+                        <div class="flex items-center justify-between">
+                          <span class="font-bold text-teal-300 text-xs flex items-center gap-1.5">
+                            <span>💬</span> {{ card.term }}
+                          </span>
+                          <span class="px-2 py-0.5 rounded text-[9px] font-semibold bg-stone-900 text-stone-400 border border-stone-800">
+                            Partner Question
+                          </span>
+                        </div>
+                        <p class="text-stone-100 font-medium text-[11px] leading-relaxed italic bg-stone-900/60 p-2 rounded-lg border border-stone-800">
+                          "{{ card.question }}"
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] pt-1">
+                          <div class="p-2 rounded bg-stone-900/40 border border-stone-800/80">
+                            <strong class="text-stone-400 block mb-0.5">Clinical Purpose:</strong>
+                            <span class="text-stone-300">{{ card.rationale }}</span>
+                          </div>
+                          <div class="p-2 rounded bg-teal-950/30 border border-teal-900/40">
+                            <strong class="text-teal-400 block mb-0.5">Empowering Step:</strong>
+                            <span class="text-stone-300">{{ card.suggestedFocusArea }}</span>
+                          </div>
+                        </div>
                       </div>
-                      @if (rx.cpicGuidelineFlag) {
-                        <span class="text-[9px] text-teal-400 block mt-0.5">🧬 CPIC: {{ rx.cpicGuidelineFlag }}</span>
+                    }
+                  }
+                </div>
+
+                <!-- 5th-Grade Teaspoon Jargon Demystifications with Falsifiability Warnings -->
+                <div class="space-y-2 pt-2 border-t border-stone-800">
+                  <h4 class="text-xs font-bold text-stone-300 flex items-center gap-1.5 uppercase tracking-wider">
+                    <span>🥄</span> 5th-Grade Teaspoon Analogies & Reassurance Guards
+                  </h4>
+
+                  @for (jargon of scribe.demystifiedJargon(); track jargon.term) {
+                    <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-2">
+                      <div class="flex items-center justify-between">
+                        <span class="font-bold text-stone-200 text-xs">{{ jargon.term }}</span>
+                        <span class="px-2 py-0.5 rounded text-[9px] uppercase font-mono bg-stone-900 text-stone-400">
+                          {{ jargon.category }}
+                        </span>
+                      </div>
+                      <p class="text-stone-300 text-[11px]">{{ jargon.plainEnglish }}</p>
+                      <div class="p-2.5 rounded-lg bg-teal-950/20 border border-teal-800/30 text-[11px] text-teal-200 space-y-1">
+                        <strong class="text-teal-400 block text-[10px] uppercase tracking-wider">Teaspoon Metaphor:</strong>
+                        <p>{{ jargon.teaspoonAnalogy }}</p>
+                      </div>
+
+                      @if (jargon.falsifiabilityWarning) {
+                        <div class="p-2 rounded-lg bg-amber-950/30 border border-amber-800/40 text-[10px] text-amber-300 flex items-start gap-1.5">
+                          <span class="text-xs">🛡️</span>
+                          <div>
+                            <strong class="font-semibold block">Reassurance & Boundary:</strong>
+                            <span>{{ jargon.falsifiabilityWarning }}</span>
+                          </div>
+                        </div>
                       }
                     </div>
                   }
                 </div>
 
-                <!-- Suggested Billing CPT Codes -->
-                <div class="pt-2 border-t border-stone-800/80 flex flex-wrap items-center gap-1.5">
-                  <span class="text-[10px] text-stone-500 font-semibold">Suggested Billing:</span>
-                  @for (cpt of soap.plan.suggestedCptCodes; track cpt.code) {
-                    <span class="px-2 py-0.5 rounded-md bg-stone-900 border border-stone-700 text-stone-300 text-[10px] font-mono" title="{{ cpt.description }}">
-                      CPT {{ cpt.code }} ({{ cpt.reimbursementTier }})
-                    </span>
-                  }
-                </div>
-              </div>
-
-              <!-- Global Evidence Footer -->
-              <div class="p-2.5 rounded-xl bg-teal-950/30 border border-teal-900/50 flex flex-col sm:flex-row sm:items-center justify-between text-[10px] text-teal-300 gap-2">
-                <span class="flex items-center gap-1.5">
-                  <span>🏛️</span>
-                  <span>{{ soap.evidenceSummary.cochraneEvidenceLevel }}</span>
-                </span>
-                <span class="font-mono text-stone-400">
-                  H₀ p = {{ soap.evidenceSummary.nullHypothesisPValue }} | Conf: {{ (soap.evidenceSummary.confidenceScore * 100) | number:'1.0-0' }}%
-                </span>
               </div>
             }
+
+            <!-- 3. TRAJECTORY TAB -->
+            @else if (activeTab() === 'trajectory') {
+              @let traj = scribe.threeActTrajectory();
+              <div class="space-y-4">
+                
+                <!-- Act I -->
+                <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-stone-300 text-xs flex items-center gap-1.5">
+                      <span>⏮️</span> {{ traj.act1WhereYouveBeen.title }}
+                    </span>
+                  </div>
+                  <p class="text-stone-300 text-[11px]">{{ traj.act1WhereYouveBeen.summary }}</p>
+                  <p class="text-stone-400 text-[10px] italic">{{ traj.act1WhereYouveBeen.historicalContext }}</p>
+                </div>
+
+                <!-- Act II -->
+                <div class="p-3.5 rounded-xl bg-stone-950/80 border border-stone-800 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-teal-300 text-xs flex items-center gap-1.5">
+                      <span>📍</span> {{ traj.act2WhereYouStandToday.title }}
+                    </span>
+                  </div>
+                  <p class="text-stone-300 text-[11px]">{{ traj.act2WhereYouStandToday.summary }}</p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[10px]">
+                    @for (bio of traj.act2WhereYouStandToday.activeBiometrics; track bio) {
+                      <div class="p-2 rounded bg-stone-900 border border-stone-800 text-stone-300 flex items-center gap-1.5">
+                        <span class="text-teal-400">⚡</span>
+                        <span>{{ bio }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Act III -->
+                <div class="p-3.5 rounded-xl bg-stone-950/80 border border-teal-800/40 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-bold text-emerald-400 text-xs flex items-center gap-1.5">
+                      <span>🚀</span> {{ traj.act3WhereYoureGoing.title }}
+                    </span>
+                  </div>
+                  <div class="space-y-1.5 text-[11px] text-stone-300">
+                    <div class="p-2 rounded bg-stone-900/80 border border-stone-800">
+                      <strong class="text-emerald-400 block text-[10px]">30-Day Focus:</strong>
+                      {{ traj.act3WhereYoureGoing.roadmap30Day }}
+                    </div>
+                    <div class="p-2 rounded bg-stone-900/80 border border-stone-800">
+                      <strong class="text-sky-400 block text-[10px]">60-Day Evolution:</strong>
+                      {{ traj.act3WhereYoureGoing.roadmap60Day }}
+                    </div>
+                    <div class="p-2 rounded bg-stone-900/80 border border-stone-800">
+                      <strong class="text-purple-400 block text-[10px]">90-Day Vitality:</strong>
+                      {{ traj.act3WhereYoureGoing.roadmap90Day }}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            }
+
           </div>
 
         </div>
@@ -341,6 +521,7 @@ import { AmbientScribeService, IScribeDialogueTurn, IStructuredSoapNote } from '
 export class AmbientClinicalScribeComponent {
   readonly scribe = inject(AmbientScribeService);
   readonly copiedFhir = signal<boolean>(false);
+  readonly activeTab = signal<'soap' | 'socratic' | 'trajectory'>('soap');
 
   runScenario(scenarioId: string): void {
     this.scribe.runSimulationScenario(scenarioId);

@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-export type MainTabType = 'chart' | 'analysis' | 'intake' | 'directory' | 'research' | 'tasks' | 'settings';
+export type MainTabType = 'chart' | 'analysis' | 'intake' | 'directory' | 'research' | 'tasks' | 'settings' | 'moca';
 
 @Injectable({
   providedIn: 'root'
@@ -26,12 +26,12 @@ export class NavigationShellService {
   readonly showCommercialHubModal = signal<boolean>(false);
   readonly showRoleDemoModal = signal<boolean>(false);
   readonly showIntimacyVitalityModal = signal<boolean>(false);
-  readonly showFederalUswdsPortal = signal<boolean>(false);
   readonly showArcadeHubModal = signal<boolean>(false);
   readonly showAtlasModal = signal<boolean>(false);
   readonly showChwSuiteModal = signal<boolean>(false);
   readonly showSpecialistReferralModal = signal<boolean>(false);
   readonly showMultilingualTerminalModal = signal<boolean>(false);
+  readonly showMocaSuiteModal = signal<boolean>(false);
   readonly activeGameId = signal<string>('luminaries');
 
   /** Developer Mode: Gates investor pitch portals, experimental showcases, and auxiliary demos. Defaults to false. */
@@ -68,6 +68,9 @@ export class NavigationShellService {
    */
   public selectTab(tab: MainTabType): void {
     this.activeTab.set(tab);
+    if (tab === 'moca') {
+      this.showMocaSuiteModal.set(true);
+    }
   }
 
   /**
@@ -115,9 +118,6 @@ export class NavigationShellService {
   public openIntimacyVitality(): void { this.showIntimacyVitalityModal.set(true); }
   public closeIntimacyVitality(): void { this.showIntimacyVitalityModal.set(false); }
 
-  public openFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(true); }
-  public closeFederalUswdsPortal(): void { this.showFederalUswdsPortal.set(false); }
-
   public openArcadeHub(gameId?: string): void {
     if (gameId) {
       this.activeGameId.set(gameId);
@@ -138,6 +138,17 @@ export class NavigationShellService {
   public openMultilingualTerminal(): void { this.showMultilingualTerminalModal.set(true); }
   public closeMultilingualTerminal(): void { this.showMultilingualTerminalModal.set(false); }
 
+  public openMocaSuite(): void {
+    this.activeTab.set('moca');
+    this.showMocaSuiteModal.set(true);
+  }
+  public closeMocaSuite(): void {
+    this.showMocaSuiteModal.set(false);
+    if (this.activeTab() === 'moca') {
+      this.activeTab.set('chart');
+    }
+  }
+
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
    */
@@ -145,6 +156,7 @@ export class NavigationShellService {
     this.activeTab.set('chart');
     this.showGlossaryModal.set(false);
     this.showCompanionSyncModal.set(false);
+    this.showMocaSuiteModal.set(false);
     this.showFhirCallback.set(false);
     this.showApiKeyModal.set(false);
     this.showPatientDirectoryModal.set(false);
@@ -153,12 +165,12 @@ export class NavigationShellService {
     this.showComplianceCertificateModal.set(false);
     this.showCmsSuperbillModal.set(false);
     this.showTrajectoryReaderModal.set(false);
+    this.showPosologyModal.set(false);
     this.showAustereHudModal.set(false);
     this.showMdcpHubModal.set(false);
     this.showCommercialHubModal.set(false);
     this.showRoleDemoModal.set(false);
     this.showIntimacyVitalityModal.set(false);
-    this.showFederalUswdsPortal.set(false);
     this.showArcadeHubModal.set(false);
     this.showAtlasModal.set(false);
     this.showChwSuiteModal.set(false);

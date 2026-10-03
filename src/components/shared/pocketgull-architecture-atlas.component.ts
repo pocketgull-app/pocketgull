@@ -371,8 +371,6 @@ export class PocketgullArchitectureAtlasComponent {
       this.nav.openAustereHud();
     } else if (name.includes('posology')) {
       this.nav.openPosology();
-    } else if (name.includes('federal') || name.includes('uswds')) {
-      this.nav.openFederalUswdsPortal();
     } else if (name.includes('arcade') || name.includes('luminaries')) {
       this.nav.openArcadeHub();
     } else if (name.includes('trajectory')) {

@@ -247,9 +247,9 @@ describe('SkepticalEpistemologyService', () => {
     expect(eudkaAudit.atypicalPresentationFlags.some(f => f.id === 'atypical-euglycemic-dka')).toBe(true);
   });
 
-  it('20. Retrieves complete 12 Canonical Clinical Fallacies Catalog with valid metadata', () => {
+  it('20. Retrieves complete 14 Canonical Clinical Fallacies Catalog with valid metadata', () => {
     const fallacies = service.getAllFallacyDefinitions();
-    expect(fallacies.length).toBe(12);
+    expect(fallacies.length).toBe(14);
 
     const baseRate = service.getFallacyDefinition('BASE_RATE_FALLACY');
     expect(baseRate).toBeDefined();
@@ -264,6 +264,14 @@ describe('SkepticalEpistemologyService', () => {
     const affirming = service.getFallacyDefinition('AFFIRMING_THE_CONSEQUENT');
     expect(affirming).toBeDefined();
     expect(affirming?.category).toBe('FORMAL_LOGICAL');
+
+    const dcaFallacy = service.getFallacyDefinition('DECISION_CURVE_THRESHOLD_FALLACY');
+    expect(dcaFallacy).toBeDefined();
+    expect(dcaFallacy?.category).toBe('INFORMAL_PROBABILISTIC');
+
+    const iatrogenicPanic = service.getFallacyDefinition('IATROGENIC_PANIC_CATASTROPHIZATION');
+    expect(iatrogenicPanic).toBeDefined();
+    expect(iatrogenicPanic?.category).toBe('INFORMAL_COGNITIVE');
   });
 
   it('21. Computes Gerd Gigerenzer Bayesian Natural Frequency Matrix for screening tests', () => {
@@ -313,6 +321,20 @@ describe('SkepticalEpistemologyService', () => {
     );
     expect(autoAudit.hasDetectedFallacy).toBe(true);
     expect(autoAudit.findings.some(f => f.fallacyId === 'AUTOMATION_BIAS')).toBe(true);
+
+    // 5. Decision Curve Threshold Fallacy detection
+    const dcaAudit = service.auditClinicalAssertionForFallacies(
+      'The patient has mild knee aching with Kellgren-Lawrence Grade 1 radiograph, so we must order a routine 3.0T MRI and operate immediately to clean up the joint.'
+    );
+    expect(dcaAudit.hasDetectedFallacy).toBe(true);
+    expect(dcaAudit.findings.some(f => f.fallacyId === 'DECISION_CURVE_THRESHOLD_FALLACY')).toBe(true);
+
+    // 6. Iatrogenic Panic Catastrophization detection
+    const panicAudit = service.auditClinicalAssertionForFallacies(
+      'Your municipal drinking water has toxic forever chemicals that will poison breast milk, so you are doomed to develop cancer unless you cease breastfeeding immediately.'
+    );
+    expect(panicAudit.hasDetectedFallacy).toBe(true);
+    expect(panicAudit.findings.some(f => f.fallacyId === 'IATROGENIC_PANIC_CATASTROPHIZATION')).toBe(true);
   });
 
   it('23. Confirms sound clinical claims pass audit with zero detected fallacies', () => {
@@ -322,6 +344,60 @@ describe('SkepticalEpistemologyService', () => {
     expect(soundAudit.hasDetectedFallacy).toBe(false);
     expect(soundAudit.findings.length).toBe(0);
     expect(soundAudit.overallVerdict).toContain('No overt cognitive or logical fallacies detected');
+  });
+
+  it('24. Audits Vickers & Elkin Decision Curve Analysis (DCA) Net Benefit and detects unneeded procedures avoided', () => {
+    // Model with 85% sensitivity, 80% specificity, 15% prevalence, evaluated at decision threshold pt = 0.10
+    const dca = service.auditDecisionCurveUtility({
+      prevalence: 0.15,
+      sensitivity: 0.85,
+      specificity: 0.80,
+      thresholdProbability: 0.10,
+      interventionName: 'Stepped-Care Protocol'
+    });
+
+    expect(dca.thresholdProbability).toBe(0.10);
+    expect(dca.modelNetBenefit).toBeGreaterThan(0);
+    expect(dca.isModelSuperior).toBe(true);
+    expect(dca.avoidedInterventionsPer100).toBeGreaterThan(0);
+    expect(dca.skepticalVerdict).toContain('Clinical Decision Utility Confirmed');
+
+    // Negative net benefit case (low sensitivity, poor specificity, high threshold)
+    const harmfulDca = service.auditDecisionCurveUtility({
+      prevalence: 0.05,
+      sensitivity: 0.40,
+      specificity: 0.50,
+      thresholdProbability: 0.30,
+      interventionName: 'Routine Arthroscopy'
+    });
+
+    expect(harmfulDca.modelNetBenefit).toBeLessThan(0);
+    expect(harmfulDca.isModelSuperior).toBe(false);
+    expect(harmfulDca.skepticalVerdict).toContain('Skeptical Alert');
+  });
+
+  it('25. Enforces Aaron Antonovsky Salutogenic Manageability Invariant on environmental toxicant disclosures', () => {
+    // 1. Disclosure with accessible <=$25 remedy satisfies invariant
+    const manageable = service.auditSalutogenicManageability(
+      'Municipal water testing reveals PFAS (PFOA 12 ng/L) and extreme water hardness.',
+      'Deploy point-of-use NSF-53 certified carbon block filter pitcher and remineralize with food-grade magnesium bicarbonate living water.'
+    );
+
+    expect(manageable.isManageable).toBe(true);
+    expect(manageable.hasAccessibleRemedy).toBe(true);
+    expect(manageable.salutogenicScore).toBeGreaterThanOrEqual(70);
+    expect(manageable.clinicalGuidance).toContain('Salutogenic Manageability Invariant satisfied');
+
+    // 2. Alarmist disclosure without remedy triggers iatrogenic risk alert
+    const alarmist = service.auditSalutogenicManageability(
+      'Municipal drinking water contains toxic carcinogenic PFAS chemicals.'
+    );
+
+    expect(alarmist.isManageable).toBe(false);
+    expect(alarmist.hasAccessibleRemedy).toBe(false);
+    expect(alarmist.salutogenicScore).toBeLessThan(70);
+    expect(alarmist.clinicalGuidance).toContain('IATROGENIC RISK');
+    expect(alarmist.recommendedAntonovskyRemedy).toContain('NSF-53 certified activated carbon block gravity filter');
   });
 });
 

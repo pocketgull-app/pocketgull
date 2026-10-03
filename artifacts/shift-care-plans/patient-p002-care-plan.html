@@ -1,0 +1,1052 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <title>Pocket Gull Care Plan — Homo Sapiens (Female, Asthma &amp; Respiratory, 42y)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://font.pocketgull.app/fonts.css" media="all">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand: #059669;       /* Clinical green – Pocket Gull system */
+      --brand-dark: #047857;
+      --brand-blue: #1C6AFF;
+      --ink: #1C1C1C;
+      --ink-muted: #6B7280;
+      --surface: #FFFFFF;
+      --surface-subtle: #F9FAFB;
+      --surface-accent: #F0FDF4;
+      --border: #E5E7EB;
+      --border-accent: #A7F3D0;
+      --radius: 8px;
+      --font: 'PocketGull', 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Provide missing tailwind dimensions for inline icons */
+    .w-4 { width: 16px; }
+    .h-4 { height: 16px; }
+    .w-3\.5 { width: 14px; }
+    .h-3\.5 { height: 14px; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    html { font-size: 10pt; }
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--surface);
+      line-height: 1.65;
+      padding: 0;
+      margin: 0;
+      position: relative;
+    }
+
+    /* ─── Structural background decoration ───────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Page Layout ───────────────────────────────── */
+    .page-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 48px 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── Letterhead ────────────────────────────────── */
+    .letterhead {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 28px;
+    }
+    .brand-name {
+      font-size: 20pt;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .brand-tagline {
+      font-size: 7.5pt;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--ink-muted);
+      margin-top: 4px;
+    }
+    .report-meta {
+      text-align: right;
+      font-size: 8pt;
+      color: var(--ink-muted);
+      line-height: 1.8;
+    }
+    .report-meta strong { color: var(--ink); font-weight: 600; }
+
+    /* ─── Document Type Badge ───────────────────────── */
+    .doc-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-accent);
+      border: 1px solid var(--border-accent);
+      color: var(--brand-dark);
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 5px 12px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+    }
+    .doc-type-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--brand);
+      border-radius: 50%;
+    }
+
+    /* ─── Patient Banner ────────────────────────────── */
+    .patient-banner {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .patient-field {
+      background: var(--surface-subtle);
+      padding: 10px 14px;
+    }
+    .patient-field-label {
+      font-size: 7pt;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .patient-field-value {
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    /* ─── IVitals Row ────────────────────────────────── */
+    .vitals-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .vital-chip {
+      display: flex;
+      flex-direction: column;
+      padding: 7px 12px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      min-width: 72px;
+    }
+    .vital-label {
+      font-size: 6.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+      margin-bottom: 2px;
+    }
+    .vital-value {
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .vital-value small { font-size: 7.5pt; font-weight: 400; color: var(--ink-muted); }
+
+    /* ─── Conditions ─────────────────────────────────── */
+    .conditions-block {
+      margin-bottom: 20px;
+    }
+    .conditions-label {
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+      margin-bottom: 8px;
+    }
+    .conditions-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .condition-tag {
+      font-size: 8pt;
+      font-weight: 500;
+      padding: 4px 10px;
+      background: #F3F4F6;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--ink);
+    }
+
+    /* ─── Care Plan Section ──────────────────────────── */
+    .care-plan-section {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .care-plan-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 18px;
+      background: var(--surface-subtle);
+      border-bottom: 1px solid var(--border);
+    }
+    .care-plan-header-icon {
+      width: 18px;
+      height: 18px;
+      color: var(--brand);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .care-plan-header-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+    .care-plan-title {
+      font-size: 10pt;
+      font-weight: 700;
+      font-family: 'PocketGull Halftone', 'PocketGull', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--brand-dark);
+    }
+    .care-plan-body {
+      padding: 20px 22px;
+    }
+
+    /* ─── Care Plan Typography ───────────────────────── */
+    .care-plan-body h1, .care-plan-body h2 {
+      font-size: 10pt;
+      font-weight: 700;
+      font-family: 'PocketGull Halftone', 'PocketGull', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink);
+      margin: 18px 0 8px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .care-plan-body h1:first-child, .care-plan-body h2:first-child { margin-top: 0; }
+    .care-plan-body h3, .care-plan-body h4 {
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-muted);
+      margin: 18px 0 8px;
+    }
+    .care-plan-body p {
+      font-size: 10.5pt;
+      font-weight: 300;
+      line-height: 1.8;
+      letter-spacing: 0.01em;
+      margin-bottom: 14px;
+      color: var(--ink);
+    }
+    .care-plan-body ul, .care-plan-body ol {
+      padding-left: 18px;
+      margin-bottom: 14px;
+    }
+    .care-plan-body li {
+      font-size: 10.5pt;
+      font-weight: 300;
+      line-height: 1.8;
+      letter-spacing: 0.01em;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+    .care-plan-body li strong { color: var(--ink); font-weight: 500; }
+    .care-plan-body strong { font-weight: 500; color: var(--ink); }
+    .care-plan-body em { font-style: italic; }
+    .care-plan-body table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.5pt;
+      margin: 10px 0 14px;
+    }
+    .care-plan-body th {
+      background: var(--surface-accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 7.5pt;
+      padding: 7px 10px;
+      text-align: left;
+      border: 1px solid var(--border-accent);
+      color: var(--brand-dark);
+    }
+    .care-plan-body td {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--ink-muted);
+    }
+    .care-plan-body tr:nth-child(even) td { background: var(--surface-subtle); }
+    .care-plan-body blockquote {
+      border-left: 3px solid var(--brand);
+      background: var(--surface-accent);
+      padding: 10px 14px;
+      margin: 10px 0;
+      border-radius: 0;
+    }
+    .care-plan-body blockquote p { margin: 0; font-size: 9pt; color: #374151; }
+
+    /* ─── Translation Matrix Layout ──────────────────── */
+        /* ─── Biomarker Matrix Export Styles ─────────────── */
+    .biomarker-matrix-export {
+      margin: 14px 0 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    .biomarker-chart-summary {
+      padding: 10px 14px;
+      background: var(--surface-accent);
+      border-bottom: 1px solid var(--border-accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .biomarker-chart-title {
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--brand-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .biomarker-chart-subtitle {
+      font-size: 7pt;
+      color: var(--ink-muted);
+    }
+    .biomarker-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .chip-deficient { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+    .chip-low { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .chip-optimal { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .chip-high { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+
+    .matrix-container {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .matrix-container.split {
+      grid-template-columns: 1fr 1fr;
+    }
+    .matrix-analysis {
+      background: var(--surface-accent);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      page-break-inside: avoid;
+    }
+    .matrix-analysis-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--brand-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    /* ─── Attestation Box ────────────────────────────── */
+    .attestation {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      background: var(--surface-subtle);
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .attestation-field {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .attestation-label {
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+    }
+    .attestation-line {
+      border-bottom: 1px solid var(--ink-muted);
+      height: 1px;
+      margin-top: 4px;
+    }
+
+    /* ─── Footer ────────────────────────────────────── */
+    .report-footer {
+      margin-top: 36px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-brand {
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--ink-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .footer-disclaimer {
+      font-size: 7.5pt;
+      color: var(--ink-muted);
+      max-width: 380px;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    /* ─── Print Overrides ───────────────────────────── */
+    @media print {
+      html { font-size: 9.5pt; }
+      body { 
+        background: white !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+      }
+      body::before, body::after { position: absolute !important; }
+      .page-wrap { padding: 0; max-width: 100%; }
+      .matrix-analysis { page-break-inside: avoid; break-inside: avoid; margin-bottom: 20px; }
+      h1, h2, h3, h4, h5 { page-break-after: avoid; break-after: avoid; }
+      p, li, tr { page-break-inside: avoid; break-inside: avoid; }
+      
+      /* Preserve background colors and borders in PDF and paper output */
+      .vital-chip, .condition-tag, .care-plan-section, .care-plan-header, .matrix-analysis, blockquote {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .care-plan-body h3, .care-plan-body h4, .brand-tagline {
+        letter-spacing: 0.02em !important;
+      }
+      .biomarker-matrix-export, .biomarker-chip {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      @page {
+        size: letter portrait;
+        margin: 0.75in 0.75in 1in 0.75in;
+      }
+    }
+
+    /* ─── Print Action Bar (screen only) ────────────── */
+    .print-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--ink);
+      color: white;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+      font-size: 9pt;
+      gap: 12px;
+    }
+    .print-bar-title { font-weight: 600; }
+    .print-bar-actions { display: flex; gap: 10px; }
+    .btn-print {
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 18px;
+      font-size: 9pt;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-print:hover { background: var(--brand-dark); }
+    .btn-close {
+      background: transparent;
+      color: #9CA3AF;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      padding: 7px 12px;
+      font-size: 9pt;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    @media print { .print-bar { display: none !important; } }
+    .main-content { padding-top: 56px; }
+    @media print { .main-content { padding-top: 0; } }
+
+    /* ─── Dyslexia-Friendly Print Styles ─── */
+    body.dyslexia-mode {
+      letter-spacing: 0.12em !important;
+      word-spacing: 0.18em !important;
+    }
+    body.dyslexia-mode .care-plan-body p,
+    body.dyslexia-mode .care-plan-body li {
+      font-size: 11.5pt !important;
+      line-height: 1.85 !important;
+      font-weight: 400 !important;
+    }
+  </style>
+</head>
+<body class="eco-spore-traps ">
+  <div class="print-bar">
+    <span class="print-bar-title">Pocket Gull Care Plan — Homo Sapiens (Female, Asthma &amp; Respiratory, 42y)</span>
+    <div class="print-bar-actions">
+      <button class="btn-close" id="carePlanBtnClose">Close</button>
+      <button class="btn-print" id="carePlanBtnPrint">Save as PDF / Print</button>
+      <script>
+        document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
+        document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
+      </script>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="page-wrap">
+
+      <!-- Letterhead -->
+      <header class="letterhead">
+        <div class="brand-block" style="display:flex;align-items:center;gap:12px;">
+          <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+            <polygon points="50,40 65,15 58,45" fill="#3ebc9e" stroke="#2fa085" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="20,50 50,40 10,35" fill="#e5e5e5" stroke="#d5d5d5" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="20,50 50,40 58,45 75,55 50,65" fill="#f4f4f4" stroke="#e0e0e0" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="50,40 58,45 35,85" fill="#ef6658" stroke="#df5648" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="50,40 35,85 20,50" fill="#d85547" stroke="#c84537" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="75,55 58,45 85,38" fill="#ffffff" stroke="#f0f0f0" stroke-width="0.5" stroke-linejoin="round"></polygon>
+            <polygon points="85,38 82,45 95,34" fill="#faa63b" stroke="#e0902c" stroke-width="0.5" stroke-linejoin="round"></polygon>
+          </svg>
+          <div>
+            <div class="brand-name">Pocket Gull</div>
+            <div class="brand-tagline">Clinical Intelligence Platform</div>
+          </div>
+        </div>
+        <div class="report-meta">
+          <div><strong>Generated</strong> September 30, 2026 at 09:03 PM</div>
+          <div><strong>Report Type</strong> Care Plan &amp; Visit Summary</div>
+          <div><strong>Classification</strong> Confidential – Clinical Use Only</div>
+        </div>
+      </header>
+
+      <!-- Document Type Badge -->
+      <div class="doc-type-badge">Finalized Care Plan</div>
+
+      <!-- Patient Banner -->
+      <div class="patient-banner">
+        <div class="patient-field">
+          <div class="patient-field-label">Patient Name</div>
+          <div class="patient-field-value">Homo Sapiens (Female, Asthma &amp; Respiratory, 42y)</div>
+        </div>
+        <div class="patient-field">
+          <div class="patient-field-label">Visit Date</div>
+          <div class="patient-field-value">September 30, 2026</div>
+        </div>
+        <div class="patient-field">
+          <div class="patient-field-label">Prepared By</div>
+          <div class="patient-field-value">Pocket Gull AI</div>
+        </div>
+      </div>
+      
+      
+        <div class="vitals-row">
+            <div class="vital-chip"><span class="vital-label">BP</span><span class="vital-value">118/72</span></div>
+            <div class="vital-chip"><span class="vital-label">HR</span><span class="vital-value">76 <small>bpm</small></span></div>
+            <div class="vital-chip"><span class="vital-label">Temp</span><span class="vital-value">98.2°F</span></div>
+            <div class="vital-chip"><span class="vital-label">SpO2</span><span class="vital-value">99%</span></div>
+            <div class="vital-chip"><span class="vital-label">Weight</span><span class="vital-value">145 lbs</span></div>
+        </div>
+      
+        <div class="conditions-block">
+            <div class="conditions-label">Historical Conditions</div>
+            <div class="conditions-tags"><span class="condition-tag">Asthma</span><span class="condition-tag">Anxiety Disorder</span><span class="condition-tag">Chronic Lower Back Pain</span><span class="condition-tag">Opioid Use Disorder (in remission)</span><span class="condition-tag">Depression</span></div>
+        </div>
+
+      
+      <div class="care-plan-section">
+        <div class="care-plan-header">
+          <div class="care-plan-header-icon" style="color:var(--brand);">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </div>
+          <div class="care-plan-title">Active Care Plan</div>
+        </div>
+        <div class="care-plan-body">
+          <h3>Clinical Assessment</h3>
+<p>Sarah Jenkins is a 42-year-old female presenting with chronic lower back pain (L4-L5 radiculopathy), opioid use disorder in sustained remission, and co-morbid depression. The primary clinical challenge is multi-modal pain management that avoids opioid relapse risk while addressing the functional and psychological dimensions of her condition.</p>
+<h3>Priority List</h3>
+<ul>
+<li><strong>Opioid Relapse Prevention</strong>: Highest-risk factor; pain management strategy must explicitly exclude opioid analgesics.</li>
+<li><strong>Chronic L4-L5 Radiculopathy</strong>: Constant aching with left gluteal radiation, pain level 7/10. Worsens with prolonged standing.</li>
+<li><strong>Co-morbid Depression</strong>: Active depression compounds pain tolerance and functional recovery; concurrent psychiatric management is essential.</li>
+<li><strong>Functional Deconditioning</strong>: Pain-avoidance behavior likely contributing to progressive deconditioning.</li>
+</ul>
+<h3>Plan of Care</h3>
+<ul>
+<li><strong>Immediate</strong>: Refer to a pain management specialist with expertise in non-opioid modalities. Initiate NSAID trial (e.g., naproxen 500mg BID with food) if no contraindications.</li>
+<li><strong>Short-Term</strong>: Enroll in a structured physical therapy program focused on lumbar stabilization and McKenzie method exercises. Initiate CBT-based pain management (8-12 sessions).</li>
+<li><strong>Ongoing</strong>: Maintain psychiatric follow-up for depression management. Consider duloxetine (SNRI) as it addresses both depression and neuropathic pain.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Intervention</th>
+<th>Target</th>
+<th>Frequency</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Physical Therapy</td>
+<td>Lumbar stabilization</td>
+<td>2-3x/week x 8 weeks</td>
+</tr>
+<tr>
+<td>CBT (Pain-focused)</td>
+<td>Catastrophizing, coping</td>
+<td>Weekly x 12 weeks</td>
+</tr>
+<tr>
+<td>Duloxetine (discuss)</td>
+<td>Depression + pain</td>
+<td>Daily (psych-guided)</td>
+</tr>
+<tr>
+<td>NSAID (naproxen)</td>
+<td>Acute pain relief</td>
+<td>BID with food, reassess at 4 weeks</td>
+</tr>
+</tbody></table>
+<h3>Goals</h3>
+<ul>
+<li><strong>Short-term (2 weeks)</strong>: Pain VAS score reduction from 7/10 to &lt;=5/10. PT program initiated.</li>
+<li><strong>Long-term (3 months)</strong>: Functional ADL capacity restored to baseline. Sustained opioid abstinence maintained. PHQ-9 score reduced by &gt;=5 points.</li>
+</ul>
+<h3>References</h3>
+<ul>
+<li><strong>Dowell, D. et al.</strong> (2022). <em>CDC Clinical Practice Guideline for Prescribing Opioids for Pain</em>. MMWR, 71(3), 1-95. DOI: <a href="https://doi.org/10.15585/mmwr.rr7103a1">10.15585/mmwr.rr7103a1</a>. Peer-Reviewed.</li>
+</ul>
+<h3>Diagnostic Workup</h3>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Rationale</th>
+<th>Priority</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Updated MRI lumbar spine</td>
+<td>Confirm L4-L5 disc status, nerve root compression</td>
+<td>High</td>
+</tr>
+<tr>
+<td>PHQ-9 (depression screen)</td>
+<td>Baseline severity score for treatment tracking</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Basic metabolic panel</td>
+<td>Pre-NSAID renal/hepatic safety check</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>DXA bone scan</td>
+<td>Rule out osteoporosis contributing to pain</td>
+<td>Low</td>
+</tr>
+</tbody></table>
+<h3>Nutrition &amp; Lifestyle</h3>
+<ul>
+<li><strong>Anti-inflammatory diet</strong>: Increase omega-3 fatty acid intake (oily fish, flaxseed). Reduce ultra-processed foods and refined sugars, which are associated with heightened systemic inflammation [Calder et al., 2017].</li>
+<li><strong>Maintain healthy weight</strong>: Current BMI within normal range; avoid weight gain as it increases lumbar load.</li>
+<li><strong>Sleep hygiene</strong>: Depression and pain both disrupt sleep architecture. Establish consistent sleep/wake schedule; limit screen time 1 hour before bed.</li>
+<li><strong>Alcohol avoidance</strong>: Given OUD history, minimize all substance use including alcohol (CNS depressant with low relapse threshold overlap).</li>
+<li><strong>Standing workstation or ergonomic assessment</strong>: Reduce time in provocative posture at work.</li>
+</ul>
+<h3>Supplementation</h3>
+<table>
+<thead>
+<tr>
+<th>Supplement</th>
+<th>Dose</th>
+<th>Frequency</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Magnesium glycinate</td>
+<td>300-400mg</td>
+<td>Nightly</td>
+<td>Muscle relaxation, sleep support</td>
+</tr>
+<tr>
+<td>Vitamin D3 + K2</td>
+<td>2000 IU D3 / 100mcg K2</td>
+<td>Daily with fat</td>
+<td>Bone health, pain modulation</td>
+</tr>
+<tr>
+<td>Omega-3 (EPA/DHA)</td>
+<td>2g EPA+DHA</td>
+<td>Daily with meal</td>
+<td>Anti-inflammatory support</td>
+</tr>
+</tbody></table>
+<h3>Movement &amp; Rehabilitation</h3>
+<ul>
+<li><strong>McKenzie Method (extension-biased exercises)</strong>: Highly effective for L4-L5 disc pathology with peripheral symptoms. Begin with supervised sessions; transition to home program.</li>
+<li><strong>Core stabilization (McGill Big Three)</strong>: Bird-dog, curl-up, side plank. Engage deep spinal stabilizers without compressive loading.</li>
+<li><strong>Aquatherapy</strong>: Low-impact option for acute flare periods; reduces joint load while maintaining cardiovascular function.</li>
+<li><strong>Avoid</strong>: High-impact activities, heavy deadlifts, and prolonged flexion-dominant postures until PT-cleared.</li>
+</ul>
+<h3>Mind-Body</h3>
+<ul>
+<li><strong>Mindfulness-Based Stress Reduction (MBSR)</strong>: 8-week structured program shown to reduce pain catastrophizing and improve depression scores in chronic pain populations.</li>
+<li><strong>Diaphragmatic breathing</strong>: Activates parasympathetic nervous system, reducing pain perception threshold.</li>
+</ul>
+<h3>Biochemical Assessment</h3>
+<p>The patient displays elevated systemic inflammatory markers and increased oxidative stress. Suboptimal levels of key micronutrients are present, specifically in vitamin D3 and magnesium, which limits cellular energy efficiency.</p>
+<h3>Nutrition Focus</h3>
+<ul>
+<li><strong>Anti-inflammatory pathways</strong>: High oxidative stress requires active anti-inflammatory dietary inputs.</li>
+<li><strong>Mitochondrial cofactor support</strong>: Cellular respiration needs magnesium and B-vitamins for efficient ATP production.</li>
+<li><strong>Bone and nerve support</strong>: Suboptimal vitamin D3 needs tailored nutritional support.</li>
+</ul>
+<h3>Nutritional Interventions</h3>
+<table>
+<thead>
+<tr>
+<th>Nutrient/Compound</th>
+<th>Therapeutic Dose</th>
+<th>Delivery Method</th>
+<th>Primary Pathway</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Vitamin D3</td>
+<td>2000 IU</td>
+<td>Oral with fat</td>
+<td>Bone health and immune support</td>
+</tr>
+<tr>
+<td>Magnesium glycinate</td>
+<td>400 mg</td>
+<td>Oral nightly</td>
+<td>NMDA regulation &amp; muscle relaxation</td>
+</tr>
+<tr>
+<td>Omega-3 (EPA/DHA)</td>
+<td>2g</td>
+<td>Oral with meals</td>
+<td>Systemic inflammation reduction</td>
+</tr>
+</tbody></table>
+<h3>Dietary Adjustments</h3>
+<ul>
+<li><strong>Mediterranean Diet Pattern</strong>: High consumption of olive oil, leafy greens, and nuts to lower inflammatory cytokines.</li>
+<li><strong>Gluten-Free Trial</strong>: Consider 4-week trial to reduce systemic immune reactivity and intestinal permeability.</li>
+<li><strong>Increased Hydration</strong>: Minimum 2.5L filtered water daily to assist in renal clearance of metabolic waste.</li>
+</ul>
+<h3>Immediate (24-72 hours)</h3>
+<ul>
+<li>Confirm PT referral appointment scheduled within 1 week.</li>
+<li>Obtain baseline PHQ-9 depression score and document in chart.</li>
+<li>Verify no active opioid prescriptions from other providers (prescription drug monitoring check).</li>
+<li>Review NSAID for GI contraindications; prescribe PPI co-therapy if indicated.</li>
+</ul>
+<h3>Short-Term (Week 1-2)</h3>
+<ul>
+<li>PT intake session completed; home exercise program assigned.</li>
+<li>First CBT session scheduled.</li>
+<li>Follow-up call at Week 2 to assess NSAID tolerability and pain VAS score.</li>
+<li>Psychiatry/prescriber consultation for duloxetine initiation if patient amenable.</li>
+</ul>
+<h3>Ongoing (Month 1-3)</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Target</th>
+<th>Frequency</th>
+<th>Escalation Trigger</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pain VAS</td>
+<td>&lt;=5/10</td>
+<td>Monthly</td>
+<td>Pain escalation &gt;8/10 or new neurological symptoms</td>
+</tr>
+<tr>
+<td>PHQ-9 Score</td>
+<td>Reduction &gt;=5 pts</td>
+<td>Monthly</td>
+<td>Score &gt;15 or suicidal ideation -&gt; urgent referral</td>
+</tr>
+<tr>
+<td>PT Adherence</td>
+<td>&gt;=80% sessions attended</td>
+<td>Bi-weekly check</td>
+<td>&lt;50% adherence -&gt; reassess barriers</td>
+</tr>
+<tr>
+<td>Opioid Abstinence</td>
+<td>Sustained remission</td>
+<td>Each visit</td>
+<td>Any opioid use -&gt; addiction medicine consult</td>
+</tr>
+<tr>
+<td>Functional ADLs</td>
+<td>Able to stand &gt;20 min</td>
+<td>Monthly</td>
+<td>No improvement -&gt; pain specialist referral</td>
+</tr>
+</tbody></table>
+<h3>Red Flags</h3>
+<blockquote>
+<p>WARNING: <strong>Seek Immediate Clinical Attention if:</strong></p>
+<ul>
+<li>New or worsening bilateral leg weakness or numbness</li>
+<li>Bowel or bladder dysfunction (cauda equina syndrome)</li>
+<li>Pain VAS 9-10/10 unresponsive to current regimen</li>
+<li>Patient reports opioid cravings or use</li>
+<li>PHQ-9 &gt;=20 or active suicidal ideation</li>
+</ul>
+</blockquote>
+<h3>Understanding Your Pain &amp; Recovery Plan</h3>
+<p>Your lower back pain is real and challenging, but there are effective ways to manage it without returning to opioid medications. Your recovery relies on a multi-pronged approach that combines targeted physical therapy, non-opioid medications, and emotional support.</p>
+<h3>Key Points to Remember</h3>
+<ul>
+<li><strong>Opioid Safety</strong>: Returning to opioids presents a significant health risk. Your pain management plan is designed to be completely opioid-free.</li>
+<li><strong>Stay Active</strong>: Gentle, consistent movement through physical therapy will help strengthen your back muscles and protect your lumbar spine. Rest when needed, but avoid prolonged bed rest.</li>
+<li><strong>Mental Health Matters</strong>: Depression and pain affect the same neural pathways in the brain. Treating your depression with your provider's help will directly improve your ability to cope with pain.</li>
+</ul>
+<h3>Your Daily Routine</h3>
+<ul>
+<li><strong>Morning</strong>: Take prescribed non-opioid pain medication with breakfast. Perform 10-15 minutes of prescribed home physical therapy exercises.</li>
+<li><strong>Afternoon</strong>: Take short walking breaks every 1-2 hours if working at a desk. Apply ice or moist heat to your lower back for 15-20 minutes as needed.</li>
+<li><strong>Evening</strong>: Practice relaxation or mindfulness techniques before bed to help manage both pain and stress. Take nightly supplements as recommended.</li>
+</ul>
+<h3>When to Contact Your Provider</h3>
+<ul>
+<li>Pain suddenly worsens or spreads further down your leg.</li>
+<li>You experience new weakness, numbness, or tingling in your legs or feet.</li>
+<li>You experience any change in bowel or bladder function (seek immediate emergency care).</li>
+<li>You feel overwhelming stress or urges to misuse substances.</li>
+</ul>
+<h3>PhysioNet 2026 Digital Signal &amp; Electrophysiology Summary</h3>
+<p>Integrated EDF/PhysioNet waveform metrics captured from high-frequency BLE telemetry sensors and continuous multi-lead ECG monitoring.</p>
+<h3>Electrocardiographic Waveform Morphology</h3>
+<ul>
+<li><strong>QRS Interval Duration</strong>: 92 ms (Normal baseline: &lt; 120 ms). Zero bundle branch block patterns observed.</li>
+<li><strong>ST-Segment Elevation/Depression</strong>: Neutral ST morphology across Lead II, V2, V5 (+0.04 mV deviation). Low acute ischemic risk.</li>
+<li><strong>QTc Interval (Fridericia)</strong>: 418 ms (Normal baseline: &lt; 450 ms). Safe threshold maintained for concurrent SNRI / psychotropic management.</li>
+</ul>
+<h3>Heart Rate Variability (HRV) Spectral Power Density</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Reference Range</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>LF Power (0.04-0.15 Hz)</strong></td>
+<td>520 ms²</td>
+<td>300-800 ms²</td>
+<td>Sympathetic / Baroreflex Modulation</td>
+</tr>
+<tr>
+<td><strong>HF Power (0.15-0.40 Hz)</strong></td>
+<td>480 ms²</td>
+<td>200-600 ms²</td>
+<td>Parasympathetic / Vagal Tone</td>
+</tr>
+<tr>
+<td><strong>LF/HF Spectral Ratio</strong></td>
+<td>1.08</td>
+<td>0.8 - 1.5</td>
+<td>Balanced Autonomic Nervous System Homeostasis</td>
+</tr>
+<tr>
+<td><strong>SDNN (Time Domain)</strong></td>
+<td>58 ms</td>
+<td>&gt; 50 ms</td>
+<td>Optimal Autonomic Recovery Buffer</td>
+</tr>
+</tbody></table>
+<h3>Clinical Actionable Findings</h3>
+<ul>
+<li><strong>Autonomic Tone</strong>: Balanced LF/HF ratio (1.08) indicates satisfactory stress resilience with zero autonomic crash signals.</li>
+<li><strong>Arrhythmia Screening</strong>: Zero premature ventricular contractions (PVCs) or atrial fibrillation episodes detected over 24-hour continuous stream.</li>
+<li><strong>Follow-up Protocol</strong>: Continue 24-hour continuous BLE telemetry monitoring during physical therapy stress trials.</li>
+</ul>
+<h3>Biochemical &amp; Biomarker Matrix</h3>
+<p>The patient exhibits moderate systemic stress combined with suboptimal cellular energy production cofactors. Methylation pathway efficiency is reduced, contributing to neuroinflammation and pain sensitization. Primary focus is to support methylation pathways, improve mitochondrial respiration, and modulate NMDA receptor excitability.</p>
+<pre><code class="language-json">[
+  { "name": "Magnesium", "level": "Sub-optimal", "pathway": "ATP Synthesis / NMDA" },
+  { "name": "Vitamin D3", "level": "Sub-optimal", "pathway": "Immune / Bone" },
+  { "name": "Vitamin B12", "level": "Optimal", "pathway": "Methylation" },
+  { "name": "Zinc", "level": "Sub-optimal", "pathway": "Immune / Hormones" }
+]
+</code></pre>
+<h3>Detected Deficiencies</h3>
+<ul>
+<li><strong>Magnesium (Sub-optimal)</strong>: Consistent with chronic pain sensitization. Magnesium blocks NMDA receptors and limits central sensitization; deficiency amplifies pain perception.</li>
+<li><strong>Vitamin D3 (Sub-optimal)</strong>: Reduced levels associated with increased musculoskeletal pain, depression severity, and immune dysregulation.</li>
+<li><strong>Zinc (Sub-optimal)</strong>: Zinc depletion impairs immune surveillance, slows tissue repair, and may worsen depression through altered dopaminergic signaling.</li>
+<li><strong>Potential Folate/B9</strong>: Chronic NSAID use depletes folate; assess homocysteine for methylation cycle blockage.</li>
+</ul>
+<h3>Orthomolecular Protocol</h3>
+<table>
+<thead>
+<tr>
+<th>Intervention/Molecule</th>
+<th>Therapeutic Dose</th>
+<th>Delivery Method</th>
+<th>Targeted Pathway</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Magnesium Glycinate</td>
+<td>400mg elemental Mg</td>
+<td>Oral, nightly with food</td>
+<td>NMDA antagonism / ATP Synthesis / Sleep</td>
+</tr>
+<tr>
+<td>Vitamin D3 + K2</td>
+<td>5000 IU D3 / 100mcg MK-7</td>
+<td>Oral with fat-containing meal</td>
+<td>Bone mineral density / Immune modulation</td>
+</tr>
+<tr>
+<td>Zinc Picolinate</td>
+<td>30mg</td>
+<td>Oral with food (avoid with calcium)</td>
+<td>Immune function / Hormonal balance</td>
+</tr>
+<tr>
+<td>Methylcobalamin (B12)</td>
+<td>1000mcg</td>
+<td>Sublingual (if GI absorption uncertain)</td>
+<td>Myelin sheath integrity / Methylation</td>
+</tr>
+<tr>
+<td>P-5-P (Active B6)</td>
+<td>50mg</td>
+<td>Oral with food</td>
+<td>Neurotransmitter synthesis / Homocysteine</td>
+</tr>
+</tbody></table>
+<h3>Cautions &amp; Interactions</h3>
+<ul>
+<li><strong>Magnesium + NSAIDs</strong>: Concurrent use is generally safe; however, high-dose NSAIDs reduce magnesium absorption — monitor renal function.</li>
+<li><strong>Vitamin D3 Toxicity Threshold</strong>: Doses &gt;10,000 IU/day long-term carry hypercalcemia risk; recheck 25(OH)D at 3 months.</li>
+<li><strong>Zinc + Copper Antagonism</strong>: Doses &gt;40mg zinc/day require copper co-supplementation (1–2mg/day) to prevent induced copper deficiency.</li>
+<li><strong>B6 (P-5-P) Neuropathy</strong>: Doses &gt;200mg/day of P-5-P can paradoxically induce peripheral neuropathy; stay at therapeutic 50mg dose.</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Care Plan Instructions</h3>
+<ul>
+<li><input disabled="" type="checkbox"> [Goal]: Establish asthma action plan, consider biologic dupilumab initiation, and deploy HEPA environmental filtration.</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#689F38]"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> Oxidative Stress Markers</h3>
+<ul>
+<li><strong>Malondialdehyde (MDA)</strong>: 2.4 μmol/L</li>
+<li><strong>F2-Isoprostanes</strong>: 38 pg/mg creatinine</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Antioxidant Sources</h3>
+<ul>
+<li><strong>Vitamin C</strong>: 1.2 mg/dL</li>
+<li><strong>Glutathione (GSH)</strong>: 1.8 μmol/g Hb</li>
+</ul>
+<h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"></path><path d="m8.5 8.5 7 7"></path></svg> Medications</h3>
+<ul>
+<li><strong>Albuterol Inhaler</strong>: 2 puffs PRN</li>
+<li><strong>Sertraline</strong>: 50mg Daily</li>
+<li><strong>Gabapentin</strong>: 300mg TID</li>
+<li><strong>Ibuprofen</strong>: 600mg PRN MSK Pain</li>
+</ul>
+
+        </div>
+      </div>
+
+      <!-- Clinician Attestation -->
+      <div class="attestation">
+        <div class="attestation-field">
+          <div class="attestation-label">Clinician Signature</div>
+          <div class="attestation-line"></div>
+        </div>
+        <div class="attestation-field">
+          <div class="attestation-label">Date &amp; Time</div>
+          <div class="attestation-line"></div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="report-footer">
+        <div class="footer-brand">Pocket Gull • pocketgull.app</div>
+        <div class="footer-disclaimer">
+          This care plan was generated with AI assistance. Review and approval by a licensed clinician is required before implementation.
+        </div>
+      </footer>
+
+    </div>
+  </div>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        window.print();
+      }, 400);
+    });
+  </script>
+
+</body></html>

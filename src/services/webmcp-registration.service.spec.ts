@@ -146,7 +146,23 @@ describe('WebMcpRegistrationService', () => {
 
     mockMoeRouter = {
       setCustomThinkingBudget: vi.fn(),
-      currentThinkingConfig: vi.fn().mockReturnValue({ thinkingBudget: 4096, enabled: true })
+      currentThinkingConfig: vi.fn().mockReturnValue({ thinkingBudget: 4096, enabled: true }),
+      activeShiftPatientId: vi.fn().mockReturnValue('p001'),
+      activeShiftPatient: vi.fn().mockReturnValue({
+        id: 'p003',
+        name: 'James Wilson',
+        clinicalDomain: 'Sleep & Chronobiology'
+      }),
+      explainDecisionFlow: vi.fn().mockImplementation((patientId: string) => {
+        return `### 🧠 SMoE Gating Decision Analysis: Eleanor Vance (71y Female)
+gatingProbabilities: [{expertId: 'ismp-posology', probabilityPercent: 48.2}]
+resultingRouting: {primaryLabel: 'ISMP Posology Guard'}
+mathematicalModel: Softmax T=0.85`;
+      }),
+      loadShiftPatient: vi.fn(),
+      primaryUiExpert: vi.fn().mockReturnValue({ expert: { id: 'analysis-report', name: 'Multi-Lens Synthesizer' }, weight: 0.42 }),
+      secondaryUiExpert: vi.fn().mockReturnValue({ expert: { id: 'counterfactual-simulator', name: 'Counterfactual Simulator' }, weight: 0.28 }),
+      activeCrossAttentionBridge: vi.fn().mockReturnValue({ id: 'bridge-01', title: 'Test Bridge' })
     };
 
     const mockNgZone = {
@@ -247,8 +263,10 @@ describe('WebMcpRegistrationService', () => {
   it('should register all 75 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(75);
+    expect(registeredTools.size).toBe(77);
     expect(registeredTools.has('getInternalState')).toBe(true);
+    expect(registeredTools.has('explain_smoe_gating_decision')).toBe(true);
+    expect(registeredTools.has('switch_shift_patient_smoe')).toBe(true);
     expect(registeredTools.has('get_epic_cerner_marketplace_manifest')).toBe(true);
     expect(registeredTools.has('get_carin_alliance_attestation')).toBe(true);
     expect(registeredTools.has('validate_smart_on_fhir_launch_conformance')).toBe(true);
@@ -741,8 +759,10 @@ describe('WebMcpRegistrationService', () => {
   it('should register all 75 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(75);
+    expect(registeredTools.size).toBe(77);
     expect(registeredTools.has('getInternalState')).toBe(true);
+    expect(registeredTools.has('explain_smoe_gating_decision')).toBe(true);
+    expect(registeredTools.has('switch_shift_patient_smoe')).toBe(true);
     expect(registeredTools.has('get_clinical_evidence_citations')).toBe(true);
     expect(registeredTools.has('get_patient_3act_trajectory')).toBe(true);
     expect(registeredTools.has('configure_optical_therapy')).toBe(true);
@@ -946,9 +966,32 @@ describe('WebMcpRegistrationService', () => {
     expect(result.content[0].text).toContain('bioprinterProfile');
   });
 
+  it('should execute explain_smoe_gating_decision tool and return mathematical routing breakdown', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('explain_smoe_gating_decision');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ patientId: 'p001' });
+    expect(result.content[0].text).toContain('Eleanor Vance');
+    expect(result.content[0].text).toContain('gatingProbabilities');
+    expect(result.content[0].text).toContain('resultingRouting');
+    expect(result.content[0].text).toContain('mathematicalModel');
+  });
+
+  it('should execute switch_shift_patient_smoe tool and activate patient routing', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('switch_shift_patient_smoe');
+    expect(tool).toBeDefined();
+
+    const result = await tool.execute({ patientId: 'p003' });
+    expect(result.content[0].text).toContain('Activated clinical shift patient');
+    expect(result.content[0].text).toContain('James Wilson');
+    expect(result.content[0].text).toContain('Multi-Lens Synthesizer');
+  });
+
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(75);
+    expect((service as any).mcpControllers.length).toBe(77);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

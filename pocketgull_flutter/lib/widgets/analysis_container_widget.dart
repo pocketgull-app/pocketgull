@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/patient_provider.dart';
 import '../models/patient_types.dart';
+import 'sparse_clinical_canvas_widget.dart';
 
 /// Analysis container — philosophy selector + analysis report shell.
 ///
@@ -21,6 +23,7 @@ class _AnalysisContainerWidgetState
     extends ConsumerState<AnalysisContainerWidget> {
   bool _justGenerated = false;
   bool _isLoading = false;
+  bool _showSmoeCanvas = false;
   DateTime? _lastRefreshTime;
 
   void _selectPhilosophy(MedicalPhilosophy philosophy) {
@@ -72,11 +75,46 @@ class _AnalysisContainerWidgetState
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Philosophy selector
-                _PhilosophyPicker(
-                  active: activePhilosophy,
-                  onSelect: _selectPhilosophy,
-                  isDark: isDark,
+                // Philosophy selector & SMoE Canvas Toggle
+                Row(
+                  children: [
+                    _PhilosophyPicker(
+                      active: activePhilosophy,
+                      onSelect: _selectPhilosophy,
+                      isDark: isDark,
+                    ),
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        setState(() => _showSmoeCanvas = !_showSmoeCanvas);
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _showSmoeCanvas
+                              ? const Color(0xFF10B981)
+                              : (isDark ? const Color(0xFF18181B) : Colors.grey.shade100),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: _showSmoeCanvas
+                                ? const Color(0xFF10B981)
+                                : (isDark ? const Color(0xFF27272A) : Colors.grey.shade300),
+                          ),
+                        ),
+                        child: Text(
+                          '🌐 SYNOPTIC CANVAS',
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: _showSmoeCanvas ? Colors.black : const Color(0xFF34D399),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 // Actions
                 Row(
@@ -149,7 +187,9 @@ class _AnalysisContainerWidgetState
           ),
           // ── Report area ──────────────────────────────
           Expanded(
-            child: _justGenerated
+            child: _showSmoeCanvas
+                ? const SparseClinicalCanvasWidget()
+                : _justGenerated
                 ? const Center(
                     child: Text(
                       'Analysis report renders here.',

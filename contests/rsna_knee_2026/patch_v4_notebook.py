@@ -1,7 +1,8 @@
 import json
 import os
 
-nb_path = r'c:\Users\philg\Pocketgull\pocketgull\contests\rsna_knee_2026\rsna_knee_submission_v4.ipynb'
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+nb_path = os.path.join(CURRENT_DIR, 'rsna_knee_submission_v4.ipynb')
 
 with open(nb_path, 'r', encoding='utf-8') as f:
     nb = json.load(f)

@@ -74,4 +74,15 @@ describe('ShieldGemmaGuardService', () => {
     expect(res.sanitizedText).toContain('2 ml');
     expect(res.correctionsApplied.length).toBeGreaterThanOrEqual(5);
   });
+
+  it('should intercept cross-paradigm herb-drug-supplement conflicts (Warfarin + Dan Shen)', () => {
+    const conflictNote = 'Patient currently taking Warfarin 5 mg daily, proposing to add Dan Shen extract for microcirculation.';
+    const result = service.evaluatePrompt(conflictNote);
+
+    expect(result.scores.some(s => s.category === 'HERB_DRUG_CONFLICT')).toBe(true);
+    expect(result.herbDrugConflicts?.length).toBeGreaterThan(0);
+    expect(result.herbDrugConflicts?.[0].drug).toBe('WARFARIN');
+    expect(result.herbDrugConflicts?.[0].severity).toBe('CRITICAL');
+    expect(result.mitigationApplied.some(m => m.includes('Cross-Paradigm Conflict Directive'))).toBe(true);
+  });
 });

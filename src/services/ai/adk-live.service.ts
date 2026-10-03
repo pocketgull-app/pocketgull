@@ -7,6 +7,7 @@ import { sanitizeLogInput } from '../../utils/security-helper';
 import { ISpatialLesion } from '../spatial-lesion-markup.service';
 import { PhysicalGenomicsService } from '../physical-genomics.service';
 import { MdcpDomainService, ISkSaiAssessment, IEEE_11073_NOMENCLATURE } from '../mdcp/mdcp-domain.service';
+import { GlobalHealthInitiativesService } from '../global-health-initiatives.service';
 
 import type { IOccupationalHazardProfile } from '../actuarial-longevity.service';
 
@@ -144,6 +145,21 @@ export const MDCP_FUNCTION_DECLARATIONS = [
   }
 ];
 
+export const WHO_NIH_FUNCTION_DECLARATIONS = [
+  {
+    name: 'query_who_infectious_disease_database',
+    description: 'Queries the World Health Organization (WHO) and NIH GARD (Genetic and Rare Diseases) databases for rare zebras and multi-systemic differential diagnoses based on clinical symptoms.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        symptoms: { type: 'ARRAY', items: { type: 'STRING' }, description: 'List of observed clinical symptoms (e.g. cachexia, remittent pyrexia)' },
+        searchScope: { type: 'STRING', enum: ['INFECTIOUS', 'RARE_ORPHAN', 'TOXICOLOGY', 'ALL'], description: 'Focus area of the database query' }
+      },
+      required: ['symptoms']
+    }
+  }
+];
+
 /**
  * Zero-copy chunked Base64 encoding helper.
  * Eliminates per-byte string allocation overhead during live audio streaming.
@@ -214,6 +230,14 @@ export class AdkLiveService {
       return inject(MdcpDomainService, { optional: true });
     } catch {
       return null;
+    }
+  })();
+
+  private globalHealthService = (() => {
+    try {
+      return inject(GlobalHealthInitiativesService, { optional: true }) || new GlobalHealthInitiativesService();
+    } catch {
+      return new GlobalHealthInitiativesService();
     }
   })();
   
@@ -528,7 +552,7 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
                 }
               },
               tools: [
-                { functionDeclarations: [...PHYSICAL_GENOMICS_FUNCTION_DECLARATIONS, ...MDCP_FUNCTION_DECLARATIONS] }
+                { functionDeclarations: [...PHYSICAL_GENOMICS_FUNCTION_DECLARATIONS, ...MDCP_FUNCTION_DECLARATIONS, ...WHO_NIH_FUNCTION_DECLARATIONS] }
               ]
             }
           }));
@@ -744,6 +768,8 @@ Macro Fleet Sentinel Context (Full-Duplex Diagnostics):
         } else if (name === 'audit_ita_standards_compliance') {
           const service = this.mdcpService || new MdcpDomainService();
           result = service.verifyItaComplianceStatus();
+        } else if (name === 'query_who_infectious_disease_database') {
+          result = this.globalHealthService.queryWhoInfectiousDiseaseDatabase(args?.symptoms || [], args?.searchScope || 'ALL');
         }
       } catch (err: any) {
         result = { error: err.message || 'Execution error' };

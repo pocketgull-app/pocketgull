@@ -18,7 +18,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section
-      class="relative w-full p-5 sm:p-7 bg-[#09090b] text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl overflow-hidden font-sans select-none"
+      class="relative w-full p-5 sm:p-7 bg-obsidian text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl overflow-hidden font-sans select-none"
       aria-labelledby="hud-heading"
     >
       <!-- Subtle Bio-Rhythmic Ambient Glow (10s autonomic vagal parasympathetic cycle) -->

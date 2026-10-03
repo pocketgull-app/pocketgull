@@ -256,4 +256,17 @@ describe('SecureSplashComponent Sensory Suite', () => {
     expect(emergencyEmitted).toBe(true);
     expect(component.session.isLocked()).toBe(false);
   });
+
+  it('11. Unlocks session and emits openTriageRoster when enterTriageCommand is invoked', () => {
+    const component = createComponent();
+    let triageEmitted = false;
+    component.openTriageRoster.subscribe(() => {
+      triageEmitted = true;
+    });
+
+    component.enterTriageCommand();
+    expect(triageEmitted).toBe(true);
+    expect(component.session.isLocked()).toBe(false);
+    expect(component.session.isOnboardingComplete()).toBe(true);
+  });
 });

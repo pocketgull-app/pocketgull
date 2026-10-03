@@ -9,6 +9,9 @@ import { BleWearablesHudComponent } from '../ble-wearables-hud.component';
 import { PhysioNetAcousticHudComponent } from '../physionet-acoustic-hud.component';
 import { VisualAcuityExamComponent } from '../shared/visual-acuity-exam.component';
 import { StormAnalysisComponent } from '../storm-analysis.component';
+import { MocaSuiteComponent } from '../moca/moca-suite.component';
+import { TippssComplianceCardComponent } from '../shared/tippss-compliance-card.component';
+import { BedsideSentinelKioskComponent } from '../shared/bedside-sentinel-kiosk.component';
 
 @Component({
   selector: 'app-biomedical-suite',
@@ -19,9 +22,12 @@ import { StormAnalysisComponent } from '../storm-analysis.component';
     PatientVitalsChartComponent, 
     TeledentistryOdontogramComponent,
     BleWearablesHudComponent,
+    TippssComplianceCardComponent,
+    BedsideSentinelKioskComponent,
     PhysioNetAcousticHudComponent,
     VisualAcuityExamComponent,
-    StormAnalysisComponent
+    StormAnalysisComponent,
+    MocaSuiteComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -67,6 +73,16 @@ import { StormAnalysisComponent } from '../storm-analysis.component';
         <app-ble-wearables-hud />
       </div>
 
+      <!-- IEEE P2933™ TIPPSS Compliance & Circular Hardware Engine -->
+      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+        <app-tippss-compliance-card />
+      </div>
+
+      <!-- Bedside Sentinel Kiosk (Repurposed Display & Parasympathetic Bio-Glow) -->
+      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+        <app-bedside-sentinel-kiosk />
+      </div>
+
       <!-- PhysioNet MedGemma Acoustic PCG Stethoscope AI HUD -->
       <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
         <app-physionet-acoustic-hud />
@@ -75,6 +91,11 @@ import { StormAnalysisComponent } from '../storm-analysis.component';
       <!-- Clinical Visual Acuity & Eye Exam Module -->
       <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
         <app-visual-acuity-exam />
+      </div>
+
+      <!-- Montreal Cognitive Assessment (MoCA 30-Point Standard Battery) -->
+      <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+        <app-moca-suite />
       </div>
 
       <!-- Teledentistry FDI Odontogram & SIBI Systemic Cross-Talk Section -->

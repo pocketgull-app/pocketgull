@@ -20,7 +20,7 @@ async function waitForBackendToBeReady() {
  * Common setup for E2E tests.
  * Mocks out hardware telemetry, config, and prevents Service Worker registration.
  */
-export async function setupE2ePage(page: Page, options: { mockClinician?: boolean } = { mockClinician: true }) {
+export async function setupE2ePage(page: Page, options: { mockClinician?: boolean, mockAI?: boolean } = { mockClinician: true, mockAI: true }) {
   // Wait for the local Express server backend to finish booting and seeding
   await waitForBackendToBeReady();
 
@@ -73,7 +73,7 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ apiKey: '' })
+      body: JSON.stringify({ apiKey: 'MOCK_E2E_KEY' })
     });
   });
 
@@ -149,16 +149,6 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
     }
   });
 
-  // Intercept AI Metrics endpoint
-  await page.route('**/api/ai/metrics', async route => {
-    console.log('E2E MOCK: Intercepted POST /api/ai/metrics');
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ complexity: 5, stability: 5, certainty: 5 })
-    });
-  });
-
   // Intercept Lemonade local inference daemon (port 13305) to avoid ERR_CONNECTION_REFUSED in headless test runs
   await page.route(/http:\/\/(localhost|127\.0\.0\.1):13305\/.*/, async route => {
     await route.fulfill({
@@ -185,62 +175,107 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
     });
   });
 
-  // Intercept AI Stream endpoint to return standard test keywords for all lens verification
-  await page.route('**/api/ai/stream', async route => {
-    console.log('E2E MOCK: Intercepted POST /api/ai/stream');
-    const mockMarkdown = `# Clinical Assessment\nDetails of clinical assessment.\n\n# Diagnostic Workup\nDetails of diagnostic workup.\n\n# Nutritional Interventions\nDetails of nutritional interventions.\n\n# Biomarker Matrix\nDetails of biomarker matrix: Magnesium.\n\n# Immediate (24-72 hours)\nDetails of immediate monitoring.\n\n# Understanding Your health plan\nDetails of patient education.`;
-    const chunk = {
-      candidates: [{
-        content: {
-          parts: [{
-            text: mockMarkdown
-          }]
+  if (options.mockAI) {
+    // Intercept AI Metrics endpoint
+    await page.route('**/*api/ai/metrics*', async route => {
+      console.log('E2E MOCK: Intercepted POST /api/ai/metrics');
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ complexity: 5, stability: 5, certainty: 5 })
+      });
+    });
+
+    // Intercept AI Stream endpoint to return standard test keywords for all lens verification
+      await page.route('**/*api/ai/stream*', async route => {
+        console.log('E2E MOCK: Intercepted POST /api/ai/stream. Bridging to local Lemonade daemon on port 13305...');
+        const req = route.request();
+        let reqBody: any = {};
+        try {
+          reqBody = JSON.parse(req.postData() || '{}');
+        } catch (e) {}
+        
+        const mockFallbackMarkdown = `# Summary Overview\nPatient presents with complex multi-systemic requirements. Mock evaluation complete.\n\n# Functional Protocols\nImplement leaky gut barrier repair, microbiome diversity expansion, and micronutrient optimization.\n\n# Traditional Chinese Medicine\nLiver Qi Stagnation resolving into Wood-Earth dyscrasia. Suggest Xiao Yao San modification.\n\n# Ayurvedic Medicine\nVata-Pitta derangement in the Annavaha Srotas. Recommend cooling Pitta-pacifying diet with Triphala.\n\n# Osteopathic & Biomechanical\nTART changes observed at T4-T8 (sympathetic chain). OMT indicated for myofascial release.\n\n# Environmental Exposomics\nHigh urban PM2.5 exposure detected. Suggest HEPA filtration and heavy metal detoxification support.\n\n# Chronobiology & Glymphatic\nCircadian misalignment. Prescribe morning 10,000 lux phototherapy and strict 10PM sleep hygiene.\n\n# Skeptical Epistemology\nCochrane Risk of Bias suggests low certainty for immediate rapid intervention. Watchful waiting advised.\n\n# Global Health & SDOH\nPRAPARE assessment indicates mild food insecurity. Refer to local community agricultural programs.\n\n# Teledentistry & Systemic Health\nSIBI cross-talk risk identified. Recommend periodontal deep scaling to reduce systemic inflammatory burden.`;
+
+        let localText = "";
+        try {
+          const res = await fetch('http://127.0.0.1:13305/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: 'Llama-3.2-3B-Instruct-GGUF',
+              messages: [
+                { role: 'system', content: reqBody.systemInstruction || 'You are an AI.' },
+                { role: 'user', content: reqBody.patientData || reqBody.prompt || 'Generate report.' }
+              ],
+              temperature: 0.7
+            })
+          });
+          const json = await res.json();
+          localText = json.choices?.[0]?.message?.content || mockFallbackMarkdown;
+        } catch (e) {
+          console.log('E2E MOCK: Lemonade daemon not running or failed. Falling back to mockMarkdown.');
+          localText = mockFallbackMarkdown;
         }
-      }]
-    };
-    await route.fulfill({
-      status: 200,
-      contentType: 'text/event-stream',
-      body: `data: ${JSON.stringify(chunk)}\ndata: [DONE]\n`
-    });
-  });
+        
+        // Wrap the generated text in the heading for the requested lens so the parser finds it!
+        const lensHeading = reqBody.lens ? `# ${reqBody.lens}\n` : "";
+        const finalContent = lensHeading + localText;
+        
+        const chunk = {
+          candidates: [{
+            content: {
+              parts: [{
+                text: finalContent
+              }]
+            }
+          }]
+        };
+        
+        await route.fulfill({
+          status: 200,
+          contentType: 'text/event-stream',
+          body: `data: ${JSON.stringify(chunk)}\ndata: [DONE]\n`
+        });
+      });
 
-  // Intercept AI Changes detection endpoint
-  await page.route('**/api/ai/changes', async route => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ significant: false })
-    });
-  });
-
-  // Intercept Genkit flow endpoints to prevent 429 quota exhaustion errors in test suites
-  await page.route('**/api/genkit/**', async route => {
-    console.log('E2E MOCK: Intercepted Genkit flow endpoint');
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ result: { text: 'Clinical assessment complete.' } })
-    });
-  });
-
-  // Intercept all AI Chat endpoints (/start, /message)
-  await page.route('**/*api/ai/chat*', async route => {
-    const url = route.request().url();
-    if (url.includes('/start')) {
+    // Intercept AI Changes detection endpoint
+    await page.route('**/*api/ai/changes*', async route => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ sessionId: 'mock-session-id' })
+        body: JSON.stringify({ significant: false })
       });
-    } else {
+    });
+
+    // Intercept Genkit flow endpoints to prevent 429 quota exhaustion errors in test suites
+    await page.route('**/api/genkit/**', async route => {
+      console.log('E2E MOCK: Intercepted Genkit flow endpoint');
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ text: 'This is a mock clinical intelligence response.' })
+        body: JSON.stringify({ result: { text: 'Clinical assessment complete.' } })
       });
-    }
-  });
+    });
+
+    // Intercept all AI Chat endpoints (/start, /message)
+    await page.route('**/*api/ai/chat*', async route => {
+      const url = route.request().url();
+      if (url.includes('/start')) {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ sessionId: 'mock-session-id' })
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ text: 'This is a mock clinical intelligence response.' })
+        });
+      }
+    });
+  }
 
   // Set local storage flags and disable service workers
   await page.addInitScript((mockClinician) => {
@@ -315,7 +350,11 @@ export async function enterDemoMode(page: Page) {
     }
 
     // 1. Enter Suite / Enter Clinical Suite button
-    const enterSuiteBtn = page.locator('button', { hasText: /Enter (Suite|Clinical Suite)/i }).first();
+    const enterSuiteBtn = page.locator('button', { hasText: /Initialize System/i }).first();
+      const apiKeyInput = page.locator('input[name="apiKey"]');
+      if (await apiKeyInput.isVisible().catch(() => false)) {
+        await apiKeyInput.fill('MOCK_E2E_KEY');
+      }
     if (await enterSuiteBtn.isVisible().catch(() => false)) {
       await enterSuiteBtn.click().catch(() => {});
       await page.waitForTimeout(500).catch(() => {});
@@ -389,7 +428,7 @@ export async function selectPatientByName(page: Page, name: string) {
 
   const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
   if (await dropdownBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
-    await dropdownBtn.click();
+    await dropdownBtn.click({ force: true });
     await page.waitForTimeout(500);
 
     const option = page.locator('app-patient-dropdown .group\\/list button', { hasText: targetName }).first();
@@ -426,3 +465,105 @@ export async function selectPatientByName(page: Page, name: string) {
     await page.waitForTimeout(500);
   }
 }
+
+/** Shared patient selection helper by explicit patient ID */
+export async function selectPatientById(page: Page, patientId: string) {
+  // Dismiss any lingering modals or backdrops that would block header interaction
+  const closeResearch = page.locator('button[aria-label="Close Evidence Drawer"]').first();
+  if (await closeResearch.isVisible({ timeout: 400 }).catch(() => false)) {
+    await closeResearch.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(200);
+  }
+  const modalClose = page.locator('.print-medical-chart button[aria-label="Close"], .print-medical-chart button:has-text("Cancel")').first();
+  if (await modalClose.isVisible({ timeout: 500 }).catch(() => false)) {
+    await modalClose.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(300);
+  }
+
+  // Try direct Angular component invocation if available
+  const switchedViaNg = await page.evaluate((pid) => {
+    const dropdownEl = document.querySelector('app-patient-dropdown') as any;
+    if (dropdownEl && (window as any).ng?.getComponent) {
+      const comp = (window as any).ng.getComponent(dropdownEl);
+      if (comp && typeof comp.selectPatient === 'function') {
+        comp.selectPatient(pid);
+        return true;
+      }
+    }
+    return false;
+  }, patientId).catch(() => false);
+
+  if (switchedViaNg) {
+    await page.waitForTimeout(500);
+    return;
+  }
+
+  const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
+  if (await dropdownBtn.waitFor({ state: 'attached', timeout: 10000 }).then(() => true).catch(() => false)) {
+    // Check if dropdown is already open
+    let isMenuOpen = await page.locator('app-patient-dropdown [data-testid^="patient-option-"]').first().isVisible().catch(() => false);
+    if (!isMenuOpen) {
+      await dropdownBtn.scrollIntoViewIfNeeded().catch(() => {});
+      await dropdownBtn.click({ force: true });
+      await page.waitForTimeout(400);
+    }
+
+    const testIdOption = page.locator(`[data-testid="patient-option-${patientId}"]`).first();
+    if (await testIdOption.waitFor({ state: 'attached', timeout: 1500 }).then(() => true).catch(() => false)) {
+      await testIdOption.scrollIntoViewIfNeeded().catch(() => {});
+      await testIdOption.click({ force: true });
+      await page.waitForTimeout(500);
+      return;
+    }
+
+    // Try search input to filter the list directly to the requested patient
+    const searchInput = page.locator('app-patient-dropdown input[placeholder*="Search"]').first();
+    if (await searchInput.isVisible({ timeout: 1500 }).catch(() => false)) {
+      await searchInput.fill(patientId);
+      await searchInput.dispatchEvent('input');
+      await page.waitForTimeout(400);
+
+      if (await testIdOption.waitFor({ state: 'attached', timeout: 2000 }).then(() => true).catch(() => false)) {
+        await testIdOption.scrollIntoViewIfNeeded().catch(() => {});
+        await testIdOption.click({ force: true });
+        await page.waitForTimeout(500);
+        return;
+      }
+      
+      // Clear search
+      await searchInput.fill('');
+      await searchInput.dispatchEvent('input');
+      await page.waitForTimeout(200);
+    }
+
+    // If still not clicked, try selecting by matching testid directly in DOM via evaluate
+    const evaluated = await page.evaluate((pid) => {
+      const btn = document.querySelector(`[data-testid="patient-option-${pid}"]`) as HTMLElement;
+      if (btn) {
+        btn.click();
+        return true;
+      }
+      return false;
+    }, patientId).catch(() => false);
+
+    if (evaluated) {
+      await page.waitForTimeout(500);
+      return;
+    }
+
+    console.error(`[selectPatientById] FAILED to locate option for patientId: ${patientId}`);
+    await page.keyboard.press('Escape').catch(() => {});
+    await page.waitForTimeout(400);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -10,41 +10,41 @@ import { ConformalReadmissionCardComponent } from './conformal-readmission-card.
   imports: [CommonModule, ConformalReadmissionCardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="relative w-full mb-8 p-5 sm:p-7 bg-[#F9F3D9] dark:bg-zinc-950 text-[#1C1C1C] dark:text-zinc-100 rounded-2xl border-2 border-[#F6B12B] dark:border-[#F6B12B]/80 shadow-[4px_6px_0px_0px_rgba(28,28,28,0.85)] font-mono overflow-hidden pocket-gull-card">
+    <div class="relative w-full mb-8 p-6 sm:p-8 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl text-zinc-900 dark:text-zinc-100 rounded-3xl border border-zinc-200/80 dark:border-zinc-800 shadow-xl font-mono overflow-hidden">
       
-      <!-- Background Texture & Papercraft Overlay -->
-      <div class="absolute inset-0 opacity-15 pointer-events-none mix-blend-multiply bg-[radial-gradient(#1c1c1c_1px,transparent_1px)] [background-size:12px_12px]"></div>
+      <!-- Subtle Ambient Glow -->
+      <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-teal-500/10 blur-3xl pointer-events-none"></div>
 
       <!-- Conformal Prediction & Pareto Trade-Off Card -->
       <app-conformal-readmission-card class="mb-6 block" />
 
       <!-- Top Header & Status Telemetry Bar -->
-      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-dashed border-[#1C1C1C]/20 dark:border-zinc-800 pb-5 mb-6 font-mono">
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5 mb-6 font-mono">
         <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-xl bg-[#F6B12B] text-zinc-950 border-2 border-[#1C1C1C] flex items-center justify-center text-2xl shadow-[2px_2px_0px_0px_rgba(28,28,28,0.9)] animate-bounce shrink-0">
+          <div class="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/30 flex items-center justify-center text-2xl shrink-0 shadow-xs">
             🔦
           </div>
           <div>
             <div class="flex flex-wrap items-center gap-2">
-              <span class="text-xs font-mono font-extrabold uppercase tracking-widest text-[#EF6658] dark:text-orange-400">Sentinel Telemetry Dock</span>
-              <span class="text-xs px-2.5 py-0.5 rounded-md bg-[#3B82F6] text-white font-bold tracking-wider uppercase border border-[#1C1C1C]">
+              <span class="text-xs font-mono font-extrabold uppercase tracking-widest text-teal-600 dark:text-teal-400">Sentinel Telemetry Dock</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 font-bold tracking-wider uppercase border border-blue-500/30">
                 Sentinel 🔦 Dispatch
               </span>
-              <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-white dark:bg-zinc-900 text-[#1C1C1C] dark:text-zinc-100 border border-[#1C1C1C] uppercase">
+              <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 uppercase">
                 Real-Time Checkin Dock
               </span>
             </div>
-            <h3 class="text-base sm:text-lg font-black uppercase tracking-tight text-[#1C1C1C] dark:text-zinc-100 mt-1">
-              Vagal Resonance & Biofeedback Quick-Dock
+            <h3 class="text-base sm:text-lg font-black uppercase tracking-tight text-zinc-900 dark:text-zinc-100 mt-1">
+              Vagal Resonance &amp; Biofeedback Quick-Dock
             </h3>
-            <p class="text-xs sm:text-sm text-[#1C1C1C]/70 dark:text-zinc-400 mt-0.5 font-sans leading-relaxed">
+            <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5 font-sans leading-relaxed">
               Log instant vagal tone check-ins, HRV micro-session completions, and clinical notes directly to patient state.
             </p>
           </div>
         </div>
 
-        <div class="text-right text-xs sm:text-sm text-[#1C1C1C]/70 dark:text-zinc-400 font-mono shrink-0">
-          <span>Logged Sessions Today: <strong class="text-orange-700 dark:text-orange-400 font-black">{{ sessionCount() }}</strong></span>
+        <div class="text-right text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 font-mono shrink-0">
+          <span>Logged Sessions Today: <strong class="text-teal-600 dark:text-teal-400 font-black">{{ sessionCount() }}</strong></span>
         </div>
       </div>
 
@@ -61,10 +61,10 @@ import { ConformalReadmissionCardComponent } from './conformal-readmission-card.
                class="relative w-full h-full transition-transform duration-500 transform-style-3d">
 
             <!-- FRONT FACE -->
-            <div class="p-5 rounded-2xl border-2 border-[#1C1C1C] dark:border-zinc-700 bg-[#FFFFFF] dark:bg-zinc-900 text-[#1C1C1C] dark:text-zinc-100 shadow-[3px_4px_0px_0px_rgba(28,28,28,0.85)] flex flex-col justify-between h-full w-full absolute inset-0 backface-hidden">
+            <div class="p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/60 text-zinc-900 dark:text-zinc-100 shadow-sm flex flex-col justify-between h-full w-full absolute inset-0 backface-hidden">
               <div>
                 <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2 text-xs font-black text-[#1C1C1C] dark:text-zinc-100 uppercase tracking-tight font-mono">
+                  <div class="flex items-center gap-2 text-xs font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight font-mono">
                     <span class="text-lg">🫁</span>
                     <span>5-Min Resonant Breathing</span>
                   </div>
@@ -72,18 +72,18 @@ import { ConformalReadmissionCardComponent } from './conformal-readmission-card.
                     dblclick 🔄
                   </span>
                 </div>
-                <p class="text-xs text-[#1C1C1C]/70 dark:text-zinc-400 font-sans leading-relaxed mt-2">
+                <p class="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed mt-2">
                   6.0 BPM pace (Inhale 5s, Exhale 5s) to boost RMSSD HRV and activate baroreflex sensitivity.
                 </p>
               </div>
               <button (click)="logBreathingSession(); $event.stopPropagation()"
-                class="w-full py-2.5 px-4 rounded-xl border-2 border-[#1C1C1C] bg-[#F6B12B] text-[#1C1C1C] font-mono text-xs font-black uppercase transition hover:scale-105 active:scale-95 cursor-pointer shadow-[2px_3px_0px_0px_rgba(28,28,28,0.85)]">
+                class="w-full py-2.5 px-4 rounded-xl border border-teal-500/40 bg-teal-500/15 text-teal-800 dark:text-teal-200 hover:bg-teal-500/25 font-mono text-xs font-black uppercase transition cursor-pointer shadow-xs">
                 ✓ Log 5-Min Session
               </button>
             </div>
 
             <!-- BACK FACE -->
-            <div class="p-5 rounded-2xl border-2 border-[#1C1C1C] bg-indigo-950 text-white shadow-2xl flex flex-col justify-between h-full w-full absolute inset-0 rotate-y-180 backface-hidden font-sans text-xs">
+            <div class="p-5 rounded-2xl border border-indigo-700/60 bg-indigo-950 text-white shadow-xl flex flex-col justify-between h-full w-full absolute inset-0 rotate-y-180 backface-hidden font-sans text-xs">
               <div>
                 <div class="flex items-center justify-between border-b border-indigo-800 pb-1.5 mb-2 font-mono text-xs">
                   <span class="text-indigo-300 font-bold uppercase flex items-center gap-1">
@@ -114,10 +114,10 @@ import { ConformalReadmissionCardComponent } from './conformal-readmission-card.
                class="relative w-full h-full transition-transform duration-500 transform-style-3d">
 
             <!-- FRONT FACE -->
-            <div class="p-5 rounded-2xl border-2 border-[#1C1C1C] dark:border-zinc-700 bg-[#FFFFFF] dark:bg-zinc-900 text-[#1C1C1C] dark:text-zinc-100 shadow-[3px_4px_0px_0px_rgba(28,28,28,0.85)] flex flex-col justify-between h-full w-full absolute inset-0 backface-hidden">
+            <div class="p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/60 text-zinc-900 dark:text-zinc-100 shadow-sm flex flex-col justify-between h-full w-full absolute inset-0 backface-hidden">
               <div>
                 <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2 text-xs font-black text-[#1C1C1C] dark:text-zinc-100 uppercase tracking-tight font-mono">
+                  <div class="flex items-center gap-2 text-xs font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight font-mono">
                     <span class="text-lg">💓</span>
                     <span>HRV Coherence Check-in</span>
                   </div>
@@ -125,18 +125,18 @@ import { ConformalReadmissionCardComponent } from './conformal-readmission-card.
                     dblclick 🔄
                   </span>
                 </div>
-                <p class="text-xs text-[#1C1C1C]/70 dark:text-zinc-400 font-sans leading-relaxed mt-2">
+                <p class="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed mt-2">
                   Record instantaneous high HRV coherence status post-AVS or meditation exercise.
                 </p>
               </div>
               <button (click)="logHrvCoherence(); $event.stopPropagation()"
-                class="w-full py-2.5 px-4 rounded-xl border-2 border-[#1C1C1C] bg-[#F6B12B] text-[#1C1C1C] font-mono text-xs font-black uppercase transition hover:scale-105 active:scale-95 cursor-pointer shadow-[2px_3px_0px_0px_rgba(28,28,28,0.85)]">
+                class="w-full py-2.5 px-4 rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-emerald-800 dark:text-emerald-200 hover:bg-emerald-500/25 font-mono text-xs font-black uppercase transition cursor-pointer shadow-xs">
                 ✓ Record High Coherence
               </button>
             </div>
 
             <!-- BACK FACE -->
-            <div class="p-5 rounded-2xl border-2 border-[#1C1C1C] bg-emerald-950 text-white shadow-2xl flex flex-col justify-between h-full w-full absolute inset-0 rotate-y-180 backface-hidden font-sans text-xs">
+            <div class="p-5 rounded-2xl border border-emerald-700/60 bg-emerald-950 text-white shadow-xl flex flex-col justify-between h-full w-full absolute inset-0 rotate-y-180 backface-hidden font-sans text-xs">
               <div>
                 <div class="flex items-center justify-between border-b border-emerald-800 pb-1.5 mb-2 font-mono text-xs">
                   <span class="text-emerald-300 font-bold uppercase flex items-center gap-1">
@@ -167,29 +167,29 @@ import { ConformalReadmissionCardComponent } from './conformal-readmission-card.
                class="relative w-full h-full transition-transform duration-500 transform-style-3d">
 
             <!-- FRONT FACE -->
-            <div class="p-5 rounded-2xl border-2 border-[#1C1C1C] dark:border-zinc-700 bg-[#FFFFFF] dark:bg-zinc-900 text-[#1C1C1C] dark:text-zinc-100 shadow-[3px_4px_0px_0px_rgba(28,28,28,0.85)] flex flex-col justify-between h-full w-full absolute inset-0 backface-hidden">
+            <div class="p-5 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/60 text-zinc-900 dark:text-zinc-100 shadow-sm flex flex-col justify-between h-full w-full absolute inset-0 backface-hidden">
               <div>
                 <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2 text-xs font-black text-[#1C1C1C] dark:text-zinc-100 uppercase tracking-tight font-mono">
+                  <div class="flex items-center gap-2 text-xs font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight font-mono">
                     <span class="text-lg">☯️</span>
-                    <span>Shen & Vata Calming Tea</span>
+                    <span>Shen &amp; Vata Calming Tea</span>
                   </div>
                   <span class="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/30">
                     dblclick 🔄
                   </span>
                 </div>
-                <p class="text-xs text-[#1C1C1C]/70 dark:text-zinc-400 font-sans leading-relaxed mt-2">
+                <p class="text-xs text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed mt-2">
                   Confirm ingestion of warm ginger jujube tea to soothe Stomach Vata and kindle Agni.
                 </p>
               </div>
               <button (click)="logElixirTea(); $event.stopPropagation()"
-                class="w-full py-2.5 px-4 rounded-xl border-2 border-[#1C1C1C] bg-[#F6B12B] text-[#1C1C1C] font-mono text-xs font-black uppercase transition hover:scale-105 active:scale-95 cursor-pointer shadow-[2px_3px_0px_0px_rgba(28,28,28,0.85)]">
+                class="w-full py-2.5 px-4 rounded-xl border border-amber-500/40 bg-amber-500/15 text-amber-800 dark:text-amber-200 hover:bg-amber-500/25 font-mono text-xs font-black uppercase transition cursor-pointer shadow-xs">
                 ✓ Confirm Elixir Ingestion
               </button>
             </div>
 
             <!-- BACK FACE -->
-            <div class="p-5 rounded-2xl border-2 border-[#1C1C1C] bg-amber-950 text-white shadow-2xl flex flex-col justify-between h-full w-full absolute inset-0 rotate-y-180 backface-hidden font-sans text-xs">
+            <div class="p-5 rounded-2xl border border-amber-700/60 bg-amber-950 text-white shadow-xl flex flex-col justify-between h-full w-full absolute inset-0 rotate-y-180 backface-hidden font-sans text-xs">
               <div>
                 <div class="flex items-center justify-between border-b border-amber-800 pb-1.5 mb-2 font-mono text-xs">
                   <span class="text-amber-300 font-bold uppercase flex items-center gap-1">
@@ -198,11 +198,11 @@ import { ConformalReadmissionCardComponent } from './conformal-readmission-card.
                   <span class="text-amber-400 text-[10px]">dblclick flip</span>
                 </div>
                 <p class="text-[11px] text-amber-100 leading-snug">
-                  Warm ginger & jujube date decoction grounds unrooted Heart Shen, pacifies cold digestive Vata, and kindles metabolic Agni.
+                  Warm ginger &amp; jujube date decoction grounds unrooted Heart Shen, pacifies cold digestive Vata, and kindles metabolic Agni.
                 </p>
               </div>
               <div class="pt-1.5 border-t border-amber-900 font-mono text-[9px] text-amber-300 flex justify-between">
-                <span>Shen & Agni Grounding</span>
+                <span>Shen &amp; Agni Grounding</span>
                 <span>Double-click to return</span>
               </div>
             </div>
@@ -213,15 +213,15 @@ import { ConformalReadmissionCardComponent } from './conformal-readmission-card.
       </div>
 
       <!-- Quick Text Note Publisher Input -->
-      <div class="relative z-10 p-5 rounded-2xl border-2 border-[#1C1C1C] bg-[#FFFFFF] dark:bg-zinc-900 text-[#1C1C1C] dark:text-zinc-100 shadow-[3px_4px_0px_0px_rgba(28,28,28,0.85)] sub-panel font-mono">
-        <h4 class="text-xs font-black uppercase tracking-widest text-orange-700 dark:text-orange-400 mb-3 flex items-center gap-1.5">
+      <div class="relative z-10 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-950/60 text-zinc-900 dark:text-zinc-100 shadow-sm font-mono">
+        <h4 class="text-xs font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 mb-3 flex items-center gap-1.5">
           <span>✍️</span> Log Micro-Observation to Patient Chart
         </h4>
         <div class="flex flex-col sm:flex-row gap-3">
           <input #noteInput type="text" placeholder="Enter clinical observation, symptom resolution, or biofeedback note..."
-            class="flex-1 py-3 px-4 rounded-xl bg-zinc-50 dark:bg-zinc-800 border-2 border-[#1C1C1C] text-xs text-[#1C1C1C] dark:text-zinc-100 placeholder-[#1C1C1C]/50 dark:placeholder-zinc-500 focus:outline-none font-sans">
+            class="flex-1 py-3 px-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-teal-500/50 font-sans">
           <button (click)="publishClinicalNote(noteInput.value); noteInput.value=''"
-            class="px-5 py-3 rounded-xl border-2 border-[#1C1C1C] bg-[#F6B12B] text-[#1C1C1C] font-mono text-xs font-black uppercase transition hover:scale-105 active:scale-95 cursor-pointer shadow-[2px_3px_0px_0px_rgba(28,28,28,0.85)] shrink-0">
+            class="px-5 py-3 rounded-xl border border-teal-500/40 bg-teal-600 hover:bg-teal-500 text-white font-mono text-xs font-black uppercase transition cursor-pointer shadow-sm shrink-0">
             Publish Note 📌
           </button>
         </div>
