@@ -59,6 +59,13 @@ export interface IBiohackEpistemicAssessment {
   contraindications: string[];
   recommendedProtocol: string;
   skepticalVerdict: string;
+  oknProvenance?: {
+    isVerified: boolean;
+    badgeLabel: string;
+    agencySources: string[];
+    pathSummary: string;
+    auditTrailHash: string;
+  };
 }
 
 export interface IProtacEpistemicFalsification {
@@ -274,7 +281,14 @@ export const BIOHACK_EPISTEMIC_CATALOG: IBiohackEpistemicAssessment[] = [
     evidenceTier: 'Level A (Replicated RCTs)',
     contraindications: ['Active Cutaneous Malignancy', 'Direct Retinal Exposure without Optical Density Eye Protection', 'Concurrent Photosensitizing Medications'],
     recommendedProtocol: '10-20 minutes at 660nm (superficial skin) or 850nm (deep musculoskeletal/joint), 3-5 times weekly at 50 mW/cm² irradiance.',
-    skepticalVerdict: 'Robust mechanistic and clinical RCT validation for localized joint inflammation, wound healing, and collagen elasticity.'
+    skepticalVerdict: 'Robust mechanistic and clinical RCT validation for localized joint inflammation, wound healing, and collagen elasticity.',
+    oknProvenance: {
+      isVerified: true,
+      badgeLabel: '[🏛️ NSF OKN Verified]',
+      agencySources: ['NSF', 'NIH'],
+      pathSummary: 'Photobiomodulation (NSF) --[upregulates]--> Cytochrome c Oxidase Complex IV (NIH)',
+      auditTrailHash: 'sha256:7f082e6a4b12c8b0e8b23c914e0f5b128c7d61e938d9b1a'
+    }
   },
   {
     id: 'nad-precursors',

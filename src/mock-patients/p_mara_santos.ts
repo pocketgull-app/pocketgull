@@ -45,6 +45,16 @@ export const p_mara_santos: IPatient = {
     "heatIndex": "84°F",
     "vulnerabilityWarning": "Moderate PM2.5 and High Birch Pollen may exacerbate MS autonomic fatigue and neuro-inflammatory flare risk."
   },
+  "oknProfile": {
+    "isVerified": true,
+    "badgeLabel": "[🏛️ NSF OKN Verified]",
+    "participatingAgencies": ["NIH"],
+    "traversedPathSummary": "Ubiquinone CoQ10 (NIH) <-> HMG-CoA Reductase (NIH) <-> Statin-Associated Muscle Symptoms & Mitochondrial Depletion (NIH)",
+    "groundedTargetConcept": "Ubiquinone",
+    "auditTrailHash": "sha256:4b3fd8d98c8b5b2f3949b822214700ca9810ef32",
+    "cochraneEvidenceTier": "Level A (Replicated RCTs)",
+    "pmidCitation": "PMID:25644105"
+  },
   "preexistingConditions": [
     "Relapsing-Remitting Multiple Sclerosis (RRMS)",
     "History of Optic Neuritis (Left Eye, 2024)",

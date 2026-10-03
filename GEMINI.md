@@ -45,11 +45,25 @@ Pocket-Gull is a real-time medical Care Plan Strategy and Live AI Consult engine
   2. `Vitest Unit Test Suite` (`npx vitest run`)
   3. `Sentinel Security & Egress Audit` (`node scripts/sentinel_security_guard.mjs`)
   4. `CycloneDX 1.6 SBOM Verification` (`npm run sbom`)
+  5. `Mozilla HTTP Observatory 125 Security Guard` (`npm run observatory:audit`)
   If any test or security check fails, the deployment must immediately abort.
+- **Mozilla HTTP Observatory 125 Standard (Grade A+)**: All web entrypoints (Express, SSR, FastAPI sidecars, custom domains) MUST maintain a score of 125 / 100 on Mozilla HTTP Observatory:
+  - **Middleware #1 Rule**: Security headers MUST execute as the very first middleware before any route, domain dispatcher, or static handler to eliminate route short-circuiting.
+  - **Zero 'unsafe-inline' / 'unsafe-eval'**: Production CSP MUST enforce per-request nonces + `'strict-dynamic'` and `default-src 'none'`. Never insert `'unsafe-inline'` into production script-src.
+  - **Mandatory Bonus Suite (+25 pts)**: Always configure `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload` (+10), `Cross-Origin-Opener-Policy: same-origin` (+5), `Cross-Origin-Resource-Policy: same-origin` (+5), and `Referrer-Policy: strict-origin-when-cross-origin` (+5).
 - **Deployment Strategy**: All deployments MUST target the `gen-lang-client-0540208645` Google Cloud project.
-- **Cloud Bill & Cost Strategy**: Always monitor the cloud bill and ensure services scale to zero to minimize costs.
-  - **Artifact Registry Cleanup Policy**: Enforce a 7-day auto-deletion policy (`olderThan: "604800s"`) while retaining the latest 3 builds (`keepCount: 3`) across `cloud-run-source-deploy` and `gcr.io` repositories to prevent buildup of historical Docker image storage (~175+ GB).
-  - **GCS Source Bucket Lifecycle**: Enforce a 7-day object deletion lifecycle policy (`age: 7`) on all Cloud Run and Cloud Build deployment source zip buckets (`gs://run-sources-*` and `gs://*_cloudbuild`).
+- **Carbon-Aware GreenOps & Lightweight Deployment Standard**:
+  - **Asset Offloading to `font.pocketgull.app` CDN**: Heavy desktop font binaries (`*.ttf`, ~121 MB) and unreferenced glyph cuts MUST be excluded from all web container images via `.gcloudignore` and `.dockerignore`. All web `@font-face` rules MUST prioritize `https://font.pocketgull.app/fonts/woff2/...` (Fastly CDN edge cached) with minimal local WOFF2 fallbacks (~4 MB).
+  - **Cloud Build Layer Caching (`--cache-from`)**: Container builds in Cloud Build MUST use `--cache-from` referencing existing `:latest` images to warm the Docker cache, skipping redundant `npm install` and base image compilation.
+  - **Local-First Staging & Batching**: Always verify changes locally on `localhost:4200` or `localhost:4001` before deploying. Prohibit single-line continuous deployments; batch editorial and feature releases into consolidated production updates.
+  - **Scale-to-Zero & 7-Day Auto-Pruning**: All Cloud Run microservices MUST run with `minScale: 0`. Enforce a 7-day auto-deletion policy (`olderThan: "604800s"`, `keepCount: 3`) on Artifact Registry repositories (`cloud-run-source-deploy`, `gcr.io`) and GCS source buckets (`gs://run-sources-*` and `gs://*_cloudbuild`) to prevent storage waste.
+- **Three Acts Clinical Reality Standard**:
+  - All condition guides, care plans, and clinical CDS engines MUST enforce the Three Acts:
+    - *Act I: Auxiliary Metabolic Bridge & Baseline Screening (Days 0–30)*
+    - *Act II: Sleep Architecture, Glymphatic Protection & Autonomic Pacing (Weeks 2–12)*
+    - *Act III: Multi-Modal Stepped-Care Partnership & Long-Term Resilience (Months 6 to Decades)*
+  - *Epistemic Demarcation*: Rigorously demarcate peer-reviewed neurobiology from conceptual in silico trial models (e.g. rate-of-decline mitigation vs rapid reversal).
+  - *Respectful Pharmacy Benchmarks*: Always present "Standard Retail Benchmark" alongside transparent $4–$10 generic pricing benchmarks at Walmart, Kroger, Walgreens, and Amazon Pharmacy.
 
 ## Perfect Component Example
 ```typescript
@@ -174,7 +188,7 @@ Every new feature, component, API endpoint, or clinical model shipped in Pocket-
 | **Interoperability (Zero Lock-In)** | Patient data and clinical plans MUST be exportable in open, standard formats that any competitor, hospital, or open-source EHR can parse. | Universal **HL7 FHIR R4 Bundle** export (`fhir.serializer.ts`) & WebMCP OpenAPI schemas. |
 | **Safety Boundary (Human-in-the-Loop)** | High-impact actions, prescriptions, and financial transactions $\ge \$500$ MUST require affirmative clinician review and digital attestation. | FDA CDSR Notice & `MandiantClinicalDefenseService` Dual-Custody M-of-N signatures. |
 
-## Rachel Nabors Ethical Motion & Parasympathetic Bio-Rhythmic Pacing Standard
+## Autonomic Vagal Resonance, Reduced Motion (WCAG 2.2 §2.3.3) & Ethical Kinetic Standard
 - **Bio-Rhythmic Parasympathetic Pacing ($0.1\text{ Hz}$)**: Ambient glow oscillations, background gradients, and respiratory visualizers MUST operate on a calming $10\text{-second}$ cycle ($4\text{s}$ expansion / $6\text{s}$ contraction) to soothe the nervous system and counteract "screen apnea."
 - **Spatial Continuity & Origami Unfurling (FLIP)**: Modals, drawers, and overlay cards MUST visually unfurl along the $Z$-axis from their trigger elements using gentle spring curves (`cubic-bezier(0.16, 1, 0.3, 1)`).
 - **1-Shot Attestation Shimmer**: Cryptographic verification seals and claims play a single $800\text{ ms}$ luster pass upon completion, then permanently rest. Infinite flashing or pulsing badges are strictly prohibited.

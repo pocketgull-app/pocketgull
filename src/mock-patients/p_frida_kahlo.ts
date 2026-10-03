@@ -59,6 +59,24 @@ export const p_frida_kahlo: IPatient = {
     { id: "1", name: "Demerol (Meperidine)", value: "50mg PRN Severe Pain" },
     { id: "2", name: "Morphine Sulfate", value: "10mg SC PRN" }
   ],
+  environmentalIndex: {
+    aqi: 58,
+    pm25: "15.4 µg/m³",
+    ozone: "36 ppb",
+    pollenDensity: "Moderate",
+    heatIndex: "74°F",
+    vulnerabilityWarning: "High indoor plaster cast thermal stagnation and damp microclimate aggravating neuropathic pain."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["NSF", "NIH"],
+    traversedPathSummary: "Photobiomodulation 660-850nm (NSF) <-> Cytochrome c Oxidase Complex IV (NIH) <-> Substance P Nociception Downregulation",
+    groundedTargetConcept: "Photobiomodulation",
+    auditTrailHash: "sha256:aac36146206cc22785835ea83118667c4d81f10",
+    cochraneEvidenceTier: "Level A (Replicated RCTs)",
+    pmidCitation: "PMID:31647775"
+  },
   biometricHistory: [
     { timestamp: "1954-07-01T08:00:00Z", type: "hr", value: "88" },
     { timestamp: "1954-07-10T08:00:00Z", type: "hr", value: "84" },

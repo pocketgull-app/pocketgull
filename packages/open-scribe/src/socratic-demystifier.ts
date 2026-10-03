@@ -62,7 +62,7 @@ export class SocraticDemystifier {
       category: 'CLINICAL',
       plainEnglish: 'The physical pressure of blood pushing against the walls of your arteries is consistently higher than ideal.',
       teaspoonAnalogy: 'Think of water pressure in a garden hose. When water pressure is too high for years, it puts extra wear on the rubber hose lining and works the water pump (heart) harder than necessary.',
-      empoweringAction: 'Practice Rachel Nabors 0.1 Hz breathing (10-second breath cycles: 4s in, 6s out) for 5 minutes to immediately signal your blood vessels to relax.'
+      empoweringAction: 'Practice 0.1 Hz autonomic vagal breathing (10-second breath cycles: 4s in, 6s out) for 5 minutes to immediately signal your blood vessels to relax.'
     }
   };
 

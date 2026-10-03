@@ -29,7 +29,7 @@ describe('BibliotherapyHobbyPrescriberComponent', () => {
     const gardeningHobby = comp.hobbies[1];
     comp.selectHobby(gardeningHobby);
     expect(comp.selectedHobby().snomedCode).toBe('SCTID 226065003');
-    expect(comp.amazonStoreUrl()).toContain('gardening');
+    expect(comp.amazonStoreUrl()).toContain('Gardened');
     expect(comp.amazonStoreUrl()).not.toContain('tag=pgdpo-20');
   });
 });

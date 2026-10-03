@@ -450,6 +450,21 @@ if (!pokaYokePassed) {
   process.exit(1);
 }
 
+// Check 12: Mozilla HTTP Observatory 125 Continuous Security Guard
+const observatoryScript = path.resolve(workspaceRoot, 'scripts/observatory_headers_guard.mjs');
+const observatoryPassed = runNodeScript(observatoryScript, [], 'Mozilla HTTP Observatory 125 Continuous Security Guard');
+if (!observatoryPassed) {
+  process.exit(1);
+}
+
+// Check 13: Porter's Five Forces Strategic & Deployment Boundary Guard
+const portersScript = path.resolve(workspaceRoot, 'scripts/porters_forces_deployment_guard.mjs');
+const portersPassed = runNodeScript(portersScript, [], "Porter's Five Forces Strategic & Deployment Boundary Guard");
+if (!portersPassed) {
+  process.exit(1);
+}
+
 console.log('🎉 All pre-commit validation checks passed successfully. Safe to commit!\n');
 process.exit(0);
+
 

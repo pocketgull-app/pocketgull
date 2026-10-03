@@ -25,6 +25,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
 import { OcularVocalTelemetryService } from '../services/ocular-vocal-telemetry.service';
 import { OpticalCameraVisionService } from '../services/optical-camera-vision.service';
 import { SpatialLesionMarkupService } from '../services/spatial-lesion-markup.service';
+import { SocraticVoiceDemystifierService } from '../services/socratic-voice-demystifier.service';
 
 describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Controls', () => {
   let component: VoiceAssistantComponent;
@@ -179,6 +180,7 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
         { provide: YbocsService, useValue: mockYbocs },
         { provide: OcularVocalTelemetryService, useValue: mockTelemetry },
         { provide: OpticalCameraVisionService, useValue: mockOpticalVision },
+        SocraticVoiceDemystifierService,
         SpatialLesionMarkupService,
         BionicReadingService
       ]
@@ -357,4 +359,49 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
 
     document.body.removeChild(mockCanvas);
   });
+
+  it('12. Socratic Acoustic & Persona Options: allows toggling persona and jargon demystifier', () => {
+    expect(component.socraticVoice).toBeTruthy();
+    expect(component.isSocraticDemystifierActive()).toBe(true);
+    expect(component.socraticVoice.selectedPersonaId()).toBe('persona-parasympathetic-calm');
+
+    // Switch persona to Mentor Socrates
+    component.selectSocraticPersona('persona-socratic-mentor');
+    expect(component.socraticVoice.selectedPersonaId()).toBe('persona-socratic-mentor');
+    expect(component.isSocraticMenuOpen()).toBe(false);
+
+    // Toggle jargon demystifier off and on
+    component.isSocraticDemystifierActive.set(false);
+    expect(component.isSocraticDemystifierActive()).toBe(false);
+    component.isSocraticDemystifierActive.set(true);
+    expect(component.isSocraticDemystifierActive()).toBe(true);
+  });
+
+  it('13. Bedside AAC & Pain Vocalizer: triggers vagal speech and dispatches clinical consult prompt', async () => {
+    const speakSpy = vi.spyOn(component.socraticVoice, 'speakWithVagalPacing').mockResolvedValue();
+    const sendPromptSpy = vi.spyOn(component, 'sendQuickPrompt').mockImplementation(() => {});
+
+    expect(component.showAacShelf()).toBe(false);
+    component.showAacShelf.set(true);
+    expect(component.showAacShelf()).toBe(true);
+
+    // Select Wong-Baker face 8
+    const face8 = component.aacFaces.find(f => f.score === 8)!;
+    await component.selectAacFace(face8);
+
+    expect(speakSpy).toHaveBeenCalledWith(face8.speechPrompt);
+    expect(sendPromptSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[BEDSIDE AAC PAIN VOCALIZATION]: Patient reported Wong-Baker FACES pain score of 8/10')
+    );
+
+    // Trigger Bedside Need tile
+    const waterTile = component.aacTiles.find(t => t.id === 'WATER')!;
+    await component.triggerAacTile(waterTile);
+
+    expect(speakSpy).toHaveBeenCalledWith(waterTile.spokenText);
+    expect(sendPromptSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[BEDSIDE AAC NEED ANNOUNCEMENT]: Could I please have some water, or a mouth swab?')
+    );
+  });
 });
+

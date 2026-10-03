@@ -188,7 +188,7 @@ import { NavigationShellService } from '../../services/navigation-shell.service'
     }
   `,
   styles: [`
-    /* Rachel Nabors Ethical Motion: 0.1 Hz Parasympathetic Calming Breathing Glow (10-second cycle) */
+    /* 0.1 Hz Autonomic Vagal Parasympathetic Calming Breathing Glow (10-second cycle) */
     @keyframes parasympatheticBreathing {
       0%, 100% {
         box-shadow: 0 0 0 1px rgba(20, 184, 166, 0.25), 0 20px 50px rgba(0, 0, 0, 0.7);

@@ -8,6 +8,7 @@ import { ExportService } from '../services/export.service';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
 import { AdobeFireflyTextureService } from '../services/adobe-firefly-texture.service';
 import { GlobalHealthInitiativesService } from '../services/global-health-initiatives.service';
+import { OknKnowledgeGraphService } from '../services/okn-knowledge-graph.service';
 
 // Mock Angular effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
 vi.mock('@angular/core', async (importOriginal) => {
@@ -58,7 +59,8 @@ describe('CarePlanPrintPreviewComponent - Care Plan Print Studio & Document Caro
       { provide: ExportService, useValue: mockExportService },
       { provide: ClinicalIntelligenceService, useValue: mockClinicalIntelligence },
       { provide: AdobeFireflyTextureService, useValue: {} },
-      { provide: GlobalHealthInitiativesService, useClass: GlobalHealthInitiativesService }
+      { provide: GlobalHealthInitiativesService, useClass: GlobalHealthInitiativesService },
+      { provide: OknKnowledgeGraphService, useClass: OknKnowledgeGraphService }
     ], undefined as any);
 
     runInInjectionContext(injector, () => {

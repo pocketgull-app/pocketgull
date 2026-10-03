@@ -8,7 +8,7 @@
  * 1. Fresnel Silhouette Rim: High grazing-angle opacity (0.88) with near-transparent
  *    direct view angle (0.08) to eliminate "murky plastic" visual clutter.
  * 2. Bio-Rhythmic Respiratory Coupling: Rim intensity gently breathes with the
- *    0.1 Hz Rachel Nabors parasympathetic vagal cycle.
+ *    0.1 Hz autonomic vagal parasympathetic cycle.
  * 3. Localized Spherical Cutaway Aperture: Smoothly carves an optical window into
  *    deep bones and nerves while keeping the rest of the body as a serene ghost.
  */

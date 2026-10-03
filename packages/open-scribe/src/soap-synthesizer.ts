@@ -101,7 +101,7 @@ export class SoapSynthesizer {
 
     // 4. Plan Section & ISMP Audit
     const rawPlanLines = [
-      'Lifestyle & Biomechanics: Prescribe 10 minutes daily of Rachel Nabors 0.1 Hz parasympathetic breathing.',
+      'Lifestyle & Biomechanics: Prescribe 10 minutes daily of 0.1 Hz autonomic vagal parasympathetic breathing.',
       'Exercise: Low-impact closed-chain resistance training 3 times weekly.',
       'Diagnostic Imaging: Obtain standing 3D weight-bearing radiographs if symptoms persist past 4 weeks.'
     ];

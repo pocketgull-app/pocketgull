@@ -8,7 +8,6 @@ pocketgull_flutter/build/
 .angular/
 .vite/
 .astro/
-dist/
 build/
 .husky/
 .gcloudignore
@@ -44,3 +43,36 @@ pocketgull_api/venv/
 pocketgull_api/.venv/
 pocketgull_api/.pytest_cache/
 pocketgull_api/__pycache__/
+.venv/
+venv/
+
+# Developer Studios, Authoring Tools & Standalone Packages
+tools/
+scripts/
+packages/
+companion-apps/
+tests/
+e2e/
+
+# Heavy Machine Learning, Competition Datasets & Research
+contests/
+lora_*/
+python_example_2026/
+scratch/
+sandbox/
+typefaces_vault/
+case-studies/
+docs/study/
+
+# Mobile Companions (Separate packaging)
+pocketgull_flutter/
+
+# Source Maps & Archives
+*.map
+*.tar.gz
+*.tgz
+
+# Heavy Typography & Desktop Font Binaries (Hosted on https://font.pocketgull.app)
+*.ttf
+public/fonts/*.ttf
+public/brand/

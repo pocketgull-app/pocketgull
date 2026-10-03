@@ -100,5 +100,24 @@ export const p003: IPatient = {
       description: "Mild hippocampal volume loss bilateral; non-specific microvascular white matter ischemic changes (Fazekas Grade 1).",
       status: "Reviewed"
     }
-  ]
+  ],
+  environmentalIndex: {
+    aqi: 42,
+    pm25: "10.2 µg/m³",
+    ozone: "32 ppb",
+    pollenDensity: "Low",
+    heatIndex: "72°F",
+    vulnerabilityWarning: "USGS municipal groundwater with low Ca/Mg electrolyte hardness ratio and seasonal cold fronts predisposing to coronary vasoconstriction and orthostatic gait instability."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["USGS", "NIH", "WHO"],
+    traversedPathSummary: "USGS Drinking Water Mineral Hardness & Electrolyte Ratio (USGS) <-> NIH MeSH D002318 Myocardial Ischemia (NIH) <-> Princeton Consensus III 4-MET Stair Challenge & WHO Fall Prevention Guideline (NIH/WHO)",
+    groundedTargetConcept: "Cardiovascular Intimacy & Princeton Consensus III",
+    auditTrailHash: "sha256:8b71d9a2938e21cf4b6e5108b9812739fa4bc772",
+    cochraneEvidenceTier: "Level A (Replicated RCTs)",
+    watershedOrAquiferSiteId: "USGS-01646500",
+    pmidCitation: "PMID:23089608"
+  }
 };

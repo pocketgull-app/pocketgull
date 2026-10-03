@@ -69,3 +69,34 @@ export function isSafeRedirectUrl(url: string, allowedDomains: string[] = []): b
 }
 
 export const isValidRedirectUrl = isSafeRedirectUrl;
+
+/**
+ * OFAC Comprehensive Sanctioned Jurisdictions (Cuba, Iran, North Korea, Syria).
+ */
+export const OFAC_SANCTIONED_COUNTRIES = new Set(['CU', 'IR', 'KP', 'SY']);
+
+/**
+ * Renders statutory 451 Unavailable For Legal Reasons notification for OFAC-restricted jurisdictions.
+ */
+export function renderOfacRestrictedHtml(): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>451 Unavailable For Legal Reasons — PocketGull</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #09090b; color: #f4f4f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 1.5rem; text-align: center;">
+  <div style="max-width: 520px; background: #18181b; border: 1px solid #27272a; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <div style="font-size: 2.5rem; margin-bottom: 1rem;">⚖️</div>
+    <h1 style="font-size: 1.25rem; font-weight: 700; color: #f87171; margin-bottom: 0.75rem;">451 &bull; Service Restricted In This Territory</h1>
+    <p style="font-size: 0.875rem; color: #a1a1aa; line-height: 1.6; margin-bottom: 1.5rem;">
+      PocketGull software distributions and clinical AI telemetry endpoints are legally restricted from deployment in OFAC-sanctioned jurisdictions in strict compliance with U.S. Export Administration Regulations (EAR) and statutory trade sanctions.
+    </p>
+    <div style="font-size: 0.75rem; font-family: ui-monospace, monospace; color: #71717a;">
+      PocketGull LLC &bull; Oregon Entity 258869891 &bull; Statutory Egress Guard
+    </div>
+  </div>
+</body>
+</html>`;
+}

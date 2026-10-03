@@ -1196,7 +1196,7 @@ export class ClinicalSpecialtyRiskSuiteService {
       interventions.push('Nutritional Bypass High-Density Nutrient Infusion Pacing');
     } else if (dysautonomiaPem.score >= 0.60) {
       primaryClinicalVulnerability = 'NIH Dysautonomia & Acute Post-Exertional Malaise (PEM) Crash Risk';
-      interventions.push('0.1 Hz Rachel Nabors Parasympathetic Bio-Rhythmic Respiratory Pacing');
+      interventions.push('0.1 Hz Autonomic Vagal Resonant Respiratory Pacing');
       interventions.push('Strict Energetic Heart-Rate Ceiling Buffer (Anaerobic Threshold Pacing)');
       interventions.push('Electrolyte Fluid Bolus & Abdominal Compression Support');
     } else if (whoHeartsCvd.score >= 0.15) {

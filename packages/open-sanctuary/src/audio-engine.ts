@@ -28,7 +28,7 @@ export class AvsAudioEngine {
   private noiseGain: GainNode | null = null;
   private noiseFilter: BiquadFilterNode | null = null;
 
-  // Parasympathetic 0.1Hz Breathing LFO (Rachel Nabors Bio-Rhythmic Pacing)
+  // Parasympathetic 0.1Hz Breathing LFO (Autonomic Vagal Resonance Pacing)
   private pacingLfo: OscillatorNode | null = null;
   private pacingFilter: BiquadFilterNode | null = null;
 

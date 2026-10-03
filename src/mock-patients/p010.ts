@@ -129,5 +129,23 @@ export const p010: IPatient = {
     activeSpecialists: ['Cognitive Neurologist', 'Movement Disorder Specialist', 'Neuro-Pharmacologist', 'TCM Botanical Specialist', 'Ayurvedic Vaidya'],
     confidenceScore: 0.97,
     reasoning: 'Patient exhibits dual-pathology overlap of Alzheimer-type cholinergic memory loss and Parkinsonian nigrostriatal dopaminergic deficit.'
+  },
+  environmentalIndex: {
+    aqi: 46,
+    pm25: "11.8 µg/m³",
+    ozone: "34 ppb",
+    pollenDensity: "Low",
+    heatIndex: "68°F",
+    vulnerabilityWarning: "Circadian blue-light disruptors and ambient indoor acoustic flutter exacerbating neurogenic REM sleep fragmentation and orthostatic dysautonomia."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["NSF", "NIH", "WHO"],
+    traversedPathSummary: "NSF Brain Multiscale Topology Schemas (NSF) <-> NIH MeSH D000544 & D010300 Dual Tau-Synuclein Neuropathology (NIH) <-> WHO Global Action Plan on Dementia & Ayurvedic Medhya Rasayana Neuroprotection (WHO)",
+    groundedTargetConcept: "Dual Dopaminergic-Cholinergic Resonance & Medhya Rasayana Neuroprotection",
+    auditTrailHash: "sha256:1a82910c28374189371029e84719283719284719",
+    cochraneEvidenceTier: "Level A (Replicated RCTs)",
+    pmidCitation: "PMID:30855734"
   }
 };

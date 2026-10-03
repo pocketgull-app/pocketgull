@@ -203,7 +203,7 @@ describe('ClinicalSpecialtyRiskSuiteService Unit Suite', () => {
     expect(darwinProfile.dysautonomiaPem.score).toBeGreaterThanOrEqual(0.60);
     expect(darwinProfile.msProgression.score).toBeLessThan(0.35);
     expect(darwinProfile.primaryClinicalVulnerability).toContain('Dysautonomia');
-    expect(darwinProfile.recommendedParadigmInterventions.some(i => i.includes('Rachel Nabors Parasympathetic'))).toBe(true);
+    expect(darwinProfile.recommendedParadigmInterventions.some(i => i.includes('Autonomic Vagal Resonant'))).toBe(true);
 
     // 3. Pancreatic Oncology (p009) -> Critical Cachexia, Low MS progression
     const p009Profile = await service.evaluatePatientSpecialtyProfile({

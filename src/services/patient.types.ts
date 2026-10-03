@@ -298,6 +298,7 @@ export interface IPatientState {
     travelProfile?: ITravelMedicineProfile;
     awareStewardship?: IWhoAwareClassification[];
     environmentalIndex?: IEnvironmentalHealthIndex;
+    oknProfile?: IOknProvenanceProfile;
     [key: string]: any;
 }
 
@@ -326,6 +327,19 @@ export interface IWhoAwareClassification {
     stewardshipNote: string;
 }
 
+export interface IOknProvenanceProfile {
+    isVerified: boolean;
+    badgeLabel: string;
+    participatingAgencies: string[]; // e.g. ['USGS', 'EPA', 'NIH']
+    traversedPathSummary: string;
+    groundedTargetConcept: string;
+    auditTrailHash: string;
+    cochraneEvidenceTier: 'Level A (Replicated RCTs)' | 'Level B (Cohort / Preliminary)' | 'Level C (Mechanistic Plausibility)';
+    watershedOrAquiferSiteId?: string;
+    epaRegistryId?: string;
+    pmidCitation?: string;
+}
+
 export interface IEnvironmentalHealthIndex {
     aqi: number;
     pm25: string;
@@ -333,6 +347,7 @@ export interface IEnvironmentalHealthIndex {
     pollenDensity: 'Low' | 'Moderate' | 'High' | 'Severe';
     heatIndex: string;
     vulnerabilityWarning: string;
+    oknProvenance?: IOknProvenanceProfile;
 }
 
 export interface IGeneticVariant {

@@ -74,6 +74,7 @@ import { OsceCaseSimulatorComponent } from './components/osce-case-simulator.com
 import { PatentClaimsHudModalComponent } from './components/modals/patent-claims-hud-modal.component';
 import { UsageLicensingPaywallModalComponent } from './components/modals/usage-licensing-paywall-modal.component';
 import { NantucketTickCaseStudyComponent } from './components/case-studies/nantucket-tick-case-study.component';
+import { CardiometabolicRadarCaseStudyComponent } from './components/case-studies/cardiometabolic-radar-case-study.component';
 import { CommunityTestimonialModalComponent } from './components/modals/community-testimonial-modal.component';
 import { SmartHealthPassModalComponent } from './components/smart-health-pass-modal.component';
 import { AmbientLivingSpaceDashboardComponent } from './components/ambient-living-space-dashboard.component';
@@ -101,6 +102,7 @@ import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component
 import { PocketgullArchitectureAtlasComponent } from './components/shared/pocketgull-architecture-atlas.component';
 import { CommunityHealthWorkerSuiteComponent } from './components/shared/community-health-worker-suite.component';
 import { SpecialistReferralHubComponent } from './components/specialist-referral-hub.component';
+import { SocraticMultilingualTerminalComponent } from './components/socratic-multilingual-terminal.component';
 
 @Component({
   selector: 'app-root',
@@ -111,6 +113,7 @@ import { SpecialistReferralHubComponent } from './components/specialist-referral
   imports: [
     CommonModule,
     FormsModule,
+    SocraticMultilingualTerminalComponent,
     ArcadeHubModalComponent,
     PocketgullArchitectureAtlasComponent,
     CommunityHealthWorkerSuiteComponent,
@@ -160,6 +163,7 @@ import { SpecialistReferralHubComponent } from './components/specialist-referral
     PatentClaimsHudModalComponent,
     UsageLicensingPaywallModalComponent,
     NantucketTickCaseStudyComponent,
+    CardiometabolicRadarCaseStudyComponent,
     CommunityTestimonialModalComponent,
     SmartHealthPassModalComponent,
     AmbientLivingSpaceDashboardComponent,
@@ -953,6 +957,15 @@ import { SpecialistReferralHubComponent } from './components/specialist-referral
       </div>
     }
 
+    <!-- Cardiometabolic Radar Case Study Modal -->
+    @if (showCardiometabolicCaseStudy()) {
+      <div class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+        <app-cardiometabolic-radar-case-study 
+          (close)="showCardiometabolicCaseStudy.set(false)">
+        </app-cardiometabolic-radar-case-study>
+      </div>
+    }
+
     <!-- Community Testimonials & Quotes Modal -->
     @if (showTestimonialsModal()) {
       <app-community-testimonial-modal (close)="showTestimonialsModal.set(false)"></app-community-testimonial-modal>
@@ -1449,6 +1462,15 @@ import { SpecialistReferralHubComponent } from './components/specialist-referral
       </div>
     }
 
+    <!-- 🌐 Universal Socratic Multilingual Terminal Modal -->
+    @if (navShell.showMultilingualTerminalModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Universal Socratic Multilingual Terminal">
+        <div class="relative w-full max-w-5xl my-auto">
+          <app-socratic-multilingual-terminal (close)="navShell.closeMultilingualTerminal()" />
+        </div>
+      </div>
+    }
+
 
     <!-- 3D Joint Hologram & Tri-Plane Slicer Modal -->
     @if (showKneeHologramModal()) {
@@ -1595,6 +1617,7 @@ export class AppComponent implements OnDestroy {
   readonly showPatentClaimsModal = signal<boolean>(false);
   readonly showLicensingModal = signal<boolean>(false);
   readonly showNantucketCaseStudy = signal<boolean>(false);
+  readonly showCardiometabolicCaseStudy = signal<boolean>(false);
   readonly showTestimonialsModal = signal<boolean>(false);
   licensing = inject(AppLicensingGuardService);
   readonly showHeaderThemeMenu = signal<boolean>(false);
@@ -2550,6 +2573,60 @@ export class AppComponent implements OnDestroy {
         // Open the rich Nantucket Case Study modal for full clinical brief unless explicitly suppressed
         if (params.get('modal') !== 'false') {
           this.showNantucketCaseStudy.set(true);
+        }
+      } else if (caseParam === 'cardiometabolic' || caseParam === 'cardiometabolic-radar') {
+        // Unlock session & enter demo/cockpit mode
+        this.session.isLocked.set(false);
+        this.state.isDemoMode.set(true);
+        this.isDemoMode.set(true);
+        this.hasApiKey.set(true);
+
+        this.state.occupation.set('Senior Software Architect (Sedentary Desk Worker)');
+        this.state.reasonForVisit.set(
+          '56-year-old software architect presenting with postprandial somnolence, nocturnal prehypertension (138/88 mmHg, non-dipper), elevated HbA1c (7.4%), and rapid postprandial glucose surges (>180 mg/dL with dG/dt >= +1.6 mg/dL/min) during prolonged seated desk shifts.'
+        );
+
+        this.state.vitals.set({
+          hr: '76',
+          bp: '138/88',
+          spO2: '98',
+          temp: '36.8',
+          weight: '84 kg',
+          height: '180 cm',
+          cgmGlucoseMgDl: '134',
+          vitC: 'Normal',
+          vitD3: '31 ng/mL',
+          magnesium: '1.9 mg/dL',
+          zinc: '82 ug/dL',
+          b12: '380 pg/mL'
+        });
+
+        this.state.issues.set({
+          pancreas_liver: [{
+            id: 'pancreas_liver',
+            noteId: 'note_cardiometabolic_hepatic',
+            name: 'Hepatic & Glycemic Phase Space',
+            painLevel: 1,
+            description: 'Accelerated postprandial excursion with delayed clearance (dG/dt >= +1.6 mg/dL/min, AUC120 delayed > 90 min) and uninhibited nocturnal gluconeogenesis.',
+            symptoms: ['Postprandial Lethargy', 'Reactive Hypoglycemia Dips', 'Nocturnal Sweating'],
+            recommendation: 'Initiate Tier 1 Seated Soleus Pushups (10-15 min post-meal) + Generic Metformin ER 500mg with evening meal.'
+          }],
+          vascular_endothelium: [{
+            id: 'vascular_endothelium',
+            noteId: 'note_cardiometabolic_vascular',
+            name: 'Microvascular Endothelium & Nocturnal Dip',
+            painLevel: 2,
+            description: 'Postprandial glycemic excursions > 140 mg/dL quenching endothelial nitric oxide; nocturnal blood pressure non-dipping pattern (<10% dip).',
+            symptoms: ['Elevated Pulse Wave Velocity', 'Mild Pre-Hypertension', 'Endothelial Stiffness'],
+            recommendation: 'Magnesium Glycinate 400mg at bedtime; 8-hour circadian feeding window (10:00 AM - 6:00 PM).'
+          }]
+        });
+
+        this.isAnalysisCollapsed.set(false);
+        this.isChartCollapsed.set(false);
+
+        if (params.get('modal') !== 'false') {
+          this.showCardiometabolicCaseStudy.set(true);
         }
       }
 

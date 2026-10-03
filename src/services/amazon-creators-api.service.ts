@@ -22,6 +22,7 @@ export interface IAmazonProductItem {
   asin: string;
   title: string;
   detailPageUrl: string;
+  searchUrl?: string;
   imageUrl: string;
   price?: IAmazonProductPrice;
   rating?: number;
@@ -59,24 +60,26 @@ export const FTC_AMAZON_DISCLOSURE =
 export const CLINICAL_CURATED_AMAZON_CATALOG: IAmazonProductItem[] = [
   // Bibliotherapy & Craftsmanship
   {
-    asin: '0578087968',
-    title: "The Anarchist's Tool Chest by Christopher Schwarz",
-    detailPageUrl: 'https://www.amazon.com/dp/0578087968?tag=pgdpo-20',
+    asin: '0143117467',
+    title: 'Shop Class as Soulcraft: An Inquiry into the Value of Work by Matthew B. Crawford',
+    detailPageUrl: 'https://www.amazon.com/dp/0143117467?tag=pgdpo-20',
+    searchUrl: 'https://www.amazon.com/s?k=Shop+Class+as+Soulcraft+Matthew+Crawford&tag=pgdpo-20',
     imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&auto=format&fit=crop&q=60',
-    price: { amount: 48.0, currency: 'USD', displayPrice: '$48.00' },
-    rating: 4.9,
-    ratingsCount: 812,
+    price: { amount: 17.0, currency: 'USD', displayPrice: '$17.00' },
+    rating: 4.6,
+    ratingsCount: 2650,
     primeEligible: true,
     hsaFsaEligible: false,
     category: 'books_bibliotherapy',
-    clinicalContext: 'Tactile proprioceptive neuro-grounding & digital screen detox',
-    evidenceScore: 'CEBM Level 2b (Mindfulness in Craft)',
+    clinicalContext: 'Tactile proprioceptive neuro-grounding, physical work psychology & digital screen detox (woodworking & hand craftsmanship)',
+    evidenceScore: 'CEBM Level 2b (Mindfulness in Craft & Somatic Renewal)',
     snomedCode: 'SCTID 281084008'
   },
   {
     asin: '1501168058',
     title: 'The Well-Gardened Mind: The Restorative Power of Nature by Sue Stuart-Smith',
     detailPageUrl: 'https://www.amazon.com/dp/1501168058?tag=pgdpo-20',
+    searchUrl: 'https://www.amazon.com/s?k=The+Well-Gardened+Mind+Sue+Stuart-Smith&tag=pgdpo-20',
     imageUrl: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=300&auto=format&fit=crop&q=60',
     price: { amount: 18.99, currency: 'USD', displayPrice: '$18.99' },
     rating: 4.8,
@@ -84,23 +87,24 @@ export const CLINICAL_CURATED_AMAZON_CATALOG: IAmazonProductItem[] = [
     primeEligible: true,
     hsaFsaEligible: false,
     category: 'books_bibliotherapy',
-    clinicalContext: 'Autonomic nervous system recovery & cortisol regulation via horticulture',
+    clinicalContext: 'Autonomic nervous system recovery & cortisol regulation via horticulture (botanical therapy & gardening)',
     evidenceScore: 'CEBM Level 1b (Horticultural Therapy RCTs)',
     snomedCode: 'SCTID 226065003'
   },
   {
-    asin: '0618047918',
-    title: 'Field Guide to Birds of North America (Peterson Guides)',
-    detailPageUrl: 'https://www.amazon.com/dp/0618047918?tag=pgdpo-20',
+    asin: '030795790X',
+    title: 'The Sibley Guide to Birds (2nd Edition) by David Allen Sibley',
+    detailPageUrl: 'https://www.amazon.com/dp/030795790X?tag=pgdpo-20',
+    searchUrl: 'https://www.amazon.com/s?k=The+Sibley+Guide+to+Birds+David+Allen+Sibley&tag=pgdpo-20',
     imageUrl: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=300&auto=format&fit=crop&q=60',
-    price: { amount: 22.49, currency: 'USD', displayPrice: '$22.49' },
+    price: { amount: 29.99, currency: 'USD', displayPrice: '$29.99' },
     rating: 4.9,
-    ratingsCount: 3890,
+    ratingsCount: 10420,
     primeEligible: true,
     hsaFsaEligible: false,
     category: 'books_bibliotherapy',
-    clinicalContext: 'Auditory frequency discrimination & peaceful vagal tone stimulation',
-    evidenceScore: 'CEBM Level 2a (Ecopsychology)',
+    clinicalContext: 'Auditory frequency discrimination, optic flow & peaceful vagal tone stimulation (birdwatching & field guide)',
+    evidenceScore: 'CEBM Level 2a (Ecopsychology & Nature Immersion)',
     snomedCode: 'SCTID 226071007'
   },
   // Medical Devices & Diagnostics (HSA / FSA §213(d) Qualified)
@@ -108,6 +112,7 @@ export const CLINICAL_CURATED_AMAZON_CATALOG: IAmazonProductItem[] = [
     asin: 'B07S2CV4N7',
     title: 'Omron Complete Wireless Upper Arm Blood Pressure + EKG Monitor',
     detailPageUrl: 'https://www.amazon.com/dp/B07S2CV4N7?tag=pgdpo-20',
+    searchUrl: 'https://www.amazon.com/s?k=Omron+Complete+Wireless+Blood+Pressure+EKG&tag=pgdpo-20',
     imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=300&auto=format&fit=crop&q=60',
     price: { amount: 169.99, currency: 'USD', displayPrice: '$169.99' },
     rating: 4.6,
@@ -123,6 +128,7 @@ export const CLINICAL_CURATED_AMAZON_CATALOG: IAmazonProductItem[] = [
     asin: 'B08F9Y85G6',
     title: 'Innovo Deluxe Fingertip Pulse Oximeter with Plethysmograph Waveform',
     detailPageUrl: 'https://www.amazon.com/dp/B08F9Y85G6?tag=pgdpo-20',
+    searchUrl: 'https://www.amazon.com/s?k=Innovo+Deluxe+Fingertip+Pulse+Oximeter&tag=pgdpo-20',
     imageUrl: 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=300&auto=format&fit=crop&q=60',
     price: { amount: 34.95, currency: 'USD', displayPrice: '$34.95' },
     rating: 4.7,
@@ -138,6 +144,7 @@ export const CLINICAL_CURATED_AMAZON_CATALOG: IAmazonProductItem[] = [
     asin: 'B01N05W4TC',
     title: 'Withings Body+ Smart Wi-Fi Body Composition Scale',
     detailPageUrl: 'https://www.amazon.com/dp/B01N05W4TC?tag=pgdpo-20',
+    searchUrl: 'https://www.amazon.com/s?k=Withings+Body+Plus+Smart+Scale&tag=pgdpo-20',
     imageUrl: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=300&auto=format&fit=crop&q=60',
     price: { amount: 99.95, currency: 'USD', displayPrice: '$99.95' },
     rating: 4.5,
@@ -154,6 +161,7 @@ export const CLINICAL_CURATED_AMAZON_CATALOG: IAmazonProductItem[] = [
     asin: 'B07B9TL5KY',
     title: 'TheraBand Professional Non-Latex Resistance Bands Set (5-Pack)',
     detailPageUrl: 'https://www.amazon.com/dp/B07B9TL5KY?tag=pgdpo-20',
+    searchUrl: 'https://www.amazon.com/s?k=TheraBand+Professional+Resistance+Bands+Set&tag=pgdpo-20',
     imageUrl: 'https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=300&auto=format&fit=crop&q=60',
     price: { amount: 16.99, currency: 'USD', displayPrice: '$16.99' },
     rating: 4.8,
@@ -322,5 +330,16 @@ export class AmazonCreatorsApiService {
    */
   generateSearchUrl(query: string): string {
     return `https://www.amazon.com/s?k=${encodeURIComponent(query)}&tag=${this.affiliateTag()}`;
+  }
+
+  /**
+   * Generate a resilient affiliate URL: uses direct /dp/ if valid ASIN,
+   * otherwise falls back to a curated keyword search URL that never 404s.
+   */
+  generateResilientUrl(asin: string, fallbackQuery?: string): string {
+    if (asin && /^[A-Z0-9]{10}$/i.test(asin)) {
+      return `https://www.amazon.com/dp/${asin}?tag=${this.affiliateTag()}`;
+    }
+    return this.generateSearchUrl(fallbackQuery || asin);
   }
 }
