@@ -14,7 +14,7 @@ ENV NODE_ENV=production
 
 # Install ONLY production dependencies (Zero devDependencies, zero esbuild in cloud)
 COPY package*.json ./
-RUN npm install --omit=dev --legacy-peer-deps --no-workspaces
+RUN npm ci --omit=dev --legacy-peer-deps --no-workspaces
 
 # Copy pre-compiled distribution from local build (100% free local CPU)
 COPY dist ./dist
