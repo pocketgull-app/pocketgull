@@ -3,6 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WhoEssentialMedicinesService } from '../../services/who-essential-medicines.service';
 import { generate } from 'lean-qr';
+import {
+  FrontlineVernacularVoiceService,
+  VernacularLanguageCode,
+  IVernacularPrompt,
+  ITriageVoiceContext
+} from '../../services/frontline-vernacular-voice.service';
 
 export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary';
 
@@ -90,6 +96,42 @@ export interface IDehydrationTriageResult {
         </div>
       </header>
 
+      <!-- Frontline Multilingual Vernacular Voice Bar (WHO/MSF Top 5 Languages) -->
+      <section class="mt-4 p-3 bg-zinc-900/80 rounded-2xl border border-zinc-800/80 flex flex-wrap items-center justify-between gap-3 shadow-inner"
+               aria-label="Frontline Multilingual Vernacular Voice Selector">
+        <div class="flex items-center gap-2.5">
+          <span class="text-lg" role="img" aria-label="Audio Translation">🗣️</span>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold text-zinc-100">Frontline Vernacular Voice Prompts</span>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-teal-950 text-teal-300 border border-teal-800/60 font-semibold">Offline TTS</span>
+            </div>
+            <p class="text-[11px] text-zinc-400">
+              Spoken &amp; visual guidance for illiterate or visually impaired patients in austere field clinics
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-1.5">
+          @for (lang of voiceService.languages(); track lang.code) {
+            <button type="button"
+                    (click)="selectVernacularLanguage(lang.code)"
+                    [id]="'btn-chw-lang-' + lang.code"
+                    [class.bg-teal-600]="voiceService.activeLanguageCode() === lang.code"
+                    [class.text-white]="voiceService.activeLanguageCode() === lang.code"
+                    [class.border-teal-400]="voiceService.activeLanguageCode() === lang.code"
+                    [class.bg-zinc-800]="voiceService.activeLanguageCode() !== lang.code"
+                    [class.text-zinc-300]="voiceService.activeLanguageCode() !== lang.code"
+                    [class.border-zinc-700]="voiceService.activeLanguageCode() !== lang.code"
+                    class="px-2.5 py-1 rounded-xl text-xs font-semibold border transition cursor-pointer flex items-center gap-1.5 shadow-xs">
+              <span class="text-sm">{{ lang.flagEmoji }}</span>
+              <span>{{ lang.nativeName }}</span>
+              <span class="text-[10px] opacity-75 font-mono">({{ lang.code.toUpperCase() }})</span>
+            </button>
+          }
+        </div>
+      </section>
+
       <!-- Navigation Tabs -->
       <nav class="flex flex-wrap items-center gap-2 mt-4 pb-3 border-b border-zinc-800/70 text-xs font-mono font-bold" aria-label="CHW Triage Modules">
         <button type="button"
@@ -137,6 +179,73 @@ export interface IDehydrationTriageResult {
           <span>💊</span> 5. WHO Free Formulary
         </button>
       </nav>
+
+      <!-- Active Vernacular Audio-Visual Guidance HUD Card -->
+      <aside class="mt-4 p-3.5 rounded-2xl border transition-all duration-300 shadow-md"
+             [class.bg-rose-950/40]="currentTriageVoicePrompt().acuityTier === 'RED'"
+             [class.border-rose-700/60]="currentTriageVoicePrompt().acuityTier === 'RED'"
+             [class.bg-amber-950/40]="currentTriageVoicePrompt().acuityTier === 'YELLOW'"
+             [class.border-amber-700/60]="currentTriageVoicePrompt().acuityTier === 'YELLOW'"
+             [class.bg-emerald-950/40]="currentTriageVoicePrompt().acuityTier === 'GREEN'"
+             [class.border-emerald-700/60]="currentTriageVoicePrompt().acuityTier === 'GREEN'"
+             [dir]="currentTriageVoicePrompt().direction"
+             aria-live="polite">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="space-y-1 max-w-2xl">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-md"
+                    [class.bg-rose-900/80]="currentTriageVoicePrompt().acuityTier === 'RED'"
+                    [class.text-rose-200]="currentTriageVoicePrompt().acuityTier === 'RED'"
+                    [class.bg-amber-900/80]="currentTriageVoicePrompt().acuityTier === 'YELLOW'"
+                    [class.text-amber-200]="currentTriageVoicePrompt().acuityTier === 'YELLOW'"
+                    [class.bg-emerald-900/80]="currentTriageVoicePrompt().acuityTier === 'GREEN'"
+                    [class.text-emerald-200]="currentTriageVoicePrompt().acuityTier === 'GREEN'">
+                {{ currentTriageVoicePrompt().language.flagEmoji }} {{ currentTriageVoicePrompt().language.nativeName }} • {{ currentTriageVoicePrompt().headline }}
+              </span>
+              <span class="text-[11px] text-zinc-400 font-mono">
+                Agency: {{ currentTriageVoicePrompt().language.primaryAgency }}
+              </span>
+            </div>
+
+            <!-- Vernacular Spoken Script in native font -->
+            <p class="text-sm sm:text-base font-bold text-zinc-100 leading-snug">
+              "{{ currentTriageVoicePrompt().promptText }}"
+            </p>
+
+            <!-- Phonetic pronunciation guide and plain English meaning -->
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-300">
+              <span class="text-teal-300 font-mono">
+                🗣️ <span class="text-zinc-400">Phonetic:</span> {{ currentTriageVoicePrompt().phoneticGuide }}
+              </span>
+              <span class="text-zinc-400">|</span>
+              <span class="text-zinc-300 italic">
+                <span class="text-zinc-400 not-italic font-semibold">Meaning:</span> {{ currentTriageVoicePrompt().englishMeaning }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Play Audio Guidance Button -->
+          <div class="flex items-center gap-2 shrink-0">
+            @if (voiceService.isSpeaking()) {
+              <button type="button"
+                      (click)="stopSpeaking()"
+                      id="btn-chw-audio-stop"
+                      class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-mono text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                <span>⏹️ Stop Audio</span>
+              </button>
+            } @else {
+              <button type="button"
+                      (click)="speakCurrentTriage()"
+                      id="btn-chw-audio-speak"
+                      class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-mono text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+                <span>🔊</span>
+                <span>Listen in {{ currentTriageVoicePrompt().language.nativeName }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      </aside>
 
       <!-- TAB 1: MUAC Malnutrition & RUTF Titration -->
       @if (activeTab() === 'malnutrition_muac') {
@@ -237,7 +346,15 @@ export interface IDehydrationTriageResult {
           <!-- RUTF Dosage & Clinical Action Directive -->
           <div class="p-4 bg-zinc-900/40 rounded-2xl border border-zinc-800/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <span class="text-xs font-mono uppercase text-emerald-400 font-semibold">Action Directive:</span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono uppercase text-emerald-400 font-semibold">Action Directive:</span>
+                <button type="button"
+                        (click)="speakCurrentTriage()"
+                        id="btn-chw-speak-muac"
+                        class="px-2 py-0.5 rounded-lg bg-teal-950 hover:bg-teal-900 text-teal-300 border border-teal-800/60 text-[10px] font-mono transition cursor-pointer flex items-center gap-1 shadow-xs">
+                  <span>🔊</span> Listen ({{ currentTriageVoicePrompt().language.nativeName }})
+                </button>
+              </div>
               <p class="text-xs text-zinc-200 mt-1 leading-relaxed">
                 {{ muacTriage().clinicalAction }}
               </p>
@@ -350,7 +467,15 @@ export interface IDehydrationTriageResult {
 
           <!-- Treatment Recommendation Directive -->
           <div class="p-4 bg-zinc-900/40 rounded-2xl border border-zinc-800/80">
-            <span class="text-xs font-mono uppercase text-teal-400 font-semibold">Treatment &amp; Referral Directive:</span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono uppercase text-teal-400 font-semibold">Treatment &amp; Referral Directive:</span>
+              <button type="button"
+                      (click)="speakCurrentTriage()"
+                      id="btn-chw-speak-pneumonia"
+                      class="px-2 py-0.5 rounded-lg bg-teal-950 hover:bg-teal-900 text-teal-300 border border-teal-800/60 text-[10px] font-mono transition cursor-pointer flex items-center gap-1 shadow-xs">
+                <span>🔊</span> Listen ({{ currentTriageVoicePrompt().language.nativeName }})
+              </button>
+            </div>
             <p class="text-xs text-zinc-200 mt-1 leading-relaxed">
               {{ pneumoniaTriage().recommendedTreatment }}
             </p>
@@ -463,7 +588,15 @@ export interface IDehydrationTriageResult {
           <!-- ORS Volume & Zinc Output Card -->
           <div class="p-4 bg-zinc-900/40 rounded-2xl border border-zinc-800/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="space-y-1">
-              <span class="text-xs font-mono uppercase text-cyan-400 font-semibold">Treatment Directives:</span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono uppercase text-cyan-400 font-semibold">Treatment Directives:</span>
+                <button type="button"
+                        (click)="speakCurrentTriage()"
+                        id="btn-chw-speak-dehydration"
+                        class="px-2 py-0.5 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-800/60 text-[10px] font-mono transition cursor-pointer flex items-center gap-1 shadow-xs">
+                  <span>🔊</span> Listen ({{ currentTriageVoicePrompt().language.nativeName }})
+                </button>
+              </div>
               <ul class="text-xs text-zinc-300 list-disc list-inside space-y-1">
                 @for (dir of dehydrationTriage().clinicalDirectives; track dir) {
                   <li>{{ dir }}</li>
@@ -483,9 +616,17 @@ export interface IDehydrationTriageResult {
         <section class="mt-5 space-y-5 animate-in fade-in duration-200">
           <div class="p-4 bg-rose-950/40 rounded-2xl border border-rose-600/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <h3 class="text-sm font-bold text-rose-200 flex items-center gap-2">
-                <span>🚨</span> 7 IMCI General Danger Signs (Zero Delay Referral)
-              </h3>
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-rose-200 flex items-center gap-2">
+                  <span>🚨</span> 7 IMCI General Danger Signs (Zero Delay Referral)
+                </h3>
+                <button type="button"
+                        (click)="speakCurrentTriage()"
+                        id="btn-chw-speak-danger"
+                        class="px-2 py-0.5 rounded-lg bg-rose-900/80 hover:bg-rose-800 text-rose-200 border border-rose-700/60 text-[10px] font-mono transition cursor-pointer flex items-center gap-1 shadow-xs">
+                  <span>🔊</span> Listen ({{ currentTriageVoicePrompt().language.nativeName }})
+                </button>
+              </div>
               <p class="text-xs text-rose-300/80 mt-1">
                 If ANY of these signs are present, immediately stabilize child, give first-dose antibiotics/glucose if indicated, and arrange urgent transport.
               </p>
@@ -614,6 +755,7 @@ export interface IDehydrationTriageResult {
 })
 export class CommunityHealthWorkerSuiteComponent {
   readonly emlService = inject(WhoEssentialMedicinesService);
+  readonly voiceService = inject(FrontlineVernacularVoiceService);
   readonly close = output<void>();
 
   hasCloseButton = true;
@@ -664,6 +806,52 @@ export class CommunityHealthWorkerSuiteComponent {
       }
     });
   }
+
+  // --- Computed Vernacular Audio Prompt for Current Triage Context ---
+  readonly currentTriageVoicePrompt = computed<IVernacularPrompt>(() => {
+    const tab = this.activeTab();
+    let context: ITriageVoiceContext;
+
+    if (tab === 'malnutrition_muac') {
+      context = {
+        module: 'malnutrition_muac',
+        muacTier: this.muacTriage().statusTier,
+        muacMm: this.muacMm(),
+        rutfSachets: this.muacTriage().rutfSachetsPerDay,
+        childWeightKg: this.childWeightKg()
+      };
+    } else if (tab === 'pneumonia_timer') {
+      context = {
+        module: 'pneumonia_timer',
+        pneumoniaClassification: this.pneumoniaTriage().classification,
+        respiratoryBpm: this.respiratoryBpm()
+      };
+    } else if (tab === 'dehydration_ors') {
+      context = {
+        module: 'dehydration_ors',
+        dehydrationPlan: this.dehydrationTriage().plan,
+        orsVolumeMl: this.dehydrationTriage().orsVolumeMl4Hours,
+        childWeightKg: this.childWeightKg()
+      };
+    } else if (tab === 'danger_signs') {
+      const activeDanger = this.dangerFlags().filter(f => f.checked).map(f => f.label);
+      context = {
+        module: 'danger_signs',
+        hasDangerSigns: activeDanger.length > 0,
+        dangerFlagNames: activeDanger
+      };
+    } else {
+      context = {
+        module: 'malnutrition_muac',
+        muacTier: this.muacTriage().statusTier,
+        muacMm: this.muacMm(),
+        rutfSachets: this.muacTriage().rutfSachetsPerDay,
+        childWeightKg: this.childWeightKg()
+      };
+    }
+
+    return this.voiceService.generateTriagePrompt(context);
+  });
 
   // --- Computed Malnutrition Triage ---
   readonly muacTriage = computed<IMuacTriageResult>(() => {
@@ -865,8 +1053,24 @@ export class CommunityHealthWorkerSuiteComponent {
     return JSON.stringify(payload);
   });
 
+  // --- Vernacular Audio Guidance Actions ---
+  speakCurrentTriage(): void {
+    const prompt = this.currentTriageVoicePrompt();
+    this.voiceService.speakPrompt(prompt.promptText, prompt.languageCode);
+  }
+
+  stopSpeaking(): void {
+    this.voiceService.stopSpeaking();
+  }
+
+  selectVernacularLanguage(code: VernacularLanguageCode): void {
+    this.voiceService.setLanguage(code);
+    this.voiceService.playAcousticAttentionCue(440, 150);
+  }
+
   // --- Breathing Tap-Tempo Calculator ---
   tapBreathing(): void {
+    this.voiceService.playAcousticAttentionCue(700, 70);
     const now = Date.now();
     this.tapTimestamps.push(now);
     if (this.tapTimestamps.length > 5) {

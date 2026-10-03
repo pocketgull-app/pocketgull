@@ -89,4 +89,78 @@ describe('CommunityHealthWorkerSuiteComponent', () => {
     const parsed = JSON.parse(payloadStr);
     expect(parsed.patient.muacMm).toBe(128);
   });
+
+  describe('Frontline Vernacular Voice & Audio Prompts', () => {
+    it('should initialize with top 5 frontline languages and default to English', () => {
+      const langs = component.voiceService.languages();
+      expect(langs.length).toBe(5);
+      expect(component.voiceService.activeLanguageCode()).toBe('en');
+
+      const prompt = component.currentTriageVoicePrompt();
+      expect(prompt).toBeTruthy();
+      expect(prompt.languageCode).toBe('en');
+      expect(prompt.direction).toBe('ltr');
+    });
+
+    it('should switch language to Swahili and update current triage prompt', () => {
+      component.selectVernacularLanguage('sw');
+      fixture.detectChanges();
+
+      expect(component.voiceService.activeLanguageCode()).toBe('sw');
+      const prompt = component.currentTriageVoicePrompt();
+      expect(prompt.languageCode).toBe('sw');
+      expect(prompt.promptText).toContain('Kipimo cha mkono');
+      expect(prompt.promptText).toContain('Mtoto ana lishe nzuri');
+      expect(prompt.direction).toBe('ltr');
+    });
+
+    it('should switch language to Arabic and enforce RTL text direction', () => {
+      component.selectVernacularLanguage('ar');
+      fixture.detectChanges();
+
+      expect(component.voiceService.activeLanguageCode()).toBe('ar');
+      const prompt = component.currentTriageVoicePrompt();
+      expect(prompt.languageCode).toBe('ar');
+      expect(prompt.direction).toBe('rtl');
+      expect(prompt.promptText).toContain('قياس الذراع');
+      expect(prompt.promptText).toContain('تغذية الطفل جيدة');
+    });
+
+    it('should update prompt dynamically when switching triage tabs to Tachypnea Counter', () => {
+      component.selectVernacularLanguage('es');
+      component.activeTab.set('pneumonia_timer');
+      component.respiratoryAgeGroup.set('2_11_MONTHS');
+      component.respiratoryBpm.set(52); // Fast breathing -> Pneumonia
+      fixture.detectChanges();
+
+      const prompt = component.currentTriageVoicePrompt();
+      expect(prompt.acuityTier).toBe('YELLOW');
+      expect(prompt.languageCode).toBe('es');
+      expect(prompt.promptText).toContain('amoxicilina');
+    });
+
+    it('should invoke voiceService.speakPrompt when speakCurrentTriage is called', async () => {
+      const speakSpy = vi.spyOn(component.voiceService, 'speakPrompt').mockResolvedValue();
+      component.selectVernacularLanguage('hi');
+      fixture.detectChanges();
+
+      component.speakCurrentTriage();
+      expect(speakSpy).toHaveBeenCalledWith(
+        component.currentTriageVoicePrompt().promptText,
+        'hi'
+      );
+    });
+
+    it('should invoke voiceService.stopSpeaking when stopSpeaking is called', () => {
+      const stopSpy = vi.spyOn(component.voiceService, 'stopSpeaking');
+      component.stopSpeaking();
+      expect(stopSpy).toHaveBeenCalled();
+    });
+
+    it('should play acoustic attention cue on tapBreathing', () => {
+      const cueSpy = vi.spyOn(component.voiceService, 'playAcousticAttentionCue');
+      component.tapBreathing();
+      expect(cueSpy).toHaveBeenCalledWith(700, 70);
+    });
+  });
 });
