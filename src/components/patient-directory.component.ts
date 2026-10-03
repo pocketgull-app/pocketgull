@@ -448,9 +448,9 @@ import { ClinicalMoERouterService, IPatientTriageEvaluation } from '../services/
                       type="button"
                       (click)="selectChart(triage.patient.id, true)"
                       class="flex-1 min-h-[38px] px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-[0.98] cursor-pointer"
-                      title="Admit patient directly into the Sparse Mixture of UI Experts Canvas">
-                      <span>⚡</span>
-                      <span>Admit to SMoE Canvas</span>
+                      title="Admit patient directly into the Synoptic Canvas">
+                      <span>🌐</span>
+                      <span>Admit to Synoptic Canvas</span>
                       <span>→</span>
                     </button>
                     <button
@@ -490,7 +490,7 @@ import { ClinicalMoERouterService, IPatientTriageEvaluation } from '../services/
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               @for (patient of filteredPatients(); track patient.id) {
-                <div (click)="selectChart(patient.id, true)"
+                <div (click)="selectChart(patient.id, false)"
                      class="group relative bg-white dark:bg-[#1C1C1C] rounded-2xl p-6 border shadow-xs hover:shadow-md cursor-pointer transition-all active:scale-[0.98]"
                      [class.border-amber-300]="isSentinelCase(patient)"
                      [class.dark:border-amber-900]="isSentinelCase(patient)"
@@ -651,7 +651,7 @@ export class PatientDirectoryComponent {
     );
   });
 
-  selectChart(id: string, launchSmoe: boolean = true) {
+  selectChart(id: string, launchSmoe: boolean = false) {
     this.patientService.selectPatient(id);
     if (launchSmoe) {
       this.moeRouter.analysisViewMode.set('canvas');

@@ -104,6 +104,16 @@ import { CommunityHealthWorkerSuiteComponent } from './components/shared/communi
 import { SpecialistReferralHubComponent } from './components/specialist-referral-hub.component';
 import { SocraticMultilingualTerminalComponent } from './components/socratic-multilingual-terminal.component';
 import { MocaSuiteComponent } from './components/moca/moca-suite.component';
+import { CardiacElectrophysiology3dLensComponent } from './components/anatomy-3d/cardiac-electrophysiology-3d-lens.component';
+import { AlveolarCapillary3dLensComponent } from './components/anatomy-3d/alveolar-capillary-3d-lens.component';
+import { HepaticSinusoid3dLensComponent } from './components/anatomy-3d/hepatic-sinusoid-3d-lens.component';
+import { GlomerularFiltration3dLensComponent } from './components/anatomy-3d/glomerular-filtration-3d-lens.component';
+import { KdigoAkiPhenotyperCardComponent } from './components/clinical/kdigo-aki-phenotyper-card.component';
+import { AutonomicBaroreflexCardComponent } from './components/clinical/autonomic-baroreflex-card.component';
+import { SepsisShockSofaCardComponent } from './components/clinical/sepsis-shock-sofa-card.component';
+import { GlycemicMinimalModelCardComponent } from './components/clinical/glycemic-minimal-model-card.component';
+import { PancreaticIslet3dLensComponent } from './components/anatomy-3d/pancreatic-islet-3d-lens.component';
+import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-matrix-card.component';
 
 @Component({
   selector: 'app-root',
@@ -183,7 +193,17 @@ import { MocaSuiteComponent } from './components/moca/moca-suite.component';
     ClinicalCommercialHubComponent,
     RoleDemoModalComponent,
     IntimacyRelationshipVitalityComponent,
-    MocaSuiteComponent
+    MocaSuiteComponent,
+    CardiacElectrophysiology3dLensComponent,
+    AlveolarCapillary3dLensComponent,
+    HepaticSinusoid3dLensComponent,
+    GlomerularFiltration3dLensComponent,
+    KdigoAkiPhenotyperCardComponent,
+    AutonomicBaroreflexCardComponent,
+    SepsisShockSofaCardComponent,
+    GlycemicMinimalModelCardComponent,
+    PancreaticIslet3dLensComponent,
+    Cyp450DdiMatrixCardComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -556,6 +576,7 @@ import { MocaSuiteComponent } from './components/moca/moca-suite.component';
           (openTuringSuite)="navShell.selectTab('analysis')"
           (openSocraticRounds)="navShell.selectTab('analysis')"
           (openKneeHologram)="showKneeHologramModal.set(true)"
+          (openBiophysicalLenses)="showBiophysicalLensesModal.set(true)"
           (openResearchDividend)="showResearchDividendModal.set(true)"
           (openBarrowsWorkbench)="navShell.openBarrowsWorkbench()"
           (openSocraticIntake)="state.toggleSocraticIntake(true)"
@@ -1494,6 +1515,160 @@ import { MocaSuiteComponent } from './components/moca/moca-suite.component';
       </div>
     }
 
+    <!-- Biophysical 3D Lenses & Quantitative Clinical Phenotypers Studio Modal -->
+    @if (showBiophysicalLensesModal()) {
+      <div class="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Biophysical 3D Lenses & Quantitative Clinical Phenotypers Studio">
+        <div class="relative w-full max-w-6xl my-auto bg-zinc-950 border border-zinc-800 rounded-3xl shadow-2xl p-4 sm:p-6 flex flex-col gap-4 font-sans max-h-[92vh] overflow-y-auto">
+          <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-xl">
+                🫀
+              </span>
+              <div>
+                <h2 class="text-sm sm:text-base font-bold text-zinc-100 uppercase tracking-wider font-mono">
+                  Biophysical 3D Lenses &amp; Quantitative Clinical Phenotypers Studio
+                </h2>
+                <p class="text-xs text-zinc-400">
+                  Three.js Procedural Biophysics • Microvascular Gas Exchange • Renal Sieve • Hepatic Disse • Sepsis &amp; Autonomic CDS
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              (click)="showBiophysicalLensesModal.set(false)"
+              class="w-9 h-9 rounded-full bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-700 flex items-center justify-center text-sm font-bold shadow-2xl cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-400"
+              aria-label="Close Biophysical Lenses Studio">
+              ✕
+            </button>
+          </div>
+
+          <!-- Studio Navigation Switcher -->
+          <div class="flex flex-wrap items-center gap-2 p-1.5 bg-zinc-900/90 border border-zinc-800 rounded-2xl font-mono text-xs">
+            <div class="text-[10px] uppercase font-bold text-zinc-500 px-2">3D Biophysical Lenses:</div>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('cardiac')"
+              [class.bg-rose-500]="activeBiophysicalLensTab() === 'cardiac'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'cardiac'"
+              [class.text-rose-400]="activeBiophysicalLensTab() !== 'cardiac'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              ⚡ Cardiac Electrophysiology (V6)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('alveolar')"
+              [class.bg-cyan-500]="activeBiophysicalLensTab() === 'alveolar'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'alveolar'"
+              [class.text-cyan-400]="activeBiophysicalLensTab() !== 'alveolar'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🫁 Alveolar Gas Exchange (V7)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('hepatic')"
+              [class.bg-amber-500]="activeBiophysicalLensTab() === 'hepatic'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'hepatic'"
+              [class.text-amber-400]="activeBiophysicalLensTab() !== 'hepatic'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🔬 Hepatic Sinusoid &amp; Disse (V8)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('renal_3d')"
+              [class.bg-teal-500]="activeBiophysicalLensTab() === 'renal_3d'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'renal_3d'"
+              [class.text-teal-400]="activeBiophysicalLensTab() !== 'renal_3d'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🧬 Glomerular Sieve (V5)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('islet')"
+              [class.bg-emerald-500]="activeBiophysicalLensTab() === 'islet'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'islet'"
+              [class.text-emerald-400]="activeBiophysicalLensTab() !== 'islet'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🔬 Pancreatic Islet (V9)
+            </button>
+
+            <div class="h-4 w-px bg-zinc-700 mx-1 hidden sm:block"></div>
+            <div class="text-[10px] uppercase font-bold text-zinc-500 px-2">Clinical Phenotypers:</div>
+
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('kdigo_aki')"
+              [class.bg-blue-500]="activeBiophysicalLensTab() === 'kdigo_aki'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'kdigo_aki'"
+              [class.text-blue-400]="activeBiophysicalLensTab() !== 'kdigo_aki'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              💧 KDIGO AKI Phenotyper (P9)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('baroreflex')"
+              [class.bg-purple-500]="activeBiophysicalLensTab() === 'baroreflex'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'baroreflex'"
+              [class.text-purple-400]="activeBiophysicalLensTab() !== 'baroreflex'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🧠 Autonomic &amp; Baroreflex (P10)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('sepsis')"
+              [class.bg-rose-500]="activeBiophysicalLensTab() === 'sepsis'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'sepsis'"
+              [class.text-rose-400]="activeBiophysicalLensTab() !== 'sepsis'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🩸 Sepsis Shock SOFA-2 (P8)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('glycemic')"
+              [class.bg-emerald-500]="activeBiophysicalLensTab() === 'glycemic'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'glycemic'"
+              [class.text-emerald-400]="activeBiophysicalLensTab() !== 'glycemic'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🥞 Glycemic Minimal Model (P11)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('cyp450_ddi')"
+              [class.bg-rose-600]="activeBiophysicalLensTab() === 'cyp450_ddi'"
+              [class.text-white]="activeBiophysicalLensTab() === 'cyp450_ddi'"
+              [class.text-rose-400]="activeBiophysicalLensTab() !== 'cyp450_ddi'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              💊 CYP450 &amp; DDI Matrix (P12)
+            </button>
+          </div>
+
+          <!-- Active Panel Display -->
+          <div class="w-full">
+            @if (activeBiophysicalLensTab() === 'cardiac') {
+              <app-cardiac-electrophysiology-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'alveolar') {
+              <app-alveolar-capillary-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'hepatic') {
+              <app-hepatic-sinusoid-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'renal_3d') {
+              <app-glomerular-filtration-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'islet') {
+              <app-pancreatic-islet-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'kdigo_aki') {
+              <app-kdigo-aki-phenotyper-card />
+            } @else if (activeBiophysicalLensTab() === 'baroreflex') {
+              <app-autonomic-baroreflex-card />
+            } @else if (activeBiophysicalLensTab() === 'sepsis') {
+              <app-sepsis-shock-sofa-card />
+            } @else if (activeBiophysicalLensTab() === 'glycemic') {
+              <app-glycemic-minimal-model-card />
+            } @else if (activeBiophysicalLensTab() === 'cyp450_ddi') {
+              <app-cyp450-ddi-matrix-card />
+            }
+          </div>
+        </div>
+      </div>
+    }
+
     <!-- Ethical Patient Research Data Dividend Modal -->
     @if (showResearchDividendModal()) {
       <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Ethical Research Data Dividend">
@@ -1544,6 +1719,8 @@ export class AppComponent implements OnDestroy {
   showGreenRoomLoungeModal = signal(false);
   showAustereHudModal = signal(false);
   showKneeHologramModal = signal(false);
+  showBiophysicalLensesModal = signal(false);
+  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi'>('cardiac');
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
@@ -2555,7 +2732,7 @@ export class AppComponent implements OnDestroy {
     this.isDemoMode.set(true);
     this.state.isDemoMode.set(true);
     this.hasApiKey.set(true);
-    this.moeRouter.analysisViewMode.set('canvas');
+    this.moeRouter.analysisViewMode.set('lenses');
     // Load demo patient (Charles Darwin – p_charles_darwin)
     this.patientMgmt.selectPatient('p_charles_darwin');
     // Inject pre-baked analysis outputs (no API call) synchronously
