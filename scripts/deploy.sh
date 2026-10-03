@@ -30,6 +30,7 @@ gcloud builds submit --tag $IMAGE_TAG
 echo "🌐 2/3: Deploying to Cloud Run..."
 gcloud run deploy $SERVICE_NAME \
     --image $IMAGE_TAG \
+    --service-account="pocketgull-run@$PROJECT_ID.iam.gserviceaccount.com" \
     --platform managed \
     --region $REGION \
     --allow-unauthenticated \

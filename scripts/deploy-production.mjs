@@ -47,6 +47,9 @@ run(`node "${join(rootDir, 'scripts/pre-commit-check.cjs')}"`);
 console.log('• CycloneDX 1.6 SBOM Verification...');
 run(`node "${join(rootDir, 'scripts/generate_cyclonedx_sbom.mjs')}"`);
 
+console.log('• Google Cloud Security & IAM Architecture Audit (Frameworks 0–6)...');
+run(`node "${join(rootDir, 'scripts/audit-gcp-security-posture.mjs')}"`);
+
 console.log('• Compiling production Angular SSR bundle locally (Zero Cloud Compute)...');
 run('npm run build');
 
@@ -95,11 +98,12 @@ try {
 }
 
 // 4. Deploy to Google Cloud Run
-console.log('\n🚀 Step 4/5: Deploying image to Google Cloud Run (Scale-to-Zero & Zero Secret Injections)...');
+console.log('\n🚀 Step 4/5: Deploying image to Google Cloud Run (Scale-to-Zero & Least-Privilege SA)...');
 run(
   `gcloud run deploy ${SERVICE_NAME} ` +
   `--image ${deployTarget} ` +
   `--project=${TARGET_PROJECT} ` +
+  `--service-account=pocketgull-run@${TARGET_PROJECT}.iam.gserviceaccount.com ` +
   `--platform managed ` +
   `--region ${REGION} ` +
   `--allow-unauthenticated ` +
@@ -119,6 +123,7 @@ try {
     `gcloud run deploy pocket-gull-v2 ` +
     `--image ${deployTarget} ` +
     `--project=${TARGET_PROJECT} ` +
+    `--service-account=pocketgull-run@${TARGET_PROJECT}.iam.gserviceaccount.com ` +
     `--platform managed ` +
     `--region ${REGION} ` +
     `--allow-unauthenticated ` +

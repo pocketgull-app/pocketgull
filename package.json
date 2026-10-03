@@ -122,6 +122,7 @@
     "tippss:audit": "dart run scripts/tippss_schema_parity.dart",
     "taint:audit": "dart run scripts/phi_taint_boundary_linter.dart",
     "gcp:prune-storage": "node --no-deprecation ./scripts/apply-gcp-lifecycle-policies.mjs",
+    "gcp:audit": "node --no-deprecation scripts/audit-gcp-security-posture.mjs",
     "grants:sbir": "node --no-deprecation ./scripts/generate_sbir_grant_binder.mjs",
     "contracts:generate": "node --no-deprecation ./scripts/generate-api-contracts.mjs",
     "theme:install": "node --no-deprecation packages/pocketgull-theme/scripts/sideload.mjs",
