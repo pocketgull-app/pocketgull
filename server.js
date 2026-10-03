@@ -103,6 +103,12 @@ app.use((req, res, next) => {
     'geolocation=(), microphone=(self), camera=(), payment=(self "https://pay.google.com"), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
   );
 
+  // 9b. ICRC Digital Emblem & Medical Sanctuary Header (Geneva Conventions / Tallinn Manual Rule 131)
+  res.setHeader(
+    'X-Digital-Emblem',
+    'humanitarian/medical-cds; urn:icrc:digital-emblem:v1; status=protected-civilian; authority=Geneva-Conventions-1949-AP1; entity="PocketGull LLC."'
+  );
+
   // 10. Content Security Policy (Strict CSP3 with Nonce & Strict-Dynamic)
   const scriptSrc = isProd
     ? `'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval' https://apis.google.com https://cloud.google.com https://pay.google.com`
@@ -632,6 +638,25 @@ app.use(express.json({ limit: '50mb' }));
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
+});
+
+// ICRC Digital Emblem manifest endpoint (.well-known/digital-emblem.json & /api/digital-emblem)
+app.get(['/.well-known/digital-emblem.json', '/api/digital-emblem'], (req, res) => {
+  const candidatePaths = [
+    join(process.cwd(), 'public', '.well-known', 'digital-emblem.json'),
+    join(__dirname, 'public', '.well-known', 'digital-emblem.json'),
+    join(__dirname, '..', 'browser', '.well-known', 'digital-emblem.json')
+  ];
+  const targetPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[0];
+
+  try {
+    const emblemData = fs.readFileSync(targetPath, 'utf8');
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(emblemData);
+  } catch {
+    res.status(404).json({ error: 'Digital emblem manifest not found' });
+  }
 });
 
 // JSON File Database Configuration

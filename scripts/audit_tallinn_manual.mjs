@@ -66,13 +66,25 @@ check('Rule 131', 'Medical Sanctuary & Non-Device CDS Demarcation', () => {
   const hasSnomedCds = content.includes('706598000') || content.includes('Clinical decision support software');
   const hasDeviceDef = content.includes('exportFhirDeviceDefinition');
 
-  if (hasManufacturer && hasSnomedCds && hasDeviceDef) {
+  const emblemFile = path.join(rootDir, 'public', '.well-known', 'digital-emblem.json');
+  if (!fs.existsSync(emblemFile)) {
+    return { success: false, error: 'public/.well-known/digital-emblem.json manifest missing.' };
+  }
+  const emblemJson = JSON.parse(fs.readFileSync(emblemFile, 'utf8'));
+  const hasValidEmblem = emblemJson.entity === 'PocketGull LLC.' && emblemJson.emblemType === 'RedCrystal' && emblemJson.type === 'DigitalEmblem';
+
+  const serverJsFile = path.join(rootDir, 'server.js');
+  const serverTsFile = path.join(rootDir, 'src', 'server.ts');
+  const hasJsHeader = fs.existsSync(serverJsFile) && fs.readFileSync(serverJsFile, 'utf8').includes('X-Digital-Emblem');
+  const hasTsHeader = fs.existsSync(serverTsFile) && fs.readFileSync(serverTsFile, 'utf8').includes('X-Digital-Emblem');
+
+  if (hasManufacturer && hasSnomedCds && hasDeviceDef && hasValidEmblem && hasJsHeader && hasTsHeader) {
     return {
       success: true,
-      detail: 'FHIR R4 DeviceDefinition verified: PocketGull LLC. designated as civilian CDS software.',
+      detail: 'FHIR R4 DeviceDefinition & ICRC Digital Emblem Header (X-Digital-Emblem: Red Crystal) deployed.',
     };
   }
-  return { success: false, error: 'Missing FHIR DeviceDefinition or manufacturer attribution.' };
+  return { success: false, error: 'Missing FHIR DeviceDefinition, ICRC digital emblem manifest, or X-Digital-Emblem header.' };
 });
 
 // ── Check 2: Tallinn Rule 132 — Strict Humanitarian Isolation (Zero Combatant Code)
