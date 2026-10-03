@@ -54,7 +54,7 @@ export class YbocsService {
       const patient = this.patientMgmt.selectedPatient();
       untracked(() => {
         if (patient) {
-          const latestYDocs = patient.history.filter((h: any) => h.type === 'Y-BOCsAssessment') as any[];
+          const latestYDocs = (patient?.history || []).filter((h: any) => h?.type === 'Y-BOCsAssessment') as any[];
           if (latestYDocs.length > 0) {
             // Sort by date/timestamp and load latest
             const entry = latestYDocs[latestYDocs.length - 1];

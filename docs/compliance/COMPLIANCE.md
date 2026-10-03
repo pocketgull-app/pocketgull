@@ -1,7 +1,7 @@
 # 🛡️ Pocket-Gull Enterprise Healthcare Compliance & Regulatory Dossier
 
 > **Authoritative Compliance Dossier for HIPAA, FDA Non-Device CDS, ONC HTI-2 DSI, FDA GMLP, and EU AI Act Governance.**
-> **Entity**: Pocket-Gull Health Technologies (`pocketgull-app`)
+> **Entity**: PocketGull LLC. (`pocketgull-app`)
 > **Cloud Target**: Google Cloud Platform Project `gen-lang-client-0540208645`
 
 ---
@@ -87,5 +87,5 @@ Pocket-Gull adheres to the **10 Guiding Principles of Good Machine Learning Prac
 ---
 
 <p align="center">
-  <sub>© 2026 Pocket-Gull Health Technologies. Certified under OpenSSF Scorecard & SLSA Level 3 Standards.</sub>
+  <sub>© 2026 PocketGull LLC. Certified under OpenSSF Scorecard & SLSA Level 3 Standards.</sub>
 </p>

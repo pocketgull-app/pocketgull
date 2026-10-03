@@ -1,4 +1,4 @@
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, inject, output, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NetworkStateService } from '../services/network-state.service';
 import { PatientStateService } from '../services/patient-state.service';
@@ -16,6 +16,7 @@ import { NavigationShellService } from '../services/navigation-shell.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
 import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
 import { SocraticMultilingualTranslatorService } from '../services/socratic-multilingual-translator.service';
+import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../services/frontline-vernacular-voice.service';
 
 @Component({
   selector: 'app-main-header-nav',
@@ -263,6 +264,23 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
 
         <app-console-integrity-badge class="hidden 2xl:inline-flex" />
 
+        <!-- 📜 Institutional Compliance Certificate Trigger (Desktop XL) -->
+        <button 
+          type="button" 
+          id="btn-compliance-cert-trigger"
+          (click)="openComplianceCertificate.emit()"
+          aria-label="Open Institutional Statutory Compliance Certificate (HIPAA, FDA, NIST, MSA)"
+          [class.bg-emerald-600]="navShell?.showComplianceCertificateModal()"
+          [class.text-white]="navShell?.showComplianceCertificateModal()"
+          [class.border-emerald-700]="navShell?.showComplianceCertificateModal()"
+          [class.bg-emerald-50]="!navShell?.showComplianceCertificateModal()"
+          [class.dark:bg-emerald-950/40]="!navShell?.showComplianceCertificateModal()"
+          [class.text-emerald-800]="!navShell?.showComplianceCertificateModal()"
+          [class.dark:text-emerald-200]="!navShell?.showComplianceCertificateModal()"
+          class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">📜</span>
+          <span>Compliance</span>
+        </button>
 
         <!-- 🌟 Clinical Apps & Portals Hub Dropdown Button (Desktop) -->
         <div class="relative hidden md:block">
@@ -629,6 +647,16 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
             <span>Research</span>
           </button>
 
+          <!-- Frontline CHW Suite & Vernacular Audio Quick-Launcher (Desktop) -->
+          <button type="button"
+                  (click)="openChwSuite()"
+                  id="btn-desktop-chw-launcher"
+                  title="Open Frontline CHW Suite & Vernacular Audio Prompts (WHO/MSF)"
+                  class="group shrink-0 px-2.5 py-1.5 border border-emerald-300 dark:border-emerald-800/60 hover:border-emerald-500 hover:bg-emerald-50/60 dark:hover:bg-emerald-950/40 rounded-xs transition-colors text-emerald-800 dark:text-emerald-300 cursor-pointer flex items-center gap-1.5 bg-emerald-50/40 dark:bg-emerald-950/20 shadow-xs font-mono text-xs font-bold">
+            <span>🌿</span>
+            <span class="hidden xl:inline">Frontline CHW</span>
+          </button>
+
           <!-- Language Translation Switcher Dropdown (Desktop) -->
           <div class="relative">
             <button 
@@ -641,6 +669,9 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
               class="group shrink-0 px-2.5 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:border-teal-500/60 hover:bg-teal-50/50 dark:hover:bg-teal-950/30 rounded-xs transition-colors text-zinc-700 dark:text-zinc-200 cursor-pointer flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900 shadow-xs">
               <span class="text-xs">{{ translator.activeLanguage().flagEmoji }}</span>
               <span class="text-[11px] font-bold font-mono tracking-tight uppercase">{{ translator.selectedLanguageCode() }}</span>
+              @if (isFrontlineLanguage(translator.selectedLanguageCode())) {
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Frontline Vernacular Voice Prompts Active"></span>
+              }
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-400 transition-transform duration-200" [class.rotate-180]="isLangMenuOpen()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </button>
 
@@ -932,6 +963,9 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
               <span class="text-base">🌿</span> <span>Frontline CHW Suite (WHO/MSF)</span>
             </button>
 
+            <button type="button" (click)="openComplianceCertificate.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">📜</span> <span>Statutory Compliance Certificate</span>
+            </button>
 
             <button type="button" (click)="triggerSomaticGrounding.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🧘</span> <span>Somatic Grounding</span>
@@ -1022,6 +1056,35 @@ export class MainHeaderNavComponent {
   navShell = inject(NavigationShellService, { optional: true });
   rpmService = inject(CmsRpmSuperbillService, { optional: true });
   translator = inject(SocraticMultilingualTranslatorService, { optional: true }) ?? new SocraticMultilingualTranslatorService();
+  vernacularVoice = inject(FrontlineVernacularVoiceService, { optional: true });
+
+  constructor() {
+    try {
+      effect(() => {
+        const code = this.translator.selectedLanguageCode();
+        if (this.vernacularVoice && this.isFrontlineLanguage(code)) {
+          if (this.vernacularVoice.activeLanguageCode() !== code) {
+            this.vernacularVoice.setLanguage(code as VernacularLanguageCode);
+          }
+        }
+      });
+
+      effect(() => {
+        if (this.vernacularVoice) {
+          const vCode = this.vernacularVoice.activeLanguageCode();
+          if (this.translator.selectedLanguageCode() !== vCode) {
+            this.translator.setLanguage(vCode);
+          }
+        }
+      });
+    } catch {
+      // In isolated environments where ChangeDetectionScheduler is omitted from Injector.create
+    }
+  }
+
+  isFrontlineLanguage(code: string): boolean {
+    return ['en', 'es', 'hi', 'sw', 'ar'].includes(code);
+  }
 
   today = new Date();
   isMobileMenuOpen = signal<boolean>(false);

@@ -514,6 +514,20 @@ if (dartAvailable) {
   }
 }
 
+// Check 17: Automated Clinical Cyber Tabletop Resilience Exercise
+const tabletopScript = path.resolve(workspaceRoot, 'scripts/simulate_clinical_cyber_tabletop.mjs');
+const tabletopPassed = runNodeScript(tabletopScript, [], 'Automated Clinical Cyber Tabletop Resilience Exercise');
+if (!tabletopPassed) {
+  process.exit(1);
+}
+
+// Check 18: NATO CCDCOE Tallinn Manual 2.0/3.0 International Cyber Law & Medical Sanctuary Guard
+const tallinnScript = path.resolve(workspaceRoot, 'scripts/audit_tallinn_manual.mjs');
+const tallinnPassed = runNodeScript(tallinnScript, [], 'Tallinn Manual 2.0/3.0 Cyber Law & Medical Sanctuary Guard');
+if (!tallinnPassed) {
+  process.exit(1);
+}
+
 console.log('🎉 All pre-commit validation checks passed successfully. Safe to commit!\n');
 process.exit(0);
 

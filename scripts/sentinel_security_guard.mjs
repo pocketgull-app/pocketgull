@@ -61,6 +61,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'www.doctorswithoutborders.org',
   'msf.org',
   'www.msf.org',
+  'icrc.org',
+  'www.icrc.org',
   'kaggle.com',
   'www.kaggle.com',
   'cdn.tailwindcss.com',

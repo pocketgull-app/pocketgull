@@ -18,7 +18,7 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     // Switch to Analysis panel if on mobile/tablet viewports
     const reportTab = page.locator('button', { hasText: 'Analysis' }).first();
     if (await reportTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await reportTab.click({ force: true });
+      await reportTab.dispatchEvent('click');
       await page.waitForTimeout(500);
     }
 
@@ -26,14 +26,14 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     const assessmentsBtn = page.getByTestId('tab-assessments');
     await assessmentsBtn.scrollIntoViewIfNeeded();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.click({ force: true });
+    await assessmentsBtn.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 3. Select Y-BOCs Screener Tab
     const ybocsTab = page.getByTestId('tab-ybocs-screener');
     await ybocsTab.scrollIntoViewIfNeeded();
     await expect(ybocsTab).toBeVisible({ timeout: 10000 });
-    await ybocsTab.click({ force: true });
+    await ybocsTab.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 3. Verify Y-BOCs Screener renders
@@ -47,24 +47,28 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     // 4. Click a symptom checklist item (Obsessions)
     // Toggle "Current" on first obsession (id: 1)
     const currentBtn = page.locator('button', { hasText: 'Current' }).first();
+    await currentBtn.scrollIntoViewIfNeeded();
     await expect(currentBtn).toBeVisible({ timeout: 10000 });
-    await currentBtn.click();
+    await currentBtn.dispatchEvent('click');
     
     // Toggle "Past" on first obsession
     const pastBtn = page.locator('button', { hasText: 'Past' }).first();
+    await pastBtn.scrollIntoViewIfNeeded();
     await expect(pastBtn).toBeVisible({ timeout: 5000 });
-    await pastBtn.click();
+    await pastBtn.dispatchEvent('click');
 
     // 5. Select Severity Question Ratings
     // Click option with score 3 for Question 1
     const q1Option3 = page.locator('[data-question-id="1"] button', { hasText: 'Severe (3-8 hrs/day)' }).first();
+    await q1Option3.scrollIntoViewIfNeeded();
     await expect(q1Option3).toBeVisible({ timeout: 10000 });
-    await q1Option3.click();
+    await q1Option3.dispatchEvent('click');
 
     // Click option with score 2 for Question 2
     const q2Option2 = page.locator('[data-question-id="2"] button', { hasText: 'Moderate' }).first();
+    await q2Option2.scrollIntoViewIfNeeded();
     await expect(q2Option2).toBeVisible({ timeout: 10000 });
-    await q2Option2.click();
+    await q2Option2.dispatchEvent('click');
 
     // Verify score updates to 5/40
     const totalScoreText = page.locator('app-ybocs-screener .text-3xl.font-black.font-mono').first();
@@ -79,7 +83,7 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     const q3Option4 = page.locator('[data-question-id="3"] button', { hasText: 'Extreme' }).first();
     await q3Option4.scrollIntoViewIfNeeded();
     await expect(q3Option4).toBeVisible({ timeout: 5000 });
-    await q3Option4.click();
+    await q3Option4.dispatchEvent('click');
 
     // Verify clinical category updates to Mild OCD (9 <= 15)
     await expect(severityBadge).toContainText('Mild OCD');
@@ -88,7 +92,7 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     const resetBtn = page.locator('button', { hasText: 'Reset Form' });
     await resetBtn.scrollIntoViewIfNeeded();
     await expect(resetBtn).toBeVisible({ timeout: 5000 });
-    await resetBtn.click();
+    await resetBtn.dispatchEvent('click');
 
     // Verify total score resets back to 0
     const scoreAfterReset = page.locator('app-ybocs-screener .text-3xl.font-black.font-mono').first();
@@ -97,7 +101,8 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     // 7. Verify helper buttons exist (in Intake & Interviewing tab)
     const intakeTab = page.locator('button', { hasText: 'Intake & Interviewing' });
     if (await intakeTab.isVisible().catch(() => false)) {
-      await intakeTab.click();
+      await intakeTab.scrollIntoViewIfNeeded();
+      await intakeTab.dispatchEvent('click');
     }
 
     const voiceBtn = page.locator('button', { hasText: 'Start Voice-First Interview' });

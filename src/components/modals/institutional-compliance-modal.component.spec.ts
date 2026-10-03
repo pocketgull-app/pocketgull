@@ -19,7 +19,7 @@ describe('InstitutionalComplianceModalComponent Unit Suite', () => {
     expect(component).toBeTruthy();
     expect(component.complianceService).toBe(service);
     expect(component.activeCertificate().overallComplianceScore).toBe(100);
-    expect(component.activeCertificate().standards.length).toBe(11);
+    expect(component.activeCertificate().standards.length).toBe(14);
   });
 
   it('2. Copies certificate digest to clipboard', async () => {

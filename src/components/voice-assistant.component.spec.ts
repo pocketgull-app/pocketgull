@@ -377,8 +377,8 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
     expect(component.isSocraticDemystifierActive()).toBe(true);
   });
 
-  it('13. Bedside AAC & Pain Vocalizer: triggers vagal speech and dispatches clinical consult prompt', async () => {
-    const speakSpy = vi.spyOn(component.socraticVoice, 'speakWithVagalPacing').mockResolvedValue();
+  it('13. Bedside AAC & Pain Vocalizer: triggers vernacular speech and dispatches clinical consult prompt', async () => {
+    const speakSpy = vi.spyOn(component.vernacularVoice, 'speakPrompt').mockResolvedValue();
     const sendPromptSpy = vi.spyOn(component, 'sendQuickPrompt').mockImplementation(() => {});
 
     expect(component.showAacShelf()).toBe(false);
@@ -389,19 +389,39 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
     const face8 = component.aacFaces.find(f => f.score === 8)!;
     await component.selectAacFace(face8);
 
-    expect(speakSpy).toHaveBeenCalledWith(face8.speechPrompt);
+    const face8Prompt = component.vernacularVoice.getAacFacePrompt(8);
+    expect(speakSpy).toHaveBeenCalledWith(face8Prompt, 'en');
     expect(sendPromptSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[BEDSIDE AAC PAIN VOCALIZATION]: Patient reported Wong-Baker FACES pain score of 8/10')
+      expect.stringContaining('[BEDSIDE AAC PAIN VOCALIZATION (English (Plain))]: Patient reported Wong-Baker FACES pain score of 8/10')
     );
 
     // Trigger Bedside Need tile
     const waterTile = component.aacTiles.find(t => t.id === 'WATER')!;
     await component.triggerAacTile(waterTile);
 
-    expect(speakSpy).toHaveBeenCalledWith(waterTile.spokenText);
+    const waterPrompt = component.vernacularVoice.getAacTilePrompt('WATER');
+    expect(speakSpy).toHaveBeenCalledWith(waterPrompt, 'en');
     expect(sendPromptSpy).toHaveBeenCalledWith(
-      expect.stringContaining('[BEDSIDE AAC NEED ANNOUNCEMENT]: Could I please have some water, or a mouth swab?')
+      expect.stringContaining('[BEDSIDE AAC NEED ANNOUNCEMENT (English (Plain))]:')
     );
   });
+
+  it('14. Frontline Vernacular Voice: switches offline language and speaks multilingual prompts', async () => {
+    expect(component.vernacularVoice).toBeTruthy();
+    expect(component.isVernacularVoiceMenuOpen()).toBe(false);
+
+    component.isVernacularVoiceMenuOpen.set(true);
+    expect(component.isVernacularVoiceMenuOpen()).toBe(true);
+
+    component.selectVernacularLanguage('sw');
+    expect(component.vernacularVoice.activeLanguageCode()).toBe('sw');
+    expect(component.vernacularVoice.activeLanguage().nativeName).toBe('Kiswahili');
+    expect(component.isVernacularVoiceMenuOpen()).toBe(false);
+
+    const speakSpy = vi.spyOn(component.vernacularVoice, 'speakPrompt').mockResolvedValue();
+    await component.speakVernacular('Joto la mwili ni la kawaida.');
+    expect(speakSpy).toHaveBeenCalledWith('Joto la mwili ni la kawaida.');
+  });
 });
+
 

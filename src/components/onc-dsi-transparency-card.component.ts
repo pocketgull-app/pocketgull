@@ -2,7 +2,7 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OncDsiTransparencyService, IDsiModelCard } from '../services/onc-dsi-transparency.service';
 
-type DsiTab = 'metrics' | 'demographics' | 'governance' | 'contraindications';
+type DsiTab = 'metrics' | 'demographics' | 'equity' | 'governance' | 'contraindications';
 
 @Component({
   selector: 'app-onc-dsi-transparency-card',
@@ -62,6 +62,16 @@ type DsiTab = 'metrics' | 'demographics' | 'governance' | 'contraindications';
           class="px-3 py-2 text-xs font-bold border-b-2 border-transparent text-slate-600 dark:text-zinc-400 hover:text-indigo-600 transition-all min-h-[44px] shrink-0"
         >
           Cohort Demographics
+        </button>
+        <button
+          type="button"
+          (click)="activeTab.set('equity')"
+          [class.border-indigo-600]="activeTab() === 'equity'"
+          [class.text-indigo-600]="activeTab() === 'equity'"
+          [class.dark:text-indigo-400]="activeTab() === 'equity'"
+          class="px-3 py-2 text-xs font-bold border-b-2 border-transparent text-slate-600 dark:text-zinc-400 hover:text-indigo-600 transition-all min-h-[44px] shrink-0"
+        >
+          Global Health Equity
         </button>
         <button
           type="button"
@@ -149,6 +159,115 @@ type DsiTab = 'metrics' | 'demographics' | 'governance' | 'contraindications';
             <p class="text-[11px] text-slate-500 dark:text-zinc-400 italic">
               Validated across {{ activeCard().demographics.studySitesCount }} diverse clinical study sites in accordance with FDA GMLP demographic balance requirements.
             </p>
+          </div>
+        }
+
+        @case ('equity') {
+          <div class="space-y-4">
+            <!-- 4-Pillar Global Equity Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Pillar 1: Global Multi-Ancestry Genomic Representation -->
+              <div class="p-4 bg-slate-50 dark:bg-zinc-800/60 rounded-xl border border-slate-200/60 dark:border-zinc-700/60 space-y-2">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <span>🌍 Multi-Ancestry Genomic Spectrum</span>
+                  </h4>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold">1000G & H3Africa</span>
+                </div>
+                @if (activeCard().demographics.globalAncestry; as ga) {
+                  <ul class="text-xs space-y-1 text-slate-700 dark:text-zinc-300">
+                    <li class="flex justify-between"><span>Sub-Saharan African:</span> <strong>{{ ga.subSaharanAfricanPct }}%</strong></li>
+                    <li class="flex justify-between"><span>South Asian:</span> <strong>{{ ga.southAsianPct }}%</strong></li>
+                    <li class="flex justify-between"><span>East &amp; Southeast Asian:</span> <strong>{{ ga.eastSoutheastAsianPct }}%</strong></li>
+                    <li class="flex justify-between"><span>Indigenous &amp; First Nations:</span> <strong>{{ ga.indigenousFirstNationsPct }}%</strong></li>
+                    <li class="flex justify-between"><span>Latin American Admixed:</span> <strong>{{ ga.latinAmericanAdmixedPct }}%</strong></li>
+                    <li class="flex justify-between"><span>Middle Eastern / North African (MENA):</span> <strong>{{ ga.menaPct }}%</strong></li>
+                    <li class="flex justify-between"><span>European:</span> <strong>{{ ga.europeanPct }}%</strong></li>
+                  </ul>
+                }
+              </div>
+
+              <!-- Pillar 2: Optical Sensor & Melanin Equity -->
+              <div class="p-4 bg-slate-50 dark:bg-zinc-800/60 rounded-xl border border-slate-200/60 dark:border-zinc-700/60 space-y-2">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                    <span>🔬 Optical Sensor &amp; Melanin Calibration</span>
+                  </h4>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold">Monk Scale</span>
+                </div>
+                @if (activeCard().demographics.opticalEquity; as oe) {
+                  <ul class="text-xs space-y-1.5 text-slate-700 dark:text-zinc-300">
+                    <li class="flex justify-between"><span>Fitzpatrick Types IV–VI:</span> <strong class="text-emerald-600 dark:text-emerald-400">{{ oe.fitzpatrickIVtoVIPct }}%</strong></li>
+                    <li class="flex justify-between"><span>Monk Skin Tone (MST):</span> <strong>{{ oe.monkSkinToneCoverage }}</strong></li>
+                    <li class="flex justify-between"><span>rPPG Pulse Max RMSE:</span> <strong class="font-mono">{{ oe.rPpgMaxRmsePct }}% (Parity)</strong></li>
+                    <li class="flex items-center justify-between">
+                      <span>Occult Hypoxemia Bias Guard:</span>
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">✓ ACTIVE</span>
+                    </li>
+                    <li class="flex items-center justify-between">
+                      <span>PulseOx Red/IR Dynamic Normalization:</span>
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">✓ CALIBRATED</span>
+                    </li>
+                  </ul>
+                }
+              </div>
+
+              <!-- Pillar 3: Pharmacogenomic Ancestry Coverage -->
+              <div class="p-4 bg-slate-50 dark:bg-zinc-800/60 rounded-xl border border-slate-200/60 dark:border-zinc-700/60 space-y-2">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400 flex items-center gap-1.5">
+                    <span>🧬 CPIC Pharmacogenomic Safeguards</span>
+                  </h4>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-100 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-bold">Race-Free Posology</span>
+                </div>
+                @if (activeCard().demographics.pharmacogenomics; as pgx) {
+                  <ul class="text-xs space-y-1 text-slate-700 dark:text-zinc-300">
+                    <li class="flex items-center justify-between">
+                      <span>CYP2C19 *2/*3 Clopidogrel Safeguard:</span>
+                      <span class="text-emerald-500 font-bold">✓ Enforced</span>
+                    </li>
+                    <li class="flex items-center justify-between">
+                      <span>CYP2D6 Ultrarapid Opioid Guard:</span>
+                      <span class="text-emerald-500 font-bold">✓ Enforced</span>
+                    </li>
+                    <li class="flex items-center justify-between">
+                      <span>HLA-B*15:02 Stevens-Johnson Screen:</span>
+                      <span class="text-emerald-500 font-bold">✓ Enforced</span>
+                    </li>
+                    <li class="flex items-center justify-between">
+                      <span>HLA-B*58:01 SCAR Allopurinol Screen:</span>
+                      <span class="text-emerald-500 font-bold">✓ Enforced</span>
+                    </li>
+                    <li class="flex items-center justify-between">
+                      <span>G6PD Hemolysis Protection:</span>
+                      <span class="text-emerald-500 font-bold">✓ Enforced</span>
+                    </li>
+                  </ul>
+                }
+              </div>
+
+              <!-- Pillar 4: Algorithmic Fairness Audit -->
+              <div class="p-4 bg-slate-50 dark:bg-zinc-800/60 rounded-xl border border-slate-200/60 dark:border-zinc-700/60 space-y-2">
+                <div class="flex items-center justify-between">
+                  <h4 class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                    <span>⚖️ Algorithmic Fairness &amp; Parity</span>
+                  </h4>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold">EEOC / HHS 1557</span>
+                </div>
+                @if (activeCard().demographics.fairnessAudit; as fa) {
+                  <ul class="text-xs space-y-1.5 text-slate-700 dark:text-zinc-300">
+                    <li class="flex justify-between"><span>Equalized Odds FPR Disparity:</span> <strong class="font-mono text-emerald-600 dark:text-emerald-400">±{{ fa.equalizedOddsFprDisparityPct }}%</strong></li>
+                    <li class="flex justify-between"><span>Demographic Parity Ratio:</span> <strong class="font-mono text-emerald-600 dark:text-emerald-400">{{ fa.demographicParityRatio }} (&gt; 0.80)</strong></li>
+                    <li class="flex justify-between"><span>Predictive Rate Parity:</span> <strong class="font-mono">{{ fa.predictiveRateParityPct }}%</strong></li>
+                    <li class="flex items-center justify-between">
+                      <span>4/5ths Rule Disparate Impact:</span>
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">✓ PASSED</span>
+                    </li>
+                    <li class="flex justify-between"><span>Min Subgroup N:</span> <strong class="font-mono">{{ fa.minSubgroupCohortSize }} participants</strong></li>
+                  </ul>
+                }
+              </div>
+            </div>
           </div>
         }
 

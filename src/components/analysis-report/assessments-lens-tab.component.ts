@@ -147,12 +147,11 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
   `
 })
 export class AssessmentsLensTabComponent {
-  private cdr = inject(ChangeDetectorRef);
+  private cdr = inject(ChangeDetectorRef, { optional: true });
   screenerTab = signal<ScreenerSubTab>('suite');
 
   setScreenerTab(tab: ScreenerSubTab): void {
     this.screenerTab.set(tab);
-    this.cdr.markForCheck();
-    this.cdr.detectChanges();
+    this.cdr?.markForCheck();
   }
 }

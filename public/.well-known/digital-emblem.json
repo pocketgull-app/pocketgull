@@ -1,0 +1,26 @@
+{
+  "$schema": "https://www.icrc.org/ns/digital-emblem/v1/schema.json",
+  "@context": "https://www.icrc.org/ns/digital-emblem/v1",
+  "type": "DigitalEmblem",
+  "emblemType": "RedCrystal",
+  "emblemStandard": "ICRC ADEM-v1 (Ad-hoc Digital Emblem Framework)",
+  "category": "CivilianMedicalUnit",
+  "entity": "PocketGull LLC.",
+  "jurisdiction": "Portland, OR, United States",
+  "legalBasis": [
+    "Geneva Convention I (1949) Article 19",
+    "Geneva Convention IV (1949) Article 18",
+    "Additional Protocol I (1977) Article 12",
+    "Additional Protocol III (2005) Article 2 (Red Crystal)",
+    "NATO CCDCOE Tallinn Manual 2.0 / 3.0 Rules 131-134, 141"
+  ],
+  "technicalDesignation": "Clinical Decision Support Software & Frontline Triage Engine",
+  "regulatoryDemarcation": "21st Century Cures Act § 3060 Non-Device CDS",
+  "status": "PROTECTED_CIVILIAN_NON_COMBATANT",
+  "digitalEmblemUrn": "urn:icrc:digital-emblem:v1:pocketgull-app",
+  "httpHeader": "X-Digital-Emblem: humanitarian/medical-cds; urn:icrc:digital-emblem:v1; status=protected-civilian; authority=Geneva-Conventions-1949-AP1; entity=\"PocketGull LLC.\"",
+  "dnsTxtValidationRecord": "_emblem.pocketgull.app",
+  "dnsTxtRecordContent": "v=adem1; t=medical-unit; a=icrc; s=protected; e=PocketGull LLC.",
+  "contact": "dpo@pocketgull.app",
+  "issuedTimestamp": "2026-10-03T11:48:00Z"
+}

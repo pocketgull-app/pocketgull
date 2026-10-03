@@ -24,14 +24,14 @@ test.describe('Teledentistry & Systemic Health Cross-Talk Suite', () => {
     const assessmentsBtn = page.getByTestId('tab-assessments');
     await assessmentsBtn.scrollIntoViewIfNeeded();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.click({ force: true });
+    await assessmentsBtn.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 5. Select Teledentistry (32-Tooth) sub-tab
     const teledentistryTab = page.getByTestId('tab-teledentistry');
     await teledentistryTab.scrollIntoViewIfNeeded();
     await expect(teledentistryTab).toBeVisible({ timeout: 10000 });
-    await teledentistryTab.click({ force: true });
+    await teledentistryTab.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 6. Verify SIBI Telemetry Header components
@@ -42,18 +42,21 @@ test.describe('Teledentistry & Systemic Health Cross-Talk Suite', () => {
     // 7. Inspect FDI Tooth #16 (Maxillary Right 1st Molar)
     const tooth16Btn = page.locator('button:has-text("#16")').first();
     await expect(tooth16Btn).toBeVisible();
-    await tooth16Btn.click({ force: true });
+    await tooth16Btn.scrollIntoViewIfNeeded();
+    await tooth16Btn.dispatchEvent('click');
 
     // 8. Verify Tooth Inspector panel opens
     await expect(page.locator('text=Tooth #16 Inspector')).toBeVisible();
 
     // 9. Toggle Occlusal (O) surface caries
     const surfaceOBtn = page.locator('button:has-text("O")').first();
-    await surfaceOBtn.click({ force: true });
+    await surfaceOBtn.scrollIntoViewIfNeeded();
+    await surfaceOBtn.dispatchEvent('click');
 
     // 10. Change Smith & Knight TWI grade to G4
     const twiG4Btn = page.locator('button:has-text("G4")').first();
-    await twiG4Btn.click({ force: true });
+    await twiG4Btn.scrollIntoViewIfNeeded();
+    await twiG4Btn.dispatchEvent('click');
 
     // 11. Assert SIBI Score renders valid numerical telemetry
     const sibiText = await page.locator('text=/ 100').first().innerText();

@@ -48,11 +48,17 @@ Pocket-Gull is a real-time medical Care Plan Strategy and Live AI Consult engine
   5. `Mozilla HTTP Observatory 125 Security Guard` (`npm run observatory:audit`)
   6. `IEEE P2933™ TIPPSS Cross-Language Parity Guard` (`npm run tippss:audit`)
   7. `HIPAA §164.514 Safe Harbor PHI Taint Boundary Guard` (`npm run taint:audit`)
+  8. `Google Cloud Security & IAM Architecture Guard` (`npm run gcp:audit`)
   If any test or security check fails, the deployment must immediately abort.
 - **Mozilla HTTP Observatory 125 Standard (Grade A+)**: All web entrypoints (Express, SSR, FastAPI sidecars, custom domains) MUST maintain a score of 125 / 100 on Mozilla HTTP Observatory:
   - **Middleware #1 Rule**: Security headers MUST execute as the very first middleware before any route, domain dispatcher, or static handler to eliminate route short-circuiting.
   - **Zero 'unsafe-inline' / 'unsafe-eval'**: Production CSP MUST enforce per-request nonces + `'strict-dynamic'` and `default-src 'none'`. Never insert `'unsafe-inline'` into production script-src.
   - **Mandatory Bonus Suite (+25 pts)**: Always configure `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload` (+10), `Cross-Origin-Opener-Policy: same-origin` (+5), `Cross-Origin-Resource-Policy: same-origin` (+5), and `Referrer-Policy: strict-origin-when-cross-origin` (+5).
+- **Google Cloud Security & IAM Architecture Standard (Grade A+ 100/100)**: All cloud resources in `gen-lang-client-0540208645` MUST strictly adhere to the 7 Google Cloud architecture frameworks (Docs [0]–[6]):
+  - **Workload SA Least Privilege**: Cloud Run services MUST always deploy with `--service-account=pocketgull-run@gen-lang-client-0540208645.iam.gserviceaccount.com`. Never run workloads under the default Compute Engine service account. The default compute SA must have zero primitive `roles/editor`, `roles/run.admin`, or `roles/bigquery.admin` bindings.
+  - **100% Keyless Workload Identity Federation (WIF)**: All CI/CD pipelines (GitHub Actions) MUST authenticate keylessly via WIF. Zero static user-managed JSON service account keys are permitted anywhere in the project or repository.
+  - **Two-Tier API Key Hardening**: Every Google Cloud API key MUST enforce explicit `apiTargets` restrictions. Browser-facing keys MUST enforce HTTP referrer restrictions (`allowedReferrers`). Server-side LLM credentials MUST be stored in GCP Secret Manager and retrieved dynamically in memory.
+  - **Sovereign Organization Ownership**: Primary ownership is held by the Google Workspace organizational identity `dpo@pocketgull.app` with full administrative suites across AI Platform, BigQuery, Storage, Cloud Run, Logging, and Secret Manager.
 - **Deployment Strategy**: All deployments MUST target the `gen-lang-client-0540208645` Google Cloud project.
 - **Carbon-Aware GreenOps & Lightweight Deployment Standard**:
   - **Asset Offloading to `font.pocketgull.app` CDN**: Heavy desktop font binaries (`*.ttf`, ~121 MB) and unreferenced glyph cuts MUST be excluded from all web container images via `.gcloudignore` and `.dockerignore`. All web `@font-face` rules MUST prioritize `https://font.pocketgull.app/fonts/woff2/...` (Fastly CDN edge cached) with minimal local WOFF2 fallbacks (~4 MB).

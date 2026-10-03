@@ -121,5 +121,16 @@ describe('MainHeaderNavComponent', () => {
     component.toggleResearchTab();
     expect(mockPatientState.toggleResearchFrame).toHaveBeenCalledWith(true);
   });
+
+  it('should identify frontline languages (en, es, hi, sw, ar) for vernacular voice prompt integration', () => {
+    expect(component.isFrontlineLanguage('en')).toBe(true);
+    expect(component.isFrontlineLanguage('es')).toBe(true);
+    expect(component.isFrontlineLanguage('hi')).toBe(true);
+    expect(component.isFrontlineLanguage('sw')).toBe(true);
+    expect(component.isFrontlineLanguage('ar')).toBe(true);
+    expect(component.isFrontlineLanguage('fr')).toBe(false);
+    expect(component.isFrontlineLanguage('de')).toBe(false);
+  });
 });
+
 
