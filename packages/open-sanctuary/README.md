@@ -12,7 +12,7 @@ Modern life and digital interfaces are fraught with cognitive overload, fragment
 **Open Sanctuary** is an uncompromising public-benefit tool:
 - **Zero Dependencies**: Pure HTML5 Canvas 2D and native Web Audio API.
 - **Zero Tracking / 100% Client-Side**: No cloud egress, no telemetry, no cookies, no paywalls.
-- **Scientifically Grounded**: Incorporates empirical acoustics, Solfeggio frequencies, 432Hz Pythagorean natural harmonic tuning, and **Rachel Nabors 0.1 Hz bio-rhythmic parasympathetic breathing pacing**.
+- **Scientifically Grounded**: Incorporates empirical acoustics, Solfeggio frequencies, 432Hz Pythagorean natural harmonic tuning, and **0.1 Hz autonomic vagal parasympathetic breathing pacing**.
 - **Open Hardware & Software Dual-License**: Dual-licensed under **Apache-2.0** and **CERN Open Hardware License (CERN OHL-S v2)**.
 
 ---
@@ -86,7 +86,7 @@ renderer.startAnimation();
 - **Chladni Plate Nodal Simulation**: Particle dynamics simulating nodal lines on vibrating plates governed by 2D wave equations.
 - **Lissajous Phase Orbits**: Real-time phase interference visualizing the exact stereo binaural relationship.
 - **Sacred Mandala Geometry**: Golden ratio ($\phi \approx 1.618$) harmonic petals.
-- **0.1 Hz Rachel Nabors Parasympathetic Breathing Ring**: 10-second visual bio-rhythmic guide (4s expansion / 6s contraction) to ease screen apnea.
+- **0.1 Hz Autonomic Vagal Parasympathetic Breathing Ring**: 10-second visual bio-rhythmic guide (4s expansion / 6s contraction) to ease screen apnea.
 - **🥽 Google Cardboard VR (Side-by-Side Stereoscopic Viewport)**: Zero-library 3D immersive entrainment with parallax offset for phone headsets.
 
 ### 5. 🌙 Sleep Chronobiology & Contactless Respiration Suite (`SleepEngine`)

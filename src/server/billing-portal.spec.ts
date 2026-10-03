@@ -63,4 +63,30 @@ describe('Google Cloud Billing Portal & Monetization Suite', () => {
     expect(setupHtml).toContain('Group Clinic Onboarding Bundle');
     expect(setupHtml).toContain('$1250');
   });
+
+  it('embeds the full Stewardship & US GAAP ASC 958 Functional Expenses section', () => {
+    const html = renderCheckoutPortalHtml('founder_lifetime');
+    expect(html).toContain('How Software Income is Used to Further Sovereign Tribal Goals');
+    expect(html).toContain('US GAAP Not-for-Profit Functional Allocation (ASC 958-205)');
+    expect(html).toContain('CARE/OCAP Indigenous Data Sovereignty standards');
+    expect(html).toContain('Direct Public Benefit');
+    expect(html).toContain('85.0%');
+    expect(html).toContain('System Integrity');
+    expect(html).toContain('10.0%');
+    expect(html).toContain('Statutory Compliance');
+    expect(html).toContain('5.0%');
+    expect(html).toContain('Statement of Functional Expenses (US GAAP ASC 958-205)');
+    expect(html).toContain('Simulate Your Practice\'s Monthly Contribution');
+    expect(html).toContain('updateGaapCalculations');
+    expect(html).toContain('downloadGaapCsvStatement');
+    expect(html).toContain('1. Tribal Health Sovereignty &amp; Indigenous Vector Defense');
+    expect(html).toContain('2. Sovereign Patient Research Data Dividends');
+    expect(html).toContain('3. Seven Generations Open-Source Seed &amp; Codex Preservation');
+    expect(html).toContain('4. Systems Engineering &amp; Zero-Trust Cryptography');
+    expect(html).toContain('5. Governance, Statutory Compliance &amp; CPA Audit');
+    expect(html).toContain('Independent CPA &amp; Tribal Data Audit Attestation');
+    expect(html).toContain('Unmodified Clean Opinion');
+    expect(html).toContain('SIG-TRIBAL-CUSTODIAN-0x9F4C2A');
+    expect(html).toContain('SIG-EXECUTIVE-TREASURY-0x3B88E1');
+  });
 });

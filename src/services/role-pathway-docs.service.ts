@@ -627,7 +627,7 @@ export class RolePathwayDocsService {
           targetTabId: 'soundscape',
           clinicalObjective: 'Alleviate caregiver panic and maternal stress through soothing acoustic bio-rhythmic pacing during frontline encounters.',
           keyOutputs: ['Parasympathetic Heart Rate Calming', 'Caregiver Reassurance Rhythm', 'Zero-Anxiety Field Guidance'],
-          evidenceOrStandard: 'Rachel Nabors Ethical Motion & Autonomic Vagal Regulation',
+          evidenceOrStandard: 'Autonomic Vagal Regulation & WCAG Reduced Motion Standards',
           statusBadge: 'Stage 4: Caregiver Comfort'
         },
         {

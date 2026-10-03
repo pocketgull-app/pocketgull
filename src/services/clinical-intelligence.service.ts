@@ -45,7 +45,7 @@ export interface INodeContext {
     timestamp: Date;
 }
 
-export type AnalysisLens = 'Summary Overview' | 'Functional Protocols' | 'Nutrition' | 'Monitoring & Follow-up' | 'Patient Education' | 'Precision Nutrients' | 'Treatment Matrix' | 'PhysioNet Telemetry' | 'Maternal & Postpartum' | 'Grow-Thyself Education' | 'Epigenetic Longevity' | 'Pre-Conception & Family Health' | 'Chronobiology Matrix' | 'Functional Medicine Matrix' | 'Seven Generations Stewardship' | 'Console Debugging & Integrity' | 'Performance Optimization & Web Vitals' | 'Teledentistry & Systemic Health' | 'RSNA Knee Abnormality' | 'Physical Genomics' | 'Physical Genomics & Genome Engineering' | 'Tri-Paradigm Medicine' | 'Environmental Exposomics & Toxicology' | 'Global Health & WHO Initiatives' | 'Skeptical Epistemology & Socratic Audit';
+export type AnalysisLens = 'Summary Overview' | 'Functional Protocols' | 'Nutrition' | 'Monitoring & Follow-up' | 'Patient Education' | 'Precision Nutrients' | 'Treatment Matrix' | 'PhysioNet Telemetry' | 'Maternal & Postpartum' | "Men's Health & Andrology" | "Gender-Affirming Care & Transition" | 'Grow-Thyself Education' | 'Epigenetic Longevity' | 'Pre-Conception & Family Health' | 'Chronobiology Matrix' | 'Functional Medicine Matrix' | 'Seven Generations Stewardship' | 'Console Debugging & Integrity' | 'Performance Optimization & Web Vitals' | 'Teledentistry & Systemic Health' | 'RSNA Knee Abnormality' | 'Physical Genomics' | 'Physical Genomics & Genome Engineering' | 'Tri-Paradigm Medicine' | 'Environmental Exposomics & Toxicology' | 'Global Health & WHO Initiatives' | 'Skeptical Epistemology & Socratic Audit';
 
 export interface IClinicalMetrics {
     complexity: number; // 0-10

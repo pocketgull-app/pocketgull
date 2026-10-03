@@ -15,6 +15,9 @@ import { SummaryOverviewLensTabComponent } from './summary-overview-lens-tab.com
 import { TeledentistrySystemicLensComponent } from './teledentistry-systemic-lens.component';
 import { TriParadigmIntegrativeLensTabComponent } from './tri-paradigm-integrative-lens-tab.component';
 
+import { MensHealthLensTabComponent } from './mens-health-lens-tab.component';
+import { GenderAffirmingLensTabComponent } from './gender-affirming-lens-tab.component';
+
 export * from './assessments-lens-tab.component';
 export * from './chronobiology-matrix-lens-tab.component';
 export * from './diagnostics-lens-tab.component';
@@ -22,8 +25,10 @@ export * from './emt-handoff-lens-tab.component';
 export * from './epigenetic-longevity-lens-tab.component';
 export * from './functional-circadian-synergy-bridge.component';
 export * from './functional-medicine-matrix-lens-tab.component';
+export * from './gender-affirming-lens-tab.component';
 export * from './interventions-lens-tab.component';
 export * from './maternal-postpartum-lens-tab.component';
+export * from './mens-health-lens-tab.component';
 export * from './nutritional-bypass-lens-tab.component';
 export * from './patient-education-lens-tab.component';
 export * from './seven-generations-stewardship-lens-tab.component';
@@ -44,8 +49,10 @@ export const ANALYSIS_LENS_TAB_COMPONENTS = [
   EpigeneticLongevityLensTabComponent,
   FunctionalCircadianSynergyBridgeComponent,
   FunctionalMedicineMatrixLensTabComponent,
+  GenderAffirmingLensTabComponent,
   InterventionsLensTabComponent,
   MaternalPostpartumLensTabComponent,
+  MensHealthLensTabComponent,
   NutritionalBypassLensTabComponent,
   PatientEducationLensTabComponent,
   SevenGenerationsStewardshipLensTabComponent,
@@ -54,4 +61,5 @@ export const ANALYSIS_LENS_TAB_COMPONENTS = [
   TeledentistrySystemicLensComponent,
   TriParadigmIntegrativeLensTabComponent,
 ] as const;
+
 

@@ -54,7 +54,7 @@ describe('CircadianAlertGuardService (Pillar 2: Cyberchondria & Nocebo Preventio
     expect(bpContext.calmingExplanation).toContain('white coat effect');
   });
 
-  it('5. Provides Rachel Nabors 0.1 Hz vagal-resonant breathing cadence', () => {
+  it('5. Provides 0.1 Hz vagal-resonant breathing cadence', () => {
     const cadence = service.getParasympatheticBreathingCadence();
     expect(cadence.frequencyHz).toBe(0.1);
     expect(cadence.cycleDurationSeconds).toBe(10);

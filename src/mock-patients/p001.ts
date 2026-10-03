@@ -185,5 +185,24 @@ export const p001: IPatient = {
   ],
   "dynamicNutrients": [],
   "clinicalNotes": [],
-  "checklist": []
+  "checklist": [],
+  "environmentalIndex": {
+    "aqi": 68,
+    "pm25": "21.5 µg/m³",
+    "ozone": "44 ppb",
+    "pollenDensity": "Moderate",
+    "heatIndex": "88°F",
+    "vulnerabilityWarning": "Urban heat island microclimate and elevated PM2.5 increase sympathetic vascular tone and endothelial glucotoxicity."
+  },
+  "oknProfile": {
+    "isVerified": true,
+    "badgeLabel": "[🏛️ NSF OKN Verified]",
+    "participatingAgencies": ["EPA", "NIH", "WHO"],
+    "traversedPathSummary": "EPA Microclimate & PM2.5 Index (EPA) <-> NIH MeSH D024821 Metabolic Syndrome & Endothelial Glucotoxicity (NIH) <-> WHO SDG 3.4 Metformin Essential Benchmark (WHO)",
+    "groundedTargetConcept": "Metabolic Syndrome & Endothelial Glucotoxicity",
+    "auditTrailHash": "sha256:d8102a0a20a6572eb0fbb9c8bb256fef38b1f868",
+    "cochraneEvidenceTier": "Level A (Replicated RCTs)",
+    "epaRegistryId": "110000345678",
+    "pmidCitation": "PMID:11884740"
+  }
 };

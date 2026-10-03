@@ -4,6 +4,17 @@ name: Deployment Pipeline (Cloud Run)
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'documentation/**'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'typefaces_vault/**'
+      - 'brand/**'
+      - 'scratch/**'
+      - '.agents/**'
+      - 'packages/pocketgull-theme/**'
   workflow_dispatch:
 
 permissions:
@@ -34,7 +45,7 @@ jobs:
           cache: 'npm'
           
       - name: Install Dependencies
-        run: npm ci --legacy-peer-deps --prefer-offline
+        run: npm ci --legacy-peer-deps
         
       - name: Security Audit
         run: npm audit --json > audit.json || true

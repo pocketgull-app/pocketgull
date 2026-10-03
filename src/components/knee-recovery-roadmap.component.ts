@@ -24,7 +24,7 @@ import {
       class="relative w-full p-5 sm:p-7 bg-[#09090b] text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl overflow-hidden font-sans select-none"
       aria-labelledby="knee-roadmap-heading"
     >
-      <!-- Rachel Nabors 10s Parasympathetic Ambient Glow -->
+      <!-- 10s Autonomic Vagal Parasympathetic Ambient Glow -->
       <div
         class="absolute -top-32 -right-32 w-80 h-80 rounded-full blur-3xl pointer-events-none transition-opacity duration-1000"
         [ngClass]="{
@@ -996,7 +996,7 @@ export class KneeRecoveryRoadmapComponent implements OnDestroy {
     try {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.92; // Rachel Nabors parasympathetic pacing
+      utterance.rate = 0.92; // Parasympathetic speech cadence pacing
       utterance.pitch = 1.0;
       utterance.lang = 'en-US';
       window.speechSynthesis.speak(utterance);

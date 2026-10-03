@@ -31,6 +31,7 @@ export class NavigationShellService {
   readonly showAtlasModal = signal<boolean>(false);
   readonly showChwSuiteModal = signal<boolean>(false);
   readonly showSpecialistReferralModal = signal<boolean>(false);
+  readonly showMultilingualTerminalModal = signal<boolean>(false);
   readonly activeGameId = signal<string>('luminaries');
 
   /** Developer Mode: Gates investor pitch portals, experimental showcases, and auxiliary demos. Defaults to false. */
@@ -134,6 +135,9 @@ export class NavigationShellService {
   public openSpecialistReferralHub(): void { this.showSpecialistReferralModal.set(true); }
   public closeSpecialistReferralHub(): void { this.showSpecialistReferralModal.set(false); }
 
+  public openMultilingualTerminal(): void { this.showMultilingualTerminalModal.set(true); }
+  public closeMultilingualTerminal(): void { this.showMultilingualTerminalModal.set(false); }
+
   /**
    * Resets active shell tab to 'chart', closes all active modal overlays, and returns home.
    */
@@ -159,6 +163,7 @@ export class NavigationShellService {
     this.showAtlasModal.set(false);
     this.showChwSuiteModal.set(false);
     this.showSpecialistReferralModal.set(false);
+    this.showMultilingualTerminalModal.set(false);
   }
 }
 

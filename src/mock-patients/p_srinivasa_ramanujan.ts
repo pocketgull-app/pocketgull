@@ -48,6 +48,24 @@ export const p_srinivasa_ramanujan: IPatient = {
     { id: '3', name: 'Zinc Carnosine (PepZin GI)', value: '75mg BID' },
     { id: '4', name: 'Tinospora cordifolia (Guduchi)', value: '500mg BID' }
   ],
+  environmentalIndex: {
+    aqi: 64,
+    pm25: "18.2 µg/m³",
+    ozone: "24 ppb",
+    pollenDensity: "Low",
+    heatIndex: "48°F",
+    vulnerabilityWarning: "Severe damp-cold British climate accelerating Vishamagni metabolic impairment and gut barrier permeability."
+  },
+  oknProfile: {
+    isVerified: true,
+    badgeLabel: "[🏛️ NSF OKN Verified]",
+    participatingAgencies: ["NIH", "EPA"],
+    traversedPathSummary: "Non-Alcoholic Fatty Liver (NIH) <-> PPAR-Alpha (NIH) <-> PFOA Xenobiotic Burden (EPA)",
+    groundedTargetConcept: "Non-Alcoholic Fatty Liver Disease",
+    auditTrailHash: "sha256:63ee888573a0733aba747abe46fab46ab902d18",
+    cochraneEvidenceTier: "Level B (Cohort / Preliminary)",
+    pmidCitation: "Costello E et al. EHP 2022"
+  },
   oxidativeStressMarkers: [
     { id: '1', name: 'Fecal Calprotectin', value: '185 mcg/g (Gut Mucosal Inflammation)' },
     { id: '2', name: 'Intestinal Permeability (Zonulin)', value: '64 ng/mL (Elevated Leaky Gut)' }

@@ -1,7 +1,7 @@
 /**
  * PocketGull Bio-Rhythmic Typography Service
  * 
- * Bridges clinical vagal autonomic pacing (0.1 Hz Rachel Nabors Parasympathetic Standard)
+ * Bridges clinical vagal autonomic pacing (0.1 Hz Autonomic Vagal Resonance Standard)
  * to live CSS variable font axes (--pg-live-wght, --pg-live-opsz, --pg-live-breathe-scale).
  * 
  * Architecture:

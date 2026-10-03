@@ -11,7 +11,7 @@ import { PatientTrajectoryComponent } from '../patient-trajectory.component';
   imports: [CommonModule, FormsModule, PatientTrajectoryComponent],
   template: `
     <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="traj-reader-title">
-      <!-- Rachel Nabors Parasympathetic Ambient Respiration Glow (10s Cycle) -->
+      <!-- Autonomic Vagal Parasympathetic Ambient Respiration Glow (10s Cycle) -->
       <div class="absolute w-96 h-96 rounded-full bg-teal-500/20 pointer-events-none animate-vagal-glow"></div>
       
       <div class="relative w-full max-w-4xl p-6 bg-zinc-950 text-zinc-100 rounded-2xl shadow-2xl border border-zinc-800 transition-all max-h-[92vh] overflow-y-auto font-sans flex flex-col animate-origami-unfurl">

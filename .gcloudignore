@@ -3,7 +3,6 @@
 .gcloudignore
 node_modules/
 .angular/
-dist/
 tmp/
 .venv/
 venv/
@@ -22,7 +21,7 @@ pocketgull_api/__pycache__/
 .gemini/
 .agents/
 
-# Testing
+# Testing & E2E
 test-results/
 playwright-report/
 .playwright_temp/
@@ -30,6 +29,16 @@ playwright-report/
 cov/
 coverage/
 .nyc_output/
+tests/
+e2e/
+
+# Developer Studios, Authoring Tools & Standalone Packages
+tools/
+scripts/
+packages/
+companion-apps/
+case-studies/
+docs/study/
 
 # Dart / Flutter / Android companion apps (not needed for server)
 pubspec.yaml
@@ -37,12 +46,6 @@ pubspec.lock
 melos.yaml
 .dart_tool/
 pocketgull_flutter/
-companion-apps/**/node_modules/
-companion-apps/**/.angular/
-companion-apps/**/dist/
-companion-apps/**/.gradle/
-companion-apps/**/build/
-companion-apps/patient_app/
 **/.gradle/
 
 # ML contests and training data
@@ -61,6 +64,8 @@ sandbox/
 *.h5
 *.hdf5
 *.joblib
+*.map
+lora_*/
 
 # PhysioNet data
 physio*/
@@ -88,3 +93,9 @@ logs/
 .temp/
 .DS_Store
 Thumbbs.db
+
+# Heavy Typography & Desktop Font Binaries (Hosted live on https://font.pocketgull.app — saves 300+ MB)
+*.ttf
+public/fonts/*.ttf
+public/brand/
+typefaces_vault/

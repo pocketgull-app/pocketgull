@@ -26,7 +26,7 @@ import json
 import os
 import re
 import sys
-sys.modules['numexpr'] = None
+sys.modules['numexpr'] = None  # type: ignore
 import time
 
 from pathlib import Path
@@ -72,6 +72,67 @@ from services.physical_genomics_api_service import (
     HologramFhirBundleRequest,
     HologramFhirBundleResponse,
     physical_genomics_service,
+)
+from services.sovereignty_health_models_service import (
+    PcosModelInput,
+    PcosModelOutput,
+    evaluate_pcos_model,
+    EndometriosisModelInput,
+    EndometriosisModelOutput,
+    evaluate_endometriosis_model,
+    PrincetonCadInput,
+    PrincetonCadOutput,
+    evaluate_princeton_cad_model,
+    PsaTriageInput,
+    PsaTriageOutput,
+    evaluate_psa_density_model,
+    GahtPkInput,
+    GahtPkOutput,
+    simulate_gaht_pk_model,
+    ErythrocytosisInput,
+    ErythrocytosisOutput,
+    forecast_erythrocytosis_model,
+)
+from services.flourishing_predictive_models_service import (
+    GlymphaticClearanceInput,
+    GlymphaticClearanceOutput,
+    forecast_glymphatic_clearance,
+    CouplesCoRegulationInput,
+    CouplesCoRegulationOutput,
+    predict_couples_co_regulation,
+    GutBarrierModelInput,
+    GutBarrierModelOutput,
+    evaluate_gut_barrier_model,
+    CaregiverAllostaticLoadInput,
+    CaregiverAllostaticLoadOutput,
+    forecast_caregiver_allostatic_load,
+)
+from services.agronomic_nutrition_service import (
+    SoilHealthInput,
+    SoilHealthOutput,
+    evaluate_soil_health_model,
+    FarmPlanningInput,
+    FarmPlanningOutput,
+    plan_farm_crop_portfolio,
+    GroceryStockingInput,
+    GroceryStockingOutput,
+    plan_grocery_stocking,
+)
+from services.bioregional_climate_service import (
+    BioregionalClimateInput,
+    BioregionalClimateOutput,
+    evaluate_bioregional_climate_model,
+    FoodshedCarbonInput,
+    FoodshedCarbonOutput,
+    calculate_foodshed_carbon_drawdown,
+    NativeBiodiversityInput,
+    NativeBiodiversityOutput,
+    evaluate_native_biodiversity_model,
+)
+from services.food_inflation_predictive_model_service import (
+    FoodInflationRiskInput,
+    FoodInflationRiskOutput,
+    evaluate_food_inflation_risk_model,
 )
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -244,12 +305,17 @@ async def security_middleware(request: Request, call_next):
 
     response = await call_next(request)
 
-    # 3. Inject OWASP Security Headers
+    # 3. Inject OWASP & Mozilla HTTP Observatory 125 Security Headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Embedder-Policy"] = "credentialless"
+    response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'; base-uri 'none';"
     return response
 
 
@@ -759,7 +825,7 @@ async def _biosignal_generator(session_id: str) -> AsyncGenerator[str, None]:
 
     # Attempt to load scipy for real DSP
     try:
-        from scipy.signal import find_peaks
+        from scipy.signal import find_peaks  # type: ignore
         has_scipy = True
     except ImportError:
         find_peaks = None
@@ -2031,7 +2097,7 @@ async def predict_endotoxin_sibi_spike(req: EndotoxinSibiSpikePredictRequest) ->
 try:
     from engines.mondrian_conformal import MondrianConformalEngine, MondrianCalibrationRequest, MondrianCalibrationResult, classify_age_tier
 except ImportError:
-    from pocketgull_api.engines.mondrian_conformal import MondrianConformalEngine, MondrianCalibrationRequest, MondrianCalibrationResult, classify_age_tier
+    from pocketgull_api.engines.mondrian_conformal import MondrianConformalEngine, MondrianCalibrationRequest, MondrianCalibrationResult, classify_age_tier  # type: ignore
 
 try:
     _mondrian_engine = MondrianConformalEngine()
@@ -3286,6 +3352,134 @@ async def optimize_pharmacological_rescue(payload: PharmacologicalRescueRequest)
 async def assemble_hologram_fhir_bundle(payload: HologramFhirBundleRequest) -> HologramFhirBundleResponse:
     """Assembles a validated FHIR R4 Bundle containing DiagnosticReport and Media with LOINC 98253-8."""
     return physical_genomics_service.assemble_hologram_fhir_bundle(payload)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SOVEREIGNTY HEALTH MODELS (Women's Health, Men's Health, Gender-Affirming Care)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.post("/v1/models/womens-health/pcos", response_model=PcosModelOutput, tags=["Sovereignty Health Models"])
+@app.post("/api/models/womens-health/pcos", response_model=PcosModelOutput, tags=["Sovereignty Health Models"])
+async def evaluate_pcos_endpoint(payload: PcosModelInput) -> PcosModelOutput:
+    """Evaluates Rotterdam PCOS Phenotypes A-D and HOMA-IR insulin resistance."""
+    return evaluate_pcos_model(payload)
+
+
+@app.post("/v1/models/womens-health/endometriosis", response_model=EndometriosisModelOutput, tags=["Sovereignty Health Models"])
+@app.post("/api/models/womens-health/endometriosis", response_model=EndometriosisModelOutput, tags=["Sovereignty Health Models"])
+async def evaluate_endometriosis_endpoint(payload: EndometriosisModelInput) -> EndometriosisModelOutput:
+    """Evaluates Endometriosis Pelvic Pain Index (EPI) to combat diagnostic delay."""
+    return evaluate_endometriosis_model(payload)
+
+
+@app.post("/v1/models/mens-health/princeton-cad", response_model=PrincetonCadOutput, tags=["Sovereignty Health Models"])
+@app.post("/api/models/mens-health/princeton-cad", response_model=PrincetonCadOutput, tags=["Sovereignty Health Models"])
+async def evaluate_princeton_cad_endpoint(payload: PrincetonCadInput) -> PrincetonCadOutput:
+    """Evaluates Princeton III microvascular CAD risk and enforces ISMP nitrate hard stop."""
+    return evaluate_princeton_cad_model(payload)
+
+
+@app.post("/v1/models/mens-health/psa-density", response_model=PsaTriageOutput, tags=["Sovereignty Health Models"])
+@app.post("/api/models/mens-health/psa-density", response_model=PsaTriageOutput, tags=["Sovereignty Health Models"])
+async def evaluate_psa_density_endpoint(payload: PsaTriageInput) -> PsaTriageOutput:
+    """Evaluates PSA Density to safely avoid blind prostate biopsies in benign BPH."""
+    return evaluate_psa_density_model(payload)
+
+
+@app.post("/v1/models/gaht/pk-simulator", response_model=GahtPkOutput, tags=["Sovereignty Health Models"])
+@app.post("/api/models/gaht/pk-simulator", response_model=GahtPkOutput, tags=["Sovereignty Health Models"])
+async def simulate_gaht_pk_endpoint(payload: GahtPkInput) -> GahtPkOutput:
+    """Simulates 2-compartment pharmacokinetic hormone absorption and peak-trough swings."""
+    return simulate_gaht_pk_model(payload)
+
+
+@app.post("/v1/models/gaht/erythrocytosis", response_model=ErythrocytosisOutput, tags=["Sovereignty Health Models"])
+@app.post("/api/models/gaht/erythrocytosis", response_model=ErythrocytosisOutput, tags=["Sovereignty Health Models"])
+async def forecast_erythrocytosis_endpoint(payload: ErythrocytosisInput) -> ErythrocytosisOutput:
+    """Forecasts secondary erythrocytosis and monitors hematocrit safety in masculinizing GAHT."""
+    return forecast_erythrocytosis_model(payload)
+
+
+@app.post("/v1/models/flourishing/glymphatic-clearance", response_model=GlymphaticClearanceOutput, tags=["Flourishing Models"])
+@app.post("/api/models/flourishing/glymphatic-clearance", response_model=GlymphaticClearanceOutput, tags=["Flourishing Models"])
+async def forecast_glymphatic_clearance_endpoint(payload: GlymphaticClearanceInput) -> GlymphaticClearanceOutput:
+    """Forecasts nocturnal CSF-ISF convective turnover and metabolic waste clearance."""
+    return forecast_glymphatic_clearance(payload)
+
+
+@app.post("/v1/models/flourishing/couples-co-regulation", response_model=CouplesCoRegulationOutput, tags=["Flourishing Models"])
+@app.post("/api/models/flourishing/couples-co-regulation", response_model=CouplesCoRegulationOutput, tags=["Flourishing Models"])
+async def predict_couples_co_regulation_endpoint(payload: CouplesCoRegulationInput) -> CouplesCoRegulationOutput:
+    """Predicts Gottman physiological flooding probability and autonomic coupling in couples."""
+    return predict_couples_co_regulation(payload)
+
+
+@app.post("/v1/models/flourishing/gut-barrier", response_model=GutBarrierModelOutput, tags=["Flourishing Models"])
+@app.post("/api/models/flourishing/gut-barrier", response_model=GutBarrierModelOutput, tags=["Flourishing Models"])
+async def evaluate_gut_barrier_endpoint(payload: GutBarrierModelInput) -> GutBarrierModelOutput:
+    """Evaluates short-chain fatty acid butyrate synthesis and Claudin-1 tight junction integrity."""
+    return evaluate_gut_barrier_model(payload)
+
+
+@app.post("/v1/models/flourishing/caregiver-allostatic-load", response_model=CaregiverAllostaticLoadOutput, tags=["Flourishing Models"])
+@app.post("/api/models/flourishing/caregiver-allostatic-load", response_model=CaregiverAllostaticLoadOutput, tags=["Flourishing Models"])
+async def forecast_caregiver_allostatic_load_endpoint(payload: CaregiverAllostaticLoadInput) -> CaregiverAllostaticLoadOutput:
+    """Forecasts caregiver cumulative sleep debt, Process-S allostatic load, and daytime microsleep hazard."""
+    return forecast_caregiver_allostatic_load(payload)
+
+
+@app.post("/v1/models/agronomic/soil-health", response_model=SoilHealthOutput, tags=["Agronomic & Soil Science"])
+@app.post("/api/models/agronomic/soil-health", response_model=SoilHealthOutput, tags=["Agronomic & Soil Science"])
+async def evaluate_soil_health_endpoint(payload: SoilHealthInput) -> SoilHealthOutput:
+    """Evaluates regenerative soil health, glomalin carbon storage, and crop polyphenol boost."""
+    return evaluate_soil_health_model(payload)
+
+
+@app.post("/v1/models/agronomic/farm-planning", response_model=FarmPlanningOutput, tags=["Agronomic & Soil Science"])
+@app.post("/api/models/agronomic/farm-planning", response_model=FarmPlanningOutput, tags=["Agronomic & Soil Science"])
+async def plan_farm_crop_endpoint(payload: FarmPlanningInput) -> FarmPlanningOutput:
+    """Plans polyculture crop portfolios and 9-month heirloom seed procurement backed by hospital CSA offtake."""
+    return plan_farm_crop_portfolio(payload)
+
+
+@app.post("/v1/models/agronomic/grocery-stocking", response_model=GroceryStockingOutput, tags=["Agronomic & Soil Science"])
+@app.post("/api/models/agronomic/grocery-stocking", response_model=GroceryStockingOutput, tags=["Agronomic & Soil Science"])
+async def plan_grocery_stocking_endpoint(payload: GroceryStockingInput) -> GroceryStockingOutput:
+    """Optimizes store produce inventory to meet 30+ botanical species target with zero-waste storage."""
+    return plan_grocery_stocking(payload)
+
+
+@app.post("/v1/models/climate/bioregional-health", response_model=BioregionalClimateOutput, tags=["Planetary Health & Climate"])
+@app.post("/api/models/climate/bioregional-health", response_model=BioregionalClimateOutput, tags=["Planetary Health & Climate"])
+async def evaluate_bioregional_climate_endpoint(payload: BioregionalClimateInput) -> BioregionalClimateOutput:
+    """Evaluates local wet-bulb heat strain, canopy buffering, and wildfire PM2.5 defense."""
+    return evaluate_bioregional_climate_model(payload)
+
+
+@app.post("/v1/models/climate/foodshed-carbon", response_model=FoodshedCarbonOutput, tags=["Planetary Health & Climate"])
+@app.post("/api/models/climate/foodshed-carbon", response_model=FoodshedCarbonOutput, tags=["Planetary Health & Climate"])
+async def calculate_foodshed_carbon_endpoint(payload: FoodshedCarbonInput) -> FoodshedCarbonOutput:
+    """Calculates household 100-mile foodshed self-reliance and annual soil carbon drawdown."""
+    return calculate_foodshed_carbon_drawdown(payload)
+
+
+@app.post("/v1/models/climate/native-biodiversity", response_model=NativeBiodiversityOutput, tags=["Planetary Health & Climate"])
+@app.post("/api/models/climate/native-biodiversity", response_model=NativeBiodiversityOutput, tags=["Planetary Health & Climate"])
+async def evaluate_native_biodiversity_endpoint(payload: NativeBiodiversityInput) -> NativeBiodiversityOutput:
+    """Recommends hyper-local keystone native plant guilds and evaluates biophilic cortisol restoration."""
+    return evaluate_native_biodiversity_model(payload)
+
+
+@app.post("/v1/models/food-inflation/evaluate", response_model=FoodInflationRiskOutput, tags=["Foodshed & Nutrition Security"])
+@app.post("/api/models/food-inflation/evaluate", response_model=FoodInflationRiskOutput, tags=["Foodshed & Nutrition Security"])
+async def evaluate_food_inflation_endpoint(payload: FoodInflationRiskInput) -> FoodInflationRiskOutput:
+    """Evaluates grocery price inflation, freight fragility, stockout vulnerability, and dietary-restricted whole food swaps."""
+    return evaluate_food_inflation_risk_model(payload)
+
+
+
+
+
 
 
 

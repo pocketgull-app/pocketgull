@@ -15,6 +15,7 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
 import { NavigationShellService } from '../services/navigation-shell.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
 import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
+import { SocraticMultilingualTranslatorService } from '../services/socratic-multilingual-translator.service';
 
 @Component({
   selector: 'app-main-header-nav',
@@ -313,6 +314,13 @@ import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
                       <div class="text-[10px] text-zinc-400 font-normal">WHO SDG 3.4 &amp; ICD-11</div>
                     </div>
                   </button>
+                  <button type="button" (click)="navShell?.openMultilingualTerminal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-teal-700 dark:text-teal-300 cursor-pointer border border-teal-500/20 bg-teal-50/30 dark:bg-teal-950/20">
+                    <span class="text-sm">🗣️</span>
+                    <div>
+                      <div>Multilingual Socratic Terminal</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">50+ Global Dialects &amp; Translation</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openCompanionSync.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">📱</span>
                     <div>
@@ -525,6 +533,52 @@ import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18c-2.29 0-4.43-.78-6.14-2.1C4.6 16.5 4 14.83 4 12c0-1.5.3-2.91.86-4.22L16.22 19.14A7.92 7.92 0 0 1 12 20m7.14-2.1C20.4 16.5 21 14.83 21 12c0-1.5-.3-2.91-.86-4.22L8.78 19.14C10.09 20.7 11.97 21.5 14 21.5c1.47 0 2.87-.42 4.14-1.14Z"/></svg>
             <span>Research</span>
           </button>
+
+          <!-- Language Translation Switcher Dropdown (Desktop) -->
+          <div class="relative">
+            <button 
+              type="button"
+              (click)="isLangMenuOpen.set(!isLangMenuOpen())"
+              id="btn-desktop-lang-switcher"
+              [attr.aria-expanded]="isLangMenuOpen()"
+              aria-label="Language translation switcher"
+              [title]="'Language: ' + translator.activeLanguage().name + ' (' + translator.activeLanguage().nativeName + ')'"
+              class="group shrink-0 px-2.5 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:border-teal-500/60 hover:bg-teal-50/50 dark:hover:bg-teal-950/30 rounded-xs transition-colors text-zinc-700 dark:text-zinc-200 cursor-pointer flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900 shadow-xs">
+              <span class="text-xs">{{ translator.activeLanguage().flagEmoji }}</span>
+              <span class="text-[11px] font-bold font-mono tracking-tight uppercase">{{ translator.selectedLanguageCode() }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-400 transition-transform duration-200" [class.rotate-180]="isLangMenuOpen()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+
+            @if (isLangMenuOpen()) {
+              <!-- Backdrop click-away -->
+              <div class="fixed inset-0 z-40 bg-black/20" (click)="isLangMenuOpen.set(false)"></div>
+
+              <div class="absolute right-0 top-full mt-1.5 w-64 z-50 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-2.5 rounded-xs font-mono text-xs max-h-80 overflow-y-auto">
+                <div class="flex items-center justify-between pb-2 mb-2 border-b border-zinc-100 dark:border-zinc-800 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
+                  <span>Translate / Idioma</span>
+                  <button type="button" (click)="navShell?.openMultilingualTerminal(); isLangMenuOpen.set(false)" class="text-teal-600 dark:text-teal-400 hover:underline cursor-pointer">50+ Terminal →</button>
+                </div>
+                <div class="space-y-1">
+                  @for (lang of primaryLanguages; track lang.code) {
+                    <button 
+                      type="button"
+                      (click)="translator.setLanguage(lang.code); isLangMenuOpen.set(false)"
+                      class="w-full text-left px-2 py-1.5 rounded transition flex items-center justify-between text-xs cursor-pointer"
+                      [ngClass]="{
+                        'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 font-bold border border-teal-300 dark:border-teal-700': translator.selectedLanguageCode() === lang.code,
+                        'hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-transparent': translator.selectedLanguageCode() !== lang.code
+                      }">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm">{{ lang.flagEmoji }}</span>
+                        <span>{{ lang.name }}</span>
+                      </div>
+                      <span class="text-[10px] text-zinc-400">{{ lang.nativeName }}</span>
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
 
           <!-- Theme Toggle -->
           <button (click)="theme.cycleTheme()" 
@@ -770,6 +824,29 @@ import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
                 <span>Philo</span>
               </button>
             </div>
+
+            <!-- Mobile Language Switcher -->
+            <div class="pt-2">
+              <div class="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1.5">
+                <span>Translate ({{ translator.activeLanguage().name }})</span>
+                <button type="button" (click)="navShell?.openMultilingualTerminal(); isMobileMenuOpen.set(false)" class="text-teal-600 dark:text-teal-400 font-bold hover:underline cursor-pointer">50+ Dialects →</button>
+              </div>
+              <div class="grid grid-cols-4 gap-1.5 font-mono text-[11px]">
+                @for (lang of primaryLanguages.slice(0, 8); track lang.code) {
+                  <button 
+                    type="button" 
+                    (click)="translator.setLanguage(lang.code)"
+                    class="min-h-[44px] py-1 px-1 rounded-xl border text-center flex flex-col items-center justify-center gap-0.5 cursor-pointer transition"
+                    [ngClass]="{
+                      'bg-teal-50 dark:bg-teal-950/70 text-teal-900 dark:text-teal-100 border-teal-500 font-bold': translator.selectedLanguageCode() === lang.code,
+                      'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800': translator.selectedLanguageCode() !== lang.code
+                    }">
+                    <span class="text-xs">{{ lang.flagEmoji }}</span>
+                    <span class="text-[10px] uppercase font-bold">{{ lang.code }}</span>
+                  </button>
+                }
+              </div>
+            </div>
           </div>
         </div>
 
@@ -812,11 +889,28 @@ export class MainHeaderNavComponent {
   soundscapeService = inject(AmbientFlowSoundscapeService);
   navShell = inject(NavigationShellService, { optional: true });
   rpmService = inject(CmsRpmSuperbillService, { optional: true });
+  translator = inject(SocraticMultilingualTranslatorService, { optional: true }) ?? new SocraticMultilingualTranslatorService();
 
   today = new Date();
   isMobileMenuOpen = signal<boolean>(false);
   isAppsHubOpen = signal<boolean>(false);
   showAmbientPlayer = signal<boolean>(false);
+  isLangMenuOpen = signal<boolean>(false);
+
+  readonly primaryLanguages = [
+    { code: 'en', name: 'English', nativeName: 'English (Plain)', flagEmoji: '🇺🇸' },
+    { code: 'es', name: 'Spanish', nativeName: 'Español', flagEmoji: '🇲🇽' },
+    { code: 'zh', name: 'Mandarin', nativeName: '中文 (简体)', flagEmoji: '🇨🇳' },
+    { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flagEmoji: '🇮🇳' },
+    { code: 'ar', name: 'Arabic', nativeName: 'العربية', flagEmoji: '🇸🇦' },
+    { code: 'tl', name: 'Tagalog', nativeName: 'Tagalog', flagEmoji: '🇵🇭' },
+    { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', flagEmoji: '🇻🇳' },
+    { code: 'fr', name: 'French', nativeName: 'Français', flagEmoji: '🇫🇷' },
+    { code: 'pt', name: 'Portuguese', nativeName: 'Português', flagEmoji: '🇧🇷' },
+    { code: 'de', name: 'German', nativeName: 'Deutsch', flagEmoji: '🇩🇪' },
+    { code: 'uk', name: 'Ukrainian', nativeName: 'Українська', flagEmoji: '🇺🇦' },
+    { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili', flagEmoji: '🇰🇪' },
+  ];
 
   openTuringSuite = output<void>();
   openSocraticRounds = output<void>();

@@ -99,5 +99,15 @@ describe('MainHeaderNavComponent', () => {
     component.state.toggleActiveRoom();
     expect(mockPatientState.toggleActiveRoom).toHaveBeenCalled();
   });
+
+  it('should initialize language switcher and support selecting languages', () => {
+    expect(component.translator).toBeTruthy();
+    expect(component.primaryLanguages.length).toBeGreaterThan(5);
+    expect(component.isLangMenuOpen()).toBe(false);
+    component.isLangMenuOpen.set(true);
+    expect(component.isLangMenuOpen()).toBe(true);
+    component.translator.setLanguage('es');
+    expect(component.translator.selectedLanguageCode()).toBe('es');
+  });
 });
 

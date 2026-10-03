@@ -4,6 +4,10 @@ import { AndroscogginForagingPhytoncideComponent } from '../androscoggin-foragin
 import { GrowThyselfLegacyVaultComponent } from '../grow-thyself-legacy-vault.component';
 import { TribalHealthSovereigntyCardComponent } from '../shared/tribal-health-sovereignty-card.component';
 import { GaapTribalStewardshipCardComponent } from '../shared/gaap-tribal-stewardship-card.component';
+import { CompassionateNutritionCardComponent } from '../shared/compassionate-nutrition-card.component';
+import { CaregiverAdvocacyCardComponent } from '../caregiver-advocacy-card.component';
+import { AgronomicSoilProcurementCardComponent } from '../shared/agronomic-soil-procurement-card.component';
+import { BioregionalClimateFlourishingCardComponent } from '../shared/bioregional-climate-flourishing-card.component';
 
 @Component({
   selector: 'app-seven-generations-stewardship-lens-tab',
@@ -13,7 +17,11 @@ import { GaapTribalStewardshipCardComponent } from '../shared/gaap-tribal-stewar
     AndroscogginForagingPhytoncideComponent,
     GrowThyselfLegacyVaultComponent,
     TribalHealthSovereigntyCardComponent,
-    GaapTribalStewardshipCardComponent
+    GaapTribalStewardshipCardComponent,
+    CompassionateNutritionCardComponent,
+    CaregiverAdvocacyCardComponent,
+    AgronomicSoilProcurementCardComponent,
+    BioregionalClimateFlourishingCardComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -39,8 +47,20 @@ import { GaapTribalStewardshipCardComponent } from '../shared/gaap-tribal-stewar
       <!-- US GAAP FASB ASC 958 Financial Revenue Allocation & Tribal Stewardship -->
       <app-gaap-tribal-stewardship-card></app-gaap-tribal-stewardship-card>
 
+      <!-- Compassionate Nutrition & Cultural Foodways -->
+      <app-compassionate-nutrition-card></app-compassionate-nutrition-card>
+
+      <!-- Agronomic Soil Science, Seed Procurement & Grocery Stocking Engine -->
+      <app-agronomic-soil-procurement-card></app-agronomic-soil-procurement-card>
+
+      <!-- Bioregional Planetary Health, Climate Resilience & 100-Mile Foodshed Studio -->
+      <app-bioregional-climate-flourishing-card></app-bioregional-climate-flourishing-card>
+
       <!-- Grow Thyself Lifelong Vitality & Legacy Vault Component -->
       <app-grow-thyself-legacy-vault></app-grow-thyself-legacy-vault>
+
+      <!-- Family Caregiver Shadow Portal & Respite Shield -->
+      <app-caregiver-advocacy-card></app-caregiver-advocacy-card>
 
       <!-- Androscoggin Wild Foraging & Forest Bathing Phytoncide Telemetry -->
       <app-androscoggin-foraging-phytoncide></app-androscoggin-foraging-phytoncide>

@@ -39,4 +39,13 @@ describe('SocraticMultilingualTerminalComponent Unit Suite', () => {
     expect(comp.translator.isRtl()).toBe(true);
     expect(comp.translation().textDirection).toBe('rtl');
   });
+
+  it('4. Emits close event when close is triggered', () => {
+    let closed = false;
+    comp.close.subscribe(() => {
+      closed = true;
+    });
+    comp.close.emit();
+    expect(closed).toBe(true);
+  });
 });

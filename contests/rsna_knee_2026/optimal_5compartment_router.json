@@ -1,0 +1,164 @@
+{
+  "cohort_size": 3613,
+  "baseline_macro_auc": 0.65626,
+  "optimized_macro_auc": 0.6568,
+  "macro_auc_gain": 0.00053,
+  "targets": {
+    "ACL": {
+      "compartment_weights": {
+        "medial": 0.2001,
+        "lateral": 0.2004,
+        "cruciate": 0.2012,
+        "patellofemoral": 0.1997,
+        "popliteal_perimeter": 0.1986
+      },
+      "blend_alpha": 0.0,
+      "baseline_auc": 0.53231,
+      "optimized_auc": 0.53231,
+      "gain": 0.0
+    },
+    "MCL": {
+      "compartment_weights": {
+        "medial": 0.1997,
+        "lateral": 0.2006,
+        "cruciate": 0.2001,
+        "patellofemoral": 0.1994,
+        "popliteal_perimeter": 0.2002
+      },
+      "blend_alpha": 0.0,
+      "baseline_auc": 0.43878,
+      "optimized_auc": 0.43879,
+      "gain": 0.0
+    },
+    "Medial Meniscus": {
+      "compartment_weights": {
+        "medial": 0.1992,
+        "lateral": 0.2016,
+        "cruciate": 0.2,
+        "patellofemoral": 0.1991,
+        "popliteal_perimeter": 0.2001
+      },
+      "blend_alpha": 0.0,
+      "baseline_auc": 0.62409,
+      "optimized_auc": 0.62409,
+      "gain": 0.0
+    },
+    "Lateral Meniscus": {
+      "compartment_weights": {
+        "medial": 0.1996,
+        "lateral": 0.2001,
+        "cruciate": 0.1995,
+        "patellofemoral": 0.2006,
+        "popliteal_perimeter": 0.2003
+      },
+      "blend_alpha": 0.0,
+      "baseline_auc": 0.46724,
+      "optimized_auc": 0.46724,
+      "gain": 0.0
+    },
+    "Medial OA": {
+      "compartment_weights": {
+        "medial": 0.1997,
+        "lateral": 0.1992,
+        "cruciate": 0.2001,
+        "patellofemoral": 0.2011,
+        "popliteal_perimeter": 0.1999
+      },
+      "blend_alpha": 0.0001,
+      "baseline_auc": 0.77275,
+      "optimized_auc": 0.77275,
+      "gain": 0.0
+    },
+    "Lateral OA": {
+      "compartment_weights": {
+        "medial": 0.2014,
+        "lateral": 0.1993,
+        "cruciate": 0.1994,
+        "patellofemoral": 0.1995,
+        "popliteal_perimeter": 0.2003
+      },
+      "blend_alpha": 0.0,
+      "baseline_auc": 0.71346,
+      "optimized_auc": 0.71346,
+      "gain": 0.0
+    },
+    "PF OA": {
+      "compartment_weights": {
+        "medial": 0.2,
+        "lateral": 0.2,
+        "cruciate": 0.2,
+        "patellofemoral": 0.2,
+        "popliteal_perimeter": 0.2
+      },
+      "blend_alpha": 0.0533,
+      "baseline_auc": 0.73106,
+      "optimized_auc": 0.73126,
+      "gain": 0.0002
+    },
+    "Effusion": {
+      "compartment_weights": {
+        "medial": 0.2,
+        "lateral": 0.2002,
+        "cruciate": 0.2,
+        "patellofemoral": 0.2,
+        "popliteal_perimeter": 0.1998
+      },
+      "blend_alpha": 0.4487,
+      "baseline_auc": 0.75613,
+      "optimized_auc": 0.75719,
+      "gain": 0.00105
+    },
+    "Synovitis": {
+      "compartment_weights": {
+        "medial": 0.2001,
+        "lateral": 0.1998,
+        "cruciate": 0.2,
+        "patellofemoral": 0.2002,
+        "popliteal_perimeter": 0.1999
+      },
+      "blend_alpha": 0.6879,
+      "baseline_auc": 0.75059,
+      "optimized_auc": 0.75573,
+      "gain": 0.00514
+    },
+    "Baker's": {
+      "compartment_weights": {
+        "medial": 0.1997,
+        "lateral": 0.2022,
+        "cruciate": 0.2,
+        "patellofemoral": 0.1985,
+        "popliteal_perimeter": 0.1996
+      },
+      "blend_alpha": 0.0,
+      "baseline_auc": 0.69043,
+      "optimized_auc": 0.69043,
+      "gain": 0.0
+    },
+    "Contusion": {
+      "compartment_weights": {
+        "medial": 0.1998,
+        "lateral": 0.1987,
+        "cruciate": 0.1996,
+        "patellofemoral": 0.2,
+        "popliteal_perimeter": 0.2019
+      },
+      "blend_alpha": 0.0,
+      "baseline_auc": 0.67404,
+      "optimized_auc": 0.67404,
+      "gain": 0.0
+    },
+    "Fracture": {
+      "compartment_weights": {
+        "medial": 0.2001,
+        "lateral": 0.2002,
+        "cruciate": 0.1996,
+        "patellofemoral": 0.1989,
+        "popliteal_perimeter": 0.2012
+      },
+      "blend_alpha": 0.0,
+      "baseline_auc": 0.72426,
+      "optimized_auc": 0.72427,
+      "gain": 0.0
+    }
+  }
+}

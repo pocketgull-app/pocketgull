@@ -139,7 +139,7 @@ export class CircadianAlertGuardService {
   }
 
   /**
-   * Returns the Rachel Nabors 0.1 Hz Parasympathetic Bio-Rhythmic Breathing Parameters.
+   * Returns the 0.1 Hz Autonomic Vagal Resonance Breathing Parameters.
    */
   getParasympatheticBreathingCadence(): IParasympatheticBreathingCadence {
     return {

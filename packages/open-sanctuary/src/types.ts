@@ -57,7 +57,7 @@ export interface IAvsSessionConfig {
   waveform: AvsWaveform;
   noiseProfile: NoiseProfile;
   noiseVolume: number; // 0.0 to 1.0
-  parasympatheticPacingEnabled: boolean; // 0.1Hz Rachel Nabors bio-rhythmic modulation
+  parasympatheticPacingEnabled: boolean; // 0.1Hz autonomic vagal bio-rhythmic modulation
   volume: number; // 0.0 to 1.0
   saturationProfile: AvsSaturationProfile;
 }

@@ -21,7 +21,7 @@ import {
       class="relative w-full p-5 sm:p-7 bg-[#09090b] text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl overflow-hidden font-sans select-none"
       aria-labelledby="hud-heading"
     >
-      <!-- Subtle Bio-Rhythmic Ambient Glow (10s Rachel Nabors parasympathetic cycle) -->
+      <!-- Subtle Bio-Rhythmic Ambient Glow (10s autonomic vagal parasympathetic cycle) -->
       <div
         class="absolute -top-32 -right-32 w-80 h-80 rounded-full blur-3xl pointer-events-none transition-opacity duration-1000"
         [ngClass]="{

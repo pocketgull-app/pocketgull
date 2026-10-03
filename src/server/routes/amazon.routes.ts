@@ -23,17 +23,19 @@ export interface IAmazonProductItemServer {
   clinicalContext?: string;
   evidenceScore?: string;
   snomedCode?: string;
+  searchUrl?: string;
 }
 
 const SERVER_AMAZON_CATALOG: IAmazonProductItemServer[] = [
   {
-    asin: '0578087968',
-    title: "The Anarchist's Tool Chest by Christopher Schwarz",
-    detailPageUrl: 'https://www.amazon.com/dp/0578087968?tag=pgdpo-20',
+    asin: '0143117467',
+    title: 'Shop Class as Soulcraft: An Inquiry into the Value of Work by Matthew B. Crawford',
+    detailPageUrl: 'https://www.amazon.com/dp/0143117467?tag=pgdpo-20',
+    searchUrl: 'https://www.amazon.com/s?k=Shop+Class+as+Soulcraft+Matthew+B+Crawford&tag=pgdpo-20',
     imageUrl: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&auto=format&fit=crop&q=60',
-    price: { amount: 48.0, currency: 'USD', displayPrice: '$48.00' },
-    rating: 4.9,
-    ratingsCount: 812,
+    price: { amount: 16.99, currency: 'USD', displayPrice: '$16.99' },
+    rating: 4.6,
+    ratingsCount: 2150,
     primeEligible: true,
     hsaFsaEligible: false,
     category: 'books_bibliotherapy',
@@ -45,6 +47,7 @@ const SERVER_AMAZON_CATALOG: IAmazonProductItemServer[] = [
     asin: '1501168058',
     title: 'The Well-Gardened Mind: The Restorative Power of Nature by Sue Stuart-Smith',
     detailPageUrl: 'https://www.amazon.com/dp/1501168058?tag=pgdpo-20',
+    searchUrl: 'https://www.amazon.com/s?k=The+Well-Gardened+Mind+Sue+Stuart-Smith&tag=pgdpo-20',
     imageUrl: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=300&auto=format&fit=crop&q=60',
     price: { amount: 18.99, currency: 'USD', displayPrice: '$18.99' },
     rating: 4.8,
@@ -57,13 +60,14 @@ const SERVER_AMAZON_CATALOG: IAmazonProductItemServer[] = [
     snomedCode: 'SCTID 226065003'
   },
   {
-    asin: '0618047918',
-    title: 'Field Guide to Birds of North America (Peterson Guides)',
-    detailPageUrl: 'https://www.amazon.com/dp/0618047918?tag=pgdpo-20',
+    asin: '030795790X',
+    title: 'The Sibley Guide to Birds (2nd Edition) by David Allen Sibley',
+    detailPageUrl: 'https://www.amazon.com/dp/030795790X?tag=pgdpo-20',
+    searchUrl: 'https://www.amazon.com/s?k=The+Sibley+Guide+to+Birds+David+Allen+Sibley&tag=pgdpo-20',
     imageUrl: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=300&auto=format&fit=crop&q=60',
-    price: { amount: 22.49, currency: 'USD', displayPrice: '$22.49' },
+    price: { amount: 24.99, currency: 'USD', displayPrice: '$24.99' },
     rating: 4.9,
-    ratingsCount: 3890,
+    ratingsCount: 10420,
     primeEligible: true,
     hsaFsaEligible: false,
     category: 'books_bibliotherapy',

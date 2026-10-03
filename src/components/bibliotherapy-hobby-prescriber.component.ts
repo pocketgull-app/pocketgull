@@ -151,9 +151,9 @@ export class BibliotherapyHobbyPrescriberComponent {
       biomechanicalGoal: 'Fine motor coordination, tactile proprioceptive stimulation, and digital screen detox.',
       books: [
         {
-          title: "The Anarchist's Tool Chest",
-          author: 'Christopher Schwarz',
-          description: 'A masterpiece on slow hand craftsmanship, tool mastery, and tactile neuro-grounding.'
+          title: 'Shop Class as Soulcraft: An Inquiry into the Value of Work',
+          author: 'Matthew B. Crawford',
+          description: 'A masterpiece on manual craftsmanship, cognitive agency, and tactile neuro-grounding.'
         },
         {
           title: 'Why We Make Things and Why It Matters',
@@ -161,7 +161,7 @@ export class BibliotherapyHobbyPrescriberComponent {
           description: 'Explores the psychological flow state and restorative power of physical creation.'
         }
       ],
-      amazonQuery: 'hand woodworking tools'
+      amazonQuery: 'Shop Class as Soulcraft Matthew Crawford'
     },
     {
       snomedCode: 'SCTID 226065003',
@@ -181,7 +181,7 @@ export class BibliotherapyHobbyPrescriberComponent {
           description: 'Indigenous wisdom and botanical science on human-nature reciprocity.'
         }
       ],
-      amazonQuery: 'organic gardening kit'
+      amazonQuery: 'The Well-Gardened Mind Sue Stuart-Smith'
     },
     {
       snomedCode: 'SCTID 226071007',
@@ -191,9 +191,9 @@ export class BibliotherapyHobbyPrescriberComponent {
       biomechanicalGoal: 'Spatial visual tracking, auditory frequency discrimination, and peaceful vagal tone restoration.',
       books: [
         {
-          title: 'The Genius of Birds',
-          author: 'Jennifer Ackerman',
-          description: 'Fascinating investigation into avian cognition, navigation, and problem-solving.'
+          title: 'The Sibley Guide to Birds (2nd Edition)',
+          author: 'David Allen Sibley',
+          description: 'The definitive visual guide for acoustic bird identification, optic flow, and peaceful nature immersion.'
         },
         {
           title: 'What the Robin Knows',
@@ -201,7 +201,7 @@ export class BibliotherapyHobbyPrescriberComponent {
           description: 'Decoding bird language and acoustic environmental cues for deep mental presence.'
         }
       ],
-      amazonQuery: 'birdwatching field guide'
+      amazonQuery: 'Sibley Guide to Birds David Allen Sibley'
     }
   ];
 

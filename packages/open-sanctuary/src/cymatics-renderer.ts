@@ -1,7 +1,7 @@
 /**
  * @pocketgull/open-sanctuary
  * Zero-dependency HTML5 Canvas 2D Cymatics, Chladni Plate, Lissajous,
- * and 0.1 Hz Rachel Nabors Parasympathetic Pacing visualizer engine.
+ * and 0.1 Hz Autonomic Vagal Parasympathetic Pacing visualizer engine.
  */
 
 import { ICymaticOptions, ICymaticParticle, CymaticVisualizerMode, IPacingBreathingState } from './types';
@@ -89,7 +89,7 @@ export class CymaticsRenderer {
   }
 
   /**
-   * Returns current 0.1 Hz Rachel Nabors bio-rhythmic breathing state
+   * Returns current 0.1 Hz autonomic vagal bio-rhythmic breathing state
    */
   public getBreathingState(): IPacingBreathingState {
     const cyclePos = this.breathTime % this.breathCycleDuration;
