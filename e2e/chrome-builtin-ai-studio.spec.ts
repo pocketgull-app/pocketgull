@@ -33,22 +33,19 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
     // Switch to Vector RAG Tab
     const vectorTabBtn = studio.locator('button', { hasText: /Vector RAG/i }).first();
     await vectorTabBtn.scrollIntoViewIfNeeded();
-    await vectorTabBtn.click().catch(() => {});
-    await vectorTabBtn.dispatchEvent('click');
+    await vectorTabBtn.click({ force: true });
     await page.waitForTimeout(300);
 
     // Verify preset badges exist and click "Burning Foot Neuropathy"
     const dpnPreset = studio.locator('button', { hasText: /Burning Foot Neuropathy/i }).first();
     await expect(dpnPreset).toBeVisible({ timeout: 10000 });
-    await dpnPreset.click().catch(() => {});
-    await dpnPreset.dispatchEvent('click');
+    await dpnPreset.click({ force: true });
     await page.waitForTimeout(300);
 
     // Click compute vector match
     const computeBtn = studio.locator('button', { hasText: /Compute Vector Match/i }).first();
     await expect(computeBtn).toBeVisible({ timeout: 10000 });
-    await computeBtn.click().catch(() => {});
-    await computeBtn.dispatchEvent('click');
+    await computeBtn.click({ force: true });
 
     // Verify that ranked archetype cards are rendered with similarity scores
     await expect(studio.locator('text=Diabetic Peripheral Neuropathy').first()).toBeVisible({ timeout: 15000 });
@@ -92,22 +89,19 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
     // Switch to Classifier Tab
     const classifierTabBtn = studio.locator('button', { hasText: /Triage Acuity Classifier/i }).first();
     await classifierTabBtn.scrollIntoViewIfNeeded();
-    await classifierTabBtn.click().catch(() => {});
-    await classifierTabBtn.dispatchEvent('click');
+    await classifierTabBtn.click({ force: true });
     await page.waitForTimeout(300);
 
     // Click STAT Emergency bypass preset
     const statBtn = studio.locator('button', { hasText: /STAT/i }).first();
     await expect(statBtn).toBeVisible({ timeout: 10000 });
-    await statBtn.click().catch(() => {});
-    await statBtn.dispatchEvent('click');
+    await statBtn.click({ force: true });
     await page.waitForTimeout(300);
 
     // Click Classify Acuity button
     const classifyBtn = studio.locator('button', { hasText: /Classify Acuity/i }).first();
     await expect(classifyBtn).toBeVisible({ timeout: 10000 });
-    await classifyBtn.click().catch(() => {});
-    await classifyBtn.dispatchEvent('click');
+    await classifyBtn.click({ force: true });
 
     // Verify STAT_EMERGENCY badge and directive
     await expect(studio.locator('text=STAT_EMERGENCY').first()).toBeVisible({ timeout: 15000 });

@@ -1,5 +1,4 @@
 // Dart WCAG 2.2 AAA/AA Comprehensive Color Contrast & Component Mapping Auditor
-import 'dart:io';
 import 'dart:math';
 
 double srgbToLuminance(int r, int g, int b) {

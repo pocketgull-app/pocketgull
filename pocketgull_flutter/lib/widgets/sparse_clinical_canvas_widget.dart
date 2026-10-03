@@ -113,7 +113,7 @@ class _SparseClinicalCanvasWidgetState
                     Row(
                       children: [
                         Text(
-                          'SMoE CLINICAL CANVAS',
+                          'SYNOPTIC CLINICAL CANVAS',
                           style: TextStyle(
                             fontFamily: 'monospace',
                             fontWeight: FontWeight.bold,

@@ -33,8 +33,7 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     const ybocsTab = page.getByTestId('tab-ybocs-screener');
     await ybocsTab.scrollIntoViewIfNeeded();
     await expect(ybocsTab).toBeVisible({ timeout: 10000 });
-    await ybocsTab.click().catch(() => {});
-    await ybocsTab.dispatchEvent('click');
+    await ybocsTab.click({ force: true });
     await page.waitForTimeout(500);
 
     // 3. Verify Y-BOCs Screener renders

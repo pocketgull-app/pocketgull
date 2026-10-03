@@ -104,7 +104,7 @@ class _AnalysisContainerWidgetState
                           ),
                         ),
                         child: Text(
-                          '⚡ SMoE CANVAS',
+                          '🌐 SYNOPTIC CANVAS',
                           style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 11,

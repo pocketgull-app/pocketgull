@@ -278,6 +278,9 @@ export class GlobalAvsService {
       } catch {
         this.ctx = new AudioContextClass();
       }
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume().catch(() => {});
+      }
       const cfg = this.WAVE_CONFIG[wave] ?? this.WAVE_CONFIG['theta'];
 
       // Master gain (soft start)

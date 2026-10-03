@@ -1123,6 +1123,12 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                       class="px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer">
                       <span>{{ state.isAvsSessionActive() ? '⏸ Pause AVS Therapy' : '▶ Start AVS Co-Regulation' }}</span>
                     </button>
+                    <a href="http://localhost:4205" target="_blank" rel="noopener noreferrer"
+                      class="px-3.5 py-2 rounded-md bg-zinc-800 hover:bg-zinc-700 text-indigo-300 border border-indigo-500/30 text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                      title="Launch Standalone AVS Therapy Companion Console (Port 4205)">
+                      <span>🎛️</span>
+                      <span>AVS Companion Console</span>
+                    </a>
 
                       <!-- AVS Session Duration & Countdown Selector -->
                       <div class="flex items-center gap-1.5 bg-zinc-950 p-1.5 rounded-md border border-zinc-800 text-xs text-zinc-300">

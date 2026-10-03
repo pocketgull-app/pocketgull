@@ -10,7 +10,7 @@
   <link rel="preload" href="fonts/woff2/PocketGull-Fineliner.woff2?v=3.3.0" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/woff2/PocketGull-Bold.woff2?v=3.3.0" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/woff2/PocketGullMono-Regular.woff2?v=3.3.0" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/woff2/PocketGull-Math.woff2?v=3.100" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="https://font.pocketgull.app/fonts.css?v=3.3.0">
   <link rel="stylesheet" href="fonts.css?v=3.3.0">
   <style>
     :root {
@@ -977,20 +977,27 @@
     /* Individual Font Cuts Grid */
     .download-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 18px;
       margin-top: 24px;
     }
 
     .dl-card {
       background: var(--surface-inner);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 14px;
+      padding: 22px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       gap: 14px;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dl-card:hover {
+      border-color: rgba(6, 182, 212, 0.45);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
     }
 
     .dl-card.highlight {
@@ -999,17 +1006,68 @@
     }
 
     .dl-title {
-      font-family: 'PocketGull Bold';
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--sample-text);
+      letter-spacing: -0.01em;
+      margin-bottom: 2px;
+    }
+
+    .dl-specimen-stage {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 10px 0 6px 0;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .dl-specimen-stage:hover, .dl-specimen-stage:focus-within {
+      background: rgba(0, 0, 0, 0.55);
+      border-color: rgba(6, 182, 212, 0.4);
+    }
+
+    .dl-specimen-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'PocketGull Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    .dl-specimen-large {
+      font-size: 24px;
+      line-height: 1.3;
+      color: var(--sample-text);
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+      word-break: break-word;
+      outline: none;
+      cursor: text;
+    }
+
+    .dl-specimen-sub {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--sample-text-dim);
+      outline: none;
+      word-break: break-word;
+      cursor: text;
     }
 
     .dl-meta {
       font-size: 12px;
       color: var(--text-muted);
       margin-top: 4px;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .dl-btn-row {
@@ -2032,12 +2090,18 @@
               <button type="button" class="sci-tab-btn" style="font-size: 11px; padding: 6px 12px;" onclick="selectMathFormula('enzyme', this)">Enzyme Kinetics</button>
               <button type="button" class="sci-tab-btn" style="font-size: 11px; padding: 6px 12px;" onclick="selectMathFormula('pkpd', this)">PK/PD Bolus Decay</button>
               <button type="button" class="sci-tab-btn" style="font-size: 11px; padding: 6px 12px;" onclick="selectMathFormula('delims', this)">Stepped Brackets</button>
+              <button type="button" class="sci-tab-btn" style="font-size: 11px; padding: 6px 12px;" onclick="selectMathFormula('ismp', this)">ISMP Zero &amp; PK</button>
             </div>
           </div>
 
-          <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 18px;">
+          <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 14px;">
             Standard LaTeX math typefaces (like Computer Modern) feature ultra-thin 28 UPM vertical stems designed for 19th-century letterpress ink squash on paper. In modern clinical dark-mode EHRs and presentation monitors, their exponents and fraction bars collapse into hairlines and disappear. PocketGull Math stabilizes stroke geometry at <strong>68 UPM</strong>, guaranteeing universal legibility across all contrast states.
           </p>
+
+          <div style="background: rgba(56, 189, 248, 0.08); border-left: 3px solid #38bdf8; padding: 12px 16px; border-radius: 6px; margin-bottom: 18px; font-size: 12.5px; line-height: 1.6; color: var(--sample-text);">
+            <strong style="color: #38bdf8;">🛡️ Intrinsic ISMP Safety (Decoupled from OpenType MATH Table):</strong>
+            While the ISO/IEC 14496-22 OpenType <code>MATH</code> table governs 2D spatial assembly (fractions, radical extensions, and stepped delimiters), <strong>ISMP character safety is baked directly into the default Unicode base glyphs</strong> (<code>U+0030</code> slashed zero 0̸, <code>U+006C</code> curved l, <code>U+0049</code> slab serifed I, <code>U+005A</code> crossbar Z, and 68 UPM stem geometry). Even in raw plain-text fields, Canvas 2D renders, SVG vector exports, thermal label printers, or legacy environments where an OpenType MATH layout engine is inactive, the glyphs remain fundamentally ISMP-safe out of the box.
+          </div>
 
           <!-- Dynamic Formula Display Stage -->
           <div class="math-formula-stage" id="mathFormulaStage" style="font-family: 'PocketGull Math', 'PocketGull', sans-serif; font-size: clamp(18px, 2.8vw, 32px); color: var(--sample-text); letter-spacing: 0.02em;">
@@ -3374,9 +3438,23 @@
 
       <!-- Individual Font Cuts Grid -->
       <div class="download-grid">
+        <!-- 1. PocketGull VF -->
         <div class="dl-card highlight">
           <div>
-            <div class="dl-title" style="color: var(--cyan);">PocketGull VF (Variable Font)</div>
+            <div class="dl-title" style="font-family: 'PocketGull VF', 'PocketGull', sans-serif; color: var(--cyan);">
+              PocketGull VF (Variable Font)
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>🎛️</span> 16-Axis Continuous Design Space
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull VF', 'PocketGull', sans-serif; font-variation-settings: 'wght' 650, 'wdth' 95;">
+                AaBbGgQq 0123456789
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull VF', 'PocketGull', sans-serif;">
+                The quick brown fox jumps over the lazy dog • 16-Axis Continuous Morphing
+              </div>
+            </div>
             <div class="dl-meta">wght 400–900 • wdth 75–100 • slnt −10.5°–0° • opsz 14–72 pt • Single Responsive File</div>
           </div>
           <div class="dl-btn-row">
@@ -3385,9 +3463,23 @@
           </div>
         </div>
 
+        <!-- 2. PocketGull Bold -->
         <div class="dl-card">
           <div>
-            <div class="dl-title">PocketGull Bold</div>
+            <div class="dl-title" style="font-family: 'PocketGull Bold', 'PocketGull', sans-serif; font-weight: 700;">
+              PocketGull Bold
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>⚡</span> Proportional Titling &amp; Brand
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Bold', 'PocketGull', sans-serif; font-weight: 700;">
+                AaBbGgQq 0123456789
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Bold', 'PocketGull', sans-serif;">
+                Sphinx of black quartz, judge my vow • High-Acuity Clinical Titling
+              </div>
+            </div>
             <div class="dl-meta">Weight: 700/800 • Proportional Display, Titling &amp; Brand</div>
           </div>
           <div class="dl-btn-row">
@@ -3396,9 +3488,23 @@
           </div>
         </div>
 
+        <!-- 3. PocketGull Regular -->
         <div class="dl-card">
           <div>
-            <div class="dl-title">PocketGull Regular</div>
+            <div class="dl-title" style="font-family: 'PocketGull Regular', 'PocketGull', sans-serif; font-weight: 400;">
+              PocketGull Regular
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>📖</span> Foundation Reading &amp; Body
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Regular', 'PocketGull', sans-serif; font-weight: 400;">
+                AaBbGgQq 0123456789
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Regular', 'PocketGull', sans-serif;">
+                Standard of Care &amp; Clinical Evidence Homeostasis • 1000 UPM Optotypes
+              </div>
+            </div>
             <div class="dl-meta">Weight: 400 • Foundation Reading &amp; Standard Body Typography</div>
           </div>
           <div class="dl-btn-row">
@@ -3407,9 +3513,23 @@
           </div>
         </div>
 
+        <!-- 4. PocketGull Fineliner -->
         <div class="dl-card">
           <div>
-            <div class="dl-title">PocketGull Fineliner</div>
+            <div class="dl-title" style="font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif; font-weight: 400;">
+              PocketGull Fineliner
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>💊</span> Clinical EHR &amp; Slashed Zero
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif; font-weight: 400;">
+                AaBbGgQq 0123456789
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Fineliner', 'PocketGull', sans-serif;">
+                Rx: Amoxicillin 500mg PO TID x 10d • Disambiguated (Ø / l / I)
+              </div>
+            </div>
             <div class="dl-meta">Weight: 400 • Clinical EHR Prescribing &amp; Long-Form Charts</div>
           </div>
           <div class="dl-btn-row">
@@ -3418,9 +3538,23 @@
           </div>
         </div>
 
+        <!-- 5. PocketGull Chiseltip -->
         <div class="dl-card">
           <div>
-            <div class="dl-title">PocketGull Chiseltip</div>
+            <div class="dl-title" style="font-family: 'PocketGull Chiseltip', sans-serif; font-weight: 900;">
+              PocketGull Chiseltip
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>🚨</span> High-Impact Wayfinding
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Chiseltip', sans-serif; font-weight: 900;">
+                AaBbGgQq 0123456789
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Chiseltip', sans-serif;">
+                EMERGENCY TRAUMA BAY 04 • RAPID TRIAGE PLACARD
+              </div>
+            </div>
             <div class="dl-meta">Weight: 900 • High-Impact Emergency Placards &amp; Wayfinding</div>
           </div>
           <div class="dl-btn-row">
@@ -3429,9 +3563,23 @@
           </div>
         </div>
 
+        <!-- 6. PocketGull Black -->
         <div class="dl-card">
           <div>
-            <div class="dl-title">PocketGull Black</div>
+            <div class="dl-title" style="font-family: 'PocketGull Black', sans-serif; font-weight: 900;">
+              PocketGull Black
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>⬛</span> Heavyweight High-Contrast Display
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Black', sans-serif; font-weight: 900;">
+                AaBbGgQq 0123456789
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Black', sans-serif;">
+                CRITICAL CODE BLUE • RESUSCITATION READY DISPLAY
+              </div>
+            </div>
             <div class="dl-meta">Weight: 900 • Heavyweight Poster &amp; High-Contrast Display</div>
           </div>
           <div class="dl-btn-row">
@@ -3440,9 +3588,23 @@
           </div>
         </div>
 
+        <!-- 7. PocketGull Marker Raw -->
         <div class="dl-card">
           <div>
-            <div class="dl-title">PocketGull Marker Raw</div>
+            <div class="dl-title" style="font-family: 'PocketGull Marker Raw', cursive, sans-serif; font-weight: 900;">
+              PocketGull Marker Raw
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>🖋️</span> Phil Gear Authentic Cardstock Felt
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Marker Raw', cursive, sans-serif; font-weight: 900;">
+                PocketGull 0123456789
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Marker Raw', cursive, sans-serif;">
+                Authentic Felt-Marker Cardstock Brand Lettering • Signature Flow
+              </div>
+            </div>
             <div class="dl-meta">Weight: 900 • Phil Gear's Authentic Cardstock Felt-Marker Display Cut</div>
           </div>
           <div class="dl-btn-row">
@@ -3451,9 +3613,23 @@
           </div>
         </div>
 
+        <!-- 8. PocketGull Mono -->
         <div class="dl-card">
           <div>
-            <div class="dl-title">PocketGull Mono</div>
+            <div class="dl-title" style="font-family: 'PocketGull Mono', monospace; font-weight: 500;">
+              PocketGull Mono
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>📟</span> Fixed 600 UPM Clinical Telemetry
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Mono', monospace; font-weight: 500; font-variant-numeric: tabular-nums lining-nums slashed-zero; font-size: 19px;">
+                HR: 72 bpm | BP: 120/80 | SpO2: 99%
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Mono', monospace;">
+                0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz
+              </div>
+            </div>
             <div class="dl-meta">Weight: 400/500 • Fixed 600 UPM Clinical Monospace Telemetry</div>
           </div>
           <div class="dl-btn-row">
@@ -3462,9 +3638,23 @@
           </div>
         </div>
 
+        <!-- 9. PocketGull Slab -->
         <div class="dl-card">
           <div>
-            <div class="dl-title">PocketGull Slab</div>
+            <div class="dl-title" style="font-family: 'PocketGull Slab', serif; font-weight: 700;">
+              PocketGull Slab
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>🏛️</span> Architectural Slab Serifs
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Slab', serif; font-weight: 700;">
+                AaBbGgQq 0123456789
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Slab', serif;">
+                Architectural Slab Serifs for Stepped-Care Care Plans &amp; Editorial Titling
+              </div>
+            </div>
             <div class="dl-meta">Weight: 400/700 • High-Impact Architectural Slab Serifs for Editorial Titling</div>
           </div>
           <div class="dl-btn-row">
@@ -3475,9 +3665,23 @@
           </div>
         </div>
 
+        <!-- 10. PocketGull Serif -->
         <div class="dl-card">
           <div>
-            <div class="dl-title">PocketGull Serif</div>
+            <div class="dl-title" style="font-family: 'PocketGull Serif', serif; font-weight: 700;">
+              PocketGull Serif
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>📜</span> Humanist Bracketed Serifs
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Serif', serif; font-weight: 700;">
+                AaBbGgQq 0123456789
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Serif', serif;">
+                Humanist Bracketed Serifs for Sustained Long-Form Reading &amp; Informed Consent
+              </div>
+            </div>
             <div class="dl-meta">Weight: 400/700 • Refined Humanist Bracketed Serifs for Long-Form Comfort</div>
           </div>
           <div class="dl-btn-row">
@@ -3488,9 +3692,23 @@
           </div>
         </div>
 
+        <!-- 11. PocketGull Soft -->
         <div class="dl-card">
           <div>
-            <div class="dl-title">PocketGull Soft</div>
+            <div class="dl-title" style="font-family: 'PocketGull Soft', sans-serif; font-weight: 700;">
+              PocketGull Soft
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>🧸</span> Tactile Rounded Pediatric Fillets
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Soft', sans-serif; font-weight: 700;">
+                AaBbGgQq 0123456789
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Soft', sans-serif;">
+                Tactile Felt-Tip Fillets &amp; Organic Pediatric Contour Geometry
+              </div>
+            </div>
             <div class="dl-meta">Weight: 400/700 • Tactile Felt-Tip Fillets &amp; Organic Pediatric Contour</div>
           </div>
           <div class="dl-btn-row">
@@ -3501,9 +3719,23 @@
           </div>
         </div>
 
+        <!-- 12. PocketGull Math -->
         <div class="dl-card highlight">
           <div>
-            <div class="dl-title" style="color: var(--cyan, #38bdf8);">PocketGull Math</div>
+            <div class="dl-title" style="font-family: 'PocketGull Math', 'PocketGull', serif; color: var(--cyan, #38bdf8);">
+              PocketGull Math
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>∑</span> ISO/IEC 14496-22 MATH • ISMP Slashed Zero Disambiguation
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Math', 'PocketGull', serif; font-size: 18px; font-feature-settings: 'zero' 1, 'cv08' 1, 'cv05' 1, 'ss02' 1;">
+                C₀ = 100 mg/L • lim_{t→0} • 0.5 mg (Leading 0) • 5 mg (No Trailing 0)
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Math', 'PocketGull', serif; font-feature-settings: 'zero' 1, 'cv08' 1, 'cv05' 1, 'ss02' 1;">
+                ISMP Zero Disambiguation: 0̸ ≠ O ≠ θ ≠ ∅ • 68 UPM Dark-Mode Stem Geometry
+              </div>
+            </div>
             <div class="dl-meta">Weight: 400 • Humanist Clinical OpenType Math (ISO/IEC 14496-22 MATH Table)</div>
           </div>
           <div class="dl-btn-row">
@@ -3512,9 +3744,23 @@
           </div>
         </div>
 
+        <!-- 13. PocketGull Chem -->
         <div class="dl-card highlight" style="border-color: rgba(52, 211, 153, 0.4);">
           <div>
-            <div class="dl-title" style="color: var(--emerald, #34d399);">PocketGull Chem</div>
+            <div class="dl-title" style="font-family: 'PocketGull Chem', 'PocketGull Mono', monospace; color: var(--emerald, #34d399);">
+              PocketGull Chem
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>🧪</span> Stereochemical Bonds &amp; Reactions
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Chem', 'PocketGull Mono', monospace; font-size: 20px;">
+                C₈H₁₀N₄O₂ (Caffeine) • H₂O + CO₂ ⇌ H₂CO₃
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Chem', 'PocketGull Mono', monospace;">
+                H₂CO₃ ⇌ H⁺ + HCO₃⁻ • Clinical Electrolyte &amp; Stereochemical Reaction Dynamics
+              </div>
+            </div>
             <div class="dl-meta">Weight: 400 • Clinical Chemistry, Stereochemical Bonds &amp; Reaction Dynamics</div>
           </div>
           <div class="dl-btn-row">
@@ -3523,9 +3769,23 @@
           </div>
         </div>
 
+        <!-- 14. PocketGull Genome -->
         <div class="dl-card highlight" style="border-color: rgba(45, 212, 191, 0.4);">
           <div>
-            <div class="dl-title" style="color: #2dd4bf;">PocketGull Genome</div>
+            <div class="dl-title" style="font-family: 'PocketGull Genome', 'PocketGull Mono', monospace; color: #2dd4bf;">
+              PocketGull Genome
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>🧬</span> NGS Alignments &amp; CRISPR/Cas9
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Genome', 'PocketGull Mono', monospace; font-size: 19px;">
+                5'-ATG GCG ACC CTG GAA AAG CTG-3'
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Genome', 'PocketGull Mono', monospace;">
+                CRISPR/Cas9 Cleavage: 5'-...NGG...-3' • Fixed 600 UPM Alignment
+              </div>
+            </div>
             <div class="dl-meta">Fixed 600 UPM Monospace • Clinical Genomics, NGS Alignments &amp; CRISPR/Cas9 Cleavage</div>
           </div>
           <div class="dl-btn-row">
@@ -3534,9 +3794,23 @@
           </div>
         </div>
 
+        <!-- 15. PocketGull Music -->
         <div class="dl-card highlight" style="border-color: rgba(129, 140, 248, 0.4);">
           <div>
-            <div class="dl-title" style="color: #818cf8;">PocketGull Music</div>
+            <div class="dl-title" style="font-family: 'PocketGull Music', sans-serif; color: #818cf8;">
+              PocketGull Music
+            </div>
+            <div class="dl-specimen-stage">
+              <div class="dl-specimen-badge">
+                <span>🎵</span> W3C SMuFL Standard Notation
+              </div>
+              <div class="dl-specimen-large" contenteditable="true" spellcheck="false" title="Click to test custom text in this font" style="font-family: 'PocketGull Music', sans-serif; font-size: 22px;">
+                𝄞 𝄢 𝄡 𝄽 𝅗𝅥 𝅘𝅥 𝅘𝅥𝅮 𝅘𝅥𝅯 • 4/4 ♩ = 120
+              </div>
+              <div class="dl-specimen-sub" contenteditable="true" spellcheck="false" style="font-family: 'PocketGull Music', sans-serif;">
+                W3C SMuFL Standard Notation • Music Therapy &amp; Audiology Telemetry
+              </div>
+            </div>
             <div class="dl-meta">Weight: 400 • W3C SMuFL Standard Notation, Music Therapy &amp; Audiology Telemetry</div>
           </div>
           <div class="dl-btn-row">
@@ -4484,6 +4758,20 @@
                    Stepped Delimiters (.v1 1000 UPM &rarr; .v4 2200 UPM) & ISMP Clinical Disambiguation Matrix
                  </div>`,
           latex: `\\Biggl[ \\biggl( \\Bigl\\{ x_{i,j} \\cdot 0.75 \\pm 0.02 \\Bigr\\} \\biggr) \\Biggr] \\quad 0̸ \\neq \\mathrm{O}, \\quad 1 \\neq \\mathrm{l} \\neq \\mathrm{I}, \\quad \\mathrm{Z} \\neq 2`
+        },
+        ismp: {
+          html: `<div style="line-height: 1.8; font-size: 1.1em;">
+                   C(t) = C<sub>0̸</sub> &middot; e<sup>&minus;k<sub>0̸</sub> &middot; t</sup> &emsp;
+                   <span style="color: #34d399; font-weight: bold;">0̸.5 mg</span> <span style="font-size: 0.8em; color: var(--text-muted);">(Mandatory Leading 0)</span> &emsp;
+                   <span style="color: #34d399; font-weight: bold;">5 mg</span> <span style="font-size: 0.8em; color: var(--text-muted);">(No Trailing .0)</span>
+                 </div>
+                 <div style="font-size: 16px; margin-top: 10px; color: #38bdf8; font-family: 'PocketGull Math', 'PocketGull Mono'; letter-spacing: 0.05em;">
+                   0̸ &ne; O &emsp; 0̸ &ne; &theta; &emsp; 0̸ &ne; &empty; &emsp; 1 &ne; l &ne; I &emsp; 2 &ne; Z
+                 </div>
+                 <div style="font-size: 13px; color: var(--text-muted); margin-top: 10px; font-family: 'PocketGull', sans-serif;">
+                   ISMP High-Risk Zero Disambiguation & Pharmacokinetics (OpenType "zero" 1, "cv08" 1, "cv05" 1, "ss02" 1)
+                 </div>`,
+          latex: `C(t) = C_{0̸} e^{-k_{0̸} t}, \\quad \\text{Dose: } 0.5\\text{ mg (Mandatory Leading 0, Never .5)}, \\quad 5\\text{ mg (Prohibited Trailing 0, Never 5.0)}, \\quad 0̸ \\neq \\mathrm{O} \\neq \\theta \\neq \\emptyset`
         }
       };
 

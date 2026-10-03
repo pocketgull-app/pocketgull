@@ -104,10 +104,6 @@ import { PocketgullDesktopSuiteComponent } from '../pocketgull-desktop-suite.com
                       class="flex-1 px-3 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl text-xs uppercase cursor-pointer transition">
                 ⚡ Push ESI Triage to Mobile
               </button>
-              <button type="button" (click)="triggerDisasterSync()"
-                      class="flex-1 px-3 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs uppercase cursor-pointer transition">
-                🚨 Push START Tag to Mobile
-              </button>
             </div>
           </div>
         } @else {
@@ -219,18 +215,6 @@ export class CompanionSyncModalComponent {
       acuityLabel: 'EMERGENT',
       nurseAttestation: true,
       rationale: 'Workstation clinical review triggered live ESI-2 priority telemetry sync.',
-      timestamp: new Date().toISOString()
-    });
-  }
-
-  triggerDisasterSync(): void {
-    this.crossSync.broadcastStartDisasterTag({
-      casualtyId: 'CAS-101',
-      tagColor: 'RED',
-      triageCategory: 'IMMEDIATE',
-      respirations: 34,
-      perfusionSeconds: 3.2,
-      mentalStatus: 'UNRESPONSIVE',
       timestamp: new Date().toISOString()
     });
   }

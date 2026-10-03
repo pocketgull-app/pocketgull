@@ -273,6 +273,10 @@ class MasterSuperfamilyCompiler {
       builder.addGlyph(IsmpDisambiguationEngine.generateCurvedL(gid++));
       builder.addGlyph(IsmpDisambiguationEngine.generateSerifedI(gid++));
       builder.addGlyph(IsmpDisambiguationEngine.generateSlashedZ(gid++));
+      builder.addGlyph(IsmpDisambiguationEngine.generateEmptySet(gid++));
+      builder.addGlyph(IsmpDisambiguationEngine.generateRightHarpoon(gid++));
+      builder.addGlyph(IsmpDisambiguationEngine.generatePartialDifferential(gid++));
+      builder.addGlyph(IsmpDisambiguationEngine.generateInfinity(gid++));
 
       // 4. Monospace ICU HUD Waveforms
       final hudGlyphs = MonospaceHudEngine.generateCoreSet(gid);

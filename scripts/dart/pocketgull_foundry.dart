@@ -19,6 +19,7 @@ const fontStems = [
   'PocketGull-Antigravity',
   'PocketGull-Numerics',
   'PocketGull-Math',
+  'PocketGull-Chem',
   'PocketGullMono-Regular',
   'PocketGullMono-Bold',
   'PocketGullMono-Italic',
@@ -145,6 +146,8 @@ void runCompile() {
     'PocketGull-Chiseltip.ttf': 900,
     'PocketGull-Antigravity.ttf': 400,
     'PocketGull-Numerics.ttf': 600,
+    'PocketGull-Math.ttf': 400,
+    'PocketGull-Chem.ttf': 400,
     'PocketGullMono-Regular.ttf': 500,
     'PocketGull-VF.ttf': 400,
   };

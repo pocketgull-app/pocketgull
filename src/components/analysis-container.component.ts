@@ -29,9 +29,7 @@ import { LensPhysicalGenomicsComponent } from './turing/lens-physical-genomics.c
 import { HobbyDomainCompanionComponent } from './hobby-domain-companion.component';
 import { SparseClinicalCanvasComponent } from './sparse-clinical-canvas.component';
 import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
-import { BedsideInterpreterModalComponent } from './modals/bedside-interpreter-modal.component';
 import { CaregiverCheatSheetModalComponent } from './modals/caregiver-cheat-sheet-modal.component';
-import { DisasterTriageModalComponent } from './modals/disaster-triage-modal.component';
 import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
 
 @Component({
@@ -60,9 +58,7 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
     LensPhysicalGenomicsComponent,
     HobbyDomainCompanionComponent,
     SparseClinicalCanvasComponent,
-    BedsideInterpreterModalComponent,
     CaregiverCheatSheetModalComponent,
-    DisasterTriageModalComponent,
     TraumaBurnModalComponent
   ],
   template: `
@@ -207,15 +203,6 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
                 <span>[WHAT-IF]</span>
               </button>
 
-              <!-- Bedside Multimodal Interpreter Button -->
-              <button type="button" (click)="showInterpreterModal.set(!showInterpreterModal())"
-                title="Open ACA § 1557 Qualified Medical Language Access Teleprompter"
-                [class]="showInterpreterModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-400 bg-amber-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-600 hover:text-white transition cursor-pointer'">
-                <span>[🗣️ INTERPRETER]</span>
-              </button>
-
               <!-- Caregiver Advocacy & Cheat Sheet Button -->
               <button type="button" (click)="showCaregiverModal.set(!showCaregiverModal())"
                 title="Open Caregiver Advocacy & Plain-Language Doctor Visit Cheat Sheet (Flesch-Kincaid Grade 6)"
@@ -223,15 +210,6 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
                   ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-400 bg-teal-500 text-zinc-950 transition cursor-pointer'
                   : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-500/40 bg-teal-500/10 text-teal-300 hover:bg-teal-600 hover:text-white transition cursor-pointer'">
                 <span>[👤 CHEAT SHEET]</span>
-              </button>
-
-              <!-- Mass Casualty / Disaster Rapid Triage Button -->
-              <button type="button" (click)="showDisasterModal.set(!showDisasterModal())"
-                title="Open Mass Casualty Rapid Disaster Triage Command (START / SALT & Surge Capacity)"
-                [class]="showDisasterModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-rose-400 bg-rose-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-rose-500/40 bg-rose-500/10 text-rose-300 hover:bg-rose-600 hover:text-white transition cursor-pointer'">
-                <span>[🚨 DISASTER]</span>
               </button>
 
               <!-- 3D Procedural Trauma & Burn Anatomy Button -->
@@ -247,7 +225,7 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
               <div class="relative">
                 <button type="button" (click)="showToolsMenu.set(!showToolsMenu())"
                   title="Clinical Studio &amp; Advanced Analysis Tools"
-                  [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showEdgeAiModal() || showSteeepModal() || showBiophysicsModal() || showInterpreterModal() || showCaregiverModal() || showDisasterModal() || showTraumaModal() || showToolsMenu())
+                  [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showEdgeAiModal() || showSteeepModal() || showBiophysicsModal() || showCaregiverModal() || showTraumaModal() || showToolsMenu())
                     ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-600 bg-zinc-800 text-zinc-100 transition cursor-pointer'
                     : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
                   <span>STUDIO ▾</span>
@@ -260,20 +238,10 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
                       <span>🩻 3D Trauma &amp; Burn Lens</span>
                       @if (showTraumaModal()) { <span class="text-amber-400">✓</span> }
                     </button>
-                    <button (click)="showDisasterModal.set(!showDisasterModal()); showToolsMenu.set(false)"
-                      class="w-full text-left px-3 py-2 text-rose-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
-                      <span>🚨 Disaster Triage (START/SALT)</span>
-                      @if (showDisasterModal()) { <span class="text-rose-400">✓</span> }
-                    </button>
                     <button (click)="showCaregiverModal.set(!showCaregiverModal()); showToolsMenu.set(false)"
                       class="w-full text-left px-3 py-2 text-teal-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
                       <span>👤 Caregiver Action Plan</span>
                       @if (showCaregiverModal()) { <span class="text-teal-400">✓</span> }
-                    </button>
-                    <button (click)="showInterpreterModal.set(!showInterpreterModal()); showToolsMenu.set(false)"
-                      class="w-full text-left px-3 py-2 text-amber-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
-                      <span>🗣️ Medical Interpreter</span>
-                      @if (showInterpreterModal()) { <span class="text-amber-400">✓</span> }
                     </button>
                     <button (click)="showEdgeAiModal.set(!showEdgeAiModal()); showToolsMenu.set(false)"
                       class="w-full text-left px-3 py-2 text-teal-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer">
@@ -513,19 +481,9 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
       <app-clinical-ux-evaluation-hub (closed)="showEvaluationHubModal.set(false)"></app-clinical-ux-evaluation-hub>
     }
 
-    <!-- Bedside Multimodal Live Consult & Interpreter Modal (ACA § 1557) -->
-    @if (showInterpreterModal()) {
-      <app-bedside-interpreter-modal (close)="showInterpreterModal.set(false)"></app-bedside-interpreter-modal>
-    }
-
     <!-- Caregiver Advocacy & "Doctor Visit Cheat Sheet" Modal (Flesch-Kincaid Grade 6) -->
     @if (showCaregiverModal()) {
       <app-caregiver-cheat-sheet-modal (close)="showCaregiverModal.set(false)"></app-caregiver-cheat-sheet-modal>
-    }
-
-    <!-- Mass Casualty & Disaster Rapid Triage Modal (START / SALT) -->
-    @if (showDisasterModal()) {
-      <app-disaster-triage-modal (close)="showDisasterModal.set(false)"></app-disaster-triage-modal>
     }
 
     <!-- 3D Procedural Trauma & Burn Anatomy Modal (Wallace Rule of 9s & Parkland) -->
@@ -592,9 +550,7 @@ export class AnalysisContainerComponent {
   showCohortMatrixModal = signal(false);
   showHipaaPdfModal = signal(false);
   showEvaluationHubModal = signal(false);
-  showInterpreterModal = signal(false);
   showCaregiverModal = signal(false);
-  showDisasterModal = signal(false);
   showTraumaModal = signal(false);
   showHobbyCompanionModal = signal(false);
   showMyChartModal = signal(false);

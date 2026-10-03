@@ -576,9 +576,9 @@ class _TriageCommandBoardState extends State<TriageCommandBoard> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              icon: const Text('⚡', style: TextStyle(fontSize: 13)),
+              icon: const Text('🌐', style: TextStyle(fontSize: 13)),
               label: const Text(
-                'Admit to SMoE Canvas →',
+                'Admit to Synoptic Canvas →',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5),
               ),
             ),
