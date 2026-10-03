@@ -270,6 +270,13 @@ export class FrontlineVernacularVoiceService {
     }
   }
 
+  /**
+   * Alias for playAcousticAttentionCue for intuitive speech error fallback.
+   */
+  public playAcousticChime(freq = 528, durationMs = 350): void {
+    this.playAcousticAttentionCue(freq, durationMs);
+  }
+
   // ────────────────────────────────────────────────────────────────────────
   // Prompt Builders for the Top 5 Frontline Languages
   // ────────────────────────────────────────────────────────────────────────
@@ -795,5 +802,114 @@ export class FrontlineVernacularVoiceService {
         audioDurationSecEst: 6
       };
     }
+  }
+
+  /**
+   * Returns localized spoken prompt for Wong-Baker FACES pain scores (0, 2, 4, 6, 8, 10).
+   */
+  public getAacFacePrompt(score: number, langCode?: VernacularLanguageCode): string {
+    const code = langCode || this.activeLanguageCode();
+    const faceMap: Record<number, Record<VernacularLanguageCode, string>> = {
+      0: {
+        en: 'I am comfortable and have no pain. Pain score zero.',
+        es: 'Estoy cómodo y no tengo dolor. Nivel de dolor cero.',
+        hi: 'मैं आराम से हूँ और मुझे कोई दर्द नहीं है। दर्द का स्तर शून्य।',
+        sw: 'Niko salama na sina maumivu yoyote. Kiwango cha maumivu sifuri.',
+        ar: 'أنا مرتاح ولا أشعر بأي ألم. درجة الألم صفر.'
+      },
+      2: {
+        en: 'It hurts just a little bit. Pain score two.',
+        es: 'Me duele solo un poco. Nivel de dolor dos.',
+        hi: 'मुझे बस थोड़ा सा दर्द हो रहा है। दर्द का स्तर दो।',
+        sw: 'Inauma kidogo tu. Kiwango cha maumivu mawili.',
+        ar: 'يؤلمني قليلاً فقط. درجة الألم اثنان.'
+      },
+      4: {
+        en: 'It hurts a little more now. Pain score four.',
+        es: 'Me duele un poco más ahora. Nivel de dolor cuatro.',
+        hi: 'अब थोड़ा और दर्द हो रहा है। दर्द का स्तर चार।',
+        sw: 'Sasa inauma zaidi kidogo. Kiwango cha maumivu manne.',
+        ar: 'يؤلمني أكثر قليلاً الآن. درجة الألم أربعة.'
+      },
+      6: {
+        en: 'It hurts even more. It is hard to rest. Pain score six.',
+        es: 'Me duele aún más. Es difícil descansar. Nivel de dolor seis.',
+        hi: 'और भी ज्यादा दर्द हो रहा है। आराम करना मुश्किल है। दर्द का स्तर छह।',
+        sw: 'Inauma zaidi sana. Ni vigumu kupumzika. Kiwango cha maumivu sita.',
+        ar: 'الألم يزداد أكثر، يصعب عليّ الراحة. درجة الألم ستة.'
+      },
+      8: {
+        en: 'It hurts a whole lot. I need pain relief. Pain score eight.',
+        es: 'Me duele muchísimo. Necesito alivio para el dolor. Nivel de dolor ocho.',
+        hi: 'बहुत तेज दर्द हो रहा है। मुझे दर्द से राहत चाहिए। दर्द का स्तर आठ।',
+        sw: 'Inauma sana mno. Nahitaji dawa ya maumivu. Kiwango cha maumivu nane.',
+        ar: 'يؤلمني بشدة كبيرة. أحتاج إلى مسكن للألم. درجة الألم ثمانية.'
+      },
+      10: {
+        en: 'This hurts the worst possible. Please help me right away. Pain score ten.',
+        es: 'Es el peor dolor posible. Por favor ayúdenme de inmediato. Nivel de dolor diez.',
+        hi: 'यह असहनीय और सबसे भयानक दर्द है। कृपया तुरंत मेरी मदद करें। दर्द का स्तर दस।',
+        sw: 'Haya ni maumivu mabaya zaidi iwezekanavyo. Tafadhali nisaidieni mara moja. Kiwango cha maumivu kumi.',
+        ar: 'هذا أشد ألم ممكن لا أستطيع تحمله. أرجو المساعدة فوراً. درجة الألم عشرة.'
+      }
+    };
+
+    const targetScore = score in faceMap ? score : 0;
+    return faceMap[targetScore][code] || faceMap[targetScore].en;
+  }
+
+  /**
+   * Returns localized spoken prompt for ICU Bedside AAC need tiles.
+   */
+  public getAacTilePrompt(tileId: string, langCode?: VernacularLanguageCode): string {
+    const code = langCode || this.activeLanguageCode();
+    const tileMap: Record<string, Record<VernacularLanguageCode, string>> = {
+      WATER: {
+        en: 'Could I please have some water, or a mouth swab?',
+        es: '¿Podría darme un poco de agua o una gasa húmeda para la boca, por favor?',
+        hi: 'कृपया मुझे थोड़ा पानी या मुंह पोंछने के लिए गीला कपड़ा मिल सकता है?',
+        sw: 'Tafadhali naomba maji ya kunywa au kitambaa cha kuloweka kinywa?',
+        ar: 'هل يمكنني الحصول على بعض الماء أو مسحة رطبة للفم من فضلك؟'
+      },
+      PAIN: {
+        en: "I'm in pain. Could someone please check on my pain medication?",
+        es: 'Tengo dolor. ¿Alguien podría revisar mi medicamento para el dolor, por favor?',
+        hi: 'मुझे दर्द हो रहा है। क्या कोई मेरी दर्द की दवा की जांच कर सकता है?',
+        sw: 'Nina maumivu. Tafadhali naomba mtu anisaidie kuangalia dawa yangu ya maumivu?',
+        ar: 'أشعر بألم. هل يمكن لأحد تفقد دواء تسكين الألم الخاص بي من فضلك؟'
+      },
+      COLD: {
+        en: "I'm feeling very cold. Could I please have a warm blanket?",
+        es: 'Tengo mucho frío. ¿Podría traerme una manta caliente, por favor?',
+        hi: 'मुझे बहुत ठंड लग रही है। क्या मुझे एक गर्म कंबल मिल सकता है?',
+        sw: 'Ninahisi baridi kali sana. Naomba blanketi ya joto tafadhali?',
+        ar: 'أشعر ببرد شديد. هل يمكنني الحصول على بطانية دافئة من فضلك؟'
+      },
+      WARM: {
+        en: "I'm feeling too warm. Could we adjust the blankets or turn on a fan?",
+        es: 'Tengo mucho calor. ¿Podríamos retirar las mantas o encender un ventilador?',
+        hi: 'मुझे बहुत गर्मी लग रही है। क्या हम कंबल हटा सकते हैं या पंखा चला सकते हैं?',
+        sw: 'Ninahisi joto kali. Tunaweza kupunguza blanketi au kuwasha feni?',
+        ar: 'أشعر بحرارة شديدة. هل يمكننا تخفيف الأغطية أو تشغيل مروحة؟'
+      },
+      REPOSITION: {
+        en: 'Could someone please help reposition me, or turn me in bed?',
+        es: '¿Podría alguien ayudarme a cambiar de posición o girarme en la cama, por favor?',
+        hi: 'क्या कोई मुझे बिस्तर में करवट बदलने या सही स्थिति में लेटने में मदद कर सकता है?',
+        sw: 'Tafadhali naomba mtu anisaidie kubadili mkao au kugeuka kitandani?',
+        ar: 'هل يمكن لأحد مساعدتي في تغيير وضعيتي أو تعديل نومتي في السرير من فضلك؟'
+      },
+      FAMILY: {
+        en: 'I would like to see my family, or speak with my nurse, please.',
+        es: 'Me gustaría ver a mi familia o hablar con mi enfermera, por favor.',
+        hi: 'मैं अपने परिवार से मिलना चाहता हूँ, या अपनी नर्स से बात करना चाहता हूँ।',
+        sw: 'Ningependa kuona familia yangu au kuongea na muuguzi wangu, tafadhali.',
+        ar: 'أود رؤية عائلتي أو التحدث مع ممرضتي من فضلك.'
+      }
+    };
+
+    const tile = tileMap[tileId.toUpperCase()];
+    if (!tile) return 'Assistance requested.';
+    return tile[code] || tile.en;
   }
 }

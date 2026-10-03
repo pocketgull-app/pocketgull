@@ -146,4 +146,31 @@ describe('FrontlineVernacularVoiceService Unit Suite', () => {
     // Test acoustic cue trigger
     expect(() => service.playAcousticAttentionCue(528, 100)).not.toThrow();
   });
+
+  it('8. Generates localized Wong-Baker FACES pain prompts across scores and languages', () => {
+    // Score 0 English
+    expect(service.getAacFacePrompt(0, 'en')).toContain('no pain');
+    // Score 10 Spanish
+    expect(service.getAacFacePrompt(10, 'es')).toContain('peor dolor posible');
+    // Score 6 Hindi
+    expect(service.getAacFacePrompt(6, 'hi')).toContain('दर्द');
+    // Score 8 Swahili
+    expect(service.getAacFacePrompt(8, 'sw')).toContain('dawa ya maumivu');
+    // Score 10 Arabic
+    expect(service.getAacFacePrompt(10, 'ar')).toContain('أشد ألم');
+  });
+
+  it('9. Generates localized Bedside AAC Need Tile prompts', () => {
+    // WATER in Arabic
+    expect(service.getAacTilePrompt('WATER', 'ar')).toContain('الماء');
+    // PAIN in Spanish
+    expect(service.getAacTilePrompt('PAIN', 'es')).toContain('medicamento');
+    // COLD in Hindi
+    expect(service.getAacTilePrompt('COLD', 'hi')).toContain('कंबल');
+    // FAMILY in Swahili
+    expect(service.getAacTilePrompt('FAMILY', 'sw')).toContain('familia');
+    // Fallback for unknown tile
+    expect(service.getAacTilePrompt('UNKNOWN_TILE')).toBe('Assistance requested.');
+  });
 });
+

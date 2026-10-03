@@ -28,6 +28,7 @@ import { SpatialLesionMarkupService } from '../services/spatial-lesion-markup.se
 import { MdcpDomainService } from '../services/mdcp/mdcp-domain.service';
 import { NavigationShellService } from '../services/navigation-shell.service';
 import { SocraticVoiceDemystifierService, IVoicePersonaProfile } from '../services/socratic-voice-demystifier.service';
+import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../services/frontline-vernacular-voice.service';
 
 
 export interface IChatEntry {
@@ -229,6 +230,52 @@ export interface IChatEntry {
                                     <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-mono font-bold">
                                         {{ isSocraticDemystifierActive() ? 'ANALOGIES ON' : 'RAW' }}
                                     </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Vernacular Voice Language Selector Dropdown -->
+                    <div class="relative">
+                        <button
+                            type="button"
+                            (click)="isVernacularVoiceMenuOpen.set(!isVernacularVoiceMenuOpen())"
+                            id="btn-chat-vernacular-lang"
+                            class="flex items-center gap-1.5 transition-all px-2 py-1 rounded-lg border text-[11px] font-bold cursor-pointer"
+                            [ngClass]="vernacularVoice.isSpeaking() ? 'bg-teal-500/20 text-teal-700 dark:text-teal-300 border-teal-500/50 shadow-xs' : 'bg-gray-50 dark:bg-zinc-800/80 text-gray-700 dark:text-zinc-300 border-gray-200 dark:border-zinc-700'"
+                            [title]="'Frontline Vernacular Voice: ' + vernacularVoice.activeLanguage().name + ' (' + vernacularVoice.activeLanguage().nativeName + ')'">
+                            <span class="text-xs">{{ vernacularVoice.activeLanguage().flagEmoji }}</span>
+                            <span class="font-mono uppercase">{{ vernacularVoice.activeLanguageCode() }}</span>
+                            @if (vernacularVoice.isSpeaking()) {
+                                <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+                            }
+                        </button>
+
+                        @if (isVernacularVoiceMenuOpen()) {
+                            <div class="fixed inset-0 z-40 bg-black/20" (click)="isVernacularVoiceMenuOpen.set(false)"></div>
+                            <div class="absolute right-0 mt-1 w-52 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-100 font-sans text-xs">
+                                <div class="px-2 py-1 text-[10px] font-mono font-bold uppercase text-zinc-500 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center mb-1">
+                                    <span>Frontline Voice Prompts</span>
+                                    <span class="text-teal-500 font-bold">Offline TTS</span>
+                                </div>
+                                <div class="space-y-1">
+                                    @for (lang of vernacularVoice.languages(); track lang.code) {
+                                        <button
+                                            type="button"
+                                            (click)="selectVernacularLanguage(lang.code)"
+                                            [class.bg-teal-50]="vernacularVoice.activeLanguageCode() === lang.code"
+                                            [class.dark:bg-teal-950/60]="vernacularVoice.activeLanguageCode() === lang.code"
+                                            [class.text-teal-800]="vernacularVoice.activeLanguageCode() === lang.code"
+                                            [class.dark:text-teal-200]="vernacularVoice.activeLanguageCode() === lang.code"
+                                            [class.font-bold]="vernacularVoice.activeLanguageCode() === lang.code"
+                                            class="w-full text-left px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition flex items-center justify-between text-xs cursor-pointer">
+                                            <div class="flex items-center gap-2">
+                                                <span>{{ lang.flagEmoji }}</span>
+                                                <span>{{ lang.nativeName }}</span>
+                                            </div>
+                                            <span class="text-[10px] font-mono opacity-70">({{ lang.code.toUpperCase() }})</span>
+                                        </button>
+                                    }
                                 </div>
                             </div>
                         }
@@ -525,6 +572,11 @@ export interface IChatEntry {
                                                             📋 Copy
                                                         </button>
                                                         @if (entry.role === 'model') {
+                                                            <button type="button" (click)="speakVernacular(entry.text); $event.stopPropagation()" 
+                                                                    class="px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-300 border border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-900/60 cursor-pointer flex items-center gap-1 font-mono text-[10px]" 
+                                                                    [title]="'Listen in ' + vernacularVoice.activeLanguage().nativeName">
+                                                                <span>🔊</span> <span>{{ vernacularVoice.activeLanguage().nativeName }}</span>
+                                                            </button>
                                                             <button type="button" (click)="speakPersona(entry.text, 'gulliver'); $event.stopPropagation()" 
                                                                     class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-100 cursor-pointer" 
                                                                     title="Speak with Gulliver voice">
@@ -713,7 +765,11 @@ export interface IChatEntry {
                                 <div class="space-y-1">
                                     <div class="flex items-center justify-between text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
                                         <span class="font-bold flex items-center gap-1"><span>😣</span> Wong-Baker FACES Pain Vocalizer</span>
-                                        <span class="text-teal-600 dark:text-teal-400">One-Tap Announce</span>
+                                        <span class="text-teal-600 dark:text-teal-400 flex items-center gap-1 font-bold">
+                                            <span>{{ vernacularVoice.activeLanguage().flagEmoji }}</span>
+                                            <span>{{ vernacularVoice.activeLanguage().nativeName }}</span>
+                                            <span class="opacity-75">({{ vernacularVoice.activeLanguageCode().toUpperCase() }})</span>
+                                        </span>
                                     </div>
                                     <div class="grid grid-cols-6 gap-1 font-mono text-xs">
                                         @for (face of aacFaces; track face.score) {
@@ -975,6 +1031,7 @@ export class VoiceAssistantComponent implements OnDestroy {
     mdcpService = inject(MdcpDomainService, { optional: true });
     navShell = inject(NavigationShellService, { optional: true });
     socraticVoice = inject(SocraticVoiceDemystifierService);
+    vernacularVoice = inject(FrontlineVernacularVoiceService, { optional: true }) ?? new FrontlineVernacularVoiceService();
 
     openMdcpHub(): void {
       this.navShell?.openMdcpHub();
@@ -982,6 +1039,7 @@ export class VoiceAssistantComponent implements OnDestroy {
 
     isVoiceMenuOpen = signal<boolean>(false);
     isSocraticMenuOpen = signal<boolean>(false);
+    isVernacularVoiceMenuOpen = signal<boolean>(false);
     isSocraticDemystifierActive = signal<boolean>(true);
     showPromptShelf = signal<boolean>(false);
     showAacShelf = signal<boolean>(false);
@@ -1014,14 +1072,29 @@ export class VoiceAssistantComponent implements OnDestroy {
       this.isSocraticMenuOpen.set(false);
     }
 
-    async selectAacFace(face: { score: number; name: string; speechPrompt: string }): Promise<void> {
-      await this.socraticVoice.speakWithVagalPacing(face.speechPrompt);
-      this.sendQuickPrompt(`[BEDSIDE AAC PAIN VOCALIZATION]: Patient reported Wong-Baker FACES pain score of ${face.score}/10 (${face.name}). "${face.speechPrompt}"`);
+    selectVernacularLanguage(code: VernacularLanguageCode): void {
+      this.vernacularVoice.setLanguage(code);
+      this.isVernacularVoiceMenuOpen.set(false);
     }
 
-    async triggerAacTile(tile: { title: string; spokenText: string }): Promise<void> {
-      await this.socraticVoice.speakWithVagalPacing(tile.spokenText);
-      this.sendQuickPrompt(`[BEDSIDE AAC NEED ANNOUNCEMENT]: ${tile.spokenText}`);
+    async speakVernacular(text: string): Promise<void> {
+      if (!text) return;
+      const clean = this.sanitizeTextForSpeech(text);
+      await this.vernacularVoice.speakPrompt(clean);
+    }
+
+    async selectAacFace(face: { score: number; name: string; speechPrompt: string }): Promise<void> {
+      const prompt = this.vernacularVoice.getAacFacePrompt(face.score);
+      const lang = this.vernacularVoice.activeLanguage();
+      await this.vernacularVoice.speakPrompt(prompt, lang.code);
+      this.sendQuickPrompt(`[BEDSIDE AAC PAIN VOCALIZATION (${lang.nativeName})]: Patient reported Wong-Baker FACES pain score of ${face.score}/10 (${face.name}). "${prompt}"`);
+    }
+
+    async triggerAacTile(tile: { id: string; title: string; spokenText: string }): Promise<void> {
+      const prompt = this.vernacularVoice.getAacTilePrompt(tile.id);
+      const lang = this.vernacularVoice.activeLanguage();
+      await this.vernacularVoice.speakPrompt(prompt, lang.code);
+      this.sendQuickPrompt(`[BEDSIDE AAC NEED ANNOUNCEMENT (${lang.nativeName})]: "${prompt}"`);
     }
 
     setVoice(voice: string): void {
@@ -2129,9 +2202,20 @@ To enable full interactive consultations, custom question answering, and live vo
         this.speakClientSide(welcomeText);
     }
 
-    private getBestNaturalVoice(): SpeechSynthesisVoice | null {
+    private getBestNaturalVoice(langCode?: string): SpeechSynthesisVoice | null {
         if (typeof window === 'undefined' || !window.speechSynthesis) return null;
         const voices = window.speechSynthesis.getVoices();
+        const code = langCode || this.vernacularVoice.activeLanguageCode();
+        const activeSpec = this.vernacularVoice.activeLanguage();
+
+        // 1. First priority: match by active vernacular BCP-47 or 2-letter language code
+        if (code && code !== 'en') {
+            const vernacularMatch = voices.find(v => 
+                v.lang.toLowerCase() === activeSpec.bcp47.toLowerCase() ||
+                v.lang.toLowerCase().startsWith(code.toLowerCase())
+            );
+            if (vernacularMatch) return vernacularMatch;
+        }
         
         const preferredVoices = [
             'Google US English',
@@ -2177,13 +2261,20 @@ To enable full interactive consultations, custom question answering, and live vo
             const cleanText = this.sanitizeTextForSpeech(text);
             const utterance = new SpeechSynthesisUtterance(cleanText);
             
-            const voice = this.getBestNaturalVoice();
+            const activeLang = this.vernacularVoice.activeLanguage();
+            utterance.lang = activeLang.bcp47;
+            const voice = this.getBestNaturalVoice(activeLang.code);
             if (voice) {
                 utterance.voice = voice;
             }
             
             utterance.rate = 0.94;  // Natural conversational pace
             utterance.pitch = 1.02; // Warm intonation
+
+            utterance.onerror = () => {
+                // Graceful fallback to acoustic chime
+                this.vernacularVoice.playAcousticChime();
+            };
 
             utterance.onend = () => {
                 this.agentState.set('listening');
