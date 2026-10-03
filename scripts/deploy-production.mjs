@@ -98,12 +98,13 @@ try {
 }
 
 // 4. Deploy to Google Cloud Run
-console.log('\n🚀 Step 4/5: Deploying image to Google Cloud Run (Scale-to-Zero & Least-Privilege SA)...');
+console.log('\n🚀 Step 4/5: Deploying image to Google Cloud Run (Scale-to-Zero, Binary Authorization & Least-Privilege SA)...');
 run(
   `gcloud run deploy ${SERVICE_NAME} ` +
   `--image ${deployTarget} ` +
   `--project=${TARGET_PROJECT} ` +
   `--service-account=pocketgull-run@${TARGET_PROJECT}.iam.gserviceaccount.com ` +
+  `--binary-authorization=default ` +
   `--platform managed ` +
   `--region ${REGION} ` +
   `--allow-unauthenticated ` +
@@ -124,6 +125,7 @@ try {
     `--image ${deployTarget} ` +
     `--project=${TARGET_PROJECT} ` +
     `--service-account=pocketgull-run@${TARGET_PROJECT}.iam.gserviceaccount.com ` +
+    `--binary-authorization=default ` +
     `--platform managed ` +
     `--region ${REGION} ` +
     `--allow-unauthenticated ` +

@@ -41,4 +41,18 @@ describe('OncDsiTransparencyService', () => {
     expect(parsed.model_card.governance.fdaRegulatoryPathway).toContain('Non-Device Clinical Decision Support');
     expect(parsed.audit_verdict).toContain('FULLY COMPLIANT');
   });
+
+  it('should include WHO Global Frontline Equity CDS with multi-ancestry and optical sensor calibration', () => {
+    service.selectModel('pocketgull-global-equity');
+    const card = service.activeModelCard();
+    expect(card.name).toContain('WHO-ICD11');
+    expect(card.demographics.studySitesCount).toBe(218);
+    expect(card.demographics.globalAncestry?.subSaharanAfricanPct).toBeGreaterThan(20);
+    expect(card.demographics.globalAncestry?.southAsianPct).toBeGreaterThan(10);
+    expect(card.demographics.opticalEquity?.fitzpatrickIVtoVIPct).toBeGreaterThan(50);
+    expect(card.demographics.opticalEquity?.occultHypoxemiaBiasMitigated).toBe(true);
+    expect(card.demographics.pharmacogenomics?.hlaB1502CarbamazepineScreening).toBe(true);
+    expect(card.demographics.fairnessAudit?.disparateImpactFourFifthsPassed).toBe(true);
+    expect(card.demographics.fairnessAudit?.demographicParityRatio).toBeGreaterThan(0.95);
+  });
 });

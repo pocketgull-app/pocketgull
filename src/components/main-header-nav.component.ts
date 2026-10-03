@@ -263,6 +263,23 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
 
         <app-console-integrity-badge class="hidden 2xl:inline-flex" />
 
+        <!-- 📜 Institutional Compliance Certificate Trigger (Desktop XL) -->
+        <button 
+          type="button" 
+          id="btn-compliance-cert-trigger"
+          (click)="openComplianceCertificate.emit()"
+          aria-label="Open Institutional Statutory Compliance Certificate (HIPAA, FDA, NIST, MSA)"
+          [class.bg-emerald-600]="navShell?.showComplianceCertificateModal()"
+          [class.text-white]="navShell?.showComplianceCertificateModal()"
+          [class.border-emerald-700]="navShell?.showComplianceCertificateModal()"
+          [class.bg-emerald-50]="!navShell?.showComplianceCertificateModal()"
+          [class.dark:bg-emerald-950/40]="!navShell?.showComplianceCertificateModal()"
+          [class.text-emerald-800]="!navShell?.showComplianceCertificateModal()"
+          [class.dark:text-emerald-200]="!navShell?.showComplianceCertificateModal()"
+          class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          <span class="text-xs">📜</span>
+          <span>Compliance</span>
+        </button>
 
         <!-- 🌟 Clinical Apps & Portals Hub Dropdown Button (Desktop) -->
         <div class="relative hidden md:block">
@@ -932,6 +949,9 @@ import { SocraticMultilingualTranslatorService } from '../services/socratic-mult
               <span class="text-base">🌿</span> <span>Frontline CHW Suite (WHO/MSF)</span>
             </button>
 
+            <button type="button" (click)="openComplianceCertificate.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">📜</span> <span>Statutory Compliance Certificate</span>
+            </button>
 
             <button type="button" (click)="triggerSomaticGrounding.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🧘</span> <span>Somatic Grounding</span>

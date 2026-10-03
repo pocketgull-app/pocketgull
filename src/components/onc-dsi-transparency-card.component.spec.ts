@@ -29,15 +29,23 @@ describe('OncDsiTransparencyCardComponent', () => {
     component.activeTab.set('demographics');
     expect(component.activeTab()).toBe('demographics');
 
+    component.activeTab.set('equity');
+    expect(component.activeTab()).toBe('equity');
+
     component.activeTab.set('governance');
     expect(component.activeTab()).toBe('governance');
   });
 
-  it('should allow switching model to RSNA Vision Engine', () => {
+  it('should allow switching model to RSNA Vision Engine and WHO Global Equity Engine', () => {
     dsiService.selectModel('pocketgull-rsna-dicom');
     fixture.detectChanges();
 
     expect(component.activeCard().id).toBe('pocketgull-rsna-dicom');
     expect(component.activeCard().name).toContain('RSNA Deep Knee');
+
+    dsiService.selectModel('pocketgull-global-equity');
+    fixture.detectChanges();
+    expect(component.activeCard().id).toBe('pocketgull-global-equity');
+    expect(component.activeCard().name).toContain('WHO-ICD11');
   });
 });
