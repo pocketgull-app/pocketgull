@@ -1561,9 +1561,17 @@ export interface IDehydrationTriageResult {
                     WHO Weight Band: <strong class="text-zinc-200">{{ pediatricDosing.artemetherLumefantrine().weightBandLabel }}</strong>
                   </span>
                 </div>
-                <span class="text-xs font-mono font-bold uppercase px-2.5 py-1 rounded-xl bg-teal-900/80 text-teal-200 border border-teal-700">
-                  {{ pediatricDosing.artemetherLumefantrine().tabletsPerDose }} Tab(s) per Dose
-                </span>
+                <div class="flex items-center gap-2">
+                  <button type="button"
+                          (click)="speakCurrentTriage()"
+                          class="px-2.5 py-1 rounded-xl bg-teal-800/70 hover:bg-teal-700 text-teal-100 font-mono text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-xs">
+                    <span>🔊</span>
+                    <span>Listen</span>
+                  </button>
+                  <span class="text-xs font-mono font-bold uppercase px-2.5 py-1 rounded-xl bg-teal-900/80 text-teal-200 border border-teal-700">
+                    {{ pediatricDosing.artemetherLumefantrine().tabletsPerDose }} Tab(s) per Dose
+                  </span>
+                </div>
               </div>
 
               @if (!pediatricDosing.artemetherLumefantrine().isEligible) {
@@ -1614,8 +1622,15 @@ export interface IDehydrationTriageResult {
                     Clinical Protocol: <strong class="text-zinc-200">{{ pediatricDosing.orsCalculation().planLabel }}</strong>
                   </span>
                 </div>
-                <!-- Plan Toggle Buttons -->
-                <div class="flex items-center gap-1.5 font-mono text-xs">
+                <div class="flex flex-wrap items-center gap-2">
+                  <button type="button"
+                          (click)="speakCurrentTriage()"
+                          class="px-2.5 py-1 rounded-xl bg-teal-800/70 hover:bg-teal-700 text-teal-100 font-mono text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-xs">
+                    <span>🔊</span>
+                    <span>Listen</span>
+                  </button>
+                  <!-- Plan Toggle Buttons -->
+                  <div class="flex items-center gap-1.5 font-mono text-xs">
                   <button type="button"
                           (click)="pediatricDosing.setOrsPlan('PLAN_A')"
                           [class.bg-teal-600]="pediatricDosing.orsPlan() === 'PLAN_A'"
@@ -1637,6 +1652,7 @@ export interface IDehydrationTriageResult {
                           class="px-2.5 py-1 rounded-lg border border-zinc-800 bg-zinc-900 cursor-pointer">
                     Plan C (STAT IV)
                   </button>
+                  </div>
                 </div>
               </div>
 
@@ -1702,9 +1718,17 @@ export interface IDehydrationTriageResult {
                     Age Group: <strong class="text-zinc-200">{{ pediatricDosing.childAgeMonths() < 6 ? 'Infant Under 6 Months' : 'Child 6 Months to 5 Years' }}</strong>
                   </span>
                 </div>
-                <span class="text-xs font-mono font-bold uppercase px-2.5 py-1 rounded-xl bg-teal-900/80 text-teal-200 border border-teal-700">
-                  {{ pediatricDosing.zincDose().dailyDoseMg }} mg Daily ({{ pediatricDosing.zincDose().tabletFractionLabel }})
-                </span>
+                <div class="flex items-center gap-2">
+                  <button type="button"
+                          (click)="speakCurrentTriage()"
+                          class="px-2.5 py-1 rounded-xl bg-teal-800/70 hover:bg-teal-700 text-teal-100 font-mono text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-xs">
+                    <span>🔊</span>
+                    <span>Listen</span>
+                  </button>
+                  <span class="text-xs font-mono font-bold uppercase px-2.5 py-1 rounded-xl bg-teal-900/80 text-teal-200 border border-teal-700">
+                    {{ pediatricDosing.zincDose().dailyDoseMg }} mg Daily ({{ pediatricDosing.zincDose().tabletFractionLabel }})
+                  </span>
+                </div>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-center">
@@ -1745,9 +1769,17 @@ export interface IDehydrationTriageResult {
                     Dosage: <strong class="text-zinc-200">{{ pediatricDosing.amoxicillinDose().doseMg }} mg Twice Daily (BID)</strong>
                   </span>
                 </div>
-                <span class="text-xs font-mono font-bold uppercase px-2.5 py-1 rounded-xl bg-teal-900/80 text-teal-200 border border-teal-700">
-                  {{ pediatricDosing.amoxicillinDose().tabletsPerDose }} Tablet(s) BID
-                </span>
+                <div class="flex items-center gap-2">
+                  <button type="button"
+                          (click)="speakCurrentTriage()"
+                          class="px-2.5 py-1 rounded-xl bg-teal-800/70 hover:bg-teal-700 text-teal-100 font-mono text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-xs">
+                    <span>🔊</span>
+                    <span>Listen</span>
+                  </button>
+                  <span class="text-xs font-mono font-bold uppercase px-2.5 py-1 rounded-xl bg-teal-900/80 text-teal-200 border border-teal-700">
+                    {{ pediatricDosing.amoxicillinDose().tabletsPerDose }} Tablet(s) BID
+                  </span>
+                </div>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-center">
@@ -1905,6 +1937,25 @@ export class CommunityHealthWorkerSuiteComponent {
         module: 'danger_signs',
         hasDangerSigns: activeDanger.length > 0,
         dangerFlagNames: activeDanger
+      };
+    } else if (tab === 'pediatric_dosing') {
+      const activeMed = this.pediatricDosing.selectedMedication();
+      const al = this.pediatricDosing.artemetherLumefantrine();
+      const ors = this.pediatricDosing.orsCalculation();
+      const zinc = this.pediatricDosing.zincDose();
+      const amox = this.pediatricDosing.amoxicillinDose();
+
+      context = {
+        module: 'pediatric_dosing',
+        childWeightKg: this.pediatricDosing.childWeightKg(),
+        childAgeMonths: this.pediatricDosing.childAgeMonths(),
+        pediatricMedication: activeMed,
+        tabletsPerDose: activeMed === 'artemether_lumefantrine' ? al.tabletsPerDose : amox.tabletsPerDose,
+        totalTablets: activeMed === 'artemether_lumefantrine' ? al.totalTablets : (activeMed === 'zinc_sulfate' ? zinc.totalTabletsDispensed : amox.totalTabletsDispensed),
+        doseMg: activeMed === 'amoxicillin_dispersible' ? amox.doseMg : (activeMed === 'zinc_sulfate' ? zinc.dailyDoseMg : undefined),
+        dehydrationPlan: ors.plan,
+        orsVolumeMl: ors.totalVolumeMl4Hours,
+        isEligible: al.isEligible
       };
     } else {
       context = {

@@ -28,17 +28,23 @@ export interface IVernacularPrompt {
 }
 
 export interface ITriageVoiceContext {
-  module: 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs';
+  module: 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'pediatric_dosing';
   muacTier?: 'SEVERE_ACUTE_MALNUTRITION' | 'MODERATE_ACUTE_MALNUTRITION' | 'WELL_NOURISHED';
   muacMm?: number;
   rutfSachets?: number;
   childWeightKg?: number;
+  childAgeMonths?: number;
   pneumoniaClassification?: 'SEVERE_PNEUMONIA' | 'PNEUMONIA' | 'NO_PNEUMONIA';
   respiratoryBpm?: number;
   dehydrationPlan?: 'PLAN_A' | 'PLAN_B' | 'PLAN_C';
   orsVolumeMl?: number;
   hasDangerSigns?: boolean;
   dangerFlagNames?: string[];
+  pediatricMedication?: 'artemether_lumefantrine' | 'ors_rehydration' | 'zinc_sulfate' | 'amoxicillin_dispersible';
+  tabletsPerDose?: number;
+  totalTablets?: number;
+  doseMg?: number;
+  isEligible?: boolean;
 }
 
 export const FRONTLINE_TOP5_LANGUAGES: IVernacularLanguageSpec[] = [
@@ -152,6 +158,8 @@ export class FrontlineVernacularVoiceService {
         return this.buildDehydrationPrompt(context, lang);
       case 'danger_signs':
         return this.buildDangerSignsPrompt(context, lang);
+      case 'pediatric_dosing':
+        return this.buildPediatricDosingPrompt(context, lang);
       default:
         return this.buildMuacPrompt(context, lang);
     }
@@ -802,6 +810,349 @@ export class FrontlineVernacularVoiceService {
         audioDurationSecEst: 6
       };
     }
+  }
+
+  private buildPediatricDosingPrompt(context: ITriageVoiceContext, lang: IVernacularLanguageSpec): IVernacularPrompt {
+    const med = context.pediatricMedication || 'artemether_lumefantrine';
+    const tabs = context.tabletsPerDose || 1;
+    const mg = context.doseMg || (tabs * 250);
+    const orsMl = context.orsVolumeMl || 750;
+    const age = context.childAgeMonths ?? 18;
+    const isEligible = context.isEligible !== false;
+    const plan = context.dehydrationPlan || 'PLAN_B';
+
+    if (med === 'artemether_lumefantrine') {
+      if (!isEligible) {
+        const prompts: Record<VernacularLanguageCode, { text: string; english: string; phonetic: string; headline: string }> = {
+          en: {
+            headline: '🔴 RED ALERT: Coartem Ineligible (<5 kg)',
+            text: 'Warning. Child is under five kilograms. Coartem is not recommended without specialist advice. Refer to clinic immediately.',
+            english: 'Child is under 5 kg. Specialist consultation or alternative therapy required.',
+            phonetic: 'ˈWɔːrnɪŋ. Tʃaɪld ɪz ˈʌndər faɪv ˈkɪləɡræmz.'
+          },
+          es: {
+            headline: '🔴 ALERTA ROJA: Coartem No Apto (<5 kg)',
+            text: 'Advertencia. El niño pesa menos de cinco kilogramos. No se recomienda Coartem sin consejo médico especializado. Traslade de inmediato a la clínica.',
+            english: 'Warning. Child is under 5 kg. Coartem not recommended without specialist advice. Refer immediately.',
+            phonetic: 'Ad-vehr-TEHN-syah. Ehl NEE-nyoh PEH-sah MEH-nohs deh SEEN-koh kee-loh-GRAH-mohs.'
+          },
+          hi: {
+            headline: '🔴 लाल चेतावनी: कोआर्टेम अनुपयुक्त (<5 किग्रा)',
+            text: 'चेतावनी। बच्चे का वजन पांच किलोग्राम से कम है। विशेषज्ञ सलाह के बिना कोआर्टेम की सिफारिश नहीं की जाती है। तुरंत अस्पताल ले जाएं।',
+            english: 'Warning. Child is under 5 kg. Do not administer Coartem without specialist doctor advice.',
+            phonetic: 'Chetavani. Bachhe ka vazan paanch kilogram se kam hai.'
+          },
+          sw: {
+            headline: '🔴 ONYO JEKUNDU: Coartem Haifai (<5 kg)',
+            text: 'Onyo. Mtoto ana uzito wa chini ya kilo tano. Dawa ya Coartem haishauriwi bila ushauri wa daktari. Mpeleke kliniki mara moja.',
+            english: 'Warning. Child is under 5 kg. Coartem not recommended without doctor advice. Refer immediately.',
+            phonetic: 'OH-nyoh. M-TOH-toh AH-nah oo-ZEE-toh wah CHEE-nee yah KEE-loh TAH-noh.'
+          },
+          ar: {
+            headline: '🔴 طوارئ: كوارتم غير ملائم (أقل من 5 كجم)',
+            text: 'تحذير. وزن الطفل أقل من خمسة كيلوغرامات. لا يُنصح بدواء كوارتم دون استشارة طبيب أطفال مختص. يُرجى التوجه فوراً للمستشفى.',
+            english: 'Warning. Child is under 5 kg. Coartem not recommended without pediatric specialist consultation.',
+            phonetic: 'Tah-dheer. WAZ-noo al-TIF-lee ah-QAL min KHAM-sah kee-loh-ghraam.'
+          }
+        };
+        const p = prompts[lang.code] || prompts.en;
+        return {
+          languageCode: lang.code,
+          language: lang,
+          headline: p.headline,
+          promptText: p.text,
+          englishMeaning: p.english,
+          phoneticGuide: p.phonetic,
+          acuityTier: 'RED',
+          direction: lang.direction,
+          audioDurationSecEst: 7
+        };
+      }
+
+      const prompts: Record<VernacularLanguageCode, { text: string; english: string; phonetic: string; headline: string }> = {
+        en: {
+          headline: `🟡 MALARIA ACT: Coartem (${tabs} Tab/Dose)`,
+          text: `Give ${tabs} dispersible tablet(s) of Coartem per dose. Total six doses over three days at hours zero, eight, twenty-four, thirty-six, forty-eight, and sixty. Dissolve in clean water or breastmilk and give with milk or fatty food. If the child vomits within one hour, repeat the full dose immediately.`,
+          english: `Give ${tabs} Coartem tablet(s) per dose across 6 doses over 3 days with milk/fatty food. Repeat full dose if vomited within 1 hour.`,
+          phonetic: `Gɪv ${tabs} dɪˈspɜːrsəbəl ˈtæblət(s) əv ˈkoʊɑːrtɛm.`
+        },
+        es: {
+          headline: `🟡 MALARIA ACT: Coartem (${tabs} Tab/Dosis)`,
+          text: `Administre ${tabs} tableta(s) dispersable(s) de Coartem por dosis. Seis dosis en total durante tres días en las horas cero, ocho, veinticuatro, treinta y seis, cuarenta y ocho y sesenta. Disuelva en agua limpia o leche materna y administre con leche o comida con grasa. Si vomita dentro de una hora, repita la dosis completa de inmediato.`,
+          english: `Administer ${tabs} Coartem tablet(s) per dose across 6 doses over 3 days with milk/fatty food. Repeat full dose if vomited within 1 hour.`,
+          phonetic: `Ad-mee-NEES-treh ${tabs} tah-BLEH-tah(s) dehs-pehr-SAH-bleh(s) deh Koh-AHR-tehm.`
+        },
+        hi: {
+          headline: `🟡 मलेरिया ACT: कोआर्टेम (${tabs} गोली/खुराक)`,
+          text: `कोआर्टेम की ${tabs} घुलनशील गोली प्रति खुराक दें। तीन दिनों में कुल छह खुराकें: शून्य, आठ, चौबीस, छत्तीस, अड़तालीस और साठ घंटे पर। साफ पानी या मां के दूध में घोलें और दूध या वसायुक्त भोजन के साथ दें। यदि बच्चा एक घंटे के भीतर उल्टी कर दे, तो तुरंत पूरी खुराक दोबारा दें।`,
+          english: `Give ${tabs} Coartem tablet(s) per dose, 6 doses over 3 days with milk/fatty food. Repeat dose if vomited within 1 hour.`,
+          phonetic: `Coartem kee ${tabs} goli prati khuraak dein.`
+        },
+        sw: {
+          headline: `🟡 MALARIA ACT: Coartem (Tembe ${tabs}/Dozi)`,
+          text: `Mpe mtoto tembe ${tabs} ya Coartem inayoyeyuka kwa kila dozi. Jumla ya dozi sita kwa siku tatu katika saa sifuri, nane, ishirini na nne, thelathini na sita, arobaini na nane na sitini. Yeyusha katika maji safi au maziwa ya mama na umpe pamoja na maziwa au chakula chenye mafuta. Mtoto akitapika ndani ya saa moja, rudia dozi nzima mara moja.`,
+          english: `Give ${tabs} dispersible Coartem tablet(s) per dose across 6 doses over 3 days with milk/fatty food. Repeat full dose if vomited within 1 hour.`,
+          phonetic: `M-peh M-TOH-toh TEHM-beh ${tabs} yah Koh-AHR-tehm.`
+        },
+        ar: {
+          headline: `🟡 علاج الملاريا: كوارتم (${tabs} قرص/جرعة)`,
+          text: `أعطِ ${tabs} قرص(أقراص) من كوارتم القابل للذوبان لكل جرعة. إجمالي ست جرعات على مدى ثلاثة أيام في الساعات صفر وثمانية وأربع وعشرين وست وثلاثين وثمان وأربعين وستين. قم بإذابتها في ماء نظيف أو حليب الأم وأعطها مع الحليب أو وجبة دسمة. إذا تقيأ الطفل خلال ساعة واحدة، أعد إعطاء الجرعة كاملة فوراً.`,
+          english: `Give ${tabs} dispersible Coartem tablet(s) per dose across 6 doses over 3 days with milk/fatty food. Repeat full dose if vomited within 1 hour.`,
+          phonetic: `A-TI ${tabs} QURS min Koh-AHR-tehm li-koo-lee JOOR-ah.`
+        }
+      };
+      const p = prompts[lang.code] || prompts.en;
+      return {
+        languageCode: lang.code,
+        language: lang,
+        headline: p.headline,
+        promptText: p.text,
+        englishMeaning: p.english,
+        phoneticGuide: p.phonetic,
+        acuityTier: 'YELLOW',
+        direction: lang.direction,
+        audioDurationSecEst: 11
+      };
+    }
+
+    if (med === 'ors_rehydration') {
+      if (plan === 'PLAN_C') {
+        const prompts: Record<VernacularLanguageCode, { text: string; english: string; phonetic: string; headline: string }> = {
+          en: {
+            headline: '🔴 STAT RESUS: Severe Dehydration (Plan C)',
+            text: 'Emergency severe dehydration. Start intravenous Ringer\'s Lactate or saline immediately. Transfer urgently to hospital.',
+            english: 'Emergency severe dehydration. Start IV fluids STAT and transfer to hospital.',
+            phonetic: 'ɪˈmɜːrdʒənsi sɪˈvɪr diːhaɪˈdreɪʃən.'
+          },
+          es: {
+            headline: '🔴 RESUCITACIÓN STAT: Deshidratación Grave (Plan C)',
+            text: 'Emergencia por deshidratación grave. Inicie suero intravenoso Lactato Ringer de inmediato y traslade urgente al hospital.',
+            english: 'Emergency severe dehydration. Start IV fluids immediately and transfer urgently.',
+            phonetic: 'Eh-mehr-HEHN-syah pohr dehs-ee-drah-tah-SYOHN GRAH-veh.'
+          },
+          hi: {
+            headline: '🔴 आपातकालीन पुनर्जीवन: गंभीर निर्जलीकरण (प्लान C)',
+            text: 'गंभीर निर्जलीकरण की आपात स्थिति। तुरंत नसों द्वारा ड्रिप शुरू करें और बच्चे को तत्काल अस्पताल ले जाएं।',
+            english: 'Severe dehydration emergency. Start IV fluids immediately and rush to hospital.',
+            phonetic: 'Gambhir nirjalikaran aapat sthiti. Turant IV shuru karein.'
+          },
+          sw: {
+            headline: '🔴 DHARURA KUBWA: Upungufu Mkali wa Maji (Mpango C)',
+            text: 'Dharura ya ukosefu mkubwa wa maji mwilini. Anzisha maji ya dripu ya mshipani mara moja na umpeleke mtoto hospitali haraka.',
+            english: 'Critical dehydration emergency. Start IV fluids immediately and transfer child to hospital.',
+            phonetic: 'Dhah-ROO-rah yah oo-KOH-seh-foo m-KAH-lee wah MAH-jee.'
+          },
+          ar: {
+            headline: '🔴 إنعاش طارئ: جفاف شديد (الخطة ج)',
+            text: 'طوارئ جفاف حاد شديد. ابدأ المحاليل الوريدية فوراً وانقل الطفل على وجه السرعة القصوى إلى المستشفى.',
+            english: 'Severe dehydration emergency. Start IV fluids immediately and transfer urgently to hospital.',
+            phonetic: 'Tah-wah-REE jah-FAAF haad wa sha-DEED.'
+          }
+        };
+        const p = prompts[lang.code] || prompts.en;
+        return {
+          languageCode: lang.code,
+          language: lang,
+          headline: p.headline,
+          promptText: p.text,
+          englishMeaning: p.english,
+          phoneticGuide: p.phonetic,
+          acuityTier: 'RED',
+          direction: lang.direction,
+          audioDurationSecEst: 7
+        };
+      }
+
+      if (plan === 'PLAN_B') {
+        const prompts: Record<VernacularLanguageCode, { text: string; english: string; phonetic: string; headline: string }> = {
+          en: {
+            headline: `🟡 ORS REHYDRATION: Plan B (${orsMl} mL / 4h)`,
+            text: `Dissolve one packet of ORS in exactly one liter of clean water. Give ${orsMl} milliliters slowly with a cup or spoon over the next four hours. Also give Zinc tablet once daily for fourteen days.`,
+            english: `Mix 1 ORS packet in 1L clean water. Give ${orsMl} mL slowly over 4 hours. Give Zinc daily for 14 days.`,
+            phonetic: `Dɪˈzɑːlv wʌn ˈpækɪt əv oʊ-ɑːr-ɛs. Gɪv ${orsMl} ˈmɪləˌliːtərz.`
+          },
+          es: {
+            headline: `🟡 SUERO ORAL: Plan B (${orsMl} mL / 4h)`,
+            text: `Disuelva un sobre de suero en exactamente un litro de agua limpia. Administre ${orsMl} mililitros lentamente con cuchara o taza durante las próximas cuatro horas. También dé una tableta de Zinc al día por catorce días.`,
+            english: `Mix 1 ORS packet in 1 liter clean water. Give ${orsMl} mL slowly over 4 hours. Give Zinc daily for 14 days.`,
+            phonetic: `Dees-WEHL-vah oon SOH-breh deh SWEH-roh. Ad-mee-NEES-treh ${orsMl} mee-lee-LEE-trohs.`
+          },
+          hi: {
+            headline: `🟡 ओआरएस घोल: प्लान B (${orsMl} मिली / 4 घंटे)`,
+            text: `एक लीटर साफ पानी में ओआरएस का एक पैकेट घोलें। अगले चार घंटों में चम्मच या कटोरी से ${orsMl} मिलीलीटर घोल थोड़ा-थोड़ा पिलाएं। साथ ही चौदह दिनों तक रोजाना जिंक की गोली भी दें।`,
+            english: `Dissolve 1 ORS packet in 1L clean water. Give ${orsMl} mL slowly over 4 hours. Give Zinc daily for 14 days.`,
+            phonetic: `Ek liter saaf paani mein ORS gholein. ${orsMl} ml pilayein.`
+          },
+          sw: {
+            headline: `🟡 SULUHISHO LA ORS: Mpango B (Mililita ${orsMl} / Saa 4)`,
+            text: `Yeyusha pakiti moja ya ORS katika lita moja kamili ya maji safi. Mpe mtoto mililita ${orsMl} polepole kwa kijiko au kikombe katika masaa manne yajayo. Pia mpe tembe ya Zinki mara moja kwa siku kwa siku kumi na nne.`,
+            english: `Mix 1 ORS packet in 1 liter clean water. Give ${orsMl} mL slowly over 4 hours. Give Zinc daily for 14 days.`,
+            phonetic: `Yeh-YOO-shah pah-KEE-tee MOH-jah yah ORS. M-peh mee-lee-LEE-tah ${orsMl}.`
+          },
+          ar: {
+            headline: `🟡 محلول الإرواء: الخطة ب (${orsMl} مل / 4 ساعات)`,
+            text: `قم بإذابة كيس واحد من محلول الإرواء في لتر كامل من الماء النظيف. أعطِ الطفل ${orsMl} مليلتر ببطء بالملعقة أو الكوب خلال الساعات الأربع القادمة. كما يجب إعطاء قرص الزنك يومياً لمدة أربعة عشر يوماً.`,
+            english: `Dissolve 1 ORS packet in 1L clean water. Give ${orsMl} mL slowly over 4 hours. Give Zinc daily for 14 days.`,
+            phonetic: `A-dhib KEE-san WAH-hi-dan min mah-LOOL al-ir-WAA. A-ti ${orsMl} mee-lee-lee-tr.`
+          }
+        };
+        const p = prompts[lang.code] || prompts.en;
+        return {
+          languageCode: lang.code,
+          language: lang,
+          headline: p.headline,
+          promptText: p.text,
+          englishMeaning: p.english,
+          phoneticGuide: p.phonetic,
+          acuityTier: 'YELLOW',
+          direction: lang.direction,
+          audioDurationSecEst: 9
+        };
+      }
+
+      // Plan A (Home maintenance)
+      const prompts: Record<VernacularLanguageCode, { text: string; english: string; phonetic: string; headline: string }> = {
+        en: {
+          headline: '🟢 ORS HOME PROTOCOL: Plan A (Fluid Maintenance)',
+          text: 'Mix one packet of ORS in one liter of clean water. Give half a cup to one full cup after every loose stool. Continue normal feeding and give Zinc tablet daily for fourteen days.',
+          english: 'Mix 1 packet of ORS in 1L clean water. Give 1/2 to 1 cup after each loose stool. Continue feeding and give Zinc daily for 14 days.',
+          phonetic: 'Mɪks wʌn ˈpækɪt əv oʊ-ɑːr-ɛs. Gɪv hæf ə kʌp æftər ˈɛvəri luːs stuːl.'
+        },
+        es: {
+          headline: '🟢 SUERO EN CASA: Plan A (Mantenimiento)',
+          text: 'Disuelva un sobre de suero en un litro de agua limpia. Administre de media a una taza después de cada deposición líquida. Continúe la alimentación normal y dé Zinc diario por catorce días.',
+          english: 'Mix 1 ORS packet in 1L clean water. Give 1/2 to 1 cup after each loose stool. Continue feeding and give Zinc daily for 14 days.',
+          phonetic: 'Dees-WEHL-vah oon SOH-breh deh SWEH-roh. Ad-mee-NEES-treh MEH-dyah TAH-sah.'
+        },
+        hi: {
+          headline: '🟢 घरेलू ओआरएस: प्लान A (तरल रखरखाव)',
+          text: 'एक लीटर साफ पानी में एक पैकेट ओआरएस घोलें। हर पतले दस्त के बाद आधा से एक कप घोल पिलाएं। भोजन जारी रखें और चौदह दिनों तक रोजाना जिंक की गोली दें।',
+          english: 'Dissolve 1 packet of ORS in 1L clean water. Give 1/2 to 1 cup after each loose stool. Continue feeding and give Zinc daily for 14 days.',
+          phonetic: 'Ek packet ORS gholein. Har dast ke baad aadha cup pilayein.'
+        },
+        sw: {
+          headline: '🟢 ORS YA NYUMBANI: Mpango A (Kinga ya Upungufu)',
+          text: 'Changanya pakiti moja ya ORS katika lita moja ya maji safi. Mpe mtoto nusu kikombe hadi kikombe kimoja kila baada ya kuharisha. Endelea kumlisha na umpe tembe ya Zinki kila siku kwa siku kumi na nne.',
+          english: 'Mix 1 ORS packet in 1L clean water. Give 1/2 to 1 cup after each loose stool. Continue feeding and give Zinc daily for 14 days.',
+          phonetic: 'Chahn-GAHN-yah pah-KEE-tee MOH-jah yah ORS. M-peh NOO-soo kee-KOHM-beh.'
+        },
+        ar: {
+          headline: '🟢 محلول الإرواء المنزلي: الخطة أ (وقاية)',
+          text: 'اخلط كيساً واحداً من محلول الجفاف في لتر ماء نظيف. أعطِ الطفل نصف كوب إلى كوب بعد كل إسهال مائي. استمر في الرضاعة والتغذية وأعطِ الزنك يومياً لمدة أربعة عشر يوماً.',
+          english: 'Mix 1 ORS packet in 1L clean water. Give 1/2 to 1 cup after each loose stool. Continue feeding and give Zinc daily for 14 days.',
+          phonetic: 'IKH-lat KEE-san WAH-hi-dan min mah-LOOL al-jah-FAAF. A-ti NISF KOOB.'
+        }
+      };
+      const p = prompts[lang.code] || prompts.en;
+      return {
+        languageCode: lang.code,
+        language: lang,
+        headline: p.headline,
+        promptText: p.text,
+        englishMeaning: p.english,
+        phoneticGuide: p.phonetic,
+        acuityTier: 'GREEN',
+        direction: lang.direction,
+        audioDurationSecEst: 8
+      };
+    }
+
+    if (med === 'zinc_sulfate') {
+      const isUnder6Mo = age < 6;
+      const zincMg = isUnder6Mo ? 10 : 20;
+      const zincFrac = isUnder6Mo ? 'half a tablet' : 'one full tablet';
+
+      const prompts: Record<VernacularLanguageCode, { text: string; english: string; phonetic: string; headline: string }> = {
+        en: {
+          headline: `🟢 ZINC SUPPLEMENT: ${zincMg} mg Daily (14 Days)`,
+          text: `Give ${zincFrac} of Zinc, which is ${zincMg} milligrams, once daily for fourteen full days. Dissolve in a spoon with clean water, breastmilk, or ORS. Complete all fourteen days even after diarrhea stops.`,
+          english: `Give ${zincFrac} (${zincMg} mg) Zinc once daily for 14 full days. Dissolve in spoon with clean water/milk. Complete all 14 days.`,
+          phonetic: `Gɪv ${zincFrac} əv zɪŋk, ${zincMg} ˈmɪləˌɡræmz, wʌns ˈdeɪli fɔːr ˈfɔːrˈtiːn deɪz.`
+        },
+        es: {
+          headline: `🟢 SUPLEMENTO DE ZINC: ${zincMg} mg Diario (14 Días)`,
+          text: `Administre ${isUnder6Mo ? 'media tableta' : 'una tableta entera'} de Zinc (${zincMg} miligramos) una vez al día durante catorce días completos. Disuélvala en una cuchara con agua limpia, leche materna o suero. Complete los catorce días incluso si la diarrea desaparece.`,
+          english: `Give ${isUnder6Mo ? 'half' : 'one'} Zinc tablet (${zincMg} mg) once daily for 14 full days. Complete all 14 days.`,
+          phonetic: `Ad-mee-NEES-treh ${isUnder6Mo ? 'MEH-dyah' : 'OO-nah'} tah-BLEH-tah deh Seenk (${zincMg} mee-lee-GRAH-mohs).`
+        },
+        hi: {
+          headline: `🟢 जिंक अनुपूरक: ${zincMg} मिग्रा रोजाना (14 दिन)`,
+          text: `जिंक की ${isUnder6Mo ? 'आधी गोली (दस मिलीग्राम)' : 'एक पूरी गोली (बीस मिलीग्राम)'} दिन में एक बार पूरे चौदह दिनों तक दें। चम्मच में साफ पानी, मां के दूध या ओआरएस में घोलें। दस्त बंद होने के बाद भी चौदह दिनों का कोर्स जरूर पूरा करें।`,
+          english: `Give ${isUnder6Mo ? 'half' : 'one'} Zinc tablet (${zincMg} mg) once daily for 14 full days. Dissolve in spoon. Complete 14 days.`,
+          phonetic: `Zinc kee ${isUnder6Mo ? 'aadhi' : 'ek poori'} goli rozana dein. 14 din poore karein.`
+        },
+        sw: {
+          headline: `🟢 KIONGEZA CHA ZINKI: Miligramu ${zincMg} Kila Siku (Siku 14)`,
+          text: `Mpe mtoto ${isUnder6Mo ? 'nusu tembe' : 'tembe moja nzima'} ya Zinki (miligramu ${zincMg}) mara moja kwa siku kwa siku kumi na nne kamili. Yeyusha kwenye kijiko chenye maji safi, maziwa ya mama au ORS. Kamilisha siku zote kumi na nne hata kama kuharisha kumekoma.`,
+          english: `Give ${isUnder6Mo ? 'half' : 'one'} Zinc tablet (${zincMg} mg) once daily for 14 full days. Complete all 14 days.`,
+          phonetic: `M-peh M-TOH-toh ${isUnder6Mo ? 'NOO-soo TEHM-beh' : 'TEHM-beh MOH-jah'} yah ZEEN-kee.`
+        },
+        ar: {
+          headline: `🟢 مكمل الزنك: ${zincMg} مجم يومياً (14 يوماً)`,
+          text: `أعطِ ${isUnder6Mo ? 'نصف قرص من الزنك (عشرة مجم)' : 'قرصاً كاملاً من الزنك (عشرين مجم)'} مرة واحدة يومياً لمدة أربعة عشر يوماً كاملة. قم بإذابته في ملعقة بماء نظيف أو حليب الأم أو محلول الجفاف. يجب إكمال الأيام الأربعة عشر كاملة حتى لو توقف الإسهال.`,
+          english: `Give ${isUnder6Mo ? 'half' : 'one'} Zinc tablet (${zincMg} mg) once daily for 14 full days. Complete all 14 days.`,
+          phonetic: `A-ti ${isUnder6Mo ? 'NISF QURS' : 'QUR-san KAH-mee-lan'} min al-ZEENK (${zincMg} mg).`
+        }
+      };
+      const p = prompts[lang.code] || prompts.en;
+      return {
+        languageCode: lang.code,
+        language: lang,
+        headline: p.headline,
+        promptText: p.text,
+        englishMeaning: p.english,
+        phoneticGuide: p.phonetic,
+        acuityTier: 'GREEN',
+        direction: lang.direction,
+        audioDurationSecEst: 8
+      };
+    }
+
+    // Default: amoxicillin_dispersible
+    const prompts: Record<VernacularLanguageCode, { text: string; english: string; phonetic: string; headline: string }> = {
+      en: {
+        headline: `🟡 PNEUMONIA ANTIBIOTIC: Amoxicillin (${tabs} Tab / ${mg} mg BID)`,
+        text: `Give ${tabs} dispersible tablet(s) of Amoxicillin, ${mg} milligrams, twice daily every twelve hours for five full days. Dissolve in a little clean water or allow child to chew. If breathing becomes harder or child vomits everything, rush to hospital immediately.`,
+        english: `Give ${tabs} Amoxicillin dispersible tablet(s) (${mg} mg) twice daily for 5 full days. Rush to hospital if chest indrawing occurs.`,
+        phonetic: `Gɪv ${tabs} dɪˈspɜːrsəbəl ˈtæblət(s) əv əˌmɑːksɪˈsɪlɪn, ${mg} ˈmɪləˌɡræmz.`
+      },
+      es: {
+        headline: `🟡 ANTIBIÓTICO NEUMONÍA: Amoxicilina (${tabs} Tab / ${mg} mg BID)`,
+        text: `Administre ${tabs} tableta(s) dispersable(s) de Amoxicilina (${mg} miligramos) dos veces al día, cada doce horas, durante cinco días completos. Disuelva en un poco de agua limpia o deje que el niño la mastique. Si la respiración se vuelve más difícil o presenta tiraje en el pecho, traslade urgente al hospital.`,
+        english: `Administer ${tabs} Amoxicillin dispersible tablet(s) (${mg} mg) twice daily every 12 hours for 5 days. Refer urgently if chest indrawing occurs.`,
+        phonetic: `Ad-mee-NEES-treh ${tabs} tah-BLEH-tah(s) dehs-pehr-SAH-bleh(s) deh Ah-mohk-see-see-LEE-nah.`
+      },
+      hi: {
+        headline: `🟡 निमोनिया एंटीबायोटिक: अमोक्सिसिलिन (${tabs} गोली / ${mg} मिग्रा BID)`,
+        text: `अमोक्सिसिलिन की ${tabs} घुलनशील गोली (${mg} मिलीग्राम) दिन में दो बार (हर बारह घंटे पर) पूरे पांच दिनों तक दें। थोड़े साफ पानी में घोलें या बच्चे को चबाने दें। यदि सांस लेना कठिन हो जाए या सीना धंसे, तो तुरंत अस्पताल ले जाएं।`,
+        english: `Give ${tabs} Amoxicillin dispersible tablet(s) (${mg} mg) twice daily for 5 days. Rush to hospital if breathing worsens.`,
+        phonetic: `Amoxicillin kee ${tabs} goli (${mg} mg) din mein do baar 5 din tak dein.`
+      },
+      sw: {
+        headline: `🟡 DAWA YA NIMONIA: Amoksisilini (Tembe ${tabs} / mg ${mg} Mara 2)`,
+        text: `Mpe mtoto tembe ${tabs} ya Amoksisilini inayoyeyuka (miligramu ${mg}) mara mbili kwa siku kila baada ya masaa kumi na mbili kwa siku tano kamili. Yeyusha kwenye maji safi kidogo au mtoto atafune. Mtoto akipumua kwa shida au akivuta kifua ndani, mpeleke hospitali mara moja.`,
+        english: `Give ${tabs} Amoxicillin dispersible tablet(s) (${mg} mg) twice daily for 5 full days. Rush to hospital if breathing becomes difficult.`,
+        phonetic: `M-peh M-TOH-toh TEHM-beh ${tabs} yah Ah-mohk-see-see-LEE-nee (${mg} mg).`
+      },
+      ar: {
+        headline: `🟡 مضاد حيوي للالتهاب الرئوي: أموكسيسيلين (${tabs} قرص / ${mg} مجم)`,
+        text: `أعطِ ${tabs} قرص(أقراص) أموكسيسيلين القابل للذوبان (${mg} مجم) مرتين يومياً كل اثنتي عشرة ساعة لمدة خمسة أيام كاملة. قم بإذابته في قليل من الماء النظيف أو دعه يمضغه. إذا ازداد التنفس صعوبة أو ظهر انسحاب بالصدر، انقل الطفل فوراً إلى المستشفى.`,
+        english: `Give ${tabs} Amoxicillin dispersible tablet(s) (${mg} mg) twice daily every 12 hours for 5 full days. Rush to hospital if chest indrawing occurs.`,
+        phonetic: `A-ti ${tabs} QURS Ah-mohk-see-see-LEEN (${mg} mg) mar-ra-TAYN yaw-MEE-yan.`
+      }
+    };
+    const p = prompts[lang.code] || prompts.en;
+    return {
+      languageCode: lang.code,
+      language: lang,
+      headline: p.headline,
+      promptText: p.text,
+      englishMeaning: p.english,
+      phoneticGuide: p.phonetic,
+      acuityTier: 'YELLOW',
+      direction: lang.direction,
+      audioDurationSecEst: 9
+    };
   }
 
   /**

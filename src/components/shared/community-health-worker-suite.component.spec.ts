@@ -445,5 +445,38 @@ describe('CommunityHealthWorkerSuiteComponent', () => {
       expect(amox.doseMg).toBe(500);
       expect(amox.totalTabletsDispensed).toBe(20); // 2 tabs x 2 x 5d
     });
+
+    it('should update currentTriageVoicePrompt dynamically for pediatric dosing and switch languages', () => {
+      component.activeTab.set('pediatric_dosing');
+      component.pediatricDosing.setSelectedMedication('artemether_lumefantrine');
+      component.pediatricDosing.setWeightKg(10.0);
+      fixture.detectChanges();
+
+      let voicePrompt = component.currentTriageVoicePrompt();
+      expect(voicePrompt.headline).toContain('MALARIA ACT: Coartem');
+      expect(voicePrompt.acuityTier).toBe('YELLOW');
+      expect(voicePrompt.promptText).toContain('Coartem');
+
+      // Switch to Swahili
+      component.selectVernacularLanguage('sw');
+      fixture.detectChanges();
+      voicePrompt = component.currentTriageVoicePrompt();
+      expect(voicePrompt.languageCode).toBe('sw');
+      expect(voicePrompt.direction).toBe('ltr');
+      expect(voicePrompt.promptText).toContain('Coartem');
+
+      // Switch to Arabic and Zinc
+      component.selectVernacularLanguage('ar');
+      component.pediatricDosing.setSelectedMedication('zinc_sulfate');
+      fixture.detectChanges();
+      voicePrompt = component.currentTriageVoicePrompt();
+      expect(voicePrompt.languageCode).toBe('ar');
+      expect(voicePrompt.direction).toBe('rtl');
+      expect(voicePrompt.headline).toContain('الزنك');
+
+      // Test speakCurrentTriage
+      expect(() => component.speakCurrentTriage()).not.toThrow();
+      expect(() => component.stopSpeaking()).not.toThrow();
+    });
   });
 });

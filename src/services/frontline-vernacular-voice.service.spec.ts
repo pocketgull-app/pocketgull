@@ -172,5 +172,130 @@ describe('FrontlineVernacularVoiceService Unit Suite', () => {
     // Fallback for unknown tile
     expect(service.getAacTilePrompt('UNKNOWN_TILE')).toBe('Assistance requested.');
   });
+
+  it('10. Generates localized Artemether + Lumefantrine (Coartem) dosing prompts across all 5 languages', () => {
+    const ctx: ITriageVoiceContext = {
+      module: 'pediatric_dosing',
+      pediatricMedication: 'artemether_lumefantrine',
+      childWeightKg: 12.0,
+      tabletsPerDose: 1,
+      totalTablets: 6,
+      isEligible: true
+    };
+
+    // English
+    const promptEn = service.generateTriagePrompt(ctx, 'en');
+    expect(promptEn.acuityTier).toBe('YELLOW');
+    expect(promptEn.headline).toContain('MALARIA ACT: Coartem');
+    expect(promptEn.promptText).toContain('Give 1 dispersible tablet(s) of Coartem');
+    expect(promptEn.promptText).toContain('fatty food');
+
+    // Spanish
+    const promptEs = service.generateTriagePrompt(ctx, 'es');
+    expect(promptEs.headline).toContain('MALARIA ACT: Coartem');
+    expect(promptEs.promptText).toContain('1 tableta(s) dispersable(s) de Coartem');
+    expect(promptEs.promptText).toContain('comida con grasa');
+
+    // Hindi
+    const promptHi = service.generateTriagePrompt(ctx, 'hi');
+    expect(promptHi.headline).toContain('मलेरिया ACT: कोआर्टेम');
+    expect(promptHi.promptText).toContain('कोआर्टेम की 1 घुलनशील गोली');
+    expect(promptHi.promptText).toContain('दूध या वसायुक्त भोजन');
+
+    // Swahili
+    const promptSw = service.generateTriagePrompt(ctx, 'sw');
+    expect(promptSw.headline).toContain('MALARIA ACT: Coartem');
+    expect(promptSw.promptText).toContain('tembe 1');
+    expect(promptSw.promptText).toContain('chakula');
+
+    // Arabic
+    const promptAr = service.generateTriagePrompt(ctx, 'ar');
+    expect(promptAr.headline).toContain('علاج الملاريا: كوارتم');
+    expect(promptAr.direction).toBe('rtl');
+    expect(promptAr.promptText).toContain('كوارتم');
+    expect(promptAr.promptText).toContain('الحليب أو وجبة دسمة');
+  });
+
+  it('11. Generates RED Alert for Under-5kg infant ineligible for Coartem with urgent referral prompt', () => {
+    const ctx: ITriageVoiceContext = {
+      module: 'pediatric_dosing',
+      pediatricMedication: 'artemether_lumefantrine',
+      childWeightKg: 4.2,
+      isEligible: false
+    };
+
+    const promptEn = service.generateTriagePrompt(ctx, 'en');
+    expect(promptEn.acuityTier).toBe('RED');
+    expect(promptEn.headline).toContain('Coartem Ineligible (<5 kg)');
+    expect(promptEn.promptText).toContain('under five kilograms');
+
+    const promptSw = service.generateTriagePrompt(ctx, 'sw');
+    expect(promptSw.acuityTier).toBe('RED');
+    expect(promptSw.promptText).toContain('chini ya kilo tano');
+    expect(promptSw.promptText).toContain('Coartem haishauriwi');
+  });
+
+  it('12. Generates WHO Reduced Osmolarity ORS Plan B & C rehydration volume instructions', () => {
+    const ctxPlanB: ITriageVoiceContext = {
+      module: 'pediatric_dosing',
+      pediatricMedication: 'ors_rehydration',
+      dehydrationPlan: 'PLAN_B',
+      childWeightKg: 10.0,
+      orsVolumeMl: 750
+    };
+
+    const promptAr = service.generateTriagePrompt(ctxPlanB, 'ar');
+    expect(promptAr.direction).toBe('rtl');
+    expect(promptAr.headline).toContain('محلول الإرواء: الخطة ب');
+    expect(promptAr.promptText).toContain('750 مليلتر');
+    expect(promptAr.promptText).toContain('الساعات الأربع');
+
+    const promptSw = service.generateTriagePrompt(ctxPlanB, 'sw');
+    expect(promptSw.headline).toContain('SULUHISHO LA ORS');
+    expect(promptSw.promptText).toContain('mililita 750');
+    expect(promptSw.promptText).toContain('masaa manne');
+  });
+
+  it('13. Generates Zinc Sulfate 14-day completion and Amoxicillin fast-breathing guidance', () => {
+    // Zinc under 6 months (10mg half tablet)
+    const ctxZincInfant: ITriageVoiceContext = {
+      module: 'pediatric_dosing',
+      pediatricMedication: 'zinc_sulfate',
+      childAgeMonths: 4,
+      doseMg: 10,
+      totalTablets: 7
+    };
+    const zincPrompt = service.generateTriagePrompt(ctxZincInfant, 'en');
+    expect(zincPrompt.acuityTier).toBe('GREEN');
+    expect(zincPrompt.promptText).toContain('half a tablet of Zinc');
+    expect(zincPrompt.promptText).toContain('10 milligrams');
+    expect(zincPrompt.promptText).toContain('fourteen full days');
+
+    // Zinc over 6 months (20mg full tablet) in Spanish
+    const ctxZincChild: ITriageVoiceContext = {
+      module: 'pediatric_dosing',
+      pediatricMedication: 'zinc_sulfate',
+      childAgeMonths: 18,
+      doseMg: 20,
+      totalTablets: 14
+    };
+    const zincPromptEs = service.generateTriagePrompt(ctxZincChild, 'es');
+    expect(zincPromptEs.promptText).toContain('una tableta entera');
+    expect(zincPromptEs.promptText).toContain('catorce días completos');
+
+    // Amoxicillin in Hindi
+    const ctxAmox: ITriageVoiceContext = {
+      module: 'pediatric_dosing',
+      pediatricMedication: 'amoxicillin_dispersible',
+      tabletsPerDose: 2,
+      doseMg: 500,
+      totalTablets: 20
+    };
+    const amoxPromptHi = service.generateTriagePrompt(ctxAmox, 'hi');
+    expect(amoxPromptHi.acuityTier).toBe('YELLOW');
+    expect(amoxPromptHi.promptText).toContain('अमोक्सिसिलिन');
+    expect(amoxPromptHi.promptText).toContain('2 घुलनशील गोली');
+    expect(amoxPromptHi.promptText).toContain('500 मिलीग्राम');
+  });
 });
 
