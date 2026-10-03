@@ -83,7 +83,7 @@
     "launch-editor": ">=2.14.1",
     "ws": "^8.21.0",
     "brace-expansion": "^2.1.4",
-    "fast-uri": "^4.1.4",
+    "fast-uri": "^4.2.1",
     "qs": ">=6.16.0",
     "postcss-selector-parser": ">=6.1.4",
     "ip-address": ">=10.4.0",
