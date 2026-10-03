@@ -1142,9 +1142,9 @@ export interface IDehydrationTriageResult {
               <div class="space-y-1.5">
                 <span class="text-xs text-zinc-400 font-bold block">Vaccine Vial Monitor (VVM) Indicator:</span>
                 <div class="grid grid-cols-4 gap-1.5 text-xs font-mono">
-                  @for (s of [1, 2, 3, 4]; track s) {
+                  @for (s of vvmStages; track s) {
                     <button type="button"
-                            (click)="edlService.updateColdChainTelemetry({ vvmStage: s })"
+                            (click)="setVvmStage(s)"
                             [class.bg-emerald-950]="s <= 2 && edlService.coldChainInputs().vvmStage === s"
                             [class.border-emerald-500]="s <= 2 && edlService.coldChainInputs().vvmStage === s"
                             [class.bg-rose-950]="s >= 3 && edlService.coldChainInputs().vvmStage === s"
@@ -1858,6 +1858,12 @@ export class CommunityHealthWorkerSuiteComponent {
 
   hasCloseButton = true;
   activeTab = signal<ChwTab>('malnutrition_muac');
+
+  readonly vvmStages: readonly (1 | 2 | 3 | 4)[] = [1, 2, 3, 4] as const;
+
+  setVvmStage(stage: 1 | 2 | 3 | 4): void {
+    this.edlService.updateColdChainTelemetry({ vvmStage: stage });
+  }
 
   // MUAC Signal States
   muacMm = signal<number>(128); // default normal
