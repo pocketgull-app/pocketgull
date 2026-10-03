@@ -300,7 +300,7 @@
     "vite": "^7.3.5 || ^8.0.0",
     "launch-editor": ">=2.14.1",
     "js-yaml": ">=4.3.1",
-    "brace-expansion": "^2.1.4",
+    "brace-expansion": "^2.1.7",
     "fast-uri": "^4.1.4",
     "postcss-selector-parser": ">=6.1.4",
     "ip-address": ">=10.4.0",
