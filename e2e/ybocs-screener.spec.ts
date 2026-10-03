@@ -26,14 +26,14 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     const assessmentsBtn = page.getByTestId('tab-assessments');
     await assessmentsBtn.scrollIntoViewIfNeeded();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.click({ force: true });
+    await assessmentsBtn.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 3. Select Y-BOCs Screener Tab
     const ybocsTab = page.getByTestId('tab-ybocs-screener');
     await ybocsTab.scrollIntoViewIfNeeded();
     await expect(ybocsTab).toBeVisible({ timeout: 10000 });
-    await ybocsTab.click({ force: true });
+    await ybocsTab.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 3. Verify Y-BOCs Screener renders

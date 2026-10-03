@@ -127,6 +127,7 @@ Agents MUST delegate specialized and compute/context-heavy tasks according to th
 | **Multi-Script & Sovereign Linguistics** | `multi-script-linguist` | • Authoring phonological matrices and glyph mapping specs.<br>• Verifying rotational symmetry and diacritic elevation clearance (UCAS / Duployan).<br>• Enforcing UAX #9 BiDi numeric dosage isolation. | Prohibits un-grounded phonetic distortion or cultural appropriation. |
 | **NVIDIA CUDA & GPU Architect** | `nvidia-cuda-architect` | • Hardware-specific GPU optimization (Tesla T4, A100, H100).<br>• Enforcing Automatic Mixed Precision (`autocast` FP16/BF16), FlashAttention-2 / SDPA, and MONAI SmartCache in-memory pipelines.<br>• Empirical latency and Tensor Core profiling (`torch.profiler`). | Prohibits un-gated FP32 compute on Tensor Core hardware and repetitive disk DICOM decoding. |
 | **Mozilla Observatory 125 Guard** | `observatory-125-guard` | • Any modification to Express/SSR server, CSP headers, HSTS, routing, or deployment scripts.<br>• Enforcing 125/100 Grade A+ rating.<br>• Preventing route short-circuiting and unsafe-inline drift. | Prohibits bypassing pre-commit Check 12 or deploying without live synthetic verification. |
+| **GCP Security & IAM Guard** | `gcp-iam-guard` | • Any modification to Cloud Run service accounts, `cloudbuild.yaml`, IAM bindings, Secret Manager, or API keys.<br>• Enforcing 100/100 Grade A+ posture.<br>• Prohibiting user-managed JSON keys and un-scoped API keys.<br>• Verifying `pocketgull-run` least-privilege binding. | Must run `npm run gcp:audit` to verify 100% compliance. Prohibits deploying under default compute SA. |
 
 ### Subagent Escalation Invariants:
 1. **Single-Turn Synthesis**: Subagents must return actionable conclusions, verified diffs, or structured findings in a single response. Prohibit multi-turn ping-pong loops between subagents.
@@ -148,6 +149,10 @@ Before concluding any implementation turn, execute the explicit workspace comman
 - **Unit Test Suite**:
   ```powershell
   npm test -- --run
+  ```
+- **GCP Security & IAM Posture Audit**:
+  ```powershell
+  npm run gcp:audit
   ```
 
 ### 2. Self-Healing Protocol

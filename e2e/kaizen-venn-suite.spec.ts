@@ -25,14 +25,14 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     const assessmentsBtn = page.getByTestId('tab-assessments');
     await assessmentsBtn.scrollIntoViewIfNeeded();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.click({ force: true });
+    await assessmentsBtn.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 5. Select Venn Consensus sub-tab
     const vennTab = page.getByTestId('tab-venn-matrix');
     await vennTab.scrollIntoViewIfNeeded();
     await expect(vennTab).toBeVisible({ timeout: 10000 });
-    await vennTab.click({ force: true });
+    await vennTab.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 6. Verify Venn Matrix header renders
@@ -42,7 +42,8 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     // 7. Click Triple Consensus button (W ∩ F ∩ E)
     const tripleBtn = page.locator('button', { hasText: 'Triple Consensus' });
     await expect(tripleBtn).toBeVisible({ timeout: 10000 });
-    await tripleBtn.click({ force: true });
+    await tripleBtn.scrollIntoViewIfNeeded();
+    await tripleBtn.dispatchEvent('click');
 
     // 8. Verify 100% Certainty badge and biomarkers list render
     const certaintyBadge = page.locator('text=100% Certainty').first();
@@ -67,14 +68,14 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     const assessmentsBtn = page.getByTestId('tab-assessments');
     await assessmentsBtn.scrollIntoViewIfNeeded();
     await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.click({ force: true });
+    await assessmentsBtn.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 3. Select Kaizen Optimization sub-tab
     const kaizenTab = page.getByTestId('tab-kaizen-suite');
     await kaizenTab.scrollIntoViewIfNeeded();
     await expect(kaizenTab).toBeVisible({ timeout: 10000 });
-    await kaizenTab.click({ force: true });
+    await kaizenTab.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 4. Verify Continuous Outcome Optimization Suite header renders
@@ -89,7 +90,8 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     const paretoTabBtn = page.locator('button', { hasText: 'Pareto 80/20 Analysis' });
     await expect(paretoTabBtn).toBeVisible({ timeout: 10000 });
     await paretoTabBtn.scrollIntoViewIfNeeded();
-    await paretoTabBtn.click({ force: true });
+    await paretoTabBtn.dispatchEvent('click');
+    await page.waitForTimeout(400);
 
     const paretoBadge = page.locator('text=Top 3 High-Leverage Actions');
     await expect(paretoBadge).toBeVisible({ timeout: 10000 });
@@ -98,7 +100,8 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     const spcTabBtn = page.locator('button', { hasText: 'SPC Control Chart' });
     await expect(spcTabBtn).toBeVisible({ timeout: 10000 });
     await spcTabBtn.scrollIntoViewIfNeeded();
-    await spcTabBtn.click({ force: true });
+    await spcTabBtn.dispatchEvent('click');
+    await page.waitForTimeout(400);
 
     const spcStatus = page.locator('text=Process Status: In Control').first();
     await expect(spcStatus).toBeVisible({ timeout: 10000 });

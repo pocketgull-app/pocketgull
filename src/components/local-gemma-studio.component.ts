@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WebLLMProvider, AVAILABLE_GEMMA_MODELS, IGemmaModelInfo, IOfflineEmergencyProtocol } from '../services/ai/webllm.provider';
@@ -95,31 +95,31 @@ const CLINICAL_ARCHETYPES = [
 
       <!-- Navigation Mode Tabs -->
       <div class="flex items-center gap-2 border-b border-zinc-800/80 pb-3 overflow-x-auto">
-        <button (click)="setActiveTab('chat')"
+        <button type="button" data-testid="tab-studio-chat" (click)="setActiveTab('chat')"
           [ngClass]="activeTab() === 'chat' ? 'bg-purple-600/30 text-purple-300 border-purple-500/50' : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:text-zinc-200'"
           class="px-3.5 py-2 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center gap-2 shrink-0">
           <span>💬</span> Consult Stream &amp; Scribe
         </button>
 
-        <button (click)="setActiveTab('embedder')"
+        <button type="button" data-testid="tab-studio-embedder" (click)="setActiveTab('embedder')"
           [ngClass]="activeTab() === 'embedder' ? 'bg-purple-600/30 text-purple-300 border-purple-500/50' : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:text-zinc-200'"
           class="px-3.5 py-2 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center gap-2 shrink-0">
           <span>🧬</span> Vector RAG (256-Dim Embedder)
         </button>
 
-        <button (click)="setActiveTab('proofreader')"
+        <button type="button" data-testid="tab-studio-proofreader" (click)="setActiveTab('proofreader')"
           [ngClass]="activeTab() === 'proofreader' ? 'bg-purple-600/30 text-purple-300 border-purple-500/50' : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:text-zinc-200'"
           class="px-3.5 py-2 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center gap-2 shrink-0">
           <span>✍️</span> Clinical Proofreader &amp; ISMP Guard
         </button>
 
-        <button (click)="setActiveTab('classifier')"
+        <button type="button" data-testid="tab-studio-classifier" (click)="setActiveTab('classifier')"
           [ngClass]="activeTab() === 'classifier' ? 'bg-purple-600/30 text-purple-300 border-purple-500/50' : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:text-zinc-200'"
           class="px-3.5 py-2 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center gap-2 shrink-0">
           <span>🏷️</span> Triage Acuity Classifier
         </button>
 
-        <button (click)="setActiveTab('hardware')"
+        <button type="button" data-testid="tab-studio-hardware" (click)="setActiveTab('hardware')"
           [ngClass]="activeTab() === 'hardware' ? 'bg-purple-600/30 text-purple-300 border-purple-500/50' : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:text-zinc-200'"
           class="px-3.5 py-2 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center gap-2 shrink-0">
           <span>🖥️</span> Hardware &amp; NPU Telemetry
@@ -633,6 +633,7 @@ export class LocalGemmaStudioComponent {
   readonly hardware = inject(HardwareTelemetryService);
   readonly state = inject(PatientStateService);
   readonly dsmLanguageService = inject(DsmLanguageCorrectionService);
+  private cdr = inject(ChangeDetectorRef, { optional: true });
 
   readonly isAiSupported = this.nanoProvider.isAiSupported;
   readonly isProofreaderSupported = this.nanoProvider.isProofreaderSupported;
@@ -663,6 +664,7 @@ export class LocalGemmaStudioComponent {
 
   setActiveTab(tab: 'chat' | 'embedder' | 'proofreader' | 'classifier' | 'hardware'): void {
     this.activeTab.set(tab);
+    this.cdr?.markForCheck();
   }
 
   onSelectEngine(engineId: string): void {
@@ -682,6 +684,7 @@ export class LocalGemmaStudioComponent {
 
   setEmbedQuery(text: string): void {
     this.embedQueryText = text;
+    this.cdr?.markForCheck();
     this.runEmbedderMatching();
   }
 
@@ -705,6 +708,7 @@ export class LocalGemmaStudioComponent {
         score: r.score
       }))
     );
+    this.cdr?.markForCheck();
   }
 
   setProofreaderPreset(type: 'trailing_zero' | 'naked_decimal' | 'typos' | 'detox' | 'toxicology' | 'suicide' | 'non_compliant' | 'non_pharmacological' | 'stewardship'): void {
@@ -792,6 +796,7 @@ export class LocalGemmaStudioComponent {
       });
     } finally {
       this.isProofreading.set(false);
+      this.cdr?.markForCheck();
     }
   }
 
@@ -827,6 +832,7 @@ export class LocalGemmaStudioComponent {
         recommendation: 'Standard outpatient care. Reconcile electronic pharmacy records and verify adherence.'
       });
     }
+    this.cdr?.markForCheck();
   }
 
   triggerDisasterPreset(type: 'maritime' | 'start_triage' | 'wilderness_trauma' | 'pharmacogenomics'): void {
