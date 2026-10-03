@@ -28,7 +28,7 @@ export type PatentHudTab = 'inventions' | 'clauses' | 'math' | 'charter';
                   POCKETGULL IP &amp; PATENT CLAIMS REGISTRY
                 </h2>
                 <span class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/30">
-                  [ 10 INVENTIONS ▪ 200 CLAIMS ]
+                  [ {{ summary.totalClaimClusters }} INVENTIONS ▪ {{ summary.totalClaimsCount }} CLAIMS ]
                 </span>
               </div>
               <p class="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono mt-0.5">
@@ -64,7 +64,7 @@ export type PatentHudTab = 'inventions' | 'clauses' | 'math' | 'charter';
                     [class.text-zinc-500]="activeTab() !== 'inventions'"
                     [class.dark:text-zinc-400]="activeTab() !== 'inventions'"
                     class="py-2.5 px-3 border-b-2 text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer hover:text-zinc-800 dark:hover:text-zinc-200 whitespace-nowrap">
-              01 Staked Inventions (200)
+              01 Staked Inventions ({{ summary.totalClaimsCount }})
             </button>
 
             <button type="button"
@@ -297,7 +297,7 @@ export type PatentHudTab = 'inventions' | 'clauses' | 'math' | 'charter';
           <div class="flex items-center gap-2 text-[10px] font-mono text-zinc-400">
             <span>35 U.S.C. §101 / 17 U.S.C. §101</span>
             <span>•</span>
-            <span class="text-teal-600 dark:text-teal-400 font-bold">200 CLAIMS STAKED</span>
+            <span class="text-teal-600 dark:text-teal-400 font-bold">{{ summary.totalClaimsCount }} CLAIMS STAKED</span>
           </div>
         </div>
 
@@ -314,7 +314,7 @@ export class PatentClaimsHudModalComponent {
   readonly searchQuery = signal<string>('');
   readonly copiedText = signal<boolean>(false);
 
-  private readonly summary = this.patentService.getPatentSummary();
+  readonly summary = this.patentService.getPatentSummary();
 
   readonly filteredClusters = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();

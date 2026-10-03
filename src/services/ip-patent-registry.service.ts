@@ -273,8 +273,8 @@ export class IpPatentRegistryService {
       article: 'Article II',
       section: 'Section 2.01',
       title: 'Statutory Invention Reservation & Patent Notice',
-      summary: 'Formally reserves patent rights under 35 U.S.C. §101 et seq. for 10 core algorithm clusters across 200 staked patent claims.',
-      fullText: 'Notice is hereby given that the computational algorithms, data pipelines, WebGPU shaders, and hardware integration architectures disclosed herein represent proprietary inventions subject to pending domestic and international patent applications under 35 U.S.C. § 101 et seq. and the Patent Cooperation Treaty (PCT), spanning 200 formal patent claims across 10 distinct invention clusters.',
+      summary: 'Formally reserves patent rights under 35 U.S.C. §101 et seq. for 16 core algorithm clusters across 320 staked patent claims.',
+      fullText: 'Notice is hereby given that the computational algorithms, data pipelines, WebGPU shaders, and hardware integration architectures disclosed herein represent proprietary inventions subject to pending domestic and international patent applications under 35 U.S.C. § 101 et seq. and the Patent Cooperation Treaty (PCT), spanning 320 formal patent claims across 16 distinct invention clusters.',
       governingLaw: '35 U.S.C. § 101, 102, 103 / PCT'
     },
     {

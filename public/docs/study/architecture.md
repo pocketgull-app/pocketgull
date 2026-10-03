@@ -152,23 +152,46 @@ Each parallel agent execution maps directly to a chunked generator stream (`gene
 
 ---
 
+---
+
+## 🏛️ Institutional Systems & Standards Matrix (Defensive Architecture)
+
+Pocket Gull enforces statutory, mathematical, and clinical invariants across 8 institutional pillars:
+
+| Pillar & Discipline | Statutory Standards & Invariants | System Implementation |
+| :--- | :--- | :--- |
+| **1. Cryptographic Security**<br>*(ACM SIGSAC, NIST, ISO/IEC)* | Mozilla 125/100 (Grade A+), NIST SP 800-90A CSPRNG, FDA 21 CFR Part 11, OWASP LLM01 | Level 3 CSP dynamic nonces (`'strict-dynamic'`, zero `'unsafe-inline'`), 53-bit mantissa unbiased entropy derivation, M-of-N dual custody, AST taint tracking. |
+| **2. Biomedical & IoMT**<br>*(IEEE EMB, IEEE P2933, IEEE PES)* | IEEE P2933™ TIPPSS (6 Pillars), IEEE 11073, Circular Hardware Lifecycles | Hardware Root of Trust attestation (Titan M2 / Secure Enclave), RSSI proximity gating ($\ge -85\text{ dBm}$), Web Battery API 20%–80% cycling, 99.5% edge decimation. |
+| **3. Machine Learning & Causal AI**<br>*(JMLR, IEEE TMI, NeurIPS)* | Doubly Robust AIPW, Mondrian Conformal Prediction, RSNA GroupKFold | Counterfactual causal estimation resolving observational bias, finite-sample 95% marginal coverage bounds, Epistemic OOD detector, Chrome Built-in AI (Prompt API). |
+| **4. Software Engineering**<br>*(ACM SIGSOFT, SIGPLAN, Google SWE)* | Angular 22 Zoneless Signals, "Tell, Don't Ask" Rule, Poka-Yoke AST Parity | Single-directional signals graph, domain-encapsulated state mutations (anti-getter bolting), polyglot AST schema parity (TS ↔ Dart ↔ Python), compile-time unit guards. |
+| **5. Clinical Pharmacology**<br>*(ISMP, FDA, WHO, CPIC)* | Three Acts Clinical Reality, ISMP High-Alert Safety, SIBI Oral Link | Epistemic demarcation (acute bridge vs. longevity), slashed zero (`cv08`), curved `l` (`cv05`), serifed `I` (`ss02`), zero naked decimals, 32-tooth odontogram & SIBI oral-systemic cross-talk. |
+| **6. Statutory Governance & Sovereignty**<br>*(Five Eyes FVEY, Microsoft MSA)* | Five Eyes (US, UK, CA, AU, NZ), MSA §14.s / §14.i, 38 CFR § 4.87 | Multi-nation statutory compliance profiles (HIPAA, DTAC, PIPEDA), MSA §14.s zero emotion inferencing & zero distillation ban, mandatory clinician HITL review, VA DBQ generator. |
+| **7. Human-Computer Interaction**<br>*(ACM SIGCHI, USWDS, AIGA)* | LogMAR 0.0 Legibility, WCAG AAA Obsidian Contrast, Rachel Nabors Motion | Optotypic legibility (5-arcminute visual angle at 50–70 cm), thin-client zero-blowout layout (Citrix COW 5:4 to mobile), 0.1 Hz vagal pacing, marker font brand quarantine. |
+| **8. GreenOps & Cloud FinOps**<br>*(CNCF Green, IEEE PES)* | Zero-TTF Container Invariant, Scale-to-Zero ($0.20/mo), 7-Day Auto-Prune | 121 MB desktop TTF offloaded to Google Cloud CDN (GCS origin), sub-10MB build contexts, Cloud Run scale-to-zero, Docker layer caching, 7-day auto-pruning. |
+
+---
+
 ## Key Infrastructure Files
 
 | File | Responsibility |
 |---|---|
-| `server.js` | Express.js backend — SSR, PubMed proxy, CSE static serve, WebSocket live proxy, rate limiting |
+| `server.js` / `src/server.ts` | Express.js backend — SSR, Mozilla Observatory 125 headers, WebSocket live proxy, rate limiting |
+| `scripts/setup-gcp-font-cdn.mjs` | Google Cloud CDN Anycast edge & GCS typography provisioning automation |
 | `src/services/clinical-intelligence.service.ts` | ADK runner configuration, agent orchestration |
 | `src/services/ai/gemini.provider.ts` | Vertex AI Enterprise provider — ADC token resolution, regional endpoints |
 | `src/services/ai/adk-live.service.ts` | Bidirectional live audio streaming via `/ws/gemini-live` proxy |
-| `src/services/patient-state.service.ts` | Centralized Signals-based state management |
+| `src/services/patient-state.service.ts` | Centralized Signals-based state management ("Tell, Don't Ask" domain encapsulation) |
 | `src/app.component.ts` | Root layout, MCP tool registration, panel management |
-| `scripts/deploy.sh` | Automated Cloud Run deployment script |
-| `Dockerfile` | Container build configuration |
+| `scripts/deploy-production.mjs` | Automated Cloud Run deployment script with pre-flight verification chain |
+| `Dockerfile` | Container build configuration enforcing Zero-TTF container invariant |
 
 ---
 
 ## 📜 Architecture Evolution Timeline
 
+- **v1.39.0 (2026-10-02)**: Google Cloud CDN Anycast edge typography deployment (`font.pocketgull.app`), 8-Pillar Institutional Systems & Standards Matrix integration, MSA §14.s AI Governance guard, and Mozilla HTTP Observatory 125/100 Grade A+ baseline.
+- **v1.38.0 (2026-09-28)**: Asymmetric Fast-Loop (WebGPU/NPU) / Slow-Loop (Cloud Run) symbiosis, 3-Act Clinical Trajectory Compass, and USWDS 3.0 VA Community Care DBQ generator.
+- **v1.36.0 (2026-09-23)**: Monorepo polyglot AST contract parity (TS ↔ Dart ↔ Python) via `tippss_schema_parity.dart`, IEEE P2933™ TIPPSS 6-pillar trust engine, and Poka-Yoke compile-time unit guards.
 - **v1.2.0 (2026-07-22)**: 10 Standardized Clinical & Life Sovereignty Assessment Suite (`ClinicalAssessmentsSuiteComponent`), Dynamic 3D Paradigm Viewport Synchronization (`body-viewer.component.ts` & `body-3d-viewer.component.ts`), and Rice Papercraft design system.
 - **v1.1.0 (2026-07-21)**: AIGA 2025/2026 Model Augmentation & Telemetry Lens (`aiga-telemetry-lens.component.ts`), Physiological Storm De-escalation Shield (`storm-analysis.component.ts`), and WHO ICD-11 Cross-Border Emergency Health Passport (`cross-border-health-wallet.service.ts`).
 - **v1.0.0-rc10 (2026-07-21)**: PhysioNet 2026 Waveform Lens (`clinical-intelligence.service.ts`) & 7-second papercraft origami splash animation (`secure-splash.component.ts`).

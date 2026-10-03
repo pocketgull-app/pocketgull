@@ -113,7 +113,9 @@ import { AutonomicBaroreflexCardComponent } from './components/clinical/autonomi
 import { SepsisShockSofaCardComponent } from './components/clinical/sepsis-shock-sofa-card.component';
 import { GlycemicMinimalModelCardComponent } from './components/clinical/glycemic-minimal-model-card.component';
 import { PancreaticIslet3dLensComponent } from './components/anatomy-3d/pancreatic-islet-3d-lens.component';
+import { Cyp3a4Heme3dLensComponent } from './components/anatomy-3d/cyp3a4-heme-3d-lens.component';
 import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-matrix-card.component';
+import { StewartHamiltonPacCardComponent } from './components/clinical/stewart-hamilton-pac-card.component';
 
 @Component({
   selector: 'app-root',
@@ -203,7 +205,9 @@ import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-m
     SepsisShockSofaCardComponent,
     GlycemicMinimalModelCardComponent,
     PancreaticIslet3dLensComponent,
-    Cyp450DdiMatrixCardComponent
+    Cyp3a4Heme3dLensComponent,
+    Cyp450DdiMatrixCardComponent,
+    StewartHamiltonPacCardComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -889,7 +893,7 @@ import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-m
           <div class="flex items-center gap-2 sm:gap-3 text-[11px] sm:text-xs">
             <span class="font-pocketgull-brand font-bold text-xs text-zinc-900 dark:text-zinc-100">PocketGull</span>
             <span class="text-zinc-400 dark:text-zinc-600 hidden sm:inline">•</span>
-            <span class="text-zinc-500 dark:text-zinc-400 hidden sm:inline">Copyright © 2026 Applied Clinical AI Consortium • Global Health Equity &amp; HIPAA Safe Harbor</span>
+            <span class="text-zinc-500 dark:text-zinc-400 hidden sm:inline">Copyright © 2026 Applied Clinical AI Consortium • Mozilla 125 A+ • IEEE P2933™ TIPPSS • HIPAA Safe Harbor</span>
           </div>
           <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-5 font-semibold text-[11px] sm:text-xs">
             <button type="button" (click)="showPatentClaimsModal.set(true)" class="text-teal-600 dark:text-teal-400 hover:underline transition cursor-pointer flex items-center gap-1 font-mono text-[11px] font-bold">
@@ -1590,6 +1594,15 @@ import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-m
               class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
               🔬 Pancreatic Islet (V9)
             </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('cyp_heme')"
+              [class.bg-rose-500]="activeBiophysicalLensTab() === 'cyp_heme'"
+              [class.text-zinc-950]="activeBiophysicalLensTab() === 'cyp_heme'"
+              [class.text-rose-400]="activeBiophysicalLensTab() !== 'cyp_heme'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🧬 CYP3A4 Heme Active Site (V10)
+            </button>
 
             <div class="h-4 w-px bg-zinc-700 mx-1 hidden sm:block"></div>
             <div class="text-[10px] uppercase font-bold text-zinc-500 px-2">Clinical Phenotypers:</div>
@@ -1639,6 +1652,15 @@ import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-m
               class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
               💊 CYP450 &amp; DDI Matrix (P12)
             </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('swan_ganz')"
+              [class.bg-purple-600]="activeBiophysicalLensTab() === 'swan_ganz'"
+              [class.text-white]="activeBiophysicalLensTab() === 'swan_ganz'"
+              [class.text-purple-400]="activeBiophysicalLensTab() !== 'swan_ganz'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🫀 Swan-Ganz &amp; Hemodynamics (P13)
+            </button>
           </div>
 
           <!-- Active Panel Display -->
@@ -1653,6 +1675,8 @@ import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-m
               <app-glomerular-filtration-3d-lens />
             } @else if (activeBiophysicalLensTab() === 'islet') {
               <app-pancreatic-islet-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'cyp_heme') {
+              <app-cyp3a4-heme-3d-lens />
             } @else if (activeBiophysicalLensTab() === 'kdigo_aki') {
               <app-kdigo-aki-phenotyper-card />
             } @else if (activeBiophysicalLensTab() === 'baroreflex') {
@@ -1663,6 +1687,8 @@ import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-m
               <app-glycemic-minimal-model-card />
             } @else if (activeBiophysicalLensTab() === 'cyp450_ddi') {
               <app-cyp450-ddi-matrix-card />
+            } @else if (activeBiophysicalLensTab() === 'swan_ganz') {
+              <app-stewart-hamilton-pac-card />
             }
           </div>
         </div>
@@ -1720,7 +1746,7 @@ export class AppComponent implements OnDestroy {
   showAustereHudModal = signal(false);
   showKneeHologramModal = signal(false);
   showBiophysicalLensesModal = signal(false);
-  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi'>('cardiac');
+  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz'>('cardiac');
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;

@@ -100,6 +100,8 @@
     "sbom:prod": "node --no-deprecation scripts/generate_cyclonedx_sbom.mjs --prod",
     "sbom:generate": "node --no-deprecation scripts/generate_cyclonedx_sbom.mjs",
     "mcp:warmup": "node --no-deprecation scripts/mcp-warmup.js",
+    "cdn:fonts": "node --no-deprecation scripts/setup-gcp-font-cdn.mjs",
+    "cdn:fonts:dry": "node --no-deprecation scripts/setup-gcp-font-cdn.mjs --dry-run",
     "build": "node --no-deprecation scripts/build-all.mjs",
     "deploy": "node --no-deprecation scripts/deploy-production.mjs",
     "deploy:all": "node --no-deprecation scripts/deploy-production.mjs",

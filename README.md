@@ -31,6 +31,15 @@
   <img src="https://img.shields.io/badge/Ollama-1--Click_Modelfiles-black?style=flat-square&logo=ollama" alt="Ollama">
 </p>
 
+<p align="center">
+  <a href="ARCHITECTURE.md#pillar-1-cryptography"><img src="https://img.shields.io/badge/Observatory-125%2F100_Grade_A%2B-059669?style=flat-square&logo=mozilla&logoColor=white" alt="Mozilla HTTP Observatory 125/100 Grade A+"></a>
+  <a href="ARCHITECTURE.md#pillar-2-biomedical-iomt"><img src="https://img.shields.io/badge/IEEE_P2933™-TIPPSS_IoMT_Trust-00629B?style=flat-square&logo=ieee&logoColor=white" alt="IEEE P2933 TIPPSS"></a>
+  <a href="ARCHITECTURE.md#pillar-1-cryptography"><img src="https://img.shields.io/badge/NIST_SP_800--90A-CSPRNG_Entropy-7c3aed?style=flat-square" alt="NIST SP 800-90A CSPRNG"></a>
+  <a href="ARCHITECTURE.md#pillar-6-international-law"><img src="https://img.shields.io/badge/Data_Sovereignty-Five_Eyes_(FVEY)-0284c7?style=flat-square" alt="Five Eyes Data Sovereignty"></a>
+  <a href="ARCHITECTURE.md#pillar-1-cryptography"><img src="https://img.shields.io/badge/FDA_21_CFR_Part_11-Electronic_Attestation-4338ca?style=flat-square" alt="FDA 21 CFR Part 11"></a>
+  <a href="ARCHITECTURE.md#pillar-6-international-law"><img src="https://img.shields.io/badge/MSA_§14.s-AI_Governance-0078D4?style=flat-square&logo=microsoft&logoColor=white" alt="MSA §14.s AI Governance"></a>
+</p>
+
 ---
 
 ## 🚀 Live Demos & Open Hugging Face Ecosystem
@@ -448,28 +457,33 @@ See [SECURITY.md](SECURITY.md) for full vulnerability reporting policy.
 
 ---
 
-## 🏛️ Academic Research & Standards Alignment
+## 🏛️ Institutional Systems & Standards Matrix (Defensive Architecture)
 
-Pocket Gull is architected as an empirical, peer-reviewed clinical intelligence testbed bridging engineering, computing, design, and health equity:
+Pocket Gull is engineered as an institutional clinical intelligence testbed bridging computer science, biomedical engineering, cryptographic security, and health sovereignty. Detailed technical specifications, mathematical derivations, and implementation source references are maintained in the [System Architecture Whitepaper (ARCHITECTURE.md)](ARCHITECTURE.md).
 
-| Domain & Society | Standard / Framework | Implementation in Pocket Gull |
-| :--- | :--- | :--- |
-| **IEEE Biomedical Engineering** | IEEE 11073-10101, IEEE 2621, IEEE P7003 | • 1D Dilated CNN ECG/PPG Waveform Arrhythmia Classifier (`pocketgull_api/waveform_1d_cnn.py`)<br>• Real-time WebGPU Biosignal Shaders (`src/services/webgpu-bio-signal.service.ts`)<br>• Biometric Sensor Fusion & CGM Time-in-Range ($70-180\text{ mg/dL}$) Telemetry |
-| **ACM Computing & Ethics** | ACM Code of Ethics §1.2 & §1.4, ACM HEALTH | • AST Global Taint-Tracking Engine (`scripts/taint-analysis-guard.mjs`)<br>• Stanford HCI Calibrated Confidence HUD (`src/components/ai-confidence-hud.component.ts`)<br>• Socratic "Don't Miss" Differential Radar with Bayesian Nomograms ($LR^+, LR^-$) |
-| **AIGA Design & Typography** | Evidence-Based Clinical Communication | • Bionic Reading Saccadic Fixation (`src/components/shared/bionic-focus-benchmark.component.ts`)<br>• Custom *PocketGull Marker* & Caslon Medical Typography<br>• 3D Longitudinal Trajectory Comparison Slider (WebGL Three.js) |
-| **ASU & NIH/NSF Translational** | NIH CTSA, NSF SBIR, SDOH Equity | • Automated SBIR Phase I Grant Binder Generator (`npm run grants:sbir`)<br>• PRAPARE SDOH & Population Health Equity Engine (`src/services/population-health-equity.service.ts`)<br>• Tribal Health Sovereignty & Cryptographically Sealed Patient Consent Logs |
+| Pillar & Discipline | Statutory Standards & Invariants | System Implementation & Routing | Whitepaper Deep-Dive |
+| :--- | :--- | :--- | :--- |
+| **1. Cryptographic Security**<br>*(ACM SIGSAC, NIST, ISO/IEC)* | Mozilla 125/100 (Grade A+), NIST SP 800-90A CSPRNG, FDA 21 CFR Part 11, OWASP LLM01 | • Dynamic nonces + `'strict-dynamic'` (zero `'unsafe-inline'`)<br>• 53-bit IEEE-754 mantissa unbiased entropy derivation<br>• Dual-Custody M-of-N multi-signature authorization<br>• Shift-Left AST Taint Analysis (`scripts/taint-analysis-guard.mjs`) | [Section 1: Cryptography](ARCHITECTURE.md#pillar-1-cryptography) |
+| **2. Biomedical & IoMT**<br>*(IEEE EMB, IEEE P2933, IEEE PES)* | IEEE P2933™ TIPPSS (6 Pillars), IEEE 11073, Circular Hardware Lifecycles | • Hardware Root of Trust attestation (Titan M2 / Secure Enclave)<br>• Proximity gating ($\ge -85\text{ dBm}$) preventing wireless relay attacks<br>• Web Battery API 20%–80% cycling (+3.0 to +6.5 yr longevity)<br>• Edge waveform decimation eliminating 99.5% egress | [Section 2: Biomedical IoMT](ARCHITECTURE.md#pillar-2-biomedical-iomt) |
+| **3. Machine Learning & Causal AI**<br>*(JMLR, IEEE TMI, NeurIPS)* | Doubly Robust AIPW, Mondrian Conformal Prediction, RSNA GroupKFold | • Counterfactual causal estimation resolving observational bias<br>• Finite-sample 95% marginal coverage prediction bounds<br>• Epistemic Out-of-Distribution Mahalanobis distance detector<br>• Chrome Built-in AI (Prompt API / Gemma 4) on-device RAG | [Section 3: Data Science & ML](ARCHITECTURE.md#pillar-3-data-science) |
+| **4. Software Engineering**<br>*(ACM SIGSOFT, SIGPLAN, Google SWE)* | Angular 22 Zoneless Signals, "Tell, Don't Ask" Rule, Poka-Yoke AST Parity | • "Tell, Don't Ask": State transitions encapsulated in domain models<br>• Single-directional reactive signals graph without dirty-checking<br>• Cross-language AST schema parity (TS ↔ Dart ↔ Python)<br>• Physical unit preservation compile-time guards (`poka_yoke`) | [Section 4: Systems & Software](ARCHITECTURE.md#pillar-4-software-engineering) |
+| **5. Clinical Pharmacology**<br>*(ISMP, FDA, WHO, CPIC)* | Three Acts Clinical Reality, ISMP High-Alert Safety, SIBI Oral Link | • Epistemic demarcation: Acute bridge vs. stepped-care longevity<br>• Slashed zero (`cv08`), curved `l` (`cv05`), serifed `I` (`ss02`)<br>• Prohibition of trailing zeroes (`5.0 mg`) and naked decimals (`.5 mg`)<br>• 32-tooth odontogram & SIBI oral-systemic cardiovascular cross-talk | [Section 5: Clinical Pharmacology](ARCHITECTURE.md#pillar-5-clinical-pharmacology) |
+| **6. Statutory Governance & Sovereignty**<br>*(Five Eyes FVEY, Microsoft MSA)* | Five Eyes (US, UK, CA, AU, NZ), MSA §14.s / §14.i, 38 CFR § 4.87 | • Multi-nation statutory compliance profiles (HIPAA, DTAC, PIPEDA)<br>• MSA §14.s: Zero emotion inferencing & zero base model distillation<br>• Mandatory affirmative clinician review (Human-in-the-Loop)<br>• VA Community Care DBQ & Medical Nexus statement generator | [Section 6: Statutory Governance](ARCHITECTURE.md#pillar-6-international-law) |
+| **7. Human-Computer Interaction**<br>*(ACM SIGCHI, USWDS, AIGA)* | LogMAR 0.0 Legibility, WCAG AAA Obsidian Contrast, Rachel Nabors Motion | • Optotypic legibility: 5-arcminute visual angle at 50–70 cm<br>• Institutional thin-client zero-blowout (Citrix COW 5:4 to Mobile)<br>• 0.1 Hz vagal autonomic pacing & origami spatial continuity<br>• Marker font strictly quarantined to Brand/Copyright lettering | [Section 7: HCI & Ergonomics](ARCHITECTURE.md#pillar-7-hci-ergonomics) |
+| **8. GreenOps & Cloud FinOps**<br>*(CNCF Green, IEEE PES)* | Zero-TTF Container Invariant, Scale-to-Zero ($0.20/mo), 7-Day Auto-Prune | • 121 MB desktop TTF binaries offloaded to Google Cloud CDN (GCS origin)<br>• Sub-10MB build contexts with 4MB local WOFF2 fallbacks<br>• Cloud Run scale-to-zero with Docker build layer caching<br>• 7-day automatic lifecycle cleanup on Artifact Registry & GCS | [Section 8: GreenOps & FinOps](ARCHITECTURE.md#pillar-8-greenops-finops) |
 
 ---
 
-## Safety & Responsible AI
+## Safety, Responsible AI & Governance
 
-- **Human-in-the-loop (HITL)** — clinicians must validate AI output before archiving care plans
-- **Safety red-teaming** — automated Vitest safety suite tests Gemini against adversarial prompts
-- **Evidence grounding** — every recommendation anchored in PubMed literature with UKRIO citation formatting
-- **Skeptical epistemology** — $p$-values against population baselines; Cochrane Risk of Bias assessments
-- **Evidence hierarchy tagging** — recommendations tagged Level A (RCTs), Level B (Cohort), or Level C (Expert Consensus)
+- **Human-in-the-Loop (HITL)** — Clinicians must validate all AI output before archiving care plans; autonomous un-gated decision-making is strictly prohibited.
+- **Microsoft Services Agreement (MSA) §14.s / §14.i Governance** — Complete prohibition of emotion inferencing from voice/video; absolute ban on base model distillation or cross-training on AI service outputs.
+- **"Tell, Don't Ask" Domain Invariant** — State mutations and clinical calculations remain strictly encapsulated within domain services, preventing silent un-validated dosage overrides.
+- **Safety Red-Teaming** — Automated Vitest safety suite continuously tests generative models against adversarial clinical and prompt injection vectors.
+- **Evidence Grounding** — Every recommendation is anchored in PubMed literature with UKRIO citation formatting and Cochrane Risk of Bias assessments.
+- **Epistemic Falsification** — Recommendations tagged Level A (RCTs), Level B (Cohort), or Level C (Expert Consensus) with $p$-values tested against population baselines.
 
-See [RESPONSIBLE_AI.md](RESPONSIBLE_AI.md) for ethical principles.
+See [RESPONSIBLE_AI.md](RESPONSIBLE_AI.md) and [ARCHITECTURE.md](ARCHITECTURE.md) for complete ethical and architectural specifications.
 
 ---
 
@@ -533,10 +547,11 @@ npm run deploy
 
 | Document | Description |
 | :--- | :--- |
+| [System Architecture Whitepaper](ARCHITECTURE.md) | 8-Pillar institutional systems engineering, cryptography & statutory standards vault |
 | [Clinical Case Studies Commons](docs/CLINICAL_CASE_STUDIES_COMMONS.md) | 3B cognitive framework, biophysical radars & FHIR R4 cohorts |
 | [Enterprise EHR Sidecar](docs/ENTERPRISE_EHR_SIDECAR.md) | Epic, Cerner & MEDITECH sidecar, 45 CFR Part 171 Safe Harbor & RPM billing |
 | [Porter's Five Forces](docs/PORTERS_FIVE_FORCES.md) | Industry structural analysis, defensible moat & competitive dynamics |
-| [Architecture](docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md) | System design, data flow & reactive state |
+| [Architecture (SIGARCH)](docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md) | System design, data flow & reactive state |
 | [Changelog](CHANGELOG.md) | Complete release history through v1.38.0 |
 | [Clinical Paradigms](docs/TRI_PARADIGM_SYNTHESIS_INTEGRATION.md) | Western, TCM, Ayurvedic & Orthomolecular frameworks |
 | [Federal USWDS Demarcation](docs/FEDERAL_DESIGN_SYSTEM_DEMARCATION.md) | USWDS 3.0, VA Community Care & 18 U.S.C. § 701 Safe Harbor |

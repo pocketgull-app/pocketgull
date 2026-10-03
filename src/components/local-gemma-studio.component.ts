@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WebLLMProvider, AVAILABLE_GEMMA_MODELS, IGemmaModelInfo, IOfflineEmergencyProtocol } from '../services/ai/webllm.provider';
@@ -627,6 +627,7 @@ const CLINICAL_ARCHETYPES = [
   `
 })
 export class LocalGemmaStudioComponent {
+  private cdr = inject(ChangeDetectorRef, { optional: true });
   readonly webLlm = inject(WebLLMProvider);
   readonly nanoProvider = inject(NanoProvider);
   readonly embedder = inject(OnDeviceEmbedderService);
@@ -663,6 +664,8 @@ export class LocalGemmaStudioComponent {
 
   setActiveTab(tab: 'chat' | 'embedder' | 'proofreader' | 'classifier' | 'hardware'): void {
     this.activeTab.set(tab);
+    this.cdr?.markForCheck();
+    this.cdr?.detectChanges();
   }
 
   onSelectEngine(engineId: string): void {
@@ -670,6 +673,8 @@ export class LocalGemmaStudioComponent {
     if (engineId !== 'builtin-gemma4') {
       this.webLlm.setModel(engineId);
     }
+    this.cdr?.markForCheck();
+    this.cdr?.detectChanges();
   }
 
   onSelectModel(modelId: string): void {
@@ -705,6 +710,8 @@ export class LocalGemmaStudioComponent {
         score: r.score
       }))
     );
+    this.cdr?.markForCheck();
+    this.cdr?.detectChanges();
   }
 
   setProofreaderPreset(type: 'trailing_zero' | 'naked_decimal' | 'typos' | 'detox' | 'toxicology' | 'suicide' | 'non_compliant' | 'non_pharmacological' | 'stewardship'): void {
@@ -792,6 +799,8 @@ export class LocalGemmaStudioComponent {
       });
     } finally {
       this.isProofreading.set(false);
+      this.cdr?.markForCheck();
+      this.cdr?.detectChanges();
     }
   }
 
@@ -827,6 +836,8 @@ export class LocalGemmaStudioComponent {
         recommendation: 'Standard outpatient care. Reconcile electronic pharmacy records and verify adherence.'
       });
     }
+    this.cdr?.markForCheck();
+    this.cdr?.detectChanges();
   }
 
   triggerDisasterPreset(type: 'maritime' | 'start_triage' | 'wilderness_trauma' | 'pharmacogenomics'): void {

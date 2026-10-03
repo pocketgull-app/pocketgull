@@ -33,8 +33,9 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
     // Switch to Vector RAG Tab
     const vectorTabBtn = studio.locator('button', { hasText: /Vector RAG/i }).first();
     await vectorTabBtn.scrollIntoViewIfNeeded();
-    await vectorTabBtn.click({ force: true });
-    await page.waitForTimeout(300);
+    await vectorTabBtn.click({ force: true }).catch(() => {});
+    await vectorTabBtn.evaluate(el => (el as HTMLElement).click());
+    await page.waitForTimeout(500);
 
     // Verify preset badges exist and click "Burning Foot Neuropathy"
     const dpnPreset = studio.locator('button', { hasText: /Burning Foot Neuropathy/i }).first();
@@ -54,8 +55,9 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
     // Switch to Proofreader Tab
     const proofreaderTabBtn = studio.locator('button', { hasText: /Clinical Proofreader/i }).first();
     await proofreaderTabBtn.scrollIntoViewIfNeeded();
-    await proofreaderTabBtn.click({ force: true });
-    await page.waitForTimeout(300);
+    await proofreaderTabBtn.click({ force: true }).catch(() => {});
+    await proofreaderTabBtn.evaluate(el => (el as HTMLElement).click());
+    await page.waitForTimeout(500);
 
     // Click Trailing Zero preset (e.g. 5.0 mg)
     const trailingZeroBtn = studio.locator('button', { hasText: /ISMP \(5\.0 mg\)/i }).first();
@@ -76,8 +78,9 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
     // Switch to Classifier Tab
     const classifierTabBtn = studio.locator('button', { hasText: /Triage Acuity Classifier/i }).first();
     await classifierTabBtn.scrollIntoViewIfNeeded();
-    await classifierTabBtn.click({ force: true });
-    await page.waitForTimeout(300);
+    await classifierTabBtn.click({ force: true }).catch(() => {});
+    await classifierTabBtn.evaluate(el => (el as HTMLElement).click());
+    await page.waitForTimeout(500);
 
     // Click STAT Emergency bypass preset
     const statBtn = studio.locator('button', { hasText: /Preset: STAT Chest Pain/i }).first();

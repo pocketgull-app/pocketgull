@@ -50,7 +50,7 @@ Pocket Gull's valuation scales rapidly based on its development milestones, stak
 
 | Stage / Horizon | Valuation Range | Key Drivers & Methodological Justification |
 | :--- | :---: | :--- |
-| **1. Cost-to-Replicate Asset Floor & Sovereign IP Moat** <br>*(Current 2026)* | **$28.0M – $33.5M** | **Proprietary Tech Stack & Architecture (COCOMO II / COSYSMO / COCOTS / SLIM):** <br>• 500K+ lines across 7,000+ files (340+ executable KSLOC across Angular 22, Flutter/Dart, Python FastAPI)<br>• 1,220 person-months estimated traditional effort (101.6 solo-developer-years)<br>• Dual-engine containerized backend (Node.js/Express + FastAPI Python sidecar)<br>• **Universal AI Model Training & Distillation Exclusions (EU AI Act Art. 53 & 17 U.S.C. § 106):** Machine-readable TDM reservation (`tdmrep.json`, `ai.txt`), MSA § 14.s.iv reciprocal prohibition, and willful patent infringement shield preventing hyperscaler commoditization.<br>• **Proprietary Clinical Typefoundry Suite ($242K replacement value):** Louise Sloan 5:1 optotypes and ISMP dosage safeguards on `font.pocketgull.app`<br>• **280 Staked Patent Claims across 14 Invention Clusters**<br>• OpenSSF Scorecard 10/10, zero SBOM NOASSERTION, 2,631 automated unit tests across 541 suites (100% passing). |
+| **1. Cost-to-Replicate Asset Floor & Sovereign IP Moat** <br>*(Current 2026)* | **$28.0M – $33.5M** | **Proprietary Tech Stack & Architecture (COCOMO II / COSYSMO / COCOTS / SLIM):** <br>• 500K+ lines across 7,000+ files (340+ executable KSLOC across Angular 22, Flutter/Dart, Python FastAPI)<br>• 1,220 person-months estimated traditional effort (101.6 solo-developer-years)<br>• Dual-engine containerized backend (Node.js/Express + FastAPI Python sidecar)<br>• **Universal AI Model Training & Distillation Exclusions (EU AI Act Art. 53 & 17 U.S.C. § 106):** Machine-readable TDM reservation (`tdmrep.json`, `ai.txt`), MSA § 14.s.iv reciprocal prohibition, and willful patent infringement shield preventing hyperscaler commoditization.<br>• **Proprietary Clinical Typefoundry Suite ($242K replacement value):** Louise Sloan 5:1 optotypes and ISMP dosage safeguards on `font.pocketgull.app`<br>• **320 Staked Patent Claims across 16 Invention Clusters**<br>• OpenSSF Scorecard 10/10, zero SBOM NOASSERTION, 2,631 automated unit tests across 541 suites (100% passing). |
 | **2. Pre-Money Seed / Series A** <br>*(2026 Pilot Stage)* | **$35.0M – $48.0M** | **Early Clinical Adoption, Fast-Loop Margin Advantage & Sovereign Defensibility:** <br>• 250 active clinician seats ($620k ARR, 93.2% Gross Margin fueled by on-device Edge AI)<br>• Staked USPTO / PCT patent applications + U.S. Copyright Form TX/VA registrations<br>• Clean, un-diluted algorithmic provenance certified immune to foundation model scraping<br>• Real-world time-savings proof (42% charting reduction, $314k RPM practice revenue). |
 | **3. Series B Growth Stage** <br>*(2027 Year 2)* | **$90.0M – $115.0M** | **16x – 19x ARR ($5.5M – $6.5M ARR):** <br>• 1,800 active clinician seats across regional health networks and ACOs<br>• High enterprise net revenue retention (>135%)<br>• Epic App Market and Oracle Cerner marketplace presence with proprietary CDS protections. |
 | **4. Series C Scale Stage** <br>*(2028 Year 3)* | **$220M – $290M** | **14x – 18x ARR ($16.0M – $20.0M ARR):** <br>• 6,500 active clinician seats + Five Eyes international deployments (NHS UK, Australia TGA)<br>• Full CMS automated risk adjustment (RAF) and CPT billing automation. |
@@ -58,7 +58,7 @@ Pocket Gull's valuation scales rapidly based on its development milestones, stak
 
 ---
 
-## 🛡️ The 14 Core Technology Moats (280 Patent Claims)
+## 🛡️ The 16 Core Technology Moats (320 Patent Claims)
 
 1. **Popperian Epistemological AI Verifier (Claims 1–20):** Continuous null-hypothesis $H_0$ statistical baseline testing ($p < 0.05$) and Cochrane RoB 2 risk-of-bias discounting.
 2. **Zero-Egress WebGPU Optical rPPG (Claims 21–40):** Browser-native WebGPU Plane-Orthogonal-to-Skin (POS) rPPG vitals extraction (pulse, HRV, Parkinsonian tremor) with zero video egress.
@@ -74,6 +74,8 @@ Pocket Gull's valuation scales rapidly based on its development milestones, stak
 12. **Gemma 4 Fast-Loop Edge Runtime & ISMP Proofreader (Claims 221–240):** Symbiotic fast-loop/slow-loop architecture executing on-device Chrome Built-in AI Prompt API with sub-50ms latency, deterministic local TypeScript fallback, and automated elimination of naked decimals and trailing zeros without cloud transit.
 13. **Volumetric DICOM Abnormality Scoring & Bayesian Prior Calibration (Claims 241–260):** Leak-free `GroupKFold` multi-slice DICOM volumetric scoring engine with Asymmetric Loss ($\gamma_-=4.0$) and Nelder-Mead threshold optimization for sparse musculoskeletal and organ abnormalities.
 14. **Anti-Deepfake Audio Boundary & STAT Forensic Seals (Claims 261–280):** Voice interaction boundary strictly decoupling speech telemetry from authentication, enforcing physical FIDO2 passkey challenges for high-impact dosage changes, and minting immutable SHA-256 forensic snapshot seals (`IIncidentForensicSnapshot`) under FDA 21 CFR Part 11.
+15. **Automated 16-Day Statutory Remote Patient Monitoring (RPM) Superbill Engine (Claims 281–300):** Continuous compliance auditing of asynchronous biometric device telemetry against CMS 16-day transmission statutory requirements (CPT 99453–99458) with NIST SP 800-90A CSPRNG SHA-256 digital attestation seals into FHIR Claims.
+16. **Dichoptic Optical & 670nm Mitochondrial Retinal Photobiomodulation (Claims 301–320):** Ophthalmic photobiomodulation apparatus delivering calibrated $670\text{ nm}$ monochromatic deep red radiation with 180s automatic dosage control for RPE cytochrome c oxidase activation, coupled with drifting OKN/VOR sinusoidal gratings at $0.1\text{ Hz}$ parasympathetic pacing, CIE S 026 melanopic circadian lux tuning, and dichoptic visual stimulation generating cortical binaural beats.
 
 ---
 
@@ -81,7 +83,7 @@ Pocket Gull's valuation scales rapidly based on its development milestones, stak
 
 | Registry / Agency | Jurisdiction | Form / Submission | Primary Asset Protected |
 | :--- | :---: | :--- | :--- |
-| **USPTO Patent Center** | United States | Provisional / Non-Provisional (35 U.S.C. §101) | 280 Staked Patent Claims across 14 Invention Clusters |
+| **USPTO Patent Center** | United States | Provisional / Non-Provisional (35 U.S.C. §101) | 320 Staked Patent Claims across 16 Invention Clusters |
 | **WIPO ePCT Portal** | International / FVEY | PCT International Patent Application | International Priority across 157 Contracting States |
 | **U.S. Copyright Office (eCO)** | United States | Form TX (Literary / Computer Program) | 500K+ SLOC Monorepo Source Code & Architecture |
 | **U.S. Copyright Office (eCO)** | United States | Form VA (Visual Arts) / Design Patent | Optotypic Clinical Typefoundry Suite (5 Master TTF Binaries) |
