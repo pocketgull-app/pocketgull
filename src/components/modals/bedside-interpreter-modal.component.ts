@@ -69,7 +69,7 @@ export interface IBilingualUtterance {
             <!-- Close Button -->
             <button type="button" (click)="close.emit()"
                     class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 flex items-center justify-center transition cursor-pointer text-xs font-bold"
-                    aria-label="Close Bedside Interpreter">
+                    aria-label="Close modal">
               ✕
             </button>
           </div>

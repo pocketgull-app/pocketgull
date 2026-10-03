@@ -31,7 +31,8 @@ test.describe('Teledentistry & Systemic Health Cross-Talk Suite', () => {
     const teledentistryTab = page.getByTestId('tab-teledentistry');
     await teledentistryTab.scrollIntoViewIfNeeded();
     await expect(teledentistryTab).toBeVisible({ timeout: 10000 });
-    await teledentistryTab.click({ force: true });
+    await teledentistryTab.click().catch(() => {});
+    await teledentistryTab.dispatchEvent('click');
     await page.waitForTimeout(500);
 
     // 6. Verify SIBI Telemetry Header components

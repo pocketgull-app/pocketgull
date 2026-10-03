@@ -153,5 +153,6 @@ export class AssessmentsLensTabComponent {
   setScreenerTab(tab: ScreenerSubTab): void {
     this.screenerTab.set(tab);
     this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 }

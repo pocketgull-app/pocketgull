@@ -124,7 +124,7 @@ test.describe('Human-in-the-Loop & Affirmative Clinical Oversight E2E Suite', ()
 
     // Verify newly logged casualty appears in roster table
     const casualtyRows = page.locator('app-disaster-triage-modal table tbody tr');
-    expect(await casualtyRows.count()).toBeGreaterThanOrEqual(6);
+    await expect(casualtyRows).toHaveCount(6, { timeout: 10000 });
 
     // Close modal
     const closeBtn = page.locator('app-disaster-triage-modal button[aria-label="Close modal"]').first();
