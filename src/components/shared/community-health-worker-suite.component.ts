@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, output, E
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WhoEssentialMedicinesService } from '../../services/who-essential-medicines.service';
+import { WhoEssentialDiagnosticsService } from '../../services/who-essential-diagnostics.service';
 import { generate } from 'lean-qr';
 import {
   FrontlineVernacularVoiceService,
@@ -10,7 +11,7 @@ import {
   ITriageVoiceContext
 } from '../../services/frontline-vernacular-voice.service';
 
-export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary';
+export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain';
 
 export interface IMuacTriageResult {
   muacMm: number;
@@ -177,6 +178,24 @@ export interface IDehydrationTriageResult {
                 [class.text-zinc-400]="activeTab() !== 'open_formulary'"
                 class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
           <span>💊</span> 5. WHO Free Formulary
+        </button>
+
+        <button type="button"
+                (click)="activeTab.set('who_edl_rdt')"
+                [class.bg-purple-600]="activeTab() === 'who_edl_rdt'"
+                [class.text-white]="activeTab() === 'who_edl_rdt'"
+                [class.text-zinc-400]="activeTab() !== 'who_edl_rdt'"
+                class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
+          <span>🔬</span> 6. WHO EDL-4 Rapid Tests
+        </button>
+
+        <button type="button"
+                (click)="activeTab.set('cold_chain')"
+                [class.bg-cyan-600]="activeTab() === 'cold_chain'"
+                [class.text-white]="activeTab() === 'cold_chain'"
+                [class.text-zinc-400]="activeTab() !== 'cold_chain'"
+                class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
+          <span>❄️</span> 7. Cold-Chain &amp; Solar Watchdog
         </button>
       </nav>
 
@@ -715,6 +734,480 @@ export interface IDehydrationTriageResult {
         </section>
       }
 
+
+      <!-- MODULE 6: WHO EDL-4 Point-of-Care Rapid Diagnostic Tests (RDTs) -->
+      @if (activeTab() === 'who_edl_rdt') {
+        <section class="mt-4 p-4 sm:p-6 bg-zinc-900/60 rounded-3xl border border-zinc-800 space-y-6 animate-in fade-in duration-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                <span>🔬</span> WHO Model List of Essential In Vitro Diagnostics (EDL-4)
+              </h3>
+              <p class="text-xs text-zinc-400">
+                Primary healthcare &amp; community lateral-flow assays: Dual HIV/Syphilis, Malaria Pf/Pv, Dengue NS1 &amp; Sickle Cell
+              </p>
+            </div>
+            <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-800/60 font-bold">
+              WHO Pre-Qualified
+            </span>
+          </div>
+
+          <!-- RDT Assay Sub-Selector Buttons -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+            <button type="button"
+                    (click)="edlService.setRdtType('hiv_syphilis_dual')"
+                    [class.bg-purple-600]="edlService.activeRdtType() === 'hiv_syphilis_dual'"
+                    [class.text-white]="edlService.activeRdtType() === 'hiv_syphilis_dual'"
+                    [class.border-purple-400]="edlService.activeRdtType() === 'hiv_syphilis_dual'"
+                    class="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 text-left transition hover:border-zinc-700 cursor-pointer">
+              <span class="block text-sm mb-1">🩺</span>
+              <span class="font-bold block truncate">Dual HIV/Syphilis</span>
+              <span class="text-[10px] text-zinc-400 block">Prenatal MTCT</span>
+            </button>
+
+            <button type="button"
+                    (click)="edlService.setRdtType('malaria_pf_pv')"
+                    [class.bg-purple-600]="edlService.activeRdtType() === 'malaria_pf_pv'"
+                    [class.text-white]="edlService.activeRdtType() === 'malaria_pf_pv'"
+                    [class.border-purple-400]="edlService.activeRdtType() === 'malaria_pf_pv'"
+                    class="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 text-left transition hover:border-zinc-700 cursor-pointer">
+              <span class="block text-sm mb-1">🦟</span>
+              <span class="font-bold block truncate">Malaria Pf / Pv</span>
+              <span class="text-[10px] text-zinc-400 block">HRP2 &amp; pLDH Ag</span>
+            </button>
+
+            <button type="button"
+                    (click)="edlService.setRdtType('dengue_ns1_ab')"
+                    [class.bg-purple-600]="edlService.activeRdtType() === 'dengue_ns1_ab'"
+                    [class.text-white]="edlService.activeRdtType() === 'dengue_ns1_ab'"
+                    [class.border-purple-400]="edlService.activeRdtType() === 'dengue_ns1_ab'"
+                    class="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 text-left transition hover:border-zinc-700 cursor-pointer">
+              <span class="block text-sm mb-1">🩸</span>
+              <span class="font-bold block truncate">Dengue NS1/Ab</span>
+              <span class="text-[10px] text-zinc-400 block">Acute Day 1–5</span>
+            </button>
+
+            <button type="button"
+                    (click)="edlService.setRdtType('sickle_cell_rdt')"
+                    [class.bg-purple-600]="edlService.activeRdtType() === 'sickle_cell_rdt'"
+                    [class.text-white]="edlService.activeRdtType() === 'sickle_cell_rdt'"
+                    [class.border-purple-400]="edlService.activeRdtType() === 'sickle_cell_rdt'"
+                    class="p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/80 text-left transition hover:border-zinc-700 cursor-pointer">
+              <span class="block text-sm mb-1">🧬</span>
+              <span class="font-bold block truncate">Sickle Cell (SCD)</span>
+              <span class="text-[10px] text-zinc-400 block">HbS Lateral Flow</span>
+            </button>
+          </div>
+
+          <!-- Active Test Content Panels -->
+          <!-- 1. Dual HIV/Syphilis Panel -->
+          @if (edlService.activeRdtType() === 'hiv_syphilis_dual') {
+            <div class="space-y-4">
+              <div class="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-3">
+                <span class="text-xs font-bold text-zinc-200 uppercase tracking-wider block">
+                  Cassette Visual Readout Controls
+                </span>
+
+                <div class="flex flex-wrap gap-3">
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.hivSyphilisControl()" (change)="edlService.hivSyphilisControl.set($any($event.target).checked)" class="accent-purple-500">
+                    <span>Control Line (C) Present</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.hivReactive()" (change)="edlService.hivReactive.set($any($event.target).checked)" class="accent-purple-500">
+                    <span class="text-rose-400 font-bold">HIV-1/2 Line (T1)</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.syphilisReactive()" (change)="edlService.syphilisReactive.set($any($event.target).checked)" class="accent-purple-500">
+                    <span class="text-amber-400 font-bold">Syphilis Line (T2)</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.isPregnant()" (change)="edlService.isPregnant.set($any($event.target).checked)" class="accent-pink-500">
+                    <span class="text-pink-300 font-bold">Pregnant Patient (ANC)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Result Card -->
+              <div class="p-4 rounded-2xl border"
+                   [ngClass]="{
+                     'bg-rose-950/40 border-rose-600/60 text-rose-200': edlService.hivSyphilisAssessment().acuityTier === 'RED',
+                     'bg-amber-950/40 border-amber-600/60 text-amber-200': edlService.hivSyphilisAssessment().acuityTier === 'YELLOW',
+                     'bg-emerald-950/40 border-emerald-600/60 text-emerald-200': edlService.hivSyphilisAssessment().acuityTier === 'GREEN'
+                   }">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-mono font-bold uppercase tracking-wider">
+                    Classification: {{ edlService.hivSyphilisAssessment().classification.replace(/_/g, ' ') }}
+                  </span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase"
+                        [class.bg-rose-900]="edlService.hivSyphilisAssessment().acuityTier === 'RED'"
+                        [class.bg-amber-900]="edlService.hivSyphilisAssessment().acuityTier === 'YELLOW'"
+                        [class.bg-emerald-900]="edlService.hivSyphilisAssessment().acuityTier === 'GREEN'">
+                    {{ edlService.hivSyphilisAssessment().acuityTier }} TIER
+                  </span>
+                </div>
+                <p class="text-xs leading-relaxed font-sans font-medium">
+                  {{ edlService.hivSyphilisAssessment().clinicalAction }}
+                </p>
+                @if (edlService.hivSyphilisAssessment().mandatoryFormulary.length > 0) {
+                  <div class="mt-3 pt-2 border-t border-white/10 space-y-1">
+                    <span class="text-[10px] font-mono font-bold uppercase block opacity-80">Mandatory WHO Essential Medicines:</span>
+                    <ul class="text-xs space-y-0.5 font-mono list-disc list-inside">
+                      @for (drug of edlService.hivSyphilisAssessment().mandatoryFormulary; track drug) {
+                        <li>{{ drug }}</li>
+                      }
+                    </ul>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- 2. Malaria Pf/Pv Panel -->
+          @if (edlService.activeRdtType() === 'malaria_pf_pv') {
+            <div class="space-y-4">
+              <div class="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-3">
+                <span class="text-xs font-bold text-zinc-200 uppercase tracking-wider block">
+                  Malaria Dipstick Antigen Readout
+                </span>
+
+                <div class="flex flex-wrap gap-3">
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.malariaControl()" (change)="edlService.malariaControl.set($any($event.target).checked)" class="accent-purple-500">
+                    <span>Control Line (C)</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.malariaPfHrp2()" (change)="edlService.malariaPfHrp2.set($any($event.target).checked)" class="accent-rose-500">
+                    <span class="text-rose-400 font-bold">P. falciparum HRP2 (Pf)</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.malariaPvLdh()" (change)="edlService.malariaPvLdh.set($any($event.target).checked)" class="accent-amber-500">
+                    <span class="text-amber-400 font-bold">P. vivax pLDH (Pv)</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.malariaDangerSigns()" (change)="edlService.malariaDangerSigns.set($any($event.target).checked)" class="accent-red-500">
+                    <span class="text-red-400 font-bold">Danger Signs (Vomiting/Coma)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Result Card -->
+              <div class="p-4 rounded-2xl border"
+                   [ngClass]="{
+                     'bg-rose-950/40 border-rose-600/60 text-rose-200': edlService.malariaAssessment().acuityTier === 'RED',
+                     'bg-amber-950/40 border-amber-600/60 text-amber-200': edlService.malariaAssessment().acuityTier === 'YELLOW',
+                     'bg-emerald-950/40 border-emerald-600/60 text-emerald-200': edlService.malariaAssessment().acuityTier === 'GREEN'
+                   }">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-mono font-bold uppercase tracking-wider">
+                    Species: {{ edlService.malariaAssessment().speciesClassification.replace(/_/g, ' ') }}
+                  </span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase"
+                        [class.bg-rose-900]="edlService.malariaAssessment().acuityTier === 'RED'"
+                        [class.bg-amber-900]="edlService.malariaAssessment().acuityTier === 'YELLOW'"
+                        [class.bg-emerald-900]="edlService.malariaAssessment().acuityTier === 'GREEN'">
+                    {{ edlService.malariaAssessment().acuityTier }} TIER
+                  </span>
+                </div>
+                <p class="text-xs leading-relaxed font-sans font-medium">
+                  {{ edlService.malariaAssessment().clinicalAction }}
+                </p>
+                <div class="mt-3 pt-2 border-t border-white/10 text-xs font-mono">
+                  <span class="text-zinc-400 block text-[10px] uppercase font-bold">First-Line Protocol:</span>
+                  <span class="text-zinc-100 font-bold">{{ edlService.malariaAssessment().firstLineTherapy }}</span>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- 3. Dengue NS1 & Ab Panel -->
+          @if (edlService.activeRdtType() === 'dengue_ns1_ab') {
+            <div class="space-y-4">
+              <div class="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-3">
+                <span class="text-xs font-bold text-zinc-200 uppercase tracking-wider block">
+                  Dengue Antigen &amp; Antibody Rapid Cassette
+                </span>
+
+                <div class="flex flex-wrap gap-3">
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.dengueControl()" (change)="edlService.dengueControl.set($any($event.target).checked)" class="accent-purple-500">
+                    <span>Control (C)</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.dengueNs1()" (change)="edlService.dengueNs1.set($any($event.target).checked)" class="accent-teal-500">
+                    <span class="text-teal-400 font-bold">NS1 Ag (Days 1–5)</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.dengueIgm()" (change)="edlService.dengueIgm.set($any($event.target).checked)" class="accent-cyan-500">
+                    <span class="text-cyan-400 font-bold">IgM (Recent)</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.dengueIgg()" (change)="edlService.dengueIgg.set($any($event.target).checked)" class="accent-amber-500">
+                    <span class="text-amber-400 font-bold">IgG (Secondary)</span>
+                  </label>
+                  <label class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
+                    <input type="checkbox" [checked]="edlService.dengueWarningSigns()" (change)="edlService.dengueWarningSigns.set($any($event.target).checked)" class="accent-rose-500">
+                    <span class="text-rose-400 font-bold">WHO Warning Signs</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Result Card -->
+              <div class="p-4 rounded-2xl border"
+                   [ngClass]="{
+                     'bg-rose-950/40 border-rose-600/60 text-rose-200': edlService.dengueAssessment().acuityTier === 'RED',
+                     'bg-amber-950/40 border-amber-600/60 text-amber-200': edlService.dengueAssessment().acuityTier === 'YELLOW',
+                     'bg-emerald-950/40 border-emerald-600/60 text-emerald-200': edlService.dengueAssessment().acuityTier === 'GREEN'
+                   }">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-mono font-bold uppercase tracking-wider">
+                    Stage: {{ edlService.dengueAssessment().infectionStage.replace(/_/g, ' ') }}
+                  </span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase"
+                        [class.bg-rose-900]="edlService.dengueAssessment().acuityTier === 'RED'"
+                        [class.bg-amber-900]="edlService.dengueAssessment().acuityTier === 'YELLOW'"
+                        [class.bg-emerald-900]="edlService.dengueAssessment().acuityTier === 'GREEN'">
+                    {{ edlService.dengueAssessment().acuityTier }} TIER
+                  </span>
+                </div>
+                <p class="text-xs leading-relaxed font-sans font-medium">
+                  {{ edlService.dengueAssessment().clinicalAction }}
+                </p>
+                <div class="mt-3 pt-2 border-t border-rose-800/40 text-xs font-mono text-rose-300">
+                  <span class="text-rose-400 block text-[10px] uppercase font-bold">⛔ STRICT CONTRAINDICATION:</span>
+                  <span>DO NOT ADMINISTER: {{ edlService.dengueAssessment().contraindicatedMedications.join(', ') }} (Fatal bleeding hazard). Paracetamol only.</span>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- 4. Sickle Cell Disease Panel -->
+          @if (edlService.activeRdtType() === 'sickle_cell_rdt') {
+            <div class="space-y-4">
+              <div class="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-3">
+                <span class="text-xs font-bold text-zinc-200 uppercase tracking-wider block">
+                  Sickle Cell Lateral Flow Banding
+                </span>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                  <button type="button"
+                          (click)="edlService.sicklePhenotype.set('HB_AA_NORMAL')"
+                          [class.bg-emerald-950]="edlService.sicklePhenotype() === 'HB_AA_NORMAL'"
+                          [class.border-emerald-500]="edlService.sicklePhenotype() === 'HB_AA_NORMAL'"
+                          class="p-2 rounded-xl border border-zinc-800 text-left cursor-pointer">
+                    <span class="font-bold block">HbAA Normal</span>
+                    <span class="text-[10px] text-zinc-400">Normal adult</span>
+                  </button>
+
+                  <button type="button"
+                          (click)="edlService.sicklePhenotype.set('HB_AS_TRAIT')"
+                          [class.bg-amber-950]="edlService.sicklePhenotype() === 'HB_AS_TRAIT'"
+                          [class.border-amber-500]="edlService.sicklePhenotype() === 'HB_AS_TRAIT'"
+                          class="p-2 rounded-xl border border-zinc-800 text-left cursor-pointer">
+                    <span class="font-bold block">HbAS Trait</span>
+                    <span class="text-[10px] text-zinc-400">Carrier (Counsel)</span>
+                  </button>
+
+                  <button type="button"
+                          (click)="edlService.sicklePhenotype.set('HB_SS_DISEASE')"
+                          [class.bg-rose-950]="edlService.sicklePhenotype() === 'HB_SS_DISEASE'"
+                          [class.border-rose-500]="edlService.sicklePhenotype() === 'HB_SS_DISEASE'"
+                          class="p-2 rounded-xl border border-zinc-800 text-left cursor-pointer">
+                    <span class="font-bold block">HbSS Disease</span>
+                    <span class="text-[10px] text-zinc-400">Sickle Cell Anemia</span>
+                  </button>
+
+                  <button type="button"
+                          (click)="edlService.sicklePhenotype.set('HB_SC_OR_THAL')"
+                          [class.bg-rose-950]="edlService.sicklePhenotype() === 'HB_SC_OR_THAL'"
+                          [class.border-rose-500]="edlService.sicklePhenotype() === 'HB_SC_OR_THAL'"
+                          class="p-2 rounded-xl border border-zinc-800 text-left cursor-pointer">
+                    <span class="font-bold block">HbSC / S-Thal</span>
+                    <span class="text-[10px] text-zinc-400">Compound hetero</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Result Card -->
+              <div class="p-4 rounded-2xl border"
+                   [ngClass]="{
+                     'bg-rose-950/40 border-rose-600/60 text-rose-200': edlService.sickleCellAssessment().acuityTier === 'RED',
+                     'bg-amber-950/40 border-amber-600/60 text-amber-200': edlService.sickleCellAssessment().acuityTier === 'YELLOW',
+                     'bg-emerald-950/40 border-emerald-600/60 text-emerald-200': edlService.sickleCellAssessment().acuityTier === 'GREEN'
+                   }">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-mono font-bold uppercase tracking-wider">
+                    Phenotype: {{ edlService.sickleCellAssessment().phenotypeResult.replace(/_/g, ' ') }}
+                  </span>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded font-bold uppercase"
+                        [class.bg-rose-900]="edlService.sickleCellAssessment().acuityTier === 'RED'"
+                        [class.bg-amber-900]="edlService.sickleCellAssessment().acuityTier === 'YELLOW'"
+                        [class.bg-emerald-900]="edlService.sickleCellAssessment().acuityTier === 'GREEN'">
+                    {{ edlService.sickleCellAssessment().acuityTier }} TIER
+                  </span>
+                </div>
+                <p class="text-xs leading-relaxed font-sans font-medium">
+                  {{ edlService.sickleCellAssessment().clinicalAction }}
+                </p>
+                @if (edlService.sickleCellAssessment().preventiveBundle.length > 0) {
+                  <div class="mt-3 pt-2 border-t border-white/10 space-y-1">
+                    <span class="text-[10px] font-mono font-bold uppercase block opacity-80">WHO Preventive Stepped-Care Bundle:</span>
+                    <ul class="text-xs space-y-0.5 font-mono list-disc list-inside">
+                      @for (item of edlService.sickleCellAssessment().preventiveBundle; track item) {
+                        <li>{{ item }}</li>
+                      }
+                    </ul>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </section>
+      }
+
+      <!-- MODULE 7: Cold-Chain & Solar Microgrid Watchdog -->
+      @if (activeTab() === 'cold_chain') {
+        <section class="mt-4 p-4 sm:p-6 bg-zinc-900/60 rounded-3xl border border-zinc-800 space-y-6 animate-in fade-in duration-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                <span>❄️</span> WHO PQS Cold-Chain &amp; Solar Microgrid Watchdog
+              </h3>
+              <p class="text-xs text-zinc-400">
+                Continuous vaccine storage temperature monitoring (+2°C to +8°C) and solar autonomy projection
+              </p>
+            </div>
+            <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full border font-bold"
+                  [ngClass]="{
+                    'bg-rose-950 text-rose-300 border-rose-800': edlService.coldChainTelemetry().statusTier === 'FREEZE_HAZARD' || edlService.coldChainTelemetry().statusTier === 'HEAT_EXCURSION' || edlService.coldChainTelemetry().statusTier === 'BATTERY_CRITICAL',
+                    'bg-emerald-950 text-emerald-300 border-emerald-800': edlService.coldChainTelemetry().statusTier === 'OPTIMAL',
+                    'bg-amber-950 text-amber-300 border-amber-800': edlService.coldChainTelemetry().statusTier === 'COLD_EXCURSION'
+                  }">
+              {{ edlService.coldChainTelemetry().statusLabel }}
+            </span>
+          </div>
+
+          <!-- Two Column Grid: Fridge Telemetry & Solar Battery -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- Fridge Temperature Controls & VVM -->
+            <div class="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-4">
+              <span class="text-xs font-bold text-zinc-200 uppercase tracking-wider block">
+                Vaccine Refrigerator Sensor Telemetry
+              </span>
+
+              <!-- Temperature Slider -->
+              <div>
+                <div class="flex justify-between items-center text-xs mb-1.5">
+                  <span class="text-zinc-400">Current Storage Temp:</span>
+                  <span class="font-bold font-mono text-base tabular-nums"
+                        [class.text-rose-400]="edlService.coldChainInputs().fridgeTempC < 0 || edlService.coldChainInputs().fridgeTempC > 8"
+                        [class.text-emerald-400]="edlService.coldChainInputs().fridgeTempC >= 2 && edlService.coldChainInputs().fridgeTempC <= 8"
+                        [class.text-amber-400]="edlService.coldChainInputs().fridgeTempC >= 0 && edlService.coldChainInputs().fridgeTempC < 2">
+                    {{ edlService.coldChainInputs().fridgeTempC.toFixed(1) }} °C
+                  </span>
+                </div>
+                <input type="range" min="-5" max="15" step="0.5"
+                       [ngModel]="edlService.coldChainInputs().fridgeTempC"
+                       (ngModelChange)="edlService.updateColdChainTelemetry({ fridgeTempC: $event })"
+                       class="w-full accent-cyan-500 cursor-pointer h-2 bg-zinc-800 rounded-lg">
+                <div class="flex justify-between text-[10px] text-zinc-500 mt-1 font-mono">
+                  <span class="text-rose-400">&lt;0°C Freeze</span>
+                  <span class="text-emerald-400 font-bold">+2°C to +8°C Optimal</span>
+                  <span class="text-rose-400">&gt;8°C Heat</span>
+                </div>
+              </div>
+
+              <!-- VVM Stage Selector -->
+              <div class="space-y-1.5">
+                <span class="text-xs text-zinc-400 font-bold block">Vaccine Vial Monitor (VVM) Indicator:</span>
+                <div class="grid grid-cols-4 gap-1.5 text-xs font-mono">
+                  @for (s of [1, 2, 3, 4]; track s) {
+                    <button type="button"
+                            (click)="edlService.updateColdChainTelemetry({ vvmStage: s })"
+                            [class.bg-emerald-950]="s <= 2 && edlService.coldChainInputs().vvmStage === s"
+                            [class.border-emerald-500]="s <= 2 && edlService.coldChainInputs().vvmStage === s"
+                            [class.bg-rose-950]="s >= 3 && edlService.coldChainInputs().vvmStage === s"
+                            [class.border-rose-500]="s >= 3 && edlService.coldChainInputs().vvmStage === s"
+                            class="p-2 rounded-xl border border-zinc-800 text-center cursor-pointer">
+                      <span class="font-bold block">Stage {{ s }}</span>
+                      <span class="text-[9px]" [class.text-emerald-400]="s <= 2" [class.text-rose-400]="s >= 3">
+                        {{ s <= 2 ? 'USE' : 'DISCARD' }}
+                      </span>
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Solar PV Microgrid & Battery Runtime -->
+            <div class="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-4">
+              <span class="text-xs font-bold text-zinc-200 uppercase tracking-wider block">
+                Solar Microgrid &amp; Battery Autonomy
+              </span>
+
+              <!-- Battery SoC Slider -->
+              <div>
+                <div class="flex justify-between items-center text-xs mb-1.5">
+                  <span class="text-zinc-400">Battery State of Charge (SoC):</span>
+                  <span class="font-bold font-mono text-base tabular-nums"
+                        [class.text-rose-400]="edlService.coldChainInputs().batterySocPct < 20"
+                        [class.text-emerald-400]="edlService.coldChainInputs().batterySocPct >= 50"
+                        [class.text-amber-400]="edlService.coldChainInputs().batterySocPct >= 20 && edlService.coldChainInputs().batterySocPct < 50">
+                    {{ edlService.coldChainInputs().batterySocPct }}% ({{ edlService.coldChainInputs().batteryVoltageV }}V)
+                  </span>
+                </div>
+                <input type="range" min="10" max="100" step="5"
+                       [ngModel]="edlService.coldChainInputs().batterySocPct"
+                       (ngModelChange)="edlService.updateColdChainTelemetry({ batterySocPct: $event })"
+                       class="w-full accent-emerald-500 cursor-pointer h-2 bg-zinc-800 rounded-lg">
+              </div>
+
+              <!-- Solar Irradiance Slider -->
+              <div>
+                <div class="flex justify-between items-center text-xs mb-1.5">
+                  <span class="text-zinc-400">Solar Irradiance:</span>
+                  <span class="font-bold font-mono text-xs text-amber-400 tabular-nums">
+                    {{ edlService.coldChainInputs().solarWattsM2 }} W/m²
+                  </span>
+                </div>
+                <input type="range" min="0" max="1000" step="50"
+                       [ngModel]="edlService.coldChainInputs().solarWattsM2"
+                       (ngModelChange)="edlService.updateColdChainTelemetry({ solarWattsM2: $event })"
+                       class="w-full accent-amber-500 cursor-pointer h-2 bg-zinc-800 rounded-lg">
+              </div>
+
+              <!-- Projected Autonomy Display -->
+              <div class="p-3 rounded-xl bg-black/40 border border-zinc-800 flex items-center justify-between">
+                <span class="text-xs text-zinc-300">Projected Refrigeration Autonomy:</span>
+                <span class="text-base font-black font-mono text-teal-300 tabular-nums">
+                  {{ edlService.coldChainTelemetry().projectedAutonomyHours }} Hours
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Action Guidance Alert Banner -->
+          <div class="p-4 rounded-2xl border text-xs leading-relaxed font-sans"
+               [ngClass]="{
+                 'bg-rose-950/60 border-rose-600/70 text-rose-200': edlService.coldChainTelemetry().statusTier === 'FREEZE_HAZARD' || edlService.coldChainTelemetry().statusTier === 'HEAT_EXCURSION' || edlService.coldChainTelemetry().statusTier === 'BATTERY_CRITICAL',
+                 'bg-emerald-950/60 border-emerald-600/70 text-emerald-200': edlService.coldChainTelemetry().statusTier === 'OPTIMAL',
+                 'bg-amber-950/60 border-amber-600/70 text-amber-200': edlService.coldChainTelemetry().statusTier === 'COLD_EXCURSION'
+               }">
+            <div class="flex items-start gap-2">
+              <span class="text-base">{{ edlService.coldChainTelemetry().statusTier === 'OPTIMAL' ? '🛡️' : '⚠️' }}</span>
+              <div>
+                <strong class="block mb-0.5 uppercase tracking-wide font-mono text-[11px]">
+                  {{ edlService.coldChainTelemetry().statusLabel }}
+                </strong>
+                <span>{{ edlService.coldChainTelemetry().actionGuidance }}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+
       <!-- Offline QR Handoff Modal Overlay -->
       @if (showQrModal()) {
         <div class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
@@ -756,6 +1249,7 @@ export interface IDehydrationTriageResult {
 export class CommunityHealthWorkerSuiteComponent {
   readonly emlService = inject(WhoEssentialMedicinesService);
   readonly voiceService = inject(FrontlineVernacularVoiceService);
+  readonly edlService = inject(WhoEssentialDiagnosticsService, { optional: true }) ?? new WhoEssentialDiagnosticsService();
   readonly close = output<void>();
 
   hasCloseButton = true;

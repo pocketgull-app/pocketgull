@@ -116,6 +116,7 @@ import { PancreaticIslet3dLensComponent } from './components/anatomy-3d/pancreat
 import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-matrix-card.component';
 import { Cyp3a4Heme3dLensComponent } from './components/anatomy-3d/cyp3a4-heme-3d-lens.component';
 import { StewartHamiltonPacCardComponent } from './components/clinical/stewart-hamilton-pac-card.component';
+import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin-tone-equity-card.component';
 
 @Component({
   selector: 'app-root',
@@ -207,7 +208,8 @@ import { StewartHamiltonPacCardComponent } from './components/clinical/stewart-h
     PancreaticIslet3dLensComponent,
     Cyp450DdiMatrixCardComponent,
     Cyp3a4Heme3dLensComponent,
-    StewartHamiltonPacCardComponent
+    StewartHamiltonPacCardComponent,
+    MonkSkinToneEquityCardComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -1661,6 +1663,15 @@ import { StewartHamiltonPacCardComponent } from './components/clinical/stewart-h
               class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
               🫀 Swan-Ganz &amp; Hemodynamics (P13)
             </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('monk_equity')"
+              [class.bg-amber-600]="activeBiophysicalLensTab() === 'monk_equity'"
+              [class.text-white]="activeBiophysicalLensTab() === 'monk_equity'"
+              [class.text-amber-400]="activeBiophysicalLensTab() !== 'monk_equity'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🎨 Monk Skin Tone Equity
+            </button>
           </div>
 
           <!-- Active Panel Display -->
@@ -1689,6 +1700,8 @@ import { StewartHamiltonPacCardComponent } from './components/clinical/stewart-h
               <app-cyp450-ddi-matrix-card />
             } @else if (activeBiophysicalLensTab() === 'swan_ganz') {
               <app-stewart-hamilton-pac-card />
+            } @else if (activeBiophysicalLensTab() === 'monk_equity') {
+              <app-monk-skin-tone-equity-card />
             }
           </div>
         </div>
@@ -1746,7 +1759,7 @@ export class AppComponent implements OnDestroy {
   showAustereHudModal = signal(false);
   showKneeHologramModal = signal(false);
   showBiophysicalLensesModal = signal(false);
-  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz'>('cardiac');
+  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz' | 'monk_equity'>('cardiac');
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
