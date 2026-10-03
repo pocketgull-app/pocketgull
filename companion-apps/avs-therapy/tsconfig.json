@@ -22,12 +22,21 @@
     "lib": [
       "ES2022",
       "dom"
+    ],
+    "types": [
+      "jasmine"
     ]
   },
   "angularCompilerOptions": {
+    "disableTypeScriptVersionCheck": true,
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "exclude": [
+    "e2e",
+    "dist",
+    "out-tsc"
+  ]
 }
