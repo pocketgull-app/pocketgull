@@ -11,19 +11,19 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^22.1.7",
-    "@angular/compiler": "^22.1.7",
-    "@angular/core": "^22.1.7",
-    "@angular/forms": "^22.1.7",
-    "@angular/platform-browser": "^22.1.7",
-    "@angular/router": "^22.1.7",
+    "@angular/common": "^22.2.0",
+    "@angular/compiler": "^22.2.0",
+    "@angular/core": "^22.2.0",
+    "@angular/forms": "^22.2.0",
+    "@angular/platform-browser": "^22.2.0",
+    "@angular/router": "^22.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/build": "^22.1.7",
-    "@angular/cli": "^22.1.7",
-    "@angular/compiler-cli": "^22.1.7",
+    "@angular/build": "^22.2.0",
+    "@angular/cli": "^22.2.0",
+    "@angular/compiler-cli": "^22.2.0",
     "@types/jasmine": "~6.0.0",
     "autoprefixer": "^10.5.0",
     "jasmine-core": "~5.2.0",
@@ -90,7 +90,7 @@
     "js-yaml": ">=4.3.1",
     "hono": ">=4.13.8",
     "@hono/node-server": ">=2.1.0",
-    "@angular/common": "^22.1.7",
+    "@angular/common": "^22.2.0",
     "browserslist": ">=4.28.7"
   }
 }
