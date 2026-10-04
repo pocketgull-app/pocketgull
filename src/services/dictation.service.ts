@@ -4,6 +4,7 @@ import { PatientManagementService } from './patient-management.service';
 import { PetAuditoryService } from './pet-auditory.service';
 import { AmbientLightingService } from './ambient-lighting.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
+import { EdgeAudioPrimacyService, IEdgeTranscriptionResult, IEdgePolishOptions } from './edge-audio-primacy.service';
 
 declare var webkitSpeechRecognition: any;
 
@@ -16,6 +17,7 @@ export class DictationService {
   private petAuditory = inject(PetAuditoryService, { optional: true });
   private lighting = inject(AmbientLightingService, { optional: true });
   private moeRouter = inject(ClinicalMoERouterService, { optional: true });
+  readonly edgeAudio = inject(EdgeAudioPrimacyService, { optional: true });
 
   readonly isListening = signal(false);
   readonly isSidechainDuckingActive = computed(() => this.isListening());
@@ -489,6 +491,20 @@ export class DictationService {
     setTimeout(() => {
       this.wakeWordDetected.set(null);
     }, 1500);
+  }
+
+  /**
+   * Post-processes raw speech transcripts locally using Chrome Built-in AI (Gemma 4 Dev Trial)
+   * with ISMP safety auditing and zero cloud token burn.
+   */
+  public async polishTranscriptWithEdge(
+    text: string,
+    options?: IEdgePolishOptions
+  ): Promise<IEdgeTranscriptionResult | null> {
+    if (this.edgeAudio) {
+      return this.edgeAudio.polishDictationWithEdge(text, options);
+    }
+    return null;
   }
 }
 

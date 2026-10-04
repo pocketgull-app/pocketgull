@@ -34,7 +34,13 @@ import { NetworkStateService } from '../services/network-state.service';
         </div>
 
         <div class="flex items-center gap-2">
+          <button (click)="runReachabilityProbe()" type="button"
+                  id="btn-probe-ping"
+                  class="px-3 py-1.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5">
+            <span>🌐</span> Probe Ping
+          </button>
           <button (click)="toggleForceOffline()" type="button"
+                  id="btn-toggle-force-offline"
                   class="px-3.5 py-1.5 rounded-xl border text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
                   [ngClass]="{
                     'bg-amber-500/20 text-amber-300 border-amber-500/40': network.forceOffline(),
@@ -46,39 +52,91 @@ import { NetworkStateService } from '../services/network-state.service';
       </div>
 
       <!-- Main Status Badges & Active Engine -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6 relative z-10 font-sans">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 relative z-10 font-sans">
         
         <!-- 1. Network & Provider Status -->
         <div class="p-4 bg-zinc-900/90 rounded-2xl border border-zinc-800 flex flex-col justify-between">
-          <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Active Engine Target</span>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Active Engine</span>
+            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md" [ngClass]="{
+              'bg-emerald-950 text-emerald-300 border border-emerald-800': network.networkQuality() === 'OPTIMAL',
+              'bg-amber-950 text-amber-300 border border-amber-800': network.networkQuality() === 'CONSTRAINED',
+              'bg-rose-950 text-rose-300 border border-rose-800': network.networkQuality() === 'LIE_FI_SUSPECTED',
+              'bg-zinc-800 text-zinc-400 border border-zinc-700': network.networkQuality() === 'OFFLINE'
+            }">{{ network.networkQuality() }}</span>
+          </div>
           <div class="mt-2 flex items-baseline gap-2 font-mono">
             <span class="text-lg font-black text-emerald-400">{{ network.activeProvider() }}</span>
           </div>
-          <span class="text-[11px] text-zinc-500 mt-2 font-mono">
-            Mode: {{ network.isOnline() ? 'Connected (Cloud + Local Fallback)' : 'Low-Connectivity (Local WASM Edge)' }}
-          </span>
+          <div class="flex items-center justify-between text-[11px] text-zinc-500 mt-2 font-mono">
+            <span>{{ network.isOnline() ? 'Connected' : 'Edge-Only' }}</span>
+            <span>RTT: {{ network.latencyMs() ? network.latencyMs() + 'ms' : '--' }}</span>
+          </div>
         </div>
 
-        <!-- 2. PWA Service Worker Status -->
+        <!-- 2. Store-and-Forward Sync Queue -->
         <div class="p-4 bg-zinc-900/90 rounded-2xl border border-zinc-800 flex flex-col justify-between">
-          <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">PWA Service Worker Cache</span>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Store &amp; Forward</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-md font-bold border"
+                  [class.bg-amber-950]="network.pendingQueueCount() > 0"
+                  [class.text-amber-300]="network.pendingQueueCount() > 0"
+                  [class.border-amber-800]="network.pendingQueueCount() > 0"
+                  [class.bg-zinc-800]="network.pendingQueueCount() === 0"
+                  [class.text-zinc-400]="network.pendingQueueCount() === 0"
+                  [class.border-zinc-700]="network.pendingQueueCount() === 0">
+              {{ network.pendingQueueCount() }} Queued
+            </span>
+          </div>
+          <div class="mt-2">
+            <button (click)="flushSyncQueue()"
+                    type="button"
+                    id="btn-sync-offline-queue"
+                    [disabled]="network.isFlushingQueue() || network.pendingQueueCount() === 0"
+                    class="w-full py-1.5 px-2 rounded-xl text-xs font-mono font-bold transition flex items-center justify-center gap-1.5"
+                    [ngClass]="{
+                      'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 cursor-pointer': !network.isFlushingQueue() && network.pendingQueueCount() > 0,
+                      'bg-zinc-800 text-zinc-500 border border-zinc-700/50 cursor-not-allowed': network.pendingQueueCount() === 0 && !network.isFlushingQueue(),
+                      'bg-teal-900/50 text-teal-300 border border-teal-700 animate-pulse cursor-wait': network.isFlushingQueue()
+                    }">
+              @if (network.isFlushingQueue()) {
+                <span>🔄 Syncing Queue...</span>
+              } @else {
+                <span>⚡ Sync Queue Now</span>
+              }
+            </button>
+          </div>
+          <div class="text-[10px] text-zinc-500 mt-2 font-mono truncate">
+            @if (network.isLieFiSuspected()) {
+              <span class="text-rose-400 font-bold">⚠️ Lie-Fi: Cloud Unreachable</span>
+            } @else if (network.lastSyncTimestamp()) {
+              <span>Last sync: {{ network.lastSyncTimestamp() | date:'shortTime' }}</span>
+            } @else {
+              <span>Encrypted Local FIFO</span>
+            }
+          </div>
+        </div>
+
+        <!-- 3. PWA Service Worker Status -->
+        <div class="p-4 bg-zinc-900/90 rounded-2xl border border-zinc-800 flex flex-col justify-between">
+          <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">PWA Service Worker</span>
           <div class="mt-2 flex items-center gap-2 font-mono">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
-            <span class="text-sm font-bold text-zinc-200">Prefetched & Active</span>
+            <span class="text-sm font-bold text-zinc-200">Prefetched &amp; Active</span>
           </div>
-          <span class="text-[11px] text-zinc-500 mt-2 font-mono">
-            Asset Group: 'app-shell' + 'wasm-onnx-models'
+          <span class="text-[11px] text-zinc-500 mt-2 font-mono truncate">
+            Groups: app-shell + wasm
           </span>
         </div>
 
-        <!-- 3. Pre-fetch Model Weights Action -->
+        <!-- 4. Pre-fetch Model Weights Action -->
         <div class="p-4 bg-zinc-900/90 rounded-2xl border border-zinc-800 flex flex-col justify-between">
           <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Edge Model Pre-Fetch</span>
           
           @if (edgeAi.isDownloading()) {
             <div class="mt-2 space-y-1">
               <div class="flex justify-between text-xs font-mono text-emerald-400">
-                <span>Caching ONNX Weights...</span>
+                <span>Caching Weights...</span>
                 <span>{{ edgeAi.downloadProgressPct() }}%</span>
               </div>
               <div class="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
@@ -87,12 +145,12 @@ import { NetworkStateService } from '../services/network-state.service';
             </div>
           } @else {
             <button (click)="prefetchModel()" type="button"
-                    class="mt-2 w-full py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center justify-center gap-1.5">
-              <span>📥</span> Pre-Fetch Gemma Edge Model (85MB)
+                    class="mt-2 w-full py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center justify-center gap-1.5">
+              <span>📥</span> Pre-Fetch Gemma (85MB)
             </button>
           }
-          <span class="text-[11px] text-zinc-500 mt-2 font-mono">
-            BioBERT-Lite (15MB): Cached | Gemma-2B (85MB): Ready
+          <span class="text-[11px] text-zinc-500 mt-2 font-mono truncate">
+            BioBERT: Cached | Gemma-2B: Ready
           </span>
         </div>
 
@@ -139,6 +197,14 @@ export class OfflineEdgeControlsComponent {
 
   toggleForceOffline() {
     this.network.toggleForceOffline();
+  }
+
+  async runReachabilityProbe() {
+    await this.network.checkReachability();
+  }
+
+  async flushSyncQueue() {
+    await this.network.flushOfflineQueue();
   }
 
   prefetchModel() {

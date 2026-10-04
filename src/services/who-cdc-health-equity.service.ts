@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { UnicefOpenDataService, IUnicefRegionalChildProfile } from './unicef-open-data.service';
 
 export interface ISdohPrapareAssessment {
   housingInsecurity: boolean;      // LOINC 71802-3
@@ -6,6 +7,8 @@ export interface ISdohPrapareAssessment {
   transportationBarrier: boolean;   // LOINC 93300-2
   utilityInsecurity: boolean;        // LOINC 93301-0
   digitalLiteracyBarrier: boolean;  // LOINC 93302-8
+  cleanWaterInsecurity?: boolean;   // UNICEF/WHO JMP Basic Drinking Water
+  childImmunizationDelay?: boolean; // UNICEF Zero-Dose / Under-Immunized
 }
 
 export interface IClimateHealthMetrics {
@@ -19,12 +22,22 @@ export interface IWhoCdcHealthEquityScorecard {
   compositeEquityIndex: number;     // 0-100 (100 = Optimal Equity & Resilience)
   equityTier: 'OPTIMAL' | 'MODERATE_RISK' | 'HIGH_VULNERABILITY' | 'CRITICAL_ACTION_REQUIRED';
   priorityDirectives: string[];
+  unicefBenchmark?: IUnicefRegionalChildProfile;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class WhoCdcHealthEquityService {
+  private readonly unicefService?: UnicefOpenDataService;
+
+  constructor() {
+    try {
+      this.unicefService = inject(UnicefOpenDataService, { optional: true }) ?? undefined;
+    } catch {
+      // Gracefully handles instantiation outside Angular DI context (e.g. unit tests with `new`)
+    }
+  }
 
   public sdohState = signal<ISdohPrapareAssessment>({
     housingInsecurity: false,
@@ -72,6 +85,12 @@ export class WhoCdcHealthEquityService {
     if (sdoh.transportationBarrier) {
       directives.push('🚌 Coordinate non-emergency medical transportation (NEMT) for clinical visits.');
     }
+    if (sdoh.cleanWaterInsecurity) {
+      directives.push('💧 UNICEF/WHO WASH Alert: Inadequate potable water access. Recommend point-of-use chlorine water purification and hygiene kit.');
+    }
+    if (sdoh.childImmunizationDelay) {
+      directives.push('💉 UNICEF Zero-Dose Directive: Connect pediatric patient with community catch-up immunization clinic for missed primary antigens.');
+    }
     if (climate.airQualityIndex > 100) {
       directives.push('🫁 Recommend HEPA air filtration and indoor activity during high AQI alerts.');
     }
@@ -79,11 +98,14 @@ export class WhoCdcHealthEquityService {
       directives.push('✅ Health equity metrics optimal. Maintain routine preventative wellness monitoring.');
     }
 
+    const unicefBenchmark = this.unicefService?.activeRegionalProfile ? this.unicefService.activeRegionalProfile() : undefined;
+
     return {
       sdohRiskVectorCount: count,
       compositeEquityIndex: index,
       equityTier: tier,
-      priorityDirectives: directives
+      priorityDirectives: directives,
+      unicefBenchmark
     };
   });
 
@@ -98,5 +120,31 @@ export class WhoCdcHealthEquityService {
       this.climateMetrics.update(c => ({ ...c, ...climateOverride }));
     }
     return this.equityScorecard();
+  }
+
+  /**
+   * Generates a BigQuery query against the public EPA Historical Air Quality dataset
+   * to extract localized PM2.5 and AQI risk metrics for environmental SDOH grounding.
+   */
+  public generateBigQueryAirQualityQuery(stateCode = '06', countyCode = '075'): string {
+    return `-- BigQuery EPA Air Quality PM2.5 & AQI Environmental SDOH Extraction
+SELECT
+  state_name,
+  county_name,
+  date_local,
+  aqi,
+  arithmetic_mean AS pm25_concentration_ug_m3,
+  CASE
+    WHEN aqi <= 50 THEN 'GOOD'
+    WHEN aqi <= 100 THEN 'MODERATE'
+    WHEN aqi <= 150 THEN 'UNHEALTHY_FOR_SENSITIVE_GROUPS'
+    ELSE 'UNHEALTHY_OR_HAZARDOUS'
+  END AS aqi_category
+FROM \`bigquery-public-data.epa_historical_air_quality.pm25_daily_summary\`
+WHERE state_code = '${stateCode.replace(/'/g, '')}'
+  AND county_code = '${countyCode.replace(/'/g, '')}'
+  AND date_local >= DATE_SUB(CURRENT_DATE(), INTERVAL 180 DAY)
+ORDER BY date_local DESC
+LIMIT 100;`;
   }
 }

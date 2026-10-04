@@ -117,4 +117,43 @@ describe('BigQueryCohortExporterService', () => {
       expect(metadata.dataGovernance.storageLifecycleDays).toBe(7);
     });
   });
+
+  describe('BigQuery Public Dataset Crosswalk Queries', () => {
+    it('should generate crosswalk SQL for NIH clinical trials', () => {
+      const sql = service.generateCrosswalkQuery('cohort_diabetes_cgm', 'nih_clinical_trials');
+      expect(sql).toContain('bigquery-public-data.nih_clinical_trials.clinical_study_block');
+      expect(sql).toContain('cohort_diabetes_cgm');
+      expect(sql).toContain('RECRUITING');
+    });
+
+    it('should generate crosswalk SQL for CMS OMOP measurement benchmarks', () => {
+      const sql = service.generateCrosswalkQuery('cohort_diabetes_cgm', 'cms_synthetic_omop');
+      expect(sql).toContain('bigquery-public-data.cms_synthetic_patient_data_omop.measurement');
+      expect(sql).toContain('measurement_concept_id');
+    });
+
+    it('should generate crosswalk SQL for MIMIC-IV ICU waveforms', () => {
+      const sql = service.generateCrosswalkQuery('cohort_cardiopulmonary_audio', 'mimiciv_icu');
+      expect(sql).toContain('physionet-data.mimiciv_icu.chartevents');
+      expect(sql).toContain('mean_icu_value');
+    });
+
+    it('should generate crosswalk SQL for FDA FAERS adverse drug events', () => {
+      const sql = service.generateCrosswalkQuery('cohort_oncology_biomarkers', 'fda_drug');
+      expect(sql).toContain('bigquery-public-data.fda_drug.event');
+      expect(sql).toContain('reactionmeddrapt');
+    });
+
+    it('should generate crosswalk SQL for EPA air quality SDOH', () => {
+      const sql = service.generateCrosswalkQuery('cohort_long_covid_autonomic', 'epa_air_quality');
+      expect(sql).toContain('bigquery-public-data.epa_historical_air_quality.pm25_daily_summary');
+      expect(sql).toContain('pm25_mean_ug_m3');
+    });
+
+    it('should generate crosswalk SQL for World Bank global health benchmarks', () => {
+      const sql = service.generateCrosswalkQuery('cohort_neuro_developmental', 'world_bank_health');
+      expect(sql).toContain('bigquery-public-data.world_bank_health_population.health_nutrition_population');
+      expect(sql).toContain('SH.DYN.MORT');
+    });
+  });
 });

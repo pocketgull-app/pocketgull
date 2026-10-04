@@ -266,6 +266,127 @@ ORDER BY query_date DESC;`;
       }
     };
   }
+
+  /**
+   * Generates a BigQuery SQL query crosswalking a Pocket-Gull research cohort with
+   * Google Cloud public health datasets (NIH Clinical Trials, CMS Synthetic OMOP,
+   * PhysioNet MIMIC-IV, FDA FAERS, EPA Air Quality, or World Bank Health).
+   */
+  public generateCrosswalkQuery(
+    cohortId: string,
+    targetDataset: 'nih_clinical_trials' | 'cms_synthetic_omop' | 'mimiciv_icu' | 'fda_drug' | 'epa_air_quality' | 'world_bank_health'
+  ): string {
+    const cohort = CERTIFIED_COHORTS.find(c => c.id === cohortId) || CERTIFIED_COHORTS[0];
+    const safeTable = cohort.tableName;
+
+    switch (targetDataset) {
+      case 'nih_clinical_trials':
+        return `-- Crosswalk: PocketGull ${cohort.title} x NIH ClinicalTrials.gov
+WITH cohort_phenotypes AS (
+  SELECT DISTINCT phenotype_code, cohort_id
+  FROM \`projects/${GCP_CONFIG.projectId}/datasets/${BigQueryCohortExporterService.DATASET_ID}.${safeTable}\`
+  WHERE study_day_t >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+    AND cohort_id = '${cohortId.replace(/'/g, '')}'
+)
+SELECT
+  t.nct_id,
+  t.brief_title,
+  t.overall_status,
+  t.phase,
+  c.condition,
+  p.cohort_id
+FROM \`bigquery-public-data.nih_clinical_trials.clinical_study_block\` AS t
+JOIN \`bigquery-public-data.nih_clinical_trials.conditions\` AS c
+  ON t.nct_id = c.nct_id
+JOIN cohort_phenotypes AS p
+  ON LOWER(c.condition) LIKE CONCAT('%', LOWER(p.phenotype_code), '%')
+WHERE t.overall_status = 'RECRUITING'
+ORDER BY t.nct_id
+LIMIT 50;`;
+
+      case 'cms_synthetic_omop':
+        return `-- Crosswalk: PocketGull ${cohort.title} x CMS Synthetic OMOP RWE
+WITH pocketgull_metrics AS (
+  SELECT
+    fhir_observation_code,
+    age_bracket,
+    COUNT(1) AS cohort_obs_count
+  FROM \`projects/${GCP_CONFIG.projectId}/datasets/${BigQueryCohortExporterService.DATASET_ID}.${safeTable}\`
+  WHERE study_day_t >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+    AND cohort_id = '${cohortId.replace(/'/g, '')}'
+  GROUP BY 1, 2
+)
+SELECT
+  m.measurement_concept_id,
+  c.concept_name,
+  c.vocabulary_id,
+  p.cohort_obs_count,
+  AVG(m.value_as_number) AS omop_benchmark_mean_val,
+  COUNT(DISTINCT m.person_id) AS omop_synthetic_patients
+FROM \`bigquery-public-data.cms_synthetic_patient_data_omop.measurement\` AS m
+JOIN \`bigquery-public-data.cms_synthetic_patient_data_omop.concept\` AS c
+  ON m.measurement_concept_id = c.concept_id
+CROSS JOIN pocketgull_metrics AS p
+GROUP BY 1, 2, 3, 4
+LIMIT 50;`;
+
+      case 'mimiciv_icu':
+        return `-- Crosswalk: PocketGull ${cohort.title} x PhysioNet MIMIC-IV ICU
+SELECT
+  ce.itemid,
+  di.label AS measurement_label,
+  AVG(ce.valuenum) AS mean_icu_value,
+  STDDEV(ce.valuenum) AS std_icu_value,
+  COUNT(DISTINCT ce.stay_id) AS total_icu_stays
+FROM \`physionet-data.mimiciv_icu.chartevents\` AS ce
+JOIN \`physionet-data.mimiciv_icu.d_items\` AS di
+  ON ce.itemid = di.itemid
+WHERE ce.valuenum IS NOT NULL
+GROUP BY 1, 2
+ORDER BY total_icu_stays DESC
+LIMIT 50;`;
+
+      case 'fda_drug':
+        return `-- Crosswalk: PocketGull ${cohort.title} x FDA FAERS Adverse Events
+SELECT
+  e.safetyreportid,
+  e.receivedate,
+  p.medicinalproduct,
+  r.reactionmeddrapt AS adverse_reaction
+FROM \`bigquery-public-data.fda_drug.event\` AS e
+CROSS JOIN UNNEST(e.patient.drug) AS p
+CROSS JOIN UNNEST(e.patient.reaction) AS r
+WHERE e.receivedate >= '20230101'
+LIMIT 50;`;
+
+      case 'epa_air_quality':
+        return `-- Crosswalk: PocketGull ${cohort.title} x EPA Air Quality PM2.5 & Ozone
+SELECT
+  state_name,
+  county_name,
+  date_local,
+  aqi,
+  arithmetic_mean AS pm25_mean_ug_m3
+FROM \`bigquery-public-data.epa_historical_air_quality.pm25_daily_summary\`
+WHERE date_local >= DATE_SUB(CURRENT_DATE(), INTERVAL 365 DAY)
+  AND aqi > 50
+ORDER BY date_local DESC, aqi DESC
+LIMIT 100;`;
+
+      case 'world_bank_health':
+        return `-- Crosswalk: PocketGull ${cohort.title} x World Bank Health & Population
+SELECT
+  country_name,
+  indicator_name,
+  year,
+  value AS metric_value
+FROM \`bigquery-public-data.world_bank_health_population.health_nutrition_population\`
+WHERE indicator_code IN ('SH.DYN.MORT', 'SH.STA.STNT.ZS', 'SP.DYN.LE00.IN')
+  AND year >= 2020
+ORDER BY year DESC, country_name ASC
+LIMIT 100;`;
+    }
+  }
 }
 
 function hashMurmur(str: string): number {

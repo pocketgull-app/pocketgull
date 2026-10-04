@@ -2,7 +2,66 @@ import { Injectable, inject } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
 import { IsmpSafetyGuardService } from './ismp-safety-guard.service';
 
-export type PosologyAgeTier = 'neonate_infant' | 'pediatric_child' | 'adult' | 'geriatric_elder' | 'environmental_heat' | 'sfi_complex_adaptive';
+export type PosologyAgeTier = 'neonate_infant' | 'pediatric_child' | 'adult' | 'geriatric_elder' | 'environmental_heat' | 'sfi_complex_adaptive' | 'msf_field_humanitarian';
+
+export interface IMsfWeightBandItem {
+  id: string;
+  medication: string;
+  indication: string;
+  formulation: string;
+  weightBandLabel: string;
+  minWeightKg: number;
+  maxWeightKg: number;
+  tabletCountOrDose: string;
+  regimenSummary: string;
+  duration: string;
+  clinicalNotes: string;
+}
+
+export interface IMsfCholeraAssessmentInput {
+  lethargicOrUnconscious: boolean;
+  sunkenEyes: boolean;
+  unableToDrinkOrDrinksPoorly: boolean;
+  skinPinchVerySlow: boolean; // >= 2 seconds
+  restlessIrritable: boolean;
+  thirstyDrinksEagerly: boolean;
+  skinPinchSlow: boolean; // < 2 seconds
+}
+
+export interface IMsfCholeraPlanResult {
+  plan: 'PLAN_A' | 'PLAN_B' | 'PLAN_C';
+  dehydrationLevel: 'NO_DEHYDRATION' | 'SOME_DEHYDRATION' | 'SEVERE_DEHYDRATION';
+  patientWeightKg: number;
+  isInfantUnder1Year: boolean;
+  fluidPrescription: {
+    solution: string;
+    totalVolumeMl: number;
+    phase1VolumeMl?: number;
+    phase1DurationText?: string;
+    phase2VolumeMl?: number;
+    phase2DurationText?: string;
+    maintenanceOrsText: string;
+  };
+  monitoringDirectives: string[];
+  zincDosageText: string;
+}
+
+export interface IMsfMeaslesVitaminAResult {
+  ageMonths: number;
+  doseIU: number;
+  schedule: string;
+  indication: string;
+  presentation: string;
+  notes: string;
+}
+
+export interface IMsfMalnutritionTriageResult {
+  category: 'SEVERE_ACUTE_MALNUTRITION_COMPLICATED' | 'SEVERE_ACUTE_MALNUTRITION_UNCOMPLICATED' | 'MODERATE_ACUTE_MALNUTRITION' | 'NORMAL';
+  triageDisposition: 'INPATIENT_STABILIZATION_CRENI' | 'OUTPATIENT_THERAPEUTIC_CRENA' | 'SUPPLEMENTARY_FEEDING' | 'ROUTINE_MONITORING';
+  criteriaMatched: string[];
+  therapeuticDiet: string;
+  clinicalWarning: string;
+}
 
 export interface IFriedRuleResult {
   ageMonths: number;
@@ -467,4 +526,421 @@ export class ClinicalPosologyService {
       multiParadigmFontClass
     };
   }
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // MSF Humanitarian Field Mode Posology & Triage Subsystem
+  // ────────────────────────────────────────────────────────────────────────────
+
+  /**
+   * MSF Discrete Weight-Band Dosing Registry
+   * Provides rapid, error-proof tablet/sachet distributions for resource-limited clinics.
+   */
+  getAllMsfWeightBandsForWeight(weightKg: number): IMsfWeightBandItem[] {
+    const w = Math.max(2, weightKg);
+    const results: IMsfWeightBandItem[] = [];
+
+    // 1. Artemether / Lumefantrine (AL 20/120 mg dispersible tablets)
+    let alBand = '5 to <15 kg';
+    let alDose = '1 tablet BID (morning & evening) × 3 days (6 tablets total)';
+    let minW = 5;
+    let maxW = 15;
+
+    if (w < 5) {
+      alBand = '<5 kg';
+      alDose = 'Caution: Under 5 kg. Consult specialist or use Artesunate-Amodiaquine weight-specific drops.';
+      minW = 2;
+      maxW = 5;
+    } else if (w < 15) {
+      alBand = '5 to <15 kg';
+      alDose = '1 tablet BID × 3 days (6 tablets total)';
+      minW = 5;
+      maxW = 15;
+    } else if (w < 25) {
+      alBand = '15 to <25 kg';
+      alDose = '2 tablets BID × 3 days (12 tablets total)';
+      minW = 15;
+      maxW = 25;
+    } else if (w < 35) {
+      alBand = '25 to <35 kg';
+      alDose = '3 tablets BID × 3 days (18 tablets total)';
+      minW = 25;
+      maxW = 35;
+    } else {
+      alBand = '≥35 kg (Adult)';
+      alDose = '4 tablets BID × 3 days (24 tablets total)';
+      minW = 35;
+      maxW = 120;
+    }
+
+    results.push({
+      id: 'msf-al',
+      medication: 'Artemether / Lumefantrine (AL)',
+      indication: 'Uncomplicated P. falciparum Malaria',
+      formulation: 'Dispersible fixed-dose tablet (20 mg artemether / 120 mg lumefantrine)',
+      weightBandLabel: alBand,
+      minWeightKg: minW,
+      maxWeightKg: maxW,
+      tabletCountOrDose: alDose,
+      regimenSummary: `${alDose} with milk or fatty food`,
+      duration: '3 days (6 total doses: at 0h, 8h, 24h, 36h, 48h, 60h)',
+      clinicalNotes: 'Disperse in clean water or breastmilk for infants. Second dose taken strictly 8 hours after first dose.'
+    });
+
+    // 2. Amoxicillin Dispersible 250 mg (Pneumonia / Outpatient SAM)
+    let amoxBand = '4 to <10 kg';
+    let amoxDose = '1 dispersible tablet (250 mg) BID';
+    let amoxMin = 4;
+    let amoxMax = 10;
+
+    if (w < 4) {
+      amoxBand = '<4 kg';
+      amoxDose = '1/2 dispersible tablet (125 mg) BID';
+      amoxMin = 2;
+      amoxMax = 4;
+    } else if (w < 10) {
+      amoxBand = '4 to <10 kg';
+      amoxDose = '1 dispersible tablet (250 mg) BID';
+      amoxMin = 4;
+      amoxMax = 10;
+    } else if (w < 14) {
+      amoxBand = '10 to <14 kg';
+      amoxDose = '2 dispersible tablets (500 mg) BID';
+      amoxMin = 10;
+      amoxMax = 14;
+    } else if (w < 20) {
+      amoxBand = '14 to <20 kg';
+      amoxDose = '3 dispersible tablets (750 mg) BID';
+      amoxMin = 14;
+      amoxMax = 20;
+    } else {
+      amoxBand = '≥20 kg';
+      amoxDose = '4 dispersible tablets (1000 mg) BID';
+      amoxMin = 20;
+      amoxMax = 100;
+    }
+
+    results.push({
+      id: 'msf-amox',
+      medication: 'Amoxicillin Dispersible',
+      indication: 'Fast-Breathing Pneumonia & Routine SAM Care',
+      formulation: '250 mg scored dispersible tablet',
+      weightBandLabel: amoxBand,
+      minWeightKg: amoxMin,
+      maxWeightKg: amoxMax,
+      tabletCountOrDose: amoxDose,
+      regimenSummary: `${amoxDose} every 12 hours`,
+      duration: '5 days for non-severe pneumonia (7 days for SAM)',
+      clinicalNotes: 'WHO/MSF standard-of-care for outpatient pediatric lower respiratory tract infections. Disperses in 5 mL liquid.'
+    });
+
+    // 3. Paracetamol (Acetaminophen) 10–15 mg/kg per dose
+    let paraDose = '120 mg (approx 1/2 of 250mg tab or syrup)';
+    let paraBand = '8 to <15 kg';
+    let paraMin = 8;
+    let paraMax = 15;
+
+    if (w < 4) {
+      paraBand = '<4 kg';
+      paraDose = '40 to 50 mg every 6 hours PRN';
+      paraMin = 2;
+      paraMax = 4;
+    } else if (w < 8) {
+      paraBand = '4 to <8 kg';
+      paraDose = '80 to 100 mg (1/2 200mg or 1/4 500mg tab) every 6 hours PRN';
+      paraMin = 4;
+      paraMax = 8;
+    } else if (w < 15) {
+      paraBand = '8 to <15 kg';
+      paraDose = '150 to 200 mg (1 200mg tab or 1/2 400mg tab) every 6 hours PRN';
+      paraMin = 8;
+      paraMax = 15;
+    } else if (w < 25) {
+      paraBand = '15 to <25 kg';
+      paraDose = '250 to 300 mg (1/2 to 3/4 500mg tab) every 6 hours PRN';
+      paraMin = 15;
+      paraMax = 25;
+    } else if (w < 35) {
+      paraBand = '25 to <35 kg';
+      paraDose = '350 to 500 mg (1 500mg tab) every 6 hours PRN';
+      paraMin = 25;
+      paraMax = 35;
+    } else {
+      paraBand = '≥35 kg';
+      paraDose = '500 to 1000 mg (1 to 2 500mg tabs) every 6 hours PRN (max 4000 mg/day)';
+      paraMin = 35;
+      paraMax = 120;
+    }
+
+    results.push({
+      id: 'msf-para',
+      medication: 'Paracetamol (Acetaminophen)',
+      indication: 'Fever & Pain Management (First-line, NSAID-safe in Dengue/Malaria)',
+      formulation: '100 mg / 250 mg / 500 mg scored tablets',
+      weightBandLabel: paraBand,
+      minWeightKg: paraMin,
+      maxWeightKg: paraMax,
+      tabletCountOrDose: paraDose,
+      regimenSummary: `${paraDose} (max 4 doses in 24 hours)`,
+      duration: 'Symptomatic (typically 2 to 3 days)',
+      clinicalNotes: 'Strictly avoid aspirin and NSAIDs (ibuprofen) in undifferentiated febrile illness to prevent hemorrhagic complications.'
+    });
+
+    // 4. Zinc Sulfate Dispersible for Diarrhea
+    const isUnder6kg = w < 6;
+    results.push({
+      id: 'msf-zinc',
+      medication: 'Zinc Sulfate Dispersible',
+      indication: 'Acute Diarrhea & Cholera Adjunct',
+      formulation: '20 mg scored dispersible tablet',
+      weightBandLabel: isUnder6kg ? '<6 kg (<6 months)' : '≥6 kg (≥6 months)',
+      minWeightKg: isUnder6kg ? 2 : 6,
+      maxWeightKg: isUnder6kg ? 6 : 100,
+      tabletCountOrDose: isUnder6kg ? '10 mg (1/2 tablet) once daily' : '20 mg (1 tablet) once daily',
+      regimenSummary: isUnder6kg ? '10 mg daily for 10–14 days' : '20 mg daily for 10–14 days',
+      duration: '10 to 14 days full course',
+      clinicalNotes: 'Shortens diarrhea episode duration and regenerates mucosal enterocyte brush borders, preventing recurrences for 2–3 months.'
+    });
+
+    // 5. Artesunate Parenteral (Pre-Referral Severe Malaria)
+    const isUnder20kg = w < 20;
+    const artesunateDoseMgKg = isUnder20kg ? 3.0 : 2.4;
+    const totalDoseMg = Math.round(w * artesunateDoseMgKg * 10) / 10;
+
+    results.push({
+      id: 'msf-artesunate-iv',
+      medication: 'Artesunate IV / IM (Pre-Referral)',
+      indication: 'Severe Complicated Malaria (Cerebral / Severe Anemia / Repeated Vomiting)',
+      formulation: '60 mg vial powder for injection with sodium bicarbonate 5% & saline diluent',
+      weightBandLabel: isUnder20kg ? '<20 kg (3.0 mg/kg)' : '≥20 kg (2.4 mg/kg)',
+      minWeightKg: isUnder20kg ? 2 : 20,
+      maxWeightKg: isUnder20kg ? 20 : 150,
+      tabletCountOrDose: `${totalDoseMg} mg IM or slow IV bolus (${artesunateDoseMgKg} mg/kg)`,
+      regimenSummary: `Administer ${totalDoseMg} mg STAT at 0h, then at 12h, 24h, then daily until patient can take oral AL`,
+      duration: 'Minimum 3 parenteral doses (24h) before transition to full 3-day oral AL course',
+      clinicalNotes: 'Parenteral artesunate reduces mortality by 22% in African children and 34% in Asian adults compared to quinine.'
+    });
+
+    return results;
+  }
+
+  /**
+   * MSF Cholera & Acute Watery Diarrhea Dehydration Assessment & Fluid Calculator
+   * Stratifies into Plan A (Home), Plan B (Oral Rehydration Unit 75 mL/kg), or Plan C (IV Ringer's Lactate 100 mL/kg).
+   */
+  calculateMsfCholeraRehydration(
+    weightKg: number,
+    signs: IMsfCholeraAssessmentInput,
+    isInfantUnder1Year = false
+  ): IMsfCholeraPlanResult {
+    const w = Math.max(3, Math.min(150, weightKg));
+
+    // 1. Plan C Criteria: at least 2 of (Lethargic/Unconscious, Sunken eyes, Unable to drink/drinking poorly, Skin pinch very slow >=2s)
+    let severeSignsCount = 0;
+    if (signs.lethargicOrUnconscious) severeSignsCount++;
+    if (signs.sunkenEyes) severeSignsCount++;
+    if (signs.unableToDrinkOrDrinksPoorly) severeSignsCount++;
+    if (signs.skinPinchVerySlow) severeSignsCount++;
+
+    // 2. Plan B Criteria: at least 2 of (Restless/Irritable, Sunken eyes, Thirsty/Drinks eagerly, Skin pinch slow <2s)
+    let moderateSignsCount = 0;
+    if (signs.restlessIrritable) moderateSignsCount++;
+    if (signs.sunkenEyes) moderateSignsCount++;
+    if (signs.thirstyDrinksEagerly) moderateSignsCount++;
+    if (signs.skinPinchSlow) moderateSignsCount++;
+
+    const isPlanC = severeSignsCount >= 2;
+    const isPlanB = !isPlanC && (moderateSignsCount >= 2 || signs.thirstyDrinksEagerly || signs.skinPinchSlow);
+
+    const zincText = w < 6 || isInfantUnder1Year
+      ? 'Zinc Sulfate 10 mg (1/2 tablet) once daily for 10–14 days'
+      : 'Zinc Sulfate 20 mg (1 tablet) once daily for 10–14 days';
+
+    if (isPlanC) {
+      const totalVolumeMl = Math.round(100 * w);
+      const phase1Vol = Math.round(30 * w);
+      const phase2Vol = Math.round(70 * w);
+
+      const phase1Duration = isInfantUnder1Year ? 'Over 1 hour (30 mL/kg)' : 'Over 30 minutes (30 mL/kg)';
+      const phase2Duration = isInfantUnder1Year ? 'Over 5 hours (70 mL/kg)' : 'Over 2.5 hours (70 mL/kg)';
+
+      return {
+        plan: 'PLAN_C',
+        dehydrationLevel: 'SEVERE_DEHYDRATION',
+        patientWeightKg: w,
+        isInfantUnder1Year,
+        fluidPrescription: {
+          solution: "IV Ringer's Lactate (Hartmann's Solution) — If unavailable, Normal Saline 0.9%",
+          totalVolumeMl,
+          phase1VolumeMl: phase1Vol,
+          phase1DurationText: phase1Duration,
+          phase2VolumeMl: phase2Vol,
+          phase2DurationText: phase2Duration,
+          maintenanceOrsText: 'Give WHO ORS 5 mL/kg/hour as soon as patient can drink (usually after 3–4h in infants, 1–2h in older patients)'
+        },
+        monitoringDirectives: [
+          '🚨 EMERGENCY: Hypovolemic shock hazard. Start IV cannula (18-20G in adults, 22-24G in children) immediately.',
+          'Reassess radial pulse, respiratory rate, and skin turgor every 15–30 minutes until strong radial pulse is palpable.',
+          'If radial pulse is still weak or undetectable at end of Phase 1, repeat 30 mL/kg at the same rate.',
+          'If peripheral venous access fails after 2 attempts in a child, immediately place an Intraosseous (IO) needle.',
+          'Once IV infusion is complete, fully reassess dehydration status to select Plan A, B, or continue Plan C.'
+        ],
+        zincDosageText: zincText
+      };
+    }
+
+    if (isPlanB) {
+      const totalVolumeMl = Math.round(75 * w);
+      return {
+        plan: 'PLAN_B',
+        dehydrationLevel: 'SOME_DEHYDRATION',
+        patientWeightKg: w,
+        isInfantUnder1Year,
+        fluidPrescription: {
+          solution: 'WHO Low-Osmolarity Oral Rehydration Solution (ORS)',
+          totalVolumeMl,
+          phase1VolumeMl: totalVolumeMl,
+          phase1DurationText: `Administer ${totalVolumeMl} mL over 4 hours in Oral Rehydration Point (ORP/ORU)`,
+          maintenanceOrsText: 'Continue breastfeeding whenever child wants. If patient vomits, wait 10 minutes then resume ORS more slowly with a cup and spoon.'
+        },
+        monitoringDirectives: [
+          `Situate in Oral Rehydration Unit (ORU). Target volume: ${totalVolumeMl} mL over 4 hours.`,
+          'Show parent/caregiver how to administer ORS slowly using a clean cup and teaspoon (1 spoon every 1–2 minutes).',
+          'Reassess after 4 hours: If no signs of dehydration remain, transition to Plan A. If still some dehydration, repeat Plan B for another 4 hours.',
+          'If patient deteriorates into Plan C (lethargic, floppy, unable to drink), switch immediately to IV Ringer\'s Lactate.'
+        ],
+        zincDosageText: zincText
+      };
+    }
+
+    // Plan A
+    return {
+      plan: 'PLAN_A',
+      dehydrationLevel: 'NO_DEHYDRATION',
+      patientWeightKg: w,
+      isInfantUnder1Year,
+      fluidPrescription: {
+        solution: 'WHO Low-Osmolarity ORS + Clean fluids at home',
+        totalVolumeMl: 500,
+        maintenanceOrsText: isInfantUnder1Year
+          ? 'Give 50–100 mL of ORS after each loose stool'
+          : w < 25
+            ? 'Give 100–200 mL of ORS after each loose stool'
+            : 'Give 200–400 mL of ORS after each loose stool, or as much as desired'
+      },
+      monitoringDirectives: [
+        'Treat at home: Counsel caregiver on 4 rules of home treatment: (1) Extra fluids, (2) Zinc supplement, (3) Continue feeding, (4) When to return.',
+        'Immediate return triggers: Repeated vomiting, unable to drink or breastfeed, fever develops, blood in stool, or becoming floppy/very thirsty.',
+        'Maintain exclusive breastfeeding for infants under 6 months; give ORS in addition to breastmilk.'
+      ],
+      zincDosageText: zincText
+    };
+  }
+
+  /**
+   * MSF High-Dose Vitamin A Protocol for Measles, Severe Malnutrition, and Outbreaks
+   */
+  calculateMsfMeaslesVitaminA(ageMonths: number): IMsfMeaslesVitaminAResult {
+    const age = Math.max(1, ageMonths);
+
+    if (age < 6) {
+      return {
+        ageMonths: age,
+        doseIU: 50000,
+        schedule: '50,000 IU orally on Day 1 and Day 2 (and Day 15 if ocular signs or malnutrition present)',
+        indication: 'Measles Outbreak Case / Severe Acute Malnutrition (<6 months)',
+        presentation: '1 blue capsule (100,000 IU) cut with scissors and 2 drops administered, or 50,000 IU ampoule',
+        notes: 'Reduces measles-induced blindness and mortality by up to 50%. Administer orally directly into mouth.'
+      };
+    } else if (age < 12) {
+      return {
+        ageMonths: age,
+        doseIU: 100000,
+        schedule: '100,000 IU orally on Day 1 and Day 2 (and Day 15 if ocular signs or malnutrition present)',
+        indication: 'Measles Outbreak Case / Severe Acute Malnutrition (6–11 months)',
+        presentation: '1 blue capsule (100,000 IU) orally cut or swallowed',
+        notes: 'Stimulates rapid mucosal epithelial regeneration and restores vitamin A liver stores depleted by acute measles viremia.'
+      };
+    } else {
+      return {
+        ageMonths: age,
+        doseIU: 200000,
+        schedule: '200,000 IU orally on Day 1 and Day 2 (and Day 15 if ocular signs or malnutrition present)',
+        indication: 'Measles Outbreak Case / Severe Acute Malnutrition (≥12 months & Adults)',
+        presentation: '1 red capsule (200,000 IU) orally',
+        notes: 'Mandatory standard of care in all humanitarian measles cases regardless of prior routine vaccination status.'
+      };
+    }
+  }
+
+  /**
+   * MSF Acute Malnutrition Triage (MUAC & Weight-for-Height)
+   */
+  evaluateMsfMalnutrition(
+    weightKg: number,
+    heightCm: number,
+    muacMm?: number,
+    hasBilateralEdema = false,
+    hasMedicalComplications = false
+  ): IMsfMalnutritionTriageResult {
+    const isSevereMuac = typeof muacMm === 'number' && muacMm < 115;
+    const isModerateMuac = typeof muacMm === 'number' && muacMm >= 115 && muacMm < 125;
+
+    // Estimate Weight-for-Height Z-Score approximation for 65–110 cm
+    // Expected median weight for 80 cm is ~10 kg, -3 SD is ~7.5 kg
+    const expectedWeight = (heightCm - 50) * 0.35 + 3.5;
+    const isSevereWeightForHeight = weightKg < expectedWeight * 0.75;
+
+    const isSam = hasBilateralEdema || isSevereMuac || isSevereWeightForHeight;
+
+    if (isSam && hasMedicalComplications) {
+      const criteria: string[] = [];
+      if (hasBilateralEdema) criteria.push('Bilateral pitting edema (Kwashiorkor)');
+      if (isSevereMuac) criteria.push(`Severe wasting: MUAC ${muacMm} mm (<115 mm)`);
+      if (isSevereWeightForHeight) criteria.push(`Weight-for-Height < -3 SD (${weightKg} kg vs expected ${expectedWeight.toFixed(1)} kg)`);
+      criteria.push('Active medical complications (anorexia / hypothermia / severe systemic infection)');
+
+      return {
+        category: 'SEVERE_ACUTE_MALNUTRITION_COMPLICATED',
+        triageDisposition: 'INPATIENT_STABILIZATION_CRENI',
+        criteriaMatched: criteria,
+        therapeuticDiet: 'F-75 Therapeutic Milk (75 kcal/100 mL, 130 mL/kg/day divided into 8 feeds) during stabilization phase. Do NOT give RUTF or high-protein F-100 initially.',
+        clinicalWarning: '🚨 HIGH MORTALITY RISK: Severe Acute Malnutrition with complications. Never give IV fluids unless in overt shock (risk of acute heart failure from sodium overload). Maintain warmth (+28°C room).'
+      };
+    }
+
+    if (isSam && !hasMedicalComplications) {
+      const criteria: string[] = [];
+      if (hasBilateralEdema) criteria.push('Grade + or ++ bilateral pitting edema');
+      if (isSevereMuac) criteria.push(`MUAC ${muacMm} mm (<115 mm)`);
+      if (isSevereWeightForHeight) criteria.push('Weight-for-Height < -3 SD');
+      criteria.push('Positive appetite test (eats RUTF eagerly) and alert');
+
+      return {
+        category: 'SEVERE_ACUTE_MALNUTRITION_UNCOMPLICATED',
+        triageDisposition: 'OUTPATIENT_THERAPEUTIC_CRENA',
+        criteriaMatched: criteria,
+        therapeuticDiet: 'Ready-to-Use Therapeutic Food (RUTF / Plumpy\'Nut): ~170 kcal/kg/day (approx 2–3 sachets per day for 7–9 kg child).',
+        clinicalWarning: 'Outpatient Therapeutic Program: Weekly ration of RUTF, Amoxicillin 7-day empiric course, and single-dose Mebendazole/Albendazole deworming.'
+      };
+    }
+
+    if (isModerateMuac) {
+      return {
+        category: 'MODERATE_ACUTE_MALNUTRITION',
+        triageDisposition: 'SUPPLEMENTARY_FEEDING',
+        criteriaMatched: [`MUAC ${muacMm} mm (115–124 mm)`],
+        therapeuticDiet: 'Ready-to-Use Supplementary Food (RUSF) or fortified blended flour (Corn-Soy Blend Plus / CSB++).',
+        clinicalWarning: 'Supplementary Feeding Program enrollment to halt progression into Severe Acute Malnutrition.'
+      };
+    }
+
+    return {
+      category: 'NORMAL',
+      triageDisposition: 'ROUTINE_MONITORING',
+      criteriaMatched: ['MUAC ≥125 mm', 'No bilateral pitting edema', 'Weight-for-Height within expected normal parameters'],
+      therapeuticDiet: 'Standard balanced family diet with ongoing breastfeeding support up to 2 years.',
+      clinicalWarning: 'Growth monitoring and promotion at routine child wellness visits.'
+    };
+  }
 }
+

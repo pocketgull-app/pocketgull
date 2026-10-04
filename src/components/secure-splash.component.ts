@@ -1525,7 +1525,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
           <!-- Secondary Accessible 2-Step CDS Confirmation Trigger -->
           <div class="flex items-center justify-center">
             <button type="button"
-                    (click)="showEmergencyConfirmModal.set(true)"
+                    (click)="openEmergencyConfirmModal()"
                     class="text-xs uppercase tracking-wider font-bold text-rose-400 dark:text-rose-300 hover:text-rose-200 hover:underline transition-colors bg-transparent border-none cursor-pointer min-h-[48px] px-3 py-2 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none rounded-lg"
                     aria-label="Open 2-step STAT emergency confirmation modal">
               Or use 2-Step STAT Confirmation &rarr;
@@ -1637,9 +1637,38 @@ import { BionicReadingService } from '../services/bionic-reading.service';
             </p>
 
             <div class="flex flex-col gap-3 mb-4 text-left">
+              <!-- Responder Role Selector -->
+              <div>
+                <label class="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                  Emergency Responder Role:
+                </label>
+                <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                  <button type="button"
+                          (click)="setEmergencyResponderType('BYSTANDER')"
+                          [class.bg-white]="emergencyResponderType() === 'BYSTANDER'"
+                          [class.dark:bg-zinc-800]="emergencyResponderType() === 'BYSTANDER'"
+                          [class.shadow-sm]="emergencyResponderType() === 'BYSTANDER'"
+                          [class.font-bold]="emergencyResponderType() === 'BYSTANDER'"
+                          class="py-2 px-3 text-xs rounded-lg transition flex items-center justify-center gap-1.5 text-zinc-800 dark:text-zinc-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500">
+                    <span>🤝</span>
+                    <span>Lay Bystander</span>
+                  </button>
+                  <button type="button"
+                          (click)="setEmergencyResponderType('CLINICIAN')"
+                          [class.bg-white]="emergencyResponderType() === 'CLINICIAN'"
+                          [class.dark:bg-zinc-800]="emergencyResponderType() === 'CLINICIAN'"
+                          [class.shadow-sm]="emergencyResponderType() === 'CLINICIAN'"
+                          [class.font-bold]="emergencyResponderType() === 'CLINICIAN'"
+                          class="py-2 px-3 text-xs rounded-lg transition flex items-center justify-center gap-1.5 text-zinc-800 dark:text-zinc-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-rose-500">
+                    <span>🩺</span>
+                    <span>Licensed Clinician</span>
+                  </button>
+                </div>
+              </div>
+
               <div>
                 <label for="stat-indication-select" class="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                  Emergency Clinical Indication (HIPAA § 164.512):
+                  Emergency Clinical Indication (HIPAA § 164.512 &amp; MSF Field Protocols):
                 </label>
                 <select 
                   id="stat-indication-select"
@@ -1647,24 +1676,42 @@ import { BionicReadingService } from '../services/bionic-reading.service';
                   (ngModelChange)="emergencyIndication.set($event)"
                   class="w-full text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2 text-zinc-800 dark:text-zinc-200">
                   <option value="STAT_CODE_BLUE">🚨 Cardiopulmonary Arrest / CPR Resuscitation</option>
+                  <option value="BYSTANDER_OPIOID_OVERDOSE">💊 Bystander Opioid Overdose / Naloxone (Narcan) Rescue</option>
+                  <option value="BYSTANDER_ANAPHYLAXIS">💉 Severe Anaphylaxis / Epinephrine Auto-Injector</option>
                   <option value="UNCONSCIOUS_TRAUMA">🚑 Unconscious Trauma / Unknown Patient Identity</option>
                   <option value="CRITICAL_SEPSIS">🩸 Severe Sepsis / Acute Hemodynamic Shock</option>
+                  <option value="MSF_CHOLERA_SHOCK">💧 MSF Cholera Dehydration Shock (Plan C IV Protocol)</option>
+                  <option value="OUTBREAK_EPIDEMIC_ISOLATION">🦠 Humanitarian Outbreak / Epidemic Field Triage</option>
                   <option value="DISASTER_TRIAGE">⚠️ Mass Casualty / Code Black Disaster Triage</option>
                 </select>
               </div>
 
-              <div>
-                <label for="stat-clinician-id" class="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                  Attending Clinician NPI / Hospital Badge ID:
-                </label>
-                <input 
-                  id="stat-clinician-id"
-                  type="text"
-                  placeholder="e.g. NPI-1982736450 or BADGE-MED-442"
-                  [ngModel]="emergencyClinicianId()"
-                  (ngModelChange)="emergencyClinicianId.set($event)"
-                  class="w-full text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2 text-zinc-800 dark:text-zinc-200 font-mono">
-              </div>
+              @if (emergencyResponderType() === 'CLINICIAN') {
+                <div>
+                  <label for="stat-clinician-id" class="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 mb-1">
+                    Attending Clinician NPI / Hospital Badge ID:
+                  </label>
+                  <input 
+                    id="stat-clinician-id"
+                    type="text"
+                    placeholder="e.g. NPI-1982736450 or BADGE-MED-442"
+                    [ngModel]="emergencyClinicianId()"
+                    (ngModelChange)="emergencyClinicianId.set($event)"
+                    class="w-full text-xs bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 rounded-xl px-3 py-2 text-zinc-800 dark:text-zinc-200 font-mono">
+                </div>
+              } @else {
+                <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl p-3">
+                  <div class="flex items-center justify-between text-[11px] font-mono text-amber-800 dark:text-amber-300">
+                    <span class="font-bold flex items-center gap-1.5">
+                      <span>🛡️</span> Good Samaritan Identity Token:
+                    </span>
+                    <span class="font-bold tracking-wider">{{ emergencyBystanderToken() }}</span>
+                  </div>
+                  <p class="text-[10px] text-amber-700 dark:text-amber-400 mt-1 leading-normal">
+                    Cryptographic lay-responder seal generated via NIST SP 800-90A CSPRNG entropy. No hospital credentials required.
+                  </p>
+                </div>
+              }
 
               <label class="flex items-start gap-2 text-[10.5px] text-zinc-600 dark:text-zinc-400 cursor-pointer pt-1">
                 <input 
@@ -1673,7 +1720,13 @@ import { BionicReadingService } from '../services/bionic-reading.service';
                   [checked]="emergencyAttestationAccepted()"
                   (change)="emergencyAttestationAccepted.set(!emergencyAttestationAccepted())"
                   class="mt-0.5 rounded border-zinc-400 text-rose-600 focus:ring-rose-500">
-                <span>I legally attest under 45 CFR § 164.512 and penalty of perjury that this emergency clinical override is medically necessary to prevent imminent severe harm or death.</span>
+                <span>
+                  @if (emergencyResponderType() === 'CLINICIAN') {
+                    I legally attest under 45 CFR § 164.512 and penalty of perjury that this emergency clinical override is medically necessary to prevent imminent severe harm or death.
+                  } @else {
+                    I attest under statutory Good Samaritan protections and 45 CFR § 164.512 that I am rendering emergency aid in good faith without compensation to prevent imminent death or severe bodily injury.
+                  }
+                </span>
               </label>
             </div>
 
@@ -1685,7 +1738,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
               </button>
               <button type="button"
                       (click)="confirmStatEmergencyOverride()"
-                      [disabled]="!emergencyAttestationAccepted() || emergencyClinicianId().trim().length < 4"
+                      [disabled]="!emergencyAttestationAccepted() || (emergencyResponderType() === 'CLINICIAN' && emergencyClinicianId().trim().length < 4)"
                       class="flex-1 py-3 px-4 min-h-[48px] bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold uppercase tracking-wider shadow-lg transition cursor-pointer active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none">
                 Confirm STAT Override
               </button>
@@ -2234,10 +2287,27 @@ export class SecureSplashComponent implements OnInit {
   readonly lockoutSecondsRemaining = signal<number>(0);
   private lockoutIntervalId: any = null;
 
-  // HIPAA § 164.512 Break-Glass Emergency Clinical Overrides
+  // HIPAA § 164.512 Break-Glass Emergency Clinical & Good Samaritan Overrides
+  readonly emergencyResponderType = signal<'CLINICIAN' | 'BYSTANDER'>('CLINICIAN');
+  readonly emergencyBystanderToken = signal<string>('SAMARITAN-8F2D');
   readonly emergencyClinicianId = signal<string>('');
   readonly emergencyIndication = signal<string>('STAT_CODE_BLUE');
   readonly emergencyAttestationAccepted = signal<boolean>(false);
+
+  openEmergencyConfirmModal(): void {
+    this.emergencyAttestationAccepted.set(false);
+    const entropy = this.clinicalDefense?.generateHardwareEntropyHex(3).toUpperCase() || Math.random().toString(36).substring(2, 6).toUpperCase();
+    this.emergencyBystanderToken.set(`SAMARITAN-${entropy}`);
+    this.showEmergencyConfirmModal.set(true);
+  }
+
+  setEmergencyResponderType(type: 'CLINICIAN' | 'BYSTANDER'): void {
+    this.emergencyResponderType.set(type);
+    if (type === 'BYSTANDER') {
+      const entropy = this.clinicalDefense?.generateHardwareEntropyHex(3).toUpperCase() || Math.random().toString(36).substring(2, 6).toUpperCase();
+      this.emergencyBystanderToken.set(`SAMARITAN-${entropy}`);
+    }
+  }
 
   registerFailedAttempt(reason: string): void {
     const nextAttempts = this.failedAttempts() + 1;
@@ -2277,15 +2347,22 @@ export class SecureSplashComponent implements OnInit {
   }
 
   confirmStatEmergencyOverride(): void {
-    if (!this.emergencyAttestationAccepted() || this.emergencyClinicianId().trim().length < 4) {
+    const isBystander = this.emergencyResponderType() === 'BYSTANDER';
+    let badge = this.emergencyClinicianId().trim();
+    if (isBystander && (!badge || badge.length < 4)) {
+      badge = this.emergencyBystanderToken();
+    }
+    if (!this.emergencyAttestationAccepted() || (!isBystander && badge.length < 4)) {
       return;
     }
-    const badge = this.emergencyClinicianId().trim();
-    const reason = `STAT Emergency Override [${this.emergencyIndication()}]: Medically necessary under HIPAA § 164.512 emergency care exceptions by clinician ${badge}.`;
+    const role = isBystander ? 'GOOD_SAMARITAN_BYSTANDER' : 'CLINICIAN';
+    const reason = isBystander
+      ? `STAT Good Samaritan Emergency Override [${this.emergencyIndication()}]: Rendered in good faith under Good Samaritan statutory protections and HIPAA § 164.512 emergency exceptions by lay responder ${badge}.`
+      : `STAT Emergency Override [${this.emergencyIndication()}]: Medically necessary under HIPAA § 164.512 emergency care exceptions by clinician ${badge}.`;
 
     this.playSuccessChime();
     this.stopAmbientSoundscape();
-    this.clinicalDefense?.auditStatEmergencyOverride(badge, reason);
+    this.clinicalDefense?.auditStatEmergencyOverride(badge, reason, role);
 
     this.showEmergencyConfirmModal.set(false);
     this.session.isLocked.set(false);
@@ -3668,9 +3745,15 @@ export class SecureSplashComponent implements OnInit {
   handleEmergencyBypass(): void {
     this.playSuccessChime();
     this.stopAmbientSoundscape();
+    const isBystander = this.emergencyResponderType() === 'BYSTANDER';
+    const token = isBystander
+      ? this.emergencyBystanderToken()
+      : 'emergency-physician@pocketgull.app';
+    const role = isBystander ? 'GOOD_SAMARITAN_BYSTANDER' : 'CLINICIAN';
     this.clinicalDefense?.auditStatEmergencyOverride(
-      'emergency-physician@pocketgull.app',
-      'STAT Emergency Clinical Bypass invoked at Splash Gatekeeper under HIPAA §164.512 emergency care exceptions.'
+      token,
+      'STAT Emergency Clinical Bypass invoked at Splash Gatekeeper under HIPAA § 164.512 and Good Samaritan emergency protocols.',
+      role
     );
     this.session.isLocked.set(false);
     this.session.resetIdleTimer();

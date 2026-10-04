@@ -71,4 +71,23 @@ describe('OfflineEdgeControlsComponent', () => {
     expect(component.testOutput()).toContain('STAT_EMERGENCY');
     expect(component.testOutput()).toContain('95%');
   });
+
+  it('6. Triggers reachability probe when Probe Ping button is clicked', async () => {
+    const probeSpy = vi.spyOn(networkService, 'checkReachability').mockResolvedValue(true);
+    await component.runReachabilityProbe();
+    expect(probeSpy).toHaveBeenCalled();
+  });
+
+  it('7. Triggers flushOfflineQueue when Sync Queue Now is clicked', async () => {
+    networkService.enqueueOfflineItem('TEST_PAYLOAD', { id: 101 });
+    expect(networkService.pendingQueueCount()).toBe(1);
+
+    const flushSpy = vi.spyOn(networkService, 'flushOfflineQueue').mockResolvedValue({
+      syncedCount: 1,
+      failedCount: 0
+    });
+
+    await component.flushSyncQueue();
+    expect(flushSpy).toHaveBeenCalled();
+  });
 });

@@ -5,7 +5,9 @@ import { WhoEssentialMedicinesService } from '../../services/who-essential-medic
 import { WhoEssentialDiagnosticsService } from '../../services/who-essential-diagnostics.service';
 import { AustereMeshSyncService } from '../../services/austere-mesh-sync.service';
 import { PediatricDosingEngineService } from '../../services/pediatric-dosing-engine.service';
-import { generate } from 'lean-qr';
+import { UnicefOpenDataService } from '../../services/unicef-open-data.service';
+import { NetworkStateService } from '../../services/network-state.service';
+import { BrandedQrCodeComponent } from './branded-qr-code.component';
 import {
   FrontlineVernacularVoiceService,
   VernacularLanguageCode,
@@ -13,7 +15,7 @@ import {
   ITriageVoiceContext
 } from '../../services/frontline-vernacular-voice.service';
 
-export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain' | 'austere_mesh_sync' | 'pediatric_dosing';
+export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain' | 'austere_mesh_sync' | 'pediatric_dosing' | 'unicef_open_data';
 
 export interface IMuacTriageResult {
   muacMm: number;
@@ -22,8 +24,12 @@ export interface IMuacTriageResult {
   statusLabel: string;
   badgeClass: string;
   rutfSachetsPerDay: number;
+  rutfSachetsPerWeek?: number;
   rutfWeightGuide: string;
   clinicalAction: string;
+  appetiteTestPassed?: boolean;
+  therapeuticFeedType?: 'RUTF_PLUMPYNUT' | 'F75_THERAPEUTIC_MILK' | 'RUSF_SUPPLEMENTARY' | 'NONE';
+  disposition?: string;
 }
 
 export interface IPneumoniaTriageResult {
@@ -50,7 +56,7 @@ export interface IDehydrationTriageResult {
 @Component({
   selector: 'app-community-health-worker-suite',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 bg-zinc-950 text-zinc-100 rounded-3xl border border-zinc-800 shadow-2xl font-sans"
@@ -217,6 +223,16 @@ export interface IDehydrationTriageResult {
                 class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
           <span>⚖️</span> 9. Pediatric Dosing (IMCI)
         </button>
+
+        <button type="button"
+                (click)="activeTab.set('unicef_open_data')"
+                id="btn-tab-unicef-open-data"
+                [class.bg-cyan-700]="activeTab() === 'unicef_open_data'"
+                [class.text-white]="activeTab() === 'unicef_open_data'"
+                [class.text-zinc-400]="activeTab() !== 'unicef_open_data'"
+                class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
+          <span>🌐</span> 10. UNICEF Open Data &amp; SDMX
+        </button>
       </nav>
 
       <!-- Active Vernacular Audio-Visual Guidance HUD Card -->
@@ -377,8 +393,79 @@ export interface IDehydrationTriageResult {
                      (ngModelChange)="childWeightKg.set(+$event)"
                      class="w-full p-2 rounded-xl bg-zinc-950 border border-zinc-700 text-zinc-100 font-mono text-sm" />
               <p class="text-[11px] text-zinc-500">
-                Calibrates therapeutic food (Plumpy'Nut) sachets according to WHO outpatient guidelines.
+                UNICEF Supply Division: ~200 kcal/kg/day (500 kcal / 92g sachet).
               </p>
+            </div>
+          </div>
+
+          <!-- UNICEF SAM Outpatient vs Inpatient Protocol & Appetite Test -->
+          <div class="p-4 bg-zinc-900/80 rounded-2xl border border-zinc-800 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold uppercase text-cyan-400">UNICEF Supply Division Protocol:</span>
+                <span class="text-[10px] font-mono text-zinc-400">Appetite Test &amp; Inpatient Demarcation</span>
+              </div>
+              <span class="text-[10px] font-mono text-zinc-500">WHO / UNICEF SAM Guidelines</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <!-- Appetite Test Toggle -->
+              <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-zinc-200">Appetite Test (RUTF):</span>
+                  <span class="text-[10px] font-mono" [class.text-emerald-400]="appetiteTestPassed()" [class.text-rose-400]="!appetiteTestPassed()">
+                    {{ appetiteTestPassed() ? '✓ PASSED (&ge;1/4 Sachet)' : '✗ FAILED (Refused)' }}
+                  </span>
+                </div>
+                <div class="flex gap-2">
+                  <button type="button"
+                          (click)="appetiteTestPassed.set(true)"
+                          id="btn-chw-appetite-pass"
+                          [class.bg-emerald-950]="appetiteTestPassed()"
+                          [class.border-emerald-600]="appetiteTestPassed()"
+                          class="flex-1 py-1.5 px-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-200 text-xs font-mono transition cursor-pointer">
+                    Pass (&ge;1/4 sachet)
+                  </button>
+                  <button type="button"
+                          (click)="appetiteTestPassed.set(false)"
+                          id="btn-chw-appetite-fail"
+                          [class.bg-rose-950]="!appetiteTestPassed()"
+                          [class.border-rose-600]="!appetiteTestPassed()"
+                          class="flex-1 py-1.5 px-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-200 text-xs font-mono transition cursor-pointer">
+                    Fail / Refused
+                  </button>
+                </div>
+                <p class="text-[10px] text-zinc-500">Child eats quietly with caregiver for 30 minutes in a calm environment.</p>
+              </div>
+
+              <!-- Medical Complications Toggle -->
+              <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-zinc-200">Medical Complications:</span>
+                  <span class="text-[10px] font-mono" [class.text-rose-400]="hasMedicalComplications()" [class.text-emerald-400]="!hasMedicalComplications()">
+                    {{ hasMedicalComplications() ? '⚠️ Present (High Risk)' : '✓ None Detected' }}
+                  </span>
+                </div>
+                <div class="flex gap-2">
+                  <button type="button"
+                          (click)="hasMedicalComplications.set(false)"
+                          id="btn-chw-complications-none"
+                          [class.bg-emerald-950]="!hasMedicalComplications()"
+                          [class.border-emerald-600]="!hasMedicalComplications()"
+                          class="flex-1 py-1.5 px-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-200 text-xs font-mono transition cursor-pointer">
+                    No Complications
+                  </button>
+                  <button type="button"
+                          (click)="hasMedicalComplications.set(true)"
+                          id="btn-chw-complications-present"
+                          [class.bg-rose-950]="hasMedicalComplications()"
+                          [class.border-rose-600]="hasMedicalComplications()"
+                          class="flex-1 py-1.5 px-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-200 text-xs font-mono transition cursor-pointer">
+                    Complications Present
+                  </button>
+                </div>
+                <p class="text-[10px] text-zinc-500">High fever, persistent vomiting, convulsions, lethargy, or severe dehydration.</p>
+              </div>
             </div>
           </div>
 
@@ -399,11 +486,65 @@ export interface IDehydrationTriageResult {
               </p>
             </div>
             @if (muacTriage().statusTier === 'SEVERE_ACUTE_MALNUTRITION') {
-              <div class="p-3 bg-amber-950/60 rounded-xl border border-amber-600/50 text-amber-200 text-xs font-mono shrink-0">
-                <div>RUTF (Plumpy'Nut): <strong>{{ muacTriage().rutfSachetsPerDay }} sachets/day</strong></div>
+              <div class="p-3 bg-amber-950/60 rounded-xl border border-amber-600/50 text-amber-200 text-xs font-mono shrink-0 space-y-0.5">
+                <div>Daily: <strong>{{ muacTriage().rutfSachetsPerDay }} sachets/day</strong></div>
+                @if (muacTriage().rutfSachetsPerWeek) {
+                  <div>Weekly OTP: <strong class="text-emerald-400">{{ muacTriage().rutfSachetsPerWeek }} sachets/week</strong></div>
+                }
                 <div class="text-[10px] text-amber-300/80 mt-0.5">{{ muacTriage().rutfWeightGuide }}</div>
               </div>
             }
+          </div>
+
+          <!-- Store-and-Forward Offline Sync Queue Action -->
+          <div class="p-4 bg-zinc-900/60 rounded-2xl border border-zinc-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold uppercase text-zinc-300">Frontline Store &amp; Forward:</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full"
+                      [ngClass]="{
+                        'bg-emerald-950 text-emerald-300 border border-emerald-800': network.isOnline() && !network.isLieFiSuspected(),
+                        'bg-amber-950 text-amber-300 border border-amber-800': !network.isOnline() || network.isLieFiSuspected()
+                      }">
+                  {{ network.isOnline() && !network.isLieFiSuspected() ? 'Online' : (network.isLieFiSuspected() ? 'Lie-Fi Suspected' : 'Offline Mode') }}
+                </span>
+                @if (network.pendingQueueCount() > 0) {
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">
+                    ⚡ {{ network.pendingQueueCount() }} Queued
+                  </span>
+                }
+              </div>
+              <p class="text-xs text-zinc-400">
+                Record MUAC assessment into local encrypted storage for auto-sync when connection restores.
+              </p>
+              @if (lastQueuedMessage()) {
+                <p class="text-xs text-emerald-400 font-mono flex items-center gap-1 mt-1">
+                  <span>✓</span> {{ lastQueuedMessage() }}
+                </p>
+              }
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              <button type="button"
+                      (click)="queueOfflineMuacAssessment()"
+                      id="btn-chw-queue-assessment"
+                      class="px-3.5 py-2 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+                <span>📦</span> Record &amp; Queue Sync
+              </button>
+              @if (network.pendingQueueCount() > 0) {
+                <button type="button"
+                        (click)="flushOfflineQueue()"
+                        id="btn-chw-flush-queue"
+                        [disabled]="network.isFlushingQueue()"
+                        class="px-3 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5">
+                  @if (network.isFlushingQueue()) {
+                    <span>🔄 Syncing...</span>
+                  } @else {
+                    <span>⚡ Sync Now ({{ network.pendingQueueCount() }})</span>
+                  }
+                </button>
+              }
+            </div>
           </div>
         </section>
       }
@@ -1810,6 +1951,169 @@ export interface IDehydrationTriageResult {
         </section>
       }
 
+      <!-- MODULE 10: UNICEF Open Data Warehouse & SDMX Global Child Health Benchmarks -->
+      @if (activeTab() === 'unicef_open_data') {
+        <section class="mt-4 p-4 sm:p-6 bg-zinc-900/60 rounded-3xl border border-zinc-800 space-y-6 animate-in fade-in duration-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                  <span>🌐</span> UNICEF Open Data Warehouse &amp; SDMX Global Benchmarks
+                </h3>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-950 text-cyan-300 border border-cyan-800 font-bold">
+                  SDMX REST API
+                </span>
+              </div>
+              <p class="text-xs text-zinc-400 mt-0.5">
+                Official UNICEF indicators from data.unicef.org for malnutrition, zero-dose immunization, child mortality, and WASH
+              </p>
+            </div>
+
+            <!-- Region Selector -->
+            <div class="flex items-center gap-2">
+              <label for="unicef-region-select" class="text-xs font-mono text-zinc-400">Region:</label>
+              <select id="unicef-region-select"
+                      [ngModel]="unicefService.selectedRegionCode()"
+                      (ngModelChange)="unicefService.selectRegion($event)"
+                      class="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs font-mono text-zinc-200 focus:outline-none focus:border-cyan-500">
+                @for (region of unicefService.regionalProfiles; track region.regionCode) {
+                  <option [value]="region.regionCode">{{ region.regionName }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Regional Profile Summary Radar Deck -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 font-mono text-xs">
+            <!-- Under-5 Mortality -->
+            <div class="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-1">
+              <span class="text-[10px] text-zinc-500 block uppercase">Under-5 Mortality</span>
+              <strong class="text-rose-300 text-base block">{{ unicefService.activeRegionalProfile().underFiveMortalityRatePer1k }}</strong>
+              <span class="text-[10px] text-zinc-400 block">per 1k (SDG &le; 25)</span>
+            </div>
+
+            <!-- Neonatal Mortality -->
+            <div class="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-1">
+              <span class="text-[10px] text-zinc-500 block uppercase">Neonatal Mortality</span>
+              <strong class="text-amber-300 text-base block">{{ unicefService.activeRegionalProfile().neonatalMortalityRatePer1k }}</strong>
+              <span class="text-[10px] text-zinc-400 block">per 1k (SDG &le; 12)</span>
+            </div>
+
+            <!-- Child Stunting -->
+            <div class="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-1">
+              <span class="text-[10px] text-zinc-500 block uppercase">Child Stunting</span>
+              <strong class="text-purple-300 text-base block">{{ unicefService.activeRegionalProfile().childStuntingRatePct }}%</strong>
+              <span class="text-[10px] text-zinc-400 block">Height-for-age &lt; -2SD</span>
+            </div>
+
+            <!-- Child Wasting / SAM -->
+            <div class="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-1">
+              <span class="text-[10px] text-zinc-500 block uppercase">Wasting (Acute)</span>
+              <strong class="text-rose-400 text-base block">{{ unicefService.activeRegionalProfile().childWastingRatePct }}%</strong>
+              <span class="text-[10px] text-zinc-400 block">SAM: {{ unicefService.activeRegionalProfile().severeAcuteMalnutritionPct }}%</span>
+            </div>
+
+            <!-- Zero-Dose Children -->
+            <div class="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-1">
+              <span class="text-[10px] text-zinc-500 block uppercase">Zero-Dose Infants</span>
+              <strong class="text-teal-300 text-base block">{{ unicefService.activeRegionalProfile().zeroDoseChildrenPct }}%</strong>
+              <span class="text-[10px] text-zinc-400 block">Missed DTP1</span>
+            </div>
+          </div>
+
+          <!-- Secondary Row: Immunization, WASH, ECDI -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+            <div class="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-zinc-500 block uppercase">Measles (MCV1) Coverage</span>
+                <strong class="text-cyan-300 text-sm">{{ unicefService.activeRegionalProfile().measlesCoveragePct }}%</strong>
+              </div>
+              <span class="text-lg">💉</span>
+            </div>
+
+            <div class="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-zinc-500 block uppercase">Basic Water Access (WASH)</span>
+                <strong class="text-sky-300 text-sm">{{ unicefService.activeRegionalProfile().basicWaterAccessPct }}%</strong>
+              </div>
+              <span class="text-lg">💧</span>
+            </div>
+
+            <div class="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] text-zinc-500 block uppercase">ECDI2030 Development</span>
+                <strong class="text-emerald-300 text-sm">{{ unicefService.activeRegionalProfile().earlyChildhoodDevelopmentIndex }} / 100</strong>
+              </div>
+              <span class="text-lg">🧸</span>
+            </div>
+          </div>
+
+          <!-- Priority UNICEF Frontline Directives -->
+          <div class="p-4 bg-zinc-950/80 rounded-2xl border border-cyan-900/50 space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase text-cyan-400">UNICEF Priority Child Survival Interventions:</span>
+              <span class="text-[10px] font-mono text-zinc-500">Region: {{ unicefService.activeRegionalProfile().regionName }}</span>
+            </div>
+            <ul class="text-xs space-y-1 text-zinc-300 font-mono list-disc list-inside">
+              @for (intervention of unicefService.activeRegionalProfile().priorityInterventions; track intervention) {
+                <li>{{ intervention }}</li>
+              }
+            </ul>
+          </div>
+
+          <!-- Interactive SDMX REST API Query Constructor -->
+          <div class="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-3 font-mono text-xs">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2">
+              <strong class="text-zinc-200 flex items-center gap-1.5">
+                <span>⚡</span> UNICEF SDMX REST API Query Constructor:
+              </strong>
+              <a href="https://data.unicef.org/open-data/" target="_blank" rel="noopener noreferrer"
+                 class="text-cyan-400 hover:underline text-[10px]">
+                data.unicef.org/open-data ↗
+              </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="unicef-dataflow-select" class="text-[11px] text-zinc-400 block mb-1">Select Dataflow:</label>
+                <select id="unicef-dataflow-select"
+                        [ngModel]="sdmxSelectedDataflow()"
+                        (ngModelChange)="sdmxSelectedDataflow.set($event)"
+                        class="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-200">
+                  @for (flow of unicefService.dataflows; track flow.id) {
+                    <option [value]="flow.id">{{ flow.name }} ({{ flow.id }})</option>
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label class="text-[11px] text-zinc-400 block mb-1">Generated SDMX REST Endpoint:</label>
+                <div class="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-400 truncate">
+                  {{ unicefService.buildSdmxQueryUrl(sdmxSelectedDataflow(), unicefService.selectedRegionCode()) }}
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <button type="button"
+                      (click)="queryUnicefSdmx()"
+                      id="btn-chw-query-sdmx"
+                      [disabled]="unicefService.isQueryingLiveApi()"
+                      class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-bold transition cursor-pointer flex items-center gap-2">
+                <span>{{ unicefService.isQueryingLiveApi() ? '⏳' : '📡' }}</span>
+                <span>{{ unicefService.isQueryingLiveApi() ? 'Querying data.unicef.org...' : 'Test SDMX Query / Fetch Live' }}</span>
+              </button>
+
+              @if (unicefService.liveApiError()) {
+                <span class="text-[10px] text-amber-400">
+                  {{ unicefService.liveApiError() }}
+                </span>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
       <!-- Offline QR Handoff Modal Overlay -->
       @if (showQrModal()) {
         <div class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
@@ -1823,15 +2127,21 @@ export interface IDehydrationTriageResult {
             <p class="text-xs text-zinc-400 text-left">
               Scan this code from any second field tablet or clinic smartphone. Zero cellular towers, satellite links, or WiFi required.
             </p>
-            <div class="flex justify-center p-4 bg-white rounded-2xl mx-auto w-fit" #qrContainer></div>
-            <div class="text-[10px] font-mono text-zinc-400 break-all bg-zinc-950 p-2 rounded-xl border border-zinc-800 max-h-24 overflow-y-auto text-left">
-              {{ qrPayloadString() }}
+            <div class="flex justify-center mx-auto">
+              <app-branded-qr-code
+                [data]="qrPayloadString()"
+                [size]="180"
+                variant="emerald"
+                [showLogo]="true"
+                [showCard]="false"
+                [showDestinationGrounding]="true"
+                [enableCopy]="true"
+                [enableDownload]="true"
+                downloadFilename="chw-handoff-qr.png"
+                title="Frontline CHW Peer-to-Peer Handoff"
+                ariaLabel="Peer-to-Peer Offline CHW Handoff QR Code">
+              </app-branded-qr-code>
             </div>
-            <button type="button"
-                    (click)="copyQrPayload()"
-                    class="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-mono text-xs font-bold transition cursor-pointer">
-              {{ qrCopied() ? '✓ Copied Encrypted Payload' : 'Copy Handoff Payload' }}
-            </button>
           </div>
         </div>
       }
@@ -1854,15 +2164,56 @@ export class CommunityHealthWorkerSuiteComponent {
   readonly edlService = inject(WhoEssentialDiagnosticsService, { optional: true }) ?? new WhoEssentialDiagnosticsService();
   readonly meshSync = inject(AustereMeshSyncService, { optional: true }) ?? new AustereMeshSyncService();
   readonly pediatricDosing = inject(PediatricDosingEngineService, { optional: true }) ?? new PediatricDosingEngineService();
+  readonly unicefService = inject(UnicefOpenDataService, { optional: true }) ?? new UnicefOpenDataService();
+  readonly network = inject(NetworkStateService, { optional: true }) ?? new NetworkStateService();
   readonly close = output<void>();
 
   hasCloseButton = true;
   activeTab = signal<ChwTab>('malnutrition_muac');
+  lastQueuedMessage = signal<string | null>(null);
+
+  queueOfflineMuacAssessment(): void {
+    const triage = this.muacTriage();
+    const payload = {
+      assessmentType: 'UNICEF_MUAC_RUTF_TRIAGE',
+      timestamp: new Date().toISOString(),
+      muacMm: triage.muacMm,
+      edemaGrade: triage.edemaGrade,
+      statusTier: triage.statusTier,
+      childWeightKg: this.childWeightKg(),
+      appetiteTestPassed: this.appetiteTestPassed(),
+      hasMedicalComplications: this.hasMedicalComplications(),
+      rutfSachetsPerDay: triage.rutfSachetsPerDay,
+      rutfSachetsPerWeek: triage.rutfSachetsPerWeek,
+      therapeuticFeedType: triage.therapeuticFeedType,
+      disposition: triage.disposition,
+      clinicalAction: triage.clinicalAction
+    };
+
+    this.network.enqueueOfflineItem('UNICEF_RUTF_ASSESSMENT', payload);
+    this.lastQueuedMessage.set(`Frontline SAM assessment queued: ${triage.statusLabel} (MUAC ${triage.muacMm}mm)`);
+  }
+
+  async flushOfflineQueue(): Promise<void> {
+    await this.network.flushOfflineQueue();
+  }
 
   readonly vvmStages: readonly (1 | 2 | 3 | 4)[] = [1, 2, 3, 4] as const;
 
   setVvmStage(stage: 1 | 2 | 3 | 4): void {
     this.edlService.updateColdChainTelemetry({ vvmStage: stage });
+  }
+
+  // UNICEF Signals
+  appetiteTestPassed = signal<boolean>(true);
+  hasMedicalComplications = signal<boolean>(false);
+  sdmxSelectedDataflow = signal<string>('NUTRITION');
+
+  queryUnicefSdmx(): void {
+    this.unicefService.fetchLiveSdmxData(
+      this.sdmxSelectedDataflow(),
+      this.unicefService.selectedRegionCode()
+    );
   }
 
   // MUAC Signal States
@@ -1901,15 +2252,6 @@ export class CommunityHealthWorkerSuiteComponent {
   // QR Modal States
   showQrModal = signal<boolean>(false);
   qrCopied = signal<boolean>(false);
-  qrContainer = viewChild<ElementRef<HTMLDivElement>>('qrContainer');
-
-  constructor() {
-    effect(() => {
-      if (this.showQrModal() && this.qrContainer()) {
-        this.renderQrCode();
-      }
-    });
-  }
 
   // --- Computed Vernacular Audio Prompt for Current Triage Context ---
   readonly currentTriageVoicePrompt = computed<IVernacularPrompt>(() => {
@@ -1981,24 +2323,36 @@ export class CommunityHealthWorkerSuiteComponent {
     const mm = this.muacMm();
     const edema = this.edemaGrade();
     const weight = this.childWeightKg();
+    const appetitePassed = this.appetiteTestPassed();
+    const complications = this.hasMedicalComplications();
+
+    const unicefSam = this.unicefService.evaluateSamAppetiteAndTriage(
+      weight,
+      mm,
+      edema,
+      appetitePassed ? 0.35 : 0.1,
+      complications
+    );
 
     if (edema !== 'NONE' || mm < 115) {
       // Severe Acute Malnutrition (SAM)
-      let sachets = 2;
-      if (weight >= 10) sachets = 4;
-      else if (weight >= 7) sachets = 3;
+      const actionText = edema !== 'NONE'
+        ? `Kwashiorkor edema detected. Perform appetite test. If poor appetite or medical complications present, refer immediately for inpatient stabilization (F-75 milk). ${unicefSam.clinicalDirectives.join(' ')}`
+        : unicefSam.clinicalDirectives.join(' ');
 
       return {
         muacMm: mm,
         edemaGrade: edema,
         statusTier: 'SEVERE_ACUTE_MALNUTRITION',
-        statusLabel: 'Severe Acute Malnutrition (SAM) - Red Alert',
-        badgeClass: 'bg-rose-950 text-rose-300 border border-rose-600',
-        rutfSachetsPerDay: sachets,
-        rutfWeightGuide: `Target caloric intake: ~200 kcal/kg/day (${sachets} Plumpy'Nut sachets/day).`,
-        clinicalAction: edema !== 'NONE'
-          ? 'Kwashiorkor edema detected. Perform appetite test. If poor appetite or medical complications present, refer immediately for inpatient stabilization (F-75 milk).'
-          : 'Enroll in Outpatient Therapeutic Program (OTP). Provide Ready-to-Use Therapeutic Food (RUTF) + 7-day course of oral Amoxicillin + Vitamin A.'
+        statusLabel: `Severe Acute Malnutrition (SAM) - ${unicefSam.dispositionLabel}`,
+        badgeClass: unicefSam.badgeClass,
+        rutfSachetsPerDay: unicefSam.dailyRutfSachets,
+        rutfSachetsPerWeek: unicefSam.weeklyRutfSachets,
+        rutfWeightGuide: `UNICEF Outpatient Target: ~200 kcal/kg/day (${unicefSam.dailyRutfSachets} sachets/day = ${unicefSam.weeklyRutfSachets} sachets/week Plumpy\'Nut).`,
+        clinicalAction: actionText,
+        appetiteTestPassed: appetitePassed,
+        therapeuticFeedType: unicefSam.therapeuticFeedType,
+        disposition: unicefSam.disposition
       };
     } else if (mm >= 115 && mm <= 124) {
       return {
@@ -2008,8 +2362,12 @@ export class CommunityHealthWorkerSuiteComponent {
         statusLabel: 'Moderate Acute Malnutrition (MAM) - Yellow Alert',
         badgeClass: 'bg-amber-950 text-amber-300 border border-amber-600',
         rutfSachetsPerDay: 1,
+        rutfSachetsPerWeek: 7,
         rutfWeightGuide: 'Supplementary Feeding: 1 sachet RUSF or fortified blended food/day.',
-        clinicalAction: 'Enroll in Supplementary Feeding Program (SFP). Administer single dose Albendazole deworming + Vitamin A capsule. Re-assess in 14 days.'
+        clinicalAction: 'Enroll in Supplementary Feeding Program (SFP). Administer single dose Albendazole deworming + Vitamin A capsule. Re-assess in 14 days.',
+        appetiteTestPassed: true,
+        therapeuticFeedType: 'RUSF_SUPPLEMENTARY',
+        disposition: 'SUPPLEMENTARY_FEEDING_MAM'
       };
     } else {
       return {
@@ -2019,8 +2377,12 @@ export class CommunityHealthWorkerSuiteComponent {
         statusLabel: 'Well-Nourished (&ge;125 mm) - Green Baseline',
         badgeClass: 'bg-emerald-950 text-emerald-300 border border-emerald-600',
         rutfSachetsPerDay: 0,
+        rutfSachetsPerWeek: 0,
         rutfWeightGuide: 'No therapeutic food needed.',
-        clinicalAction: 'Routine infant and young child feeding (IYCF) counseling. Promote continued exclusive/frequent breastfeeding and diverse local complementary foods.'
+        clinicalAction: 'Routine infant and young child feeding (IYCF) counseling. Promote continued exclusive/frequent breastfeeding and diverse local complementary foods.',
+        appetiteTestPassed: true,
+        therapeuticFeedType: 'NONE',
+        disposition: 'ROUTINE_PREVENTIVE_CARE'
       };
     }
   });
@@ -2232,20 +2594,6 @@ export class CommunityHealthWorkerSuiteComponent {
       await navigator.clipboard.writeText(this.qrPayloadString());
       this.qrCopied.set(true);
       setTimeout(() => this.qrCopied.set(false), 2000);
-    }
-  }
-
-  private renderQrCode(): void {
-    const container = this.qrContainer()?.nativeElement;
-    if (!container) return;
-
-    try {
-      container.innerHTML = '';
-      const code = generate(this.qrPayloadString());
-      const dataUrl = code.toDataURL({ scale: 5 });
-      container.innerHTML = `<img src="${dataUrl}" class="w-48 h-48 select-none pointer-events-none" style="image-rendering: pixelated;" alt="CHW Handoff QR Code" />`;
-    } catch (err) {
-      console.warn('[CHW Suite] QR render error:', err);
     }
   }
 }

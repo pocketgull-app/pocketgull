@@ -269,4 +269,27 @@ describe('SecureSplashComponent Sensory Suite', () => {
     expect(component.session.isLocked()).toBe(false);
     expect(component.session.isOnboardingComplete()).toBe(true);
   });
+
+  it('12. Permits Lay Bystander / Good Samaritan emergency override without clinician badge', () => {
+    const component = createComponent();
+    let emergencyEmitted = false;
+    component.emergencyBypass.subscribe(() => {
+      emergencyEmitted = true;
+    });
+
+    component.setEmergencyResponderType('BYSTANDER');
+    expect(component.emergencyResponderType()).toBe('BYSTANDER');
+    expect(component.emergencyBystanderToken().startsWith('SAMARITAN-')).toBe(true);
+
+    // Without attestation, blocked
+    component.confirmStatEmergencyOverride();
+    expect(emergencyEmitted).toBe(false);
+    expect(component.session.isLocked()).toBe(true);
+
+    // With attestation, passes without requiring clinician badge
+    component.emergencyAttestationAccepted.set(true);
+    component.confirmStatEmergencyOverride();
+    expect(emergencyEmitted).toBe(true);
+    expect(component.session.isLocked()).toBe(false);
+  });
 });

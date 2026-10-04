@@ -71,4 +71,25 @@ describe('PediatricClinicalTrajectoryHubComponent Suite', () => {
     expect(emitted?.engine).toBe('pubmed');
     expect(emitted?.query).toContain('American Academy of Pediatrics');
   });
+
+  it('5. Computes UNICEF ECDI2030 early childhood development index and on-track label', () => {
+    expect(component.ecdiScore()).toBeGreaterThanOrEqual(70);
+    expect(component.ecdiScore()).toBeLessThanOrEqual(100);
+    expect(component.ecdiStatusLabel()).toBe('Developmentally On Track');
+  });
+
+  it('6. Includes UNICEF clinical guidelines in evidence topics and steers search', () => {
+    const unicefTopic = component.evidenceTopics.find(t => t.id === 'unicef-who-sam-guidelines');
+    expect(unicefTopic).toBeDefined();
+    expect(unicefTopic?.organization).toBe('UNICEF');
+
+    let emitted: { query: string; engine: 'pubmed' | 'gse' | 'google' } | undefined;
+    component.selectQuery.subscribe((event) => {
+      emitted = event;
+    });
+
+    component.steerEvidence(unicefTopic!);
+    expect(emitted?.query).toContain('UNICEF');
+    expect(emitted?.engine).toBe('pubmed');
+  });
 });

@@ -38,6 +38,9 @@ describe('Research Routes (/api/research)', () => {
   const policyHandler = (router.stack.find((layer: any) => layer.route?.path === '/policy')?.route?.stack.slice(-1)[0] as any)?.handle;
   const stripeConnectLinkHandler = (router.stack.find((layer: any) => layer.route?.path === '/payout/stripe-connect-link')?.route?.stack.slice(-1)[0] as any)?.handle;
   const disburseHandler = (router.stack.find((layer: any) => layer.route?.path === '/payout/disburse')?.route?.stack.slice(-1)[0] as any)?.handle;
+  const getBigQueryDatasetsHandler = (router.stack.find((layer: any) => layer.route?.path === '/bigquery/datasets')?.route?.stack.slice(-1)[0] as any)?.handle;
+  const getBigQueryCrosswalkHandler = (router.stack.find((layer: any) => layer.route?.path === '/bigquery/crosswalk')?.route?.stack.slice(-1)[0] as any)?.handle;
+  const getUnicefBenchmarksHandler = (router.stack.find((layer: any) => layer.route?.path === '/unicef/benchmarks')?.route?.stack.slice(-1)[0] as any)?.handle;
 
   it('GET /api/research/cohorts should return accredited disease cohorts with k-anonymity scores and zero compensation', () => {
     const { req, res } = createMockReqRes();
@@ -169,6 +172,71 @@ describe('Research Routes (/api/research)', () => {
       expect(String(data['transferId'])).toMatch(/^tr_/);
       expect(String(data['dualCustodyAttestation'])).toContain('seal_sha256_');
       expect(data['amountUsd']).toBe(1250.0);
+    });
+  });
+
+  describe('BigQuery Public Health Data Endpoints', () => {
+    it('GET /api/research/bigquery/datasets should return public datasets and supported cohorts', () => {
+      const { req, res } = createMockReqRes();
+      getBigQueryDatasetsHandler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      const data = res.getJson();
+      expect(data['success']).toBe(true);
+      expect(Number(data['count'])).toBeGreaterThanOrEqual(6);
+      const datasets = data['datasets'] as Array<Record<string, unknown>>;
+      expect(datasets.some(d => d['id'] === 'nih_clinical_trials')).toBe(true);
+      expect(datasets.some(d => d['id'] === 'cms_synthetic_omop')).toBe(true);
+      expect(datasets.some(d => d['id'] === 'epa_air_quality')).toBe(true);
+    });
+
+    it('GET /api/research/bigquery/crosswalk should generate federated crosswalk SQL', () => {
+      const { req, res } = createMockReqRes({}, { cohortId: 'cohort_diabetes_cgm', targetDataset: 'nih_clinical_trials' });
+      getBigQueryCrosswalkHandler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      const data = res.getJson();
+      expect(data['success']).toBe(true);
+      expect(data['targetDataset']).toBe('nih_clinical_trials');
+      expect(String(data['crosswalkSql'])).toContain('bigquery-public-data.nih_clinical_trials');
+      expect(data['kAnonymityFloor']).toBe(8);
+      expect(data['partitionHygieneDays']).toBe(7);
+    });
+
+    it('GET /api/research/bigquery/crosswalk should reject invalid target dataset', () => {
+      const { req, res } = createMockReqRes({}, { cohortId: 'cohort_diabetes_cgm', targetDataset: 'invalid_target' });
+      getBigQueryCrosswalkHandler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      const data = res.getJson();
+      expect(data['error']).toContain('Invalid targetDataset');
+    });
+  });
+
+  describe('UNICEF Global Benchmarks Endpoints', () => {
+    it('GET /api/research/unicef/benchmarks should return active region and SDMX endpoint', () => {
+      const { req, res } = createMockReqRes();
+      getUnicefBenchmarksHandler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      const data = res.getJson();
+      expect(data['success']).toBe(true);
+      expect(data['activeRegion']).toBe('GLOBAL');
+      expect(String(data['sdmxEndpoint'])).toContain('sdmx.data.unicef.org');
+      const profile = data['benchmarkProfile'] as Record<string, unknown>;
+      expect(Number(profile['underFiveMortalityRatePer1k'])).toBeGreaterThan(0);
+    });
+
+    it('GET /api/research/unicef/benchmarks?region=SSA_WEST_CENTRAL should return West/Central Africa profile', () => {
+      const { req, res } = createMockReqRes({}, { region: 'SSA_WEST_CENTRAL' });
+      getUnicefBenchmarksHandler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      const data = res.getJson();
+      expect(data['success']).toBe(true);
+      expect(data['activeRegion']).toBe('SSA_WEST_CENTRAL');
+      const profile = data['benchmarkProfile'] as Record<string, unknown>;
+      expect(profile['regionName']).toContain('West & Central');
     });
   });
 });

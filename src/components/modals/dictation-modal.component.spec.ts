@@ -67,4 +67,44 @@ describe('DictationModalComponent', () => {
     component.accept();
     expect(acceptSpy).toHaveBeenCalledWith('Final confirmed dictate.');
   });
+
+  it('6. Renders Edge Primacy badge in modal header', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Edge Primacy');
+    expect(el.textContent).toContain('$0 Egress');
+  });
+
+  it('7. Invokes polishWithEdge and updates currentText with formatted note', async () => {
+    const polishSpy = vi.spyOn(dictationService, 'polishTranscriptWithEdge').mockResolvedValue({
+      id: 'tx_123',
+      originalRawText: 'bp 120 80 lisinopril 10 mg',
+      polishedText: 'SUBJECTIVE: Patient stable. BP 120/80. Plan: lisinopril 10 mg.',
+      targetFormat: 'SOAP',
+      acuity: 'ROUTINE',
+      engineUsed: 'LOCAL_DETERMINISTIC_FALLBACK',
+      executionDurationMs: 15,
+      estimatedTokensSaved: 40,
+      estimatedCostSavedUsd: 0.00003,
+      ismpSafetyAudit: {
+        originalText: 'bp 120 80 lisinopril 10 mg',
+        sanitizedText: 'bp 120 80 lisinopril 10 mg',
+        hasViolations: false,
+        violations: [],
+        tallManApplied: [],
+        isSafe: true
+      },
+      timestamp: new Date().toISOString()
+    });
+
+    component.currentText.set('bp 120 80 lisinopril 10 mg');
+    await component.polishWithEdge();
+    fixture.detectChanges();
+
+    expect(polishSpy).toHaveBeenCalled();
+    expect(component.currentText()).toContain('SUBJECTIVE: Patient stable. BP 120/80');
+    expect(component.lastPolishResult()).not.toBeNull();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Edge Formatted');
+    expect(el.textContent).toContain('Saved 40 tokens');
+  });
 });

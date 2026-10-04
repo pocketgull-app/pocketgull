@@ -27,4 +27,22 @@ describe('WhoCdcHealthEquityService Unit Suite', () => {
     expect(updated.equityTier).toBe('HIGH_VULNERABILITY');
     expect(updated.priorityDirectives.some(d => d.includes('SNAP'))).toBe(true);
   });
+
+  it('3. Generates UNICEF WASH and Zero-Dose child health equity directives', () => {
+    const updated = service.evaluateHealthEquity({
+      cleanWaterInsecurity: true,
+      childImmunizationDelay: true
+    });
+
+    expect(updated.priorityDirectives.some(d => d.includes('UNICEF/WHO WASH Alert'))).toBe(true);
+    expect(updated.priorityDirectives.some(d => d.includes('UNICEF Zero-Dose Directive'))).toBe(true);
+  });
+
+  it('4. Generates BigQuery EPA air quality environmental SDOH query', () => {
+    const query = service.generateBigQueryAirQualityQuery('06', '075');
+    expect(query).toContain('bigquery-public-data.epa_historical_air_quality.pm25_daily_summary');
+    expect(query).toContain("state_code = '06'");
+    expect(query).toContain("county_code = '075'");
+    expect(query).toContain('pm25_concentration_ug_m3');
+  });
 });

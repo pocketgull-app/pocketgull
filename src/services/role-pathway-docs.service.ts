@@ -601,9 +601,9 @@ export class RolePathwayDocsService {
           subtitle: 'MUAC Band & Tap-Tempo Counter',
           icon: '📏',
           targetTabId: 'chw',
-          clinicalObjective: 'Conduct physical nutrition measurements and count respiratory rate using tap-tempo calibration against age-adjusted WHO thresholds.',
-          keyOutputs: ['MUAC Classification (Red SAM / Yellow MAM / Green Normal)', 'Tachypnea Breath Count (bpm)', 'RUTF Sachet Daily Dosage'],
-          evidenceOrStandard: 'WHO SAM / MAM Guidelines & UNICEF RUTF Specifications',
+          clinicalObjective: 'Conduct physical nutrition measurements, UNICEF appetite testing, and count respiratory rate using tap-tempo calibration against age-adjusted WHO thresholds.',
+          keyOutputs: ['MUAC Classification (Red SAM / Yellow MAM / Green Normal)', 'UNICEF RUTF Appetite Test (Pass / Inpatient F-75 Escalation)', 'UNICEF Supply Division Weekly Sachet Dispenser', 'Tachypnea Breath Count (bpm)'],
+          evidenceOrStandard: 'WHO SAM / MAM Guidelines & UNICEF Supply Division RUTF Specifications',
           statusBadge: 'Stage 2: Frontline Exam'
         },
         {
@@ -645,6 +645,7 @@ export class RolePathwayDocsService {
       ],
       recommendedTools: [
         { name: 'Frontline CHW Suite', icon: '🎒', tabId: 'chw', purpose: 'MUAC nutrition slider, tap-tempo tachypnea counter, and ORS titration.' },
+        { name: 'UNICEF Open Data & SDMX', icon: '🌐', tabId: 'chw', purpose: 'Child mortality, zero-dose immunization, and regional malnutrition benchmarking from data.unicef.org.' },
         { name: 'WHO Essential Medicines', icon: '🌍', tabId: 'who', purpose: 'Universal open formulary and transparent pricing comparison.' },
         { name: 'Austere Field Mode', icon: '📡', tabId: 'austere', purpose: 'Zero-bandwidth peer-to-peer QR code transfers to district clinicians.' },
         { name: 'SMS Compass Bridge', icon: '💬', tabId: 'sms', purpose: 'Asynchronous SMS outreach without smartphone app dependencies.' }
@@ -667,7 +668,7 @@ export class RolePathwayDocsService {
         ],
         learnedOptimismReframe: 'No community is too remote to receive world-class, life-saving clinical intelligence.'
       },
-      regulatoryAndStandards: ['WHO IMCI Guidelines', 'UNICEF SAM Protocol', 'Sphere Humanitarian Standards', '100% Offline Capable'],
+      regulatoryAndStandards: ['WHO IMCI Guidelines', 'UNICEF SAM Protocol & Appetite Test', 'UNICEF Open Data & SDMX Standards', 'Sphere Humanitarian Standards', '100% Offline Capable'],
       takeHomeSummary: 'Frontline community health workers are the true backbone of global healthcare equity. Pocket-Gull gives them clinical superpowers in the palm of their hand.'
     }
   };

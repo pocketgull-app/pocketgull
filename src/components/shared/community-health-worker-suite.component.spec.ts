@@ -479,4 +479,103 @@ describe('CommunityHealthWorkerSuiteComponent', () => {
       expect(() => component.stopSpeaking()).not.toThrow();
     });
   });
+
+  describe('UNICEF Open Data & SAM Appetite Test Protocol', () => {
+    it('should switch activeTab to unicef_open_data and render UNICEF benchmarks', () => {
+      component.activeTab.set('unicef_open_data');
+      fixture.detectChanges();
+
+      expect(component.activeTab()).toBe('unicef_open_data');
+      expect(component.unicefService.dataflows.length).toBeGreaterThanOrEqual(6);
+      expect(component.unicefService.activeRegionalProfile().underFiveMortalityRatePer1k).toBeGreaterThan(0);
+    });
+
+    it('should switch regions and update active regional child health metrics', () => {
+      component.activeTab.set('unicef_open_data');
+      component.unicefService.selectRegion('SOUTH_ASIA');
+      fixture.detectChanges();
+
+      const profile = component.unicefService.activeRegionalProfile();
+      expect(profile.regionCode).toBe('SOUTH_ASIA');
+      expect(profile.regionName).toContain('South Asia');
+      expect(profile.childWastingRatePct).toBeGreaterThan(10);
+    });
+
+    it('should build valid SDMX endpoint and query live UNICEF API without throwing', () => {
+      component.activeTab.set('unicef_open_data');
+      component.sdmxSelectedDataflow.set('CME');
+      fixture.detectChanges();
+
+      expect(() => component.queryUnicefSdmx()).not.toThrow();
+    });
+
+    it('should calculate weekly UNICEF RUTF sachet dispenser based on child weight', () => {
+      // 8.0 kg child -> 3 sachets/day, 21 sachets/week
+      component.muacMm.set(110);
+      component.childWeightKg.set(8.0);
+      component.appetiteTestPassed.set(true);
+      component.hasMedicalComplications.set(false);
+      fixture.detectChanges();
+
+      const triage = component.muacTriage();
+      expect(triage.statusTier).toBe('SEVERE_ACUTE_MALNUTRITION');
+      expect(triage.rutfSachetsPerDay).toBe(3);
+      expect(triage.rutfSachetsPerWeek).toBe(21);
+      expect(triage.therapeuticFeedType).toBe('RUTF_PLUMPYNUT');
+      expect(triage.disposition).toBe('OUTPATIENT_THERAPEUTIC_PROGRAM');
+    });
+
+    it('should escalate to STAT Inpatient Referral (F-75 milk) when appetite test fails', () => {
+      component.muacMm.set(110);
+      component.childWeightKg.set(8.0);
+      component.appetiteTestPassed.set(false); // Refused or < 1/4 sachet
+      fixture.detectChanges();
+
+      const triage = component.muacTriage();
+      expect(triage.disposition).toBe('INPATIENT_STABILIZATION_PHASE_1');
+      expect(triage.therapeuticFeedType).toBe('F75_THERAPEUTIC_MILK');
+      expect(triage.clinicalAction).toContain('Inpatient Stabilization');
+    });
+
+    it('should escalate to STAT Inpatient Referral when medical complications are present', () => {
+      component.muacMm.set(110);
+      component.childWeightKg.set(8.0);
+      component.appetiteTestPassed.set(true);
+      component.hasMedicalComplications.set(true); // High fever / convulsions / etc.
+      fixture.detectChanges();
+
+      const triage = component.muacTriage();
+      expect(triage.disposition).toBe('INPATIENT_STABILIZATION_PHASE_1');
+      expect(triage.therapeuticFeedType).toBe('F75_THERAPEUTIC_MILK');
+    });
+
+    it('should record & queue frontline MUAC assessment for store-and-forward offline sync', () => {
+      component.muacMm.set(112);
+      component.childWeightKg.set(7.5);
+      component.appetiteTestPassed.set(true);
+      component.hasMedicalComplications.set(false);
+      fixture.detectChanges();
+
+      const enqueueSpy = vi.spyOn(component.network, 'enqueueOfflineItem');
+      component.queueOfflineMuacAssessment();
+
+      expect(enqueueSpy).toHaveBeenCalledWith('UNICEF_RUTF_ASSESSMENT', expect.objectContaining({
+        assessmentType: 'UNICEF_MUAC_RUTF_TRIAGE',
+        muacMm: 112,
+        statusTier: 'SEVERE_ACUTE_MALNUTRITION',
+        childWeightKg: 7.5
+      }));
+      expect(component.lastQueuedMessage()).toContain('Frontline SAM assessment queued');
+    });
+
+    it('should trigger flushOfflineQueue on network service when requested', async () => {
+      const flushSpy = vi.spyOn(component.network, 'flushOfflineQueue').mockResolvedValue({
+        syncedCount: 1,
+        failedCount: 0
+      });
+
+      await component.flushOfflineQueue();
+      expect(flushSpy).toHaveBeenCalled();
+    });
+  });
 });
