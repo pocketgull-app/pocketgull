@@ -1,0 +1,56 @@
+{
+  "modelName": "LincNuclearMechanotransductionRegressor",
+  "inputFeatureNames": [
+    "ecm_stiffness_kpa",
+    "actin_tension_nn",
+    "lamin_ac_expression"
+  ],
+  "targetNames": [
+    "linc_force_pn",
+    "pore_dilation_nm",
+    "yap_taz_nuclear_ratio",
+    "nuclear_aspect_ratio"
+  ],
+  "weights": [
+    [
+      0.450038,
+      0.09899,
+      0.066189,
+      0.010125
+    ],
+    [
+      1.800252,
+      0.396143,
+      0.264801,
+      0.050504
+    ],
+    [
+      0.001183,
+      0.004616,
+      0.000387,
+      0.000483
+    ],
+    [
+      2.495901,
+      9.738853,
+      0.816263,
+      1.001451
+    ]
+  ],
+  "metrics": {
+    "r2Scores": [
+      1.0,
+      0.9999,
+      1.0,
+      0.9988
+    ],
+    "maeScores": [
+      0.0008,
+      0.004,
+      0.0003,
+      0.0017
+    ],
+    "meanR2": 0.9997,
+    "meanMae": 0.0017
+  }
+}

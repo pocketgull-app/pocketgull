@@ -1,0 +1,86 @@
+{
+  "manifestVersion": "1.33.0",
+  "timestamp": "2026-10-03T14:22:07.257827Z",
+  "models": [
+    {
+      "modelId": "crispr_cleavage_predictor_v1",
+      "file": "crispr_cleavage_model_weights.json",
+      "architecture": "Position-Weighted Thermodynamic Stacking Regressor",
+      "metrics": {
+        "r2Scores": [
+          1.0,
+          0.4294,
+          0.4248
+        ],
+        "maeScores": [
+          0.0334,
+          0.2155,
+          0.1672
+        ],
+        "meanR2": 0.6181,
+        "meanMae": 0.1387
+      }
+    },
+    {
+      "modelId": "ctcf_tad_insulation_cnn_v1",
+      "file": "ctcf_tad_insulation_model_weights.json",
+      "architecture": "1D Convolutional Sequence Boundary Filter",
+      "metrics": {
+        "r2Scores": [
+          0.9394,
+          0.9882,
+          1.0
+        ],
+        "maeScores": [
+          0.0315,
+          0.0057,
+          0.1775
+        ],
+        "meanR2": 0.9759,
+        "meanMae": 0.0716
+      }
+    },
+    {
+      "modelId": "flory_huggins_llps_regressor_v1",
+      "file": "flory_huggins_llps_model_weights.json",
+      "architecture": "Multi-Valency IDR Free Energy Regressor",
+      "metrics": {
+        "r2Scores": [
+          0.4699,
+          0.9928,
+          0.9841
+        ],
+        "maeScores": [
+          19.4878,
+          0.4634,
+          0.173
+        ],
+        "meanR2": 0.8156,
+        "meanMae": 6.7081
+      }
+    },
+    {
+      "modelId": "linc_mechanotransduction_net_v1",
+      "file": "linc_mechanotransduction_model_weights.json",
+      "architecture": "Multi-Task Nuclear Strain Tensor Regressor",
+      "metrics": {
+        "r2Scores": [
+          1.0,
+          0.9999,
+          1.0,
+          0.9988
+        ],
+        "maeScores": [
+          0.0008,
+          0.004,
+          0.0003,
+          0.0017
+        ],
+        "meanR2": 0.9997,
+        "meanMae": 0.0017
+      }
+    }
+  ],
+  "totalTrainingTimeMs": 503,
+  "runtimeTarget": "Browser ONNX Runtime Web / WebGPU / WASM"
+}

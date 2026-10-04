@@ -138,6 +138,8 @@ __pycache__/
 .ipython/
 .jupyter/
 .matplotlib/
+input_resgated_runtime.py
+raptor_input_summary.json
 .spyder-py3/
 
 # ------------------------------------------------------------------------------

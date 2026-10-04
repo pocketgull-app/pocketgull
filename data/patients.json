@@ -1032,5 +1032,22 @@
       "height": ""
     },
     "history": []
+  },
+  {
+    "id": "p_ada_lovelace",
+    "name": "Countess Ada Lovelace",
+    "age": 36,
+    "gender": "Female",
+    "vitals": {
+      "bp": "90/60",
+      "hr": "61",
+      "spO2": "98.6",
+      "temp": "36.3",
+      "weight": "105 lbs",
+      "height": "5'4\"",
+      "crp": "4.2 mg/L",
+      "hba1c": "4.8%"
+    },
+    "history": []
   }
 ]

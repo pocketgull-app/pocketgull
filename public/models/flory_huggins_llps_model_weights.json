@@ -1,0 +1,55 @@
+{
+  "modelName": "FloryHugginsLlpsCondensateRegressor",
+  "inputFeatureNames": [
+    "med1_conc_um",
+    "brd4_conc_um",
+    "pol_ii_conc_um",
+    "salt_ionic_mm"
+  ],
+  "targetNames": [
+    "droplet_radius_nm",
+    "pol_ii_enrichment_fold",
+    "burst_frequency_per_hr"
+  ],
+  "weights": [
+    [
+      8.105683,
+      3.896259,
+      0.948157
+    ],
+    [
+      7.888776,
+      2.619235,
+      0.644522
+    ],
+    [
+      3.779246,
+      0.009192,
+      0.003461
+    ],
+    [
+      0.005168,
+      0.000054,
+      0.000027
+    ],
+    [
+      111.154785,
+      -1.223136,
+      0.341125
+    ]
+  ],
+  "metrics": {
+    "r2Scores": [
+      0.4699,
+      0.9928,
+      0.9841
+    ],
+    "maeScores": [
+      19.4878,
+      0.4634,
+      0.173
+    ],
+    "meanR2": 0.8156,
+    "meanMae": 6.7081
+  }
+}

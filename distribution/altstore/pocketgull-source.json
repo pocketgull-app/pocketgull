@@ -1,0 +1,28 @@
+{
+  "name": "PocketGull iOS Tap",
+  "identifier": "app.pocketgull.source",
+  "website": "https://pocketgull.app",
+  "subtitle": "Real-time clinical AI, vagal pacing & care strategy",
+  "description": "Official community tap and sideloading source for PocketGull iOS applications.",
+  "iconURL": "https://pocketgull.app/icons/icon-192x192.png",
+  "headerURL": "https://pocketgull.app/social-preview.png",
+  "apps": [
+    {
+      "name": "PocketGull AVS",
+      "bundleIdentifier": "app.pocketgull.patient",
+      "developerName": "PocketGull LLC",
+      "version": "1.39.0",
+      "versionDate": "2026-10-04",
+      "versionDescription": "Clinical AI consult engine with biometric telemetry, vagal pacing, and FHIR R4 care plans.",
+      "downloadURL": "https://github.com/pocketgull-app/pocketgull/releases/download/v1.39.0/PocketGull-AVS-v1.39.0.ipa",
+      "localizedDescription": "Real-time biometric health companion connecting continuous telemetry with clinical Care Plans.",
+      "iconURL": "https://pocketgull.app/icons/icon-192x192.png",
+      "tintColor": "0d9488",
+      "size": 18500000,
+      "screenshotURLs": [
+        "https://pocketgull.app/social-preview.png"
+      ]
+    }
+  ],
+  "news": []
+}
