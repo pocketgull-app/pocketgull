@@ -400,3 +400,20 @@ patch*.cjs
 scripts/*.log
 scripts/output/
 
+
+# ─── Repository front-door hygiene ─────────────────────────────────────────────
+# Confidential IP filings (USPTO provisional specs + generated PDFs) are
+# local-only and MUST NOT be published. See scripts/generate_uspto_pdf.mjs.
+/USPTO_PROVISIONAL_*.pdf
+/docs/patents/USPTO_PROVISIONAL_*.md
+
+# Generated local pipeline briefings (scripts/overnight_rsna_pipeline.ps1,
+# scripts/run_overnight_master_pipeline.ps1)
+/MORNING_BRIEFING.md
+/OVERNIGHT_MASTER_BRIEFING.md
+
+# Root-level generator output (canonical copy lives in docs/research/)
+/parity_matrix.md
+
+# Root IDE workspace file
+/melos_pocketgull_workspace.iml

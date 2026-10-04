@@ -82,7 +82,7 @@ markdown += f"- **Matched Features**: {match_count}\n"
 markdown += f"- **Missing in Flutter (Needs Migration)**: {missing_flutter}\n"
 markdown += f"- **Flutter Only (New Features/Architecture)**: {flutter_only}\n"
 
-output_path = os.path.join(project_root, 'parity_matrix.md')
+output_path = os.path.join(project_root, 'docs', 'research', 'parity_matrix.md')
 with open(output_path, 'w', encoding='utf-8') as f:
     f.write(markdown)
 
