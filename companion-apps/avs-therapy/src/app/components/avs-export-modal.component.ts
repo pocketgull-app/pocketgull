@@ -1,11 +1,13 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AvsSessionScribeService } from '../services/avs-session-scribe.service';
+import { AvsUiService } from '../services/avs-ui.service';
 
 @Component({
   selector: 'app-avs-export-modal',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
       <div class="relative w-full max-w-xl rounded-2xl bg-zinc-950 border border-zinc-800 shadow-2xl p-6 space-y-5">
@@ -18,12 +20,12 @@ import { AvsSessionScribeService } from '../services/avs-session-scribe.service'
               </svg>
             </div>
             <div>
-              <h3 class="text-sm font-black text-zinc-100 uppercase tracking-wider">Clinical AVS Scribe & FHIR R4 Export</h3>
-              <p class="text-[11px] text-zinc-400">Gemma 4 Edge AI Vocal Biomarker & Autonomic Report</p>
+              <h3 class="text-sm font-black text-zinc-100 uppercase tracking-wider">Clinical AVS Scribe &amp; FHIR R4 Export</h3>
+              <p class="text-[11px] text-zinc-400">Gemma 4 Edge AI Vocal Biomarker &amp; Autonomic Report</p>
             </div>
           </div>
 
-          <button (click)="close.emit()" class="text-zinc-500 hover:text-zinc-300 p-1.5 rounded-lg hover:bg-zinc-900 cursor-pointer">
+          <button (click)="onDismiss()" class="text-zinc-500 hover:text-zinc-300 p-1.5 rounded-lg hover:bg-zinc-900 cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
@@ -58,7 +60,7 @@ import { AvsSessionScribeService } from '../services/avs-session-scribe.service'
 
         <!-- Export Actions -->
         <div class="flex items-center justify-end gap-3 pt-2">
-          <button (click)="close.emit()" class="px-4 py-2 rounded-xl text-xs font-bold text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-all cursor-pointer">
+          <button (click)="onDismiss()" class="px-4 py-2 rounded-xl text-xs font-bold text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-all cursor-pointer">
             Dismiss
           </button>
 
@@ -76,9 +78,16 @@ import { AvsSessionScribeService } from '../services/avs-session-scribe.service'
 })
 export class AvsExportModalComponent {
   readonly scribe = inject(AvsSessionScribeService);
-  @Output() close = new EventEmitter<void>();
+  private readonly avsUi = inject(AvsUiService);
+  readonly close = output<void>();
+
+  onDismiss(): void {
+    this.avsUi.playToggle();
+    this.close.emit();
+  }
 
   downloadFhir(): void {
+    this.avsUi.playSuccess();
     this.scribe.downloadFhirJson();
   }
 }

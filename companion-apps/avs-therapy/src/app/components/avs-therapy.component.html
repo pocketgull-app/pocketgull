@@ -108,6 +108,17 @@
                 [class.hover:bg-zinc-900]="activeInnovationTab() !== 'odyssey'">
           <span>🌿</span> Biophilic Vagal Odyssey
         </button>
+
+        <button (click)="setInnovationTab('reader')"
+                class="px-3 py-2 rounded-xl text-xs font-black tracking-wider uppercase transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
+                [class.bg-amber-500/20]="activeInnovationTab() === 'reader'"
+                [class.text-amber-400]="activeInnovationTab() === 'reader'"
+                [class.border]="activeInnovationTab() === 'reader'"
+                [class.border-amber-500/40]="activeInnovationTab() === 'reader'"
+                [class.text-zinc-400]="activeInnovationTab() !== 'reader'"
+                [class.hover:bg-zinc-900]="activeInnovationTab() !== 'reader'">
+          <span>📖</span> Neuro-Bionic Reader
+        </button>
       </div>
 
       <!-- Active Innovation View Body -->
@@ -146,8 +157,10 @@
         <app-circadian-dashboard
           [targetBrainwaveFrequencyHz]="targetBrainwaveFrequencyHz()"
           [colorTemp]="colorTemp()"
+          [activeCarrierHz]="activeCarrierHz()"
           (frequencyChange)="onFrequencySliderChange($event)"
-          (colorTempChange)="selectColorTemp($event)">
+          (colorTempChange)="selectColorTemp($event)"
+          (carrierChange)="selectCarrierTone($event)">
         </app-circadian-dashboard>
 
         <app-co-regulation-panel
@@ -185,6 +198,10 @@
         <app-biophilic-vagal-odyssey-hud></app-biophilic-vagal-odyssey-hud>
       }
 
+      @if (activeInnovationTab() === 'reader') {
+        <app-neuro-bionic-reader></app-neuro-bionic-reader>
+      }
+
       <!-- Master Session Controls & FHIR Export Action Bar -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
         <app-session-controls
@@ -193,18 +210,27 @@
           [voicePacingEnabled]="voicePacingEnabled()"
           [vibrationEnabled]="vibrationEnabled()"
           [hasVibrator]="hasVibrator"
+          [isCprActive]="isCprActive()"
+          [volume]="volume()"
+          [pinkNoiseEnabled]="pinkNoiseEnabled()"
+          [sessionDurationMinutes]="sessionDurationMinutes()"
+          [sessionSecondsRemaining]="sessionSecondsRemaining()"
           (toggleSession)="toggleSession()"
           (toggleVoice)="toggleVoice()"
           (toggleVoicePacing)="toggleVoicePacing()"
-          (toggleVibration)="toggleVibration()">
+          (toggleVibration)="toggleVibration()"
+          (toggleCpr)="toggleCprMetronome()"
+          (volumeChange)="setVolume($event)"
+          (togglePinkNoise)="togglePinkNoise()"
+          (durationChange)="setDurationMinutes($event)">
         </app-session-controls>
 
         <button (click)="openExportModal()"
-                class="px-4 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm">
+                class="px-4 py-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm shrink-0">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
-          Scribe & FHIR R4 Export
+          Scribe &amp; FHIR R4 Export
         </button>
       </div>
 

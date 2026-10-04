@@ -1,4 +1,4 @@
-import { Component, inject, HostListener, signal } from '@angular/core';
+import { Component, inject, HostListener, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NeuroBionicReaderService, ReaderAvsMode } from '../services/neuro-bionic-reader.service';
@@ -7,6 +7,7 @@ import { NeuroBionicReaderService, ReaderAvsMode } from '../services/neuro-bioni
   selector: 'app-neuro-bionic-reader',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="rounded-2xl border border-amber-500/25 bg-zinc-950/90 p-5 space-y-5 backdrop-blur-md shadow-2xl">
       <!-- 1. Header Toolbar: Book Selector, AVS Mode, Bionic Toggle -->

@@ -2,12 +2,13 @@ import {
   Component,
   inject,
   signal,
-  ViewChild,
+  viewChild,
   ElementRef,
   AfterViewInit,
   OnDestroy,
   PLATFORM_ID,
-  effect
+  effect,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
@@ -23,6 +24,7 @@ import { AVS_CLINICAL_EVIDENCE } from '../services/avs-evidence-citations';
   selector: 'app-optical-innovations-hud',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="rounded-2xl border border-rose-500/25 bg-gradient-to-b from-slate-950 via-zinc-950 to-rose-950/20 p-5 space-y-4 shadow-2xl font-sans">
       <!-- Header Bar -->
@@ -447,7 +449,7 @@ export class OpticalInnovationsHudComponent implements AfterViewInit, OnDestroy 
   readonly isEvidenceDrawerOpen = signal<boolean>(false);
   readonly evidenceCitations = AVS_CLINICAL_EVIDENCE;
 
-  @ViewChild('opticalCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  readonly canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('opticalCanvas');
   private rafId: number | null = null;
   private animStartTime = 0;
 
@@ -485,8 +487,8 @@ export class OpticalInnovationsHudComponent implements AfterViewInit, OnDestroy 
   }
 
   private startCanvasLoop(): void {
-    if (!this.canvasRef?.nativeElement) return;
-    const canvas = this.canvasRef.nativeElement;
+    const canvas = this.canvasRef()?.nativeElement;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DyadicCoRegulationService } from '../services/dyadic-co-regulation.service';
 
@@ -6,6 +6,7 @@ import { DyadicCoRegulationService } from '../services/dyadic-co-regulation.serv
   selector: 'app-dyadic-sync-hud',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="rounded-xl border border-rose-500/20 bg-rose-950/20 p-5 space-y-4 backdrop-blur-sm">
       <!-- Header -->
