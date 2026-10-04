@@ -1,12 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AutonomicCoherenceBridgeService } from '../services/autonomic-coherence-bridge.service';
-import { PeerNetworkService } from '../services/peer-network.service';
+import { PeerNetworkService, IConnectedPeer } from '../services/peer-network.service';
+import { BrandedQrCodeComponent } from './shared/branded-qr-code.component';
 
 @Component({
   selector: 'app-autonomic-coherence-bridge',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   template: `
     <div class="w-full max-w-4xl mx-auto p-6 bg-zinc-950 text-gray-100 rounded-3xl border border-rose-500/30 shadow-2xl space-y-6">
       <!-- Header Banner -->
@@ -22,11 +23,48 @@ import { PeerNetworkService } from '../services/peer-network.service';
             </div>
           </div>
 
-          <div class="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-            {{ coherenceService.resonanceQualityLabel() }}
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              (click)="toggleMyPairingQr()"
+              class="px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40 hover:bg-teal-500/30 transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <span>📱</span> {{ showMyPairingQr() ? 'Hide Pairing QR' : 'My Pairing QR' }}
+            </button>
+            <div class="px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              {{ coherenceService.resonanceQualityLabel() }}
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Scannable My Peer Pairing QR Card -->
+      @if (showMyPairingQr()) {
+        <div class="p-5 bg-zinc-900/90 border border-teal-500/40 rounded-2xl flex flex-col items-center">
+          <div class="flex items-center justify-between w-full mb-3">
+            <span class="text-xs font-mono font-bold text-teal-400 uppercase tracking-wider">
+              📱 SMART-on-FHIR Peer Pairing Pass
+            </span>
+            <button type="button" (click)="showMyPairingQr.set(false)" class="text-xs text-zinc-400 hover:text-white cursor-pointer">✕ Close</button>
+          </div>
+          <app-branded-qr-code
+            [data]="selectedQrPayload()"
+            [size]="160"
+            variant="teal"
+            [showLogo]="true"
+            [showCard]="false"
+            [showDestinationGrounding]="true"
+            [enableCopy]="true"
+            [enableDownload]="true"
+            downloadFilename="peer-pairing-qr.png"
+            title="SMART-on-FHIR Peer Sync"
+            ariaLabel="Peer Pairing QR Code">
+          </app-branded-qr-code>
+          <span class="text-[9.5px] font-mono text-zinc-400 mt-2 text-center">
+            Zero-Cloud Ephemeral Pairing • Bilateral Bio-Resonance Consent Enforced
+          </span>
+        </div>
+      }
 
       <!-- Active Dual Resonance HUD -->
       @if (coherenceService.activeResonanceSession(); as session) {
@@ -81,12 +119,22 @@ import { PeerNetworkService } from '../services/peer-network.service';
                   <div class="text-xs font-bold text-gray-200">{{ peer.mascotEmoji }} {{ peer.aliasName }}</div>
                   <div class="text-[11px] text-gray-400">{{ peer.schoolAffiliation }}</div>
                 </div>
-                <button 
-                  (click)="coherenceService.startResonanceSession(peer)" 
-                  class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-bold text-xs transition cursor-pointer"
-                >
-                  🫀 Connect Pulse
-                </button>
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    (click)="viewPeerQr(peer)"
+                    title="View Peer Scannable QR Code"
+                    class="px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-teal-400 border border-teal-500/30 rounded-lg font-mono text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>📱</span> QR
+                  </button>
+                  <button 
+                    (click)="coherenceService.startResonanceSession(peer)" 
+                    class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg font-bold text-xs transition cursor-pointer"
+                  >
+                    🫀 Connect Pulse
+                  </button>
+                </div>
               </div>
             }
           </div>
@@ -98,4 +146,21 @@ import { PeerNetworkService } from '../services/peer-network.service';
 export class AutonomicCoherenceBridgeComponent {
   readonly coherenceService = inject(AutonomicCoherenceBridgeService);
   readonly peerNetwork = inject(PeerNetworkService);
+
+  readonly showMyPairingQr = signal<boolean>(false);
+  readonly selectedQrPayload = signal<string>('https://pocketgull.app/peer-sync?peerId=my-local-node&mode=coherence');
+
+  toggleMyPairingQr(): void {
+    if (!this.showMyPairingQr()) {
+      this.selectedQrPayload.set('https://pocketgull.app/peer-sync?peerId=my-local-node&mode=coherence');
+      this.showMyPairingQr.set(true);
+    } else {
+      this.showMyPairingQr.set(false);
+    }
+  }
+
+  viewPeerQr(peer: IConnectedPeer): void {
+    this.selectedQrPayload.set(peer.qrPayloadUrl || `https://pocketgull.app/peer-sync?peerId=${peer.peerId}`);
+    this.showMyPairingQr.set(true);
+  }
 }

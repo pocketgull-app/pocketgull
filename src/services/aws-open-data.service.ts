@@ -23,6 +23,7 @@ export interface IOpenHealthDataset {
   managedBy: string;
   queryOrAccessMethod: 'S3 Direct' | 'BigQuery Public' | 'Azure Blob' | 'HTTPS REST' | 'FHIR / On-Device' | 'PhysioNet Open Access';
   directAccessUrl?: string;
+  sampleBigQuerySql?: string;
 }
 
 export const FEDERATED_OPEN_HEALTH_DATASETS: IOpenHealthDataset[] = [
@@ -124,6 +125,75 @@ export const FEDERATED_OPEN_HEALTH_DATASETS: IOpenHealthDataset[] = [
     managedBy: 'National Library of Medicine (NLM)',
     queryOrAccessMethod: 'BigQuery Public',
     directAccessUrl: 'https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=nih_clinical_trials',
+    sampleBigQuerySql: `SELECT nct_id, brief_title, condition, overall_status, phase\nFROM \`bigquery-public-data.nih_clinical_trials.clinical_trials\`\nWHERE REGEXP_CONTAINS(condition, r'(?i)pediatric|malnutrition|diabetes')\nORDER BY start_date DESC\nLIMIT 50;`
+  },
+  {
+    id: 'gcp-cms-synthetic-omop',
+    name: 'CMS Synthetic Patient Data (OMOP Common Data Model)',
+    provider: 'gcp',
+    providerLabel: 'Google Cloud',
+    description: 'De-identified synthetic Medicare claims mapped to the OHDSI OMOP Common Data Model (conditions, drug exposures, procedures) for zero-PHI health analytics.',
+    documentationUrl: 'https://cloud.google.com/healthcare-api/docs/resources/public-datasets',
+    storageUri: 'bigquery-public-data.cms_synthetic_patient_data_omop',
+    regionOrLocation: 'US Multi-Region (GCP)',
+    category: 'clinical',
+    tags: ['omop', 'cms', 'synthetic', 'ehr', 'medicare', 'claims'],
+    license: 'Public Domain / CMS Open Data',
+    managedBy: 'Centers for Medicare & Medicaid Services (CMS)',
+    queryOrAccessMethod: 'BigQuery Public',
+    directAccessUrl: 'https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=cms_synthetic_patient_data_omop',
+    sampleBigQuerySql: `SELECT c.concept_name, COUNT(DISTINCT co.person_id) AS patient_count\nFROM \`bigquery-public-data.cms_synthetic_patient_data_omop.condition_occurrence\` co\nJOIN \`bigquery-public-data.cms_synthetic_patient_data_omop.concept\` c\n  ON co.condition_concept_id = c.concept_id\nGROUP BY c.concept_name\nORDER BY patient_count DESC\nLIMIT 25;`
+  },
+  {
+    id: 'gcp-cms-medicare',
+    name: 'CMS Medicare Inpatient & Outpatient Charges & Utilization',
+    provider: 'gcp',
+    providerLabel: 'Google Cloud',
+    description: 'Hospital chargemaster variations, DRG reimbursement tiers, physician utilization, and Part D prescription claims across US health systems.',
+    documentationUrl: 'https://data.cms.gov/',
+    storageUri: 'bigquery-public-data.medicare',
+    regionOrLocation: 'US Multi-Region (GCP)',
+    category: 'clinical',
+    tags: ['medicare', 'hospital pricing', 'drg', 'cms', 'cost transparency'],
+    license: 'Public Domain',
+    managedBy: 'Centers for Medicare & Medicaid Services (CMS)',
+    queryOrAccessMethod: 'BigQuery Public',
+    directAccessUrl: 'https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=medicare',
+    sampleBigQuerySql: `SELECT provider_name, provider_state, drg_definition, average_total_payments, average_covered_charges\nFROM \`bigquery-public-data.medicare.inpatient_charges_2015\`\nWHERE REGEXP_CONTAINS(drg_definition, r'(?i)heart failure|pneumonia')\nORDER BY average_total_payments DESC\nLIMIT 25;`
+  },
+  {
+    id: 'gcp-mimic-iv',
+    name: 'PhysioNet MIMIC-IV Clinical EHR on Google BigQuery',
+    provider: 'gcp',
+    providerLabel: 'Google Cloud',
+    description: 'Credentialed access to electronic health records of over 300,000 ICU and Emergency Department stays at BIDMC, including arterial blood gases and SOFA scores.',
+    documentationUrl: 'https://physionet.org/content/mimiciv/',
+    storageUri: 'physionet-data.mimiciv_icu',
+    regionOrLocation: 'US Multi-Region (GCP)',
+    category: 'clinical',
+    tags: ['mimic', 'icu', 'physionet', 'sofa score', 'sepsis', 'vital signs'],
+    license: 'PhysioNet Credentialed Health Data License',
+    managedBy: 'MIT Laboratory for Computational Physiology & BIDMC',
+    queryOrAccessMethod: 'PhysioNet Open Access',
+    directAccessUrl: 'https://console.cloud.google.com/bigquery?p=physionet-data&d=mimiciv_icu',
+    sampleBigQuerySql: `SELECT stay_id, subject_id, los, respiration, coagulation, liver, cardiovascular, cns, renal, sofa_score\nFROM \`physionet-data.mimiciv_derived.sofa\`\nWHERE sofa_score >= 6\nORDER BY los DESC\nLIMIT 25;`
+  },
+  {
+    id: 'gcp-world-bank-health',
+    name: 'World Bank Global Health, Nutrition & Population Statistics',
+    provider: 'gcp',
+    providerLabel: 'Google Cloud',
+    description: 'Longitudinal country-level indicators across 200+ nations covering maternal mortality, under-5 mortality, stunting prevalence, anemia, and immunization.',
+    documentationUrl: 'https://data.worldbank.org/',
+    storageUri: 'bigquery-public-data.world_bank_health_population',
+    regionOrLocation: 'US Multi-Region (GCP)',
+    category: 'epidemiology',
+    tags: ['world bank', 'global health', 'maternal mortality', 'unicef', 'who', 'stunting'],
+    license: 'CC-BY-4.0',
+    managedBy: 'The World Bank Group',
+    queryOrAccessMethod: 'BigQuery Public',
+    directAccessUrl: 'https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=world_bank_health_population',
+    sampleBigQuerySql: `SELECT country_name, country_code, year, value AS under_five_mortality_per_1k\nFROM \`bigquery-public-data.world_bank_health_population.health_nutrition_population\`\nWHERE indicator_code = 'SH.DYN.MORT' AND year >= 2020\nORDER BY value DESC\nLIMIT 25;`
   },
   {
     id: 'gcp-openfda',
@@ -140,6 +210,58 @@ export const FEDERATED_OPEN_HEALTH_DATASETS: IOpenHealthDataset[] = [
     managedBy: 'U.S. Food and Drug Administration (FDA)',
     queryOrAccessMethod: 'BigQuery Public',
     directAccessUrl: 'https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=fda_drug',
+    sampleBigQuerySql: `SELECT patient.reaction[OFFSET(0)].reactionmeddrapt AS reaction, COUNT(1) AS report_count\nFROM \`bigquery-public-data.fda_drug.drug_event\`\nWHERE ARRAY_LENGTH(patient.reaction) > 0\nGROUP BY reaction\nORDER BY report_count DESC\nLIMIT 20;`
+  },
+  {
+    id: 'gcp-epa-air-quality',
+    name: 'EPA Historical Outdoor Air Quality (PM2.5 & Ozone SDOH Telemetry)',
+    provider: 'gcp',
+    providerLabel: 'Google Cloud',
+    description: 'Hourly and daily particulate matter (PM2.5, PM10), ozone, and chemical pollutant sensor telemetry across 4,000+ US monitoring stations for environmental pulmonology & SDOH.',
+    documentationUrl: 'https://www.epa.gov/outdoor-air-quality-data',
+    storageUri: 'bigquery-public-data.epa_historical_air_quality',
+    regionOrLocation: 'US Multi-Region (GCP)',
+    category: 'epidemiology',
+    tags: ['epa', 'air quality', 'pm25', 'ozone', 'pulmonology', 'sdoh', 'asthma'],
+    license: 'Public Domain / US Government Work',
+    managedBy: 'U.S. Environmental Protection Agency (EPA)',
+    queryOrAccessMethod: 'BigQuery Public',
+    directAccessUrl: 'https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=epa_historical_air_quality',
+    sampleBigQuerySql: `SELECT state_name, county_name, date_local, arithmetic_mean AS pm25_ug_m3\nFROM \`bigquery-public-data.epa_historical_air_quality.pm25_frm_daily_summary\`\nWHERE date_local >= '2023-01-01' AND arithmetic_mean > 35.0\nORDER BY arithmetic_mean DESC\nLIMIT 25;`
+  },
+  {
+    id: 'gcp-covid19-open-data',
+    name: 'Google Cloud COVID-19 Open Data Global Consortium',
+    provider: 'gcp',
+    providerLabel: 'Google Cloud',
+    description: 'Harmonized global COVID-19 epidemiological time series, vaccination rates, hospitalizations, genomic variants, and demographic indicators across 20,000+ geographical regions.',
+    documentationUrl: 'https://cloud.google.com/bigquery/public-data/covid19-open-data',
+    storageUri: 'bigquery-public-data.covid19_open_data',
+    regionOrLocation: 'US Multi-Region (GCP)',
+    category: 'epidemiology',
+    tags: ['covid-19', 'epidemiology', 'vaccinations', 'time-series', 'public health'],
+    license: 'CC-BY-4.0',
+    managedBy: 'Google Cloud & Global Partners',
+    queryOrAccessMethod: 'BigQuery Public',
+    directAccessUrl: 'https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=covid19_open_data',
+    sampleBigQuerySql: `SELECT date, country_name, new_confirmed, cumulative_persons_fully_vaccinated\nFROM \`bigquery-public-data.covid19_open_data.covid19_open_data\`\nWHERE date = '2022-06-01' AND subregion1_name IS NULL\nORDER BY new_confirmed DESC\nLIMIT 25;`
+  },
+  {
+    id: 'gcp-rxnorm',
+    name: 'NLM RxNorm Clinical Drug Nomenclature on BigQuery',
+    provider: 'gcp',
+    providerLabel: 'Google Cloud',
+    description: 'Normalized clinical drug names, ingredient hierarchies, active pharmaceutical ingredients, and dosage forms from the National Library of Medicine.',
+    documentationUrl: 'https://www.nlm.nih.gov/research/umls/rxnorm/',
+    storageUri: 'bigquery-public-data.rxnorm',
+    regionOrLocation: 'US Multi-Region (GCP)',
+    category: 'pharmacology',
+    tags: ['rxnorm', 'nlm', 'drug nomenclature', 'ingredients', 'clinical posology'],
+    license: 'UMLS Metathesaurus License / Public Domain',
+    managedBy: 'National Library of Medicine (NLM)',
+    queryOrAccessMethod: 'BigQuery Public',
+    directAccessUrl: 'https://console.cloud.google.com/bigquery?p=bigquery-public-data&d=rxnorm',
+    sampleBigQuerySql: `SELECT rxcui, str AS drug_name, tty AS term_type\nFROM \`bigquery-public-data.rxnorm.rxnconso\`\nWHERE sab = 'RXNORM' AND tty IN ('SBD', 'SCD')\nORDER BY str ASC\nLIMIT 50;`
   },
   {
     id: 'gcp-gnomad',
@@ -156,6 +278,7 @@ export const FEDERATED_OPEN_HEALTH_DATASETS: IOpenHealthDataset[] = [
     managedBy: 'Broad Institute of MIT and Harvard',
     queryOrAccessMethod: 'BigQuery Public',
     directAccessUrl: 'https://console.cloud.google.com/storage/browser/gcp-public-data--gnomad',
+    sampleBigQuerySql: `SELECT reference_name, start_position, reference_bases, alternate_bases, AC, AF\nFROM \`bigquery-public-data.gnomAD.v2_1_genomes_chr1\`\nWHERE start_position BETWEEN 1000000 AND 1050000\nLIMIT 25;`
   },
 
   // ── 3. MICROSOFT AZURE & MSR OPEN DATASETS ─────────────────────

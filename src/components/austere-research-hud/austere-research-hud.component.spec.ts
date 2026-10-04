@@ -69,6 +69,7 @@ describe('AustereResearchHudComponent', () => {
     fixture.detectChanges();
 
     expect(component.showP2pQr()).toBe(true);
+    expect(fixture.nativeElement.querySelector('app-branded-qr-code')).toBeTruthy();
 
     const validPayload = service.generateCompactOfflineQrPayload();
     component.incomingPeerPayload.set(validPayload);

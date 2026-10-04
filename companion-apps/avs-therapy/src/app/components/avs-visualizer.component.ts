@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, PLATFORM_ID, Inject, effect, untracked, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, viewChild, ElementRef, PLATFORM_ID, inject, effect, untracked, OnDestroy } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ColorTemperature } from './avs.constants';
 
@@ -6,24 +6,29 @@ import { ColorTemperature } from './avs.constants';
   selector: 'app-avs-visualizer',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="relative w-full h-44 rounded-xl bg-gray-50 dark:bg-zinc-950/40 border border-gray-100 dark:border-zinc-900 flex flex-col items-center justify-center overflow-hidden">
       <!-- Ambient Canvas Visualizer -->
-      <canvas #avsCanvas class="absolute inset-0 w-full h-full pointer-events-none opacity-85" *ngIf="isActive"></canvas>
+      @if (isActive()) {
+        <canvas #avsCanvas class="absolute inset-0 w-full h-full pointer-events-none opacity-85"></canvas>
+      }
 
       <!-- Gradient background ripples -->
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(249,115,22,0.03)_0%,transparent_70%)] pointer-events-none"></div>
 
       <!-- Sync Pulsing Core -->
-      <div [class.paused]="!isActive"
-           [style.animationDuration.ms]="pulseIntervalMs"
+      <div [class.paused]="!isActive()"
+           [style.animationDuration.ms]="pulseIntervalMs()"
            class="avs-pulsing-glow relative w-24 h-24 rounded-full bg-gradient-to-tr from-orange-500 to-amber-600 flex items-center justify-center shadow-lg transition-transform duration-500 z-10">
 
-        <div class="absolute inset-0 rounded-full bg-orange-400/20 animate-ping" [style.animationDuration.ms]="pulseIntervalMs * 2" *ngIf="isActive"></div>
+        @if (isActive()) {
+          <div class="absolute inset-0 rounded-full bg-orange-400/20 animate-ping" [style.animationDuration.ms]="pulseIntervalMs() * 2"></div>
+        }
 
         <span class="text-white font-extrabold text-xs tracking-wider uppercase select-none">
-          @if (isActive) {
-            {{ currentWaveFrequencyName }}
+          @if (isActive()) {
+            {{ currentWaveFrequencyName() }}
           } @else {
             STANDBY
           }
@@ -32,8 +37,8 @@ import { ColorTemperature } from './avs.constants';
 
       <!-- Active Metrics Status Bar -->
       <div class="absolute bottom-3 left-4 right-4 flex justify-between items-center text-[10px] font-semibold text-gray-500 dark:text-zinc-500 uppercase tracking-wider z-10 pointer-events-none">
-        <span>Dynamic: {{ currentBaseFrequency }} Hz Carrier</span>
-        <span>Delta/Diff: {{ targetBrainwaveFrequencyHz }} Hz ({{ currentWaveFrequencyName }})</span>
+        <span>Dynamic: {{ currentBaseFrequency() }} Hz Carrier</span>
+        <span>Delta/Diff: {{ targetBrainwaveFrequencyHz().toFixed(1) }} Hz ({{ currentWaveFrequencyName() }})</span>
       </div>
     </div>
   `,
@@ -62,26 +67,25 @@ import { ColorTemperature } from './avs.constants';
   `]
 })
 export class AvsVisualizerComponent implements OnDestroy {
-  @Input() isActive = false;
-  @Input() pulseIntervalMs = 10000;
-  @Input() currentWaveFrequencyName = 'THETA';
-  @Input() currentBaseFrequency = 200;
-  @Input() targetBrainwaveFrequencyHz = 6.0;
-  @Input() colorTemp: ColorTemperature = 'indigo';
+  readonly isActive = input<boolean>(false);
+  readonly pulseIntervalMs = input<number>(10000);
+  readonly currentWaveFrequencyName = input<string>('THETA');
+  readonly currentBaseFrequency = input<number>(200);
+  readonly targetBrainwaveFrequencyHz = input<number>(6.0);
+  readonly colorTemp = input<ColorTemperature>('indigo');
 
-  @ViewChild('avsCanvas') avsCanvasRef!: ElementRef<HTMLCanvasElement>;
+  readonly avsCanvasRef = viewChild<ElementRef<HTMLCanvasElement>>('avsCanvas');
   private canvasRafId: number | null = null;
-  private isBrowser = false;
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-
+  constructor() {
     if (this.isBrowser) {
       effect(() => {
-        // Re-trigger loop when these change
-        const active = this.isActive;
-        const freq = this.targetBrainwaveFrequencyHz;
-        const temp = this.colorTemp;
+        // Re-trigger loop when signals change
+        const active = this.isActive();
+        const freq = this.targetBrainwaveFrequencyHz();
+        const temp = this.colorTemp();
 
         untracked(() => {
           if (active) {
@@ -98,7 +102,7 @@ export class AvsVisualizerComponent implements OnDestroy {
     if (!this.isBrowser) return;
     this.stopCanvasLoop();
 
-    const canvas = this.avsCanvasRef?.nativeElement;
+    const canvas = this.avsCanvasRef()?.nativeElement;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -115,7 +119,7 @@ export class AvsVisualizerComponent implements OnDestroy {
 
     let angle = 0;
     const tick = () => {
-      if (!this.isActive || !canvas || !ctx) {
+      if (!this.isActive() || !canvas || !ctx) {
         window.removeEventListener('resize', resize);
         return;
       }
@@ -126,7 +130,7 @@ export class AvsVisualizerComponent implements OnDestroy {
       ctx.clearRect(0, 0, width, height);
 
       // Get color temperature colors
-      const preset = this.colorTemp;
+      const preset = this.colorTemp();
       let colorGlow = 'rgba(67, 56, 202, 0.15)'; // Indigo
       let colorLine = 'rgba(14, 165, 233, 0.4)';
 
@@ -149,7 +153,7 @@ export class AvsVisualizerComponent implements OnDestroy {
       ctx.fillRect(0, 0, width, height);
 
       // Draw sine wave pattern corresponding to light modulation frequency
-      const freqHz = this.targetBrainwaveFrequencyHz;
+      const freqHz = this.targetBrainwaveFrequencyHz();
       const speed = (freqHz * 2 * Math.PI) / 1000;
       angle += speed;
 

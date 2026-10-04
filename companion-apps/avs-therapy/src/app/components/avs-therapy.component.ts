@@ -1,4 +1,4 @@
-import { Component, signal, computed, effect, inject, OnDestroy, PLATFORM_ID, Inject, untracked } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, effect, inject, OnDestroy, PLATFORM_ID, untracked } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientStateService } from '../services/patient-state.service';
@@ -7,6 +7,8 @@ import { LifestyleAdjunctService } from '../services/lifestyle-adjunct.service';
 import { AthleticProtocolService } from '../services/athletic-protocol.service';
 import { AthleticState } from '../services/patient.types';
 import { PythonBridgeService } from '../services/python-bridge.service';
+import { AvsUiService } from '../services/avs-ui.service';
+import { GlobalAvsService } from '../services/global-avs.service';
 
 import { BrainwaveFrequency, WAVE_PROFILES, ViewMode, ProtocolMode, ColorTemperature } from './avs.constants';
 import { AvsHeaderComponent } from './avs-header.component';
@@ -27,6 +29,7 @@ import { DyadicSyncHudComponent } from './dyadic-sync-hud.component';
 import { AvsExportModalComponent } from './avs-export-modal.component';
 import { OpticalInnovationsHudComponent } from './optical-innovations-hud.component';
 import { BiophilicVagalOdysseyHudComponent } from './biophilic-vagal-odyssey-hud.component';
+import { NeuroBionicReaderComponent } from './neuro-bionic-reader.component';
 
 // Next-Gen Services
 import { QeegEntrainmentService } from '../services/qeeg-entrainment.service';
@@ -37,7 +40,7 @@ import { DyadicCoRegulationService } from '../services/dyadic-co-regulation.serv
 import { AvsSessionScribeService } from '../services/avs-session-scribe.service';
 import { OpticalInnovationsService } from '../services/optical-innovations.service';
 
-export type AvsInnovationTab = 'qeeg' | 'sleep' | 'rppg' | 'spatial' | 'dyadic' | 'coreg' | 'optical' | 'odyssey';
+export type AvsInnovationTab = 'qeeg' | 'sleep' | 'rppg' | 'spatial' | 'dyadic' | 'coreg' | 'optical' | 'odyssey' | 'reader';
 
 @Component({
   selector: 'app-avs-therapy',
@@ -60,35 +63,40 @@ export type AvsInnovationTab = 'qeeg' | 'sleep' | 'rppg' | 'spatial' | 'dyadic' 
     DyadicSyncHudComponent,
     AvsExportModalComponent,
     OpticalInnovationsHudComponent,
-    BiophilicVagalOdysseyHudComponent
+    BiophilicVagalOdysseyHudComponent,
+    NeuroBionicReaderComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './avs-therapy.component.html',
   styleUrl: './avs-therapy.component.css'
 })
 export class AvsTherapyComponent implements OnDestroy {
-  patientState     = inject(PatientStateService);
-  private contextAvs   = inject(ClinicalContextAvsService);
-  readonly lifestyleAdj = inject(LifestyleAdjunctService);
+  readonly patientState    = inject(PatientStateService);
+  private readonly contextAvs  = inject(ClinicalContextAvsService);
+  readonly lifestyleAdj    = inject(LifestyleAdjunctService);
   readonly athleticService = inject(AthleticProtocolService);
-  private pythonBridge = inject(PythonBridgeService);
+  private readonly pythonBridge = inject(PythonBridgeService);
+  readonly avsUi           = inject(AvsUiService);
+  readonly globalAvs       = inject(GlobalAvsService);
 
   // Injected Next-Gen Services
-  readonly qeeg = inject(QeegEntrainmentService);
-  readonly sleep = inject(SleepInsomniaProtocolService);
-  readonly rppg = inject(ContactlessRppgService);
+  readonly qeeg    = inject(QeegEntrainmentService);
+  readonly sleep   = inject(SleepInsomniaProtocolService);
+  readonly rppg    = inject(ContactlessRppgService);
   readonly spatial = inject(SpatialAmbisonicsService);
-  readonly dyadic = inject(DyadicCoRegulationService);
-  readonly scribe = inject(AvsSessionScribeService);
+  readonly dyadic  = inject(DyadicCoRegulationService);
+  readonly scribe  = inject(AvsSessionScribeService);
   readonly optical = inject(OpticalInnovationsService);
 
-  private isBrowser = false;
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser  = isPlatformBrowser(this.platformId);
 
   protocolMode = signal<ProtocolMode>('clinical');
   viewMode = signal<ViewMode>('clinician');
   athleticSport = signal('Sprinting');
   athleticState = signal<AthleticState>('priming');
 
-  // Navigation tab for the 6 next-gen clinical innovations
+  // Navigation tab for the 9 next-gen clinical innovations
   activeInnovationTab = signal<AvsInnovationTab>('qeeg');
   isExportModalOpen = signal<boolean>(false);
 
@@ -104,21 +112,29 @@ export class AvsTherapyComponent implements OnDestroy {
   customFrequency = signal<number | null>(null);
   colorTemp = signal<ColorTemperature>('indigo');
 
+  // Solfeggio & Acoustic Controls
+  activeCarrierHz = signal<number>(432);
+  volume = signal<number>(75);
+  pinkNoiseEnabled = signal<boolean>(true);
+  sessionDurationMinutes = signal<number>(15);
+  sessionSecondsRemaining = signal<number | null>(null);
+  isCprActive = computed(() => this.globalAvs.isCprMetronomeActive());
+
   // --- Web Audio API Properties ---
   private audioCtx: AudioContext | null = null;
   private oscLeft: OscillatorNode | null = null;
   private oscRight: OscillatorNode | null = null;
   private noiseNode: AudioBufferSourceNode | null = null;
+  private noiseGain: GainNode | null = null;
   private mainGain: GainNode | null = null;
 
-  // --- Speech & Vibration Interval Handles ---
+  // --- Interval & Timer Handles ---
   private guidanceTimer: any = null;
   private vibrationTimer: any = null;
+  private countdownTimer: any = null;
   hasVibrator = false;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-
+  constructor() {
     if (this.isBrowser) {
       this.hasVibrator = !!navigator.vibrate;
 
@@ -194,13 +210,7 @@ export class AvsTherapyComponent implements OnDestroy {
   });
 
   currentBaseFrequency = computed(() => {
-    switch (this.targetWave()) {
-      case 'delta': return 150;
-      case 'theta': return 200;
-      case 'alpha': return 250;
-      case 'beta': return 350;
-      default: return 200;
-    }
+    return this.activeCarrierHz();
   });
 
   pulseIntervalMs = computed(() => {
@@ -208,10 +218,12 @@ export class AvsTherapyComponent implements OnDestroy {
   });
 
   setInnovationTab(tab: AvsInnovationTab): void {
+    this.avsUi.playTransition();
     this.activeInnovationTab.set(tab);
   }
 
   openExportModal(): void {
+    this.avsUi.playHover();
     this.isExportModalOpen.set(true);
   }
 
@@ -219,7 +231,7 @@ export class AvsTherapyComponent implements OnDestroy {
     this.isExportModalOpen.set(false);
   }
 
-  // --- Event Handlers for UI Sliders ---
+  // --- Event Handlers for UI Sliders & Controls ---
   onHrSliderChange(value: number) {
     this.targetHr.set(value);
     if (this.isActive() && this.voiceEnabled()) {
@@ -251,6 +263,17 @@ export class AvsTherapyComponent implements OnDestroy {
     }
   }
 
+  selectCarrierTone(hz: number) {
+    this.activeCarrierHz.set(hz);
+    this.globalAvs.setSolfeggioTone(hz);
+    if (this.isActive()) {
+      this.restartOscillators();
+      if (this.voiceEnabled()) {
+        this.speakGuidance(`Acoustic carrier harmonic locked to ${hz} Hertz.`);
+      }
+    }
+  }
+
   selectWaveProfile(wave: BrainwaveFrequency) {
     this.targetWave.set(wave);
     this.customFrequency.set(null);
@@ -259,6 +282,37 @@ export class AvsTherapyComponent implements OnDestroy {
       if (this.voiceEnabled()) {
         this.speakGuidance(`Brainwave target updated to ${wave.toUpperCase()} frequency profile.`);
       }
+    }
+  }
+
+  setVolume(vol: number): void {
+    this.volume.set(vol);
+    if (this.mainGain && this.audioCtx) {
+      const targetGain = (vol / 100) * 0.35;
+      this.mainGain.gain.setValueAtTime(targetGain, this.audioCtx.currentTime);
+    }
+  }
+
+  togglePinkNoise(): void {
+    this.pinkNoiseEnabled.update(p => !p);
+    if (this.noiseGain && this.audioCtx) {
+      const targetGain = this.pinkNoiseEnabled() ? 0.025 : 0.0001;
+      this.noiseGain.gain.setValueAtTime(targetGain, this.audioCtx.currentTime);
+    }
+  }
+
+  setDurationMinutes(mins: number): void {
+    this.sessionDurationMinutes.set(mins);
+    if (this.isActive()) {
+      this.startCountdownTimer();
+    }
+  }
+
+  toggleCprMetronome(): void {
+    if (this.globalAvs.isCprMetronomeActive()) {
+      this.globalAvs.stopCprMetronome();
+    } else {
+      this.globalAvs.startCprMetronome();
     }
   }
 
@@ -337,6 +391,7 @@ export class AvsTherapyComponent implements OnDestroy {
     if (this.isBrowser) {
       await this.initWebAudio();
       this.startVoiceGuidanceLoop();
+      this.startCountdownTimer();
       if (this.vibrationEnabled()) {
         this.startVibrationLoop();
       }
@@ -348,6 +403,40 @@ export class AvsTherapyComponent implements OnDestroy {
     this.stopWebAudio();
     this.stopVoiceGuidanceLoop();
     this.stopVibrationLoop();
+    this.stopCountdownTimer();
+    if (this.globalAvs.isCprMetronomeActive()) {
+      this.globalAvs.stopCprMetronome();
+    }
+  }
+
+  private startCountdownTimer(): void {
+    this.stopCountdownTimer();
+    const mins = this.sessionDurationMinutes();
+    if (mins <= 0) {
+      this.sessionSecondsRemaining.set(null);
+      return;
+    }
+    this.sessionSecondsRemaining.set(mins * 60);
+
+    this.countdownTimer = setInterval(() => {
+      const cur = this.sessionSecondsRemaining();
+      if (cur !== null && cur > 0) {
+        this.sessionSecondsRemaining.set(cur - 1);
+        if (cur - 1 === 0) {
+          this.avsUi.playFinalizeChord();
+          this.speakGuidance("AVS session target duration reached. Gentle return to wakeful baseline.");
+          this.stopTherapy();
+        }
+      }
+    }, 1000);
+  }
+
+  private stopCountdownTimer(): void {
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
+    this.sessionSecondsRemaining.set(null);
   }
 
   private async initWebAudio() {
@@ -358,13 +447,18 @@ export class AvsTherapyComponent implements OnDestroy {
       if (!this.audioCtx || this.audioCtx.state === 'closed') {
         this.audioCtx = new AudioCtxClass();
       }
+
       if (this.audioCtx.state === 'suspended') {
         await this.audioCtx.resume();
       }
 
+      const initialGain = (this.volume() / 100) * 0.35;
       this.mainGain = this.audioCtx.createGain();
-      this.mainGain.gain.setValueAtTime(0.25, this.audioCtx.currentTime);
+      this.mainGain.gain.setValueAtTime(initialGain, this.audioCtx.currentTime);
       this.mainGain.connect(this.audioCtx.destination);
+
+      // Initialize Pink Noise floor generator
+      this.initPinkNoise();
 
       // Initialize Spatial Ambisonics Sub-system
       this.spatial.initAudioGraph(this.audioCtx, this.mainGain);
@@ -373,6 +467,39 @@ export class AvsTherapyComponent implements OnDestroy {
     } catch (e) {
       console.debug('Web Audio API unavailable in current execution context', e);
     }
+  }
+
+  private initPinkNoise(): void {
+    if (!this.audioCtx || !this.mainGain) return;
+    try {
+      const bufferSize = this.audioCtx.sampleRate * 8; // 8s loop
+      const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.05;
+        b6 = white * 0.115926;
+      }
+
+      this.noiseNode = this.audioCtx.createBufferSource();
+      this.noiseNode.buffer = buffer;
+      this.noiseNode.loop = true;
+
+      this.noiseGain = this.audioCtx.createGain();
+      this.noiseGain.gain.setValueAtTime(this.pinkNoiseEnabled() ? 0.025 : 0.0001, this.audioCtx.currentTime);
+
+      this.noiseNode.connect(this.noiseGain);
+      this.noiseGain.connect(this.mainGain);
+      this.noiseNode.start();
+    } catch {}
   }
 
   private restartOscillators() {
@@ -388,7 +515,7 @@ export class AvsTherapyComponent implements OnDestroy {
     const baseFreq = this.currentBaseFrequency();
     const diffFreq = this.targetBrainwaveFrequencyHz();
 
-    // Channel splitters and mergers for binaural separation
+    // Channel splitters and mergers for pristine stereo binaural separation
     const merger = this.audioCtx.createChannelMerger(2);
 
     this.oscLeft = this.audioCtx.createOscillator();
@@ -416,6 +543,14 @@ export class AvsTherapyComponent implements OnDestroy {
     if (this.oscRight) {
       try { this.oscRight.stop(); this.oscRight.disconnect(); } catch (e) {}
       this.oscRight = null;
+    }
+    if (this.noiseNode) {
+      try { this.noiseNode.stop(); this.noiseNode.disconnect(); } catch (e) {}
+      this.noiseNode = null;
+    }
+    if (this.noiseGain) {
+      try { this.noiseGain.disconnect(); } catch (e) {}
+      this.noiseGain = null;
     }
     if (this.audioCtx) {
       try { this.audioCtx.close(); } catch (e) {}

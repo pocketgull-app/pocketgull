@@ -93,6 +93,7 @@ To align with HIPAA compliance and secure clinical engineering, we integrate Git
 - **Push Protection**: Enforce GitHub's *Secret Scanning Push Protection* to intercept and block commits containing leaked GCP credentials or API keys before they reach the repository.
 - **Continuous Container Scanning**: Dependabot alerts are utilized for early static workspace package warnings. However, the source of truth for runtime safety is **GCP Artifact Registry Container Analysis**, which performs continuous automated CVE scanning on the compiled container layers.
 - **Unified Compliance Dashboard**: For production deployments, CodeQL static analysis alerts are connected to **GCP Security Command Center (SCC)** via security source integrations, presenting a unified dashboard for infrastructure, cloud compliance, and source code health.
+- **Serverless SIEM with BigQuery Log Analytics**: Real-time SQL threat-hunting and compliance auditing are enabled directly on the `_Default` Cloud Logging bucket via BigQuery Log Analytics linked dataset (`default_log_link._AllLogs`) with zero storage duplication. Long-term compliance audit records are additionally captured into daily partitioned BigQuery tables in dataset `siem_audit_logs` via Cloud Logging sink (`siem-bigquery-sink`).
 
 ### 6. Anti-Surveillance Data Sovereignty Architecture
 To protect patients and clinicians from invasive telemetry, dragnet background tracking, and unauthorized data harvesting, Pocket Gull strictly enforces anti-surveillance engineering principles:
@@ -126,9 +127,10 @@ All data serialization, export, and telemetry vectors strictly comply with Five 
 - **Strict Outbound Channel Isolation**: Raw Amazon affiliate links (`amazon.com/dp/*`, `tag=pgdpo-20`) are strictly prohibited in outbound SMS text messages, push notifications, and emails.
 - **Zero PHI in Query Parameters**: Affiliate URLs contain only ASIN and tracking tags. No patient identifiers, diagnoses, or condition codes may ever appear in outbound links.
 
-### 12. Institutional Security Triad: NIST SP 800-90A, FDA 21 CFR Part 11 & HIPAA §164.312(c)(1)
+### 12. Institutional Security Triad: NIST SP 800-90A, FDA 21 CFR Part 11 & HIPAA §164.312(b)/(c)(1)
 - **NIST SP 800-90A (Hardware Entropy & Deterministic Random Bit Generation)**: All session identifiers, PKCE challenge verifiers, OAuth states, digital consent tokens, and security identifiers MUST be generated using NIST SP 800-90A compliant CSPRNG OS kernel hardware entropy (`globalThis.crypto.getRandomValues()` / Node.js `node:crypto` `randomBytes`, `randomInt`). The use of `Math.random()` in any security, authentication, transaction, or identification context is strictly prohibited.
 - **FDA 21 CFR Part 11 (Electronic Records & Electronic Signatures Integrity)**: All clinical data transactions, state transformations, research dividend ledger entries, and emergency overrides generate immutable, timestamped SHA-256 digital attestation seals (`computeIntegrityDigest()`, `generateCryptographicReceipt()`) to guarantee electronic record provenance, non-repudiation, and audit traceability.
+- **HIPAA § 164.312(b) (Audit Controls & Serverless SIEM Retention)**: All administrative, data access, and clinical modification events are ingested into BigQuery Log Analytics (`default_log_link._AllLogs`) and long-term partitioned storage (`siem_audit_logs`), maintaining immutable, tamper-evident audit records and real-time SQL threat-hunting capabilities.
 - **HIPAA § 164.312(c)(1) (ePHI Data Integrity Verification)**: All electronic Protected Health Information (ePHI), FHIR R4 resource bundles, and patient state records incorporate data integrity verification mechanisms to corroborate that patient clinical data has not been altered, tampered with, or destroyed in an unauthorized manner during storage, transit, or client-side evaluation.
 
 ### 14. Formal Assurance Case & Memory Safety Hardening (OpenSSF Gold Standard)

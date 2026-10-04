@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, signal, effect, OnDestroy, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DictationService } from '../../services/dictation.service';
+import { IEdgeTranscriptionResult } from '../../services/edge-audio-primacy.service';
 
 import { PocketGullButtonComponent } from '../shared/pocket-gull-button.component';
 import { PocketGullInputComponent } from '../shared/pocket-gull-input.component';
@@ -32,7 +33,13 @@ import { PocketGullInputComponent } from '../shared/pocket-gull-input.component'
                   </svg>
               </div>
               <div>
-                <h3 id="dictation-modal-title" class="text-sm font-bold text-gray-900 uppercase tracking-wide">Voice Dictation</h3>
+                <div class="flex items-center gap-2">
+                  <h3 id="dictation-modal-title" class="text-sm font-bold text-gray-900 uppercase tracking-wide">Voice Dictation</h3>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-teal-50 text-teal-800 border border-teal-200" title="Zero-cost on-device Gemma 4 Dev Trial processing active. Zero cloud network egress.">
+                    <span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
+                    <span>⚡ Edge Primacy ($0 Egress)</span>
+                  </span>
+                </div>
                 <p class="text-xs text-gray-500">
                   @if (dictation.isListening()) {
                     Listening... Speak clearly.
@@ -98,7 +105,22 @@ import { PocketGullInputComponent } from '../shared/pocket-gull-input.component'
                }
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+               @if (lastPolishResult(); as res) {
+                 <span class="text-[10px] font-mono text-teal-800 bg-teal-50 px-2 py-1 rounded border border-teal-200 flex items-center gap-1">
+                   <span>✓ Edge Formatted ({{ res.executionDurationMs }}ms)</span>
+                   <span>•</span>
+                   <span>Saved {{ res.estimatedTokensSaved }} tokens</span>
+                 </span>
+               }
+               <button type="button"
+                       (click)="polishWithEdge()"
+                       [disabled]="!currentText().trim() || isPolishing()"
+                       id="btn-edge-polish"
+                       class="px-2.5 py-1.5 rounded-md bg-teal-50 hover:bg-teal-100 border border-teal-300 text-teal-900 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+                 <span>⚡</span>
+                 <span>{{ isPolishing() ? 'Polishing on Edge...' : 'Polish with Gemma 4' }}</span>
+               </button>
                <pocket-gull-button 
                  variant="ghost" 
                  size="sm" 
@@ -123,6 +145,8 @@ export class DictationModalComponent implements OnDestroy {
   dictation = inject(DictationService);
   currentText = signal('');
   interimText = signal('');
+  isPolishing = signal(false);
+  lastPolishResult = signal<IEdgeTranscriptionResult | null>(null);
 
   constructor() {
     // Register to receive updates from the service
@@ -153,6 +177,24 @@ export class DictationModalComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.dictation.stopRecognition();
+  }
+
+  async polishWithEdge(): Promise<void> {
+    const text = this.currentText().trim();
+    if (!text || this.isPolishing()) return;
+
+    this.isPolishing.set(true);
+    try {
+      const res = await this.dictation.polishTranscriptWithEdge(text, { targetFormat: 'SOAP' });
+      if (res) {
+        this.currentText.set(res.polishedText);
+        this.lastPolishResult.set(res);
+      }
+    } catch (err) {
+      console.warn('[DictationModalComponent] Edge polish failed:', err);
+    } finally {
+      this.isPolishing.set(false);
+    }
   }
 
   updateTextManual(text: string) {

@@ -1,13 +1,13 @@
-import { Component, ChangeDetectionStrategy, inject, signal, output, viewChild, ElementRef, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, output, viewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AustereResearchService } from '../../services/austere-research.service';
-import { generate } from 'lean-qr';
+import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
 
 @Component({
   selector: 'app-austere-research-hud',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 bg-zinc-950 text-zinc-100 rounded-3xl border border-zinc-800 shadow-2xl font-sans"
@@ -256,10 +256,21 @@ import { generate } from 'lean-qr';
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-            <!-- QR Display -->
-            <div class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl mx-auto w-fit shadow-lg">
-              <div #p2pQrContainer></div>
-              <span class="text-[10px] text-zinc-700 font-mono mt-1 font-bold">Encrypted Austere P2P Seal</span>
+            <!-- Branded P2P QR Display -->
+            <div class="flex flex-col items-center justify-center mx-auto w-fit">
+              <app-branded-qr-code
+                [data]="compactOfflineQrPayload()"
+                [size]="160"
+                variant="emerald"
+                title="P2P Field Handoff"
+                subtitle="Air-Gapped Offline Transfer"
+                destinationSummary="PocketGull Austere P2P • Safe Harbor §164.514"
+                downloadFilename="austere-p2p-handoff-qr.png"
+                [enableCopy]="true"
+                [enableDownload]="true"
+                ariaLabel="Austere P2P Handoff QR Code">
+              </app-branded-qr-code>
+              <div #p2pQrContainer class="hidden"></div>
             </div>
 
             <!-- Import / Receive Peer Payload -->
@@ -320,6 +331,8 @@ export class AustereResearchHudComponent {
   incomingPeerPayload = signal<string>('');
   hydrateStatus = signal<string>('');
   hydrateSuccess = signal<boolean>(false);
+
+  readonly compactOfflineQrPayload = computed(() => this.service.generateCompactOfflineQrPayload());
 
   p2pQrContainer = viewChild<ElementRef<HTMLDivElement>>('p2pQrContainer');
 
@@ -398,18 +411,7 @@ export class AustereResearchHudComponent {
   }
 
   private renderP2pQr(): void {
-    const container = this.p2pQrContainer()?.nativeElement;
-    if (!container) return;
-
-    try {
-      container.innerHTML = '';
-      const payload = this.service.generateCompactOfflineQrPayload();
-      const code = generate(payload);
-      const dataUrl = code.toDataURL({ scale: 4 });
-      container.innerHTML = `<img src="${dataUrl}" class="w-40 h-40 select-none pointer-events-none" style="image-rendering: pixelated;" alt="Austere P2P Handoff QR Code" />`;
-    } catch (err) {
-      console.warn('[AustereHud] QR render error:', err);
-    }
+    // Declaratively handled via <app-branded-qr-code> in template
   }
 
   downloadFhirJson(): void {

@@ -71,4 +71,18 @@ describe('AmbientLivingSpaceDashboardComponent', () => {
     component.closeModal.emit();
     expect(emitted).toBe(true);
   });
+
+  it('6. should display scannable branded QR code with passport payload on generatePassport', () => {
+    vi.spyOn(window, 'alert').mockImplementation(() => {});
+    expect(component.showPassportQr()).toBe(false);
+
+    component.generatePassport();
+    fixture.detectChanges();
+
+    expect(component.showPassportQr()).toBe(true);
+    expect(component.passportQrPayload()).toContain('WALLET-9921');
+    expect(component.passportQrPayload()).toContain('POCKETGULL_CROSS_BORDER_EMERGENCY_v1');
+    const qrEl = fixture.nativeElement.querySelector('app-branded-qr-code');
+    expect(qrEl).toBeTruthy();
+  });
 });

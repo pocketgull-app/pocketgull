@@ -1,15 +1,17 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IAvsAdjunct, ISessionRecommendation } from '../services/patient.types';
+import { AvsUiService } from '../services/avs-ui.service';
 
 @Component({
   selector: 'app-lifestyle-adjunct-panel',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="rounded-xl border dark:border-emerald-500/15 bg-emerald-500/[0.02] dark:bg-emerald-950/10 overflow-hidden"
-         [class.border-emerald-500/40]="adjunct"
-         [class.border-emerald-500/20]="!adjunct">
+         [class.border-emerald-500/40]="adjunct()"
+         [class.border-emerald-500/20]="!adjunct()">
 
       <div class="px-4 py-3 border-b border-emerald-500/15 flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -19,17 +21,17 @@ import { IAvsAdjunct, ISessionRecommendation } from '../services/patient.types';
           </svg>
           <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Lifestyle &amp; Beverage Adjuncts</span>
         </div>
-        @if (adjunct) {
+        @if (adjunct(); as adj) {
           <span class="text-[9px] px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold uppercase tracking-wider">
-            {{ adjunct.recommendations.length }} suggestions
+            {{ adj.recommendations.length }} suggestions
           </span>
         }
       </div>
 
       <div class="p-4 space-y-3">
-        @if (adjunct) {
-          <p class="text-[10px] text-zinc-400 italic leading-relaxed">{{ adjunct.clinician_note }}</p>
-          @for (rec of adjunct.recommendations; track rec.title) {
+        @if (adjunct(); as adj) {
+          <p class="text-[10px] text-zinc-400 italic leading-relaxed">{{ adj.clinician_note }}</p>
+          @for (rec of adj.recommendations; track rec.title) {
             <div class="p-3 rounded-lg border" [class]="recCardClass(rec)">
               <div class="flex items-start gap-2.5">
                 <span class="text-base leading-none mt-0.5">{{ rec.emoji }}</span>
@@ -46,7 +48,7 @@ import { IAvsAdjunct, ISessionRecommendation } from '../services/patient.types';
             </div>
           }
         } @else {
-          <button (click)="generate.emit()"
+          <button (click)="onGenerate()"
                   class="w-full py-2.5 px-4 rounded-xl font-bold uppercase tracking-wider text-[11px] border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
@@ -63,8 +65,15 @@ import { IAvsAdjunct, ISessionRecommendation } from '../services/patient.types';
   `
 })
 export class LifestyleAdjunctPanelComponent {
-  @Input() adjunct: IAvsAdjunct | null = null;
-  @Output() generate = new EventEmitter<void>();
+  readonly adjunct = input<IAvsAdjunct | null>(null);
+  readonly generate = output<void>();
+
+  private readonly avsUi = inject(AvsUiService);
+
+  onGenerate(): void {
+    this.avsUi.playHover();
+    this.generate.emit();
+  }
 
   recCardClass(rec: ISessionRecommendation): string {
     const MAP: Record<string, string> = {

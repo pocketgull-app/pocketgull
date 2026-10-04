@@ -7,6 +7,7 @@ import { PatientManagementService } from './patient-management.service';
 import { PetAuditoryService } from './pet-auditory.service';
 import { AmbientLightingService } from './ambient-lighting.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
+import { EdgeAudioPrimacyService } from './edge-audio-primacy.service';
 
 describe('DictationService & Voice Simulation Suite', () => {
 
@@ -16,6 +17,7 @@ describe('DictationService & Voice Simulation Suite', () => {
     petAuditory?: any;
     lighting?: any;
     moeRouter?: any;
+    edgeAudio?: any;
   }) => {
     const injector = Injector.create({
       providers: [
@@ -24,7 +26,8 @@ describe('DictationService & Voice Simulation Suite', () => {
         { provide: PatientManagementService, useValue: overrides?.patientMgmt || {} },
         { provide: PetAuditoryService, useValue: overrides?.petAuditory || {} },
         { provide: AmbientLightingService, useValue: overrides?.lighting || {} },
-        { provide: ClinicalMoERouterService, useValue: overrides?.moeRouter || {} }
+        { provide: ClinicalMoERouterService, useValue: overrides?.moeRouter || {} },
+        { provide: EdgeAudioPrimacyService, useValue: overrides?.edgeAudio || {} }
       ]
     });
     return runInInjectionContext(injector, () => new DictationService());
@@ -238,6 +241,20 @@ describe('DictationService & Voice Simulation Suite', () => {
       const handled = service.processVoiceCommand('Gull highlight heart');
       expect(handled).toBe(true);
       expect(selectPartMock).toHaveBeenCalled();
+    });
+
+    it('delegates transcript polishing to EdgeAudioPrimacyService', async () => {
+      const polishMock = vi.fn().mockResolvedValue({
+        polishedText: 'SUBJECTIVE: Polished via Edge.',
+        targetFormat: 'SOAP'
+      });
+      const service = createService({
+        edgeAudio: { polishDictationWithEdge: polishMock }
+      });
+
+      const res = await service.polishTranscriptWithEdge('raw note text', { targetFormat: 'SOAP' });
+      expect(polishMock).toHaveBeenCalledWith('raw note text', { targetFormat: 'SOAP' });
+      expect(res?.polishedText).toBe('SUBJECTIVE: Polished via Edge.');
     });
   });
 });

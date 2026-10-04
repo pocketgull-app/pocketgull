@@ -96,6 +96,14 @@ import { KneeHologramHudComponent } from './components/knee-hologram-hud.compone
 import { ResearchDataDividendComponent } from './components/research-data-dividend.component';
 import { MdcpGovernanceHubComponent } from './components/clinical/mdcp-governance-hub.component';
 import { ClinicalCommercialHubComponent } from './components/shared/clinical-commercial-hub.component';
+import { AmbientScribeDrawerComponent } from './components/ambient-scribe/ambient-scribe-drawer.component';
+import { EdiClaimsConsoleComponent } from './components/enterprise-billing/edi-claims-console.component';
+import { EnterpriseIdentityConsoleComponent } from './components/enterprise-identity/enterprise-identity-console.component';
+import { DirectIomtConsoleComponent } from './components/iomt-wearables/direct-iomt-console.component';
+import { MimicOmopBenchmarkHubComponent } from './components/research/mimic-omop-benchmark-hub.component';
+import { SmartFhirLauncherComponent } from './components/smart-fhir-launcher.component';
+import { EhrWritebackConsoleComponent } from './components/ehr-writeback/ehr-writeback-console.component';
+import { EdgeAutonomousVoiceAgentComponent } from './components/voice/edge-autonomous-voice-agent.component';
 import { RoleDemoModalComponent } from './components/role-demo-modal.component';
 import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
 import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component';
@@ -194,6 +202,14 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
     ResearchDataDividendComponent,
     MdcpGovernanceHubComponent,
     ClinicalCommercialHubComponent,
+    AmbientScribeDrawerComponent,
+    EdiClaimsConsoleComponent,
+    EnterpriseIdentityConsoleComponent,
+    DirectIomtConsoleComponent,
+    MimicOmopBenchmarkHubComponent,
+    SmartFhirLauncherComponent,
+    EhrWritebackConsoleComponent,
+    EdgeAutonomousVoiceAgentComponent,
     RoleDemoModalComponent,
     IntimacyRelationshipVitalityComponent,
     MocaSuiteComponent,
@@ -370,6 +386,86 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
       <!-- MDCP Strategic Clinical & Standards Governance Hub Modal -->
       @if (navShell.showMdcpHubModal()) {
         <app-mdcp-governance-hub></app-mdcp-governance-hub>
+      }
+
+      <!-- Ambient AI Scribe Ingestion & CDS Adjudication Drawer Modal -->
+      @if (navShell.showAmbientScribeDrawer()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Ambient AI Scribe Ingestion Drawer">
+          <div class="relative w-full max-w-4xl my-auto">
+            <app-ambient-scribe-drawer (close)="navShell.closeAmbientScribeDrawer()"></app-ambient-scribe-drawer>
+          </div>
+        </div>
+      }
+
+      <!-- Enterprise Payer & Billing Defense ANSI X12 Claims Console Modal -->
+      @if (navShell.showEdiClaimsModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="ANSI X12 EDI Claims Console">
+          <div class="relative w-full max-w-4xl my-auto">
+            <app-edi-claims-console (close)="navShell.closeEdiClaimsModal()"></app-edi-claims-console>
+          </div>
+        </div>
+      }
+
+      <!-- Institutional Enterprise Identity & SCIM Directory Console Modal -->
+      @if (navShell.showEnterpriseIdentityModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Institutional Enterprise Identity Console">
+          <div class="relative w-full max-w-5xl my-auto">
+            <app-enterprise-identity-console (close)="navShell.closeEnterpriseIdentityModal()"></app-enterprise-identity-console>
+          </div>
+        </div>
+      }
+
+      <!-- Direct IoMT Wearables Console Modal (Apple HealthKit & Google Health Connect) -->
+      @if (navShell.showDirectIomtModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Direct IoMT Wearables Console">
+          <div class="relative w-full max-w-5xl my-auto">
+            <app-direct-iomt-console (close)="navShell.closeDirectIomtModal()"></app-direct-iomt-console>
+          </div>
+        </div>
+      }
+
+      <!-- MIMIC-IV & CMS OMOP Conformal Sepsis Benchmark Hub Modal -->
+      @if (navShell.showSepsisBenchmarkModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="MIMIC-IV and CMS OMOP Conformal Sepsis Benchmark Hub">
+          <div class="relative w-full max-w-5xl my-auto">
+            <app-mimic-omop-benchmark-hub (close)="navShell.closeSepsisBenchmarkModal()"></app-mimic-omop-benchmark-hub>
+          </div>
+        </div>
+      }
+
+      <!-- SMART on FHIR v2 & EHR Marketplace Showroom Modal -->
+      @if (navShell.showEhrMarketplaceModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="SMART on FHIR v2 and EHR Marketplace Hub">
+          <div class="relative w-full max-w-5xl my-auto bg-zinc-950 rounded-3xl border border-zinc-800 p-4 sm:p-6 shadow-2xl text-gray-100">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-zinc-800">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">🏥</span>
+                <span class="text-sm font-mono font-bold text-sky-400">EHR MARKETPLACE &amp; CONNECTION HUB SHOWROOM</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">Epic • Oracle • CARIN</span>
+              </div>
+              <button type="button" (click)="navShell.closeEhrMarketplaceModal()" aria-label="Close EHR Marketplace Modal" class="w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer transition min-h-[44px] min-w-[44px]">✕</button>
+            </div>
+            <app-smart-fhir-launcher></app-smart-fhir-launcher>
+          </div>
+        </div>
+      }
+
+      <!-- EHR Bi-Directional Writeback & Subscription ADT Modal -->
+      @if (navShell.showEhrWritebackModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="EHR Bi-Directional Writeback and Subscription ADT Console">
+          <div class="relative w-full max-w-6xl my-auto">
+            <app-ehr-writeback-console (close)="navShell.closeEhrWritebackModal()"></app-ehr-writeback-console>
+          </div>
+        </div>
+      }
+
+      <!-- Edge Autonomous Offline Voice Agent Modal -->
+      @if (navShell.showEdgeVoiceModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Edge Autonomous Offline Voice Agent Console">
+          <div class="relative w-full max-w-6xl my-auto">
+            <app-edge-autonomous-voice-agent (close)="navShell.closeEdgeVoiceModal()"></app-edge-autonomous-voice-agent>
+          </div>
+        </div>
       }
 
       @defer (on idle) {

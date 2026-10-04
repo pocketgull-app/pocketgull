@@ -3,7 +3,15 @@ import { Injectable, signal } from '@angular/core';
 export type TriageAcuityLevel = 'STAT_EMERGENCY' | 'URGENT' | 'ROUTINE';
 
 export interface IEmergencyRedFlag {
-  category: 'STROKE_BE_FAST' | 'CARDIAC_ACS' | 'SEPSIS_QSOFA' | 'PSYCH_SUICIDE_RISK' | 'RESPIRATORY_FAILURE';
+  category:
+    | 'STROKE_BE_FAST'
+    | 'CARDIAC_ACS'
+    | 'SEPSIS_QSOFA'
+    | 'PSYCH_SUICIDE_RISK'
+    | 'RESPIRATORY_FAILURE'
+    | 'CHOLERA_SHOCK_PLAN_C'
+    | 'MEASLES_SEVERE_COMPLICATION'
+    | 'MALARIA_SEVERE_DANGER';
   description: string;
   mandatoryDirective: string;
   statutoryHotline: string;
@@ -114,6 +122,42 @@ export class ClinicalTriageGuardService {
         description: 'qSOFA sepsis criteria met (Hypotension SBP <= 100 mmHg + Tachypnea RR >= 22 bpm).',
         mandatoryDirective: 'STAT sepsis bundle: blood cultures, serum lactate, broad-spectrum IV antimicrobials, and IV crystalloid resuscitation.',
         statutoryHotline: '911 / Inpatient Sepsis Alert'
+      });
+    }
+
+    // 5. MSF Outbreak Triggers: Cholera Shock / Severe Dehydration (Plan C)
+    const hasRiceWaterDiarrhea = /rice[- ]water|severe\s*watery\s*diarrhea|profuse\s*diarrhea|cholera/i.test(allText);
+    const hasSevereDehydrationSigns = /sunken\s*eyes|skin\s*pinch\s*(?:very\s*slow|tented)|lethargic|floppy|unconscious|unable\s*to\s*drink/i.test(allText);
+    if (hasRiceWaterDiarrhea && hasSevereDehydrationSigns) {
+      redFlags.push({
+        category: 'CHOLERA_SHOCK_PLAN_C',
+        description: 'MSF Plan C Cholera / Severe Dehydration Shock detected (profuse watery diarrhea with severe hypovolemic signs).',
+        mandatoryDirective: 'STAT IV Ringer\'s Lactate 100 mL/kg resuscitation (Phase 1: 30 mL/kg bolus; Phase 2: 70 mL/kg). Reassess pulse every 15 min. Discard oral rehydration until alert enough to drink.',
+        statutoryHotline: 'Emergency Cholera Treatment Unit (CTU) / STAT IV Resuscitation'
+      });
+    }
+
+    // 6. MSF Outbreak Triggers: Complicated Measles
+    const hasMeasles = /measles|rubeola|morbilli|maculopapular\s*rash.*fever/i.test(allText);
+    const hasMeaslesComplication = /stridor|chest\s*indrawing|corneal\s*clouding|corneal\s*ulcer|severe\s*croup|inability\s*to\s*feed/i.test(allText);
+    if (hasMeasles && hasMeaslesComplication) {
+      redFlags.push({
+        category: 'MEASLES_SEVERE_COMPLICATION',
+        description: 'MSF Complicated Measles: acute measles with respiratory compromise (stridor/indrawing) or ocular lesions.',
+        mandatoryDirective: 'Immediate inpatient isolation. Administer age-tiered high-dose Vitamin A STAT (Day 1 & Day 2). Initiate broad-spectrum amoxicillin or ceftriaxone for secondary bronchopneumonia.',
+        statutoryHotline: 'Inpatient Pediatric Isolation / Humanitarian Outbreak Unit'
+      });
+    }
+
+    // 7. MSF Outbreak Triggers: Severe Complicated Malaria
+    const hasMalaria = /malaria|falciparum|fever.*chills.*rigors/i.test(allText);
+    const hasMalariaDanger = /cerebral\s*malaria|convulsion|blackwater|severe\s*anemia|jaundice.*fever|repeated\s*vomiting.*malaria/i.test(allText);
+    if (hasMalaria && hasMalariaDanger) {
+      redFlags.push({
+        category: 'MALARIA_SEVERE_DANGER',
+        description: 'MSF Severe Complicated Malaria with neurological or severe physiological danger signs.',
+        mandatoryDirective: 'Administer parenteral Artesunate (3.0 mg/kg if <20kg; 2.4 mg/kg if >=20kg) IV or IM STAT pre-referral. Transfer to inpatient facility.',
+        statutoryHotline: 'Inpatient Emergency / STAT Artesunate Center'
       });
     }
 

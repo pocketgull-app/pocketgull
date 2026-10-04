@@ -2,7 +2,9 @@ import { Component, ChangeDetectionStrategy, signal, computed, inject, output, O
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
-import { IPatient } from '../services/patient.types';
+import { IPatient, HistoryEntry, IPatientState } from '../services/patient.types';
+import { BrandedQrCodeComponent } from './shared/branded-qr-code.component';
+import { QrBrandVariant } from '../services/branded-qr-code.service';
 
 export interface ICaseCarePlan {
   diagnosis: string;
@@ -65,7 +67,7 @@ export interface IShiftPatientCase {
 @Component({
   selector: 'app-doctor-shift-simulator',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 z-[1200] bg-black/85 backdrop-blur-2xl p-3 sm:p-6 flex items-center justify-center overflow-y-auto font-mono text-zinc-100 animate-in fade-in duration-300">
@@ -129,6 +131,16 @@ export interface IShiftPatientCase {
                 <button (click)="stepNextPhase()" [disabled]="currentPhaseIndex() === phases.length - 1"
                   class="px-3 py-1.5 rounded-xl bg-zinc-950 hover:bg-zinc-850 text-zinc-300 font-bold uppercase transition cursor-pointer border border-zinc-800 disabled:opacity-40">
                   Step →
+                </button>
+                <button (click)="openPhaseHandoffQrModal()"
+                  class="px-3.5 py-1.5 rounded-xl bg-teal-600/25 hover:bg-teal-600 text-teal-300 hover:text-white font-bold uppercase tracking-wider transition cursor-pointer border border-teal-500/40 shadow-sm flex items-center gap-1.5"
+                  title="Generate Branded QR Code for Batch Phase Handoff & Morning Rounds">
+                  <span>📱</span> <span>Handoff Phase QR</span>
+                </button>
+                <button (click)="insertAllCurrentPhaseCasesIntoChart()"
+                  class="px-3 py-1.5 rounded-xl bg-emerald-600/25 hover:bg-emerald-600 text-emerald-300 hover:text-white font-bold uppercase tracking-wider transition cursor-pointer border border-emerald-500/40 shadow-sm flex items-center gap-1.5"
+                  title="Insert all encounters in this phase into Patient Chart & History">
+                  <span>📥</span> <span>Chart Phase</span>
                 </button>
                 <button (click)="resetShift()"
                   class="px-3 py-1.5 rounded-xl bg-zinc-950 hover:bg-zinc-850 text-zinc-400 hover:text-white transition cursor-pointer border border-zinc-800">
@@ -269,14 +281,24 @@ export interface IShiftPatientCase {
                         </span>
                       </td>
                       <td class="py-2.5 px-3 text-right">
-                        @if (c.carePlan) {
-                          <button (click)="openCarePlan(c)"
-                            class="px-2.5 py-1 rounded-lg bg-orange-500/20 hover:bg-orange-500 text-orange-300 hover:text-zinc-950 border border-orange-500/40 text-[10px] font-bold uppercase transition cursor-pointer flex items-center gap-1 ml-auto">
-                            <span>📋</span> <span>Care Plan</span>
+                        <div class="flex items-center justify-end gap-1.5">
+                          <button (click)="openCaseHandoffQr(c)" title="Generate Bedside Handoff QR Code"
+                            class="px-2 py-1 rounded-lg bg-teal-600/20 hover:bg-teal-600 text-teal-300 hover:text-white border border-teal-500/40 text-[10px] font-bold uppercase transition cursor-pointer flex items-center gap-1">
+                            <span>📱</span> <span class="hidden sm:inline">Handoff</span>
                           </button>
-                        } @else {
-                          <span class="text-[10px] text-zinc-500">Summary</span>
-                        }
+                          <button (click)="insertCaseIntoPatientChart(c)" title="Insert directly into patient chart"
+                            class="px-2 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 text-[10px] font-bold uppercase transition cursor-pointer flex items-center gap-1">
+                            <span>📥</span> <span class="hidden sm:inline">Chart</span>
+                          </button>
+                          @if (c.carePlan) {
+                            <button (click)="openCarePlan(c)"
+                              class="px-2.5 py-1 rounded-lg bg-orange-500/20 hover:bg-orange-500 text-orange-300 hover:text-zinc-950 border border-orange-500/40 text-[10px] font-bold uppercase transition cursor-pointer flex items-center gap-1">
+                              <span>📋</span> <span>Care Plan</span>
+                            </button>
+                          } @else {
+                            <span class="text-[10px] text-zinc-500">Summary</span>
+                          }
+                        </div>
                       </td>
                     </tr>
                   }
@@ -413,7 +435,18 @@ export interface IShiftPatientCase {
 
             <!-- Actions Bar: Load Patient & FHIR Export -->
             <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-zinc-800">
-              <div class="flex items-center gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <button (click)="insertCaseIntoPatientChart(sc)"
+                  class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer border border-emerald-400/50 flex items-center gap-1.5 shadow-md">
+                  <span>📥</span> <span>Insert Into Patient Chart</span>
+                </button>
+
+                <button (click)="openCaseHandoffQr(sc)"
+                  class="px-4 py-2 rounded-xl bg-teal-600/30 hover:bg-teal-600 text-teal-300 hover:text-white font-bold text-xs uppercase tracking-wider transition cursor-pointer border border-teal-500/50 flex items-center gap-1.5 shadow-md"
+                  title="Generate Bedside Handoff QR Code for mobile transfer">
+                  <span>📱</span> <span>Handoff &amp; Transfer QR</span>
+                </button>
+
                 <button (click)="loadCaseIntoPatientState(sc)"
                   class="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-bold text-xs uppercase tracking-wider transition cursor-pointer border border-orange-400/50 flex items-center gap-1.5">
                   <span>🏥</span> <span>Load Into Active State</span>
@@ -435,6 +468,145 @@ export interface IShiftPatientCase {
         </div>
       }
 
+      <!-- Interactive Patient Case Handoff QR Modal -->
+      @if (qrHandoffCase(); as hoc) {
+        <div class="fixed inset-0 z-[1400] bg-black/85 backdrop-blur-xl p-3 sm:p-6 flex items-center justify-center animate-in fade-in duration-200">
+          <div class="w-full max-w-xl bg-zinc-950 rounded-3xl border border-teal-500/40 shadow-2xl p-6 max-h-[92vh] overflow-y-auto space-y-5 font-mono text-zinc-100">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-teal-400 animate-pulse"></span>
+                <div>
+                  <h3 class="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
+                    📱 Bedside Patient Handoff &amp; Transfer QR
+                  </h3>
+                  <p class="text-[11px] text-zinc-400 font-sans">
+                    Scan with any mobile device or tablet for instant bedside SBAR patient transfer.
+                  </p>
+                </div>
+              </div>
+              <button (click)="closeCaseHandoffQr()"
+                class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 flex items-center justify-center transition cursor-pointer text-sm font-bold">
+                ✕
+              </button>
+            </div>
+
+            <!-- Patient Acuity & Overview -->
+            <div class="p-3.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div>
+                <span class="text-white font-black text-sm block">{{ hoc.patientName }}</span>
+                <span class="text-zinc-400 text-[11px]">{{ hoc.ward }} • Encounter at {{ hoc.time }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span [class]="hoc.triageColor" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase">
+                  {{ hoc.triageLevel }}
+                </span>
+                <span class="px-2 py-0.5 rounded bg-zinc-800 text-teal-300 font-bold text-[10px]">
+                  ICD-10: {{ hoc.carePlan?.icd10 || 'Z00.00' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Branded QR Code Display -->
+            <div class="flex justify-center">
+              <app-branded-qr-code
+                [data]="caseHandoffUrl()"
+                [variant]="caseHandoffVariant()"
+                title="Scan for Bedside Shift Transfer"
+                subtitle="Encodes SBAR note and clinical parameters"
+                destinationSummary="PocketGull Clinical Shift Transfer • HIPAA Safe Harbor Compliant"
+                [downloadFilename]="'shift-handoff-' + hoc.id + '.png'"
+                [ariaLabel]="'Patient Shift Handoff QR Code for ' + hoc.patientName">
+              </app-branded-qr-code>
+            </div>
+
+            <!-- SBAR Note Brief & Action -->
+            <div class="p-3.5 rounded-xl bg-zinc-900/90 border border-zinc-800 space-y-2 text-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-teal-400 font-bold uppercase text-[10.5px]">SBAR Bedside Clinical Note:</span>
+                <button (click)="copyCaseHandoffSbar()"
+                  class="px-2.5 py-1 rounded-lg bg-teal-600/20 hover:bg-teal-600 text-teal-300 hover:text-white border border-teal-500/40 text-[10.5px] font-bold uppercase transition cursor-pointer">
+                  {{ handoffSbarCopied() ? '✓ Copied SBAR' : '📋 Copy SBAR' }}
+                </button>
+              </div>
+              <p class="text-zinc-300 text-[11.5px] font-sans leading-relaxed">
+                <strong>S:</strong> {{ hoc.patientName }} in {{ hoc.ward }} ({{ hoc.triageLevel }}).<br>
+                <strong>B:</strong> Chief complaint: {{ hoc.chiefComplaint }}. Dx: {{ hoc.carePlan?.diagnosis || 'Pending evaluation' }}.<br>
+                <strong>A:</strong> {{ hoc.parityAudit }}. Antonio Antonovsky Immediate Remedy: {{ hoc.carePlan?.antonovskyManageability?.immediateRemedy || 'Supportive care' }}.<br>
+                <strong>R:</strong> Ongoing observation; generic pharmacy benchmark {{ hoc.carePlan?.pharmacyBenchmark?.genericBenchmark || '$4-$10' }}.
+              </p>
+            </div>
+
+            <div class="flex items-center justify-between pt-2 border-t border-zinc-800 text-[11px] text-zinc-500">
+              <span>🔒 0 Direct Identifiers (Safe Harbor §164.514)</span>
+              <button (click)="closeCaseHandoffQr()" class="font-bold text-teal-400 hover:underline">
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Interactive Phase Roster Handoff QR Modal -->
+      @if (isPhaseHandoffModalOpen()) {
+        <div class="fixed inset-0 z-[1400] bg-black/85 backdrop-blur-xl p-3 sm:p-6 flex items-center justify-center animate-in fade-in duration-200">
+          <div class="w-full max-w-xl bg-zinc-950 rounded-3xl border border-teal-500/40 shadow-2xl p-6 max-h-[92vh] overflow-y-auto space-y-5 font-mono text-zinc-100">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <div class="flex items-center gap-2.5">
+                <span class="w-3 h-3 rounded-full bg-teal-400 animate-pulse"></span>
+                <div>
+                  <h3 class="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
+                    📱 Phase {{ currentPhaseIndex() + 1 }} Rounding Roster QR
+                  </h3>
+                  <p class="text-[11px] text-zinc-400 font-sans">
+                    Batch roster transfer for morning rounds and colleague shift handoff.
+                  </p>
+                </div>
+              </div>
+              <button (click)="closePhaseHandoffQrModal()"
+                class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 flex items-center justify-center transition cursor-pointer text-sm font-bold">
+                ✕
+              </button>
+            </div>
+
+            <!-- Phase Summary -->
+            <div class="p-3.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-1 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="text-orange-400 font-bold text-sm">{{ currentPhase().title }}</span>
+                <span class="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-bold text-[10px]">
+                  {{ currentPhase().timeRange }}
+                </span>
+              </div>
+              <p class="text-zinc-400 text-[11px] font-sans">
+                {{ currentPhase().subtitle }} • {{ activeCases().length }} Active Patients
+              </p>
+            </div>
+
+            <!-- Branded QR Code Display -->
+            <div class="flex justify-center">
+              <app-branded-qr-code
+                [data]="phaseHandoffUrl()"
+                variant="teal"
+                title="Scan for Batch Phase Handoff"
+                [subtitle]="'Encodes ' + activeCases().length + ' patient roster for incoming attending'"
+                [destinationSummary]="'PocketGull Shift Roster • Phase ' + (currentPhaseIndex() + 1) + ' Morning Rounds'"
+                [downloadFilename]="'phase-' + (currentPhaseIndex() + 1) + '-roster-qr.png'"
+                [ariaLabel]="'Phase ' + (currentPhaseIndex() + 1) + ' Shift Handoff QR Code'">
+              </app-branded-qr-code>
+            </div>
+
+            <!-- Patient Count & Safe Harbor Notice -->
+            <div class="flex items-center justify-between pt-2 border-t border-zinc-800 text-[11px] text-zinc-500">
+              <span>🔒 Encrypted Ephemeral Rounding Transfer</span>
+              <button (click)="closePhaseHandoffQrModal()" class="font-bold text-teal-400 hover:underline">
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+
     </div>
   `
 })
@@ -449,6 +621,9 @@ export class DoctorShiftSimulatorComponent implements OnDestroy {
   isAnalyticsFlipped = signal<boolean>(false);
   selectedCase = signal<IShiftPatientCase | null>(null);
   statusNotification = signal<string | null>(null);
+  qrHandoffCase = signal<IShiftPatientCase | null>(null);
+  isPhaseHandoffModalOpen = signal<boolean>(false);
+  handoffSbarCopied = signal<boolean>(false);
   private lastAnalyticsFlipTime = 0;
   private autoPlayTimer: any = null;
 
@@ -550,6 +725,40 @@ export class DoctorShiftSimulatorComponent implements OnDestroy {
 
   cumulativeApiSpend = computed(() => {
     return Number(this.phases.slice(0, this.currentPhaseIndex() + 1).reduce((sum, p) => sum + p.apiSpend, 0).toFixed(3));
+  });
+
+  caseHandoffUrl = computed(() => {
+    const c = this.qrHandoffCase();
+    if (!c) return 'https://pocketgull.app/handoff/shift';
+    const params = new URLSearchParams({
+      id: c.id,
+      name: c.patientName,
+      ward: c.ward,
+      triage: c.triageLevel,
+      icd10: c.carePlan?.icd10 || 'Z00.00',
+      time: c.time
+    });
+    return `https://pocketgull.app/handoff/shift?${params.toString()}`;
+  });
+
+  caseHandoffVariant = computed<QrBrandVariant>(() => {
+    const c = this.qrHandoffCase();
+    if (!c) return 'teal';
+    if (c.triageLevel === 'L1-RED' || c.triageLevel === 'L2-ORANGE') return 'amber';
+    if (c.triageLevel === 'L4-GREEN') return 'emerald';
+    return 'teal';
+  });
+
+  phaseHandoffUrl = computed(() => {
+    const phase = this.currentPhase();
+    const cases = this.activeCases();
+    const params = new URLSearchParams({
+      phase: String(this.currentPhaseIndex() + 1),
+      title: phase.title,
+      time: phase.timeRange,
+      count: String(cases.length)
+    });
+    return `https://pocketgull.app/handoff/shift-phase?${params.toString()}`;
   });
 
   patientCases: Record<number, IShiftPatientCase[]> = {
@@ -1119,6 +1328,83 @@ export class DoctorShiftSimulatorComponent implements OnDestroy {
     this.selectedCase.set(c);
   }
 
+  insertCaseIntoPatientChart(c: IShiftPatientCase): void {
+    const patientId = c.id;
+    const existingPatient = this.patientManagement.patients().find(
+      p => p.id === patientId || p.name.toLowerCase() === c.patientName.toLowerCase()
+    );
+
+    const encounterDate = new Date().toISOString().split('T')[0].replace(/-/g, '.');
+    const carePlan = c.carePlan;
+
+    const carePlanDetails = carePlan
+      ? `Three Acts Trajectory:\n• Act I (Days 0–30): ${carePlan.threeActs.act1}\n• Act II (Weeks 2–12): ${carePlan.threeActs.act2}\n• Act III (Months 6+): ${carePlan.threeActs.act3}\n\nMED-SKEPTIC Epistemic Verification:\n• Status: ${carePlan.medSkepticAudit.cochraneRoB} (p=${carePlan.medSkepticAudit.pValue})\n• Verdict: ${carePlan.medSkepticAudit.skepticalVerdict}\n• Decision Curve Net Benefit: +${carePlan.medSkepticAudit.dcaNetBenefit} | Unneeded Procedures Avoided: ${carePlan.medSkepticAudit.unnecessaryProceduresAvoided}/100\n\nAntonovsky Salutogenic Manageability:\n• Immediate Low-Cost Fix: ${carePlan.antonovskyManageability.immediateRemedy} (Est. ${carePlan.antonovskyManageability.costEstimate})\n• Living Water: ${carePlan.antonovskyManageability.remineralizationWaterPlan}\n\nRespectful Pharmacy Benchmarks:\n• Standard Retail: ${carePlan.pharmacyBenchmark.standardRetail} → Generic Benchmark: ${carePlan.pharmacyBenchmark.genericBenchmark} (Est. Out-of-Pocket: ${carePlan.pharmacyBenchmark.estimatedOutOfPocket})`
+      : `Shift Encounter (${c.time} • ${c.ward}): ${c.chiefComplaint}`;
+
+    const clinicalNote = {
+      id: `cn-shift-${c.id}-${Date.now()}`,
+      text: `[12-Hour Shift Encounter • ${c.ward} ${c.time}] ${c.chiefComplaint}. Assessment: ${carePlan?.diagnosis || 'Evaluated'} (ICD-10: ${carePlan?.icd10 || 'Z00.00'}) [${c.triageLevel}].\n\n${carePlanDetails}`,
+      sourceLens: '12-Hour Shift',
+      date: new Date().toISOString()
+    };
+
+    const patientStatePayload: IPatientState = {
+      issues: {},
+      patientGoals: `Manage ${carePlan?.diagnosis || c.chiefComplaint} with Three Acts evidence-grounded care plan.`,
+      vitals: {
+        bp: '124/82',
+        hr: '76',
+        temp: '98.6',
+        spO2: '98%',
+        cgmGlucoseMgDl: '110',
+        weight: '68',
+        height: '170'
+      },
+      reasonForVisit: c.chiefComplaint,
+      clinicalNotes: [clinicalNote]
+    };
+
+    const historyEntry: HistoryEntry = {
+      type: 'Visit',
+      date: encounterDate,
+      summary: `12-Hour Shift Encounter (${c.time} • ${c.ward}): ${carePlan?.diagnosis || c.chiefComplaint} [${c.triageLevel}]`,
+      state: patientStatePayload
+    };
+
+    if (existingPatient) {
+      this.patientManagement.addHistoryEntry(existingPatient.id, historyEntry);
+      this.patientManagement.selectPatient(existingPatient.id);
+    } else {
+      const newPatient: IPatient = {
+        id: patientId,
+        name: c.patientName,
+        age: 45,
+        gender: 'Female',
+        lastVisit: encounterDate,
+        preexistingConditions: carePlan?.diagnosis ? [carePlan.diagnosis] : [],
+        patientGoals: patientStatePayload.patientGoals,
+        vitals: patientStatePayload.vitals,
+        issues: {},
+        history: [historyEntry],
+        bookmarks: [],
+        clinicalNotes: [clinicalNote],
+        reasonForVisit: c.chiefComplaint
+      };
+      this.patientManagement.importPatient(newPatient);
+    }
+
+    this.loadCaseIntoPatientState(c);
+    this.statusNotification.set(`✓ Encounter for "${c.patientName}" successfully inserted into Patient Chart & History!`);
+  }
+
+  insertAllCurrentPhaseCasesIntoChart(): void {
+    const cases = this.activeCases();
+    for (const c of cases) {
+      this.insertCaseIntoPatientChart(c);
+    }
+    this.statusNotification.set(`✓ All ${cases.length} Phase ${this.currentPhaseIndex() + 1} encounters inserted into Patient Chart & History!`);
+  }
+
   loadCaseIntoPatientState(c: IShiftPatientCase): void {
     const patientPayload = {
       id: c.id,
@@ -1140,6 +1426,7 @@ export class DoctorShiftSimulatorComponent implements OnDestroy {
         {
           id: `cn-${c.id}`,
           text: `12-Hour Shift Encounter (${c.time} - ${c.ward}): ${c.chiefComplaint}. Assessment: ${c.carePlan?.diagnosis || ''} (ICD-10: ${c.carePlan?.icd10 || ''}). Three Acts Care Plan initiated.`,
+          sourceLens: '12-Hour Shift',
           date: new Date().toISOString()
         }
       ]
@@ -1283,6 +1570,36 @@ export class DoctorShiftSimulatorComponent implements OnDestroy {
     this.stopAutoPlay();
     this.currentPhaseIndex.set(0);
     this.statusNotification.set(null);
+  }
+
+  openCaseHandoffQr(c: IShiftPatientCase): void {
+    this.qrHandoffCase.set(c);
+    this.handoffSbarCopied.set(false);
+  }
+
+  closeCaseHandoffQr(): void {
+    this.qrHandoffCase.set(null);
+    this.handoffSbarCopied.set(false);
+  }
+
+  openPhaseHandoffQrModal(): void {
+    this.isPhaseHandoffModalOpen.set(true);
+  }
+
+  closePhaseHandoffQrModal(): void {
+    this.isPhaseHandoffModalOpen.set(false);
+  }
+
+  copyCaseHandoffSbar(): void {
+    const c = this.qrHandoffCase();
+    if (!c) return;
+    const sbarText = `SBAR CLINICAL HANDOFF\nSituation: ${c.patientName} in ${c.ward} (${c.triageLevel} at ${c.time})\nBackground: ${c.chiefComplaint}. Dx: ${c.carePlan?.diagnosis || 'Pending'}\nAssessment: ${c.parityAudit}. Immediate Remedy: ${c.carePlan?.antonovskyManageability?.immediateRemedy || 'Supportive care'}\nRecommendation: Pacing & monitoring; pharmacy benchmark ${c.carePlan?.pharmacyBenchmark?.genericBenchmark || '$4-$10'}`;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(sbarText).then(() => {
+        this.handoffSbarCopied.set(true);
+        setTimeout(() => this.handoffSbarCopied.set(false), 2500);
+      });
+    }
   }
 
   ngOnDestroy() {

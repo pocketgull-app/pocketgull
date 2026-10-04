@@ -1,0 +1,55 @@
+{
+  "modelName": "CtcfTadBoundaryInsulationRegressor",
+  "inputFeatureNames": [
+    "cohesin_speed_kb_s",
+    "ctcf_permeability",
+    "is_central_ctcf_deleted",
+    "nipbl_loading_factor"
+  ],
+  "targetNames": [
+    "tad_insulation_score",
+    "fractal_gamma",
+    "loop_span_kb"
+  ],
+  "weights": [
+    [
+      0.037273,
+      0.000361,
+      0.153269
+    ],
+    [
+      -0.259855,
+      0.000803,
+      0.329271
+    ],
+    [
+      -0.350261,
+      -0.139838,
+      499.801664
+    ],
+    [
+      0.000369,
+      0.00062,
+      0.329947
+    ],
+    [
+      0.796153,
+      1.018213,
+      499.233377
+    ]
+  ],
+  "metrics": {
+    "r2Scores": [
+      0.9394,
+      0.9882,
+      1.0
+    ],
+    "maeScores": [
+      0.0315,
+      0.0057,
+      0.1775
+    ],
+    "meanR2": 0.9759,
+    "meanMae": 0.0716
+  }
+}

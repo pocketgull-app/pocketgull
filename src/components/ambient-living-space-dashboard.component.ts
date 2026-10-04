@@ -1,11 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, output } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CrossBorderHealthWalletService } from '../services/cross-border-health-wallet.service';
+import { BrandedQrCodeComponent } from './shared/branded-qr-code.component';
 
 @Component({
   selector: 'app-ambient-living-space-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 z-[1100] bg-black/80 backdrop-blur-3xl p-6 sm:p-10 flex flex-col justify-between overflow-y-auto font-mono text-zinc-100 animate-in fade-in duration-300">
@@ -90,12 +91,35 @@ import { CrossBorderHealthWalletService } from '../services/cross-border-health-
             <p class="text-xs text-zinc-300 leading-relaxed font-sans">
               Instantly export de-identified clinical telemetry and FHIR R4 care plans into an offline-scannable QR wallet for specialist consults and international emergency care abroad.
             </p>
+
+            <!-- Scannable Cross-Border Emergency QR Code -->
+            @if (showPassportQr()) {
+              <div class="mt-4 p-3 bg-zinc-950/80 rounded-2xl border border-orange-500/30 flex flex-col items-center">
+                <div class="flex items-center justify-between w-full mb-2">
+                  <span class="text-[10px] font-mono font-bold text-orange-400 uppercase tracking-wider">🌐 Scannable Offline Health Pass</span>
+                  <button type="button" (click)="showPassportQr.set(false)" class="text-xs text-zinc-500 hover:text-zinc-300 cursor-pointer">✕ Close</button>
+                </div>
+                <app-branded-qr-code
+                  [data]="passportQrPayload()"
+                  [size]="140"
+                  variant="amber"
+                  [showLogo]="true"
+                  [showCard]="false"
+                  [showDestinationGrounding]="true"
+                  [enableCopy]="true"
+                  [enableDownload]="true"
+                  downloadFilename="cross-border-health-wallet.png"
+                  title="WHO ICD-11 Emergency Wallet"
+                  ariaLabel="Cross-Border Emergency Medical Passport QR Code">
+                </app-branded-qr-code>
+              </div>
+            }
           </div>
 
           <div class="mt-6 pt-4 border-t border-zinc-800 flex items-center justify-between font-mono text-xs">
             <span class="text-zinc-400">Passport Status</span>
             <button (click)="generatePassport()" class="font-bold text-orange-400 underline hover:text-orange-300 cursor-pointer">
-              Generate Passport QR
+              {{ showPassportQr() ? 'Regenerate QR' : 'Generate Passport QR' }}
             </button>
           </div>
         </div>
@@ -119,8 +143,27 @@ export class AmbientLivingSpaceDashboardComponent {
   closeModal = output<void>();
   openGleeAlbum = output<void>();
 
+  showPassportQr = signal<boolean>(false);
+  passportQrPayload = signal<string>('');
+  passportWalletId = signal<string>('');
+
   generatePassport() {
     const wallet = this.walletService.generateEmergencyWallet('English');
-    alert(`🌐 International Health Wallet Generated:\nID: ${wallet.walletId}\nVitals: ${wallet.vitalsSummary}\nICD-11: ${wallet.activeConditionsIcd11.join('; ')}`);
+    const compactPayload = JSON.stringify({
+      schema: 'POCKETGULL_CROSS_BORDER_EMERGENCY_v1',
+      walletId: wallet.walletId,
+      patientCohort: wallet.patientCohort,
+      vitals: wallet.vitalsSummary,
+      icd11: wallet.activeConditionsIcd11,
+      directive: wallet.emergencyContactDirective,
+      timestamp: wallet.issuanceTimestamp
+    });
+    this.passportQrPayload.set(compactPayload);
+    this.passportWalletId.set(wallet.walletId);
+    this.showPassportQr.set(true);
+
+    if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+      window.alert(`🌐 International Health Wallet Generated:\nID: ${wallet.walletId}\nVitals: ${wallet.vitalsSummary}\nICD-11: ${wallet.activeConditionsIcd11.join('; ')}`);
+    }
   }
 }

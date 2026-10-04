@@ -38,4 +38,23 @@ describe('AutonomicCoherenceBridgeComponent', () => {
     expect(component.coherenceService.isResonanceActive()).toBe(true);
     expect(component.peerNetwork.peers().length).toBeGreaterThan(0);
   });
+
+  it('2. Toggles my peer pairing QR code card', () => {
+    expect(component.showMyPairingQr()).toBe(false);
+
+    component.toggleMyPairingQr();
+    expect(component.showMyPairingQr()).toBe(true);
+    expect(component.selectedQrPayload()).toContain('peer-sync');
+
+    component.toggleMyPairingQr();
+    expect(component.showMyPairingQr()).toBe(false);
+  });
+
+  it('3. Opens scannable QR card for specific peer when viewPeerQr is invoked', () => {
+    const peer = component.peerNetwork.peers()[0];
+    component.viewPeerQr(peer);
+
+    expect(component.showMyPairingQr()).toBe(true);
+    expect(component.selectedQrPayload()).toBe(peer.qrPayloadUrl);
+  });
 });

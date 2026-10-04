@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title PocketGull — Hugging Face & Kaggle Model Hub Exporter
+title "PocketGull — Hugging Face and Kaggle Model Hub Exporter"
 
 echo =================================================================
 echo   POCKETGULL LLC -- GEMMA 3 LORA MODEL HUB PACKAGER
-echo   Packages all 11 fine-tuned clinical adapters with Open Science
+echo   Packages all 30 fine-tuned clinical adapters with Open Science
 echo   Model Cards and Zenodo attribution (DOI: 10.5281/zenodo.20647514)
 echo =================================================================
 echo.
@@ -21,7 +21,7 @@ if %errorlevel% neq 0 (
 
 echo.
 echo =================================================================
-echo   ALL 11 GEMMA 3 LORA ADAPTERS PACKAGED SUCCESSFULLY
+echo   ALL 30 CLINICAL LORA ADAPTERS PACKAGED SUCCESSFULLY
 echo   Output: adapters\huggingface\model_hub_manifest.json
 echo =================================================================
 pause

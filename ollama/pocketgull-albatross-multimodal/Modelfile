@@ -1,9 +1,8 @@
 # 🦙 Ollama Modelfile for PocketGull Albatross (12B Integrative)
 # Grounded in NIH NLM MedQuAD, WHO mhGAP Guidelines & Level A Clinical Consensus
-# License: Apache-2.0 | Publisher: PocketGull LLC (Phillip Gear / @philgear)
-# HF Repo: https://huggingface.co/philgear/pocketgull-albatross-multimodal
+# License: Apache-2.0 | Publisher: PocketGull LLC
 
-FROM gemma2:2b
+FROM gemma3:12b
 
 # Runtime Parameters
 PARAMETER temperature 0.3

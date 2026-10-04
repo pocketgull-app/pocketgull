@@ -67,6 +67,7 @@ import { createDiscoveryRouter } from './server/routes/discovery.routes';
 import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
 import { rsnaKneeRouter } from './server/routes/rsna-knee.routes';
 import { cdsHooksRouter } from './server/routes/cds-hooks.routes';
+import { fhirSubscriptionRouter } from './server/routes/fhir-subscription.routes';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -661,6 +662,7 @@ app.use('/api/v1/agent-builder', manifestRateLimiter, vertexAgentRouter);
 app.use('/api/agent-builder', manifestRateLimiter, vertexAgentRouter);
 app.use('/api/ml/rsna-knee', manifestRateLimiter, rsnaKneeRouter);
 app.use('/cds-services', cdsHooksRouter);
+app.use('/api/fhir/subscription', fhirSubscriptionRouter);
 
 app.all('/api/python/*splat', manifestRateLimiter, (req, res) => {
   res.status(200).json({
@@ -948,10 +950,12 @@ app.use('/api/python', createProxyMiddleware({
 // ── Mount Extracted Routers ────────────────────────────────────────────────
 import { createResearchRouter } from './server/routes/research.routes';
 import { createContractsRouter } from './server/routes/contracts.routes';
+import { createEnterpriseIdentityRouter } from './server/routes/enterprise-identity.routes';
 
 const routeDeps = { getApiKey, getGcpAccessToken, normalizeAndValidateModel };
 
 app.use('/api/auth', createAuthRouter());
+app.use('/api', createEnterpriseIdentityRouter());
 app.use('/api/ai', createAiRouter(routeDeps));
 app.use('/api/patients', createPatientsRouter());
 app.use('/api/research', createResearchRouter());

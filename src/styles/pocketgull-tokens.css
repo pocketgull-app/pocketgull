@@ -265,23 +265,18 @@
 
 /* ==========================================================================
    🖋️ ISMP / FDA Clinical Disambiguation & Tabular Numerals Suite
-   - Universal ISMP Posology: Slashed zero ('cv08' / 'zero'), curved lowercase l ('cv05'),
-     serifed capital I ('ss02'), and tabular figures ('tnum' 1) are enforced universally
-     across all bold headings, narrative reading text, and clinical charts.
-   - Optical Aperture Calibration: Compensates for bold glyph sidebearings so tabular
-     0, I, and l maintain crisp optotypic legibility without visual cramping.
+   - Scoped ISMP Posology: Slashed zero ('cv08' / 'zero'), curved lowercase l ('cv05'),
+     serifed capital I ('ss02'), and tabular figures ('tnum' 1) are strictly scoped
+     to explicit clinical posology, dosage guards, and telemetry elements.
+   - Headings (h1..h6), bold text, titles, and general UI retain native bold weight
+     and clean typography without forced glyph substitutions or weight drops.
    ========================================================================== */
 
-/* 1. Universal Clinical Text & Bold Headings (ISMP Compliant) */
-h1, h2, h3, h4, h5, h6,
-.font-heading,
-.prose-heading,
-.display-title,
-.font-pocketgull-sans,
+/* 1. Explicit Clinical Posology & Dosage Text (ISMP Compliant) */
 .font-pocketgull-sans-clinical,
-b, strong,
-.font-bold,
-.font-semibold {
+.clinical-dosage-guard,
+.ismp-clinical-text,
+.ismp-posology {
   font-variant-numeric: tabular-nums slashed-zero;
   font-feature-settings: 'cv08' 1, 'cv05' 1, 'ss02' 1, 'tnum' 1, 'zero' 1;
   letter-spacing: 0.012em;

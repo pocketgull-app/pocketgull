@@ -6,11 +6,13 @@ import { BioThemeSongEngineService } from '../../services/bio-theme-song-engine.
 import { PeerNetworkService } from '../../services/peer-network.service';
 import { CrossDeviceSyncService } from '../../services/cross-device-sync.service';
 import { PocketgullDesktopSuiteComponent } from '../pocketgull-desktop-suite.component';
+import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
+import { QrBrandVariant } from '../../services/branded-qr-code.service';
 
 @Component({
   selector: 'app-companion-sync-modal',
   standalone: true,
-  imports: [CommonModule, PocketgullDesktopSuiteComponent],
+  imports: [CommonModule, PocketgullDesktopSuiteComponent, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300" role="dialog" aria-modal="true">
@@ -107,41 +109,17 @@ import { PocketgullDesktopSuiteComponent } from '../pocketgull-desktop-suite.com
             </div>
           </div>
         } @else {
-          <!-- QR Code SVG Representation -->
+          <!-- Scannable Branded QR Code -->
           <div class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-zinc-950 rounded-xl border border-gray-100 dark:border-zinc-850">
-            <div class="p-3 bg-white rounded-xl shadow-md border border-gray-200 flex flex-col items-center">
-              <!-- Dynamic SVG QR Matrix -->
-              <svg class="w-44 h-44" viewBox="0 0 100 100" fill="currentColor">
-                <!-- Finder Patterns -->
-                <rect x="5" y="5" width="25" height="25" fill="#1e1b4b" rx="4"/>
-                <rect x="9" y="9" width="17" height="17" fill="white" rx="2"/>
-                <rect x="13" y="13" width="9" height="9" fill="#1e1b4b" rx="1"/>
-
-                <rect x="70" y="5" width="25" height="25" fill="#1e1b4b" rx="4"/>
-                <rect x="74" y="9" width="17" height="17" fill="white" rx="2"/>
-                <rect x="78" y="13" width="9" height="9" fill="#1e1b4b" rx="1"/>
-
-                <rect x="5" y="70" width="25" height="25" fill="#1e1b4b" rx="4"/>
-                <rect x="9" y="74" width="17" height="17" fill="white" rx="2"/>
-                <rect x="13" y="78" width="9" height="9" fill="#1e1b4b" rx="1"/>
-
-                <!-- Dynamic Data Matrix Bits based on mode -->
-                <circle cx="45" cy="15" r="3" fill="#4f46e5"/>
-                <circle cx="55" cy="15" r="3" fill="#8b5cf6"/>
-                <circle cx="40" cy="25" r="3" fill="#10b981"/>
-                <circle cx="50" cy="35" r="4" fill="#ec4899"/>
-                <circle cx="60" cy="45" r="3" fill="#4f46e5"/>
-                <circle cx="35" cy="55" r="3" fill="#10b981"/>
-                <circle cx="50" cy="65" r="3" fill="#8b5cf6"/>
-                <circle cx="75" cy="45" r="3" fill="#ec4899"/>
-                <circle cx="85" cy="65" r="3" fill="#10b981"/>
-                <circle cx="45" cy="85" r="3" fill="#4f46e5"/>
-                <circle cx="65" cy="85" r="4" fill="#8b5cf6"/>
-              </svg>
-              <span class="mt-2 text-[10px] font-mono text-gray-500 uppercase tracking-widest">
-                {{ syncMode() === 'network' ? 'Bio-Network Scannable QR' : 'FHIR R4 Smart Launch' }}
-              </span>
-            </div>
+            <app-branded-qr-code
+              [data]="deepLinkUrl()"
+              [variant]="syncQrVariant()"
+              [title]="syncMode() === 'network' ? 'Bio-Network Scannable QR' : 'FHIR R4 Smart Launch'"
+              subtitle="Scan with Any Mobile Device"
+              [destinationSummary]="syncQrDestinationSummary()"
+              downloadFilename="pocketgull-companion-sync.png"
+              [ariaLabel]="syncMode() === 'network' ? 'Bio-Network Scannable QR' : 'FHIR R4 Smart Launch'">
+            </app-branded-qr-code>
 
             <!-- Active Metadata Section -->
             <div class="mt-3 text-center">
@@ -232,6 +210,22 @@ export class CompanionSyncModalComponent {
     const mode = this.syncMode();
     const scope = this.patientState.sentinelScope();
     return `pocketgull://sync?patientId=${pId}&mode=${mode}&scope=${scope}&fhirStore=cloud-run&vitals=hr_bp_spo2_macro`;
+  });
+
+  syncQrVariant = computed<QrBrandVariant>(() => {
+    const mode = this.syncMode();
+    if (mode === 'patient') return 'emerald';
+    if (mode === 'doctor') return 'amber';
+    if (mode === 'network') return 'obsidian';
+    return 'teal';
+  });
+
+  syncQrDestinationSummary = computed(() => {
+    const mode = this.syncMode();
+    if (mode === 'network') {
+      return `PocketGull Bio-Network • Theme: ${this.themeEngine.myThemeSong().themeSongName}`;
+    }
+    return `PocketGull FHIR R4 Smart Launch • ${this.currentPatientName()}`;
   });
 
   copyLink(): void {

@@ -138,6 +138,8 @@ __pycache__/
 .ipython/
 .jupyter/
 .matplotlib/
+input_resgated_runtime.py
+raptor_input_summary.json
 .spyder-py3/
 
 # ------------------------------------------------------------------------------
@@ -181,12 +183,15 @@ pocketgull_api/*.pt
 **/.fvm/
 **/build/
 **/ephemeral/
+**/GeneratedPluginRegistrant.java
 .gradle/
 **/gradle/wrapper/gradle-wrapper.jar
 typefaces_vault/
 .typefaces_vault/
 public/fonts/google_fonts_submission/
 public/*.bundle.js.map
+documentation/fonts/
+documentation/fonts.css
 
 # ------------------------------------------------------------------------------
 # 8. Testing, Coverage, Benchmarks & Lighthouse Reports

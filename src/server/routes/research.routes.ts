@@ -10,6 +10,8 @@ import type { Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { randomBytes } from 'node:crypto';
 import { sanitizeLogInput } from '../../utils/security-helper';
+import { BigQueryCohortExporterService } from '../../services/bigquery-cohort-exporter.service';
+import { UnicefOpenDataService } from '../../services/unicef-open-data.service';
 
 export function createResearchRouter(): Router {
   const router = Router();
@@ -247,6 +249,133 @@ export function createResearchRouter(): Router {
       const msg = err instanceof Error ? err.message : String(err);
       console.error('[ResearchRoutes] Error processing dividend payout disbursement:', sanitizeLogInput(msg));
       res.status(500).json({ error: 'Internal error processing dividend payout disbursement' });
+    }
+  });
+
+  // GET /api/research/bigquery/datasets (Google Cloud Public Health Datasets Catalog)
+  router.get('/bigquery/datasets', limiter, (_req: Request, res: Response) => {
+    try {
+      const exporter = new BigQueryCohortExporterService();
+      const certifiedCohorts = exporter.getCertifiedCohorts();
+      const datasets = [
+        {
+          id: 'nih_clinical_trials',
+          name: 'NIH ClinicalTrials.gov Protocols & Results',
+          tableId: 'bigquery-public-data.nih_clinical_trials.clinical_study_block',
+          category: 'clinical_trials',
+          crosswalkType: 'ICD-10 Phenotype Matching'
+        },
+        {
+          id: 'cms_synthetic_omop',
+          name: 'CMS Synthetic Patient Data OMOP CDM v5.3',
+          tableId: 'bigquery-public-data.cms_synthetic_patient_data_omop.measurement',
+          category: 'real_world_evidence',
+          crosswalkType: 'LOINC / Concept Mapping'
+        },
+        {
+          id: 'mimiciv_icu',
+          name: 'PhysioNet MIMIC-IV ICU Physiological Signals',
+          tableId: 'physionet-data.mimiciv_icu.chartevents',
+          category: 'critical_care',
+          crosswalkType: 'Acoustic / SOFA ICU Benchmarks'
+        },
+        {
+          id: 'fda_drug',
+          name: 'FDA FAERS Post-Marketing Drug Safety',
+          tableId: 'bigquery-public-data.fda_drug.event',
+          category: 'pharmacovigilance',
+          crosswalkType: 'Polypharmacy Adverse Signals'
+        },
+        {
+          id: 'epa_air_quality',
+          name: 'EPA Historical Air Quality PM2.5 & Ozone',
+          tableId: 'bigquery-public-data.epa_historical_air_quality.pm25_daily_summary',
+          category: 'environmental_sdoh',
+          crosswalkType: 'Geographic FIPS / AQI Risk'
+        },
+        {
+          id: 'world_bank_health',
+          name: 'World Bank Health, Nutrition and Population',
+          tableId: 'bigquery-public-data.world_bank_health_population.health_nutrition_population',
+          category: 'global_epidemiology',
+          crosswalkType: 'SDG 3.2 Child & Maternal Benchmarks'
+        }
+      ];
+
+      res.status(200).json({
+        success: true,
+        count: datasets.length,
+        supportedCohorts: certifiedCohorts.map(c => ({ id: c.id, title: c.title, tableName: c.tableName })),
+        datasets
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[ResearchRoutes] Error fetching BigQuery datasets:', sanitizeLogInput(msg));
+      res.status(500).json({ error: 'Internal error fetching BigQuery datasets' });
+    }
+  });
+
+  // GET /api/research/bigquery/crosswalk (Generate Federated SQL Crosswalk Query)
+  router.get('/bigquery/crosswalk', limiter, (req: Request, res: Response) => {
+    try {
+      const cohortId = String(req.query['cohortId'] || 'cohort_diabetes_cgm');
+      const targetDataset = String(req.query['targetDataset'] || 'nih_clinical_trials') as
+        | 'nih_clinical_trials'
+        | 'cms_synthetic_omop'
+        | 'mimiciv_icu'
+        | 'fda_drug'
+        | 'epa_air_quality'
+        | 'world_bank_health';
+
+      const validTargets = ['nih_clinical_trials', 'cms_synthetic_omop', 'mimiciv_icu', 'fda_drug', 'epa_air_quality', 'world_bank_health'];
+      if (!validTargets.includes(targetDataset)) {
+        return res.status(400).json({
+          error: `Invalid targetDataset. Must be one of: ${validTargets.join(', ')}`
+        });
+      }
+
+      const exporter = new BigQueryCohortExporterService();
+      const crosswalkSql = exporter.generateCrosswalkQuery(cohortId, targetDataset);
+
+      res.status(200).json({
+        success: true,
+        cohortId,
+        targetDataset,
+        crosswalkSql,
+        partitionHygieneDays: BigQueryCohortExporterService.PARTITION_EXPIRATION_DAYS,
+        kAnonymityFloor: 8,
+        disclaimer: 'De-identified under HIPAA §164.514 Safe Harbor. Prohibits re-identification.'
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[ResearchRoutes] Error generating BigQuery crosswalk SQL:', sanitizeLogInput(msg));
+      res.status(500).json({ error: 'Internal error generating BigQuery crosswalk SQL' });
+    }
+  });
+
+  // GET /api/research/unicef/benchmarks (UNICEF Child Survival Benchmarks & SDMX Profiles)
+  router.get('/unicef/benchmarks', limiter, (req: Request, res: Response) => {
+    try {
+      const unicef = new UnicefOpenDataService();
+      const regionParam = req.query['region'] ? String(req.query['region']) : undefined;
+      const profiles = unicef.listRegionalProfiles();
+      const selected = regionParam ? unicef.getProfileByRegion(regionParam as any) : unicef.activeRegionalProfile();
+
+      res.status(200).json({
+        success: true,
+        activeRegion: selected.regionCode,
+        benchmarkProfile: selected,
+        sdmxEndpoint: unicef.sdmxBaseUrl,
+        allAvailableRegions: profiles.map(p => ({
+          code: p.regionCode,
+          name: p.regionName,
+          underFiveMortalityRate: p.underFiveMortalityRatePer1k
+        }))
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[ResearchRoutes] Error fetching UNICEF benchmarks:', sanitizeLogInput(msg));
+      res.status(500).json({ error: 'Internal error fetching UNICEF benchmarks' });
     }
   });
 

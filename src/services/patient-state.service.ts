@@ -1141,6 +1141,24 @@ export class PatientStateService {
         this.vitals.update(vitals => ({ ...vitals, [key]: value }));
     }
 
+    updateVitals(partialVitals: Partial<Record<keyof IPatientVitals | 'heartRate' | 'oxygenSaturation' | 'respiratoryRate' | 'temperature', string | number>>): void {
+        this.vitals.update(vitals => {
+            const updated = { ...vitals };
+            if (partialVitals.hr !== undefined) updated.hr = String(partialVitals.hr);
+            if (partialVitals.heartRate !== undefined) updated.hr = String(partialVitals.heartRate);
+            if (partialVitals.spO2 !== undefined) updated.spO2 = String(partialVitals.spO2);
+            if (partialVitals.oxygenSaturation !== undefined) updated.spO2 = String(partialVitals.oxygenSaturation);
+            if (partialVitals.temp !== undefined) updated.temp = String(partialVitals.temp);
+            if (partialVitals.temperature !== undefined) updated.temp = String(partialVitals.temperature);
+            if (partialVitals.bp !== undefined) updated.bp = String(partialVitals.bp);
+            if (partialVitals.cgmGlucoseMgDl !== undefined) updated.cgmGlucoseMgDl = String(partialVitals.cgmGlucoseMgDl);
+            if (partialVitals.steps !== undefined) updated.steps = String(partialVitals.steps);
+            if (partialVitals.hrvRmssd !== undefined) updated.hrvRmssd = String(partialVitals.hrvRmssd);
+            if (partialVitals.sleepEfficiency !== undefined) updated.sleepEfficiency = String(partialVitals.sleepEfficiency);
+            return updated;
+        });
+    }
+
     updateCmpLabs(cmpLabs: any) {
         console.log('[PatientStateService] updateCmpLabs called:', cmpLabs);
         this.vitals.update(vitals => ({ ...vitals, cmpLabs: { ...(vitals.cmpLabs || {}), ...cmpLabs } }));

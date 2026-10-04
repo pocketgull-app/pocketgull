@@ -70,4 +70,10 @@ describe('EmtHandoffLensTabComponent Unit Suite', () => {
     component.isPatientPregnant.set(true);
     expect(component.isPatientPregnant()).toBe(true);
   });
+
+  it('6. Generates activeFhirPayload for branded QR code', () => {
+    const payload = component.activeFhirPayload();
+    expect(payload).toBeDefined();
+    expect(payload).toContain('Bundle');
+  });
 });

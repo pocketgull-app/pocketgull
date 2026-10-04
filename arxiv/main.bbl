@@ -1,0 +1,33 @@
+\begin{thebibliography}{1}
+
+\bibitem{wong2021external}
+A.~Wong, E.~Otles, J.~P. Donnelly, A.~K. Goyal, C.~Shen, K.~Singh, T.~S. Valley, A.~Sankar, M.~R. Mathis, and M.~W. Sjoding.
+\newblock External validation of a widely implemented proprietary sepsis prediction model in hospitalized patients.
+\newblock {\em JAMA Internal Medicine}, 181(8):1065--1070, 2021.
+
+\bibitem{singer2016third}
+M.~Singer, C.~S. Deutschman, C.~W. Seymour, M.~Shankar-Hari, D.~Annane, M.~Bauer, R.~Bellomo, G.~R. Bernard, J.-D. Chiche, C.~M. Coopersmith, et~al.
+\newblock The third international consensus definitions for sepsis and septic shock (Sepsis-3).
+\newblock {\em JAMA}, 315(8):801--810, 2016.
+
+\bibitem{sendelbach2013alarm}
+S.~Sendelbach and M.~Funk.
+\newblock Alarm fatigue: a patient safety concern.
+\newblock {\em AACN Advanced Critical Care}, 24(4):378--386, 2013.
+
+\bibitem{vovk2005algorithmic}
+V.~Vovk, A.~Gammerman, and G.~Shafer.
+\newblock {\em Algorithmic Learning in a Random World}.
+\newblock Springer Science \& Business Media, New York, NY, 2005.
+
+\bibitem{angelopoulos2023conformal}
+A.~N. Angelopoulos and S.~Bates.
+\newblock Conformal prediction: A gentle introduction.
+\newblock {\em Foundations and Trends in Machine Learning}, 16(4):494--591, 2023.
+
+\bibitem{johnson2023mimic}
+A.~E. Johnson, L.~Bulgarelli, L.~Shen, A.~Gayles, A.~Shammout, S.~Horng, T.~J. Pollard, S.~Hao, B.~Moody, B.~Gow, et~al.
+\newblock MIMIC-IV, a freely accessible electronic health record dataset.
+\newblock {\em Scientific Data}, 10(1):1, 2023.
+
+\end{thebibliography}

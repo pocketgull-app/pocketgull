@@ -5,8 +5,10 @@ import * as DOMPurify from 'dompurify';
 export interface ICrossBorderEmergencyWallet {
   walletId: string;
   timestamp: string;
+  issuanceTimestamp?: string;
   language: 'English' | 'Spanish' | 'French' | 'Mandarin';
   patientAgeGender: string;
+  patientCohort?: string;
   vitalsSummary: string;
   activeConditionsIcd11: string[];
   prescribedAlbum: string;
@@ -55,11 +57,16 @@ export class CrossBorderHealthWalletService {
       Mandarin: '紧急医疗遥测：适用于国际急救人员的去标识化医疗记录。'
     };
 
+    const nowIso = new Date().toISOString();
+    const ageGenderStr = sanitize(`Age: ${this.state.patientAge() || 'Adult'}, Gender: ${this.state.patientGender() || 'De-identified'}`);
+
     return {
       walletId: `PG-INTL-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
-      timestamp: new Date().toISOString(),
+      timestamp: nowIso,
+      issuanceTimestamp: nowIso,
       language: targetLanguage,
-      patientAgeGender: sanitize(`Age: ${this.state.patientAge() || 'Adult'}, Gender: ${this.state.patientGender() || 'De-identified'}`),
+      patientAgeGender: ageGenderStr,
+      patientCohort: ageGenderStr,
       vitalsSummary: sanitize(`BP: ${vitals.bp || '120/80'} mmHg | HR: ${vitals.hr || '72'} BPM | SpO2: ${vitals.spO2 || '98'}% | Temp: ${vitals.temp || '98.6'}°F`),
       activeConditionsIcd11: activeConditions,
       prescribedAlbum: 'Actuarial Glee: 12-Track Duet Singalong Album (+12.0 QALYs Prescribed)',

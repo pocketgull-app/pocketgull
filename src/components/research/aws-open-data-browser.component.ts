@@ -6,7 +6,7 @@
  *
  * @module components/research/aws-open-data-browser
  */
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-data.service';
 
@@ -290,6 +290,34 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
               }
             </div>
 
+            @if (ds.sampleBigQuerySql) {
+              <div class="mb-4">
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5z"/>
+                    </svg>
+                    BigQuery Standard SQL Template
+                  </span>
+                  <button
+                    (click)="copySql(ds.sampleBigQuerySql)"
+                    class="px-2.5 py-1 text-[11px] font-semibold bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/80 dark:hover:bg-emerald-900 text-emerald-800 dark:text-emerald-300 rounded-md transition-colors inline-flex items-center gap-1 cursor-pointer"
+                    type="button"
+                  >
+                    @if (copiedSql()) {
+                      <span>✓ Copied!</span>
+                    } @else {
+                      <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span>Copy SQL</span>
+                    }
+                  </button>
+                </div>
+                <pre class="p-3 bg-zinc-900 text-zinc-100 dark:bg-black/90 dark:text-zinc-200 rounded-xl font-mono text-[11px] overflow-x-auto max-h-48 border border-zinc-800 selection:bg-emerald-600 selection:text-white leading-relaxed"><code>{{ ds.sampleBigQuerySql }}</code></pre>
+              </div>
+            }
+
             <div class="flex flex-wrap gap-1.5 mb-6">
               @for (tag of ds.tags; track tag) {
                 <span class="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded text-[11px]">
@@ -325,6 +353,7 @@ import { AwsOpenDataService, IOpenHealthDataset } from '../../services/aws-open-
 })
 export class AwsOpenDataBrowserComponent {
   openData = inject(AwsOpenDataService);
+  copiedSql = signal<boolean>(false);
 
   categories = [
     { id: 'all', label: 'All Categories' },
@@ -339,5 +368,17 @@ export class AwsOpenDataBrowserComponent {
   onSearchInput(e: Event): void {
     const target = e.target as HTMLInputElement;
     this.openData.setSearch(target.value);
+  }
+
+  async copySql(sql: string): Promise<void> {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(sql);
+      }
+      this.copiedSql.set(true);
+      setTimeout(() => this.copiedSql.set(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy SQL to clipboard', err);
+    }
   }
 }

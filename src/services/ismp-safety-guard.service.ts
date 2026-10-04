@@ -52,6 +52,7 @@ export interface IIsmpSafetyAudit {
   sanitizedText: string;
   hasViolations: boolean;
   violations: IIsmpViolation[];
+  violationsCount?: number;
   tallManApplied: string[];
   isSafe: boolean;
 }
@@ -651,6 +652,10 @@ export class IsmpSafetyGuardService {
    * Performs an exhaustive ISMP safety audit against a clinical order or note,
    * detecting decimal errors, prohibited abbreviations, and look-alike/sound-alike drugs.
    */
+  auditSafety(text: string): IIsmpSafetyAudit {
+    return this.auditPrescription(text);
+  }
+
   auditPrescription(text: string): IIsmpSafetyAudit {
     const originalText = text || '';
     const violations: IIsmpViolation[] = [];
@@ -733,6 +738,7 @@ export class IsmpSafetyGuardService {
       sanitizedText,
       hasViolations: violations.length > 0,
       violations,
+      violationsCount: violations.length,
       tallManApplied,
       isSafe: violations.length === 0
     };

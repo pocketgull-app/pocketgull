@@ -1,9 +1,8 @@
-# 🦙 Ollama Modelfile for PocketGull Compass (2B)
+# 🦙 Ollama Modelfile for PocketGull Compass (4B)
 # Grounded in NIH NLM MedQuAD, WHO mhGAP Guidelines & Level A Clinical Consensus
-# License: Apache-2.0 | Publisher: PocketGull LLC (Phillip Gear / @philgear)
-# HF Repo: https://huggingface.co/philgear/pocketgull-compass-2b
+# License: Apache-2.0 | Publisher: PocketGull LLC
 
-FROM gemma2:2b
+FROM gemma3:4b
 
 # Runtime Parameters
 PARAMETER temperature 0.2

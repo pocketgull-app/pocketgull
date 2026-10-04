@@ -1,11 +1,13 @@
-import { Component, inject, ViewChild, ElementRef, AfterViewInit, OnDestroy, PLATFORM_ID, NgZone } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, viewChild, ElementRef, AfterViewInit, OnDestroy, PLATFORM_ID, NgZone } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ContactlessRppgService } from '../services/contactless-rppg.service';
+import { AvsUiService } from '../services/avs-ui.service';
 
 @Component({
   selector: 'app-rppg-camera-hud',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-5 space-y-4 backdrop-blur-sm">
       <!-- Header -->
@@ -61,18 +63,18 @@ import { ContactlessRppgService } from '../services/contactless-rppg.service';
         </div>
 
         <div>
-          <span class="text-[9px] uppercase tracking-wider font-bold text-zinc-500">HRV RMSSD (Vagal Tone)</span>
-          <div class="text-lg font-black text-cyan-300 font-mono">{{ rppg.hrvRmssdMs() }} ms</div>
+          <span class="text-[9px] uppercase tracking-wider font-bold text-zinc-500">Vagal RMSSD (HRV)</span>
+          <div class="text-lg font-black text-cyan-400 font-mono">{{ rppg.hrvRmssdMs() }} ms</div>
         </div>
 
         <div>
-          <span class="text-[9px] uppercase tracking-wider font-bold text-zinc-500">Resonant Breath Cadence</span>
-          <div class="text-lg font-black text-amber-300 font-mono">{{ rppg.baroreflexResonanceBpm() }} BPM</div>
+          <span class="text-[9px] uppercase tracking-wider font-bold text-zinc-500">Resonant Pacing</span>
+          <div class="text-lg font-black text-indigo-400 font-mono">{{ rppg.baroreflexResonanceBpm() }} BPM</div>
         </div>
 
         <div>
           <span class="text-[9px] uppercase tracking-wider font-bold text-zinc-500">Autonomic Balance</span>
-          <div class="text-lg font-black text-emerald-300 font-mono">{{ rppg.autonomicBalanceScore() }}%</div>
+          <div class="text-lg font-black text-rose-400 font-mono">{{ rppg.autonomicBalanceScore() }}%</div>
         </div>
       </div>
     </div>
@@ -80,11 +82,11 @@ import { ContactlessRppgService } from '../services/contactless-rppg.service';
 })
 export class RppgCameraHudComponent implements AfterViewInit, OnDestroy {
   readonly rppg = inject(ContactlessRppgService);
+  private readonly avsUi = inject(AvsUiService);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly zone = inject(NgZone);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  @ViewChild('pulseCanvas') pulseCanvasRef!: ElementRef<HTMLCanvasElement>;
+  readonly pulseCanvas = viewChild<ElementRef<HTMLCanvasElement>>('pulseCanvas');
   private renderRafId: number | null = null;
 
   ngAfterViewInit(): void {
@@ -94,15 +96,17 @@ export class RppgCameraHudComponent implements AfterViewInit, OnDestroy {
   }
 
   startCamera(): void {
+    this.avsUi.playSuccess();
     this.rppg.startCameraRppg();
   }
 
   stopCamera(): void {
+    this.avsUi.playToggle();
     this.rppg.stopCameraRppg();
   }
 
   private startWaveformRenderLoop(): void {
-    const canvas = this.pulseCanvasRef?.nativeElement;
+    const canvas = this.pulseCanvas()?.nativeElement;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;

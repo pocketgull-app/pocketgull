@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { Injector, runInInjectionContext, NgZone } from '@angular/core';
+import { Injector, runInInjectionContext, NgZone, signal } from '@angular/core';
 import { WebMcpRegistrationService, normalizeToolInputSchema } from './webmcp-registration.service';
 import { PatientStateService } from './patient-state.service';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';
@@ -18,6 +18,15 @@ import { FhirR7HorizonService } from './fhir/fhir-r7-horizon.service';
 import { FhirR7R4ConverterService } from './fhir/fhir-r7-r4-converter.service';
 import { EhrAppOrchardPackagerService } from './fhir/ehr-app-orchard-packager.service';
 import { SmartOnFhirLauncherService } from './fhir/smart-on-fhir-launcher.service';
+import { AmbientScribeAdapterService } from './ambient-scribe-adapter.service';
+import { IsmpSafetyGuardService } from './ismp-safety-guard.service';
+import { EdgeAudioPrimacyService } from './edge-audio-primacy.service';
+import { EnterpriseIdentityService } from './enterprise-identity.service';
+import { AuthSsoService } from './auth-sso.service';
+import { DirectIomtWearablesService } from './hardware/direct-iomt-wearables.service';
+import { MimicOmopBenchmarkService } from './research/mimic-omop-benchmark.service';
+import { EhrWritebackService } from './fhir/ehr-writeback.service';
+import { EdgeAutonomousVoiceAgentService } from './voice/edge-autonomous-voice-agent.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -212,6 +221,98 @@ mathematicalModel: Softmax T=0.85`;
       })
     };
 
+    const mockIomtService: any = {
+      activeProvider: signal('APPLE_HEALTHKIT'),
+      deviceMetadata: signal({
+        APPLE_HEALTHKIT: {
+          deviceId: 'FDA-UDI-00194252003348-APPLEWATCH',
+          manufacturer: 'Apple Inc.',
+          model: 'Apple Watch Ultra 2 (Direct HealthKit CoreMotion)',
+          hardwareRootOfTrust: 'APPLE_SECURE_ENCLAVE',
+          firmwareVersion: 'watchOS 11.2 (Direct IPC)',
+          assignedPatientId: 'PATIENT-SELF-01',
+          isBackgroundSyncActive: true,
+          backgroundIntervalSec: 5,
+          lastSyncTimestamp: new Date().toISOString(),
+          bypassedVendorMiddlemen: ['Apple Health Cloud Webhooks', 'Garmin Connect Cloud API']
+        },
+        GOOGLE_HEALTH_CONNECT: {
+          deviceId: 'FDA-UDI-00840244700025-PIXELPHONE',
+          manufacturer: 'Google LLC',
+          model: 'Google Pixel 9 Pro (Android 15 Jetpack Health Connect)',
+          hardwareRootOfTrust: 'GOOGLE_TITAN_M2',
+          firmwareVersion: 'Android 15.0-HC-IPC',
+          assignedPatientId: 'PATIENT-SELF-01',
+          isBackgroundSyncActive: true,
+          backgroundIntervalSec: 5,
+          lastSyncTimestamp: new Date().toISOString(),
+          bypassedVendorMiddlemen: ['Google Cloud Healthcare Egress']
+        },
+        BLE_DIRECT_MESH: {
+          deviceId: 'FDA-UDI-00725882001124-POLARH10',
+          manufacturer: 'Polar Electro',
+          model: 'Polar H10 ECG/HR Chest Sensor (Web Bluetooth BLE)',
+          hardwareRootOfTrust: 'GENERIC_SECURE_ELEMENT',
+          firmwareVersion: 'BLE 5.2 Nordic nRF52840',
+          assignedPatientId: 'PATIENT-SELF-01',
+          isBackgroundSyncActive: false,
+          backgroundIntervalSec: 1,
+          lastSyncTimestamp: new Date().toISOString(),
+          bypassedVendorMiddlemen: ['Polar Flow Cloud API']
+        }
+      }),
+      liveBiometrics: signal({
+        heartRateBpm: 72,
+        hrvRmssdMs: 58.2,
+        spo2Pct: 99.0,
+        respiratoryRateBpm: 14.1,
+        wristSkinTemperatureC: 36.5,
+        bloodGlucoseMgDl: 96,
+        activeStepsDaily: 8420,
+        sleepDurationMinutes: 460,
+        deepSleepMinutes: 104,
+        remSleepMinutes: 118,
+        sleepEfficiencyPct: 94.0,
+        syncedAt: new Date().toISOString()
+      }),
+      batteryState: signal({
+        levelPercent: 68,
+        isCharging: false,
+        swellingRiskDetected: false,
+        optimalCyclingBand: '20% - 80% (Preservation)',
+        chargeGuidance: 'Ideal battery range (20%–80%).',
+        lifespanExtensionYears: 3.5
+      }),
+      selectProvider: vi.fn((p) => mockIomtService.activeProvider.set(p)),
+      startBackgroundSync: vi.fn(),
+      stopBackgroundSync: vi.fn(),
+      triggerManualSync: vi.fn().mockResolvedValue({ heartRateBpm: 72 }),
+      ingestAppleHealthKitSample: vi.fn().mockResolvedValue({ heartRateBpm: 72 }),
+      ingestGoogleHealthConnectRecord: vi.fn().mockResolvedValue({ heartRateBpm: 72 }),
+      ingestBleMeshFrame: vi.fn().mockResolvedValue({ heartRateBpm: 72 }),
+      triggerTestCardiacAnomaly: vi.fn().mockResolvedValue(undefined),
+      getTrustStatus: vi.fn().mockReturnValue({
+        isApproved: true,
+        pillarStatuses: { trust: true, identity: true, privacy: true, protection: true, safety: true, security: true },
+        hardwareRootOfTrust: 'APPLE_SECURE_ENCLAVE',
+        sha256AuditDigest: 'sha256-mock-digest',
+        timestamp: new Date().toISOString()
+      }),
+      getCompactionMetrics: vi.fn().mockReturnValue({
+        totalWaveformSamplesIngested: 18450,
+        totalSamplesDiscardedAtEdge: 18360,
+        compactionRatioPercent: 99.5,
+        dataLandfillKBSaved: '143.4',
+        incidentSnapshotsFrozen: 1,
+        nuisanceAlarmsSuppressed: 12,
+        clinicianMinutesSaved: 14.4
+      }),
+      exportWearableAuditReceipt: vi.fn().mockReturnValue(JSON.stringify({
+        standard: 'IEEE P2933™ TIPPSS / FDA 21 CFR Part 11 Electronic Records',
+        device: { hardwareRootOfTrust: 'GOOGLE_TITAN_M2' }
+      }))
+    };
+
     const injector = Injector.create({
       providers: [
         { provide: PatientStateService, useValue: mockPatientState },
@@ -253,6 +354,21 @@ mathematicalModel: Softmax T=0.85`;
         { provide: FhirR7R4ConverterService, useClass: FhirR7R4ConverterService },
         { provide: EhrAppOrchardPackagerService, useClass: EhrAppOrchardPackagerService },
         { provide: SmartOnFhirLauncherService, useClass: SmartOnFhirLauncherService },
+        { provide: IsmpSafetyGuardService, useClass: IsmpSafetyGuardService },
+        { provide: AmbientScribeAdapterService, useClass: AmbientScribeAdapterService },
+        { provide: EdgeAudioPrimacyService, useClass: EdgeAudioPrimacyService },
+        {
+          provide: AuthSsoService,
+          useValue: {
+            user: signal(null),
+            setSession: vi.fn()
+          }
+        },
+        { provide: EnterpriseIdentityService, useClass: EnterpriseIdentityService },
+        { provide: DirectIomtWearablesService, useValue: mockIomtService },
+        { provide: MimicOmopBenchmarkService, useClass: MimicOmopBenchmarkService },
+        { provide: EhrWritebackService, useClass: EhrWritebackService },
+        { provide: EdgeAutonomousVoiceAgentService, useClass: EdgeAutonomousVoiceAgentService },
         { provide: NgZone, useValue: mockNgZone }
       ]
     });
@@ -260,10 +376,27 @@ mathematicalModel: Softmax T=0.85`;
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 75 WebMCP agentic tools on modelContext', () => {
+  it('should register all 94 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(77);
+    expect(registeredTools.size).toBe(94);
+    expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
+    expect(registeredTools.has('synthesize_edge_offline_sbar')).toBe(true);
+    expect(registeredTools.has('get_edge_offline_queue_status')).toBe(true);
+    expect(registeredTools.has('execute_ehr_bi_directional_writeback')).toBe(true);
+    expect(registeredTools.has('get_ehr_writeback_status')).toBe(true);
+    expect(registeredTools.has('trigger_fhir_subscription_adt_event')).toBe(true);
+    expect(registeredTools.has('run_sepsis_benchmark_evaluation')).toBe(true);
+    expect(registeredTools.has('get_benchmark_preprint_dossier')).toBe(true);
+    expect(registeredTools.has('get_uspto_provisional_patent_binder')).toBe(true);
+    expect(registeredTools.has('sync_iomt_wearable_telemetry')).toBe(true);
+    expect(registeredTools.has('get_iomt_device_trust_status')).toBe(true);
+    expect(registeredTools.has('validate_saml_assertion')).toBe(true);
+    expect(registeredTools.has('sync_scim_directory')).toBe(true);
+    expect(registeredTools.has('route_audio_transcription_edge')).toBe(true);
+    expect(registeredTools.has('get_edge_audio_finops_ledger')).toBe(true);
+    expect(registeredTools.has('ingest_ambient_scribe_transcript')).toBe(true);
+    expect(registeredTools.has('get_ambient_scribe_adjudications')).toBe(true);
     expect(registeredTools.has('getInternalState')).toBe(true);
     expect(registeredTools.has('explain_smoe_gating_decision')).toBe(true);
     expect(registeredTools.has('switch_shift_patient_smoe')).toBe(true);
@@ -756,10 +889,16 @@ mathematicalModel: Softmax T=0.85`;
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 75 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 94 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(77);
+    expect(registeredTools.size).toBe(94);
+    expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
+    expect(registeredTools.has('run_sepsis_benchmark_evaluation')).toBe(true);
+    expect(registeredTools.has('get_benchmark_preprint_dossier')).toBe(true);
+    expect(registeredTools.has('get_uspto_provisional_patent_binder')).toBe(true);
+    expect(registeredTools.has('sync_iomt_wearable_telemetry')).toBe(true);
+    expect(registeredTools.has('get_iomt_device_trust_status')).toBe(true);
     expect(registeredTools.has('getInternalState')).toBe(true);
     expect(registeredTools.has('explain_smoe_gating_decision')).toBe(true);
     expect(registeredTools.has('switch_shift_patient_smoe')).toBe(true);
@@ -991,10 +1130,24 @@ mathematicalModel: Softmax T=0.85`;
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(77);
+    expect((service as any).mcpControllers.length).toBe(94);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
+  });
+
+  it('should execute get_uspto_provisional_patent_binder and return 20 claims and docket details', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('get_uspto_provisional_patent_binder');
+    expect(tool).toBeDefined();
+
+    const res = await tool.execute({ claimType: 'System' });
+    expect(res.isError).toBeFalsy();
+    const data = JSON.parse(res.content[0].text);
+    expect(data.docketNumber).toBe('PG-PAT-2026-CONF-001');
+    expect(data.totalClaimsReturned).toBe(10);
+    expect(data.figures.length).toBe(4);
+    expect(data.title).toContain('Tri-Paradigm Consilience');
   });
 
 
@@ -1210,6 +1363,353 @@ mathematicalModel: Softmax T=0.85`;
       expect(tool).toBeDefined();
       expect(tool.annotations?.debugging).toBe(true);
       expect(tool.annotations?.readOnlyHint).toBe(true);
+    });
+
+    it('should execute ingest_ambient_scribe_transcript tool and return adjudicated DDI & ISMP analysis', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('ingest_ambient_scribe_transcript');
+      expect(tool).toBeDefined();
+
+      const res = await tool.execute({
+        scribeSource: 'abridge',
+        rawTranscript: 'Patient encounter: BP is 134/86, HR 78. Order gabapentin 300.0 mg and .5 mg clonazepam at bedtime.',
+        chiefComplaint: 'Neuropathic Pain and Insomnia',
+        autoCommitToPatientState: false
+      });
+
+      expect(res.isError).toBeFalsy();
+      const parsed = JSON.parse(res.content[0].text);
+      expect(parsed.adjudicationId).toContain('adj_abridge_');
+      expect(parsed.extractedEntities.vitals.bloodPressureSystolic).toBe(134);
+      expect(parsed.extractedEntities.vitals.bloodPressureDiastolic).toBe(86);
+      expect(parsed.extractedEntities.vitals.heartRate).toBe(78);
+      // DDI check: Gabapentin + Clonazepam
+      expect(parsed.drugInteractions.length).toBeGreaterThan(0);
+      expect(parsed.drugInteractions[0].severity).toBe('CRITICAL_LETHAL');
+      // ISMP check: 300.0 mg (trailing zero) and .5 mg (naked decimal)
+      expect(parsed.ismpSafetyAudit.hasViolations).toBe(true);
+      expect(parsed.integrityDigest).toBeDefined();
+    });
+
+    it('should execute get_ambient_scribe_adjudications tool and retrieve session summary', async () => {
+      service.registerTools({});
+      const ingestTool = registeredTools.get('ingest_ambient_scribe_transcript');
+      await ingestTool.execute({
+        scribeSource: 'nuance_dax',
+        rawTranscript: 'Patient with sciatica. BP 120/80.'
+      });
+
+      const getTool = registeredTools.get('get_ambient_scribe_adjudications');
+      expect(getTool).toBeDefined();
+
+      const res = await getTool.execute({});
+      expect(res.isError).toBeFalsy();
+      const parsed = JSON.parse(res.content[0].text);
+      expect(parsed.totalTranscripts).toBeGreaterThanOrEqual(1);
+      expect(parsed.adjudications.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should report ambientScribe telemetry in getInternalState', () => {
+      const state = service.getInternalState('ambient');
+      expect(state.ambientScribe).toBeDefined();
+      expect(state.ambientScribe.supportedScribes).toContain('abridge');
+      expect(state.ambientScribe.supportedScribes).toContain('nuance_dax');
+      expect(state.ambientScribe.supportedScribes).toContain('suki');
+    });
+
+    it('should execute route_audio_transcription_edge and return structured ISMP-checked note', async () => {
+      service.registerTools({});
+      const edgeTool = registeredTools.get('route_audio_transcription_edge');
+      expect(edgeTool).toBeDefined();
+
+      const res = await edgeTool.execute({
+        rawTranscript: 'patient has severe lower back pain and sciatica blood pressure 130 over 85',
+        targetFormat: 'SOAP'
+      });
+      expect(res.isError).toBeFalsy();
+      const parsed = JSON.parse(res.content[0].text);
+      expect(parsed.targetFormat).toBe('SOAP');
+      expect(parsed.polishedText).toContain('SUBJECTIVE:');
+      expect(parsed.estimatedTokensSaved).toBeGreaterThan(0);
+    });
+
+    it('should execute get_edge_audio_finops_ledger and report grossMarginPreservationRate', async () => {
+      service.registerTools({});
+      const finOpsTool = registeredTools.get('get_edge_audio_finops_ledger');
+      expect(finOpsTool).toBeDefined();
+
+      const res = await finOpsTool.execute({});
+      expect(res.isError).toBeFalsy();
+      const parsed = JSON.parse(res.content[0].text);
+      expect(parsed.grossMarginPreservationRate).toBe(100);
+      expect(parsed.totalCostSavedUsd).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should report edgeAudioFinOps telemetry in getInternalState', () => {
+      const state = service.getInternalState('audio');
+      expect(state.edgeAudioFinOps).toBeDefined();
+      expect(state.edgeAudioFinOps.grossMarginPreservationRate).toBe(100);
+    });
+
+    it('should execute validate_saml_assertion WebMCP tool and verify claims', async () => {
+      service.registerTools({});
+      const samlTool = registeredTools.get('validate_saml_assertion');
+      expect(samlTool).toBeDefined();
+
+      const sampleXml = `<?xml version="1.0"?>
+      <samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+        <samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status>
+        <saml:Assertion ID="asn_mcp_01">
+          <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+            <ds:DigestValue>MOCK_DIGEST</ds:DigestValue>
+          </ds:Signature>
+          <saml:Subject><saml:NameID>dr.curie@hopkinsmedicine.org</saml:NameID></saml:Subject>
+          <saml:AttributeStatement>
+            <saml:Attribute Name="displayName"><saml:AttributeValue>Dr. Jane Curie</saml:AttributeValue></saml:Attribute>
+            <saml:Attribute Name="email"><saml:AttributeValue>dr.curie@hopkinsmedicine.org</saml:AttributeValue></saml:Attribute>
+            <saml:Attribute Name="clinicalRole"><saml:AttributeValue>roles/healthcare.datasetAdmin</saml:AttributeValue></saml:Attribute>
+          </saml:AttributeStatement>
+        </saml:Assertion>
+      </samlp:Response>`;
+
+      const res = await samlTool.execute({
+        assertionXmlOrBase64: sampleXml,
+        authorizeSession: true
+      });
+
+      expect(res.isError).toBeFalsy();
+      const parsed = JSON.parse(res.content[0].text);
+      expect(parsed.validation.valid).toBe(true);
+      expect(parsed.validation.claims.email).toBe('dr.curie@hopkinsmedicine.org');
+      expect(parsed.authorizedSession).not.toBeNull();
+      expect(parsed.authorizedSession.email).toBe('dr.curie@hopkinsmedicine.org');
+    });
+
+    it('should execute sync_scim_directory WebMCP tool for listing and de-provisioning', async () => {
+      service.registerTools({});
+      const scimTool = registeredTools.get('sync_scim_directory');
+      expect(scimTool).toBeDefined();
+
+      // Test listing
+      const listRes = await scimTool.execute({ action: 'list' });
+      expect(listRes.isError).toBeFalsy();
+      const parsedList = JSON.parse(listRes.content[0].text);
+      expect(parsedList.totalResults).toBeGreaterThanOrEqual(2);
+
+      // Test de-provisioning
+      const deprovRes = await scimTool.execute({
+        action: 'deprovision',
+        userId: 'usr_scim_curie_01',
+        reason: 'Shift handover to Night Trauma Team'
+      });
+      expect(deprovRes.isError).toBeFalsy();
+
+      // Test getInternalState for identity
+      const state = service.getInternalState('identity');
+      expect(state.enterpriseIdentity).toBeDefined();
+      expect(state.enterpriseIdentity.activeIdp).toBeDefined();
+    });
+
+    it('should execute sync_iomt_wearable_telemetry and get_iomt_device_trust_status WebMCP tools', async () => {
+      service.registerTools({});
+
+      // 1. sync_iomt_wearable_telemetry
+      const syncTool = registeredTools.get('sync_iomt_wearable_telemetry');
+      expect(syncTool).toBeDefined();
+
+      const syncRes = await syncTool.execute({
+        provider: 'APPLE_HEALTHKIT',
+        action: 'sync',
+        sampleData: {
+          heartRateBpm: 72,
+          spo2Pct: 99.0,
+          wristSkinTemperatureC: 36.5
+        }
+      });
+      expect(syncRes.isError).toBeFalsy();
+      const parsedSync = JSON.parse(syncRes.content[0].text);
+      expect(parsedSync.actionResult.status).toBe('SYNC_COMPLETED');
+      expect(parsedSync.liveBiometrics.heartRateBpm).toBe(72);
+      expect(parsedSync.tippssStatus.isApproved).toBe(true);
+
+      // Trigger cardiac anomaly
+      const anomalyRes = await syncTool.execute({
+        action: 'trigger_anomaly',
+        anomalyType: 'tachycardia'
+      });
+      expect(anomalyRes.isError).toBeFalsy();
+      const parsedAnomaly = JSON.parse(anomalyRes.content[0].text);
+      expect(parsedAnomaly.actionResult.ringBufferFrozen).toBe(true);
+
+      // 2. get_iomt_device_trust_status
+      const trustTool = registeredTools.get('get_iomt_device_trust_status');
+      expect(trustTool).toBeDefined();
+
+      const trustRes = await trustTool.execute({
+        provider: 'GOOGLE_HEALTH_CONNECT',
+        exportReceipt: true
+      });
+      expect(trustRes.isError).toBeFalsy();
+      const parsedTrust = JSON.parse(trustRes.content[0].text);
+      expect(parsedTrust.device.hardwareRootOfTrust).toBe('GOOGLE_TITAN_M2');
+      expect(parsedTrust.auditReceipt).toContain('IEEE P2933™ TIPPSS');
+
+      // 3. getInternalState for iomt
+      const iomtState = service.getInternalState('iomt');
+      expect(iomtState.iomtWearables).toBeDefined();
+      expect(iomtState.iomtWearables.bypassedMiddlemen).toContain('Apple Health Cloud Webhooks');
+      expect(iomtState.iomtWearables.batteryCircularity).toBeDefined();
+    });
+
+    it('should execute run_sepsis_benchmark_evaluation and get_benchmark_preprint_dossier WebMCP tools', async () => {
+      service.registerTools({});
+
+      // 1. run_sepsis_benchmark_evaluation
+      const sepsisTool = registeredTools.get('run_sepsis_benchmark_evaluation');
+      expect(sepsisTool).toBeDefined();
+
+      const sepsisRes = await sepsisTool.execute({
+        cohort: 'MIMIC_IV_ICU',
+        alpha: 0.05,
+        vitals: {
+          heartRate: 135,
+          systolicBp: 75,
+          respiratoryRate: 28,
+          temperatureC: 38.6,
+          lactateMmolL: 4.2
+        }
+      });
+      expect(sepsisRes.isError).toBeFalsy();
+      const parsedSepsis = JSON.parse(sepsisRes.content[0].text);
+      expect(parsedSepsis.activeCohort).toBe('MIMIC_IV_ICU');
+      expect(parsedSepsis.headToHeadComparison.pocketGull.auroc).toBe(0.842);
+      expect(parsedSepsis.alarmFatigueReduction.alertBurdenDropPct).toBeGreaterThanOrEqual(89);
+      expect(parsedSepsis.patientVitalsEvaluation.isSingletonAlert).toBe(true);
+      expect(parsedSepsis.patientVitalsEvaluation.predictionSet).toContain('SEPSIS_ALERT');
+
+      // 2. get_benchmark_preprint_dossier
+      const preprintTool = registeredTools.get('get_benchmark_preprint_dossier');
+      expect(preprintTool).toBeDefined();
+
+      const preprintRes = await preprintTool.execute({
+        cohort: 'MULTI_CENTER_COMBINED',
+        includeReproducibleSql: true
+      });
+      expect(preprintRes.isError).toBeFalsy();
+      const parsedPreprint = JSON.parse(preprintRes.content[0].text);
+      expect(parsedPreprint.preprint.title).toContain('Epistemic Conformal Prediction Overcomes Proprietary Sepsis Alarm Fatigue');
+      expect(parsedPreprint.preprint.bibtexCitation).toContain('@article{pocketgull2026conformal_sepsis');
+      expect(parsedPreprint.reproducibleSqlQueries).toContain('SELECT');
+
+      // 3. getInternalState for benchmark
+      const benchmarkState = service.getInternalState('benchmark');
+      expect(benchmarkState.sepsisBenchmark).toBeDefined();
+      expect(benchmarkState.sepsisBenchmark.fatigueReduction).toBeDefined();
+    });
+
+    it('should execute EHR Writeback and Subscription ADT WebMCP tools', async () => {
+      service.registerTools({});
+
+      // 1. execute_ehr_bi_directional_writeback
+      const writebackTool = registeredTools.get('execute_ehr_bi_directional_writeback');
+      expect(writebackTool).toBeDefined();
+
+      const writebackRes = await writebackTool.execute({
+        vendor: 'EPIC',
+        patientMrn: 'MRN-TEST-12345',
+        practitionerId: 'PRAC-7788'
+      });
+      expect(writebackRes.isError).toBeFalsy();
+      const parsedWriteback = JSON.parse(writebackRes.content[0].text);
+      expect(parsedWriteback.status).toBe('WRITEBACK_EXECUTED');
+      expect(parsedWriteback.overallStatus).toBe('SUCCESS_FILED_TO_EHR');
+      expect(parsedWriteback.receipts.length).toBe(3);
+      expect(parsedWriteback.authProtocol).toContain('RFC 7523');
+
+      // 2. get_ehr_writeback_status
+      const statusTool = registeredTools.get('get_ehr_writeback_status');
+      expect(statusTool).toBeDefined();
+
+      const statusRes = await statusTool.execute({ includeJwks: true });
+      expect(statusRes.isError).toBeFalsy();
+      const parsedStatus = JSON.parse(statusRes.content[0].text);
+      expect(parsedStatus.clientId).toContain('pocketgull');
+      expect(parsedStatus.jwks).toBeDefined();
+      expect(parsedStatus.jwks.keys.length).toBeGreaterThan(0);
+
+      // 3. trigger_fhir_subscription_adt_event
+      const adtTool = registeredTools.get('trigger_fhir_subscription_adt_event');
+      expect(adtTool).toBeDefined();
+
+      const adtRes = await adtTool.execute({
+        eventType: 'ADT_ADMISSION',
+        patientMrn: 'MRN-TEST-12345'
+      });
+      expect(adtRes.isError).toBeFalsy();
+      const parsedAdt = JSON.parse(adtRes.content[0].text);
+      expect(parsedAdt.status).toBe('ADT_EVENT_PROCESSED');
+      expect(parsedAdt.event.eventType).toBe('ADT_ADMISSION');
+      expect(parsedAdt.conformalEvaluationQueued).toBe(true);
+
+      // 4. getInternalState('ehr')
+      const ehrState = service.getInternalState('ehr');
+      expect(ehrState.ehrWriteback).toBeDefined();
+      expect(ehrState.ehrWriteback.clientId).toBeDefined();
+      expect(ehrState.ehrWriteback.totalWritebacks).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Edge Autonomous Offline Voice Agent Tools (92, 93, 94)', () => {
+    it('should execute start_edge_autonomous_voice_session, synthesize_edge_offline_sbar, and get_edge_offline_queue_status', async () => {
+      service.registerTools({});
+
+      // 1. start_edge_autonomous_voice_session
+      const startTool = registeredTools.get('start_edge_autonomous_voice_session');
+      expect(startTool).toBeDefined();
+
+      const startRes = await startTool.execute({
+        airGappedMode: true,
+        language: 'en-US'
+      });
+      expect(startRes.isError).toBeFalsy();
+      const parsedStart = JSON.parse(startRes.content[0].text);
+      expect(parsedStart.status).toBe('EDGE_VOICE_SESSION_ACTIVE');
+      expect(parsedStart.isAirGapped).toBe(true);
+      expect(parsedStart.cloudEgressPackets).toBe(0);
+
+      // 2. synthesize_edge_offline_sbar with ISMP medication check
+      const synthTool = registeredTools.get('synthesize_edge_offline_sbar');
+      expect(synthTool).toBeDefined();
+
+      const synthRes = await synthTool.execute({
+        rawTranscript: 'Patient taking Metformin 500.0 mg BID and Lisinopril .5 mg PO daily. Vitals stable.'
+      });
+      expect(synthRes.isError).toBeFalsy();
+      const parsedSynth = JSON.parse(synthRes.content[0].text);
+      expect(parsedSynth.status).toBe('SBAR_SYNTHESIZED_AND_QUEUED');
+      expect(parsedSynth.ismpAudit.violationsCount).toBeGreaterThanOrEqual(1);
+      expect(parsedSynth.queuedBundleId).toBeDefined();
+      expect(parsedSynth.sha256AttestationSeal).toBeDefined();
+      expect(parsedSynth.fhirBundleResourceType).toBe('Bundle');
+
+      // 3. get_edge_offline_queue_status (Inspect)
+      const queueTool = registeredTools.get('get_edge_offline_queue_status');
+      expect(queueTool).toBeDefined();
+
+      const queueRes = await queueTool.execute({ flushToEhr: false });
+      expect(queueRes.isError).toBeFalsy();
+      const parsedQueue = JSON.parse(queueRes.content[0].text);
+      expect(parsedQueue.status).toBe('EDGE_QUEUE_STATUS');
+      expect(parsedQueue.pendingCount).toBeGreaterThanOrEqual(1);
+      expect(parsedQueue.isAirGapped).toBe(true);
+      expect(parsedQueue.bundles.length).toBeGreaterThanOrEqual(1);
+
+      // 4. get_edge_offline_queue_status (Flush to EHR)
+      const flushRes = await queueTool.execute({ flushToEhr: true });
+      expect(flushRes.isError).toBeFalsy();
+      const parsedFlush = JSON.parse(flushRes.content[0].text);
+      expect(parsedFlush.pendingCount).toBe(0);
+      expect(parsedFlush.flushResult.syncedCount).toBeGreaterThanOrEqual(1);
     });
   });
 });

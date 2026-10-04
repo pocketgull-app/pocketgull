@@ -55,4 +55,13 @@ describe('CaregiverBridgeModalComponent', () => {
     component.closeModal();
     expect(closed).toBe(true);
   });
+
+  it('should copy generated share URL to clipboard', () => {
+    const writeTextMock = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText: writeTextMock } });
+
+    component.copyLinkToClipboard();
+    expect(writeTextMock).toHaveBeenCalledWith(component.generatedShareUrl());
+    expect(component.copyButtonText()).toBe('Copied!');
+  });
 });

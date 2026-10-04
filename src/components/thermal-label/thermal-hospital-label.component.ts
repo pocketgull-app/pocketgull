@@ -1,11 +1,12 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClinicalProvenanceService, IClinicalTranslationReceipt } from '../../services/clinical-provenance.service';
+import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
 
 @Component({
   selector: 'app-thermal-hospital-label',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   template: `
     <div class="p-6 bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl text-zinc-100 max-w-4xl mx-auto font-sans">
       
@@ -211,6 +212,21 @@ import { ClinicalProvenanceService, IClinicalTranslationReceipt } from '../../se
                   <span>TIMESTAMP:</span>
                   <span>{{ receipt.timestampIso }}</span>
                 </div>
+
+                <!-- Branded Part 11 Audit Verification QR Code -->
+                <div class="pt-3 border-t border-zinc-800 flex justify-center">
+                  <app-branded-qr-code
+                    [data]="receiptQrUrl()"
+                    [size]="130"
+                    variant="obsidian"
+                    title="FDA Part 11 Seal"
+                    subtitle="Scan to Verify Cryptographic Attestation"
+                    destinationSummary="PocketGull Provenance • FDA 21 CFR Part 11"
+                    downloadFilename="part11-attestation-seal-qr.png"
+                    [enableCopy]="true"
+                    ariaLabel="FDA 21 CFR Part 11 Verification QR Code">
+                  </app-branded-qr-code>
+                </div>
               </div>
             } @else {
               <div class="bg-zinc-900/50 border border-zinc-800/80 rounded-xl p-6 text-center text-zinc-500 text-xs font-mono">
@@ -257,6 +273,11 @@ export class ThermalHospitalLabelComponent {
 
   readonly isThermalSimulationActive = signal<boolean>(false);
   readonly currentReceipt = signal<IClinicalTranslationReceipt | null>(null);
+
+  readonly receiptQrUrl = computed(() => {
+    const r = this.currentReceipt();
+    return r ? `https://pocketgull.app/verify/provenance?receipt=${r.receiptId}&seal=${r.sha256Seal}` : '';
+  });
 
   readonly zplOutput = computed(() => {
     return `^XA

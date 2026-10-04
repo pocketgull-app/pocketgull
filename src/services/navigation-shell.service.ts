@@ -32,6 +32,14 @@ export class NavigationShellService {
   readonly showSpecialistReferralModal = signal<boolean>(false);
   readonly showMultilingualTerminalModal = signal<boolean>(false);
   readonly showMocaSuiteModal = signal<boolean>(false);
+  readonly showAmbientScribeDrawer = signal<boolean>(false);
+  readonly showEdiClaimsModal = signal<boolean>(false);
+  readonly showEnterpriseIdentityModal = signal<boolean>(false);
+  readonly showDirectIomtModal = signal<boolean>(false);
+  readonly showSepsisBenchmarkModal = signal<boolean>(false);
+  readonly showEhrMarketplaceModal = signal<boolean>(false);
+  readonly showEhrWritebackModal = signal<boolean>(false);
+  readonly showEdgeVoiceModal = signal<boolean>(false);
   readonly activeGameId = signal<string>('luminaries');
 
   /** Developer Mode: Gates investor pitch portals, experimental showcases, and auxiliary demos. Defaults to false. */
@@ -176,6 +184,46 @@ export class NavigationShellService {
     this.showChwSuiteModal.set(false);
     this.showSpecialistReferralModal.set(false);
     this.showMultilingualTerminalModal.set(false);
+    this.showAmbientScribeDrawer.set(false);
+    this.showEdiClaimsModal.set(false);
+    this.showEnterpriseIdentityModal.set(false);
+    this.showDirectIomtModal.set(false);
+    this.showSepsisBenchmarkModal.set(false);
+    this.showEhrMarketplaceModal.set(false);
+    this.showEhrWritebackModal.set(false);
+    this.showEdgeVoiceModal.set(false);
   }
+
+  public openAmbientScribeDrawer(): void { this.showAmbientScribeDrawer.set(true); }
+  public closeAmbientScribeDrawer(): void { this.showAmbientScribeDrawer.set(false); }
+  public toggleAmbientScribeDrawer(): void { this.showAmbientScribeDrawer.update(v => !v); }
+
+  public openEdiClaimsModal(): void { this.showEdiClaimsModal.set(true); }
+  public closeEdiClaimsModal(): void { this.showEdiClaimsModal.set(false); }
+  public toggleEdiClaimsModal(): void { this.showEdiClaimsModal.update(v => !v); }
+
+  public openEnterpriseIdentityModal(): void { this.showEnterpriseIdentityModal.set(true); }
+  public closeEnterpriseIdentityModal(): void { this.showEnterpriseIdentityModal.set(false); }
+  public toggleEnterpriseIdentityModal(): void { this.showEnterpriseIdentityModal.update(v => !v); }
+
+  public openDirectIomtModal(): void { this.showDirectIomtModal.set(true); }
+  public closeDirectIomtModal(): void { this.showDirectIomtModal.set(false); }
+  public toggleDirectIomtModal(): void { this.showDirectIomtModal.update(v => !v); }
+
+  public openSepsisBenchmarkModal(): void { this.showSepsisBenchmarkModal.set(true); }
+  public closeSepsisBenchmarkModal(): void { this.showSepsisBenchmarkModal.set(false); }
+  public toggleSepsisBenchmarkModal(): void { this.showSepsisBenchmarkModal.update(v => !v); }
+
+  public openEhrMarketplaceModal(): void { this.showEhrMarketplaceModal.set(true); }
+  public closeEhrMarketplaceModal(): void { this.showEhrMarketplaceModal.set(false); }
+  public toggleEhrMarketplaceModal(): void { this.showEhrMarketplaceModal.update(v => !v); }
+
+  public openEhrWritebackModal(): void { this.showEhrWritebackModal.set(true); }
+  public closeEhrWritebackModal(): void { this.showEhrWritebackModal.set(false); }
+  public toggleEhrWritebackModal(): void { this.showEhrWritebackModal.update(v => !v); }
+
+  public openEdgeVoiceModal(): void { this.showEdgeVoiceModal.set(true); }
+  public closeEdgeVoiceModal(): void { this.showEdgeVoiceModal.set(false); }
+  public toggleEdgeVoiceModal(): void { this.showEdgeVoiceModal.update(v => !v); }
 }
 

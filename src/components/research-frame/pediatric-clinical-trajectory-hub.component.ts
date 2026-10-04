@@ -16,7 +16,7 @@ export interface IPediatricDosageRule {
 export interface IPediatricEvidenceTopic {
   id: string;
   title: string;
-  organization: 'AAP' | 'NIH_NICHD' | 'CDC' | 'COCHRANE_PEDS';
+  organization: 'AAP' | 'NIH_NICHD' | 'CDC' | 'COCHRANE_PEDS' | 'UNICEF';
   summary: string;
   targetAges: string;
   evidenceKeywords: string;
@@ -93,8 +93,8 @@ export interface IPediatricEvidenceTopic {
         </div>
       </div>
 
-      <!-- Growth Percentiles Radar Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <!-- Growth Percentiles & Global Child Trajectory Radar Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <!-- Weight for Age -->
         <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-2xl space-y-2">
           <div class="flex items-center justify-between text-[10px] font-mono text-zinc-400">
@@ -138,6 +138,21 @@ export interface IPediatricEvidenceTopic {
             <div class="h-full bg-emerald-500 rounded-full" style="width: 54%"></div>
           </div>
           <div class="text-[10px] font-mono text-zinc-500">Metabolic: Normative Tier</div>
+        </div>
+
+        <!-- UNICEF ECDI2030 Early Childhood Development Index -->
+        <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-2xl space-y-2">
+          <div class="flex items-center justify-between text-[10px] font-mono text-zinc-400">
+            <span>UNICEF ECDI2030</span>
+            <span class="text-teal-400">🌐 Global Child</span>
+          </div>
+          <div class="text-2xl font-bold font-mono text-teal-300">
+            {{ ecdiScore() }}<span class="text-sm">/100</span>
+          </div>
+          <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+            <div class="h-full bg-teal-500 rounded-full" [style.width.%]="ecdiScore()"></div>
+          </div>
+          <div class="text-[10px] font-mono text-zinc-500">{{ ecdiStatusLabel() }}</div>
         </div>
       </div>
 
@@ -268,6 +283,15 @@ export class PediatricClinicalTrajectoryHubComponent {
     return Math.min(99, Math.max(5, this.weightPercentile() + 8));
   });
 
+  readonly ecdiScore = computed(() => {
+    const age = this.patientAgeYears();
+    return Math.min(98, Math.max(70, 85 + (age % 4) * 3));
+  });
+
+  readonly ecdiStatusLabel = computed(() => {
+    return this.ecdiScore() >= 80 ? 'Developmentally On Track' : 'Needs Early Intervention';
+  });
+
   readonly dosageRules: IPediatricDosageRule[] = [
     {
       drugName: 'Acetaminophen (Oral Suspension)',
@@ -304,6 +328,30 @@ export class PediatricClinicalTrajectoryHubComponent {
   });
 
   readonly evidenceTopics: IPediatricEvidenceTopic[] = [
+    {
+      id: 'unicef-who-sam-guidelines',
+      title: 'WHO/UNICEF Guideline: Prevention & Management of Wasting (Acute Malnutrition)',
+      organization: 'UNICEF',
+      summary: 'Outpatient Therapeutic Program (OTP) protocol utilizing Ready-to-Use Therapeutic Food (RUTF), appetite testing, and inpatient F-75 stabilization for complicated SAM.',
+      targetAges: '6–59m',
+      evidenceKeywords: 'WHO UNICEF Guideline Prevention Management Wasting Acute Malnutrition RUTF'
+    },
+    {
+      id: 'unicef-ecdi-development',
+      title: 'UNICEF Early Childhood Development Index 2030 (ECDI2030) & Nurturing Care',
+      organization: 'UNICEF',
+      summary: 'Clinical and population monitoring of children aged 24–59 months across learning, psychosocial well-being, and physical health developmental milestones.',
+      targetAges: '24–59m',
+      evidenceKeywords: 'UNICEF Early Childhood Development Index ECDI2030 Nurturing Care'
+    },
+    {
+      id: 'unicef-zero-dose-ia2030',
+      title: 'UNICEF & Gavi Immunization Agenda 2030: Zero-Dose Child Catch-Up Protocol',
+      organization: 'UNICEF',
+      summary: 'Active frontline outreach and home-based health card tracking for infants missing primary DTP1 and measles-rubella immunization series.',
+      targetAges: '0–5y',
+      evidenceKeywords: 'UNICEF Gavi Immunization Agenda 2030 Zero Dose Child Catch Up'
+    },
     {
       id: 'aap-fever-guideline',
       title: 'AAP Clinical Report: Fever and Antipyretic Use in Children',

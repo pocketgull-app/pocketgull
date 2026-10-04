@@ -4,11 +4,12 @@ import { GlobalHealthInitiativesService, IWhoCvdRiskResult, IWhoIcd11TmMapping, 
 import { WhoEssentialMedicinesService, IWhoFormularyAuditResult } from '../../services/who-essential-medicines.service';
 import { PatientStateService } from '../../services/patient-state.service';
 import { IPatient, IPatientVitals } from '../../services/patient.types';
+import { BrandedQrCodeComponent } from './branded-qr-code.component';
 
 @Component({
   selector: 'app-global-health-initiatives-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (isOpen()) {
@@ -387,18 +388,34 @@ import { IPatient, IPatientVitals } from '../../services/patient.types';
                   </div>
                 </div>
 
-                <!-- Mesh Handoff Payload -->
-                <div class="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-3">
+                <!-- Mesh Handoff Payload & Scannable QR -->
+                <div class="p-5 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-4">
                   <div class="flex items-center justify-between">
-                    <span class="text-[10.5px] font-bold uppercase tracking-wider text-zinc-500 font-mono">
-                      NSF Zero-Egress Offline Peer Mesh Payload
+                    <span class="text-[10.5px] font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400 font-mono">
+                      NSF Zero-Egress Offline Peer Mesh Payload &amp; QR Code
                     </span>
                     <button type="button" (click)="copyPayload()" class="px-2.5 py-1 rounded-md text-[10.5px] font-bold font-mono bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 cursor-pointer">
                       {{ copied() ? '✓ Copied' : '📋 Copy JSON' }}
                     </button>
                   </div>
 
-                  <pre class="p-3 bg-zinc-900 text-zinc-200 rounded-xl text-[10.5px] font-mono overflow-x-auto max-h-36">{{ arpahTriage().meshHandoffQrCodePayload }}</pre>
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                    <div class="md:col-span-5 flex justify-center">
+                      <app-branded-qr-code
+                        [data]="arpahTriage().meshHandoffQrCodePayload"
+                        variant="teal"
+                        title="NSF Peer Mesh QR"
+                        subtitle="Scan for Instant Air-Gapped Transfer"
+                        destinationSummary="PocketGull NSF Offline Peer Mesh • Zero-Egress FHIR Handoff"
+                        downloadFilename="nsf-mesh-handoff-qr.png"
+                        ariaLabel="NSF Peer Mesh Handoff QR Code">
+                      </app-branded-qr-code>
+                    </div>
+                    <div class="md:col-span-7 space-y-1">
+                      <span class="text-[10px] text-zinc-500 font-mono block">RAW JSON PAYLOAD:</span>
+                      <pre class="p-3 bg-zinc-900 text-zinc-200 rounded-xl text-[10px] font-mono overflow-x-auto max-h-48 leading-relaxed">{{ arpahTriage().meshHandoffQrCodePayload }}</pre>
+                    </div>
+                  </div>
                 </div>
               </div>
             }

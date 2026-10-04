@@ -1,10 +1,11 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BrandedQrCodeComponent } from './branded-qr-code.component';
 
 @Component({
   selector: 'app-pocketgull-ai-social-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- Simple Scannable PocketGull AI Social Card -->
@@ -32,77 +33,19 @@ import { CommonModule } from '@angular/common';
         </div>
       </div>
 
-      <!-- Scannable High-Contrast QR Code Area -->
-      <div class="p-4 bg-white rounded-2xl shadow-inner flex flex-col items-center justify-center space-y-2.5">
-        <!-- SVG Vector QR Code targeting https://pocketgull.app -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" class="w-40 h-40" shape-rendering="crispEdges">
-          <!-- Background -->
-          <rect width="33" height="33" fill="#ffffff"/>
-          <!-- Top Left Finder Pattern -->
-          <rect x="2" y="2" width="7" height="7" fill="#09090b"/>
-          <rect x="3" y="3" width="5" height="5" fill="#ffffff"/>
-          <rect x="4" y="4" width="3" height="3" fill="#09090b"/>
-          <!-- Top Right Finder Pattern -->
-          <rect x="24" y="2" width="7" height="7" fill="#09090b"/>
-          <rect x="25" y="3" width="5" height="5" fill="#ffffff"/>
-          <rect x="26" y="4" width="3" height="3" fill="#09090b"/>
-          <!-- Bottom Left Finder Pattern -->
-          <rect x="2" y="24" width="7" height="7" fill="#09090b"/>
-          <rect x="3" y="25" width="5" height="5" fill="#ffffff"/>
-          <rect x="4" y="26" width="3" height="3" fill="#09090b"/>
-          <!-- Timing Patterns -->
-          <rect x="10" y="5" width="13" height="1" fill="#09090b" stroke-dasharray="1,1"/>
-          <rect x="5" y="10" width="1" height="13" fill="#09090b" stroke-dasharray="1,1"/>
-          <!-- Alignment Pattern -->
-          <rect x="22" y="22" width="5" height="5" fill="#09090b"/>
-          <rect x="23" y="23" width="3" height="3" fill="#ffffff"/>
-          <rect x="24" y="24" width="1" height="1" fill="#09090b"/>
-          <!-- Stylized Data Matrix Dots -->
-          <rect x="11" y="2" width="2" height="1" fill="#09090b"/>
-          <rect x="15" y="2" width="1" height="2" fill="#09090b"/>
-          <rect x="18" y="3" width="2" height="1" fill="#09090b"/>
-          <rect x="21" y="2" width="1" height="1" fill="#09090b"/>
-          <rect x="10" y="8" width="1" height="2" fill="#09090b"/>
-          <rect x="13" y="7" width="2" height="1" fill="#09090b"/>
-          <rect x="17" y="8" width="1" height="2" fill="#09090b"/>
-          <rect x="20" y="7" width="2" height="2" fill="#09090b"/>
-          <rect x="2" y="11" width="1" height="2" fill="#09090b"/>
-          <rect x="4" y="12" width="2" height="1" fill="#09090b"/>
-          <rect x="8" y="11" width="2" height="2" fill="#09090b"/>
-          <rect x="12" y="12" width="3" height="2" fill="#09090b"/>
-          <rect x="16" y="11" width="2" height="1" fill="#09090b"/>
-          <rect x="20" y="12" width="1" height="3" fill="#09090b"/>
-          <rect x="23" y="11" width="2" height="1" fill="#09090b"/>
-          <rect x="27" y="12" width="2" height="2" fill="#09090b"/>
-          <rect x="30" y="11" width="1" height="1" fill="#09090b"/>
-          <rect x="10" y="15" width="2" height="2" fill="#09090b"/>
-          <rect x="14" y="16" width="3" height="1" fill="#09090b"/>
-          <rect x="19" y="15" width="2" height="2" fill="#09090b"/>
-          <rect x="23" y="16" width="2" height="1" fill="#09090b"/>
-          <rect x="27" y="15" width="1" height="2" fill="#09090b"/>
-          <rect x="11" y="19" width="3" height="1" fill="#09090b"/>
-          <rect x="16" y="19" width="1" height="3" fill="#09090b"/>
-          <rect x="19" y="18" width="2" height="2" fill="#09090b"/>
-          <rect x="2" y="20" width="2" height="2" fill="#09090b"/>
-          <rect x="6" y="21" width="1" height="2" fill="#09090b"/>
-          <rect x="10" y="23" width="2" height="2" fill="#09090b"/>
-          <rect x="14" y="22" width="1" height="3" fill="#09090b"/>
-          <rect x="17" y="24" width="2" height="2" fill="#09090b"/>
-          <rect x="29" y="21" width="2" height="2" fill="#09090b"/>
-          <rect x="11" y="27" width="2" height="2" fill="#09090b"/>
-          <rect x="15" y="26" width="2" height="1" fill="#09090b"/>
-          <rect x="19" y="28" width="1" height="2" fill="#09090b"/>
-          <rect x="28" y="26" width="3" height="2" fill="#09090b"/>
-          <rect x="12" y="30" width="3" height="1" fill="#09090b"/>
-          <rect x="17" y="29" width="2" height="2" fill="#09090b"/>
-          <rect x="21" y="30" width="2" height="1" fill="#09090b"/>
-          <rect x="25" y="29" width="1" height="2" fill="#09090b"/>
-          <rect x="28" y="30" width="2" height="1" fill="#09090b"/>
-        </svg>
-
-        <span class="text-[10px] font-bold font-mono text-zinc-800 tracking-wider uppercase">
-          📱 Scan with Phone Camera
-        </span>
+      <!-- Scannable High-Contrast Branded QR Code Area -->
+      <div class="flex items-center justify-center">
+        <app-branded-qr-code
+          [data]="'https://pocketgull.app'"
+          [size]="160"
+          variant="teal"
+          [title]="'Explore PocketGull'"
+          [subtitle]="'Scan with Phone Camera'"
+          [destinationSummary]="'https://pocketgull.app'"
+          downloadFilename="pocketgull-social-card-qr.png"
+          [enableCopy]="true"
+          ariaLabel="Official PocketGull Application QR Code">
+        </app-branded-qr-code>
       </div>
 
       <!-- Quick Action / Link -->

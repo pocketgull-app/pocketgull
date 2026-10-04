@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OpticalInnovationsService } from '../services/optical-innovations.service';
 import { OpticalChronoTrajectoryService } from '../services/optical-chrono-trajectory.service';
@@ -23,6 +23,7 @@ export interface IOdysseyWaypoint {
   selector: 'app-biophilic-vagal-odyssey-hud',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-slate-950 via-zinc-950 to-emerald-950/20 p-5 space-y-6 shadow-2xl font-sans text-zinc-100">
       <!-- Header Bar -->

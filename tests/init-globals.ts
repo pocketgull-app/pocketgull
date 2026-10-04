@@ -40,8 +40,17 @@ class MockHTMLInputElement extends MockHTMLElement { value = ''; }
 class MockHTMLButtonElement extends MockHTMLElement { disabled = false; }
 class MockHTMLAnchorElement extends MockHTMLElement { href = ''; }
 class MockHTMLCanvasElement extends MockHTMLElement {
-  getContext() {
-    return {
+  width = 300;
+  height = 150;
+  toDataURL() {
+    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+  }
+  getContext(type?: string) {
+    if (type && (type.includes('webgl') || type.includes('experimental'))) {
+      return null;
+    }
+    const baseCtx: any = {
+      canvas: this,
       fillRect: () => {},
       clearRect: () => {},
       getImageData: () => ({ data: new Uint8Array(4) }),
@@ -51,6 +60,7 @@ class MockHTMLCanvasElement extends MockHTMLElement {
       drawImage: () => {},
       save: () => {},
       fillText: () => {},
+      strokeText: () => {},
       restore: () => {},
       beginPath: () => {},
       moveTo: () => {},
@@ -61,8 +71,31 @@ class MockHTMLCanvasElement extends MockHTMLElement {
       scale: () => {},
       rotate: () => {},
       arc: () => {},
+      ellipse: () => {},
+      rect: () => {},
+      clip: () => {},
+      bezierCurveTo: () => {},
+      quadraticCurveTo: () => {},
       fill: () => {},
+      measureText: (text: string) => ({
+        width: text ? text.length * 8 : 0,
+        actualBoundingBoxAscent: 10,
+        actualBoundingBoxDescent: 2,
+        fontBoundingBoxAscent: 10,
+        fontBoundingBoxDescent: 2
+      }),
+      createLinearGradient: () => ({ addColorStop: () => {} }),
+      createRadialGradient: () => ({ addColorStop: () => {} }),
+      createPattern: () => null,
     };
+    return new Proxy(baseCtx, {
+      get(target: any, prop: string) {
+        if (prop in target) {
+          return target[prop];
+        }
+        return () => {};
+      }
+    });
   }
 }
 class MockSVGElement extends MockElement {}

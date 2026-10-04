@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { AvsTherapyComponent } from './components/avs-therapy.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [AvsTherapyComponent],
+  imports: [CommonModule, AvsTherapyComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

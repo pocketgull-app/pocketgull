@@ -38,4 +38,21 @@ describe('LegalZoomPartnerHubComponent (src/partners/)', () => {
   it('1. Initializes legalzoom partner hub component inside src/partners/', () => {
     expect(component.universalWillService.partnerOptions().length).toBeGreaterThanOrEqual(3);
   });
+
+  it('2. Toggles emergency EMT advance directive QR code', () => {
+    expect(component.showEmergencyQr()).toBe(false);
+
+    component.toggleEmergencyQr();
+    expect(component.showEmergencyQr()).toBe(true);
+
+    component.toggleEmergencyQr();
+    expect(component.showEmergencyQr()).toBe(false);
+  });
+
+  it('3. Computes emergency QR payload conforming to FHIR advance directive schema', () => {
+    const payload = component.emergencyQrPayload();
+    expect(payload).toContain('POCKETGULL_FHIR_CONSENT_ADVANCE_DIRECTIVE');
+    expect(payload).toContain('consent_adv_dir_');
+    expect(payload).toContain('Homo Sapiens');
+  });
 });

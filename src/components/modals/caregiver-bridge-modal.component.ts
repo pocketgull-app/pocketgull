@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { ExportService } from '../../services/export.service';
 import { HipaaPdfExportService } from '../../services/hipaa-pdf-export.service';
+import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
 
 @Component({
   selector: 'app-caregiver-bridge-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   template: `
     <div 
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/70 backdrop-blur-sm animate-fade-in"
@@ -95,12 +96,18 @@ import { HipaaPdfExportService } from '../../services/hipaa-pdf-export.service';
 
           <!-- Generated Encrypted Share Link & QR Code -->
           <div class="p-4 rounded-xl bg-teal-50/50 dark:bg-teal-950/30 border border-teal-200/80 dark:border-teal-800/60 flex flex-col sm:flex-row items-center gap-4">
-            <!-- Simulated Encrypted QR Code Preview -->
-            <div class="w-24 h-24 bg-white dark:bg-zinc-900 p-2 rounded-xl border border-teal-200 dark:border-teal-800 flex flex-col items-center justify-center shrink-0 shadow-sm">
-              <div class="w-16 h-16 bg-gradient-to-br from-teal-600 via-emerald-600 to-cyan-600 rounded-lg flex items-center justify-center text-white text-xs font-mono font-bold tracking-tighter">
-                QR PULL
-              </div>
-              <span class="text-[9px] font-mono text-zinc-400 mt-1">ENCRYPTED</span>
+            <!-- Branded Encrypted Caregiver QR Code -->
+            <div class="shrink-0 flex justify-center">
+              <app-branded-qr-code
+                [data]="generatedShareUrl()"
+                [size]="130"
+                variant="teal"
+                title="Caregiver Access QR"
+                subtitle="Scan for Instant Caregiver Link"
+                destinationSummary="PocketGull Caregiver Access • 7-Day Ephemeral Token"
+                downloadFilename="caregiver-access-qr.png"
+                ariaLabel="Caregiver Access QR Code">
+              </app-branded-qr-code>
             </div>
 
             <!-- Link & Access Code -->
