@@ -91,6 +91,7 @@ export class BrandedQrCodeService {
     canvas.style.width = `${sizePx}px`;
     canvas.style.height = `${sizePx}px`;
 
+    if (typeof canvas?.getContext !== 'function') return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
