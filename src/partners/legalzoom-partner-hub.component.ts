@@ -1,12 +1,13 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LegalZoomIntegrationService } from '../services/legalzoom-integration.service';
 import { UniversalLivingWillService } from '../services/universal-living-will.service';
+import { BrandedQrCodeComponent } from '../components/shared/branded-qr-code.component';
 
 @Component({
   selector: 'app-legalzoom-partner-hub',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   template: `
     <div class="w-full max-w-4xl mx-auto p-6 bg-zinc-950 text-gray-100 rounded-3xl border border-purple-500/30 shadow-2xl space-y-6">
       <!-- Header Banner -->
@@ -26,6 +27,34 @@ import { UniversalLivingWillService } from '../services/universal-living-will.se
           <span class="text-xl">📜</span>
         </div>
       </div>
+
+      <!-- Emergency EMT Advance Directive Scannable QR Code Overlay/Card -->
+      @if (showEmergencyQr()) {
+        <div class="p-5 bg-zinc-900/90 border border-amber-500/40 rounded-2xl flex flex-col items-center">
+          <div class="flex items-center justify-between w-full mb-3">
+            <span class="text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">
+              📱 Statutory Advance Directive EMT QR Pass
+            </span>
+            <button type="button" (click)="showEmergencyQr.set(false)" class="text-xs text-zinc-400 hover:text-white cursor-pointer">✕ Close</button>
+          </div>
+          <app-branded-qr-code
+            [data]="emergencyQrPayload()"
+            [size]="160"
+            variant="amber"
+            [showLogo]="true"
+            [showCard]="false"
+            [showDestinationGrounding]="true"
+            [enableCopy]="true"
+            [enableDownload]="true"
+            downloadFilename="advance-directive-emt-qr.png"
+            title="Statutory Advance Directive"
+            ariaLabel="Emergency EMT Advance Directive QR Code">
+          </app-branded-qr-code>
+          <span class="text-[9.5px] font-mono text-zinc-400 mt-2 text-center">
+            Zero-Cloud Offline Scannable • HIPAA §164.514 & FHIR R4 Consent Compliant
+          </span>
+        </div>
+      }
 
       <!-- Living Will & Advance Directive Options Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -53,7 +82,7 @@ import { UniversalLivingWillService } from '../services/universal-living-will.se
               </div>
             </div>
 
-            <div class="pt-3 border-t border-zinc-800 flex items-center justify-between">
+            <div class="pt-3 border-t border-zinc-800 flex flex-wrap items-center justify-between gap-2">
               <a 
                 [href]="opt.actionUrl" 
                 target="_blank" 
@@ -61,12 +90,21 @@ import { UniversalLivingWillService } from '../services/universal-living-will.se
               >
                 Access Portal ↗
               </a>
-              <button
-                (click)="exportFhirConsent()"
-                class="px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white transition-all shadow-md"
-              >
-                Export FHIR R4 Consent (.JSON)
-              </button>
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  (click)="toggleEmergencyQr()"
+                  class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-amber-600/90 hover:bg-amber-500 text-white transition-all shadow-md flex items-center gap-1 cursor-pointer"
+                >
+                  <span>📱</span> QR
+                </button>
+                <button
+                  (click)="exportFhirConsent()"
+                  class="px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white transition-all shadow-md cursor-pointer"
+                >
+                  Export FHIR (.JSON)
+                </button>
+              </div>
             </div>
           </div>
         }
@@ -77,6 +115,24 @@ import { UniversalLivingWillService } from '../services/universal-living-will.se
 export class LegalZoomPartnerHubComponent {
   readonly legalZoomService = inject(LegalZoomIntegrationService);
   readonly universalWillService = inject(UniversalLivingWillService);
+
+  readonly showEmergencyQr = signal<boolean>(false);
+
+  readonly emergencyQrPayload = computed<string>(() => {
+    const payload = this.universalWillService.generateFhirConsentPayload();
+    return JSON.stringify({
+      schema: 'POCKETGULL_FHIR_CONSENT_ADVANCE_DIRECTIVE',
+      id: payload.id,
+      patient: payload.patient.display,
+      status: payload.status,
+      scope: 'Advance Directive (adr)',
+      dateTime: payload.dateTime
+    });
+  });
+
+  toggleEmergencyQr(): void {
+    this.showEmergencyQr.update(v => !v);
+  }
 
   exportFhirConsent(): void {
     const consent = this.universalWillService.generateFhirConsentPayload();
