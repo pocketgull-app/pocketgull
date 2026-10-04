@@ -45,9 +45,9 @@ function main() {
   // 3. Package Hugging Face & Kaggle Model Cards
   console.log('\n🤗 Packaging Hugging Face & Kaggle Model Cards...');
   try {
-    run('.\\.venv\\Scripts\\python.exe scripts/huggingface_model_hub_export.py');
+    run('node scripts/huggingface_model_hub_export.mjs');
   } catch {
-    console.log('⚠️ Python Model Hub packaging completed with warnings.');
+    console.log('⚠️ Model Hub packaging completed with warnings.');
   }
 
   // 4. Extract release notes from CHANGELOG.md

@@ -6,11 +6,12 @@ import {
   DevicePlatformTier, 
   IHealingMilestone 
 } from '../services/movement-healing-quest.service';
+import { BrandedQrCodeComponent } from './shared/branded-qr-code.component';
 
 @Component({
   selector: 'app-movement-healing-quest',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BrandedQrCodeComponent],
   template: `
     <div class="rounded-xl border border-zinc-800 bg-zinc-950/95 p-5 shadow-2xl backdrop-blur-md text-zinc-100 font-sans" role="region" aria-label="Movement-to-Heal Biophilic Quest and QR Sharing Suite">
       
@@ -87,50 +88,18 @@ import {
             </p>
           </div>
 
-          <!-- High-Contrast Procedural QR Code (SVG) -->
-          <div class="p-3 bg-white rounded-2xl shadow-xl border border-zinc-300 relative group">
-            <svg viewBox="0 0 100 100" class="w-44 h-44 select-none" aria-label="QR Code to scan and launch movement quest">
-              <!-- Background -->
-              <rect x="0" y="0" width="100" height="100" fill="#ffffff" />
-              
-              <!-- Top-Left Finder -->
-              <rect x="6" y="6" width="28" height="28" fill="#09090b" rx="2" />
-              <rect x="10" y="10" width="20" height="20" fill="#ffffff" rx="1" />
-              <rect x="14" y="14" width="12" height="12" fill="#09090b" rx="1" />
-
-              <!-- Top-Right Finder -->
-              <rect x="66" y="6" width="28" height="28" fill="#09090b" rx="2" />
-              <rect x="70" y="10" width="20" height="20" fill="#ffffff" rx="1" />
-              <rect x="74" y="14" width="12" height="12" fill="#09090b" rx="1" />
-
-              <!-- Bottom-Left Finder -->
-              <rect x="6" y="66" width="28" height="28" fill="#09090b" rx="2" />
-              <rect x="10" y="70" width="20" height="20" fill="#ffffff" rx="1" />
-              <rect x="14" y="74" width="12" height="12" fill="#09090b" rx="1" />
-
-              <!-- Quest Payload Matrix Blocks -->
-              <rect x="38" y="8" width="6" height="6" fill="#059669" />
-              <rect x="48" y="14" width="6" height="6" fill="#09090b" />
-              <rect x="38" y="24" width="6" height="6" fill="#09090b" />
-              <rect x="48" y="32" width="6" height="6" fill="#059669" />
-              <rect x="8" y="38" width="6" height="6" fill="#09090b" />
-              <rect x="18" y="46" width="6" height="6" fill="#059669" />
-              <rect x="38" y="44" width="6" height="6" fill="#09090b" />
-              <rect x="48" y="44" width="6" height="6" fill="#059669" />
-              <rect x="58" y="44" width="6" height="6" fill="#09090b" />
-              <rect x="68" y="38" width="6" height="6" fill="#059669" />
-              <rect x="78" y="46" width="6" height="6" fill="#09090b" />
-              <rect x="38" y="66" width="6" height="6" fill="#059669" />
-              <rect x="48" y="74" width="6" height="6" fill="#09090b" />
-              <rect x="66" y="66" width="6" height="6" fill="#09090b" />
-              <rect x="76" y="74" width="6" height="6" fill="#059669" />
-              <rect x="86" y="84" width="6" height="6" fill="#09090b" />
-            </svg>
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <span class="h-8 w-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs shadow-md border-2 border-white">
-                🌿
-              </span>
-            </div>
+          <!-- High-Contrast ISO/IEC 18004 Branded QR Code -->
+          <div class="shrink-0 flex items-center justify-center">
+            <app-branded-qr-code
+              [data]="quest().qrPayloadUrl"
+              [size]="170"
+              variant="emerald"
+              title="Launch Nature Quest"
+              subtitle="Scan with iPhone, Pixel, or Windows Camera"
+              [destinationSummary]="questDestinationSummary()"
+              downloadFilename="movement-quest-qr.png"
+              ariaLabel="Scan to launch movement quest on mobile">
+            </app-branded-qr-code>
           </div>
 
           <!-- Share Actions -->
@@ -247,6 +216,8 @@ export class MovementHealingQuestComponent {
   readonly activePlatform = this.questService.activePlatform;
 
   readonly linkCopied = signal<boolean>(false);
+
+  readonly questDestinationSummary = computed(() => `PocketGull Movement Quest • ${this.quest().title}`);
 
   readonly platforms: { id: DevicePlatformTier; name: string; icon: string; featureTag: string }[] = [
     { id: 'APPLE_IOS', name: 'Apple iPhone / Watch', icon: '🍏', featureTag: 'CoreML & HealthKit Sync' },

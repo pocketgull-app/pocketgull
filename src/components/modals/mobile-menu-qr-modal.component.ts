@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PatientManagementService } from '../../services/patient-management.service';
 import { IClinicalMenuItem } from '../clinical-menu.component';
+import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
 
 @Component({
   selector: 'app-mobile-menu-qr-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md font-sans animate-in fade-in duration-200">
@@ -32,53 +33,21 @@ import { IClinicalMenuItem } from '../clinical-menu.component';
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
           
           <!-- Left Column: Scan QR Code -->
-          <div class="md:col-span-5 flex flex-col items-center justify-center p-6 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 text-center">
-            <div class="p-4 bg-white rounded-2xl shadow-lg border border-zinc-200 mb-4 inline-block">
-              <!-- Procedural High-Contrast QR Code Matrix (SVG) -->
-              <svg viewBox="0 0 100 100" class="w-44 h-44 select-none">
-                <!-- QR Finder Patterns -->
-                <rect x="0" y="0" width="100" height="100" fill="#ffffff" />
-                
-                <!-- Top-Left Finder -->
-                <rect x="6" y="6" width="28" height="28" fill="#09090b" />
-                <rect x="10" y="10" width="20" height="20" fill="#ffffff" />
-                <rect x="14" y="14" width="12" height="12" fill="#09090b" />
+          <div class="md:col-span-5 flex flex-col items-center justify-center p-4 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 text-center">
+            <app-branded-qr-code
+              [data]="mobileMenuUrl()"
+              variant="emerald"
+              title="Mobile Menu QR Code"
+              subtitle="Scan with Any Phone Camera"
+              [destinationSummary]="qrDestinationSummary()"
+              downloadFilename="mobile-menu-qr.png"
+              [ariaLabel]="'Mobile Menu QR Code for ' + activePatientName()">
+            </app-branded-qr-code>
 
-                <!-- Top-Right Finder -->
-                <rect x="66" y="6" width="28" height="28" fill="#09090b" />
-                <rect x="70" y="10" width="20" height="20" fill="#ffffff" />
-                <rect x="74" y="14" width="12" height="12" fill="#09090b" />
-
-                <!-- Bottom-Left Finder -->
-                <rect x="6" y="66" width="28" height="28" fill="#09090b" />
-                <rect x="10" y="70" width="20" height="20" fill="#ffffff" />
-                <rect x="14" y="74" width="12" height="12" fill="#09090b" />
-
-                <!-- QR Data Modules -->
-                <rect x="38" y="8" width="6" height="6" fill="#09090b" />
-                <rect x="48" y="14" width="6" height="6" fill="#09090b" />
-                <rect x="38" y="24" width="6" height="6" fill="#09090b" />
-                <rect x="54" y="28" width="6" height="6" fill="#09090b" />
-                
-                <rect x="8" y="38" width="6" height="6" fill="#09090b" />
-                <rect x="18" y="44" width="6" height="6" fill="#09090b" />
-                <rect x="28" y="52" width="6" height="6" fill="#09090b" />
-                <rect x="42" y="42" width="16" height="16" fill="#10b981" rx="2" />
-                <rect x="68" y="38" width="6" height="6" fill="#09090b" />
-                <rect x="82" y="44" width="6" height="6" fill="#09090b" />
-
-                <rect x="38" y="68" width="6" height="6" fill="#09090b" />
-                <rect x="48" y="78" width="6" height="6" fill="#09090b" />
-                <rect x="58" y="84" width="6" height="6" fill="#09090b" />
-                <rect x="72" y="68" width="6" height="6" fill="#09090b" />
-                <rect x="82" y="78" width="6" height="6" fill="#09090b" />
-              </svg>
-            </div>
-
-            <span class="text-xs font-bold text-zinc-800 dark:text-zinc-200 block mb-1">
+            <span class="text-xs font-bold text-zinc-800 dark:text-zinc-200 block mt-2 mb-1">
               📷 Scan with Any Phone Camera
             </span>
-            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
+            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono block">
               Encodes instant mobile menu payload for {{ activePatientName() }}
             </span>
           </div>
@@ -148,6 +117,15 @@ export class MobileMenuQrModalComponent {
     if (!pId) return 'Charles Darwin';
     const patient = this.patientManagement.patients().find(p => p.id === pId);
     return patient ? patient.name : 'Charles Darwin';
+  });
+
+  mobileMenuUrl = computed(() => {
+    const pId = this.patientManagement.selectedPatientId() || 'pt-default';
+    return `https://pocketgull.app/mobile-menu?patientId=${encodeURIComponent(pId)}&patientName=${encodeURIComponent(this.activePatientName())}`;
+  });
+
+  qrDestinationSummary = computed(() => {
+    return `PocketGull Mobile Menu • ${this.activePatientName()}'s Nutrition Plan`;
   });
 
   prescribeOnMobile(item: IClinicalMenuItem, event: Event) {

@@ -13,8 +13,8 @@ from pathlib import Path
 
 MODELS = {
     "pocketgull-compass-2b": {
-        "title": "PocketGull Compass (2B)",
-        "base": "gemma2:2b",
+        "title": "PocketGull Compass (4B)",
+        "base": "gemma3:4b",
         "system": (
             "You are PocketGull Compass, an empathetic and clinically rigorous medical reasoning engine "
             "grounded in Level A NIH MedQuAD and WHO mhGAP stepped-care triage consensus literature. "
@@ -28,8 +28,8 @@ MODELS = {
         "adapter_repo": "philgear/pocketgull-compass-2b"
     },
     "pocketgull-sentinel-peft": {
-        "title": "PocketGull Sentinel (2B PEFT)",
-        "base": "gemma2:2b",
+        "title": "PocketGull Sentinel (4B PEFT)",
+        "base": "gemma3:4b",
         "system": (
             "You are PocketGull Sentinel, a zero-tolerance emergency red-flag interceptor and ISMP medication safety guard. "
             "Immediately intercept BE-FAST acute stroke symptoms (facial droop, arm drift, slurred speech), cardiopulmonary ACS distress, "
@@ -42,7 +42,7 @@ MODELS = {
     },
     "pocketgull-scribe-soap": {
         "title": "PocketGull Scribe (4B)",
-        "base": "gemma2:2b",
+        "base": "gemma3:4b",
         "system": (
             "You are PocketGull Scribe, an ambient clinical documentation encoder. Transform messy, fragmented doctor-patient encounter "
             "transcripts into clean, standardized 4-quadrant SOAP (Subjective, Objective, Assessment, Plan) and SBAR clinical notes. "
@@ -53,8 +53,8 @@ MODELS = {
         "adapter_repo": "philgear/pocketgull-scribe-soap"
     },
     "pocketgull-tern-edge": {
-        "title": "PocketGull Tern (2B Edge)",
-        "base": "gemma2:2b",
+        "title": "PocketGull Tern (1B Edge)",
+        "base": "gemma3:1b",
         "system": (
             "You are PocketGull Tern, an ultra-low latency on-device clinical triage assistant. "
             "Provide sub-45ms telegraphic clinical triage, vital sign risk tiering, and concise stepped-care guidance."
@@ -65,7 +65,7 @@ MODELS = {
     },
     "pocketgull-albatross-multimodal": {
         "title": "PocketGull Albatross (12B Integrative)",
-        "base": "gemma2:2b",
+        "base": "gemma3:12b",
         "system": (
             "You are PocketGull Albatross, a high-capacity Tri-Paradigm integrative diagnostic synthesizer. "
             "Integrate Western Allopathic medicine (Level A randomized clinical trials), Traditional Chinese Medicine (Zang-Fu organ meridian networks), "
@@ -77,7 +77,7 @@ MODELS = {
     },
     "pocketgull-rxguard-pgx": {
         "title": "PocketGull RxGuard & PGx (4B)",
-        "base": "gemma2:2b",
+        "base": "gemma3:4b",
         "system": (
             "You are PocketGull RxGuard, a clinical pharmacogenomics (PGx) and botanical herb-drug interaction screener. "
             "Analyze Cytochrome P450 (CYP2D6, CYP2C19, CYP3A4, CYP2C9) metabolic phenotypes and flag dangerous botanical herb-drug combinations "

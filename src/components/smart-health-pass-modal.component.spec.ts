@@ -25,11 +25,11 @@ describe('SmartHealthPassModalComponent', () => {
     expect(el.textContent).toContain('HIPAA Safe Harbor De-Identified');
   });
 
-  it('2. Renders patient archetype, ID, and simulated QR matrix', () => {
+  it('2. Renders patient archetype, ID, and branded QR code', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('Homo Sapiens (Female, 34y)');
     expect(el.textContent).toContain('PGT-88429-FHIR');
-    expect(el.querySelector('svg')).toBeTruthy();
+    expect(el.querySelector('app-branded-qr-code')).toBeTruthy();
   });
 
   it('3. Renders clinical signals (Locus, Vitals, Popperian Null)', () => {

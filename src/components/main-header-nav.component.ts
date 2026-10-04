@@ -39,12 +39,20 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
         <!-- System Status Indicator (Accessible Button) -->
         <button type="button" class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all cursor-pointer group relative no-print shrink-0" 
              (click)="network.toggleForceOffline()"
-             [title]="network.isOnline() ? 'Click to simulate offline' : 'Click to disable offline override'">
+             [title]="'Network: ' + network.networkQuality() + ' • RTT: ' + network.latencyMs() + 'ms • Speed: ' + network.connectionSpeed() + (network.pendingQueueCount() > 0 ? ' • ' + network.pendingQueueCount() + ' offline items queued' : '')">
           <div class="relative flex h-2 w-2 items-center justify-center">
             <span class="relative inline-flex rounded-full status-dot h-2 w-2 transition-colors duration-300"
-                  [style.background-color]="network.isOnline() ? 'var(--spectral-stable)' : 'var(--spectral-critical)'"></span>
+                  [style.background-color]="network.isOnline() ? 'var(--spectral-stable)' : (network.isLieFiSuspected() ? '#f59e0b' : 'var(--spectral-critical)')"
+                  [class.animate-pulse]="network.isLieFiSuspected()"></span>
           </div>
-          <span class="text-[11px] sm:text-xs font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">{{ network.isOnline() ? 'System Ready' : (network.forceOffline() ? 'App Forced Offline' : 'System Offline') }}</span>
+          <span class="text-[11px] sm:text-xs font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">
+            {{ network.isLieFiSuspected() ? 'Lie-Fi Detected' : (network.isOnline() ? 'System Ready' : (network.forceOffline() ? 'App Forced Offline' : 'System Offline')) }}
+          </span>
+          @if (network.pendingQueueCount() > 0) {
+            <span class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+              ⚡ {{ network.pendingQueueCount() }}
+            </span>
+          }
         </button>
 
         <!-- Ambient Flow Background Music Quick Indicator (Desktop & Thin-Clients) -->
@@ -455,6 +463,13 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
                       <div class="text-[10px] text-zinc-400 font-normal">NIH All of Us • Research Commons</div>
                     </div>
                   </button>
+                  <button type="button" (click)="navShell?.openSepsisBenchmarkModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-cyan-700 dark:text-cyan-300 cursor-pointer border border-cyan-500/20 bg-cyan-50/40 dark:bg-cyan-950/20">
+                    <span class="text-sm">📊</span>
+                    <div>
+                      <div>MIMIC-IV / OMOP Conformal Hub</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Preprint • 95% Coverage vs Epic ESM Sepsis</div>
+                    </div>
+                  </button>
                 </div>
 
                 <!-- Section: Focus, Telemetry & Wellness -->
@@ -507,6 +522,55 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
                     <div>
                       <div>Commercialization & Growth Hub</div>
                       <div class="text-[10px] text-zinc-400 font-normal">Onboarding, Stripe Tiers, CDISC & BAA Kit</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openAmbientScribeDrawer(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-teal-700 dark:text-teal-300 cursor-pointer border border-teal-500/20 bg-teal-50/40 dark:bg-teal-950/20">
+                    <span class="text-sm">🎙️</span>
+                    <div>
+                      <div>Ambient AI Scribe Ingestion</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Abridge • Nuance DAX • Suki • DDI Intercept</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openEdiClaimsModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/20">
+                    <span class="text-sm">🏢</span>
+                    <div>
+                      <div>ANSI X12 EDI Claims Defense</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">EDI 837P Claims &amp; 835 Remittance • CMS RPM</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openEnterpriseIdentityModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-blue-700 dark:text-blue-300 cursor-pointer border border-blue-500/20 bg-blue-50/40 dark:bg-blue-950/20">
+                    <span class="text-sm">🛡️</span>
+                    <div>
+                      <div>Enterprise Identity (SAML / SCIM)</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Okta • Microsoft Entra ID • Shift Roster</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openDirectIomtModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-rose-700 dark:text-rose-300 cursor-pointer border border-rose-500/20 bg-rose-50/40 dark:bg-rose-950/20">
+                    <span class="text-sm">⌚</span>
+                    <div>
+                      <div>Direct IoMT Wearables (Apple / Google)</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">HealthKit • Health Connect • TIPPSS Trust • Zero Cloud Tax</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openEhrMarketplaceModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-sky-700 dark:text-sky-300 cursor-pointer border border-sky-500/20 bg-sky-50/40 dark:bg-sky-950/20">
+                    <span class="text-sm">🏥</span>
+                    <div>
+                      <div>EHR Marketplace Showroom</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Epic Connection Hub • Oracle Cerner • CARIN Alliance</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openEhrWritebackModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-teal-700 dark:text-teal-300 cursor-pointer border border-teal-500/20 bg-teal-50/40 dark:bg-teal-950/20">
+                    <span class="text-sm">⚡</span>
+                    <div>
+                      <div>EHR Bi-Directional Writeback &amp; ADT</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">RFC 7523 private_key_jwt • DocRef • CarePlan • Conformal Obs</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openEdgeVoiceModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/20">
+                    <span class="text-sm">🎙️</span>
+                    <div>
+                      <div>Edge Offline Voice Scribe</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Local SLM • ISMP Intercept • Store &amp; Forward FHIR</div>
                     </div>
                   </button>
                   <button type="button" (click)="openComplianceCertificate.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
@@ -900,6 +964,46 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
 
             <button type="button" (click)="navShell?.openCommercialHub(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">💼</span> <span>Commercialization & Growth Hub</span>
+            </button>
+
+            <!-- 🎙️ Ambient AI Scribe Ingestion -->
+            <button type="button" (click)="navShell?.openAmbientScribeDrawer(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🎙️</span> <span>Ambient AI Scribe Ingestion</span>
+            </button>
+
+            <!-- 🏢 ANSI X12 EDI Claims Defense -->
+            <button type="button" (click)="navShell?.openEdiClaimsModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🏢</span> <span>ANSI X12 EDI Claims Defense</span>
+            </button>
+
+            <!-- 🛡️ Enterprise Identity & SCIM Directory -->
+            <button type="button" (click)="navShell?.openEnterpriseIdentityModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200 border border-blue-300 dark:border-blue-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🛡️</span> <span>Enterprise Identity (SAML / SCIM)</span>
+            </button>
+
+            <!-- ⌚ Direct IoMT Wearables (Apple / Google) -->
+            <button type="button" (click)="navShell?.openDirectIomtModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">⌚</span> <span>Direct IoMT Wearables (Apple / Google)</span>
+            </button>
+
+            <!-- 📊 MIMIC-IV & CMS OMOP Conformal Benchmark -->
+            <button type="button" (click)="navShell?.openSepsisBenchmarkModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 text-cyan-800 dark:text-cyan-200 border border-cyan-300 dark:border-cyan-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">📊</span> <span>MIMIC-IV &amp; OMOP Conformal Sepsis Hub</span>
+            </button>
+
+            <!-- 🏥 EHR Marketplace Showroom -->
+            <button type="button" (click)="navShell?.openEhrMarketplaceModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-sky-50 dark:bg-sky-950/40 text-sky-800 dark:text-sky-200 border border-sky-300 dark:border-sky-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🏥</span> <span>EHR Marketplace (Epic Showroom / Cerner)</span>
+            </button>
+
+            <!-- ⚡ EHR Bi-Directional Writeback & ADT -->
+            <button type="button" (click)="navShell?.openEhrWritebackModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">⚡</span> <span>EHR Writeback &amp; ADT (RFC 7523)</span>
+            </button>
+
+            <!-- 🎙️ Edge Offline Voice Scribe -->
+            <button type="button" (click)="navShell?.openEdgeVoiceModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🎙️</span> <span>Edge Voice Agent (Air-Gapped SLM)</span>
             </button>
 
             <!-- Ambient Flow Background Music Player -->

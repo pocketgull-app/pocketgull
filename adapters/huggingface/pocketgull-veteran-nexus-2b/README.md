@@ -45,7 +45,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
 base_model_id = "google/gemma-3-1b-it"
-adapter_id = "pocketgull-llc/pocketgull-veteran-nexus-2b"
+adapter_id = "philgear/pocketgull-veteran-nexus-2b"
 
 tokenizer = AutoTokenizer.from_pretrained(base_model_id)
 base_model = AutoModelForCausalLM.from_pretrained(
@@ -55,7 +55,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
 )
 model = PeftModel.from_pretrained(base_model, adapter_id)
 
-prompt = "Patient presents with palpitations taking St. John's Wort alongside Warfarin. Evaluate CYP450 metabolism."
+prompt = "Veteran: US Army 11B Infantry, acoustic trauma from 4 IED detonations. Bilateral 4000 Hz notch at 55 dB and bilateral tinnitus. Formulate 38 CFR § 4.87 nexus statement."
 inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
 
 with torch.no_grad():

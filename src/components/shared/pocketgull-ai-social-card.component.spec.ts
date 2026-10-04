@@ -26,12 +26,9 @@ describe('PocketGullAiSocialCardComponent', () => {
     expect(el.textContent).toContain('Sovereign Clinical Co-Pilot');
   });
 
-  it('3. should render high-contrast SVG QR code vector', () => {
-    const svg = fixture.nativeElement.querySelector('svg');
-    expect(svg).toBeTruthy();
-    expect(svg.getAttribute('viewBox')).toBe('0 0 33 33');
-    const rects = fixture.nativeElement.querySelectorAll('rect');
-    expect(rects.length).toBeGreaterThan(10);
+  it('3. should render high-contrast branded QR code', () => {
+    const qr = fixture.nativeElement.querySelector('app-branded-qr-code');
+    expect(qr).toBeTruthy();
   });
 
   it('4. should render direct link pointing to pocketgull.app with target _blank', () => {

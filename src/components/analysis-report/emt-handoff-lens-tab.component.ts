@@ -4,6 +4,7 @@ import { generate } from 'lean-qr';
 import { BystanderActionSuiteComponent } from '../bystander-action-suite.component';
 import { PocketGullButtonComponent } from '../shared/pocket-gull-button.component';
 import { PocketGullCardComponent } from '../shared/pocket-gull-card.component';
+import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
 import { ClinicalIcons } from '../../assets/clinical-icons';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PatientManagementService } from '../../services/patient-management.service';
@@ -16,7 +17,8 @@ import { PatientManagementService } from '../../services/patient-management.serv
     DecimalPipe,
     BystanderActionSuiteComponent,
     PocketGullButtonComponent,
-    PocketGullCardComponent
+    PocketGullCardComponent,
+    BrandedQrCodeComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -434,15 +436,20 @@ import { PatientManagementService } from '../../services/patient-management.serv
           Scan with any paramedic or clinical device to securely ingest patient vitals and treatment timeline in offline HL7 FHIR R4 format.
         </p>
         
-        @if (qrDataUrl()) {
-          <div class="p-5 bg-white rounded-2xl shadow-2xl border-4 border-amber-500/40 mb-4 flex items-center justify-center">
-            <img [src]="qrDataUrl()" class="w-52 h-52 sm:w-64 sm:h-64 select-none pointer-events-none" style="image-rendering: pixelated;" alt="EMT Handoff FHIR QR Code" />
-          </div>
-        } @else {
-          <div class="w-52 h-52 sm:w-64 sm:h-64 border-2 border-dashed border-zinc-800 rounded-2xl flex items-center justify-center mb-4">
-            <p class="text-xs text-zinc-500">Generating Offline FHIR QR...</p>
-          </div>
-        }
+        <div class="mb-4 shrink-0 flex items-center justify-center">
+          <app-branded-qr-code
+            [data]="activeFhirPayload()"
+            [size]="220"
+            variant="amber"
+            title="EMT Field Handoff"
+            subtitle="Offline HL7 FHIR R4 Transfer"
+            destinationSummary="PocketGull EMT Field Handoff • Safe Harbor §164.514"
+            downloadFilename="emt-field-handoff-qr.png"
+            [enableCopy]="true"
+            [enableDownload]="true"
+            ariaLabel="EMT Handoff FHIR QR Code">
+          </app-branded-qr-code>
+        </div>
 
         <div class="flex items-center gap-2 text-[11px] text-zinc-400 font-bold uppercase tracking-wider font-pocketgull">
           <span>🔒 100% HIPAA Safe Harbor De-Identified</span>
@@ -624,6 +631,12 @@ export class EmtHandoffLensTabComponent implements OnDestroy {
     };
 
     return JSON.stringify(bundle);
+  });
+
+  readonly activeFhirPayload = computed(() => {
+    const fullJson = this.fhirJsonString();
+    const compactJson = this.compactFhirJsonString();
+    return fullJson.length < 1200 ? fullJson : compactJson;
   });
 
   readonly qrDataUrl = computed(() => {

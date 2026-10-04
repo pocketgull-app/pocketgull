@@ -4,7 +4,7 @@ language:
 license: apache-2.0
 library_name: peft
 tags:
-- gemma-2
+- gemma-3
 - lora
 - clinical-nlp
 - healthcare
@@ -13,18 +13,18 @@ tags:
 - pocketgull
 - nih-medquad
 - who-mhgap
-base_model: google/gemma-2-2b-it
+base_model: google/gemma-3-4b-it
 pipeline_tag: text-generation
 widget:
 - text: "Patient with BP 136/86 mmHg and fasting glucose 112 mg/dL. Formulate NIH stepped-care lifestyle modifications and follow-up timeline."
 - text: "Provide WHO mhGAP stepped-care psychoeducational and lifestyle recommendations for mild generalized fatigue and sleep difficulty."
 ---
 
-# PocketGull Compass (v1.0)
+# PocketGull Compass (4B)
 
 **Organization**: [PocketGull LLC](https://pocketgull.com) (Oregon Registry: 258869891)  
 **Informatics Lead**: Phillip Gear (CMS NPI: 1487569752 | ORCID: [0009-0008-1372-5381](https://orcid.org/0009-0008-1372-5381))  
-**Base Foundation Model**: `google/gemma-2-2b-it`  
+**Base Foundation Model**: `google/gemma-3-4b-it`  
 **Discipline**: NIH/WHO Stepped-Care Triage, Socratic Health Literacy, and 3-Act Trajectories  
 **Open Science Provenance**: [Zenodo DOI 10.5281/zenodo.20647514](https://doi.org/10.5281/zenodo.20647514)  
 
@@ -44,8 +44,8 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
-base_model_id = "google/gemma-2-2b-it"
-adapter_id = "pocketgull-llc/pocketgull-compass-2b"
+base_model_id = "google/gemma-3-4b-it"
+adapter_id = "philgear/pocketgull-compass-2b"
 
 tokenizer = AutoTokenizer.from_pretrained(base_model_id)
 base_model = AutoModelForCausalLM.from_pretrained(
@@ -55,7 +55,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
 )
 model = PeftModel.from_pretrained(base_model, adapter_id)
 
-prompt = "Patient presents with palpitations taking St. John's Wort alongside Warfarin. Evaluate CYP450 metabolism."
+prompt = "Patient presents with fasting glucose 112 mg/dL and BP 138/88 mmHg. Formulate NIH stepped-care 3-Act Trajectory."
 inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
 
 with torch.no_grad():

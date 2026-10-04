@@ -47,4 +47,10 @@ describe('MovementHealingQuestComponent', () => {
     expect(component.currentPoints()).toBe(0);
     expect(component.progressPct()).toBe(0);
   });
+
+  it('5. Renders high-DPI branded QR code with quest payload', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-branded-qr-code')).toBeTruthy();
+    expect(component.questDestinationSummary()).toContain('PocketGull Movement Quest');
+  });
 });

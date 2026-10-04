@@ -44,4 +44,12 @@ describe('ThermalHospitalLabelComponent', () => {
     expect(receipt?.receiptId).toContain('RX-SEAL-');
     expect(receipt?.ismpCompliance.passed).toBe(true);
   });
+
+  it('5. should generate receiptQrUrl for branded Part 11 verification QR', async () => {
+    expect(component.receiptQrUrl()).toBe('');
+    await component.generateSeal();
+    const url = component.receiptQrUrl();
+    expect(url).toContain('https://pocketgull.app/verify/provenance?receipt=');
+    expect(url).toContain('&seal=');
+  });
 });

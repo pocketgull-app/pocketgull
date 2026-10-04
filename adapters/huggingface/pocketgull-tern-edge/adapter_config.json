@@ -1,7 +1,7 @@
 {
   "peft_type": "LORA",
   "auto_mapping": null,
-  "base_model_name_or_path": "google/gemma-2-2b-it",
+  "base_model_name_or_path": "google/gemma-3-1b-it",
   "r": 16,
   "lora_alpha": 32,
   "lora_dropout": 0.05,

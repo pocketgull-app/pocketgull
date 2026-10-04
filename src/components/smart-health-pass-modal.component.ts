@@ -1,11 +1,13 @@
 import { Component, inject, signal, computed, output, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
+import { SmartHealthCardService } from '../services/smart-health-card.service';
+import { BrandedQrCodeComponent } from './shared/branded-qr-code.component';
 
 @Component({
   selector: 'app-smart-health-pass-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
@@ -48,11 +50,18 @@ import { PatientStateService } from '../services/patient-state.service';
               <span class="text-[11px] text-zinc-400 font-mono">ID: PGT-88429-FHIR</span>
             </div>
             
-            <!-- Simulated SMART Health QR Matrix SVG -->
-            <div class="w-20 h-20 bg-white p-1.5 rounded-lg shrink-0 flex items-center justify-center shadow">
-              <svg viewBox="0 0 24 24" class="w-full h-full text-zinc-950 fill-current">
-                <path d="M2 2h7v7H2V2zm2 2v3h3V4H4zm11-2h7v7h-7V2zm2 2v3h3V4h-3zM2 15h7v7H2v-7zm2 2v3h3v-3H4zm13 0h2v2h-2v-2zm-2-2h2v2h-2v-2zm4 4h2v2h-2v-2zm2-2h-2v-2h2v2zm-2-2h2v-2h-2v2zm-4 4h2v2h-2v-2zm0-4h2v-2h-2v2zM11 2h2v2h-2V2zm0 4h2v2h-2V6zm0 4h2v2h-2v-2zm4 0h2v2h-2v-2zm-8 4h2v2H7v-2zm4 0h2v2h-2v-2zm0 4h2v2h-2v-2z" />
-              </svg>
+            <!-- Branded SMART Health Pass QR Code -->
+            <div class="shrink-0 flex items-center justify-center">
+              <app-branded-qr-code
+                [data]="shcQrString()"
+                [size]="100"
+                variant="teal"
+                title="SMART Health Card"
+                subtitle="W3C Verifiable Credential"
+                destinationSummary="SMART Health Card • FHIR R4 Verifiable Credential"
+                downloadFilename="smart-health-pass-qr.png"
+                ariaLabel="SMART Health Pass QR Code">
+              </app-branded-qr-code>
             </div>
           </div>
 
@@ -101,8 +110,11 @@ import { PatientStateService } from '../services/patient-state.service';
 })
 export class SmartHealthPassModalComponent {
   readonly patientState = inject(PatientStateService);
+  private readonly smartHealthCardService = inject(SmartHealthCardService);
   readonly closeModal = output<void>();
   readonly isCopied = signal<boolean>(false);
+
+  readonly shcQrString = computed(() => this.smartHealthCardService.generateShcQrString());
 
   copyFhirJson(): void {
     const fhirBundle = {

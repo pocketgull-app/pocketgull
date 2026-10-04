@@ -152,4 +152,72 @@ describe('DoctorShiftSimulatorComponent Unit Suite', () => {
     expect(component.currentPhaseIndex()).toBe(0);
     expect(component.statusNotification()).toContain('Initiating Full 12-Hour Simulation');
   });
+
+  it('13. Inserts patient case directly into PatientManagementService chart history', () => {
+    const patientMgmt = TestBed.inject(PatientManagementService);
+    const caseToInsert = component.patientCases[0][0];
+
+    component.insertCaseIntoPatientChart(caseToInsert);
+
+    const insertedPatient = patientMgmt.patients().find(p => p.id === caseToInsert.id || p.name === caseToInsert.patientName);
+    expect(insertedPatient).toBeDefined();
+    expect(insertedPatient?.history.length).toBeGreaterThan(0);
+    expect(insertedPatient?.history[0].summary).toContain('12-Hour Shift Encounter');
+    expect(patientMgmt.selectedPatientId()).toBe(insertedPatient?.id);
+    expect(component.statusNotification()).toContain('successfully inserted into Patient Chart');
+  });
+
+  it('14. Batch inserts all encounters from the current phase into the patient chart', () => {
+    const patientMgmt = TestBed.inject(PatientManagementService);
+    component.currentPhaseIndex.set(0);
+    const initialCases = component.activeCases();
+
+    component.insertAllCurrentPhaseCasesIntoChart();
+
+    for (const c of initialCases) {
+      const patient = patientMgmt.patients().find(p => p.id === c.id || p.name === c.patientName);
+      expect(patient).toBeDefined();
+      expect(patient?.history.some(h => h.summary.includes(c.chiefComplaint) || h.summary.includes('12-Hour Shift Encounter'))).toBe(true);
+    }
+    expect(component.statusNotification()).toContain('encounters inserted into Patient Chart');
+  });
+
+  it('15. Opens case handoff QR modal, sets active case, and computes handoff URL and variant', () => {
+    const caseToHandoff = component.patientCases[0][0]; // Elena Rostova, L1-RED
+    expect(component.qrHandoffCase()).toBeNull();
+
+    component.openCaseHandoffQr(caseToHandoff);
+    expect(component.qrHandoffCase()).toBe(caseToHandoff);
+    expect(component.caseHandoffUrl()).toContain('https://pocketgull.app/handoff/shift');
+    expect(component.caseHandoffUrl()).toContain('id=sc01');
+    expect(component.caseHandoffUrl()).toContain('Elena+Rostova');
+    expect(component.caseHandoffVariant()).toBe('amber');
+
+    // Test copying SBAR note
+    const mockWriteText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: mockWriteText
+      }
+    });
+    component.copyCaseHandoffSbar();
+    expect(mockWriteText).toHaveBeenCalled();
+
+    component.closeCaseHandoffQr();
+    expect(component.qrHandoffCase()).toBeNull();
+  });
+
+  it('16. Opens phase handoff QR modal and computes phase handoff URL', () => {
+    component.currentPhaseIndex.set(1);
+    expect(component.isPhaseHandoffModalOpen()).toBe(false);
+
+    component.openPhaseHandoffQrModal();
+    expect(component.isPhaseHandoffModalOpen()).toBe(true);
+    expect(component.phaseHandoffUrl()).toContain('https://pocketgull.app/handoff/shift-phase');
+    expect(component.phaseHandoffUrl()).toContain('phase=2');
+
+    component.closePhaseHandoffQrModal();
+    expect(component.isPhaseHandoffModalOpen()).toBe(false);
+  });
 });
+

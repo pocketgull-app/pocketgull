@@ -7,7 +7,9 @@ import { PocketGullButtonComponent } from './pocket-gull-button.component';
 import { PocketGullCardComponent } from './pocket-gull-card.component';
 import { PocketGullInputComponent } from './pocket-gull-input.component';
 import { ThemeStudioDrawerComponent } from './theme-studio-drawer.component';
+import { BrandedQrCodeComponent } from './branded-qr-code.component';
 
+export * from './branded-qr-code.component';
 export * from './clinical-icon.component';
 export * from './clinical-tool-card.component';
 export * from './metric-card.component';
@@ -48,5 +50,6 @@ export const SHARED_POCKETGULL_COMPONENTS = [
   PocketGullCardComponent,
   PocketGullInputComponent,
   ThemeStudioDrawerComponent,
+  BrandedQrCodeComponent,
 ] as const;
 
