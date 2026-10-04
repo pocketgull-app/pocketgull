@@ -4,13 +4,13 @@ import { PatientStateService } from '../../services/patient-state.service';
 import { PatientManagementService } from '../../services/patient-management.service';
 import { ExportService } from '../../services/export.service';
 import { PocketGullButtonComponent } from '../shared/pocket-gull-button.component';
-import { generate } from 'lean-qr';
+import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-fhir-passport-modal',
   standalone: true,
-  imports: [CommonModule, PocketGullButtonComponent],
+  imports: [CommonModule, PocketGullButtonComponent, BrandedQrCodeComponent],
   template: `
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in font-mono print:static print:bg-white print:p-0 print:block">
       
@@ -92,10 +92,19 @@ import { generate } from 'lean-qr';
               </div>
             </div>
 
-            <!-- Right QR Canvas Container -->
-            <div class="shrink-0 flex flex-col items-center gap-2 p-3 bg-zinc-900 rounded-2xl border border-zinc-800 shadow-inner no-print">
-              <div #qrContainer class="w-32 h-32 bg-white rounded-xl p-2 flex items-center justify-center shadow-md"></div>
-              <span class="text-[9.5px] font-mono font-bold text-zinc-400 uppercase tracking-wider">Scan to Verify FHIR</span>
+            <!-- Right QR Container (Branded, High-DPI, Anti-Quishing Protected) -->
+            <div class="shrink-0 flex flex-col items-center no-print">
+              <app-branded-qr-code
+                [data]="passportVerificationUrl()"
+                [size]="124"
+                variant="teal"
+                [showLogo]="true"
+                [showCard]="false"
+                [showDestinationGrounding]="true"
+                [enableCopy]="true"
+                title="Scan to Verify FHIR"
+                ariaLabel="Official FHIR R4 Health Passport Verification QR Code">
+              </app-branded-qr-code>
             </div>
 
           </div>
@@ -262,12 +271,15 @@ export class FhirPassportModalComponent {
   patientManagement = inject(PatientManagementService);
   exportService = inject(ExportService);
 
-  qrContainer = viewChild<ElementRef<HTMLDivElement>>('qrContainer');
   todayDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
   activePatient = computed(() => this.patientManagement.selectedPatient());
   patientName = computed(() => this.activePatient()?.name || this.patientState.patientName() || 'Patient');
   fhirId = computed(() => this.activePatient()?.id || 'p_001_fhir_r4');
+
+  passportVerificationUrl = computed(() => {
+    return `https://pocketgull.app/verify/fhir-passport?id=${this.fhirId()}&name=${encodeURIComponent(this.patientName())}`;
+  });
 
   activeConditions = computed(() => {
     const p = this.activePatient();
@@ -276,44 +288,6 @@ export class FhirPassportModalComponent {
     }
     return ['Cardiometabolic Baseline', 'Lumbar Radiculopathy (M54.16)', 'Circadian Phase Realignment'];
   });
-
-  constructor() {
-    effect(() => {
-      if (this.qrContainer()) {
-        this.renderQrCode();
-      }
-    });
-  }
-
-  renderQrCode() {
-    const container = this.qrContainer()?.nativeElement;
-    if (!container) return;
-    container.innerHTML = '';
-
-    const payload = `https://pocketgull.app/verify/fhir-passport?id=${this.fhirId()}&name=${encodeURIComponent(this.patientName())}`;
-    const code = generate(payload);
-
-    const canvas = document.createElement('canvas');
-    canvas.width = 112;
-    canvas.height = 112;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      const size = code.size;
-      const scale = canvas.width / size;
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#09090b';
-
-      for (let y = 0; y < size; y++) {
-        for (let x = 0; x < size; x++) {
-          if (code.get(x, y)) {
-            ctx.fillRect(Math.floor(x * scale), Math.floor(y * scale), Math.ceil(scale), Math.ceil(scale));
-          }
-        }
-      }
-    }
-    container.appendChild(canvas);
-  }
 
   downloadJson() {
     const p = this.activePatient();

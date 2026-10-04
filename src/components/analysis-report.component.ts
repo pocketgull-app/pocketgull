@@ -11,7 +11,7 @@ import { DictationService } from '../services/dictation.service';
 import { CompassionateAnalogyService } from '../services/compassionate-analogy.service';
 import { getStoredApiKey } from '../services/secure-key';
 import { SecureStorageService } from '../services/secure-storage.service';
-import { generate } from 'lean-qr';
+import { BrandedQrCodeService } from '../services/branded-qr-code.service';
 
 declare var webkitSpeechRecognition: any;
 import { ISummaryNode, ISummaryNodeItem, IReportSection, IParsedTranscriptEntry, NodeAnnotation, LensAnnotations, IVerificationIssue } from './analysis-report.types';
@@ -2428,6 +2428,7 @@ export class AnalysisReportComponent implements OnDestroy {
   protected readonly markdownService = inject(MarkdownService);
   protected readonly exportService = inject(ExportService);
   protected readonly patientManagement = inject(PatientManagementService);
+  protected readonly brandedQrService = inject(BrandedQrCodeService);
   protected readonly ClinicalIcons = ClinicalIcons;
 
   showClinicalToolsModal = signal<boolean>(false);
@@ -2948,8 +2949,7 @@ export class AnalysisReportComponent implements OnDestroy {
     const fhirStr = fullJson.length < 1200 ? fullJson : compactJson;
     
     try {
-      const qr = generate(fhirStr);
-      return qr.toDataURL({ scale: 8 });
+      return this.brandedQrService.generateDataUrl(fhirStr, { size: 300, variant: 'teal' });
     } catch (e) {
       console.error('Failed to generate QR Code:', e);
       return '';

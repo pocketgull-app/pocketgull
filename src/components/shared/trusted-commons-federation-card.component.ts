@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TrustedCommonsFederationService, ICommonsFederationNode } from '../../services/trusted-commons-federation.service';
+import { BrandedQrCodeComponent } from './branded-qr-code.component';
 
 @Component({
   selector: 'app-trusted-commons-federation-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-5 bg-white dark:bg-zinc-900 border border-teal-500/30 rounded-2xl shadow-xl space-y-6 font-sans">
@@ -141,7 +142,7 @@ import { TrustedCommonsFederationService, ICommonsFederationNode } from '../../s
       <!-- Tab 2: Air-Gapped Bundles & Optical Sync -->
       @if (activeTab() === 'bundles') {
         <div class="space-y-4">
-          <div class="p-3.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex justify-between items-center text-xs">
+          <div class="p-3.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex flex-wrap justify-between items-center gap-3 text-xs">
             <div>
               <div class="font-bold text-indigo-900 dark:text-indigo-300">
                 Air-Gapped Cryptographic Provenance
@@ -150,14 +151,51 @@ import { TrustedCommonsFederationService, ICommonsFederationNode } from '../../s
                 All bundles are signed with Ed25519 signatures. Can be exported as high-density QR codes or JSON for USB sneakernet transfer.
               </div>
             </div>
-            <button
-              type="button"
-              (click)="exportSampleProtocol()"
-              class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm"
-            >
-              📤 Sign & Export Protocol
-            </button>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                (click)="toggleAirGapQr()"
+                class="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>📱</span> {{ showAirGapQr() ? 'Hide Optical QR' : 'Optical QR Transfer' }}
+              </button>
+              <button
+                type="button"
+                (click)="exportSampleProtocol()"
+                class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm cursor-pointer"
+              >
+                📤 Export JSON Bundle
+              </button>
+            </div>
           </div>
+
+          <!-- Air-Gapped Optical QR Code Drawer -->
+          @if (showAirGapQr()) {
+            <div class="p-4 bg-zinc-950/80 rounded-2xl border border-teal-500/30 flex flex-col items-center">
+              <div class="flex items-center justify-between w-full mb-3">
+                <span class="text-[11px] font-mono font-bold text-teal-400 uppercase tracking-wider">
+                  📱 Air-Gapped High-Density Ed25519 QR Transfer
+                </span>
+                <button type="button" (click)="showAirGapQr.set(false)" class="text-xs text-zinc-400 hover:text-white cursor-pointer">✕ Close</button>
+              </div>
+              <app-branded-qr-code
+                [data]="airGapQrPayload()"
+                [size]="180"
+                variant="teal"
+                [showLogo]="true"
+                [showCard]="false"
+                [showDestinationGrounding]="true"
+                [enableCopy]="true"
+                [enableDownload]="true"
+                downloadFilename="trusted-commons-protocol-bundle.png"
+                title="Cascadia Rehydration Protocol"
+                ariaLabel="Air-Gapped Signed Resource Bundle QR Code">
+              </app-branded-qr-code>
+              <span class="text-[9.5px] font-mono text-zinc-400 mt-2 text-center">
+                Signed by Ed25519 Local Node • Optical camera ingestion ready
+              </span>
+            </div>
+          }
 
           <div class="space-y-3">
             @for (bundle of fedService.incomingBundles(); track bundle.bundleId) {
@@ -169,9 +207,19 @@ import { TrustedCommonsFederationService, ICommonsFederationNode } from '../../s
                       Origin: <strong class="text-teal-700 dark:text-teal-400">{{ bundle.originNodeName }}</strong> • {{ bundle.bundleType }}
                     </div>
                   </div>
-                  <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-mono text-[9px] font-bold">
-                    ✓ {{ bundle.verificationStatus }}
-                  </span>
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      (click)="showBundleQr(bundle)"
+                      title="Display Scannable QR Code for this bundle"
+                      class="px-2 py-0.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 dark:text-teal-300 border border-teal-500/30 rounded font-mono text-[9px] font-bold cursor-pointer transition-all flex items-center gap-1"
+                    >
+                      <span>📱</span> QR
+                    </button>
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-mono text-[9px] font-bold">
+                      ✓ {{ bundle.verificationStatus }}
+                    </span>
+                  </div>
                 </div>
                 <p class="text-[11px] text-gray-600 dark:text-zinc-300 leading-relaxed">
                   {{ bundle.payloadSummary }}
@@ -222,6 +270,38 @@ import { TrustedCommonsFederationService, ICommonsFederationNode } from '../../s
 export class TrustedCommonsFederationCardComponent {
   readonly fedService = inject(TrustedCommonsFederationService);
   readonly activeTab = signal<'peers' | 'bundles' | 'identity'>('peers');
+  readonly showAirGapQr = signal<boolean>(false);
+  readonly airGapQrPayload = signal<string>('');
+
+  toggleAirGapQr(): void {
+    if (!this.showAirGapQr()) {
+      const sample = this.fedService.exportSignedResourceBundle(
+        'FHIR_CLINICAL_PROTOCOL',
+        'Cascadia Acute Dehydration & Electrolyte Repletion Protocol',
+        {
+          indication: 'Pediatric/Adult Dehydration',
+          osmolarityTarget: '245 mOsm/L (WHO Standard)',
+          composition: 'Sodium chloride 2.6g/L, Glucose anhydrous 13.5g/L, Potassium chloride 1.5g/L, Trisodium citrate 2.9g/L'
+        }
+      );
+      this.airGapQrPayload.set(sample);
+      this.showAirGapQr.set(true);
+    } else {
+      this.showAirGapQr.set(false);
+    }
+  }
+
+  showBundleQr(bundle: any): void {
+    const payload = JSON.stringify({
+      bundleId: bundle.bundleId,
+      bundleType: bundle.bundleType,
+      title: bundle.title,
+      origin: bundle.originNodeName,
+      signature: bundle.cryptographicSignature
+    });
+    this.airGapQrPayload.set(payload);
+    this.showAirGapQr.set(true);
+  }
 
   downloadTreaty(peerDid: string): void {
     const treaty = this.fedService.generateFederationCovenant(peerDid);

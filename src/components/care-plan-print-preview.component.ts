@@ -7,7 +7,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
 import { GlobalHealthInitiativesService } from '../services/global-health-initiatives.service';
 import { OknKnowledgeGraphService } from '../services/okn-knowledge-graph.service';
 import { ClinicalDataCardComponent } from './clinical-data-card.component';
-import { generate } from 'lean-qr';
+import { BrandedQrCodeComponent } from './shared/branded-qr-code.component';
 
 export interface IPrintPageThumbnail {
   pageNumber: number;
@@ -21,7 +21,7 @@ export interface IPrintPageThumbnail {
 @Component({
   selector: 'app-care-plan-print-preview',
   standalone: true,
-  imports: [CommonModule, ClinicalDataCardComponent],
+  imports: [CommonModule, ClinicalDataCardComponent, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-zinc-200/80 dark:border-zinc-800 shadow-xl mb-8 font-sans">
@@ -248,7 +248,15 @@ export interface IPrintPageThumbnail {
             </div>
             
             <div class="shrink-0 flex items-center gap-3 p-2 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-300 dark:border-zinc-700 shadow-sm">
-              <div #qrContainer class="w-20 h-20 bg-white p-1 rounded-md flex items-center justify-center"></div>
+              <app-branded-qr-code
+                [data]="mobileAccessUrl()"
+                [size]="84"
+                variant="teal"
+                [showLogo]="true"
+                [showCard]="false"
+                [showDestinationGrounding]="false"
+                ariaLabel="Mobile Patient Access QR Code">
+              </app-branded-qr-code>
               <div class="text-[10px] text-zinc-700 dark:text-zinc-300 space-y-0.5 font-mono">
                 <span class="block font-bold text-emerald-700 dark:text-emerald-400">STATUS: VERIFIED</span>
                 <span class="block text-zinc-500">ID: {{ patientState.patientId() || 'P_001' }}</span>
@@ -577,56 +585,18 @@ export class CarePlanPrintPreviewComponent {
     return this.globalHealth.mapToWhoIcd11Chapter26([...conditions, ...issueDescriptions]);
   });
 
-  qrContainer = viewChild<ElementRef<HTMLDivElement>>('qrContainer');
+  mobileAccessUrl = computed(() => {
+    const prescribedCsv = this.patientState.prescribedToolsList().map(t => t.id).join(',');
+    return `https://pocketgull.app/careplan?id=${this.patientState.patientId() || 'p001'}&tools=${prescribedCsv}&mode=${this.activeCognitiveLevel()}&phil=${this.activePhilosophy()}`;
+  });
 
   constructor() {
-    effect(() => {
-      if (this.qrContainer()) {
-        this.renderQrCode();
-      }
-    });
-
     effect(() => {
       const adopted = this.patientState.activeCarePlanNotes();
       if (adopted) {
         this.editableNotes.set(adopted);
       }
     });
-  }
-
-  renderQrCode() {
-    const container = this.qrContainer()?.nativeElement;
-    if (!container) return;
-    container.innerHTML = '';
-
-    const prescribedCsv = this.patientState.prescribedToolsList().map(t => t.id).join(',');
-    const payload = `https://pocketgull.app/careplan?id=${this.patientState.patientId() || 'p001'}&tools=${prescribedCsv}&mode=${this.activeCognitiveLevel()}&phil=${this.activePhilosophy()}`;
-    
-    try {
-      const code = generate(payload);
-      const canvas = document.createElement('canvas');
-      canvas.width = 80;
-      canvas.height = 80;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        const size = code.size;
-        const scale = canvas.width / size;
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#18181b';
-
-        for (let y = 0; y < size; y++) {
-          for (let x = 0; x < size; x++) {
-            if (code.get(x, y)) {
-              ctx.fillRect(Math.floor(x * scale), Math.floor(y * scale), Math.ceil(scale), Math.ceil(scale));
-            }
-          }
-        }
-      }
-      container.appendChild(canvas);
-    } catch (e) {
-      console.warn('QR Code generation notice:', e);
-    }
   }
 
   printPages: IPrintPageThumbnail[] = [
