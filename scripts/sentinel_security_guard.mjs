@@ -104,6 +104,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'hdl.handle.net',
   'guidelinesforcollaboration.info',
   'zenodo.org',
+  'arxiv.org',
+  'www.arxiv.org',
   'lpi.oregonstate.edu',
   'oregonstate.edu',
   'pay.google.com',

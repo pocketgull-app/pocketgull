@@ -33,7 +33,7 @@ describe('PatentClaimsHudModalComponent', () => {
 
   it('should switch tabs to clauses and filter statutory clauses', () => {
     component.activeTab.set('clauses');
-    expect(component.filteredClauses().length).toBe(7);
+    expect(component.filteredClauses().length).toBe(9);
 
     component.searchQuery.set('Amazon');
     expect(component.filteredClauses().length).toBe(1);
@@ -51,6 +51,22 @@ describe('PatentClaimsHudModalComponent', () => {
     component.selectedProvisionalFig.set(2);
     expect(component.currentFigure().figureNumber).toBe(2);
     expect(component.currentFigure().title).toContain('FIG. 2');
+  });
+
+  it('should switch tabs to pledge and access open patent pledge details', () => {
+    component.activeTab.set('pledge');
+    expect(component.activeTab()).toBe('pledge');
+    expect(component.academicBibtex).toContain('pocketgull2026conformal');
+    expect(component.academicBibtex).toContain('PG-PAT-2026-CONF-001');
+    expect(component.academicBibtex).toContain('35 U.S.C. § 102');
+
+    const writeTextSpy = vi.fn();
+    Object.assign(navigator, {
+      clipboard: { writeText: writeTextSpy }
+    });
+
+    component.copyOpenPatentPledge();
+    expect(writeTextSpy).toHaveBeenCalled();
   });
 
   it('should copy text to clipboard when copyText is called', () => {

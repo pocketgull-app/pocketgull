@@ -29,6 +29,7 @@ export interface IPatentRegistrySummary {
   totalClaimsCount: number;
   charterDocumentPath: string;
   clausesDocumentPath: string;
+  pledgeDocumentPath: string;
   lastUpdated: string;
   clusters: IPatentClaimCluster[];
   statutoryClauses: IStatutoryClause[];
@@ -359,6 +360,24 @@ export class IpPatentRegistryService {
       summary: 'Enforces M-of-N multi-party cryptographic authorization and hardware FIDO2 passkeys for high-impact clinical actions.',
       fullText: 'No single administrative account, Chief Medical Officer (CMO), or automated AI agent possesses the unilateral authority to execute high-impact actions. All bulk patient exports (>50 records), batch state purges, or disbursements ≥ $500 strictly require dual authenticated signatures verified via hardware FIDO2 physical passkeys and threshold cryptographic signatures.',
       governingLaw: 'NIST SP 800-207 Zero-Trust / HIPAA §164.312'
+    },
+    {
+      id: 'clause-open-patent-pledge-covenant',
+      article: 'Article VII',
+      section: 'Section 7.01',
+      title: 'Open Patent Research Pledge & Academic Laboratory Covenant',
+      summary: 'Grants a royalty-free, perpetual license to academic laboratories and non-commercial researchers to test, validate, and benchmark all 17 invention clusters, subject to a defensive termination clause against patent aggression.',
+      fullText: 'PocketGull hereby declares an Open Patent Research Pledge and Non-Assertion Covenant. All academic medical centers, university laboratories, non-profit institutions, and independent scientific researchers are granted a non-exclusive, royalty-free, worldwide, perpetual license under any patents or patent applications owned or controlled by PocketGull or Phil Gear to make, have made, use, and practice the inventions across all 17 invention clusters solely for research, academic benchmarking, peer-reviewed clinical validation, and open scientific inquiry. Defensive Termination Condition: Any license or covenant granted under this pledge shall immediately and automatically terminate with respect to any entity that initiates, asserts, or financially sponsors any patent infringement claim or other intellectual property litigation against PocketGull, Phil Gear, or their open-source contributors.',
+      governingLaw: 'Open Patent Non-Assertion Covenant / 35 U.S.C. § 271'
+    },
+    {
+      id: 'clause-prior-art-bar',
+      article: 'Article VII',
+      section: 'Section 7.02',
+      title: 'Statutory Prior Art Bar & Defensive Anti-Appropriation Assertion',
+      summary: 'Establishes all public git commit logs, cryptographic SHA-256 hashes, and documentation as non-confidential statutory prior art under 35 U.S.C. § 102(a)(1) to prevent third-party patent theft.',
+      fullText: 'Notice is hereby given under 35 U.S.C. § 102(a)(1) and the America Invents Act (AIA) that all specifications, mathematical formulas, algorithms, architecture diagrams, and source code committed to public repositories, published documentation, and immutable git commits constitute non-confidential, date-stamped statutory prior art worldwide. Any third party attempting to register, file, or claim inventorship over these published methods or their obvious variants commits inequitable conduct under 35 U.S.C. § 115 and renders any resulting claims anticipated (§ 102) or obvious (§ 103). PocketGull reserves the right to submit third-party preissuance prior art submissions under 35 U.S.C. § 122(e) and 37 CFR 1.290 to USPTO and international examiners against any conflicting filings.',
+      governingLaw: '35 U.S.C. § 102(a)(1), 103, 115, 122(e) / 37 CFR 1.290'
     }
   ]);
 
@@ -380,7 +399,8 @@ export class IpPatentRegistryService {
       totalClaimsCount: this.totalClaims(),
       charterDocumentPath: 'docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md',
       clausesDocumentPath: 'docs/legal/INVENTION_ASSIGNMENT_AND_COPYRIGHT_CLAUSES.md',
-      lastUpdated: '2026-08-23',
+      pledgeDocumentPath: 'docs/patents/OPEN_PATENT_PLEDGE_AND_RESEARCH_COVENANT.md',
+      lastUpdated: '2026-10-04',
       clusters: this.claimClusters(),
       statutoryClauses: this.statutoryClauses()
     };
@@ -788,6 +808,28 @@ ${claims.map(c => `### Claim ${c.claimNumber} (${c.claimType}, ${c.isIndependent
 
 ## Figures
 ${figures.map(f => `### ${f.title}\n${f.description}\n\`\`\`\n${f.asciiArt}\n\`\`\`\n`).join('\n')}
+`;
+  }
+
+  exportOpenPatentPledgeMarkdown(): string {
+    return `# ⚖️ POCKETGULL OPEN PATENT PLEDGE & ACADEMIC RESEARCH COVENANT
+**Assignee & Licensor**: PocketGull Health AI PBC & Phil Gear (dpo@pocketgull.app)
+**Date**: October 4, 2026
+**Governing Statutory Frameworks**: 35 U.S.C. § 101 et seq., 35 U.S.C. § 102(a)(1), 35 U.S.C. § 122(e), 37 CFR 1.290
+
+## 1. Open Patent Research Grant & Non-Assertion Covenant
+Subject to the defensive conditions herein, PocketGull and Phil Gear irrevocably covenant not to assert any patent, patent application, or exclusive rights (spanning all 17 Invention Clusters, Claims 1–340, and Provisional Specification Docket PG-PAT-2026-CONF-001) against any academic medical center, university laboratory, hospital, or non-profit research institute for:
+- Academic bench trial benchmarking and algorithmic reproduction
+- Observational clinical validation studies (MIMIC-IV, eICU, OMOP cohorts)
+- Peer-reviewed scientific publication and open educational use
+
+## 2. Defensive Termination Condition (Patent Retaliation Shield)
+Any license, non-assertion covenant, or permission granted under this Pledge shall immediately, automatically, and permanently terminate with respect to any entity that:
+1. Commences, files, maintains, or financially sponsors any patent infringement litigation or administrative proceeding (including Inter Partes Review) against PocketGull, Phil Gear, or their contributors; or
+2. Asserts patent claims alleging that PocketGull's open-source repositories or published specifications infringe any third-party patent.
+
+## 3. Statutory Prior Art Bar (35 U.S.C. § 102(a)(1))
+All specifications, formulas, WGSL shaders, 3D procedural meshes, and algorithmic methods committed to public repositories, documentation, and immutable git commits constitute non-confidential, date-stamped statutory prior art worldwide. Any third party attempting to register, file, or claim inventorship over these published methods commits inequitable conduct under 35 U.S.C. § 115 and renders resulting claims invalid under 35 U.S.C. § 102 / § 103.
 `;
   }
 }
