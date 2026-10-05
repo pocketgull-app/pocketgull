@@ -3,7 +3,8 @@
   "version": "1.39.0",
   "workspaces": [
     "companion-apps/avs-therapy",
-    "pocketgull_api"
+    "pocketgull_api",
+    "packages/*"
   ],
   "description": "Insight beneath the surface. Real-time medical Care Plan Strategy and Live AI Consult engine powered by Google Gemini.",
   "author": "Phillip Gear <leads@pocketgull.app> (PocketGull LLC)",
@@ -151,8 +152,12 @@
     "prepare": "node -e \"try { require('husky')() } catch (e) {}\" || true",
     "test": "vitest run --config vitest.config.ts && node scripts/run-python-tests.mjs",
     "test:fast": "vitest run --changed",
-    "test:watch": "vitest",
+    "typecheck": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
     "typecheck:fast": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
+    "typecheck:packages": "node node_modules/typescript/lib/tsc.js -b tsconfig.build.json",
+    "typecheck:all": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit && node node_modules/typescript/lib/tsc.js -b tsconfig.build.json",
+    "check": "npm run typecheck:all",
+    "clean": "node scripts/clean_workspace_cache.mjs",
     "test:python": "node scripts/run-python-tests.mjs",
     "test:e2e:ui": "playwright test --ui",
     "dns:update": "node scripts/update-porkbun-dns.js",
