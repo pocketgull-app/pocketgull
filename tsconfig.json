@@ -16,8 +16,6 @@
       "vitest/globals"
     ],
     "strict": false,
-    "incremental": true,
-    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo",
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "moduleDetection": "force",

@@ -238,6 +238,7 @@
   "devDependencies": {
     "@axe-core/puppeteer": "^4.11.1",
     "@playwright/test": "^1.62.0",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/compression": "^1.8.1",
     "@types/express": "^5.0.1",
     "@types/jasmine": "^6.0.0",
@@ -253,6 +254,7 @@
     "lint-staged": "^17.0.5",
     "postcss": "^8.5.28",
     "puppeteer": "^25.0.0",
+    "tailwindcss": "^3.4.19",
     "typescript": "~5.5.4",
     "vite": "^7.3.5 || ^8.0.0",
     "vitest": "^4.1.6",
