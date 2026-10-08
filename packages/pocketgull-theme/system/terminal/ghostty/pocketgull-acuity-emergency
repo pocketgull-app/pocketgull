@@ -1,0 +1,21 @@
+# PocketGull Acuity Emergency Ghostty Theme
+background = #0a0503
+foreground = #fff7ed
+cursor-color = #f97316
+selection-background = #f973162a
+palette = 0=#0a0503
+palette = 1=#ef4444
+palette = 2=#16a34a
+palette = 3=#f59e0b
+palette = 4=#38bdf8
+palette = 5=#c084fc
+palette = 6=#fb923c
+palette = 7=#fff7ed
+palette = 8=#78350f
+palette = 9=#f87171
+palette = 10=#4ade80
+palette = 11=#fde047
+palette = 12=#60a5fa
+palette = 13=#f472b6
+palette = 14=#fdba74
+palette = 15=#ffffff

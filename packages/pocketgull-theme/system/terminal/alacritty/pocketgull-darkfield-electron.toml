@@ -1,0 +1,32 @@
+# PocketGull Darkfield Electron Alacritty Theme
+[colors.primary]
+background = "#0f1115"
+foreground = "#e4e4e7"
+
+[colors.cursor]
+text = "#0f1115"
+cursor = "#facc15"
+
+[colors.selection]
+text = "#e4e4e7"
+background = "#facc1533"
+
+[colors.normal]
+black = "#0f1115"
+red = "#ef4444"
+green = "#facc15"
+yellow = "#cbd5e1"
+blue = "#38bdf8"
+magenta = "#fb923c"
+cyan = "#f97316"
+white = "#e4e4e7"
+
+[colors.bright]
+black = "#71717a"
+red = "#f87171"
+green = "#facc15"
+yellow = "#cbd5e1"
+blue = "#38bdf8"
+magenta = "#fb923c"
+cyan = "#f97316"
+white = "#ffffff"

@@ -1,0 +1,32 @@
+# PocketGull Okabe-Ito Divergent Alacritty Theme
+[colors.primary]
+background = "#0e1117"
+foreground = "#f0f6fc"
+
+[colors.cursor]
+text = "#0e1117"
+cursor = "#56b4e9"
+
+[colors.selection]
+text = "#f0f6fc"
+background = "#56b4e933"
+
+[colors.normal]
+black = "#0e1117"
+red = "#ef4444"
+green = "#009e73"
+yellow = "#cc79a7"
+blue = "#56b4e9"
+magenta = "#e69f00"
+cyan = "#d55e00"
+white = "#f0f6fc"
+
+[colors.bright]
+black = "#8b949e"
+red = "#f87171"
+green = "#009e73"
+yellow = "#cc79a7"
+blue = "#56b4e9"
+magenta = "#e69f00"
+cyan = "#d55e00"
+white = "#ffffff"

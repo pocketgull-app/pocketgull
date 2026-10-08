@@ -1,0 +1,21 @@
+# PocketGull Carrara Marble Ghostty Theme
+background = #faf9f6
+foreground = #0f172a
+cursor-color = #0ea5e9
+selection-background = #0ea5e928
+palette = 0=#0f172a
+palette = 1=#dc2626
+palette = 2=#059669
+palette = 3=#d97706
+palette = 4=#0284c7
+palette = 5=#7c3aed
+palette = 6=#0ea5e9
+palette = 7=#e2e8f0
+palette = 8=#64748b
+palette = 9=#ef4444
+palette = 10=#10b981
+palette = 11=#f59e0b
+palette = 12=#38bdf8
+palette = 13=#a855f7
+palette = 14=#06b6d4
+palette = 15=#ffffff

@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Hemp Fiber Theme",
+  "description": "PocketGull PocketGull Hemp Fiber browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-hemp-fiber@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#e2dccf",
+      "frame_inactive": "#eae5d8",
+      "tab_selected": "#f2efe6",
+      "tab_background_text": "#78716c",
+      "tab_text": "#2c3529",
+      "tab_line": "#15803d",
+      "toolbar": "#f2efe6",
+      "toolbar_text": "#2c3529",
+      "toolbar_field": "#f2efe6",
+      "toolbar_field_text": "#2c3529",
+      "toolbar_top_separator": "#d8d3c3",
+      "toolbar_bottom_separator": "#d8d3c3",
+      "icons": "#15803d",
+      "ntp_background": "#f2efe6",
+      "ntp_text": "#2c3529"
+    }
+  }
+}

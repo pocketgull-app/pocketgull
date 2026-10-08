@@ -1,5 +1,10 @@
 .vscode/**
 .vscode-test/**
 scripts/**
+browser/**
+**/*.pem
+**/*.crx
+**/*.xpi
 **/*.map
 .DS_Store
+

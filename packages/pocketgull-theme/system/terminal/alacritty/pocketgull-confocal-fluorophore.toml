@@ -1,0 +1,32 @@
+# PocketGull Confocal Fluorophore Alacritty Theme
+[colors.primary]
+background = "#05080c"
+foreground = "#e2e8f0"
+
+[colors.cursor]
+text = "#05080c"
+cursor = "#34d399"
+
+[colors.selection]
+text = "#e2e8f0"
+background = "#34d39933"
+
+[colors.normal]
+black = "#05080c"
+red = "#ef4444"
+green = "#34d399"
+yellow = "#a78bfa"
+blue = "#38bdf8"
+magenta = "#fbbf24"
+cyan = "#f43f5e"
+white = "#e2e8f0"
+
+[colors.bright]
+black = "#64748b"
+red = "#f87171"
+green = "#34d399"
+yellow = "#a78bfa"
+blue = "#38bdf8"
+magenta = "#fbbf24"
+cyan = "#f43f5e"
+white = "#ffffff"

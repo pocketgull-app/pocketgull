@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Construction High-Vis Theme",
+  "description": "PocketGull PocketGull Construction High-Vis browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "theme": {
+    "colors": {
+      "frame": [
+        244,
+        227,
+        171
+      ],
+      "frame_inactive": [
+        248,
+        236,
+        197
+      ],
+      "toolbar": [
+        253,
+        246,
+        226
+      ],
+      "tab_text": [
+        30,
+        27,
+        19
+      ],
+      "tab_background_text": [
+        120,
+        113,
+        108
+      ],
+      "bookmark_text": [
+        30,
+        27,
+        19
+      ],
+      "toolbar_button_icon": [
+        3,
+        105,
+        161
+      ],
+      "toolbar_text": [
+        30,
+        27,
+        19
+      ],
+      "ntp_background": [
+        253,
+        246,
+        226
+      ],
+      "ntp_text": [
+        30,
+        27,
+        19
+      ]
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Acuity Emergency Theme",
+  "description": "PocketGull PocketGull Acuity Emergency browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-acuity-emergency@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#070302",
+      "frame_inactive": "#070302",
+      "tab_selected": "#170b07",
+      "tab_background_text": "#78350f",
+      "tab_text": "#ffffff",
+      "tab_line": "#f97316",
+      "toolbar": "#170b07",
+      "toolbar_text": "#fff7ed",
+      "toolbar_field": "#0a0503",
+      "toolbar_field_text": "#fff7ed",
+      "toolbar_top_separator": "#2e1208",
+      "toolbar_bottom_separator": "#2e1208",
+      "icons": "#f97316",
+      "ntp_background": "#0a0503",
+      "ntp_text": "#fff7ed"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Spot-Color Press Theme",
+  "description": "PocketGull PocketGull Spot-Color Press browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-spot-color-press@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#efe8d8",
+      "frame_inactive": "#f7f2e7",
+      "tab_selected": "#fdfbf7",
+      "tab_background_text": "#78716c",
+      "tab_text": "#1e3a8a",
+      "tab_line": "#ec4899",
+      "toolbar": "#fdfbf7",
+      "toolbar_text": "#1e3a8a",
+      "toolbar_field": "#fdfbf7",
+      "toolbar_field_text": "#1e3a8a",
+      "toolbar_top_separator": "#e5dec9",
+      "toolbar_bottom_separator": "#e5dec9",
+      "icons": "#ec4899",
+      "ntp_background": "#fdfbf7",
+      "ntp_text": "#1e3a8a"
+    }
+  }
+}

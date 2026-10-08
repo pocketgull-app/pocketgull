@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull GearArts Theme",
+  "description": "PocketGull PocketGull GearArts browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "theme": {
+    "colors": {
+      "frame": [
+        8,
+        9,
+        12
+      ],
+      "frame_inactive": [
+        8,
+        9,
+        12
+      ],
+      "toolbar": [
+        19,
+        21,
+        29
+      ],
+      "tab_text": [
+        255,
+        255,
+        255
+      ],
+      "tab_background_text": [
+        90,
+        101,
+        120
+      ],
+      "bookmark_text": [
+        248,
+        250,
+        252
+      ],
+      "toolbar_button_icon": [
+        45,
+        212,
+        191
+      ],
+      "toolbar_text": [
+        248,
+        250,
+        252
+      ],
+      "ntp_background": [
+        11,
+        12,
+        16
+      ],
+      "ntp_text": [
+        248,
+        250,
+        252
+      ]
+    }
+  }
+}

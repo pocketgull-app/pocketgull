@@ -1,0 +1,32 @@
+# PocketGull Sacred Mandala Alacritty Theme
+[colors.primary]
+background = "#16112d"
+foreground = "#f5f3ff"
+
+[colors.cursor]
+text = "#16112d"
+cursor = "#c084fc"
+
+[colors.selection]
+text = "#f5f3ff"
+background = "#c084fc2c"
+
+[colors.normal]
+black = "#16112d"
+red = "#ef4444"
+green = "#10b981"
+yellow = "#f59e0b"
+blue = "#818cf8"
+magenta = "#c084fc"
+cyan = "#22d3ee"
+white = "#f5f3ff"
+
+[colors.bright]
+black = "#6b5c94"
+red = "#f87171"
+green = "#34d399"
+yellow = "#fde047"
+blue = "#a5b4fc"
+magenta = "#f472b6"
+cyan = "#67e8f9"
+white = "#ffffff"

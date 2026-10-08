@@ -1,0 +1,21 @@
+# PocketGull Radiograph Luminescence Ghostty Theme
+background = #01080e
+foreground = #f8fafc
+cursor-color = #22d3ee
+selection-background = #0e749055
+palette = 0=#01080e
+palette = 1=#f43f5e
+palette = 2=#10b981
+palette = 3=#38bdf8
+palette = 4=#38bdf8
+palette = 5=#c084fc
+palette = 6=#22d3ee
+palette = 7=#e2e8f0
+palette = 8=#475569
+palette = 9=#fb7185
+palette = 10=#34d399
+palette = 11=#fde047
+palette = 12=#60a5fa
+palette = 13=#e879f9
+palette = 14=#67e8f9
+palette = 15=#ffffff

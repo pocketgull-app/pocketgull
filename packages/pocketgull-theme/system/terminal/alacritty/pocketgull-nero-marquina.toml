@@ -1,0 +1,32 @@
+# PocketGull Nero Marquina Alacritty Theme
+[colors.primary]
+background = "#0d0d11"
+foreground = "#f8fafc"
+
+[colors.cursor]
+text = "#0d0d11"
+cursor = "#eab308"
+
+[colors.selection]
+text = "#f8fafc"
+background = "#eab3082c"
+
+[colors.normal]
+black = "#0d0d11"
+red = "#ef4444"
+green = "#10b981"
+yellow = "#eab308"
+blue = "#38bdf8"
+magenta = "#a855f7"
+cyan = "#14b8a6"
+white = "#f8fafc"
+
+[colors.bright]
+black = "#64748b"
+red = "#f87171"
+green = "#34d399"
+yellow = "#fde047"
+blue = "#60a5fa"
+magenta = "#c084fc"
+cyan = "#2dd4bf"
+white = "#ffffff"

@@ -1,0 +1,21 @@
+# PocketGull Spectrophotometer 280nm Ghostty Theme
+background = #0c0a14
+foreground = #ede9fe
+cursor-color = #a855f7
+selection-background = #a855f733
+palette = 0=#0c0a14
+palette = 1=#ef4444
+palette = 2=#fde047
+palette = 3=#e879f9
+palette = 4=#22d3ee
+palette = 5=#f472b6
+palette = 6=#c084fc
+palette = 7=#ede9fe
+palette = 8=#7c3aed
+palette = 9=#f87171
+palette = 10=#fde047
+palette = 11=#e879f9
+palette = 12=#22d3ee
+palette = 13=#f472b6
+palette = 14=#c084fc
+palette = 15=#ffffff

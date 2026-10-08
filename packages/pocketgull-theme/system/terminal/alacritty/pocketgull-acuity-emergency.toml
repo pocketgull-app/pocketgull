@@ -1,0 +1,32 @@
+# PocketGull Acuity Emergency Alacritty Theme
+[colors.primary]
+background = "#0a0503"
+foreground = "#fff7ed"
+
+[colors.cursor]
+text = "#0a0503"
+cursor = "#f97316"
+
+[colors.selection]
+text = "#fff7ed"
+background = "#f973162a"
+
+[colors.normal]
+black = "#0a0503"
+red = "#ef4444"
+green = "#16a34a"
+yellow = "#f59e0b"
+blue = "#38bdf8"
+magenta = "#c084fc"
+cyan = "#fb923c"
+white = "#fff7ed"
+
+[colors.bright]
+black = "#78350f"
+red = "#f87171"
+green = "#4ade80"
+yellow = "#fde047"
+blue = "#60a5fa"
+magenta = "#f472b6"
+cyan = "#fdba74"
+white = "#ffffff"

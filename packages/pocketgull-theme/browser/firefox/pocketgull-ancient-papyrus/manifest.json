@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Ancient Papyrus Theme",
+  "description": "PocketGull PocketGull Ancient Papyrus browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-ancient-papyrus@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#0d0a07",
+      "frame_inactive": "#0d0a07",
+      "tab_selected": "#1c1813",
+      "tab_background_text": "#786b59",
+      "tab_text": "#f3ead6",
+      "tab_line": "#d97706",
+      "toolbar": "#1c1813",
+      "toolbar_text": "#f3ead6",
+      "toolbar_field": "#13100c",
+      "toolbar_field_text": "#f3ead6",
+      "toolbar_top_separator": "#282119",
+      "toolbar_bottom_separator": "#282119",
+      "icons": "#d97706",
+      "ntp_background": "#13100c",
+      "ntp_text": "#f3ead6"
+    }
+  }
+}

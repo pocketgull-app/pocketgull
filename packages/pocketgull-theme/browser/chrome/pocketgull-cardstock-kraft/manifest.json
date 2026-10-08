@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Cardstock Kraft Theme",
+  "description": "PocketGull PocketGull Cardstock Kraft browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "theme": {
+    "colors": {
+      "frame": [
+        237,
+        228,
+        194
+      ],
+      "frame_inactive": [
+        243,
+        236,
+        203
+      ],
+      "toolbar": [
+        249,
+        243,
+        217
+      ],
+      "tab_text": [
+        59,
+        46,
+        30
+      ],
+      "tab_background_text": [
+        120,
+        113,
+        108
+      ],
+      "bookmark_text": [
+        59,
+        46,
+        30
+      ],
+      "toolbar_button_icon": [
+        180,
+        83,
+        9
+      ],
+      "toolbar_text": [
+        59,
+        46,
+        30
+      ],
+      "ntp_background": [
+        249,
+        243,
+        217
+      ],
+      "ntp_text": [
+        59,
+        46,
+        30
+      ]
+    }
+  }
+}

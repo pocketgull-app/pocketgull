@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Midnight Broadside Theme",
+  "description": "PocketGull PocketGull Midnight Broadside browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-midnight-broadside@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#070b12",
+      "frame_inactive": "#070b12",
+      "tab_selected": "#0d1522",
+      "tab_background_text": "#64748b",
+      "tab_text": "#f8fafc",
+      "tab_line": "#06b6d4",
+      "toolbar": "#0d1522",
+      "toolbar_text": "#f8fafc",
+      "toolbar_field": "#070b12",
+      "toolbar_field_text": "#f8fafc",
+      "toolbar_top_separator": "#1e293b",
+      "toolbar_bottom_separator": "#1e293b",
+      "icons": "#06b6d4",
+      "ntp_background": "#070b12",
+      "ntp_text": "#f8fafc"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+# PocketGull Ancient Papyrus Alacritty Theme
+[colors.primary]
+background = "#13100c"
+foreground = "#f3ead6"
+
+[colors.cursor]
+text = "#13100c"
+cursor = "#d97706"
+
+[colors.selection]
+text = "#f3ead6"
+background = "#d977062c"
+
+[colors.normal]
+black = "#13100c"
+red = "#ef4444"
+green = "#16a34a"
+yellow = "#f59e0b"
+blue = "#0284c7"
+magenta = "#a855f7"
+cyan = "#0f766e"
+white = "#f3ead6"
+
+[colors.bright]
+black = "#786b59"
+red = "#f87171"
+green = "#34d399"
+yellow = "#fbbf24"
+blue = "#38bdf8"
+magenta = "#c084fc"
+cyan = "#14b8a6"
+white = "#ffffff"

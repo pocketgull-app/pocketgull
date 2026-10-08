@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Nero Marquina Theme",
+  "description": "PocketGull PocketGull Nero Marquina browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-nero-marquina@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#09090c",
+      "frame_inactive": "#09090c",
+      "tab_selected": "#13131a",
+      "tab_background_text": "#64748b",
+      "tab_text": "#f8fafc",
+      "tab_line": "#eab308",
+      "toolbar": "#13131a",
+      "toolbar_text": "#f8fafc",
+      "toolbar_field": "#0d0d11",
+      "toolbar_field_text": "#f8fafc",
+      "toolbar_top_separator": "#1e1e26",
+      "toolbar_bottom_separator": "#1e1e26",
+      "icons": "#eab308",
+      "ntp_background": "#0d0d11",
+      "ntp_text": "#f8fafc"
+    }
+  }
+}

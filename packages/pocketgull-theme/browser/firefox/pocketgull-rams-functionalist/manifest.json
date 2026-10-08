@@ -2,24 +2,34 @@
   "manifest_version": 2,
   "version": "1.2.0",
   "name": "PocketGull Rams Functionalist Theme",
-  "description": "Pure functionalist industrial design inspired by Dieter Rams Weniger aber besser ethos with matte putty and iconic amber accents.",
+  "description": "PocketGull PocketGull Rams Functionalist browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-rams-functionalist@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
   "theme": {
     "colors": {
-      "frame": "#dedad2",
-      "frame_inactive": "#e8e6e1",
-      "tab_selected": "#f2f0eb",
-      "tab_background_text": "#6b6560",
-      "tab_text": "#1c1b1a",
-      "tab_line": "#d99b00",
-      "toolbar": "#f2f0eb",
-      "toolbar_text": "#1c1b1a",
-      "toolbar_field": "#e8e6e1",
-      "toolbar_field_text": "#1c1b1a",
-      "toolbar_top_separator": "#dedad2",
-      "toolbar_bottom_separator": "#dedad2",
-      "icons": "#d99b00",
-      "ntp_background": "#e8e6e1",
-      "ntp_text": "#1c1b1a"
+      "frame": "#e4e4dd",
+      "frame_inactive": "#ecece7",
+      "tab_selected": "#f4f4f0",
+      "tab_background_text": "#71717a",
+      "tab_text": "#1e1e1e",
+      "tab_line": "#ea580c",
+      "toolbar": "#f4f4f0",
+      "toolbar_text": "#1e1e1e",
+      "toolbar_field": "#f4f4f0",
+      "toolbar_field_text": "#1e1e1e",
+      "toolbar_top_separator": "#d4d4cd",
+      "toolbar_bottom_separator": "#d4d4cd",
+      "icons": "#ea580c",
+      "ntp_background": "#f4f4f0",
+      "ntp_text": "#1e1e1e"
     }
   }
 }

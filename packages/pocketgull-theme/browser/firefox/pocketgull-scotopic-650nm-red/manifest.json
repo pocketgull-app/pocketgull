@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Scotopic 650nm Red Theme",
+  "description": "PocketGull PocketGull Scotopic 650nm Red browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-scotopic-650nm-red@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#050000",
+      "frame_inactive": "#050000",
+      "tab_selected": "#0e0202",
+      "tab_background_text": "#7a1a1a",
+      "tab_text": "#ff9988",
+      "tab_line": "#ff2211",
+      "toolbar": "#0e0202",
+      "toolbar_text": "#ff6655",
+      "toolbar_field": "#050000",
+      "toolbar_field_text": "#ff6655",
+      "toolbar_top_separator": "#3d0a0a",
+      "toolbar_bottom_separator": "#3d0a0a",
+      "icons": "#ff2211",
+      "ntp_background": "#050000",
+      "ntp_text": "#ff6655"
+    }
+  }
+}

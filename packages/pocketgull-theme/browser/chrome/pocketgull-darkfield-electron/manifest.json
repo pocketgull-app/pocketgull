@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Darkfield Electron Theme",
+  "description": "PocketGull PocketGull Darkfield Electron browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "theme": {
+    "colors": {
+      "frame": [
+        15,
+        17,
+        21
+      ],
+      "frame_inactive": [
+        15,
+        17,
+        21
+      ],
+      "toolbar": [
+        24,
+        26,
+        32
+      ],
+      "tab_text": [
+        228,
+        228,
+        231
+      ],
+      "tab_background_text": [
+        113,
+        113,
+        122
+      ],
+      "bookmark_text": [
+        228,
+        228,
+        231
+      ],
+      "toolbar_button_icon": [
+        250,
+        204,
+        21
+      ],
+      "toolbar_text": [
+        228,
+        228,
+        231
+      ],
+      "ntp_background": [
+        15,
+        17,
+        21
+      ],
+      "ntp_text": [
+        228,
+        228,
+        231
+      ]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+# PocketGull Radiograph Luminescence Alacritty Theme
+[colors.primary]
+background = "#01080e"
+foreground = "#f8fafc"
+
+[colors.cursor]
+text = "#01080e"
+cursor = "#22d3ee"
+
+[colors.selection]
+text = "#f8fafc"
+background = "#0e749055"
+
+[colors.normal]
+black = "#01080e"
+red = "#f43f5e"
+green = "#10b981"
+yellow = "#38bdf8"
+blue = "#38bdf8"
+magenta = "#c084fc"
+cyan = "#22d3ee"
+white = "#e2e8f0"
+
+[colors.bright]
+black = "#475569"
+red = "#fb7185"
+green = "#34d399"
+yellow = "#fde047"
+blue = "#60a5fa"
+magenta = "#e879f9"
+cyan = "#67e8f9"
+white = "#ffffff"

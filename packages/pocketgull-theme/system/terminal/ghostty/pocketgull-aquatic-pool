@@ -1,0 +1,21 @@
+# PocketGull Aquatic Pool Ghostty Theme
+background = #081f3d
+foreground = #e0f2fe
+cursor-color = #38bdf8
+selection-background = #38bdf82c
+palette = 0=#081f3d
+palette = 1=#ef4444
+palette = 2=#10b981
+palette = 3=#f59e0b
+palette = 4=#38bdf8
+palette = 5=#a855f7
+palette = 6=#06b6d4
+palette = 7=#e0f2fe
+palette = 8=#476788
+palette = 9=#f87171
+palette = 10=#34d399
+palette = 11=#fde047
+palette = 12=#60a5fa
+palette = 13=#c084fc
+palette = 14=#7dd3fc
+palette = 15=#ffffff

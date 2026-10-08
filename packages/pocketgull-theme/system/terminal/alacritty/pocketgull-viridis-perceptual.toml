@@ -1,0 +1,32 @@
+# PocketGull Viridis Perceptual Alacritty Theme
+[colors.primary]
+background = "#0d0818"
+foreground = "#f8fafc"
+
+[colors.cursor]
+text = "#0d0818"
+cursor = "#21918c"
+
+[colors.selection]
+text = "#f8fafc"
+background = "#21918c33"
+
+[colors.normal]
+black = "#0d0818"
+red = "#ef4444"
+green = "#5ec962"
+yellow = "#79d151"
+blue = "#21918c"
+magenta = "#3b528b"
+cyan = "#fde725"
+white = "#f8fafc"
+
+[colors.bright]
+black = "#6b7280"
+red = "#f87171"
+green = "#5ec962"
+yellow = "#79d151"
+blue = "#21918c"
+magenta = "#3b528b"
+cyan = "#fde725"
+white = "#ffffff"

@@ -1,0 +1,32 @@
+# PocketGull Washi Rice Paper Alacritty Theme
+[colors.primary]
+background = "#faf8f0"
+foreground = "#18181b"
+
+[colors.cursor]
+text = "#faf8f0"
+cursor = "#0f766e"
+
+[colors.selection]
+text = "#18181b"
+background = "#0f766e33"
+
+[colors.normal]
+black = "#18181b"
+red = "#b91c1c"
+green = "#047857"
+yellow = "#b45309"
+blue = "#0284c7"
+magenta = "#7e22ce"
+cyan = "#0f766e"
+white = "#e5dfd3"
+
+[colors.bright]
+black = "#71717a"
+red = "#ef4444"
+green = "#10b981"
+yellow = "#f59e0b"
+blue = "#38bdf8"
+magenta = "#a855f7"
+cyan = "#14b8a6"
+white = "#faf8f0"

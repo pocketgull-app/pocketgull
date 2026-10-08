@@ -257,7 +257,57 @@ function deployWindowsTerminalFragment() {
 
 deployWindowsTerminalFragment();
 
-// 6. Pre-configure Workspace & User Editor Settings
+// 5b. Deploy PocketGullTheme PowerShell Module & Shell Prompts
+function deployPowerShellModule() {
+  const psm1Src = path.join(THEME_ROOT, 'system', 'powershell', 'PocketGullTheme.psm1');
+  if (!fs.existsSync(psm1Src)) return;
+
+  const candidateDirs = [
+    path.join(homeDir, 'Documents', 'PowerShell', 'Modules', 'PocketGullTheme'),
+    path.join(homeDir, 'OneDrive', 'Documents', 'PowerShell', 'Modules', 'PocketGullTheme'),
+    path.join('D:', 'OneDrive', 'Documents', 'PowerShell', 'Modules', 'PocketGullTheme')
+  ];
+
+  for (const dir of candidateDirs) {
+    const parentDir = path.dirname(dir);
+    if (fs.existsSync(parentDir)) {
+      try {
+        fs.mkdirSync(dir, { recursive: true });
+        fs.copyFileSync(psm1Src, path.join(dir, 'PocketGullTheme.psm1'));
+        console.log(`   ✅ Installed PocketGullTheme PowerShell Module to:`);
+        console.log(`      • ${dir}`);
+      } catch (err) {
+        console.warn(`   ⚠️ Could not copy PowerShell module to ${dir}:`, err.message);
+      }
+    }
+  }
+
+  // Sync Oh-My-Posh & P10k prompt configs to public/brand/terminal
+  const pubTerminal = path.resolve(THEME_ROOT, '..', '..', 'public', 'brand', 'terminal');
+  try {
+    fs.mkdirSync(pubTerminal, { recursive: true });
+    const ompDir = path.join(THEME_ROOT, 'system', 'shell-prompts');
+    for (const f of fs.readdirSync(ompDir)) {
+      if (f.endsWith('.omp.json')) {
+        fs.copyFileSync(path.join(ompDir, f), path.join(pubTerminal, f));
+      }
+    }
+    const p10kSrc = path.join(ompDir, 'p10k');
+    const p10kDest = path.join(pubTerminal, 'p10k');
+    if (fs.existsSync(p10kSrc)) {
+      fs.mkdirSync(p10kDest, { recursive: true });
+      for (const f of fs.readdirSync(p10kSrc)) {
+        fs.copyFileSync(path.join(p10kSrc, f), path.join(p10kDest, f));
+      }
+    }
+    console.log(`   ✅ Synchronized shell prompts to public/brand/terminal`);
+  } catch (err) {
+    console.warn('   ⚠️ Could not sync public/brand/terminal:', err.message);
+  }
+}
+
+deployPowerShellModule();
+
 function configureEditorSettings() {
   const settingsTargets = [
     // Workspace settings
@@ -299,8 +349,9 @@ console.log(`\n🎉 PocketGull Multi-Platform Theme Suite successfully deployed!
 console.log(`   • IDE Themes: 26 themes active in ${installedEditorsCount} editors`);
 console.log(`   • Fonts: PocketGull Mono & PocketGull-VF registered in OS`);
 console.log(`   • System Terminal: Windows Terminal fragment installed (auto-discovered)`);
-console.log(`   • Browser Themes: 6 Chrome & 6 Firefox themes ready in 'browser/'\n`);
+console.log(`   • Browser Themes: 26 Chrome & 26 Firefox themes + Circadian Auto ready in 'browser/'\n`);
 console.log('👉 Quick Activation:');
 console.log('   1. In IDE: Press Ctrl+K Ctrl+T -> Type "PocketGull" -> Pick Obsidian or Washi');
 console.log('   2. In Windows Terminal: Color schemes auto-loaded as "PocketGull Obsidian" & "PocketGull Washi"');
-console.log('   3. In Chrome/Brave/Edge: Go to chrome://extensions -> Developer Mode -> Load Unpacked -> select browser/chrome/pocketgull-obsidian\n');
+console.log('   3. In Chrome/Brave/Edge: Go to chrome://extensions -> Developer Mode -> Load Unpacked -> select browser/chrome/<theme-slug>');
+console.log('   4. In Firefox: Go to about:debugging -> This Firefox -> Load Temporary Add-on -> browser/firefox/pocketgull-circadian-auto/manifest.json\n');

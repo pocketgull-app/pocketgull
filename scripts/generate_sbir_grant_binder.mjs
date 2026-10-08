@@ -76,12 +76,18 @@ Physician burnout and clinical charting fatigue have reached unprecedented level
   - Concurrent Petri Net kinase network modeling MAPK/ERK, mTORC1, NF-κB, and AMPK/ULK1 autophagy with Rapamycin and Metformin perturbations.
   - 2D Navier-Stokes morphogen advection-diffusion engine ($Pe = 48.5$, $\\tau_{\\text{wall}} = 1.42\\text{ Pa}$).
 
+### Aim 6: NSF Proto-OKN Downstream Translation & Federated Consilience
+* **Objective**: Operationalize federal knowledge graph investments by translating raw academic SPARQL/TPF endpoints (BioHealth KG Award #2333740, ProKN Award #2535091, Babel/RENCI) into clinician-facing, edge-evaluated care recommendations.
+* **Empirical Benchmark**:
+  - Live query resolution via \`https://apps.okn.us/biohealth/sparql\` and \`okn.us\` Triple Pattern Fragments with sub-2.5s graceful offline seed graph fallback.
+  - De-identified cross-agency pathway discovery traversing NIH, USGS, and EPA domain silos with automated ONC HTI-1 explainability seals.
+
 ---
 
 ## 3. RESEARCH STRATEGY & METHODOLOGY
 
 ### A. Significance & Unmet Need
-Integrative and Direct Primary Care physicians routinely manage complex polypharmacy patients taking botanical supplements alongside potent prescription medications. Standard commercial EHRs lack cross-paradigm cytochrome P450 interaction screening, sub-second edge risk calibration, and plain-language patient empowerments. PocketGull solves this by providing evidence-grounded Clinical Decision Support directly on local clinician devices.
+Integrative and Direct Primary Care physicians routinely manage complex polypharmacy patients taking botanical supplements alongside potent prescription medications. While the NSF Proto-OKN initiative has funded foundational academic knowledge graphs, these graphs remain largely trapped in academic silos without point-of-care clinical interfaces. PocketGull solves this by providing evidence-grounded Clinical Decision Support and edge-native translation directly on local clinician devices.
 
 ### B. Empirical Verification & Proof-of-Work Matrix
 
@@ -90,6 +96,7 @@ Integrative and Direct Primary Care physicians routinely manage complex polyphar
 | **Edge ML Classifier** | 5-Fold GroupKFold (\`train_clinical_edge_model.py\`) | OOF ROC-AUC: 0.9640, Brier: 0.0280 | **VERIFIED** |
 | **Parquet Pipeline** | In-Memory DuckDB (\`export_clinical_parquet.py\`) | Multi-join query: 15.28 ms | **VERIFIED** |
 | **Evidence Corpus** | DuckDB Full-Text (\`ingest_nih_who_corpus.ts\`) | Evidence lookup: 9.16 ms | **VERIFIED** |
+| **Proto-OKN Federation** | OKN Vitest Suite (\`okn-knowledge-graph.service.spec.ts\`) | 6 / 6 tests passed (NSF #2333740) | **VERIFIED** |
 | **Comprehensive Vitest Suite** | Vitest Monorepo Harness (\`npm test\`) | 1,697 / 1,697 tests passed (423 test files) | **VERIFIED** |
 | **Python ML Sidecar** | FastAPI PyTest Suite | 70 / 70 tests passed (18 modules) | **VERIFIED** |
 | **RSNA Knee Lens** | Component Unit Tests (\`lens-rsna-knee.component.spec.ts\`) | 5 / 5 tests passed (9ms) | **VERIFIED** |

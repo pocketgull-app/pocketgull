@@ -1,0 +1,58 @@
+# ----------------------------------------------------------------------
+# Google Home Script Editor Automation: Scotopic Sanctuary (Night 670nm)
+# Import at: https://home.google.com/
+# Designed for Phil's PocketGull Ataxia & Circadian Lighting Architecture
+# ----------------------------------------------------------------------
+
+metadata:
+  name: PocketGull Scotopic Sanctuary (670nm Deep Red)
+  description: Eliminates melatonin-suppressing wavelengths across workstation & living spaces at night.
+
+automations:
+  # Trigger 1: Voice command "Scotopic Sanctuary" or "670 Red"
+  - starters:
+      - type: assistant.event.OkGoogle
+        eventData:
+          query:
+            - "Scotopic Sanctuary"
+            - "Activate Scotopic Mode"
+            - "670 Red"
+            - "Night Red Mode"
+      # Trigger 2: Scheduled daily at 7:30 PM
+      - type: time.schedule
+        at: 19:30
+        weekdays:
+          - MON
+          - TUE
+          - WED
+          - THU
+          - FRI
+          - SAT
+          - SUN
+
+    actions:
+      # 1. Extended Color Lights (Whispy & Lightstrip) -> Pure 670nm Deep Red
+      - type: device.command.ColorAbsolute
+        devices:
+          - Whispy - Office
+          - Hue lightstrip plus 1 - Office
+        color:
+          name: red
+          spectrumRgb: 16711680 # 0xFF0000 Pure Saturated Red
+
+      - type: device.command.BrightnessAbsolute
+        devices:
+          - Whispy - Office
+          - Hue lightstrip plus 1 - Office
+        brightness: 35
+
+      # 2. Dimmable Ambient Lights (Main & Cornear) -> Damped to 10% soft floor wash
+      - type: device.command.BrightnessAbsolute
+        devices:
+          - Main - Office
+          - Cornear - Office
+        brightness: 10
+
+      # 3. Auditory Confirmation (Low volume calm prompt)
+      - type: assistant.command.Broadcast
+        message: "Scotopic Sanctuary active. Rhodopsin and melatonin preservation enabled."

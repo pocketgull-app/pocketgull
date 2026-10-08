@@ -53,4 +53,11 @@ describe('OknKnowledgeGraphService', () => {
     expect(badge.badgeLabel).toBe('[⚠️ Unverified in OKN]');
     expect(badge.agencySources.length).toBe(0);
   });
+
+  it('should gracefully query or fallback for Proto-OKN Bio-Health KG SPARQL endpoints', async () => {
+    const res = await service.queryLiveProtoOknBiohealth('Atorvastatin');
+    expect(res).toBeDefined();
+    expect(res.endpoint).toBeDefined();
+    expect(res.bindings).toBeInstanceOf(Array);
+  });
 });

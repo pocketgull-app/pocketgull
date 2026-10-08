@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Confocal Fluorophore Theme",
+  "description": "PocketGull PocketGull Confocal Fluorophore browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "theme": {
+    "colors": {
+      "frame": [
+        5,
+        8,
+        12
+      ],
+      "frame_inactive": [
+        5,
+        8,
+        12
+      ],
+      "toolbar": [
+        13,
+        21,
+        32
+      ],
+      "tab_text": [
+        226,
+        232,
+        240
+      ],
+      "tab_background_text": [
+        100,
+        116,
+        139
+      ],
+      "bookmark_text": [
+        226,
+        232,
+        240
+      ],
+      "toolbar_button_icon": [
+        52,
+        211,
+        153
+      ],
+      "toolbar_text": [
+        226,
+        232,
+        240
+      ],
+      "ntp_background": [
+        5,
+        8,
+        12
+      ],
+      "ntp_text": [
+        226,
+        232,
+        240
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+# PocketGull Construction High-Vis Ghostty Theme
+background = #fdf6e2
+foreground = #1e1b13
+cursor-color = #0369a1
+selection-background = #0369a128
+palette = 0=#1e1b13
+palette = 1=#dc2626
+palette = 2=#15803d
+palette = 3=#d97706
+palette = 4=#0284c7
+palette = 5=#7e22ce
+palette = 6=#0891b2
+palette = 7=#f3d27b
+palette = 8=#78716c
+palette = 9=#ef4444
+palette = 10=#16a34a
+palette = 11=#f59e0b
+palette = 12=#38bdf8
+palette = 13=#9333ea
+palette = 14=#06b6d4
+palette = 15=#ffffff

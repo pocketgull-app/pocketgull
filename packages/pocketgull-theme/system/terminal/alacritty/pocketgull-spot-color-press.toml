@@ -1,0 +1,32 @@
+# PocketGull Spot-Color Press Alacritty Theme
+[colors.primary]
+background = "#fdfbf7"
+foreground = "#1e3a8a"
+
+[colors.cursor]
+text = "#fdfbf7"
+cursor = "#ec4899"
+
+[colors.selection]
+text = "#1e3a8a"
+background = "#fef08a66"
+
+[colors.normal]
+black = "#1e3a8a"
+red = "#e11d48"
+green = "#059669"
+yellow = "#d97706"
+blue = "#2563eb"
+magenta = "#ec4899"
+cyan = "#0891b2"
+white = "#e5dec9"
+
+[colors.bright]
+black = "#64748b"
+red = "#f87171"
+green = "#10b981"
+yellow = "#facc15"
+blue = "#3b82f6"
+magenta = "#f472b6"
+cyan = "#06b6d4"
+white = "#ffffff"
