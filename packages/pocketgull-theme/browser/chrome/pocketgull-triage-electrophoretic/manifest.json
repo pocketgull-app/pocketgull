@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Triage Electrophoretic Theme",
+  "description": "PocketGull PocketGull Triage Electrophoretic browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "theme": {
+    "colors": {
+      "frame": [
+        226,
+        226,
+        220
+      ],
+      "frame_inactive": [
+        235,
+        235,
+        229
+      ],
+      "toolbar": [
+        245,
+        245,
+        240
+      ],
+      "tab_text": [
+        17,
+        17,
+        17
+      ],
+      "tab_background_text": [
+        113,
+        113,
+        110
+      ],
+      "bookmark_text": [
+        17,
+        17,
+        17
+      ],
+      "toolbar_button_icon": [
+        17,
+        17,
+        17
+      ],
+      "toolbar_text": [
+        17,
+        17,
+        17
+      ],
+      "ntp_background": [
+        245,
+        245,
+        240
+      ],
+      "ntp_text": [
+        17,
+        17,
+        17
+      ]
+    }
+  }
+}

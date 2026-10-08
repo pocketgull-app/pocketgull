@@ -1,0 +1,21 @@
+# PocketGull Sacred Mandala Ghostty Theme
+background = #16112d
+foreground = #f5f3ff
+cursor-color = #c084fc
+selection-background = #c084fc2c
+palette = 0=#16112d
+palette = 1=#ef4444
+palette = 2=#10b981
+palette = 3=#f59e0b
+palette = 4=#818cf8
+palette = 5=#c084fc
+palette = 6=#22d3ee
+palette = 7=#f5f3ff
+palette = 8=#6b5c94
+palette = 9=#f87171
+palette = 10=#34d399
+palette = 11=#fde047
+palette = 12=#a5b4fc
+palette = 13=#f472b6
+palette = 14=#67e8f9
+palette = 15=#ffffff

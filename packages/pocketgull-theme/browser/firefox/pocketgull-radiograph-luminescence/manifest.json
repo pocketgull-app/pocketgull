@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Radiograph Luminescence Theme",
+  "description": "PocketGull PocketGull Radiograph Luminescence browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-radiograph-luminescence@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#01080e",
+      "frame_inactive": "#01080e",
+      "tab_selected": "#041724",
+      "tab_background_text": "#475569",
+      "tab_text": "#f8fafc",
+      "tab_line": "#22d3ee",
+      "toolbar": "#041724",
+      "toolbar_text": "#f8fafc",
+      "toolbar_field": "#01080e",
+      "toolbar_field_text": "#f8fafc",
+      "toolbar_top_separator": "#083344",
+      "toolbar_bottom_separator": "#083344",
+      "icons": "#22d3ee",
+      "ntp_background": "#01080e",
+      "ntp_text": "#f8fafc"
+    }
+  }
+}

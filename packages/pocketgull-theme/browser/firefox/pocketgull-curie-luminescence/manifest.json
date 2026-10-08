@@ -2,24 +2,34 @@
   "manifest_version": 2,
   "version": "1.2.0",
   "name": "PocketGull Curie Luminescence Theme",
-  "description": "Phosphorescent green and radium-alpha emission laboratory hues honoring pioneer Marie Curie notebooks.",
+  "description": "PocketGull PocketGull Curie Luminescence browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-curie-luminescence@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
   "theme": {
     "colors": {
-      "frame": "#0a1610",
-      "frame_inactive": "#050b08",
-      "tab_selected": "#0f2219",
-      "tab_background_text": "#34d399",
-      "tab_text": "#d1fae5",
-      "tab_line": "#10b981",
-      "toolbar": "#0f2219",
-      "toolbar_text": "#d1fae5",
-      "toolbar_field": "#050b08",
-      "toolbar_field_text": "#d1fae5",
-      "toolbar_top_separator": "#0a1610",
-      "toolbar_bottom_separator": "#0a1610",
-      "icons": "#10b981",
-      "ntp_background": "#050b08",
-      "ntp_text": "#d1fae5"
+      "frame": "#0a0e10",
+      "frame_inactive": "#0a0e10",
+      "tab_selected": "#121a1e",
+      "tab_background_text": "#475569",
+      "tab_text": "#e2f8ee",
+      "tab_line": "#00ff66",
+      "toolbar": "#121a1e",
+      "toolbar_text": "#e2f8ee",
+      "toolbar_field": "#0f1416",
+      "toolbar_field_text": "#e2f8ee",
+      "toolbar_top_separator": "#1e2c33",
+      "toolbar_bottom_separator": "#1e2c33",
+      "icons": "#00ff66",
+      "ntp_background": "#0f1416",
+      "ntp_text": "#e2f8ee"
     }
   }
 }

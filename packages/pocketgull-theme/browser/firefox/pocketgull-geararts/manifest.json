@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull GearArts Theme",
+  "description": "PocketGull PocketGull GearArts browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-geararts@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#08090c",
+      "frame_inactive": "#08090c",
+      "tab_selected": "#13151d",
+      "tab_background_text": "#5a6578",
+      "tab_text": "#ffffff",
+      "tab_line": "#2dd4bf",
+      "toolbar": "#13151d",
+      "toolbar_text": "#f8fafc",
+      "toolbar_field": "#0b0c10",
+      "toolbar_field_text": "#f8fafc",
+      "toolbar_top_separator": "#1f2430",
+      "toolbar_bottom_separator": "#1f2430",
+      "icons": "#2dd4bf",
+      "ntp_background": "#0b0c10",
+      "ntp_text": "#f8fafc"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "PocketGull Circadian Auto Theme (Firefox)",
+  "version": "1.2.0",
+  "description": "Automatically transitions browser chrome according to the solar cycle: 08:00 Washi Rice Paper, 13:00 Hemp Fiber, 19:30 Scotopic 650nm Red.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "circadian-auto@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "permissions": [
+    "theme",
+    "alarms"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  }
+}

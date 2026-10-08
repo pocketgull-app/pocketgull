@@ -1,0 +1,32 @@
+# PocketGull Hemp Fiber Alacritty Theme
+[colors.primary]
+background = "#f2efe6"
+foreground = "#2c3529"
+
+[colors.cursor]
+text = "#f2efe6"
+cursor = "#15803d"
+
+[colors.selection]
+text = "#2c3529"
+background = "#15803d26"
+
+[colors.normal]
+black = "#2c3529"
+red = "#b91c1c"
+green = "#15803d"
+yellow = "#b45309"
+blue = "#0284c7"
+magenta = "#7e22ce"
+cyan = "#0f766e"
+white = "#d8d3c3"
+
+[colors.bright]
+black = "#78716c"
+red = "#dc2626"
+green = "#16a34a"
+yellow = "#d97706"
+blue = "#0369a1"
+magenta = "#9333ea"
+cyan = "#0d9488"
+white = "#ffffff"

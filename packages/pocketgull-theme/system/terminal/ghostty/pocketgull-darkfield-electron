@@ -1,0 +1,21 @@
+# PocketGull Darkfield Electron Ghostty Theme
+background = #0f1115
+foreground = #e4e4e7
+cursor-color = #facc15
+selection-background = #facc1533
+palette = 0=#0f1115
+palette = 1=#ef4444
+palette = 2=#facc15
+palette = 3=#cbd5e1
+palette = 4=#38bdf8
+palette = 5=#fb923c
+palette = 6=#f97316
+palette = 7=#e4e4e7
+palette = 8=#71717a
+palette = 9=#f87171
+palette = 10=#facc15
+palette = 11=#cbd5e1
+palette = 12=#38bdf8
+palette = 13=#fb923c
+palette = 14=#f97316
+palette = 15=#ffffff

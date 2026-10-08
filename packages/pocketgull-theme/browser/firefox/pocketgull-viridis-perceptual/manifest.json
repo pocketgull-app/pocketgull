@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Viridis Perceptual Theme",
+  "description": "PocketGull PocketGull Viridis Perceptual browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-viridis-perceptual@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#0d0818",
+      "frame_inactive": "#0d0818",
+      "tab_selected": "#19112e",
+      "tab_background_text": "#6b7280",
+      "tab_text": "#f8fafc",
+      "tab_line": "#21918c",
+      "toolbar": "#19112e",
+      "toolbar_text": "#f8fafc",
+      "toolbar_field": "#0d0818",
+      "toolbar_field_text": "#f8fafc",
+      "toolbar_top_separator": "#261b3d",
+      "toolbar_bottom_separator": "#261b3d",
+      "icons": "#21918c",
+      "ntp_background": "#0d0818",
+      "ntp_text": "#f8fafc"
+    }
+  }
+}

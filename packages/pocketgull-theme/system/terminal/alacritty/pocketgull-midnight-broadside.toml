@@ -1,0 +1,32 @@
+# PocketGull Midnight Broadside Alacritty Theme
+[colors.primary]
+background = "#05080e"
+foreground = "#f8fafc"
+
+[colors.cursor]
+text = "#05080e"
+cursor = "#06b6d4"
+
+[colors.selection]
+text = "#f8fafc"
+background = "#06b6d433"
+
+[colors.normal]
+black = "#070b12"
+red = "#fb7185"
+green = "#10b981"
+yellow = "#f59e0b"
+blue = "#38bdf8"
+magenta = "#a855f7"
+cyan = "#06b6d4"
+white = "#f8fafc"
+
+[colors.bright]
+black = "#64748b"
+red = "#fca5a5"
+green = "#34d399"
+yellow = "#fde047"
+blue = "#60a5fa"
+magenta = "#c084fc"
+cyan = "#22d3ee"
+white = "#ffffff"

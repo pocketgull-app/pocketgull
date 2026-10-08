@@ -1,0 +1,21 @@
+# PocketGull Okabe-Ito Divergent Ghostty Theme
+background = #0e1117
+foreground = #f0f6fc
+cursor-color = #56b4e9
+selection-background = #56b4e933
+palette = 0=#0e1117
+palette = 1=#ef4444
+palette = 2=#009e73
+palette = 3=#cc79a7
+palette = 4=#56b4e9
+palette = 5=#e69f00
+palette = 6=#d55e00
+palette = 7=#f0f6fc
+palette = 8=#8b949e
+palette = 9=#f87171
+palette = 10=#009e73
+palette = 11=#cc79a7
+palette = 12=#56b4e9
+palette = 13=#e69f00
+palette = 14=#d55e00
+palette = 15=#ffffff

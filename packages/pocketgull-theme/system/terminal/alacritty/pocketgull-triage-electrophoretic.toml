@@ -1,0 +1,32 @@
+# PocketGull Triage Electrophoretic Alacritty Theme
+[colors.primary]
+background = "#f5f5f0"
+foreground = "#111111"
+
+[colors.cursor]
+text = "#f5f5f0"
+cursor = "#111111"
+
+[colors.selection]
+text = "#111111"
+background = "#11111122"
+
+[colors.normal]
+black = "#111111"
+red = "#222222"
+green = "#222222"
+yellow = "#222222"
+blue = "#333333"
+magenta = "#333333"
+cyan = "#333333"
+white = "#d1d1cc"
+
+[colors.bright]
+black = "#555555"
+red = "#222222"
+green = "#333333"
+yellow = "#333333"
+blue = "#444444"
+magenta = "#444444"
+cyan = "#555555"
+white = "#ffffff"

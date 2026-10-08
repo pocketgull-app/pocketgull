@@ -1,0 +1,32 @@
+# PocketGull Construction High-Vis Alacritty Theme
+[colors.primary]
+background = "#fdf6e2"
+foreground = "#1e1b13"
+
+[colors.cursor]
+text = "#fdf6e2"
+cursor = "#0369a1"
+
+[colors.selection]
+text = "#1e1b13"
+background = "#0369a128"
+
+[colors.normal]
+black = "#1e1b13"
+red = "#dc2626"
+green = "#15803d"
+yellow = "#d97706"
+blue = "#0284c7"
+magenta = "#7e22ce"
+cyan = "#0891b2"
+white = "#f3d27b"
+
+[colors.bright]
+black = "#78716c"
+red = "#ef4444"
+green = "#16a34a"
+yellow = "#f59e0b"
+blue = "#38bdf8"
+magenta = "#9333ea"
+cyan = "#06b6d4"
+white = "#ffffff"

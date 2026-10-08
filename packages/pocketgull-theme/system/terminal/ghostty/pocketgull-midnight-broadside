@@ -1,0 +1,21 @@
+# PocketGull Midnight Broadside Ghostty Theme
+background = #05080e
+foreground = #f8fafc
+cursor-color = #06b6d4
+selection-background = #06b6d433
+palette = 0=#070b12
+palette = 1=#fb7185
+palette = 2=#10b981
+palette = 3=#f59e0b
+palette = 4=#38bdf8
+palette = 5=#a855f7
+palette = 6=#06b6d4
+palette = 7=#f8fafc
+palette = 8=#64748b
+palette = 9=#fca5a5
+palette = 10=#34d399
+palette = 11=#fde047
+palette = 12=#60a5fa
+palette = 13=#c084fc
+palette = 14=#22d3ee
+palette = 15=#ffffff

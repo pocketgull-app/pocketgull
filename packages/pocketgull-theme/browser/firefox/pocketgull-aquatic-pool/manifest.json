@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Aquatic Pool Theme",
+  "description": "PocketGull PocketGull Aquatic Pool browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-aquatic-pool@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#05162c",
+      "frame_inactive": "#05162c",
+      "tab_selected": "#0c2b52",
+      "tab_background_text": "#476788",
+      "tab_text": "#ffffff",
+      "tab_line": "#38bdf8",
+      "toolbar": "#0c2b52",
+      "toolbar_text": "#e0f2fe",
+      "toolbar_field": "#081f3d",
+      "toolbar_field_text": "#e0f2fe",
+      "toolbar_top_separator": "#0e3a70",
+      "toolbar_bottom_separator": "#0e3a70",
+      "icons": "#38bdf8",
+      "ntp_background": "#081f3d",
+      "ntp_text": "#e0f2fe"
+    }
+  }
+}

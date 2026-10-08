@@ -1,0 +1,21 @@
+# PocketGull GearArts Ghostty Theme
+background = #0b0c10
+foreground = #f8fafc
+cursor-color = #2dd4bf
+selection-background = #2dd4bf2c
+palette = 0=#0b0c10
+palette = 1=#ef4444
+palette = 2=#10b981
+palette = 3=#f59e0b
+palette = 4=#38bdf8
+palette = 5=#a855f7
+palette = 6=#2dd4bf
+palette = 7=#f8fafc
+palette = 8=#5a6578
+palette = 9=#f87171
+palette = 10=#34d399
+palette = 11=#fde047
+palette = 12=#60a5fa
+palette = 13=#c084fc
+palette = 14=#5eead4
+palette = 15=#ffffff

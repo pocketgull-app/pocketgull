@@ -1,0 +1,32 @@
+# PocketGull GearArts Alacritty Theme
+[colors.primary]
+background = "#0b0c10"
+foreground = "#f8fafc"
+
+[colors.cursor]
+text = "#0b0c10"
+cursor = "#2dd4bf"
+
+[colors.selection]
+text = "#f8fafc"
+background = "#2dd4bf2c"
+
+[colors.normal]
+black = "#0b0c10"
+red = "#ef4444"
+green = "#10b981"
+yellow = "#f59e0b"
+blue = "#38bdf8"
+magenta = "#a855f7"
+cyan = "#2dd4bf"
+white = "#f8fafc"
+
+[colors.bright]
+black = "#5a6578"
+red = "#f87171"
+green = "#34d399"
+yellow = "#fde047"
+blue = "#60a5fa"
+magenta = "#c084fc"
+cyan = "#5eead4"
+white = "#ffffff"

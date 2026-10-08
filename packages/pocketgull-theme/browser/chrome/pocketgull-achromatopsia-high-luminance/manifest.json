@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Achromatopsia High-Luminance Theme",
+  "description": "PocketGull PocketGull Achromatopsia High-Luminance browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "theme": {
+    "colors": {
+      "frame": [
+        0,
+        0,
+        0
+      ],
+      "frame_inactive": [
+        0,
+        0,
+        0
+      ],
+      "toolbar": [
+        18,
+        18,
+        18
+      ],
+      "tab_text": [
+        228,
+        228,
+        231
+      ],
+      "tab_background_text": [
+        82,
+        82,
+        91
+      ],
+      "bookmark_text": [
+        228,
+        228,
+        231
+      ],
+      "toolbar_button_icon": [
+        255,
+        255,
+        255
+      ],
+      "toolbar_text": [
+        228,
+        228,
+        231
+      ],
+      "ntp_background": [
+        0,
+        0,
+        0
+      ],
+      "ntp_text": [
+        228,
+        228,
+        231
+      ]
+    }
+  }
+}

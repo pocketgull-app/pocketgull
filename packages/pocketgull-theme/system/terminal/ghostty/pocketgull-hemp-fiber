@@ -1,0 +1,21 @@
+# PocketGull Hemp Fiber Ghostty Theme
+background = #f2efe6
+foreground = #2c3529
+cursor-color = #15803d
+selection-background = #15803d26
+palette = 0=#2c3529
+palette = 1=#b91c1c
+palette = 2=#15803d
+palette = 3=#b45309
+palette = 4=#0284c7
+palette = 5=#7e22ce
+palette = 6=#0f766e
+palette = 7=#d8d3c3
+palette = 8=#78716c
+palette = 9=#dc2626
+palette = 10=#16a34a
+palette = 11=#d97706
+palette = 12=#0369a1
+palette = 13=#9333ea
+palette = 14=#0d9488
+palette = 15=#ffffff

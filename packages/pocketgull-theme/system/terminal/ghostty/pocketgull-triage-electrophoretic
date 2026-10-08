@@ -1,0 +1,21 @@
+# PocketGull Triage Electrophoretic Ghostty Theme
+background = #f5f5f0
+foreground = #111111
+cursor-color = #111111
+selection-background = #11111122
+palette = 0=#111111
+palette = 1=#222222
+palette = 2=#222222
+palette = 3=#222222
+palette = 4=#333333
+palette = 5=#333333
+palette = 6=#333333
+palette = 7=#d1d1cc
+palette = 8=#555555
+palette = 9=#222222
+palette = 10=#333333
+palette = 11=#333333
+palette = 12=#444444
+palette = 13=#444444
+palette = 14=#555555
+palette = 15=#ffffff

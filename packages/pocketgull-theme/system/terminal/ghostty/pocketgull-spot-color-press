@@ -1,0 +1,21 @@
+# PocketGull Spot-Color Press Ghostty Theme
+background = #fdfbf7
+foreground = #1e3a8a
+cursor-color = #ec4899
+selection-background = #fef08a66
+palette = 0=#1e3a8a
+palette = 1=#e11d48
+palette = 2=#059669
+palette = 3=#d97706
+palette = 4=#2563eb
+palette = 5=#ec4899
+palette = 6=#0891b2
+palette = 7=#e5dec9
+palette = 8=#64748b
+palette = 9=#f87171
+palette = 10=#10b981
+palette = 11=#facc15
+palette = 12=#3b82f6
+palette = 13=#f472b6
+palette = 14=#06b6d4
+palette = 15=#ffffff

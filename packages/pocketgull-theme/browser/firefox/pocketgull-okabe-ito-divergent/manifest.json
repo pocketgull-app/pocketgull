@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Okabe-Ito Divergent Theme",
+  "description": "PocketGull PocketGull Okabe-Ito Divergent browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-okabe-ito-divergent@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#0e1117",
+      "frame_inactive": "#0e1117",
+      "tab_selected": "#161b22",
+      "tab_background_text": "#8b949e",
+      "tab_text": "#f0f6fc",
+      "tab_line": "#56b4e9",
+      "toolbar": "#161b22",
+      "toolbar_text": "#f0f6fc",
+      "toolbar_field": "#0e1117",
+      "toolbar_field_text": "#f0f6fc",
+      "toolbar_top_separator": "#21262d",
+      "toolbar_bottom_separator": "#21262d",
+      "icons": "#56b4e9",
+      "ntp_background": "#0e1117",
+      "ntp_text": "#f0f6fc"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+# PocketGull Carrara Marble Alacritty Theme
+[colors.primary]
+background = "#faf9f6"
+foreground = "#0f172a"
+
+[colors.cursor]
+text = "#faf9f6"
+cursor = "#0ea5e9"
+
+[colors.selection]
+text = "#0f172a"
+background = "#0ea5e928"
+
+[colors.normal]
+black = "#0f172a"
+red = "#dc2626"
+green = "#059669"
+yellow = "#d97706"
+blue = "#0284c7"
+magenta = "#7c3aed"
+cyan = "#0ea5e9"
+white = "#e2e8f0"
+
+[colors.bright]
+black = "#64748b"
+red = "#ef4444"
+green = "#10b981"
+yellow = "#f59e0b"
+blue = "#38bdf8"
+magenta = "#a855f7"
+cyan = "#06b6d4"
+white = "#ffffff"

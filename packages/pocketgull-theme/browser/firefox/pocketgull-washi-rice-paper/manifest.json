@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Washi Rice Paper Theme",
+  "description": "PocketGull PocketGull Washi Rice Paper browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-washi-rice-paper@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#f0ebe1",
+      "frame_inactive": "#f5efe5",
+      "tab_selected": "#faf8f0",
+      "tab_background_text": "#78716c",
+      "tab_text": "#18181b",
+      "tab_line": "#0f766e",
+      "toolbar": "#faf8f0",
+      "toolbar_text": "#18181b",
+      "toolbar_field": "#faf8f0",
+      "toolbar_field_text": "#18181b",
+      "toolbar_top_separator": "#e5dfd3",
+      "toolbar_bottom_separator": "#e5dfd3",
+      "icons": "#0f766e",
+      "ntp_background": "#faf8f0",
+      "ntp_text": "#18181b"
+    }
+  }
+}

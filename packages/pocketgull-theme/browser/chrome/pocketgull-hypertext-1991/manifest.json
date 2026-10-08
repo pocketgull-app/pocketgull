@@ -2,23 +2,27 @@
   "manifest_version": 3,
   "version": "1.2.0",
   "name": "PocketGull Hypertext 1991 Theme",
-  "description": "Minimalist monochrome precision celebrating the early World Wide Web hypertext workspace.",
+  "description": "PocketGull PocketGull Hypertext 1991 browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
   "theme": {
     "colors": {
       "frame": [
-        229,
-        229,
-        229
+        238,
+        238,
+        238
       ],
       "frame_inactive": [
+        248,
+        248,
+        248
+      ],
+      "toolbar": [
         255,
         255,
         255
-      ],
-      "toolbar": [
-        245,
-        245,
-        245
       ],
       "tab_text": [
         0,
@@ -26,9 +30,9 @@
         0
       ],
       "tab_background_text": [
-        85,
-        85,
-        85
+        102,
+        102,
+        102
       ],
       "bookmark_text": [
         0,
@@ -38,7 +42,7 @@
       "toolbar_button_icon": [
         0,
         0,
-        238
+        128
       ],
       "toolbar_text": [
         0,

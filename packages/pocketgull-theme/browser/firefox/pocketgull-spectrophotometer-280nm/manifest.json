@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Spectrophotometer 280nm Theme",
+  "description": "PocketGull PocketGull Spectrophotometer 280nm browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-spectrophotometer-280nm@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#0c0a14",
+      "frame_inactive": "#0c0a14",
+      "tab_selected": "#171226",
+      "tab_background_text": "#7c3aed",
+      "tab_text": "#ede9fe",
+      "tab_line": "#a855f7",
+      "toolbar": "#171226",
+      "toolbar_text": "#ede9fe",
+      "toolbar_field": "#0c0a14",
+      "toolbar_field_text": "#ede9fe",
+      "toolbar_top_separator": "#2e1065",
+      "toolbar_bottom_separator": "#2e1065",
+      "icons": "#a855f7",
+      "ntp_background": "#0c0a14",
+      "ntp_text": "#ede9fe"
+    }
+  }
+}

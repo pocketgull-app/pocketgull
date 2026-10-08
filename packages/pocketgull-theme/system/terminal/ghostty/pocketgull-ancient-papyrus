@@ -1,0 +1,21 @@
+# PocketGull Ancient Papyrus Ghostty Theme
+background = #13100c
+foreground = #f3ead6
+cursor-color = #d97706
+selection-background = #d977062c
+palette = 0=#13100c
+palette = 1=#ef4444
+palette = 2=#16a34a
+palette = 3=#f59e0b
+palette = 4=#0284c7
+palette = 5=#a855f7
+palette = 6=#0f766e
+palette = 7=#f3ead6
+palette = 8=#786b59
+palette = 9=#f87171
+palette = 10=#34d399
+palette = 11=#fbbf24
+palette = 12=#38bdf8
+palette = 13=#c084fc
+palette = 14=#14b8a6
+palette = 15=#ffffff

@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Sacred Mandala Theme",
+  "description": "PocketGull PocketGull Sacred Mandala browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "theme": {
+    "colors": {
+      "frame": [
+        14,
+        10,
+        31
+      ],
+      "frame_inactive": [
+        14,
+        10,
+        31
+      ],
+      "toolbar": [
+        33,
+        26,
+        66
+      ],
+      "tab_text": [
+        255,
+        255,
+        255
+      ],
+      "tab_background_text": [
+        107,
+        92,
+        148
+      ],
+      "bookmark_text": [
+        245,
+        243,
+        255
+      ],
+      "toolbar_button_icon": [
+        192,
+        132,
+        252
+      ],
+      "toolbar_text": [
+        245,
+        243,
+        255
+      ],
+      "ntp_background": [
+        22,
+        17,
+        45
+      ],
+      "ntp_text": [
+        245,
+        243,
+        255
+      ]
+    }
+  }
+}

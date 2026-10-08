@@ -1,0 +1,32 @@
+# PocketGull Spectrophotometer 280nm Alacritty Theme
+[colors.primary]
+background = "#0c0a14"
+foreground = "#ede9fe"
+
+[colors.cursor]
+text = "#0c0a14"
+cursor = "#a855f7"
+
+[colors.selection]
+text = "#ede9fe"
+background = "#a855f733"
+
+[colors.normal]
+black = "#0c0a14"
+red = "#ef4444"
+green = "#fde047"
+yellow = "#e879f9"
+blue = "#22d3ee"
+magenta = "#f472b6"
+cyan = "#c084fc"
+white = "#ede9fe"
+
+[colors.bright]
+black = "#7c3aed"
+red = "#f87171"
+green = "#fde047"
+yellow = "#e879f9"
+blue = "#22d3ee"
+magenta = "#f472b6"
+cyan = "#c084fc"
+white = "#ffffff"

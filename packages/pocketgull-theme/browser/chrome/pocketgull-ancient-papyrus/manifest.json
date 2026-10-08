@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "version": "1.2.0",
+  "name": "PocketGull Ancient Papyrus Theme",
+  "description": "PocketGull PocketGull Ancient Papyrus browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "theme": {
+    "colors": {
+      "frame": [
+        13,
+        10,
+        7
+      ],
+      "frame_inactive": [
+        13,
+        10,
+        7
+      ],
+      "toolbar": [
+        28,
+        24,
+        19
+      ],
+      "tab_text": [
+        243,
+        234,
+        214
+      ],
+      "tab_background_text": [
+        120,
+        107,
+        89
+      ],
+      "bookmark_text": [
+        243,
+        234,
+        214
+      ],
+      "toolbar_button_icon": [
+        217,
+        119,
+        6
+      ],
+      "toolbar_text": [
+        243,
+        234,
+        214
+      ],
+      "ntp_background": [
+        19,
+        16,
+        12
+      ],
+      "ntp_text": [
+        243,
+        234,
+        214
+      ]
+    }
+  }
+}

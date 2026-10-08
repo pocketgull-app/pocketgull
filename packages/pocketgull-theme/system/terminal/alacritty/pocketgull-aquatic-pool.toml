@@ -1,0 +1,32 @@
+# PocketGull Aquatic Pool Alacritty Theme
+[colors.primary]
+background = "#081f3d"
+foreground = "#e0f2fe"
+
+[colors.cursor]
+text = "#081f3d"
+cursor = "#38bdf8"
+
+[colors.selection]
+text = "#e0f2fe"
+background = "#38bdf82c"
+
+[colors.normal]
+black = "#081f3d"
+red = "#ef4444"
+green = "#10b981"
+yellow = "#f59e0b"
+blue = "#38bdf8"
+magenta = "#a855f7"
+cyan = "#06b6d4"
+white = "#e0f2fe"
+
+[colors.bright]
+black = "#476788"
+red = "#f87171"
+green = "#34d399"
+yellow = "#fde047"
+blue = "#60a5fa"
+magenta = "#c084fc"
+cyan = "#7dd3fc"
+white = "#ffffff"

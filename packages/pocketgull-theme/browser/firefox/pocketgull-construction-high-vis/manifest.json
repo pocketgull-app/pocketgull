@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Construction High-Vis Theme",
+  "description": "PocketGull PocketGull Construction High-Vis browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-construction-high-vis@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#f4e3ab",
+      "frame_inactive": "#f8ecc5",
+      "tab_selected": "#fdf6e2",
+      "tab_background_text": "#78716c",
+      "tab_text": "#1e1b13",
+      "tab_line": "#0369a1",
+      "toolbar": "#fdf6e2",
+      "toolbar_text": "#1e1b13",
+      "toolbar_field": "#fdf6e2",
+      "toolbar_field_text": "#1e1b13",
+      "toolbar_top_separator": "#f3d27b",
+      "toolbar_bottom_separator": "#f3d27b",
+      "icons": "#0369a1",
+      "ntp_background": "#fdf6e2",
+      "ntp_text": "#1e1b13"
+    }
+  }
+}

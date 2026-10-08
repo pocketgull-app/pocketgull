@@ -2,22 +2,32 @@
   "manifest_version": 2,
   "version": "1.2.0",
   "name": "PocketGull Hypertext 1991 Theme",
-  "description": "Minimalist monochrome precision celebrating the early World Wide Web hypertext workspace.",
+  "description": "PocketGull PocketGull Hypertext 1991 browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-hypertext-1991@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
   "theme": {
     "colors": {
-      "frame": "#e5e5e5",
-      "frame_inactive": "#ffffff",
-      "tab_selected": "#f5f5f5",
-      "tab_background_text": "#555555",
+      "frame": "#eeeeee",
+      "frame_inactive": "#f8f8f8",
+      "tab_selected": "#ffffff",
+      "tab_background_text": "#666666",
       "tab_text": "#000000",
-      "tab_line": "#0000ee",
-      "toolbar": "#f5f5f5",
+      "tab_line": "#000080",
+      "toolbar": "#ffffff",
       "toolbar_text": "#000000",
       "toolbar_field": "#ffffff",
       "toolbar_field_text": "#000000",
-      "toolbar_top_separator": "#e5e5e5",
-      "toolbar_bottom_separator": "#e5e5e5",
-      "icons": "#0000ee",
+      "toolbar_top_separator": "#cccccc",
+      "toolbar_bottom_separator": "#cccccc",
+      "icons": "#000080",
       "ntp_background": "#ffffff",
       "ntp_text": "#000000"
     }

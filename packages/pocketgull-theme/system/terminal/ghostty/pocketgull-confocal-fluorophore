@@ -1,0 +1,21 @@
+# PocketGull Confocal Fluorophore Ghostty Theme
+background = #05080c
+foreground = #e2e8f0
+cursor-color = #34d399
+selection-background = #34d39933
+palette = 0=#05080c
+palette = 1=#ef4444
+palette = 2=#34d399
+palette = 3=#a78bfa
+palette = 4=#38bdf8
+palette = 5=#fbbf24
+palette = 6=#f43f5e
+palette = 7=#e2e8f0
+palette = 8=#64748b
+palette = 9=#f87171
+palette = 10=#34d399
+palette = 11=#a78bfa
+palette = 12=#38bdf8
+palette = 13=#fbbf24
+palette = 14=#f43f5e
+palette = 15=#ffffff

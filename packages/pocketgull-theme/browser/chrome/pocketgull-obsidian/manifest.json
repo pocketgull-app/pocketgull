@@ -2,13 +2,17 @@
   "manifest_version": 3,
   "version": "1.2.0",
   "name": "PocketGull Obsidian Theme",
-  "description": "High-contrast clinical dark theme engineered for optical legibility and serene focus with heuristic usability standards.",
+  "description": "PocketGull PocketGull Obsidian browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
   "theme": {
     "colors": {
       "frame": [
-        18,
-        18,
-        22
+        9,
+        9,
+        11
       ],
       "frame_inactive": [
         9,
@@ -16,24 +20,24 @@
         11
       ],
       "toolbar": [
-        24,
-        24,
-        27
+        18,
+        18,
+        21
       ],
       "tab_text": [
-        244,
-        244,
-        245
+        248,
+        250,
+        252
       ],
       "tab_background_text": [
-        161,
-        161,
-        170
+        113,
+        113,
+        122
       ],
       "bookmark_text": [
-        244,
-        244,
-        245
+        228,
+        228,
+        231
       ],
       "toolbar_button_icon": [
         20,
@@ -41,9 +45,9 @@
         166
       ],
       "toolbar_text": [
-        244,
-        244,
-        245
+        228,
+        228,
+        231
       ],
       "ntp_background": [
         9,
@@ -51,9 +55,9 @@
         11
       ],
       "ntp_text": [
-        244,
-        244,
-        245
+        228,
+        228,
+        231
       ]
     }
   }

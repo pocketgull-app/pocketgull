@@ -2,7 +2,7 @@
 
 > **Insight beneath the surface.** A bespoke multi-environment design system providing high-contrast clinical, tactile paper, and sensory studio themes engineered for maximum optical legibility (WCAG AAA compliant), reduced visual fatigue, and cognitive ergonomic focus.
 
-![PocketGull Theme Icon](https://raw.githubusercontent.com/pocketgull-app/pocketgull/main/packages/pocketgull-theme/icon.png)
+![PocketGull Theme Icon](./icon.png)
 
 ---
 
@@ -101,26 +101,29 @@ packages/pocketgull-theme/
 
 ---
 
-## 🌐 Browser Themes (Chrome & Firefox)
+## 🌐 Browser Themes (Chrome & Firefox - 26 Palettes + Circadian Auto)
 
-The 6 flagship colorways are provided as native browser themes:
-1. **PocketGull Obsidian**: Deep obsidian frame, gear teal active tab accent.
-2. **PocketGull Washi Rice Paper**: Handmade Kozo paper frame, cinnabar stamp indicator.
-3. **PocketGull Scotopic 650nm Red**: Circadian night mode preserving melatonin rhythm.
-4. **PocketGull Curie Luminescence**: Laboratory phosphorescent green glow.
-5. **PocketGull Rams Functionalist**: Industrial matte putty and functionalist amber.
-6. **PocketGull Hypertext 1991**: Genesis hypertext monochrome.
+All 26 IDE palettes are provided as native browser themes for Google Chrome / Brave / Edge and Mozilla Firefox, plus a dynamic Circadian Auto extension:
+
+### Available Browser Themes
+- **Clinical Obsidian & Dark**: Obsidian, Radiograph Luminescence, Curie Luminescence, Scotopic 650nm Red, Midnight Broadside, Nero Marquina, Ancient Papyrus, Aquatic Pool, Sacred Mandala, Acuity Emergency, GearArts.
+- **Tactile Paper & Studio Light**: Washi Rice Paper, Spot-Color Press, Rams Functionalist, Hypertext 1991, Cardstock Kraft, Hemp Fiber, Construction High-Vis, Triage Electrophoretic, Carrara Marble.
+- **Scientific & Universal**: Confocal Fluorophore, Darkfield Electron, Spectrophotometer 280nm, Okabe-Ito Divergent, Viridis Perceptual, Achromatopsia High-Luminance.
 
 ### Activating in Google Chrome / Brave / Microsoft Edge
 1. Open `chrome://extensions/` (or `brave://extensions/` / `edge://extensions/`).
 2. Toggle **Developer Mode** on in the top right.
 3. Click **Load unpacked**.
-4. Navigate to `packages/pocketgull-theme/browser/chrome/pocketgull-obsidian` (or your preferred theme) and click **Select Folder**.
+4. Select any theme folder in `packages/pocketgull-theme/browser/chrome/<theme-slug>` (e.g. `pocketgull-scotopic-650nm-red`, `pocketgull-washi-rice-paper`, `pocketgull-hemp-fiber`, `pocketgull-obsidian`).
 
 ### Activating in Mozilla Firefox
-1. Open `about:debugging#/runtime/this-firefox`.
-2. Click **Load Temporary Add-on...**.
-3. Select `packages/pocketgull-theme/browser/firefox/pocketgull-obsidian/manifest.json`.
+1. **Dynamic Circadian Auto-Switching** *(Recommended)*:
+   - Open `about:debugging#/runtime/this-firefox`.
+   - Click **Load Temporary Add-on...**.
+   - Select `packages/pocketgull-theme/browser/firefox/pocketgull-circadian-auto/manifest.json`.
+   - *Your browser chrome automatically tracks the solar cycle: 08:00 Washi Rice Paper, 13:00 Hemp Fiber, 19:30 Scotopic 650nm Deep Red.*
+2. **Static Themes**:
+   - Select `packages/pocketgull-theme/browser/firefox/<theme-slug>/manifest.json`.
 
 ---
 
@@ -130,17 +133,35 @@ The 6 flagship colorways are provided as native browser themes:
 PocketGull installs a Windows Terminal JSON Fragment into:
 `%LOCALAPPDATA%\Microsoft\Windows Terminal\Fragments\PocketGull\PocketGull.json`
 
-Windows Terminal automatically loads all 6 color schemes and registers pre-configured profile defaults paired with the **PocketGull Mono** font.
+Windows Terminal automatically loads all **26 color schemes** matching every IDE theme and registers pre-configured profiles (Obsidian, Scotopic 650nm, Washi, Curie, Rams, Broadside) paired with the **PocketGull Mono** font.
 
-### 2. Cross-Platform Terminals
-Theme configuration files are pre-generated in `system/terminal/`:
-- **Ghostty**: `system/terminal/ghostty/pocketgull-obsidian`
-- **Alacritty**: `system/terminal/alacritty/pocketgull-obsidian.toml`
-- **Kitty**: `system/terminal/kitty/pocketgull-obsidian.conf`
+### 2. PowerShell Theme Engine (`PocketGullTheme` Module)
+PocketGull provides a native PowerShell 7+ module (`system/powershell/PocketGullTheme.psm1`):
+- **`Set-PocketGullTheme <Name>`**: Styles PSReadLine tokens (commands, parameters, strings, errors) and `$PSStyle` table/directory outputs with 24-bit TrueColor.
+- **`Sync-PocketGullTheme`**: Automatically inspects `.vscode/settings.json` or circadian hours and synchronizes the active terminal palette.
+- **Available Themes**: `Obsidian`, `Scotopic`, `Washi`, `Curie`, `Rams`, `Broadside`.
 
 ### 3. Shell Prompts (Oh-My-Posh)
 - `system/shell-prompts/pocketgull-ophthalmic.omp.json` (Obsidian dark prompt)
+- `system/shell-prompts/pocketgull-scotopic.omp.json` (Circadian 650nm red night shift)
 - `system/shell-prompts/pocketgull-washi.omp.json` (Tactile washi light prompt)
+- `system/shell-prompts/pocketgull-curie.omp.json` (Laboratory radium green prompt)
+- `system/shell-prompts/pocketgull-rams.omp.json` (Dieter Rams functionalist prompt)
+
+### 4. Zsh Powerlevel10k (`p10k`) Prompts (WSL2 / Linux / macOS)
+Pre-tuned, high-performance P10k prompt files in `system/shell-prompts/p10k/`:
+- `pocketgull-obsidian.p10k.zsh`
+- `pocketgull-scotopic-650nm.p10k.zsh`
+- `pocketgull-washi.p10k.zsh`
+- `pocketgull-curie.p10k.zsh`
+- `pocketgull-rams.p10k.zsh`
+- **Dynamic Switcher**: Source `pocketgull-theme-switcher.zsh` in `~/.zshrc` to use `set-pocketgull-theme <name>`.
+
+### 5. Cross-Platform Terminals (All 26 Themes)
+Pre-generated configuration files across all 26 palettes in `system/terminal/`:
+- **Ghostty**: `system/terminal/ghostty/<theme-slug>` (e.g., `pocketgull-obsidian`, `pocketgull-scotopic-650nm-red`)
+- **Alacritty**: `system/terminal/alacritty/<theme-slug>.toml`
+- **Kitty**: `system/terminal/kitty/<theme-slug>.conf`
 
 ---
 

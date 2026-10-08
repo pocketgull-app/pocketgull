@@ -2,58 +2,62 @@
   "manifest_version": 3,
   "version": "1.2.0",
   "name": "PocketGull Rams Functionalist Theme",
-  "description": "Pure functionalist industrial design inspired by Dieter Rams Weniger aber besser ethos with matte putty and iconic amber accents.",
+  "description": "PocketGull PocketGull Rams Functionalist browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
   "theme": {
     "colors": {
       "frame": [
-        222,
-        218,
-        210
+        228,
+        228,
+        221
       ],
       "frame_inactive": [
-        232,
-        230,
-        225
+        236,
+        236,
+        231
       ],
       "toolbar": [
-        242,
-        240,
-        235
+        244,
+        244,
+        240
       ],
       "tab_text": [
-        28,
-        27,
-        26
+        30,
+        30,
+        30
       ],
       "tab_background_text": [
-        107,
-        101,
-        96
+        113,
+        113,
+        122
       ],
       "bookmark_text": [
-        28,
-        27,
-        26
+        30,
+        30,
+        30
       ],
       "toolbar_button_icon": [
-        217,
-        155,
-        0
+        234,
+        88,
+        12
       ],
       "toolbar_text": [
-        28,
-        27,
-        26
+        30,
+        30,
+        30
       ],
       "ntp_background": [
-        232,
-        230,
-        225
+        244,
+        244,
+        240
       ],
       "ntp_text": [
-        28,
-        27,
-        26
+        30,
+        30,
+        30
       ]
     }
   }

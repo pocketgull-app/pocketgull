@@ -1,0 +1,32 @@
+# PocketGull Scotopic 650nm Red Alacritty Theme
+[colors.primary]
+background = "#050000"
+foreground = "#ff6655"
+
+[colors.cursor]
+text = "#050000"
+cursor = "#ff2211"
+
+[colors.selection]
+text = "#ff6655"
+background = "#ff22112a"
+
+[colors.normal]
+black = "#050000"
+red = "#ff2211"
+green = "#ff5544"
+yellow = "#ff7766"
+blue = "#ff4433"
+magenta = "#ff4433"
+cyan = "#ff6655"
+white = "#ffdddd"
+
+[colors.bright]
+black = "#7a1a1a"
+red = "#ff3322"
+green = "#ff9988"
+yellow = "#ffaa99"
+blue = "#ff7766"
+magenta = "#ff5544"
+cyan = "#ffa499"
+white = "#ffffff"

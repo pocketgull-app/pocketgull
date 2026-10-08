@@ -1,0 +1,32 @@
+# PocketGull Achromatopsia High-Luminance Alacritty Theme
+[colors.primary]
+background = "#000000"
+foreground = "#e4e4e7"
+
+[colors.cursor]
+text = "#000000"
+cursor = "#ffffff"
+
+[colors.selection]
+text = "#e4e4e7"
+background = "#ffffff33"
+
+[colors.normal]
+black = "#000000"
+red = "#ef4444"
+green = "#a1a1aa"
+yellow = "#ffffff"
+blue = "#e4e4e7"
+magenta = "#d4d4d8"
+cyan = "#ffffff"
+white = "#e4e4e7"
+
+[colors.bright]
+black = "#52525b"
+red = "#f87171"
+green = "#a1a1aa"
+yellow = "#ffffff"
+blue = "#e4e4e7"
+magenta = "#d4d4d8"
+cyan = "#ffffff"
+white = "#ffffff"

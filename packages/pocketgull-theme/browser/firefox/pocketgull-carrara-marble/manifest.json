@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "version": "1.2.0",
+  "name": "PocketGull Carrara Marble Theme",
+  "description": "PocketGull PocketGull Carrara Marble browser theme engineered for optical legibility and WCAG AAA contrast.",
+  "icons": {
+    "128": "icon-128.png",
+    "512": "icon-512.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "pocketgull-carrara-marble@theme.pocketgull.app",
+      "strict_min_version": "58.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#edf0f4",
+      "frame_inactive": "#f4f5f8",
+      "tab_selected": "#faf9f6",
+      "tab_background_text": "#64748b",
+      "tab_text": "#0f172a",
+      "tab_line": "#0ea5e9",
+      "toolbar": "#faf9f6",
+      "toolbar_text": "#0f172a",
+      "toolbar_field": "#faf9f6",
+      "toolbar_field_text": "#0f172a",
+      "toolbar_top_separator": "#e2e8f0",
+      "toolbar_bottom_separator": "#e2e8f0",
+      "icons": "#0ea5e9",
+      "ntp_background": "#faf9f6",
+      "ntp_text": "#0f172a"
+    }
+  }
+}

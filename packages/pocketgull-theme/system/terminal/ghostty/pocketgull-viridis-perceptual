@@ -1,0 +1,21 @@
+# PocketGull Viridis Perceptual Ghostty Theme
+background = #0d0818
+foreground = #f8fafc
+cursor-color = #21918c
+selection-background = #21918c33
+palette = 0=#0d0818
+palette = 1=#ef4444
+palette = 2=#5ec962
+palette = 3=#79d151
+palette = 4=#21918c
+palette = 5=#3b528b
+palette = 6=#fde725
+palette = 7=#f8fafc
+palette = 8=#6b7280
+palette = 9=#f87171
+palette = 10=#5ec962
+palette = 11=#79d151
+palette = 12=#21918c
+palette = 13=#3b528b
+palette = 14=#fde725
+palette = 15=#ffffff

@@ -35,6 +35,12 @@
   "categories": [
     "Themes"
   ],
+  "scripts": {
+    "build:terminal": "node scripts/generate_terminal_schemes.mjs",
+    "build:browser": "node scripts/generate_browser_themes.mjs",
+    "build": "node scripts/generate_terminal_schemes.mjs && node scripts/generate_browser_themes.mjs",
+    "sideload": "node scripts/sideload.mjs"
+  },
   "contributes": {
     "themes": [
       {

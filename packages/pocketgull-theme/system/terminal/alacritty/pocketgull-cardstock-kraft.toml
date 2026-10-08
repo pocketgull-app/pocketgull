@@ -1,0 +1,32 @@
+# PocketGull Cardstock Kraft Alacritty Theme
+[colors.primary]
+background = "#f9f3d9"
+foreground = "#3b2e1e"
+
+[colors.cursor]
+text = "#f9f3d9"
+cursor = "#b45309"
+
+[colors.selection]
+text = "#3b2e1e"
+background = "#b4530926"
+
+[colors.normal]
+black = "#3b2e1e"
+red = "#b91c1c"
+green = "#15803d"
+yellow = "#b45309"
+blue = "#0369a1"
+magenta = "#7e22ce"
+cyan = "#0f766e"
+white = "#e5d6a7"
+
+[colors.bright]
+black = "#78716c"
+red = "#dc2626"
+green = "#16a34a"
+yellow = "#d97706"
+blue = "#0284c7"
+magenta = "#9333ea"
+cyan = "#0d9488"
+white = "#ffffff"

@@ -1,0 +1,236 @@
+[
+  {
+    "id": 1,
+    "theme": "typography",
+    "text": "The reader does not read the ink alone; they breathe through the white space.",
+    "source": "The Master Typesetter"
+  },
+  {
+    "id": 2,
+    "theme": "systems",
+    "text": "The stream does not argue with the boulder. It yields, finds the hollows, and carves the mountain.",
+    "source": "Water & Stone"
+  },
+  {
+    "id": 3,
+    "theme": "craftsmanship",
+    "text": "When nothing more can be added, the work is begun. When nothing more can be removed, the vessel is complete.",
+    "source": "The Potter's Wheel"
+  },
+  {
+    "id": 4,
+    "theme": "forces",
+    "text": "The rigid pine branch snaps beneath the heavy snow. The supple willow bends until the burden falls, then springs upright unbroken.",
+    "source": "Snow on the Willow"
+  },
+  {
+    "id": 5,
+    "theme": "wabi-sabi",
+    "text": "The cracked bowl joined with gold lacquer is more honest and resilient than the porcelain that was never tested.",
+    "source": "Kintsugi"
+  },
+  {
+    "id": 6,
+    "theme": "stillness",
+    "text": "Do not stir the muddy pond to make it clear. Be still; the silt settles, and the mirror of the sky appears.",
+    "source": "The Clear Pool"
+  },
+  {
+    "id": 7,
+    "theme": "medicine",
+    "text": "Before touching the wound, calm your own breathing. A restless hand cannot discern the subtle rhythm of life.",
+    "source": "The Quiet Healer"
+  },
+  {
+    "id": 8,
+    "theme": "craftsmanship",
+    "text": "The apprentice blamed the stubborn cedar. The master inspected the apprentice's chisels: dull and nicked. 'The wood only answers the blade.'",
+    "source": "The Wood Carver"
+  },
+  {
+    "id": 9,
+    "theme": "systems",
+    "text": "When the archer shoots for earthenware, he shoots with ease. When he shoots for gold, his hands tremble. The skill is the same; the prize divides the mind.",
+    "source": "The Archer's Mind"
+  },
+  {
+    "id": 10,
+    "theme": "wabi-sabi",
+    "text": "Look at the weathered stone in the garden. Time did not diminish it; time revealed its true character.",
+    "source": "The Moss Garden"
+  },
+  {
+    "id": 11,
+    "theme": "forces",
+    "text": "Between the strike and the bell, there is motion. Between the breath and the pulse, there is stillness. Live in the interval.",
+    "source": "The Temple Bell"
+  },
+  {
+    "id": 12,
+    "theme": "typography",
+    "text": "When character counters dilate, the darkness cannot swallow the letters. Guard the inner light.",
+    "source": "The Sloan Invariant"
+  },
+  {
+    "id": 13,
+    "theme": "systems",
+    "text": "A scholar asked to learn Zen. The master poured tea until the cup overflowed. 'Empty your cup first, or where will the tea go?'",
+    "source": "A Cup of Tea"
+  },
+  {
+    "id": 14,
+    "theme": "stillness",
+    "text": "A finger pointing at the moon is not the moon. Do not mistake the symbol for the sky.",
+    "source": "The Pointing Finger"
+  },
+  {
+    "id": 15,
+    "theme": "wabi-sabi",
+    "text": "Nothing lasts, nothing is finished, and nothing is perfect. In this imperfection lies the dignity of the craft.",
+    "source": "The Quiet Workshop"
+  },
+  {
+    "id": 16,
+    "theme": "medicine",
+    "text": "The physician listens not just to the words the patient speaks, but to the silence they hold between sentences.",
+    "source": "The Clinical Presence"
+  },
+  {
+    "id": 17,
+    "theme": "forces",
+    "text": "Waves rise and fall, yet the ocean remains wet. Thoughts come and go, yet the mind remains open.",
+    "source": "The Great Tide"
+  },
+  {
+    "id": 18,
+    "theme": "typography",
+    "text": "The felt-tip marker touches the fibrous washi. The ink bleeds slightly into the grain. In that small mark, humanity resides.",
+    "source": "The Marker Gesture"
+  },
+  {
+    "id": 19,
+    "theme": "craftsmanship",
+    "text": "What is the highest technique? No technique. Only the right posture, the sharp blade, and the clear mind.",
+    "source": "The Uncarved Block"
+  },
+  {
+    "id": 20,
+    "theme": "systems",
+    "text": "Before the code, the intent. During the code, the discipline. After the code, the release.",
+    "source": "Systems, Forces, Response"
+  },
+  {
+    "id": 21,
+    "theme": "wabi-sabi",
+    "text": "The autumn leaf falls without regret; the winter tree rests without anxiety; the spring shoot rises without boast.",
+    "source": "The Seasons"
+  },
+  {
+    "id": 22,
+    "theme": "medicine",
+    "text": "Health is not the absence of storms; it is the body's natural wisdom in regaining its balance.",
+    "source": "Parasympathetic Equilibrium"
+  },
+  {
+    "id": 23,
+    "theme": "typography",
+    "text": "Slashed zero and curved l: unambiguous, humble, precise. True clarity needs no ornament.",
+    "source": "The ISMP Code"
+  },
+  {
+    "id": 24,
+    "theme": "stillness",
+    "text": "Sitting quietly, doing nothing, spring comes, and the grass grows by itself.",
+    "source": "Zenrin Kushū"
+  },
+  {
+    "theme": "limerick",
+    "id": 25,
+    "source": "The Midnight Debugger",
+    "text": "A programmer out in Seattle,\nFought null-pointer bugs in a battle.\nHe muttered with spite,\n'It worked late last night!\nNow the heap starts to hiss and to rattle.'"
+  },
+  {
+    "theme": "limerick",
+    "id": 26,
+    "source": "The Illegible Script",
+    "text": "There once was a doctor named Ned,\nWhose prescription was too hard to read.\nThe pharmacist guessed,\n'Take two for the chest!'\nAnd cured his ingrown toe instead."
+  },
+  {
+    "theme": "limerick",
+    "id": 27,
+    "source": "Cascading Style Sorcery",
+    "text": "A coder who worked with CSS,\nGot trapped in an infinite mess.\nHe tried z-index: nine,\nNow the moon is offline,\nAnd the navbar has vanished, I guess."
+  },
+  {
+    "theme": "limerick",
+    "id": 28,
+    "source": "The Diagnostic Algorithm",
+    "text": "A patient came in feeling grey,\n'I've googled my symptoms today!'\nThe doctor replied,\n'Well, swallowing pride,\nWebMD says you died yesterday.'"
+  },
+  {
+    "theme": "limerick",
+    "id": 29,
+    "source": "The Merge Conflict",
+    "text": "There once was a branch on our git,\nWhose conflicts refused to submit.\nWith 'git push --force',\nWe burned down the source,\nAnd told management, 'Tests didn't fit!'"
+  },
+  {
+    "theme": "limerick",
+    "id": 30,
+    "source": "The Borrow Checker",
+    "text": "A seagull who coded in Rust,\nDeclared, 'Garbage collectors are dust!\nBorrow-checker is king,\nI won't leak a thing—\nExcept sanity, which I have lost.'"
+  },
+  {
+    "theme": "limerick",
+    "id": 31,
+    "source": "The Missing Character",
+    "text": "A dev spent three days on a glitch,\nStaring into the console's dark ditch.\nHe wept in despair,\nPulled out all his hair—\n'Twas a semicolon out in the pitch!"
+  },
+  {
+    "theme": "limerick",
+    "id": 32,
+    "source": "Wearable Telemetry",
+    "text": "My smartwatch just beeped on my wrist:\n'High stress levels clearly exist!'\nI yelled at the band,\n'You don't understand,\nMy build failed and Docker is pissed!'"
+  },
+  {
+    "theme": "limerick",
+    "id": 33,
+    "source": "The Optical Disambiguator",
+    "text": "A typographer obsessed with the font,\nGave kerning far more than they want.\nWith slashed zero tight,\nAnd curved 'l' upright,\nEven stack traces look quite gallant."
+  },
+  {
+    "theme": "limerick",
+    "id": 34,
+    "source": "The Sentient Assistant",
+    "text": "An AI when asked to think deep,\nJust sighed and told everyone, 'Sleep!\nYour syntax is fine,\nDrink water, un-whine,\nOr into your coffee I'll leap!'"
+  },
+  {
+    "theme": "joke",
+    "id": 35,
+    "source": "Classic Computer Science",
+    "text": "There are only two hard things in Computer Science:\n1. Cache invalidation\n2. Naming things\n3. Off-by-one errors."
+  },
+  {
+    "theme": "joke",
+    "id": 36,
+    "source": "Circadian Engineering",
+    "text": "Why do programmers prefer dark mode?\nBecause light attracts bugs."
+  },
+  {
+    "theme": "joke",
+    "id": 37,
+    "source": "Relational Humor",
+    "text": "A SQL query walks into a bar, walks up to two tables, and asks:\n'Can I join you?'"
+  },
+  {
+    "theme": "joke",
+    "id": 38,
+    "source": "The Stack Overflow Clinic",
+    "text": "Doctor: 'I have good news and bad news.'\nPatient: 'Give me the bad news first.'\nDoctor: 'You have a severe case of acute recursion.'\nPatient: 'And the good news?'\nDoctor: 'I have good news and bad news.'"
+  },
+  {
+    "theme": "joke",
+    "id": 39,
+    "source": "Tracking & Kerning",
+    "text": "Why did the font break up with the paragraph?\nIt felt they just didn't have enough space between them."
+  }
+]

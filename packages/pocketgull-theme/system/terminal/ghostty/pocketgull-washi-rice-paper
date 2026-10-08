@@ -1,0 +1,21 @@
+# PocketGull Washi Rice Paper Ghostty Theme
+background = #faf8f0
+foreground = #18181b
+cursor-color = #0f766e
+selection-background = #0f766e33
+palette = 0=#18181b
+palette = 1=#b91c1c
+palette = 2=#047857
+palette = 3=#b45309
+palette = 4=#0284c7
+palette = 5=#7e22ce
+palette = 6=#0f766e
+palette = 7=#e5dfd3
+palette = 8=#71717a
+palette = 9=#ef4444
+palette = 10=#10b981
+palette = 11=#f59e0b
+palette = 12=#38bdf8
+palette = 13=#a855f7
+palette = 14=#14b8a6
+palette = 15=#faf8f0
