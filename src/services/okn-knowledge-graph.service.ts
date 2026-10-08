@@ -984,6 +984,71 @@ export class OknKnowledgeGraphService {
   }
 
   /**
+   * Queries the live Proto-OKN Bio-Health KG (NSF Award #2333740) SPARQL endpoint.
+   * Strips PHI, de-identifies the search term, and falls back gracefully to offline seed graphs.
+   */
+  async queryLiveProtoOknBiohealth(searchTerm: string): Promise<{
+    success: boolean;
+    source: string;
+    endpoint: string;
+    bindings: Array<{ subject: string; predicate: string; object: string }>;
+  }> {
+    const cleanTerm = this.sanitizeQueryTerm(searchTerm);
+    const endpoint = 'https://apps.okn.us/biohealth/sparql';
+    const sparqlQuery = `
+      PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+      SELECT ?s ?p ?o WHERE {
+        ?s ?p ?o .
+        FILTER (regex(str(?o), "${cleanTerm.replace(/"/g, '')}", "i"))
+      } LIMIT 15
+    `;
+
+    try {
+      const url = `${endpoint}?query=${encodeURIComponent(sparqlQuery)}&format=json`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { Accept: 'application/sparql-results+json' },
+        signal: AbortSignal.timeout(2500)
+      });
+
+      if (!response.ok) {
+        throw new Error(`SPARQL HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const bindings = (data?.results?.bindings || []).map((b: any) => ({
+        subject: b.s?.value || '',
+        predicate: b.p?.value || '',
+        object: b.o?.value || ''
+      }));
+
+      this.isLiveEndpointConnectedState.set(true);
+      return {
+        success: true,
+        source: 'NSF Proto-OKN Bio-Health KG (#2333740)',
+        endpoint,
+        bindings
+      };
+    } catch {
+      // Offline fallback: Synthesize from deterministic seed nodes
+      const localMatches = this.nodesState()
+        .filter(n => n.label.toLowerCase().includes(cleanTerm.toLowerCase()))
+        .map(n => ({
+          subject: n.uri,
+          predicate: 'http://www.w3.org/2000/01/rdf-schema#label',
+          object: n.label
+        }));
+
+      return {
+        success: localMatches.length > 0,
+        source: 'PocketGull Local Seed (Bio-Health OKN Fallback)',
+        endpoint: 'local://offline-cache',
+        bindings: localMatches
+      };
+    }
+  }
+
+  /**
    * Generates an ONC HTI-1 & FDA CDSR-compliant verification badge for clinical recommendations.
    */
   async verifyRecommendationProvenance(recommendationTitle: string): Promise<IOknVerificationBadge> {
