@@ -28,11 +28,11 @@ export class InteractionsProvider implements IIntelligenceProvider {
     private config = (() => {
         try {
             return inject(AI_CONFIG, { optional: true }) || {
-                defaultModel: { modelId: 'gemini-3.7-flash', temperature: 0.1 }
+                defaultModel: { modelId: 'gemini-3.8-flash', temperature: 0.1 }
             };
         } catch {
             return {
-                defaultModel: { modelId: 'gemini-3.7-flash', temperature: 0.1 }
+                defaultModel: { modelId: 'gemini-3.8-flash', temperature: 0.1 }
             };
         }
     })();
@@ -55,7 +55,7 @@ export class InteractionsProvider implements IIntelligenceProvider {
 
     // Signals for reactive tracking
     readonly isConnected = signal<boolean>(true);
-    readonly activeModel = signal<string>('gemini-3.7-flash');
+    readonly activeModel = signal<string>('gemini-3.8-flash');
     readonly thinkingBudget = signal<number>(2048);
     readonly lastError = signal<string | null>(null);
 

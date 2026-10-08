@@ -109,7 +109,7 @@ export interface IChronoWindow {
               stroke="#f97316" stroke-width="3" stroke-linecap="round" />
           </svg>
 
-          <!-- Current Time Telemetry Pill -->
+          <!-- Current Time Telemetry Badge -->
           <div class="mt-3 px-3 py-1 rounded-xl bg-zinc-950 border border-zinc-800 text-orange-400 font-mono font-bold text-xs tracking-wider shadow-sm">
             ⏰ {{ formattedTime() }}
           </div>

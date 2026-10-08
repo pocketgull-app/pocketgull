@@ -8,7 +8,7 @@ import { ClinicalMoERouterService, IExpertSubnet } from '../../services/clinical
   imports: [CommonModule],
   template: `
     <div class="relative inline-block text-left font-sans">
-      <!-- Pathways MoE Telemetry Pill -->
+      <!-- Pathways MoE Telemetry Badge -->
       <button
         type="button"
         (click)="toggleExpanded()"
@@ -34,7 +34,7 @@ import { ClinicalMoERouterService, IExpertSubnet } from '../../services/clinical
           </span>
         </span>
 
-        <!-- Active Subnets Count Pill -->
+        <!-- Active Subnets Count Badge -->
         <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-zinc-800/80 text-zinc-300 border border-zinc-700">
           {{ activeExperts().length }} {{ activeExperts().length === 1 ? 'Expert' : 'Experts' }}
         </span>

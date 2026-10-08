@@ -34,7 +34,7 @@ type AkovosTab = 'botanicals' | 'incline' | 'evoo' | 'circadian';
           </p>
         </div>
 
-        <!-- Metric Fast Stats Pill -->
+        <!-- Metric Fast Stats Badge -->
         <div class="flex items-center gap-3 bg-zinc-900/80 border border-zinc-800 rounded-xl p-3 px-4">
           <div class="text-center">
             <div class="text-xs text-zinc-400 font-mono">Air Microplastics</div>

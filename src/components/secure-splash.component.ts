@@ -367,7 +367,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
                      </span>
                    </div>
 
-                   <!-- SSO Provider Switcher Pills -->
+                   <!-- SSO Provider Switcher Tabs -->
                    <div class="grid grid-cols-3 gap-1 p-0.5 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl text-[9.5px] font-bold">
                      <button type="button" (click)="selectedSsoProvider.set('google')"
                              [class.bg-white]="selectedSsoProvider() === 'google'"

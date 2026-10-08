@@ -174,12 +174,12 @@ export class ReproductiveAutonomyService {
     },
     {
       id: 'meth-coc',
-      name: 'Combined Oral Contraceptive (COC Pills)',
+      name: 'Combined Oral Contraceptive (COC Tablets)',
       category: 'Hormonal Short-Acting',
       typicalFailureRatePercent: 7.0,
       perfectFailureRatePercent: 0.3,
       mechanismOfAction: 'Ethinyl estradiol + progestin suppress FSH and LH secretion, preventing follicle maturation and ovulation.',
-      durationOrFrequency: 'Daily pill at consistent time',
+      durationOrFrequency: 'Daily tablet at consistent time',
       nonContraceptiveBenefits: ['Predictable menstrual cycles', 'Acne and hirsutism improvement', 'Reduction in ovarian and endometrial cancer risks'],
       contraindications: ['Migraine with aura (stroke risk)', 'Smoking over age 35', 'History of DVT/PE or inherited thrombophilia', 'Hypertension (systolic ≥ 140 / diastolic ≥ 90)'],
       mecScore: 1,
@@ -187,12 +187,12 @@ export class ReproductiveAutonomyService {
     },
     {
       id: 'meth-pop',
-      name: 'Progestin-Only Pill (Minipill / Drospirenone)',
+      name: 'Progestin-Only Oral Contraceptive (POP / Drospirenone)',
       category: 'Hormonal Short-Acting',
       typicalFailureRatePercent: 7.0,
       perfectFailureRatePercent: 0.3,
       mechanismOfAction: 'Thickens cervical mucus, suppresses ovulation in majority of cycles.',
-      durationOrFrequency: 'Daily pill with strict adherence window (3 hours for norethindrone, 24 hours for Slynd drospirenone)',
+      durationOrFrequency: 'Daily tablet with strict adherence window (3 hours for norethindrone, 24 hours for Slynd drospirenone)',
       nonContraceptiveBenefits: ['Safe for breastfeeding/postpartum', 'Zero estrogen-related thrombotic risk'],
       contraindications: ['Severe active hepatic impairment', 'Current breast cancer'],
       mecScore: 1,
@@ -327,7 +327,7 @@ export class ReproductiveAutonomyService {
     ],
     falsifiedMythsDebunked: [
       'MYTH: Abortion causes infertility or breast cancer. FACT: Extensive research by the National Academies of Sciences, Engineering, and Medicine (NASEM) confirms safe abortion does NOT increase future infertility, ectopic pregnancy, preterm birth, or breast cancer risk.',
-      'MYTH: "Abortion Pill Reversal" is proven science. FACT: ACOG, AMA, and AAP explicitly state that so-called "abortion pill reversal" with progesterone is unproven, not supported by rigorous clinical science, and was halted in clinical trials due to severe maternal hemorrhage safety risks.',
+      'MYTH: "Medication Abortion Reversal" is proven science. FACT: ACOG, AMA, and AAP explicitly state that so-called "abortion reversal" with progesterone is unproven, not supported by rigorous clinical science, and was halted in clinical trials due to severe maternal hemorrhage safety risks.',
       'MYTH: Medication abortion leaves identifiable traces in blood tests. FACT: Mifepristone and Misoprostol are metabolized rapidly; standard hospital lab panels cannot distinguish medication abortion from a spontaneous miscarriage.'
     ]
   };

@@ -15,7 +15,7 @@ describe('Comprehensive 5-Paradigm Special Delimiter Token Parser Suite', () => 
       <TAKEAWAY>24% reduction in proteinuria over 12 weeks.</TAKEAWAY>
       <PATIENT_DELTA>Urine Albumin: 42 mg/g -> Target: <30 mg/g | Prescribe: Lisinopril 10mg</PATIENT_DELTA>
       <ANALOGY>Think of healthy kidney filters like a fine kitchen strainer.</ANALOGY>
-      <SOCRATIC>Would you like to see how taking your morning blood pressure pill protects your kidney filters?</SOCRATIC>
+      <SOCRATIC>Would you like to see how taking your morning blood pressure medication protects your kidney filters?</SOCRATIC>
       <SPANISH>El lisinopril reduce la proteína en la orina y protege sus riñones.</SPANISH>
     `;
 

@@ -74,7 +74,7 @@ export class ClinicalFineTuningOrchestratorService {
       estimatedVramGb: 1.8,
       description: 'Converts multi-speaker doctor-patient audio transcripts into structured SOAP notes and SBAR specialist handoffs on-device.',
       clinicalImpact: 'Saves up to 2 hours of daily EHR charting per clinician with zero cloud PHI egress.',
-      sampleInput: `Doctor: "Good morning Mr. Davis. What brings you in today?"\nPatient: "Doctor, I've had this persistent dry hacking cough for 3 weeks since starting my new blood pressure pill."\nDoctor: "BP is 138/84. Lisinopril 20mg causes bradykinin cough. We'll switch you to Losartan 50mg daily."`,
+      sampleInput: `Doctor: "Good morning Mr. Davis. What brings you in today?"\nPatient: "Doctor, I've had this persistent dry hacking cough for 3 weeks since starting my new blood pressure medication."\nDoctor: "BP is 138/84. Lisinopril 20mg causes bradykinin cough. We'll switch you to Losartan 50mg daily."`,
       sampleOutput: JSON.stringify({
         soapNote: {
           subjective: "64yo male presents with 3-week dry cough following Lisinopril initiation.",

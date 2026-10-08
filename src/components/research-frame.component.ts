@@ -152,7 +152,7 @@ export interface IPubMedSearchResult {
         </div>
       </div>
 
-      <!-- 🎯 Active Lens Context Synchronizer Pill -->
+      <!-- 🎯 Active Lens Context Synchronizer Badge -->
       <div class="px-3 py-1.5 bg-gradient-to-r from-zinc-900 via-indigo-950/40 to-zinc-900 border-b border-indigo-500/20 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
         <div class="flex items-center gap-2 flex-wrap">
           <span class="text-[10px] text-zinc-400 uppercase tracking-wider font-bold">Lens Context:</span>
@@ -687,7 +687,7 @@ export interface IPubMedSearchResult {
                     <div>💻 <strong>Platform:</strong> <span class="text-zinc-400">{{ gse.platform }}</span></div>
                   </div>
 
-                  <!-- Biomechanical Parameters Pill Bar -->
+                  <!-- Biomechanical Parameters Badge Bar -->
                   <div class="flex items-center gap-2 text-[10px] font-mono text-zinc-400 flex-wrap">
                     <span class="px-2 py-0.5 bg-zinc-800 rounded">ECM: <strong class="text-teal-300">{{ gse.parameters.ecmStiffnessKpa }} kPa</strong></span>
                     <span class="px-2 py-0.5 bg-zinc-800 rounded">Actin: <strong class="text-amber-300">{{ gse.parameters.actinTensionNn }} nN</strong></span>

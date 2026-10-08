@@ -347,7 +347,7 @@ import { SpecialistReferralDossierService, SpecialistDomain, ISpecialtyReadiness
 
                 <p class="text-xs text-zinc-300 leading-relaxed">{{ reentryBrief().crumplerPatientGuide.plainLanguageSummary }}</p>
 
-                <!-- Daily Pill Routine -->
+                <!-- Daily Medication Routine -->
                 <div class="space-y-2">
                   <span class="text-xs font-bold text-amber-300 uppercase tracking-wider block">Your Daily Medicine Routine</span>
                   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">

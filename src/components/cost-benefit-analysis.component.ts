@@ -940,7 +940,7 @@ export class CostBenefitAnalysisComponent {
       name: 'Screening Metrics & Low-Dose Aspirin',
       costLabel: 'Moderate ($40 copay)',
       costValue: 3,
-      effortLabel: 'Annual Checks / Daily Pill',
+      effortLabel: 'Annual Checks / Daily Dose',
       effortValue: 2,
       dosingFrequencyPerDay: 1,
       efficacyDays: 5,

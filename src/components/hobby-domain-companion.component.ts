@@ -38,7 +38,7 @@ import { PatientStateService } from '../services/patient-state.service';
         </button>
       </div>
 
-      <!-- Companion Selection Carousel / Pills -->
+      <!-- Companion Selection Carousel / Tabs -->
       <div class="space-y-2">
         <label class="text-xs font-mono font-bold uppercase text-zinc-400">Select Your Kindred Passion Buddy:</label>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">

@@ -9,10 +9,10 @@ describe('InteractionsProvider', () => {
         provider = new InteractionsProvider();
     });
 
-    it('1. should be created and default to gemini-3.7-flash with 2048 thinking budget', () => {
+    it('1. should be created and default to gemini-3.8-flash with 2048 thinking budget', () => {
         expect(provider).toBeTruthy();
         expect(provider.isConnected()).toBe(true);
-        expect(provider.activeModel()).toBe('gemini-3.7-flash');
+        expect(provider.activeModel()).toBe('gemini-3.8-flash');
         expect(provider.thinkingBudget()).toBe(2048);
     });
 

@@ -29,7 +29,7 @@ import { NngUsabilityMetricsService, INngHeuristicScore } from '../services/nng-
           </p>
         </div>
 
-        <!-- Telemetry Summary Pill -->
+        <!-- Telemetry Summary Badge -->
         <div class="flex items-center gap-3 bg-stone-900/90 border border-emerald-500/40 px-4 py-2.5 rounded-2xl shrink-0 shadow-lg">
           <div class="text-right">
             <div class="text-[10px] font-mono text-stone-400 uppercase">System Usability Scale</div>

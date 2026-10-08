@@ -361,7 +361,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                       </div>
                     </div>
 
-                    <!-- Quick Status Pill -->
+                    <!-- Quick Status Badge -->
                     <div class="flex items-center gap-2">
                       <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                         4 Active Screeners
@@ -991,7 +991,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                       </div>
                     </div>
 
-                    <!-- Datapoint Perspective Filter Pills -->
+                    <!-- Datapoint Perspective Filter Tabs -->
                     <div class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-1 text-xs font-mono">
                       <span class="text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mr-1 flex-shrink-0">Datapoint Perspective:</span>
                       

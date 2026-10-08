@@ -24,7 +24,7 @@ import { EyesFreeCameraScribeService, VisionScribeMode } from '../services/eyes-
             Eyes-Free Camera Vision Scribe
           </h2>
           <p class="text-xs sm:text-sm text-stone-300">
-            Real-time multimodal optical AI that sees your surroundings, reads pill bottles, detects obstacles, and speaks what is in front of you.
+            Real-time multimodal optical AI that sees your surroundings, reads prescription bottles, detects obstacles, and speaks what is in front of you.
           </p>
         </div>
 
@@ -57,8 +57,8 @@ import { EyesFreeCameraScribeService, VisionScribeMode } from '../services/eyes-
         >
           <span class="text-2xl">💊</span>
           <div>
-            <div class="font-bold text-xs">Pill Bottles &amp; Rx</div>
-            <div class="text-[10px] opacity-70">Read labels &amp; pills</div>
+            <div class="font-bold text-xs">Rx &amp; Medications</div>
+            <div class="text-[10px] opacity-70">Read labels &amp; dosages</div>
           </div>
         </button>
 

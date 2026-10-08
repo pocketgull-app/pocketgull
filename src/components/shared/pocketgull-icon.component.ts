@@ -13,6 +13,7 @@ export type ClinicalIconName =
   | 'stethoscope'
   | 'dna'
   | 'syringe'
+  | 'medication'
   | 'pill';
 
 @Component({
@@ -74,6 +75,12 @@ export type ClinicalIconName =
         @case ('syringe') {
           <svg class="w-6 h-6 text-sky-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 80 L35 65 M30 70 L70 30 M60 20 L80 40 M75 15 L85 25"/>
+          </svg>
+        }
+        @case ('medication') {
+          <svg class="w-6 h-6 text-pink-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="25" y="40" width="50" height="20" rx="10"/>
+            <line x1="50" y1="40" x2="50" y2="60"/>
           </svg>
         }
         @case ('pill') {

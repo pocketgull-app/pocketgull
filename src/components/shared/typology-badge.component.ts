@@ -13,9 +13,9 @@ export type TUrgencyTierType = 'critical' | 'high' | 'moderate' | 'routine';
     <div class="inline-flex max-w-full flex-wrap sm:flex-nowrap items-center gap-1.5 p-1 px-2.5 rounded-xl text-xs font-mono tracking-wider border shadow-xs transition-all duration-200 hover:shadow-md cursor-default select-none overflow-hidden"
          [class]="badgeContainerClasses()">
       
-      <!-- Paradigm Identifier Pill -->
+      <!-- Paradigm Identifier Badge -->
       <span class="flex items-center gap-1 font-bold uppercase text-[9.5px] px-1.5 py-0.5 rounded-md shrink-0"
-            [class]="paradigmPillClasses()">
+            [class]="paradigmBadgeClasses()">
         <span class="w-1.5 h-1.5 rounded-full animate-pulse" [class]="paradigmDotClasses()"></span>
         {{ paradigmLabel() }}
       </span>
@@ -72,7 +72,7 @@ export class TypologyBadgeComponent {
     }
   });
 
-  paradigmPillClasses = computed(() => {
+  paradigmBadgeClasses = computed(() => {
     switch (this.paradigm()) {
       case 'tcm':
         return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40';
@@ -83,6 +83,7 @@ export class TypologyBadgeComponent {
         return 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/40';
     }
   });
+  readonly paradigmPillClasses = this.paradigmBadgeClasses;
 
   paradigmDotClasses = computed(() => {
     switch (this.paradigm()) {

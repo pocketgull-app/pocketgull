@@ -51,7 +51,7 @@ interface ICymaticParticle {
           </div>
         </div>
 
-        <!-- Mode Selector Pills -->
+        <!-- Mode Selector Tabs -->
         <div class="flex flex-wrap items-center gap-1">
           <button type="button"
                   (click)="setMode('chladni_cymatics')"

@@ -65,7 +65,7 @@ export interface ICollisionEvent {
           </div>
         </div>
 
-        <!-- Telemetry Stat Pill Badges -->
+        <!-- Telemetry Stat Badges -->
         <div class="flex items-center gap-3">
           <div class="px-3 py-1.5 rounded-lg bg-zinc-800/80 border border-zinc-700/50 text-right">
             <div class="text-[10px] uppercase font-mono tracking-wider text-zinc-400">Recorded Events</div>

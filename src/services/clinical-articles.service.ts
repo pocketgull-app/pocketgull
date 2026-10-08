@@ -436,7 +436,7 @@ export const FALLBACK_SEED_ARTICLES: IWordPressPost[] = [
     contentGrade6Html: `
       <p>After someone has a heart attack or heart surgery, they often wonder when it is safe to be active and close with their partner again.</p>
       <p>Doctors have a simple test called the <strong>2-Flights-of-Stairs Rule</strong>: If you can walk up two normal flights of stairs without feeling dizzy, out of breath, or having chest pain, your heart is strong enough.</p>
-      <p><strong>Important Medicine Warning:</strong> Never mix heart chest-pain pills (like nitroglycerin) with erectile dysfunction pills. Mixing them can make your blood pressure drop too low and be very dangerous.</p>
+      <p><strong>Important Medicine Warning:</strong> Never mix heart chest-pain medications (like nitroglycerin) with erectile dysfunction medications. Mixing them can make your blood pressure drop too low and be very dangerous.</p>
     `,
     chronologicalActionMatrix: {
       present: {

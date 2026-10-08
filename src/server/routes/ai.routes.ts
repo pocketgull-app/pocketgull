@@ -732,7 +732,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         console.log(`[Gemini Developer API] Chat message model: ${rawModel}`);
         const safeContents = sanitizeApiPayload(session.history);
         const safeSystemInstruction = typeof session.systemInstruction === 'string' ? session.systemInstruction : '';
-        const safeModel = ALLOWED_DEV_MODELS.includes(rawModel) ? rawModel : 'gemini-3.7-flash';
+        const safeModel = ALLOWED_DEV_MODELS.includes(rawModel) ? rawModel : 'gemini-3.8-flash';
 
         response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${safeModel}:generateContent?key=${key}`, {
           method: 'POST',

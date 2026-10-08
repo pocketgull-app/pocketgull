@@ -47,14 +47,14 @@ export interface IVisionAssistMode {
         <div class="p-4 bg-amber-500/5 border border-amber-500/30 rounded-xl space-y-2">
           <div class="flex items-center justify-between">
             <span class="font-black text-amber-900 dark:text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
-              💊 Optical Pill Voice Reader
+              💊 Optical Medication Voice Reader
             </span>
             <span class="px-2 py-0.5 bg-amber-500/20 text-amber-700 dark:text-amber-300 rounded font-mono text-[10px] font-bold">Multimodal Live</span>
           </div>
           <p class="text-gray-600 dark:text-zinc-300 text-[11px]">
-            Uses camera stream with Gemini Live Vision to identify pill imprint codes, dosages, and Rx bottle labels, narrating instructions via Web Speech.
+            Uses camera stream with Gemini Live Vision to identify medication imprint codes, dosages, and Rx bottle labels, narrating instructions via Web Speech.
           </p>
-          <button (click)="triggerPillScan()" aria-label="Trigger Optical Pill Voice Reader Camera Scanner" class="w-full py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 rounded-lg font-bold text-xs transition cursor-pointer">
+          <button (click)="triggerMedicationScan()" aria-label="Trigger Optical Medication Voice Reader Camera Scanner" class="w-full py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 rounded-lg font-bold text-xs transition cursor-pointer">
             📷 Scan Medication Aloud
           </button>
         </div>
@@ -126,9 +126,9 @@ export class VisionAccessibilityAssistComponent {
   }
 
   /**
-   * Triggers simulated camera optical pill scanner with audio output.
+   * Triggers simulated camera optical medication scanner with audio output.
    */
-  triggerPillScan(): void {
+  triggerMedicationScan(): void {
     const announcement = 'Scanning medication bottle. Identified Metformin 500 milligram oral tablet. Take 1 tablet twice daily with meals.';
     this.lastAnnouncement.set(announcement);
     this.dictation.speakResponse(announcement);

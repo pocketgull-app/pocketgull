@@ -157,7 +157,7 @@ import { EyesFreeAccessibilityService, ITactileMedicationGuide } from '../servic
                   [attr.aria-label]="'Play audio chime for ' + med.medicationName"
                 >
                   <span>🔔</span>
-                  <span>Play Pill Chime</span>
+                  <span>Play Medication Chime</span>
                 </button>
                 <button 
                   (click)="describeMedication(med)"

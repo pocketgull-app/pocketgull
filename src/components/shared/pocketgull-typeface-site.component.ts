@@ -347,7 +347,7 @@ export class PocketgullTypefaceSiteComponent {
     { name: 'stethoscope', label: 'Auscultation' },
     { name: 'dna', label: 'Genomics' },
     { name: 'syringe', label: 'Injection' },
-    { name: 'pill', label: 'Pharma' },
+    { name: 'medication', label: 'Medication' },
     { name: 'shield', label: 'HIPAA Lock' }
   ];
 }

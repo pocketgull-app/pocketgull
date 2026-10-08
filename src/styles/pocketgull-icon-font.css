@@ -33,6 +33,7 @@
 .pg-icon-rx::before { content: '\211E'; }            /* ℞ Prescription Order */
 .pg-icon-hospital::before { content: '\271A'; }      /* ✚ Clinical First Aid Cross */
 .pg-icon-monitor-heart::before { content: '\E87D'; } /* Cardiology ECG Waveform */
+.pg-icon-medication::before,
 .pg-icon-pill::before { content: '\E105'; }          /* Medication Capsule */
 .pg-icon-shield::before { content: '\E8E8'; }        /* HIPAA Defense Shield */
 .pg-icon-print::before { content: '\2399'; }         /* ⎙ 203 DPI Bedside Print */

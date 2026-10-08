@@ -46,7 +46,7 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
       <!-- ================================================================= -->
       <header class="rounded-2xl border border-zinc-800 bg-zinc-900/80 backdrop-blur-xl p-3.5 sm:p-4 shadow-xl flex flex-col gap-3 shrink-0">
         
-        <!-- Row 1: Brand Telemetry & Metric Pills -->
+        <!-- Row 1: Brand Telemetry & Metric Badges -->
         <div class="flex flex-wrap items-center justify-between gap-3">
           
           <div class="flex items-center gap-3">
@@ -306,7 +306,7 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
               </div>
             </div>
 
-            <!-- Benchmark Target Pill -->
+            <!-- Benchmark Target Badge -->
             <div class="sm:text-right shrink-0">
               <span class="text-[10px] font-mono text-zinc-400 block uppercase">Benchmark Target</span>
               <span class="font-mono text-xs font-bold text-emerald-300 px-2.5 py-1 rounded-lg bg-zinc-900 border border-emerald-500/40 shadow-inner inline-block mt-0.5">
@@ -515,7 +515,7 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
             </span>
           </div>
           <span class="text-zinc-500 text-[11px]">
-            Click any expert pill to promote to active canvas
+            Click any expert chip to promote to active canvas
           </span>
         </div>
 

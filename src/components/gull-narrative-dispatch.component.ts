@@ -61,7 +61,7 @@ export interface INarrativeStep {
             <span>{{ isSingalongActive() ? '🎶 Stop Singalong' : '🎵 Avian Sea Shanty Singalong' }}</span>
           </button>
 
-          <!-- 4-Act Persona Navigation Pills -->
+          <!-- 4-Act Persona Navigation Tabs -->
           <div class="flex items-center gap-1 bg-[#FFFFFF] p-1.5 rounded-xl border-2 border-[#1C1C1C] shadow-[2px_2px_0px_0px_rgba(28,28,28,0.8)]">
             @for (step of steps; track step.act) {
               <button 

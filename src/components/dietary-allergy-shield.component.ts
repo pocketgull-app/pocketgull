@@ -83,7 +83,7 @@ export interface IDietaryAllergen {
                 <strong>Manifestation:</strong> {{ item.symptomManifestation }}
               </p>
 
-              <!-- Hidden Sources Pill List -->
+              <!-- Hidden Sources Badge List -->
               <div class="mb-3">
                 <span class="text-[10px] font-mono text-zinc-400 font-bold uppercase block mb-1">Hidden Sources to Avoid:</span>
                 <div class="flex flex-wrap gap-1.5 font-mono text-[10px]">

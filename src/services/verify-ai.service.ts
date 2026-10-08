@@ -13,7 +13,7 @@ export class VerifyAiService {
         try {
             return inject(AI_CONFIG);
         } catch (e) {
-            return { apiKey: '', verificationModel: { modelId: 'gemini-3.7-flash', temperature: 0.1 } } as any;
+            return { apiKey: '', verificationModel: { modelId: 'gemini-3.8-flash', temperature: 0.1 } } as any;
         }
     })();
     private _ai: any = null;

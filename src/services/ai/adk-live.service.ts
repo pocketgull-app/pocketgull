@@ -404,7 +404,7 @@ Clinical Grounding Directive for 3D Lesions:
     apiKey: string = '',
     systemInstruction: string,
     voiceName: string = 'Aoede',
-    modelName: string = 'models/gemini-3.7-flash',
+    modelName: string = 'models/gemini-3.8-flash',
     occupationalProfile?: IOccupationalHazardProfile | null,
     isPediatric: boolean = false,
     childName?: string,

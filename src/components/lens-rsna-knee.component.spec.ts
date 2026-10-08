@@ -99,4 +99,25 @@ describe('LensRsnaKneeComponent Unit Suite', () => {
     expect(mockLoopService.generateFhirCarePlanBundle).toHaveBeenCalledWith('P001');
     expect(component.fhirExported()).toBe(true);
   });
+
+  it('7. Toggles Soft Eyes panoramic mode and computes trauma triads', () => {
+    expect(component.softEyesActive()).toBe(false);
+    component.toggleSoftEyes();
+    expect(component.softEyesActive()).toBe(true);
+
+    const triads = component.traumaTriads();
+    expect(triads.length).toBe(4);
+    expect(triads.map(t => t.id)).toContain('pivot_shift');
+    expect(triads.map(t => t.id)).toContain('medial_degenerative');
+    expect(triads.map(t => t.id)).toContain('capsular_synovial');
+    expect(triads.map(t => t.id)).toContain('cortical_collateral');
+  });
+
+  it('8. Detects kinetic coupling synergy in Pivot-Shift trauma triad', () => {
+    const pivotShift = component.traumaTriads().find(t => t.id === 'pivot_shift');
+    expect(pivotShift).toBeDefined();
+    // Default mock data has ACL positive (0.934) and Contusion positive (0.945)
+    expect(pivotShift?.synergyActive).toBe(true);
+  });
 });
+

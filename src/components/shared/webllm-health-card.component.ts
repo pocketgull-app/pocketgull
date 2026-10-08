@@ -33,7 +33,7 @@ import { WebLlmHealthService } from '../../services/webllm-health.service';
         </button>
       </div>
 
-      <!-- Status Pills -->
+      <!-- Status Badges -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
         <div class="p-2.5 rounded-xl bg-zinc-900/80 border border-zinc-800">
           <div class="text-[9.5px] uppercase text-zinc-400">WebGPU Engine</div>
