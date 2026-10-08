@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:0bb9512f-06a4-4ff6-bd71-01e17a2c736f",
+  "serialNumber": "urn:uuid:ef254609-ff21-475e-9b23-c9588bbf0cb4",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-10-08T01:51:48.215Z",
+    "timestamp": "2026-10-08T02:28:09.538Z",
     "tools": {
       "components": [
         {
@@ -115,8 +115,8 @@
     {
       "type": "library",
       "name": "@angular-devkit/architect",
-      "version": "0.2202.0",
-      "purl": "pkg:npm/@angular-devkit%2Farchitect@0.2202.0",
+      "version": "0.2202.2",
+      "purl": "pkg:npm/@angular-devkit%2Farchitect@0.2202.2",
       "scope": "required",
       "licenses": [
         {
@@ -128,15 +128,15 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "1f163c2712dddd6c458f8e41b4350767d23a84ee0a79b4f3df6510e1990f87410c2bf4d976ca5b4a0c1dda5a358c4e9af7492744042402c9c14cac16bc64a6dc"
+          "content": "ed2701a38ee1687c91186e4ce591296e1c0780ed8b1036c22f03428e98f086d4450c81260056d42ccd4e4232326cddf1fb03b263591644aecabe28426ecdfbd6"
         }
       ]
     },
     {
       "type": "library",
       "name": "@angular-devkit/core",
-      "version": "22.2.0",
-      "purl": "pkg:npm/@angular-devkit%2Fcore@22.2.0",
+      "version": "22.2.2",
+      "purl": "pkg:npm/@angular-devkit%2Fcore@22.2.2",
       "scope": "required",
       "licenses": [
         {
@@ -148,7 +148,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "7442c1c17b49594c4500b74456f764f2a2be5c16b5ec41f91fd3599bed38d7f7ac8cd8ba49a64cbaca8182bd8f64aabb843f8eda34821076decbf870933d80c2"
+          "content": "8907b16f9c5438df40913cef06231fb6b1d62e0b88958bfa33f04e1ffb23ed4e4bf1e38f32ef0ddbaf5617be313e8e27fd7e6dbac14baa7886234ce8953d928e"
         }
       ]
     },
@@ -175,8 +175,8 @@
     {
       "type": "library",
       "name": "@angular-devkit/schematics",
-      "version": "22.2.0",
-      "purl": "pkg:npm/@angular-devkit%2Fschematics@22.2.0",
+      "version": "22.2.2",
+      "purl": "pkg:npm/@angular-devkit%2Fschematics@22.2.2",
       "scope": "required",
       "licenses": [
         {
@@ -188,7 +188,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "ca1a7f2d1cca1c93b3a368059bdf87e432a7b13f5a762f88b4eda95b4a56d81e39e6ca99604f1125a4a4bbe4d296ff8fbd64a66ed16c3d73604912c0ea94a4f1"
+          "content": "b82a4565b420154ace8ca1cb79848269808976e7dab98a26f321468209baef27ad30018a3db991bd4124a3c8bc6ae345a0143ed70d428af8d24f0b665d0cd990"
         }
       ]
     },
@@ -215,8 +215,8 @@
     {
       "type": "library",
       "name": "@angular/build",
-      "version": "22.2.0",
-      "purl": "pkg:npm/@angular%2Fbuild@22.2.0",
+      "version": "22.2.2",
+      "purl": "pkg:npm/@angular%2Fbuild@22.2.2",
       "scope": "required",
       "licenses": [
         {
@@ -228,15 +228,15 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "f4005837dce9e03a837d9c62ab220c101e6279ceb122e572b3e05f563385930777b429ce2be0e746d53c3a623b47c071519c0bcdb3ea15f7d9cef09555f1cfed"
+          "content": "407256919744593aaa6f7f87892a7c967b92e2240909aef24caf608394da3088c2a19ccff660fd2f8d7bb2d8950d91a3d89dd8f66ae6974e389c456f49b5b48a"
         }
       ]
     },
     {
       "type": "library",
       "name": "@angular/cli",
-      "version": "22.2.0",
-      "purl": "pkg:npm/@angular%2Fcli@22.2.0",
+      "version": "22.2.2",
+      "purl": "pkg:npm/@angular%2Fcli@22.2.2",
       "scope": "required",
       "licenses": [
         {
@@ -248,7 +248,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "156e1108d5da3e96c1712e30e9f7ad4cee9e453d31c9260649d4360c6444537d06d53067a49749e9302fb3c99304f5cd7c53104f28a847689eed49099632c92a"
+          "content": "0002c837ecda8b40a203b1e04821953c7c99ca2c37c855a58827db692e2e7870c91d567c421563454ae77c665cdc42678a0732434c360ca793c63c2aa438ca7b"
         }
       ]
     },
@@ -475,8 +475,8 @@
     {
       "type": "library",
       "name": "@angular/ssr",
-      "version": "22.2.0",
-      "purl": "pkg:npm/@angular%2Fssr@22.2.0",
+      "version": "22.2.2",
+      "purl": "pkg:npm/@angular%2Fssr@22.2.2",
       "scope": "required",
       "licenses": [
         {
@@ -488,7 +488,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "e4131fee84be29087b2af3801aa130434ce43d4bc54f80f01cdb0094e49d8d0849f577eafa6e55c5c95e3d27a4e18e329267088f223ad2d805d721dddfa73ba3"
+          "content": "88c7304f96729c88f7dd1d174aaf80b42e516ba14628ebd5dea534b2346bfa551a19f2fa323ca03e8bcf16c28b8bc1f3b86380e5d60329f7c97cf79db02f51c6"
         }
       ]
     },
@@ -635,8 +635,8 @@
     {
       "type": "library",
       "name": "@aws-sdk/client-bedrock-runtime",
-      "version": "3.1143.0",
-      "purl": "pkg:npm/@aws-sdk%2Fclient-bedrock-runtime@3.1143.0",
+      "version": "3.1147.0",
+      "purl": "pkg:npm/@aws-sdk%2Fclient-bedrock-runtime@3.1147.0",
       "scope": "required",
       "licenses": [
         {
@@ -648,15 +648,15 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "36a715be679eb14679de6bf5c2c462edea21aa6d0a29d4317e675a09a5938d6ab0e17e6061500f7f2e111155cdb3b274c3478ce08e5f72d4ae4b93214c8d7891"
+          "content": "89be3c743c9669a5ba7e7cb952df83de5a3a5ccd1c37f387880babbbee36e7933c29f5ae92c85177076cc9be1bf8b890d5d2821fe46bc76fb735e6b9b354121f"
         }
       ]
     },
     {
       "type": "library",
       "name": "@aws-sdk/client-healthlake",
-      "version": "3.1143.0",
-      "purl": "pkg:npm/@aws-sdk%2Fclient-healthlake@3.1143.0",
+      "version": "3.1147.0",
+      "purl": "pkg:npm/@aws-sdk%2Fclient-healthlake@3.1147.0",
       "scope": "required",
       "licenses": [
         {
@@ -668,7 +668,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "e4003921f86893c92c3d72dbce130186b42c018259dc389a1eb744895e479b8ec8ec76f0cd1a6fa7ff0b05325415c3c2b8425c92d40664f421c5eab48500b69b"
+          "content": "56b20e74a01ab7e494d5d61d4e30e26a76565c6badfd98206f3fa4d0febfb7d8cc06e878b8cb54f30903e2934c61d6e34977a2fbe455f23b3063fd1fbb0c0997"
         }
       ]
     },
@@ -975,8 +975,8 @@
     {
       "type": "library",
       "name": "@aws-sdk/token-providers",
-      "version": "3.1143.0",
-      "purl": "pkg:npm/@aws-sdk%2Ftoken-providers@3.1143.0",
+      "version": "3.1147.0",
+      "purl": "pkg:npm/@aws-sdk%2Ftoken-providers@3.1147.0",
       "scope": "required",
       "licenses": [
         {
@@ -988,7 +988,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "4171a6a3cea397bc43cdf4560ebb39d535e8262db8e3d9a23e1ad4f86d391e5ab6bcdab235547adf28b97a4a65cb3eb6af0595aee0c1193244509f8db5573ac8"
+          "content": "b9e9b607f598799bdc26688b5b251db34794b8e7462eeaeef7f122ec7b0d11d5eb247d65d7d222415554c8071abca2b796f9495d23870a30832e4795e1585c9b"
         }
       ]
     },
@@ -4795,8 +4795,8 @@
     {
       "type": "library",
       "name": "@google/genai",
-      "version": "2.24.0",
-      "purl": "pkg:npm/@google%2Fgenai@2.24.0",
+      "version": "2.28.0",
+      "purl": "pkg:npm/@google%2Fgenai@2.28.0",
       "scope": "required",
       "licenses": [
         {
@@ -4808,7 +4808,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "6c8bb97a8c45d4068f5acf62be65091a9d51a431f26a9a0e0ef5af9e4cd10f1d824c85ba5095c58437638f406546f7b764730cb84910055ac0fc02eaa56e1aa4"
+          "content": "872340263fb2c2edcbe3aaa566877a28efc9bdc4f740e373e950a23debc2fc558e8c00fe2d06fb0cc2d4a15f2fce82e9b7ad50d2bb905fdf62a9bc448cf2569b"
         }
       ]
     },
@@ -6115,40 +6115,40 @@
     {
       "type": "library",
       "name": "@modelcontextprotocol/core",
-      "version": "2.0.0",
-      "purl": "pkg:npm/@modelcontextprotocol%2Fcore@2.0.0",
+      "version": "2.3.1",
+      "purl": "pkg:npm/@modelcontextprotocol%2Fcore@2.3.1",
       "scope": "required",
       "licenses": [
         {
           "license": {
-            "id": "MIT"
+            "id": "Apache-2.0"
           }
         }
       ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "a49084c061bb2dfafff8f429f594f029735e3b9c336df28bec7dcc6290a8acce28141a10add8e7060128a86f918e1b2f4b514aac36cabb1f8cd478659c65aa70"
+          "content": "95a5662213c6a568bbac6f6afb452281b9513741f0b3f62395beaa2c5b55aabc9754b91ce21fb237ccfbdf53ce0f62e700642515eeffb578549bb062d1807dd6"
         }
       ]
     },
     {
       "type": "library",
       "name": "@modelcontextprotocol/server",
-      "version": "2.0.0",
-      "purl": "pkg:npm/@modelcontextprotocol%2Fserver@2.0.0",
+      "version": "2.3.1",
+      "purl": "pkg:npm/@modelcontextprotocol%2Fserver@2.3.1",
       "scope": "required",
       "licenses": [
         {
           "license": {
-            "id": "MIT"
+            "id": "Apache-2.0"
           }
         }
       ],
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "6211d67477e914c41f774a6bb049f129e4b7433df2b481a6b12d2cb61e0a0e39da7084fb87193a8571e427d2b2b31964bd333e59902d41b6dc5217683f81efb7"
+          "content": "7b9f4c7d6b92b2c8fa0e843de89093a9d5b50174f9fd7b674e5d1659de8c53529ae37e1f154186a2c08b25b18dc920e11c6bf1416a1158ad77ec55d816460d5b"
         }
       ]
     },
@@ -10561,8 +10561,8 @@
     {
       "type": "library",
       "name": "@schematics/angular",
-      "version": "22.2.0",
-      "purl": "pkg:npm/@schematics%2Fangular@22.2.0",
+      "version": "22.2.2",
+      "purl": "pkg:npm/@schematics%2Fangular@22.2.2",
       "scope": "required",
       "licenses": [
         {
@@ -10574,7 +10574,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "20e0fe4fe4b92f2555b8b02d2eaff993e5b19d3f54a4979cc833ef213f805ae83e99926477e1ca5551ebc9e9cd241696dbdb48c4d7e80ee5453c4b19e1429c37"
+          "content": "271a572a9c5d990711b096eb89624e841ec77954f3cfd084b0f370e9f4342ceb8f167bedc942172f1c856cabff2dfa05533f301400c2b4d539b23a30304e4cbe"
         }
       ]
     },
