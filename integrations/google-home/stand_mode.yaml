@@ -1,0 +1,28 @@
+# ----------------------------------------------------------------------
+# Google Home Script Editor Automation: Stand Mode (Ataxia Ergonomic Pacing)
+# Import at: https://home.google.com/
+# ----------------------------------------------------------------------
+
+metadata:
+  name: PocketGull Stand Mode & Sensory Scaffold
+  description: Hands-free vocal trigger to pace standing desk intervals and sensory stabilization.
+
+automations:
+  - starters:
+      - type: assistant.event.OkGoogle
+        eventData:
+          query:
+            - "Stand Mode"
+            - "Elevate Desk"
+            - "Time to stand"
+
+    actions:
+      # Announce standing guidance with proprioceptive grounding cue
+      - type: assistant.command.Broadcast
+        message: "Standing mode active for 15 minutes. Remember light fingertip contact on your desk edge for postural grounding."
+
+      # Adjust ambient task lighting to reduce vertical screen reflection
+      - type: device.command.BrightnessAbsolute
+        devices:
+          - Whispy - Office
+        brightness: 70

@@ -1,0 +1,28 @@
+# ----------------------------------------------------------------------
+# Google Home Script Editor Automation: Romberg Balance Timer
+# Import at: https://home.google.com/
+# ----------------------------------------------------------------------
+
+metadata:
+  name: PocketGull Romberg Balance Timer
+  description: 30-second hands-free auditory timer for daily vestibular ataxia balance check.
+
+automations:
+  - starters:
+      - type: assistant.event.OkGoogle
+        eventData:
+          query:
+            - "Start Romberg timer"
+            - "Start balance test"
+            - "Check balance"
+
+    actions:
+      - type: assistant.command.Broadcast
+        message: "Starting 30-second Romberg balance test. Stand with feet together, arms crossed, and eyes closed. Beginning in 3, 2, 1, begin."
+
+      # 30-second pause
+      - type: time.delay
+        for: 30s
+
+      - type: assistant.command.Broadcast
+        message: "Romberg test complete. Well done. You may relax your posture."

@@ -1,0 +1,53 @@
+# ----------------------------------------------------------------------
+# Google Home Script Editor Automation: Morning Washi (Daylight Focus)
+# Import at: https://home.google.com/
+# ----------------------------------------------------------------------
+
+metadata:
+  name: PocketGull Morning Washi (4000K Daylight)
+  description: Energizing morning daylight awakening and cognitive clarity.
+
+automations:
+  - starters:
+      - type: assistant.event.OkGoogle
+        eventData:
+          query:
+            - "Morning Washi"
+            - "Start Morning"
+            - "Workstation Daylight"
+      - type: time.schedule
+        at: 08:00
+        weekdays:
+          - MON
+          - TUE
+          - WED
+          - THU
+          - FRI
+          - SAT
+          - SUN
+
+    actions:
+      # 1. Extended Color Lights -> 4000K Crisp Daylight
+      - type: device.command.ColorAbsolute
+        devices:
+          - Whispy - Office
+          - Hue lightstrip plus 1 - Office
+        color:
+          temperatureK: 4000
+
+      - type: device.command.BrightnessAbsolute
+        devices:
+          - Whispy - Office
+          - Hue lightstrip plus 1 - Office
+        brightness: 85
+
+      # 2. Main Ambient Lights -> 80% Daylight
+      - type: device.command.BrightnessAbsolute
+        devices:
+          - Main - Office
+          - Cornear - Office
+        brightness: 75
+
+      # 3. Morning Briefing & Weather
+      - type: assistant.command.Broadcast
+        message: "Good morning Phil. Morning Washi daylight is active."
