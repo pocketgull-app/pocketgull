@@ -1,7 +1,7 @@
 class Pocketgull < Formula
   desc "Real-time medical care plan strategy and live AI consult terminal engine"
   homepage "https://pocketgull.app/"
-  url "https://github.com/pocketgull-app/pocketgull/archive/refs/tags/v1.39.0.tar.gz"
+  url "https://github.com/pocketgull-app/pocketgull/archive/refs/tags/v1.40.0.tar.gz"
   sha256 :no_check
   license "Apache-2.0"
 

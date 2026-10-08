@@ -1,5 +1,5 @@
 cask "pocketgull" do
-  version "1.39.0"
+  version "1.40.0"
   sha256 :no_check
 
   url "https://github.com/pocketgull-app/pocketgull/releases/download/v#{version}/PocketGull-v#{version}-macos.zip"
