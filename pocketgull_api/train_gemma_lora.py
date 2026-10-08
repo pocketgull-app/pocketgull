@@ -84,7 +84,9 @@ def generate_dpo_preference_pairs(samples: List[ClinicalTrainingSample]) -> List
 
 
 if __name__ == "__main__":
-    scratch_path = Path(__file__).resolve().parent.parent / "scratch" / "fine_tuning_clinical_dataset.jsonl"
+    scratch_path = Path(__file__).resolve().parent.parent / "scratch" / "pocketgull_15paradigms_dataset.jsonl"
+    if not scratch_path.exists():
+        scratch_path = Path(__file__).resolve().parent.parent / "scripts" / "dpo_preference_dataset.jsonl"
     logger.info("Initializing Pocket-Gull Fine-Tuning Pipeline...")
     
     config = LoRaConfigModel()
