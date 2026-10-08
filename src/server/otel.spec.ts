@@ -63,7 +63,7 @@ describe('CNCF OpenTelemetry & HIPAA Safe Harbor Guard', () => {
 
     it('should preserve safe clinical biomarkers, vitals, and metadata', () => {
       const clinicalAttributes = {
-        'model.name': 'gemini-3.7-flash',
+        'model.name': 'gemini-3.8-flash',
         'clinical.heart_rate': 78,
         'clinical.spo2': 98.5,
         'clinical.bp_systolic': 120,
@@ -73,7 +73,7 @@ describe('CNCF OpenTelemetry & HIPAA Safe Harbor Guard', () => {
 
       const sanitized = sanitizeSpanAttributes(clinicalAttributes);
 
-      expect(sanitized['model.name']).toBe('gemini-3.7-flash');
+      expect(sanitized['model.name']).toBe('gemini-3.8-flash');
       expect(sanitized['clinical.heart_rate']).toBe(78);
       expect(sanitized['clinical.spo2']).toBe(98.5);
       expect(sanitized['clinical.bp_systolic']).toBe(120);
@@ -141,7 +141,7 @@ describe('CNCF OpenTelemetry & HIPAA Safe Harbor Guard', () => {
       expect(() => {
         recordClinicalMetric('inference_latency_ms', 142.5, {
           'patient_name': 'Should Be Scrubbed',
-          'model.id': 'gemini-3.7-flash',
+          'model.id': 'gemini-3.8-flash',
         });
       }).not.toThrow();
     });

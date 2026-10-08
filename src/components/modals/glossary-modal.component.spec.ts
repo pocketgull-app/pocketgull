@@ -34,7 +34,7 @@ describe('GlossaryModalComponent', () => {
     expect(emitted).toBe(true);
   });
 
-  it('3. Filters entries based on category pill selection', () => {
+  it('3. Filters entries based on category tab selection', () => {
     const totalCount = component.filteredEntries().length;
 
     // Filter to TCM

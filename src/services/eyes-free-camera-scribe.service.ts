@@ -31,8 +31,8 @@ export class EyesFreeCameraScribeService {
     MEDICATION_IDENTIFIER: {
       mode: 'MEDICATION_IDENTIFIER',
       headline: 'Metformin Hydrochloride 500 mg',
-      detailedNarration: 'You are holding a white oval pill bottle of Metformin Hydrochloride 500 milligrams. Prescribed for morning glucose control. Expiration date is November 2027. Bottle is centered and clear.',
-      spatialFramingCue: '✅ Pill bottle centered in frame (15 cm away).',
+      detailedNarration: 'You are holding a white prescription container of Metformin Hydrochloride 500 milligrams. Prescribed for morning glucose control. Expiration date is November 2027. Bottle is centered and clear.',
+      spatialFramingCue: '✅ Prescription bottle centered in frame (15 cm away).',
       confidenceScore: 0.98,
       tactileHapticCue: 'CONFIRM',
       audioEarconHz: 523.25,
@@ -102,7 +102,7 @@ export class EyesFreeCameraScribeService {
 
   startCamera(): void {
     this.isCameraStreaming.set(true);
-    this.speakNarration('Camera activated. Point your phone at objects, pill bottles, or documents.');
+    this.speakNarration('Camera activated. Point your phone at objects, prescription bottles, or documents.');
   }
 
   stopCamera(): void {

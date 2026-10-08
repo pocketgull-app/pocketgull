@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 export interface IVertexAiConfig {
   projectId: string;
   location: string;
-  modelId: 'medlm-large' | 'medlm-medium' | 'gemini-1.5-pro' | 'gemini-1.5-flash';
+  modelId: 'medlm-large' | 'medlm-medium' | 'gemini-3.8-flash' | 'gemini-3.8-pro' | 'gemini-2.5-pro' | 'gemini-1.5-pro' | 'gemini-1.5-flash';
   apiEndpoint: string;
 }
 

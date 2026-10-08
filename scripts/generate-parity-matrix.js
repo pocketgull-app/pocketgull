@@ -131,7 +131,7 @@ markdown += `- **Total Tracked System Capabilities**: ${sortedKeys.length}\n`;
 markdown += `- **Unified Cross-Platform Matched Features**: ${matchCount}\n`;
 markdown += `- **Specialized Subsystem Services**: ${partialCount}\n`;
 
-const outputPath = path.join(__dirname, '../parity_matrix.md');
+const outputPath = path.join(__dirname, '../docs/research/parity_matrix.md');
 fs.writeFileSync(outputPath, markdown);
 
 console.log(`Multi-Platform parity matrix with Contest APIs generated successfully at ${outputPath}`);

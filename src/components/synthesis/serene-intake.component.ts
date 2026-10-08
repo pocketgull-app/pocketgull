@@ -222,7 +222,7 @@ interface IIntakePreset {
                           {{ isPlainLanguage() ? q.questionPatient : q.questionClinician }}
                         </p>
 
-                        <!-- Quick Option Pills -->
+                        <!-- Quick Option Chips -->
                         @if (q.quickOptions && q.quickOptions.length > 0) {
                           <div class="flex flex-wrap gap-1.5 pt-1">
                             @for (opt of q.quickOptions; track opt) {

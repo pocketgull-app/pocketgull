@@ -27,6 +27,9 @@ $flutterIconCandidate = Join-Path $repoDir "pocketgull_flutter\windows\runner\re
 $iconPath = if (Test-Path $brandIconCandidate) { $brandIconCandidate } else { $flutterIconCandidate }
 $controllerScript = Join-Path $scriptDir "pocketgull_controller.mjs"
 $fontScript = Join-Path $scriptDir "install_brand_fonts.ps1"
+$ergoScript = Join-Path $scriptDir "configure_ataxia_ergonomics.ps1"
+$pacerScript = Join-Path $scriptDir "sit_stand_pacer.ps1"
+$circadianScript = Join-Path $scriptDir "schedule_circadian_themes.ps1"
 $stateFile = Join-Path $repoDir ".pocketgull_a11y.json"
 $startupDir = [Environment]::GetFolderPath('Startup')
 $startupShortcut = Join-Path $startupDir "PocketGull Assistive Tray.lnk"
@@ -265,9 +268,44 @@ $bionicItem.Add_Click({
     $notifyIcon.ShowBalloonTip(2000, "Bionic Reading", "Toggled Saccadic Fixation Anchors", [System.Windows.Forms.ToolTipIcon]::Info)
 })
 
+$ataxiaItem = $contextMenu.Items.Add("⚖️ Ataxia Tremor Damping & Sonar")
+$ataxiaItem.CheckOnClick = $true
+$ataxiaItem.Checked = $true
+$ataxiaItem.Add_Click({
+    if ($ataxiaItem.Checked) {
+        pwsh -NoProfile -ExecutionPolicy Bypass -File $ergoScript -Action Apply | Out-Null
+        $notifyIcon.ShowBalloonTip(2000, "Ataxia Ergonomics", "Active: Sonar Ripple + 750ms Clicks + Kinetic Damping", [System.Windows.Forms.ToolTipIcon]::Info)
+    } else {
+        pwsh -NoProfile -ExecutionPolicy Bypass -File $ergoScript -Action Restore | Out-Null
+        $notifyIcon.ShowBalloonTip(2000, "Ataxia Ergonomics", "Restored standard Windows defaults", [System.Windows.Forms.ToolTipIcon]::Info)
+    }
+    Invoke-Earcon
+})
+
+$pacerItem = $contextMenu.Items.Add("🧍 Sit-Stand Cadence Pacer (45/15 min)")
+$pacerItem.CheckOnClick = $true
+$pacerItem.Checked = $true
+$pacerItem.Add_Click({
+    if ($pacerItem.Checked) {
+        Start-Process pwsh.exe -ArgumentList "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$pacerScript`""
+        $notifyIcon.ShowBalloonTip(2000, "Sit-Stand Pacer", "Started 45m sit / 15m stand cadence", [System.Windows.Forms.ToolTipIcon]::Info)
+    } else {
+        Get-WmiObject Win32_Process | Where-Object { $_.CommandLine -like "*sit_stand_pacer.ps1*" } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+        $notifyIcon.ShowBalloonTip(2000, "Sit-Stand Pacer", "Paused sit-stand cadence", [System.Windows.Forms.ToolTipIcon]::Info)
+    }
+    Invoke-Earcon
+})
+
 $contextMenu.Items.Add("-") | Out-Null
 
 # ── 5. SYSTEM INTEGRATION & STARTUP ──
+$syncSunItem = $contextMenu.Items.Add("🌅 Sync Circadian Solar Theme Now")
+$syncSunItem.Add_Click({
+    pwsh -NoProfile -ExecutionPolicy Bypass -File $circadianScript -Action SyncNow
+    Invoke-Earcon
+    $notifyIcon.ShowBalloonTip(2000, "Circadian Sync", "Synchronized theme to current solar time.", [System.Windows.Forms.ToolTipIcon]::Info)
+})
+
 $startupItem = $contextMenu.Items.Add("🚀 Launch at Windows Startup")
 $startupItem.CheckOnClick = $true
 $startupItem.Checked = (Test-Path $startupShortcut)
@@ -343,6 +381,16 @@ $notifyIcon.Add_DoubleClick({
 $st = Get-PocketGullState
 $philoItem.Checked = [bool]$st.philocardia
 $bionicItem.Checked = [bool]$st.bionic
+
+# Auto-apply ataxia tremor damping & motor ergonomics on startup
+if (Test-Path $ergoScript) {
+    pwsh -NoProfile -ExecutionPolicy Bypass -File $ergoScript -Action Apply | Out-Null
+}
+
+# Auto-sync circadian solar theme across IDE, Terminal, Taskbar & Browsers on startup
+if (Test-Path $circadianScript) {
+    pwsh -NoProfile -ExecutionPolicy Bypass -File $circadianScript -Action SyncNow | Out-Null
+}
 
 $notifyIcon.ShowBalloonTip(3000, "PocketGull Assistive System", "Resident in notification area. Right-click for JAWS-style quick controls, or double-click to cycle circadian presets.", [System.Windows.Forms.ToolTipIcon]::Info)
 

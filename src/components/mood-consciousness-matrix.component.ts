@@ -101,7 +101,7 @@ export interface IConsciousnessState {
             <span class="text-sm font-black text-zinc-900 dark:text-zinc-100 block uppercase tracking-tight">{{ state.name }}</span>
             <span class="text-xs text-zinc-600 dark:text-zinc-400 block mt-1 font-mono font-bold">{{ state.targetEEG }}</span>
 
-            <!-- Active Selection Pill -->
+            <!-- Active Selection Badge -->
             <span [class]="isSelected 
               ? 'mt-2.5 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider text-white shadow-sm ' + state.pillBg
               : 'mt-2.5 text-xs text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 font-mono uppercase tracking-wider font-bold'">

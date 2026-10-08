@@ -66,4 +66,46 @@ describe('DualPaneConsultationComponent', () => {
     expect(translation.greeting).toBeTruthy();
     expect(translation.reassuranceStatement).toBeTruthy();
   });
+
+  it('6. Transitions between split, clinician, and patient focused views', () => {
+    expect(component.focusedView()).toBe('split');
+
+    component.setFocusedView('clinician');
+    fixture.detectChanges();
+    expect(component.focusedView()).toBe('clinician');
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Clinician Technical View');
+    expect(el.textContent).not.toContain('Plain Language Active');
+
+    component.setFocusedView('patient');
+    fixture.detectChanges();
+    expect(component.focusedView()).toBe('patient');
+    expect(el.textContent).toContain('Patient Persona View');
+    expect(el.textContent).not.toContain('ICD-10 / SNOMED CT');
+
+    component.setFocusedView('split');
+    fixture.detectChanges();
+    expect(component.focusedView()).toBe('split');
+    expect(el.textContent).toContain('Clinician Technical View');
+    expect(el.textContent).toContain('Patient Persona View');
+  });
+
+  it('7. Toggles CSS Anchor Positioning inspector for clinical concepts', () => {
+    expect(component.selectedConcept()).toBeNull();
+
+    component.toggleAnchorInspector('ICD-10 I10: Essential primary hypertension');
+    fixture.detectChanges();
+    expect(component.selectedConcept()).toBe('ICD-10 I10: Essential primary hypertension');
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Anchor Positioning Inspector');
+    expect(el.textContent).toContain('Essential primary hypertension');
+
+    // Toggling the same concept closes the inspector
+    component.toggleAnchorInspector('ICD-10 I10: Essential primary hypertension');
+    fixture.detectChanges();
+    expect(component.selectedConcept()).toBeNull();
+    expect(el.textContent).not.toContain('Anchor Positioning Inspector');
+  });
 });
+

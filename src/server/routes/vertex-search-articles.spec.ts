@@ -37,7 +37,7 @@ describe('AI App Builder (Vertex AI Search & Agent Builder) Resilient Endpoints'
   const mockDeps = {
     getApiKey: vi.fn().mockResolvedValue('test-key'),
     getGcpAccessToken: vi.fn().mockResolvedValue(null), // simulate offline / missing ADC
-    normalizeAndValidateModel: vi.fn().mockReturnValue('gemini-3.7-flash')
+    normalizeAndValidateModel: vi.fn().mockReturnValue('gemini-3.8-flash')
   };
 
   const aiRouter = createAiRouter(mockDeps);

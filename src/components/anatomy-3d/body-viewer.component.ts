@@ -148,7 +148,7 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
       @if (isSearchOpen()) {
         <div class="bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 p-3 max-h-[340px] overflow-y-auto divide-y divide-gray-100 dark:divide-zinc-900 z-30 shadow-2xl space-y-2">
           
-          <!-- Paradigm Sub-Filter Pills -->
+          <!-- Paradigm Sub-Filter Tabs -->
           <div class="flex items-center justify-between gap-2 pb-2 text-[10px] font-mono overflow-x-auto">
             <div class="flex items-center gap-1">
               <button 

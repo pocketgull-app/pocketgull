@@ -2,9 +2,7 @@
 @import './styles/pocketgull-icon-font.css';
 @import './styles/pocketgull-tokens.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import './styles/directcurves.css';
 
 :root {
   /* Material Design 3 (M3) System Color Tokens (Dark Obsidian Theme) */
@@ -999,13 +997,15 @@ app-body-3d-viewer,
     letter-spacing: 0.03em;
 }
 
-/* Media pills */
+/* Media badges & chips */
+.spark-theme .inline-badge--media,
 .spark-theme .inline-pill--media {
     background: rgba(255, 255, 255, 0.04) !important;
     border-color: rgba(104, 159, 56, 0.3) !important;
     color: #8bc34a !important;
 }
 
+.spark-theme .inline-badge--media:hover,
 .spark-theme .inline-pill--media:hover {
     background: rgba(104, 159, 56, 0.12) !important;
     border-color: rgba(104, 159, 56, 0.5) !important;
@@ -1016,6 +1016,7 @@ app-body-3d-viewer,
 
     .spark-theme .rm-panel,
     .spark-theme .rm-card,
+    .spark-theme .inline-badge--media,
     .spark-theme .inline-pill--media {
         display: none !important;
     }

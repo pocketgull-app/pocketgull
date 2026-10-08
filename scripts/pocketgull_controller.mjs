@@ -18,6 +18,9 @@ const WIN_THEMES_DIR = path.join(LOCALAPPDATA, 'Microsoft', 'Windows', 'Themes')
 
 const OMP_WASHI = path.join(WORKSPACE_DIR, 'public', 'brand', 'terminal', 'pocketgull-washi.omp.json');
 const OMP_OPHTHALMIC = path.join(WORKSPACE_DIR, 'public', 'brand', 'terminal', 'pocketgull-ophthalmic.omp.json');
+const OMP_SCOTOPIC = path.join(WORKSPACE_DIR, 'public', 'brand', 'terminal', 'pocketgull-scotopic.omp.json');
+const OMP_CURIE = path.join(WORKSPACE_DIR, 'public', 'brand', 'terminal', 'pocketgull-curie.omp.json');
+const OMP_RAMS = path.join(WORKSPACE_DIR, 'public', 'brand', 'terminal', 'pocketgull-rams.omp.json');
 
 // ANSI Codes
 const ESC = '\x1b[';
@@ -60,7 +63,7 @@ const THEME_MAP = {
     name: 'PocketGull Scotopic 650nm Red',
     mode: 'dark',
     colorization: '0xC4DC2626',
-    omp: OMP_OPHTHALMIC,
+    omp: OMP_SCOTOPIC,
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Scotopic-650nm.theme'),
     description: 'Narrow-band 650-670nm red wavelength preserving retinal rhodopsin & melatonin.'
   },
@@ -68,7 +71,7 @@ const THEME_MAP = {
     name: 'PocketGull Scotopic 650nm Red',
     mode: 'dark',
     colorization: '0xC4DC2626',
-    omp: OMP_OPHTHALMIC,
+    omp: OMP_SCOTOPIC,
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Scotopic-650nm.theme'),
     description: 'Narrow-band 650-670nm red wavelength preserving retinal rhodopsin & melatonin.'
   },
@@ -76,7 +79,7 @@ const THEME_MAP = {
     name: 'PocketGull Curie Luminescence',
     mode: 'dark',
     colorization: '0xC410B981',
-    omp: OMP_OPHTHALMIC,
+    omp: OMP_CURIE,
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Obsidian.theme'),
     description: 'Radiant phosphorescent green on dark field commemorating Marie Curie laboratory notebooks.'
   },
@@ -84,7 +87,7 @@ const THEME_MAP = {
     name: 'PocketGull Rams Functionalist',
     mode: 'light',
     colorization: '0xC43E5C76',
-    omp: OMP_WASHI,
+    omp: OMP_RAMS,
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Washi.theme'),
     description: 'Dieter Rams 10-principles functionalist Braun-inspired slate & warm cream palette.'
   },
@@ -391,6 +394,13 @@ switch (command.toLowerCase()) {
       console.log(`  ${SLATE}The PocketGull icon is now active in your Windows notification area (System Tray).${RESET}`);
       console.log(`  ${GOLD}Right-click the icon anytime to switch themes, cursors, or cognitive modes.${RESET}\n`);
     }
+    break;
+  }
+
+  case 'mode': {
+    const targetMode = args[1] || 'build';
+    const modeScript = path.join(WORKSPACE_DIR, 'scripts', 'pocketgull_mode.ps1');
+    execSync(`powershell.exe -NoProfile -ExecutionPolicy Bypass -File "${modeScript}" -Mode ${targetMode}`, { stdio: 'inherit' });
     break;
   }
 

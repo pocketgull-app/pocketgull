@@ -304,7 +304,7 @@ Please provide:
 Note: This is an AI preliminary analysis for decision-support, not an official diagnostic read. Respond with clear, structured Markdown.`;
 
       const response = await (ai as any).generate({
-        model: 'googleai/gemini-3.7-flash', // Using 3.7-flash for multimodal synthesis
+        model: 'googleai/gemini-3.8-flash', // Using 3.8-flash for multimodal synthesis
         messages: [
           {
             role: 'user',

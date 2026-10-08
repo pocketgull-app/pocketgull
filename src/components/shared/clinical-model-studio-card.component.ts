@@ -40,7 +40,7 @@ import { ClinicalFineTuningOrchestratorService, FineTuningParadigmId } from '../
         </div>
       </div>
 
-      <!-- Paradigm Selector Pills -->
+      <!-- Paradigm Selector Tabs -->
       <div class="space-y-2">
         <label class="text-xs font-semibold uppercase tracking-wider text-zinc-400">Select Fine-Tuning Paradigm ({{ orchestrator.totalParadigms() }})</label>
         <div class="flex flex-wrap gap-2">

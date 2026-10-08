@@ -368,7 +368,7 @@ export class SpecialistReferralDossierService {
           medicationName: m.name,
           plainPurpose: m.purpose,
           timing: 'Take with morning breakfast or evening meal as directed below.',
-          foodInstructions: 'Drink a full glass of cool or warm water with this pill; do not skip meals.'
+          foodInstructions: 'Drink a full glass of cool or warm water with this medication; do not skip meals.'
         })),
         homeCareAndFamilyPacing: params.homeInstructions,
         whenToCallUsImmediately: params.redFlags.map(rf => `Call our clinic immediately if you notice: ${rf}`)

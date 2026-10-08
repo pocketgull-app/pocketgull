@@ -32,9 +32,9 @@ export type ClinicalParadigm = 'western' | 'tcm' | 'ayurveda' | 'osteopathic';
           </div>
         </div>
 
-        <!-- Trend Pill -->
-        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono border"
-              [ngClass]="getTrendPillClass()">
+        <!-- Trend Badge -->
+        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono border"
+              [ngClass]="getTrendBadgeClass()">
           {{ trendLabel() }}
         </span>
       </div>
@@ -235,11 +235,15 @@ export class LongitudinalTrendSparklineComponent {
     }
   }
 
-  getTrendPillClass(): string {
+  getTrendBadgeClass(): string {
     const dir = this.trendDirection();
     if (dir === 'improving') return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
     if (dir === 'declining') return 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800';
     return 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700';
+  }
+
+  getTrendPillClass(): string {
+    return this.getTrendBadgeClass();
   }
 
   getDeltaColorClass(): string {

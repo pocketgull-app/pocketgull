@@ -17,8 +17,8 @@ describe('Gemini 3.7 GA Migration & Thought Signature Circulation', () => {
           provide: AI_CONFIG,
           useValue: {
             apiKey: 'test-api-key',
-            defaultModel: { modelId: 'gemini-3.7-flash', temperature: 0.1 },
-            verificationModel: { modelId: 'gemini-3.7-flash', temperature: 0.0 }
+            defaultModel: { modelId: 'gemini-3.8-flash', temperature: 0.1 },
+            verificationModel: { modelId: 'gemini-3.8-flash', temperature: 0.0 }
           }
         },
         { provide: AiCacheService, useFactory: () => new AiCacheService() },
@@ -30,7 +30,7 @@ describe('Gemini 3.7 GA Migration & Thought Signature Circulation', () => {
     provider = runInInjectionContext(injector, () => injector.get(GeminiProvider));
   });
 
-  it('should route clinical lenses to gemini-3.7-flash', async () => {
+  it('should route clinical lenses to gemini-3.8-flash', async () => {
     let capturedBody: any = null;
 
     // Spy on fetchWithRetry
@@ -38,21 +38,21 @@ describe('Gemini 3.7 GA Migration & Thought Signature Circulation', () => {
       capturedBody = JSON.parse(init.body as string);
       return new Response(new ReadableStream({
         start(controller) {
-          controller.enqueue(new TextEncoder().encode('data: {"candidates":[{"content":{"parts":[{"text":"Gemini 3.7 streamed response"}]}}]}\n\ndata: [DONE]\n\n'));
+          controller.enqueue(new TextEncoder().encode('data: {"candidates":[{"content":{"parts":[{"text":"Gemini 3.8 streamed response"}]}}]}\n\ndata: [DONE]\n\n'));
           controller.close();
         }
       }));
     };
 
-    // 1. Heavy synthesis lens -> gemini-3.7-flash
+    // 1. Heavy synthesis lens -> gemini-3.8-flash
     const streamPro = provider.generateReportStream$('Patient Data', 'Functional Protocols', 'Sys Inst');
     for await (const chunk of streamPro) {}
-    expect(capturedBody.model).toBe('gemini-3.7-flash');
+    expect(capturedBody.model).toBe('gemini-3.8-flash');
 
-    // 2. Standard formatting lens -> gemini-3.7-flash
+    // 2. Standard formatting lens -> gemini-3.8-flash
     const streamFlash = provider.generateReportStream$('Patient Data', 'Precision Nutrients', 'Sys Inst');
     for await (const chunk of streamFlash) {}
-    expect(capturedBody.model).toBe('gemini-3.7-flash');
+    expect(capturedBody.model).toBe('gemini-3.8-flash');
   });
 
   it('should capture and circulate thought signatures in multi-turn chat history', async () => {

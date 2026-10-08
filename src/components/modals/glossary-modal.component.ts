@@ -49,7 +49,7 @@ export interface IGlossaryEntry {
                    class="bg-transparent text-zinc-100 text-xs focus:outline-none w-full font-sans" />
           </div>
 
-          <!-- Category Filter Pills -->
+          <!-- Category Filter Tabs -->
           <div class="flex items-center gap-1 overflow-x-auto py-1">
             <button (click)="activeCategory.set('all')" 
                     [class]="activeCategory() === 'all' ? 'bg-indigo-600 text-white font-bold' : 'bg-zinc-900 text-zinc-400 hover:text-white'"

@@ -262,7 +262,7 @@ export interface IRegionalCrosswalkNode {
       @if (activeView() === 'lenses') {
         <div class="space-y-6">
           
-          <!-- Paradigm Selector Pills -->
+          <!-- Paradigm Selector Tabs -->
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 font-mono">
             @for (p of paradigmTabs; track p.id) {
               <button
@@ -640,7 +640,7 @@ export interface IRegionalCrosswalkNode {
             </div>
           </div>
 
-          <!-- Regional Node Pills -->
+          <!-- Regional Node Badges -->
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 font-mono">
             @for (node of spatialNodes; track node.id) {
               <button

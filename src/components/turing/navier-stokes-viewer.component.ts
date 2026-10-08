@@ -47,7 +47,7 @@ interface IFluidParticle {
         </div>
       </div>
 
-      <!-- Mode & Stage Selector Pill Bar -->
+      <!-- Mode & Stage Selector Bar -->
       <div class="flex flex-wrap items-center justify-between gap-2 pb-2 mb-2 border-b border-sky-900/30">
         <!-- Fluid Mode Switcher -->
         <div class="flex items-center gap-1.5">

@@ -87,6 +87,15 @@ export interface IFhirR4DiagnosticReport {
         <div class="flex flex-wrap items-center gap-2">
           <button
             type="button"
+            (click)="toggleSoftEyes()"
+            [class]="softEyesActive() ? 'bg-amber-600 hover:bg-amber-500 text-white font-medium px-4 py-2 rounded-xl transition-all text-xs border border-amber-400 cursor-pointer shadow-lg shadow-amber-950/40 flex items-center gap-1.5' : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-4 py-2 rounded-xl text-xs border border-zinc-700 cursor-pointer flex items-center gap-1.5'"
+          >
+            <span>👁️</span>
+            <span>{{ softEyesActive() ? '👁️ Soft Eyes ON' : 'Soft Eyes' }}</span>
+          </button>
+
+          <button
+            type="button"
             (click)="toggleCalibration()"
             [class]="calibrationActive() ? 'bg-cyan-600 hover:bg-cyan-500 text-white font-medium px-4 py-2 rounded-xl transition-all text-xs border border-cyan-400 cursor-pointer' : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-xl text-xs border border-zinc-700 cursor-pointer'"
           >
@@ -232,6 +241,90 @@ export interface IFhirR4DiagnosticReport {
         </div>
       </div>
 
+      <!-- Soft Eyes Panoramic Triads HUD -->
+      @if (softEyesActive()) {
+        <div class="mb-6 p-5 bg-gradient-to-r from-amber-950/30 via-zinc-900 to-cyan-950/30 rounded-2xl border border-amber-500/30 shadow-lg animate-fade-in font-sans">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-zinc-800/80 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">👁️</span>
+              <div>
+                <h3 class="text-sm font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                  Soft Eyes: Panoramic Tri-Planar Perception
+                  <span class="px-2 py-0.5 rounded text-[9px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                    Cross-Plane Attention Active
+                  </span>
+                </h3>
+                <p class="text-[11px] text-zinc-400 mt-0.5">
+                  Defoveates central fixation to simultaneously hold Sagittal, Coronal, and Axial planes in awareness, preventing inattentional blindness across kinetic trauma cascades.
+                </p>
+              </div>
+            </div>
+            <div class="text-[11px] font-mono text-zinc-400">
+              DirectCurves™ 28 UPM Fillet Geometry
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @for (triad of traumaTriads(); track triad.id) {
+              <div class="p-4 rounded-xl border transition-all"
+                   [class.border-amber-500]="triad.synergyActive"
+                   [class.bg-amber-950\/20]="triad.synergyActive"
+                   [class.border-zinc-800]="!triad.synergyActive"
+                   [class.bg-zinc-950\/60]="!triad.synergyActive">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <h4 class="text-xs font-bold text-zinc-100 flex items-center gap-1.5">
+                    <span>{{ triad.synergyActive ? '⚡' : '🔗' }}</span>
+                    <span>{{ triad.title }}</span>
+                  </h4>
+                  <span class="text-[9px] font-mono px-2 py-0.5 rounded-full border uppercase"
+                        [class.bg-red-950]="triad.synergyActive"
+                        [class.text-red-400]="triad.synergyActive"
+                        [class.border-red-800]="triad.synergyActive"
+                        [class.bg-zinc-800]="!triad.synergyActive"
+                        [class.text-zinc-400]="!triad.synergyActive"
+                        [class.border-zinc-700]="!triad.synergyActive">
+                    {{ triad.synergyActive ? 'Kinetic Coupling Detected' : 'No Cascade Synergy' }}
+                  </span>
+                </div>
+
+                <p class="text-[11px] text-zinc-400 mb-2 leading-relaxed">
+                  {{ triad.biomechanism }}
+                </p>
+
+                <div class="text-[10px] font-mono text-cyan-400/90 mb-3 bg-zinc-900/80 px-2 py-1 rounded-md border border-zinc-800">
+                  {{ triad.planeBreadth }}
+                </div>
+
+                <!-- Triad Target Micro-Cards -->
+                <div class="space-y-2">
+                  @for (t of triad.targets; track t.key) {
+                    <div (click)="focusTargetIn3D(t)"
+                         class="p-2 rounded-lg bg-zinc-900/70 border border-zinc-800 hover:border-cyan-500 cursor-pointer transition-colors flex items-center justify-between text-xs">
+                      <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-mono text-zinc-400 uppercase">[{{ t.primaryPlane[0] }}]</span>
+                        <span class="font-medium text-zinc-200">{{ t.name }}</span>
+                      </div>
+                      <div class="flex items-center gap-2 font-mono">
+                        <span class="text-xs font-bold" [class.text-red-400]="t.isPositive" [class.text-cyan-400]="!t.isPositive">
+                          {{ (t.probability * 100).toFixed(1) }}%
+                        </span>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded"
+                              [class.bg-red-950]="t.isPositive"
+                              [class.text-red-300]="t.isPositive"
+                              [class.bg-zinc-800]="!t.isPositive"
+                              [class.text-zinc-400]="!t.isPositive">
+                          {{ t.isPositive ? 'POS' : 'NEG' }}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
       <!-- 12 Target Abnormality Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @for (target of filteredTargets(); track target.key) {
@@ -367,6 +460,7 @@ export class LensRsnaKneeComponent implements OnInit {
   activeFocusedTargetKey = signal<string>('acl');
   selectedPlane = signal<string>('All');
   calibrationActive = signal<boolean>(true);
+  softEyesActive = signal<boolean>(false);
   fhirExported = signal<boolean>(false);
   isSidecarConnected = signal<boolean>(false);
   showOncDsiModal = signal<boolean>(false);
@@ -530,6 +624,63 @@ export class LensRsnaKneeComponent implements OnInit {
     if (plane === 'All') return all;
     return all.filter(t => t.primaryPlane === plane);
   });
+
+  traumaTriads = computed(() => {
+    const tMap = new Map(this.targets().map(t => [t.key, t]));
+    return [
+      {
+        id: 'pivot_shift',
+        title: 'Pivot-Shift Trauma Triad',
+        biomechanism: 'High-velocity valgus external rotation loading with lateral femoral impact & secondary meniscal disruption.',
+        planeBreadth: 'Sagittal (ACL, Contusion) ⟷ Coronal (Contusion) ⟷ Sagittal (Lateral Meniscus)',
+        targets: [
+          tMap.get('acl'),
+          tMap.get('contusion'),
+          tMap.get('lateral_meniscus')
+        ].filter((t): t is IKneeAbnormalityTarget => !!t),
+        synergyActive: (tMap.get('acl')?.isPositive ?? false) && ((tMap.get('contusion')?.isPositive ?? false) || (tMap.get('lateral_meniscus')?.isPositive ?? false))
+      },
+      {
+        id: 'medial_degenerative',
+        title: 'Medial Compartment Degenerative Cascade',
+        biomechanism: 'Posterior horn meniscal extrusion accelerating localized tibiofemoral cartilage erosion.',
+        planeBreadth: 'Sagittal (Medial Meniscus) ⟷ Coronal (Medial OA, JSN)',
+        targets: [
+          tMap.get('medial_meniscus'),
+          tMap.get('medial_oa')
+        ].filter((t): t is IKneeAbnormalityTarget => !!t),
+        synergyActive: (tMap.get('medial_meniscus')?.isPositive ?? false) && (tMap.get('medial_oa')?.isPositive ?? false)
+      },
+      {
+        id: 'capsular_synovial',
+        title: 'Capsular & Synovial Inflammatory Cascade',
+        biomechanism: 'Synovial vascular proliferation driving intracapsular fluid expansion into the popliteal bursa.',
+        planeBreadth: 'Sagittal (Synovitis) ⟷ Axial (Effusion, Baker\'s Cyst)',
+        targets: [
+          tMap.get('synovitis'),
+          tMap.get('effusion'),
+          tMap.get('bakers_cyst')
+        ].filter((t): t is IKneeAbnormalityTarget => !!t),
+        synergyActive: (tMap.get('synovitis')?.isPositive ?? false) && (tMap.get('effusion')?.isPositive ?? false)
+      },
+      {
+        id: 'cortical_collateral',
+        title: 'Collateral & Cortical Bone Integrity',
+        biomechanism: 'Coronal tension failure of medial restraints paired with subchondral or cortical disruption.',
+        planeBreadth: 'Coronal (MCL, Fracture) ⟷ Axial (PF OA)',
+        targets: [
+          tMap.get('mcl'),
+          tMap.get('fracture'),
+          tMap.get('pf_oa')
+        ].filter((t): t is IKneeAbnormalityTarget => !!t),
+        synergyActive: (tMap.get('mcl')?.isPositive ?? false) || (tMap.get('fracture')?.isPositive ?? false)
+      }
+    ];
+  });
+
+  toggleSoftEyes(): void {
+    this.softEyesActive.update(v => !v);
+  }
 
   toggleCalibration(): void {
     this.calibrationActive.update(v => !v);

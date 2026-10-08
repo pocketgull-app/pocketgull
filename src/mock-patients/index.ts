@@ -8,6 +8,7 @@ export * from './p007';
 export * from './p008';
 export * from './p009';
 export * from './p010';
+export * from './p011';
 export * from './p_mara_santos';
 export * from './p_frida_kahlo';
 export * from './p_edwin_smith_3';

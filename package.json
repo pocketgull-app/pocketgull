@@ -1,9 +1,10 @@
 {
   "name": "pocket-gull",
-  "version": "1.39.0",
+  "version": "1.40.0",
   "workspaces": [
     "companion-apps/avs-therapy",
-    "pocketgull_api"
+    "pocketgull_api",
+    "packages/*"
   ],
   "description": "Insight beneath the surface. Real-time medical Care Plan Strategy and Live AI Consult engine powered by Google Gemini.",
   "author": "Phillip Gear <leads@pocketgull.app> (PocketGull LLC)",
@@ -151,8 +152,12 @@
     "prepare": "node -e \"try { require('husky')() } catch (e) {}\" || true",
     "test": "vitest run --config vitest.config.ts && node scripts/run-python-tests.mjs",
     "test:fast": "vitest run --changed",
-    "test:watch": "vitest",
+    "typecheck": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
     "typecheck:fast": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
+    "typecheck:packages": "node node_modules/typescript/lib/tsc.js -b tsconfig.build.json",
+    "typecheck:all": "node node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit && node node_modules/typescript/lib/tsc.js -b tsconfig.build.json",
+    "check": "npm run typecheck:all",
+    "clean": "node scripts/clean_workspace_cache.mjs",
     "test:python": "node scripts/run-python-tests.mjs",
     "test:e2e:ui": "playwright test --ui",
     "dns:update": "node scripts/update-porkbun-dns.js",
@@ -188,7 +193,7 @@
     "@google-cloud/bigquery": "^8.3.1",
     "@google-cloud/firestore": "^8.7.1",
     "@google-cloud/secret-manager": "^7.0.0",
-    "@google/adk": "^2.2.0",
+    "@google/adk": "^2.2.1",
     "@google/genai": "^2.26.0",
     "@mcp-b/webmcp-polyfill": "^2.2.0",
     "@mlc-ai/web-llm": "^0.2.83",
@@ -205,7 +210,7 @@
     "@tweenjs/tween.js": "^25.0.0",
     "@types/three": "^0.185.0",
     "chart.js": "^4.5.1",
-    "compression": "^1.8.1",
+    "compression": "^1.8.2",
     "cors": "^2.8.6",
     "dompurify": "^3.4.16",
     "echarts": "^6.1.0",
@@ -319,11 +324,16 @@
     "micromatch": ">=4.0.8",
     "fast-uri": "^4.2.1",
     "webpack-dev-middleware": "^8.3.0",
-    "postcss-selector-parser": ">=6.1.4",
+    "postcss-selector-parser": ">=7.1.6",
+    "@modelcontextprotocol/sdk": ">=1.31.0",
     "ip-address": ">=10.7.3",
     "engine.io": ">=6.6.11",
     "@fastify/busboy": ">=3.2.2",
     "browserslist": ">=4.28.7",
+    "compression": "^1.8.2",
+    "proxy-addr": ">=2.0.8",
+    "shell-quote": ">=1.11.0",
+    "source-map-js": ">=1.2.2",
     "@angular/build": {
       "undici": "8.11.2",
       "esbuild": {
@@ -365,7 +375,13 @@
       "minimatch": "^10.0.3",
       "rimraf": "^6.0.1",
       "postcss": "^8.5.26"
-    }
+    },
+    "rimraf": "^6.0.1",
+    "glob": "^11.0.0",
+    "inflight": "npm:lru-cache@^10.0.0",
+    "node-domexception": "npm:domexception@^4.0.0",
+    "@google-cloud/opentelemetry-cloud-trace-exporter": "^3.1.0",
+    "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.22.0"
   },
   "lint-staged": {
     "*.ts": "npm run lint",

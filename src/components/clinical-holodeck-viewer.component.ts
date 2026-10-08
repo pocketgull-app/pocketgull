@@ -137,7 +137,7 @@ export type ToolMode = 'inspect' | 'laser_pbm' | 'scalpel_resect' | 'synovial_la
             />
           </div>
 
-          <!-- Layer Quick Selector Pills -->
+          <!-- Layer Quick Selector Tabs -->
           <div class="grid grid-cols-2 gap-1.5 pt-1">
             <button 
               (click)="setLayer('skin', 10)"

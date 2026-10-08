@@ -95,7 +95,7 @@ This report evaluates Pocket Gull's competitive positioning and strategic defens
 
 ### Substitute Comparison
 
-| Feature / Capability | Legacy EHRs (Epic / Cerner) | Generic LLMs (ChatGPT / Claude) | Ambient Scribes (Nuance / Abridge) | **Pocket Gull v1.39.0** |
+| Feature / Capability | Legacy EHRs (Epic / Cerner) | Generic LLMs (ChatGPT / Claude) | Ambient Scribes (Nuance / Abridge) | **Pocket Gull v1.40.0** |
 |---|---|---|---|---|
 | **3D WebGL Anatomy Viewer** | ❌ None | ❌ None | ❌ None | ✅ **Procedural PBR Mesh** |
 | **Tri-Paradigm Consilience** | ❌ Western Only | ⚠️ Text Only | ❌ None | ✅ **Western + TCM + Ayurvedic** |

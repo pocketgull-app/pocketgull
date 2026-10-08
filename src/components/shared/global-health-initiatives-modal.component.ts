@@ -278,7 +278,7 @@ import { BrandedQrCodeComponent } from './branded-qr-code.component';
                     {{ nihRecover().pascClassification }}
                   </div>
 
-                  <!-- Evaluated Symptoms Pill Cloud -->
+                  <!-- Evaluated Symptoms Badge Cloud -->
                   <div class="flex flex-wrap gap-2 pt-1">
                     @for (sym of nihRecover().symptoms; track sym.name) {
                       <span class="px-2.5 py-1 rounded-lg text-[11px] font-mono border"

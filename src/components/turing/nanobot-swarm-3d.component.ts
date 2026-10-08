@@ -57,7 +57,7 @@ import {
         </div>
       </div>
 
-      <!-- Mode & Target Pill Selector Bar -->
+      <!-- Mode & Target Selector Bar -->
       <div class="flex flex-wrap items-center justify-between gap-2 pb-2 mb-2 border-b border-teal-900/30 text-xs">
         <div class="flex flex-wrap items-center gap-1.5">
           <button (click)="setMode('ACOUSTIC_DRILL')"

@@ -2147,7 +2147,7 @@ export class ClinicalPosologyCalculatorComponent {
         act1WhereYouveBeen: {
           title: 'Arizona Extreme Heat & Anticholinergic Dehydration Risk',
           clinicalRationale: `Patient evaluated under desert thermal load (Ambient: ${ambientTemp}°F, WBGT: ${wbgt}°F). Anticholinergics suppress cholinergic eccrine sweat secretion (anhidrosis) raising heat stroke risk, while loop diuretics accelerate hypovolemia.`,
-          plainLanguageRationale: `Your medicines were reviewed because it is ${ambientTemp}°F outside today. Extreme summer heat makes it hard to cool down, and some pills stop your body from sweating or cause you to lose fluids too quickly.`,
+          plainLanguageRationale: `Your medicines were reviewed because it is ${ambientTemp}°F outside today. Extreme summer heat makes it hard to cool down, and some medications stop your body from sweating or cause you to lose fluids too quickly.`,
           patientSelfCareRationale: `When the desert temperature climbs to ${ambientTemp}°F, your body works overtime to stay cool. We are adjusting your medications so your kidneys and heart stay protected, letting you feel energized without dehydration.`,
           communitySdohRationale: `Evaluating home cooling resilience (current ambient ${ambientTemp}°F), water access, utility shutoff protections, and heat-vulnerability scores for elderly or outdoor workers.`,
           baselineFactors: [
@@ -2162,7 +2162,7 @@ export class ClinicalPosologyCalculatorComponent {
           calibratedDosage: 'Hold Diphenhydramine 50 mg; titrate diuretic to 20 mg PO QAM; avoid peak solar exposure (10:00–18:00).',
           hydrationTarget: '2,500 mL / 24h oral electrolyte solution (approx. 10 glasses)',
           clinicalSafetyStamp: 'ISMP & CDC Extreme Heat Protocol Verified',
-          plainLanguageAdvice: 'Take your reduced morning water pill with breakfast. Drink roughly 10 glasses of water or electrolyte drink throughout the day, and stay in cool air conditioning.',
+          plainLanguageAdvice: 'Take your reduced morning water tablet (diuretic) with breakfast. Drink roughly 10 glasses of water or electrolyte drink throughout the day, and stay in cool air conditioning.',
           patientHabitRoutine: 'Take morning dose with a full glass of cool water before 9 AM. Keep your insulated water bottle refilled at your desk or chair all afternoon.',
           communitySafetySupport: 'Ensure indoor living space stays under 82°F. Verify medications are stored below 77°F (out of sunlit windows). Utility assistance applied if needed.'
         },
@@ -2203,9 +2203,9 @@ export class ClinicalPosologyCalculatorComponent {
           calibratedDosage: 'Reduce dose by 33–50% to prevent drug accumulation; administer with morning meal.',
           hydrationTarget: `${fluidTarget} mL / 24h maintenance fluids (approx. 6–8 glasses)`,
           clinicalSafetyStamp: 'Cockcroft-Gault CrCl & AGS Beers 2023 Verified',
-          plainLanguageAdvice: 'Take your adjusted pill in the morning with a full glass of water. Aim for 6 to 8 cups of water or warm herbal tea spread across the day.',
-          patientHabitRoutine: 'Take pill with your morning breakfast. Keep a pitcher of fresh water on the counter to sip 6 glasses before dinnertime.',
-          communitySafetySupport: 'Place clear non-slip mats in the hallway; confirm pillbox compartments are filled for the upcoming week.'
+          plainLanguageAdvice: 'Take your adjusted medication in the morning with a full glass of water. Aim for 6 to 8 cups of water or warm herbal tea spread across the day.',
+          patientHabitRoutine: 'Take medication with your morning breakfast. Keep a pitcher of fresh water on the counter to sip 6 glasses before dinnertime.',
+          communitySafetySupport: 'Place clear non-slip mats in the hallway; confirm dose organizer compartments are filled for the upcoming week.'
         },
         act3WhereYoureGoing: {
           title: '48-Hour Fall Prevention & Stability Surveillance',

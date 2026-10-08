@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.40.0] - 2026-10-07
+
+**🛡️ Zero-Pill Clinical Demarcation & Dieter Rams Design Token Architecture, DirectCurves Zero-Runtime CSS Engine, Multi-Workspace Supply Chain Vulnerability Remediation (Zero-Alert Posture), EU CRA CycloneDX 1.6 SBOM, and Dual-Service Google Cloud Run Production Deployment**
+
+### Added
+- **[DirectCurves Zero-Runtime Vector CSS Engine]**:
+  - Implemented pure-CSS vector typography and bezier curve rendering pipeline (`directcurves`), eliminating CSS-in-JS runtime evaluation overhead, layout thrashing, and paint latency across high-density clinical displays.
+- **[EU Cyber Resilience Act (CRA) CycloneDX 1.6 SBOM] (`sbom.cdx.json`)**:
+  - Generated complete European Cyber Resilience Act (Regulation EU 2024/2847 Annex I §2) and US Executive Order 14028 compliant Software Bill of Materials (SBOM) with cryptographic SHA-512 and SHA-256 package provenance across all monorepo workspaces.
+- **[Production Google Cloud Run Multi-Revision Deployment]**:
+  - Deployed production revisions `pocket-gull-00223-9b8` (`pocket-gull`) and `pocket-gull-v2-00250-ff4` (`pocket-gull-v2` / `pocketgull.app`) on Google Cloud Run (`gen-lang-client-0540208645`).
+  - Verified live synthetic HTTP 200 responses with full Mozilla HTTP Observatory 125/100 (Grade A+) security posture (HSTS preload, COOP, CORP, COEP, strict-dynamic nonces).
+- **[TypeScript 5.8 Project References & Build Caching] (`tsconfig.json`)**:
+  - Modernized monorepo build caching and cross-workspace project references, accelerating typechecking and build pipeline throughput.
+
+### Changed
+- **[Zero-Pill UI Standard & Prescribing Demarcation] (`ProjectCard.tsx`, `ProjectFilter.tsx`, `GitHubRepoExplorer.tsx`, `TechRadar.tsx`, `agtech_vpd_telemetry.svg`, UI components)**:
+  - Completely eliminated the word "pill" from user interface elements, tags, buttons, CSS classes, comments, and SVG templates monorepo-wide.
+  - Standardized on neutral, clinically precise tokens: `Badge`, `Marker`, `Filter Tab`, `Status Tag`, and `Segment Selector`.
+  - Preserved legitimate clinical, diagnostic, and historical exceptions: Parkinsonian UPDRS Part III resting *pill-rolling tremor*, DSM-5 / psychiatric clinical screening heuristics (`"pill for every ill"`), and historical pharmacopeia records (Lincoln's *Blue Mass*).
+  - Clinical rationale: Eliminates subconscious cognitive priming that predisposes clinicians toward reflexive pharmacological prescribing over root-cause diagnostic inquiry, functional lifestyle pacing, or non-pharmacological therapies.
+
+### Security & Fixed
+- **[Multi-Workspace Dependency & Supply Chain Vulnerability Remediation]**:
+  - Resolved 5 open GitHub Dependabot security advisories across all workspace directories (`package.json`, `pocketgull_api/package.json`, `companion-apps/avs-therapy/package.json`):
+    - **Alert #378 (Critical - GHSA-jqcg-44mw-7w3h)**: Upgraded `proxy-addr` to `>=2.0.8` in `pocketgull_api/package.json` overrides and lockfile, eliminating IP address spoofing vulnerabilities via IPv4-mapped IPv6 loopback and trust subnets.
+    - **Alert #374 (High - GHSA-vc2v-76pw-4v95)**: Upgraded `compression` to `^1.8.2` in root monorepo `dependencies`, `overrides`, and lockfile, resolving a memory leak and Denial of Service vector triggered on premature client response disconnection.
+    - **Alert #373 (High - GHSA-6qxp-vccf-f47h)**: Upgraded `@modelcontextprotocol/sdk` to `1.32.1` in root and `companion-apps/avs-therapy`, preventing malicious MCP servers from redirecting OAuth credentials to arbitrary authorization endpoints.
+    - **Alert #372 (High - GHSA-68fv-2mgg-jv7q)**: Upgraded `source-map-js` to `>=1.2.2` across all workspaces, resolving an event-loop denial of service vulnerability triggered by deeply nested or malicious indexed source-map section offsets.
+    - **Alert #371 (Moderate - GHSA-rj75-hqrm-r3gf)**: Upgraded `postcss-selector-parser` to `>=7.1.6` across root, `pocketgull_api`, and `companion-apps/avs-therapy`, resolving quadratic complexity in flat selector parsing causing CPU exhaustion.
+    - **Transitive Supply Chain CVE Patches**: Upgraded `shell-quote` to `>=1.12.0`, `protobufjs` to `>=7.6.6`, `engine.io` to `>=6.6.11`, and `ip-address` to `10.7.3`.
+
 ## [1.39.0] - 2026-09-28
 
 **🌲 Sowa-Rigpa 3D Living Tree Spatial Engine, ICD-11 Primary Internal Clinical Ontology with Projected ICD-10-CM/SNOMED CT Mappings, Global Decad of Healing Systems Spectrum, and WHO-NIH Strategic Alignment Hub**

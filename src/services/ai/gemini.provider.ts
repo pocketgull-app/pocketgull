@@ -71,11 +71,11 @@ export class GeminiProvider implements IIntelligenceProvider {
 
     async *generateReportStream$(patientData: string, lens: string, systemInstruction: string): AsyncIterable<string> {
         // Hybrid FinOps Routing:
-        // Reserve gemini-3.7-flash for deep clinical synthesis/biochemistry,
+        // Reserve gemini-3.8-flash for deep clinical synthesis/biochemistry,
         // and route overview, nutrition, and patient education to fast gemini-2.5-flash.
         const routingModelId = (lens === 'Summary Overview' || lens === 'Patient Education' || lens === 'Nutrition' || lens === 'Grow-Thyself Education')
             ? 'gemini-2.5-flash'
-            : 'gemini-3.7-flash';
+            : 'gemini-3.8-flash';
 
         const response = await this.fetchWithRetry('/api/ai/stream', {
             method: 'POST',

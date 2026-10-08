@@ -107,7 +107,7 @@ export class DocDrillService {
       `,
       patientBrief: `
         <h4 class="text-xs font-bold uppercase tracking-wider text-teal-400 mb-1">Protecting Your Prescriptions</h4>
-        <p class="mb-2 text-zinc-300">Have you ever noticed how the letter <strong>l</strong>, the capital letter <strong>I</strong>, and the number <strong>1</strong> can look almost identical in standard fonts? In a hospital, confusing those letters could cause someone to get the wrong pill or dose.</p>
+        <p class="mb-2 text-zinc-300">Have you ever noticed how the letter <strong>l</strong>, the capital letter <strong>I</strong>, and the number <strong>1</strong> can look almost identical in standard fonts? In a hospital, confusing those letters could cause someone to get the wrong medication or dose.</p>
         <p class="text-zinc-300">PocketGull puts a diagonal slash through every zero (0) and gives lowercase l a gentle curve, making sure nobody ever misreads your prescriptions.</p>
       `,
       suggestedChips: ['Why is 5.0 mg banned?', 'What is slashed zero?', 'Show Tall Man Lettering']

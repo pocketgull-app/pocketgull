@@ -775,7 +775,7 @@ export class InstantBodyCarePlanSheetComponent {
           title: 'Renal Reserve & Baseline Filtration',
           clinicalRationale: 'Baseline Cockcroft-Gault CrCl estimation indicates moderate filtration reserve decline with age.',
           plainLanguageRationale: 'Your kidneys filter your blood day and night. We check them to keep them strong and protected.',
-          patientSelfCareRationale: 'Gentle on your body: taking care of your kidneys means steady water sips and avoiding excess pain pills.',
+          patientSelfCareRationale: 'Gentle on your body: taking care of your kidneys means steady water sips and avoiding excess NSAID pain medications.',
           communitySdohRationale: 'Extreme heatwaves and outdoor activity accelerate dehydration; verify clean water and cool shade access.'
         },
         act2WhereYouStandToday: {

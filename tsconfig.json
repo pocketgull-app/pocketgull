@@ -1,4 +1,5 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2022",
     "experimentalDecorators": true,
@@ -14,6 +15,7 @@
       "node",
       "vitest/globals"
     ],
+    "strict": false,
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -26,6 +28,24 @@
       ],
       "@google-cloud/storage": [
         "./src/mocks/empty.ts"
+      ],
+      "@pocketgull/core-sdk": [
+        "./packages/core-sdk/src/index.ts"
+      ],
+      "@pocketgull/ismp-clinical-guard": [
+        "./packages/ismp-clinical-guard/src/index.ts"
+      ],
+      "@pocketgull/clinical-parquet-duckdb": [
+        "./packages/clinical-parquet-duckdb/src/index.ts"
+      ],
+      "@pocketgull/open-sanctuary": [
+        "./packages/open-sanctuary/src/index.ts"
+      ],
+      "@pocketgull/open-sanctuary/*": [
+        "./packages/open-sanctuary/src/*"
+      ],
+      "@pocketgull/open-scribe": [
+        "./packages/open-scribe/src/index.ts"
       ]
     }
   },

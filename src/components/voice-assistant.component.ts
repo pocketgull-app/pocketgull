@@ -351,7 +351,7 @@ export interface IChatEntry {
                         }
                     </button>
 
-                    <!-- Minimize to Floating Pill -->
+                    <!-- Minimize to Floating Dock -->
                     <button
                         type="button"
                         (click)="state.setLiveAgentWindowMode('minimized')"
@@ -1682,7 +1682,7 @@ Only include a rich-media block when the user explicitly requests visual or rese
                 apiKey,
                 `${context}\n\nPatient Data:\n${rawPatientData}`,
                 'Aoede',
-                'models/gemini-3.7-flash',
+                'models/gemini-3.8-flash',
                 occupationalProfile,
                 isPediatric,
                 childName,

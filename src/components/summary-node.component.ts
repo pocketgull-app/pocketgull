@@ -334,9 +334,9 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
         .drill-banner-text { flex:1; font-style:italic; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         .drill-banner-clear { font-size:8px; font-weight:600; color:#3B82F6; cursor:pointer; border:none; background:none; padding:0; }
 
-        /* ─── Suggestion pills ───────────────────── */
-        .inline-pills { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px 0; border-top: 1px solid #F3F4F6; }
-        .inline-pill {
+        /* ─── Suggestion chips ───────────────────── */
+        .inline-chips, .inline-pills { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px 0; border-top: 1px solid #F3F4F6; }
+        .inline-chip, .inline-pill {
             font-family: 'Inter', system-ui, sans-serif;
             font-size: 8px; font-weight: 700; color: #1C1C1C;
             text-transform: uppercase; letter-spacing: 0.1em;
@@ -344,7 +344,7 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
             padding: 4px 8px; cursor: pointer; transition: all 0.15s;
             display: inline-flex; align-items: center; gap: 5px;
         }
-        .inline-pill:hover { background: #1C1C1C; color: #FFFFFF; }
+        .inline-chip:hover, .inline-pill:hover { background: #1C1C1C; color: #FFFFFF; }
 
         /* ─── Thinking dots ──────────────────────── */
         .thinking-dots { display:flex; gap:3px; align-items:center; padding:4px 0; }
@@ -406,9 +406,9 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
         .dark .bracketed-panel { background: #1a2e0530; border-top-color: #416b1f; }
         .dark .bracketed-claim-text { color: #e4e4e7; }
         .dark .drill-banner { background: #1e3a8a30; border-color: #1e3a8a; color: #e4e4e7; }
-        .dark .inline-pills { border-top-color: #27272a; }
-        .dark .inline-pill { color: #e4e4e7; border-color: #52525b; }
-        .dark .inline-pill:hover { background: #e4e4e7; color: #18181b; }
+        .dark .inline-chips, .dark .inline-pills { border-top-color: #27272a; }
+        .dark .inline-chip, .dark .inline-pill { color: #e4e4e7; border-color: #52525b; }
+        .dark .inline-chip:hover, .dark .inline-pill:hover { background: #e4e4e7; color: #18181b; }
         .dark .inline-input-container { border-top-color: #27272a; background: #09090b; }
         .dark .inline-input { background: #18181b; border-color: #27272a; color: #e4e4e7; }
         .dark .inline-file-chip { background: #27272a; border-color: #3f3f46; color: #e4e4e7; }
@@ -889,16 +889,16 @@ function parseHtmlToClaims(html: string): IClaimUnit[] {
             }
           </div>
 
-          <!-- Suggestion pills (persist while idle) -->
+          <!-- Suggestion chips (persist while idle) -->
           @if (showSuggestions() && !chatIsLoading() && drillStack().length === 0) {
             <div class="flex flex-wrap items-center justify-center gap-2 mt-4 mb-2 w-full px-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-              @for (s of suggestionPills(); track s) {
-                <button type="button" (click)="sendPill(s)" class="px-3 py-1.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-400 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-[#689F38] dark:hover:text-[#8bc34a] transition-all shadow-sm flex items-center gap-1.5">
+              @for (s of suggestionChips(); track s) {
+                <button type="button" (click)="sendChip(s)" class="px-3 py-1.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-400 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-[#689F38] dark:hover:text-[#8bc34a] transition-all shadow-sm flex items-center gap-1.5">
                    <div [innerHTML]="ClinicalIcons.Suggestion | safeHtml" class="w-3.5 h-3.5 opacity-70"></div>
                    {{ s }}
                 </button>
               }
-              <!-- Rich media action pills -->
+              <!-- Rich media action chips -->
               <button type="button" (click)="requestImage()" class="px-3 py-1.5 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-400 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-purple-600 dark:hover:text-purple-400 transition-all shadow-sm flex items-center gap-1.5">
                 <div [innerHTML]="ClinicalIcons.Image | safeHtml" class="w-3.5 h-3.5 opacity-70"></div>
                 Request Image
@@ -1072,7 +1072,7 @@ export class SummaryNodeComponent implements AfterViewChecked {
   private sessionStarted = false;
   private needsScroll = false;
 
-  suggestionPills = computed<string[]>(() => {
+  suggestionChips = computed<string[]>(() => {
     const s = this.sectionTitle().toLowerCase();
     if (s.includes('overview') || s.includes('summary'))
       return ['What evidence supports this?', 'Alternative approaches?', 'Key risks?'];
@@ -1084,6 +1084,7 @@ export class SummaryNodeComponent implements AfterViewChecked {
       return ['Simplify for patient', 'Expected patient questions?'];
     return ['Clinical rationale?', 'Alternatives?', 'Contraindications?'];
   });
+  readonly suggestionPills = this.suggestionChips;
 
   ngAfterViewChecked() {
     if (this.needsScroll) { this.scrollBottom(); this.needsScroll = false; }
@@ -1283,7 +1284,8 @@ Only include a rich-media block when the user explicitly requests visual or rese
     await this._sendPrompt(text, files);
   }
 
-  sendPill(text: string) { this.chatInputText = text; this.sendMessage(); }
+  sendChip(text: string) { this.chatInputText = text; this.sendMessage(); }
+  sendPill(text: string) { this.sendChip(text); }
 
   private async _sendPrompt(prompt: string, files: File[] = []) {
     this.chatIsLoading.set(true);
@@ -1375,7 +1377,7 @@ Only include a rich-media block when the user explicitly requests visual or rese
     this.chatBottomRef?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  // ─── Rich media pill actions ──────────────────
+  // ─── Rich media action badges ──────────────────
   requestImage() {
     const topic = this.sectionTitle() || 'this clinical topic';
     this.chatInputText = `Show me medical images of ${topic}`;

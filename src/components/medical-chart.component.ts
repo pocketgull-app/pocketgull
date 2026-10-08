@@ -140,7 +140,7 @@ import { PatientScansComponent } from './patient-scans.component';
             <span class="tracking-wider uppercase">Sloan 5:1 Lens:</span>
           </div>
 
-          <!-- Phoropter Mode Pills -->
+          <!-- Phoropter Mode Tabs -->
           <button type="button" (click)="bioTypography.setPhoropterMode('STANDARD_20_20')"
             [class.bg-teal-500]="bioTypography.phoropterMode() === 'STANDARD_20_20'"
             [class.text-white]="bioTypography.phoropterMode() === 'STANDARD_20_20'"

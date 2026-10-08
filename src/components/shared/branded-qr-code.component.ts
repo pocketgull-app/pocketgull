@@ -54,7 +54,7 @@ import {
         </canvas>
       </div>
 
-      <!-- IEEE Anti-Quishing / Destination Grounding Pill -->
+      <!-- IEEE Anti-Quishing / Destination Grounding Badge -->
       @if (showDestinationGrounding() && effectiveDestinationSummary()) {
         <div class="mt-2.5 px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 max-w-full text-center font-mono">
           <span class="text-[9.5px] text-zinc-600 dark:text-zinc-300 font-bold block truncate"

@@ -803,7 +803,7 @@ export function initVesalian3DViewer(
     pin: IAnatomicalPin;
     el: HTMLElement;
     badge: HTMLElement;
-    pill: HTMLElement;
+    labelTag: HTMLElement;
   }
   const pinDOMElements: IPinDOMEntry[] = [];
 
@@ -883,20 +883,20 @@ export function initVesalian3DViewer(
       badge.textContent = pin.number.toString();
       pinEl.appendChild(badge);
 
-      // Callout Label Pill
-      const pill = document.createElement('div');
-      pill.style.background = 'rgba(24, 18, 14, 0.90)';
-      pill.style.color = '#f5eedb';
-      pill.style.border = `1px solid ${pin.color}`;
-      pill.style.padding = '3px 8px';
-      pill.style.borderRadius = '6px';
-      pill.style.fontSize = '10px';
-      pill.style.fontFamily = "'PocketGull Mono', monospace";
-      pill.style.backdropFilter = 'blur(6px)';
-      pill.style.whiteSpace = 'nowrap';
-      pill.style.boxShadow = '0 2px 10px rgba(0,0,0,0.5)';
-      pill.innerHTML = `<span style="font-style: italic; color: #ffd166;">${pin.latinName}</span>`;
-      pinEl.appendChild(pill);
+      // Callout Label Badge
+      const labelTag = document.createElement('div');
+      labelTag.style.background = 'rgba(24, 18, 14, 0.90)';
+      labelTag.style.color = '#f5eedb';
+      labelTag.style.border = `1px solid ${pin.color}`;
+      labelTag.style.padding = '3px 8px';
+      labelTag.style.borderRadius = '6px';
+      labelTag.style.fontSize = '10px';
+      labelTag.style.fontFamily = "'PocketGull Mono', monospace";
+      labelTag.style.backdropFilter = 'blur(6px)';
+      labelTag.style.whiteSpace = 'nowrap';
+      labelTag.style.boxShadow = '0 2px 10px rgba(0,0,0,0.5)';
+      labelTag.innerHTML = `<span style="font-style: italic; color: #ffd166;">${pin.latinName}</span>`;
+      pinEl.appendChild(labelTag);
 
       // Tooltip Card (On hover or click)
       const tooltip = document.createElement('div');
@@ -940,7 +940,7 @@ export function initVesalian3DViewer(
       });
 
       pinsContainer.appendChild(pinEl);
-      pinDOMElements.push({ pin, el: pinEl, badge, pill });
+      pinDOMElements.push({ pin, el: pinEl, badge, labelTag });
     });
 
     filterFocalPin(activeFocalRegion === 'full' ? null : 'lumbar_l4_l5');
@@ -1216,8 +1216,8 @@ export function initVesalian3DViewer(
       const isDecompressed = activeTension > 0.6;
       const color = isDecompressed ? '#2dd4bf' : '#ef4444';
       l4Pin.badge.style.background = color;
-      l4Pin.pill.style.borderColor = color;
-      l4Pin.pill.innerHTML = isDecompressed
+      l4Pin.labelTag.style.borderColor = color;
+      l4Pin.labelTag.innerHTML = isDecompressed
         ? `<span style="color: #2dd4bf; font-weight: bold;">✓ L4–L5 Decompressed (+2.4 mm)</span>`
         : `<span style="color: #ef4444; font-weight: bold;">⚠ L4–L5 Pinched (Anterior Tilt)</span>`;
     }

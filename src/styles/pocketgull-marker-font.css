@@ -730,7 +730,7 @@
 
 /* ==========================================================================
    ☯️ 11. Contextual Acupoint Encircled Badges ([LV-3], [ST-36], [SP-6])
-   - OpenType discretionary ligatures (dlig) and pill badge styling
+   - OpenType discretionary ligatures (dlig) and badge styling
    - Preserves uniform line-height rhythm without vertical baseline jumping
    ========================================================================== */
 
@@ -1155,7 +1155,7 @@
   font-size: 0.78rem;
 }
 
-/* Universal Dosage Badge Pill */
+/* Universal Dosage Badge Chip */
 .dosage-badge {
   display: inline-flex;
   align-items: center;

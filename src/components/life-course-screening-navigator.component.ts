@@ -1101,7 +1101,7 @@ export const TRADITIONS_METADATA: ITraditionMetadata[] = [
                 </p>
               </div>
 
-              <!-- Category Filter Pills -->
+              <!-- Category Filter Tabs -->
               <div class="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 shrink-0">
                 <button
                   (click)="traditionFilter.set('all')"

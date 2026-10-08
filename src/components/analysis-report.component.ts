@@ -445,7 +445,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                     @else if (state.activePhilosophy() === 'ayurvedic') { Ayurvedic Medicine }
                   </span>
 
-                  <!-- Dynamic Agent Pill -->
+                  <!-- Dynamic Agent Badge -->
                   <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-[12px] font-bold uppercase tracking-wider bg-gray-50/50 dark:bg-zinc-900/50 border-gray-200/40 dark:border-zinc-800/40"
                        [class.text-sky-700]="state.activePhilosophy() === 'western'"
                        [class.dark:text-sky-400]="state.activePhilosophy() === 'western'"
@@ -3168,7 +3168,7 @@ export class AnalysisReportComponent implements OnDestroy {
               </div>`;
             }
 
-            // Dieter Rams Rectilinear Task Bracketing (Replacing Pills)
+            // Dieter Rams Rectilinear Task Bracketing (Replacing Legacy Tokens)
             highlightedHtml = highlightedHtml
               .replace(/\[✓\s*APPROVED\]/gi, '<span class="rams-task-bracket approved">✓ APPROVED</span>')
               .replace(/\[⚡\s*IN-PROGRESS\]/gi, '<span class="rams-task-bracket in-progress">⚡ IN-PROGRESS</span>')

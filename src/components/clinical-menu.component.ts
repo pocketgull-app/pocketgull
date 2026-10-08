@@ -131,7 +131,7 @@ import { ChronoWeeklyMealPlannerComponent } from './chrono-weekly-meal-planner.c
             [class.dark:ring-emerald-400/30]="match.score >= 85">
             
             <div>
-              <!-- Course Badge, Patient Match Badge & Translucent Emoji Clinical Pill -->
+              <!-- Course Badge, Patient Match Badge & Translucent Emoji Clinical Badge -->
               <div class="flex items-center justify-between gap-3 mb-4">
                 <span class="text-[11px] font-mono font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
                   {{ item.category }}
@@ -167,7 +167,7 @@ import { ChronoWeeklyMealPlannerComponent } from './chrono-weekly-meal-planner.c
                 <span>{{ match.reason }}</span>
               </div>
 
-              <!-- Active Targeted Compounds Pills -->
+              <!-- Active Targeted Compounds Badges -->
               <div class="flex flex-wrap items-center gap-1.5 mb-4">
                 @for (c of item.activeCompounds; track c.name) {
                   <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/60 dark:border-zinc-700/60 text-[11px] font-mono text-zinc-700 dark:text-zinc-300">

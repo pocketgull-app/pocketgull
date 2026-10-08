@@ -159,8 +159,8 @@ try {
     }
   }
 } catch (e) {
-  // Not a git repo or git not installed, fallback to walkthrough.md
-  const localWalkthrough = path.resolve('walkthrough.md');
+  // Not a git repo or git not installed, fallback to docs/WALKTHROUGH.md
+  const localWalkthrough = path.resolve('docs', 'WALKTHROUGH.md');
   if (fs.existsSync(localWalkthrough)) {
     filesToCheck.push(localWalkthrough);
   }

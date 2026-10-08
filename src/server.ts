@@ -107,7 +107,7 @@ const ALLOWED_GEMINI_MODELS = new Set([
 
 function normalizeAndValidateModel(model: unknown): string {
   if (typeof model !== 'string' || !model.trim()) {
-    return 'gemini-3.7-flash';
+    return 'gemini-3.8-flash';
   }
   const normalized = model.trim().replace(/^models\//, '');
   if (!ALLOWED_GEMINI_MODELS.has(normalized)) {
@@ -1400,7 +1400,7 @@ if (isMainModule(import.meta.url)) {
 
                   // 2. Adjust Model Path
                   if (token) {
-                    const rawModel = (json.setup.model || 'gemini-2.0-flash-exp').replace(/^models\//, '');
+                    const rawModel = (json.setup.model || 'gemini-3.8-flash').replace(/^models\//, '');
                     const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
                     const location = process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1';
                     json.setup.model = `projects/${projectId}/locations/${location}/publishers/google/models/${rawModel}`;

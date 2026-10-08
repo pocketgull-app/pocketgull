@@ -40,8 +40,8 @@ describe('VisionAccessibilityAssistComponent', () => {
     expect(component.lastAnnouncement()).toContain('Heart Rate is 75');
   });
 
-  it('should scan pill and announce instructions when triggerPillScan is called', () => {
-    component.triggerPillScan();
+  it('should scan medication and announce instructions when triggerMedicationScan is called', () => {
+    component.triggerMedicationScan();
     expect(mockDictation.speakResponse).toHaveBeenCalledWith(expect.stringContaining('Metformin'));
     expect(component.lastAnnouncement()).toContain('Metformin');
   });

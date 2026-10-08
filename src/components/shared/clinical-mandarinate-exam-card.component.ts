@@ -177,7 +177,7 @@ import { ClinicalMandarinateExamService, IExamEvaluationResult } from '../../ser
               </div>
             </div>
 
-            <!-- Score Pill -->
+            <!-- Score Badge -->
             <div class="flex items-center gap-2">
               <span class="text-2xl font-black text-amber-400 font-mono">{{ res.overallScore }}%</span>
               <span class="text-xs font-mono text-zinc-500">/ 100%</span>

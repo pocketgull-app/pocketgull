@@ -265,7 +265,7 @@ import {
         </aside>
       }
 
-      <!-- Clinical Scenario Preset Pills -->
+      <!-- Clinical Scenario Preset Chips -->
       <nav class="flex flex-wrap items-center gap-2 mb-6" aria-label="Clinical Scenario Presets">
         <span class="text-xs font-mono text-zinc-400 font-semibold mr-1">Simulate Presentation:</span>
         <button

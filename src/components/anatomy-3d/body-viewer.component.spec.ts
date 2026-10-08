@@ -134,7 +134,7 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
     expect(viewer.filteredParts().some(p => p.id === 'cellular_mitochondria')).toBe(true);
   });
 
-  it('should filter search results by active paradigm pill', () => {
+  it('should filter search results by active paradigm tab', () => {
     viewer.searchQuery.set('');
     
     viewer.activeSystemFilter.set('eastern');

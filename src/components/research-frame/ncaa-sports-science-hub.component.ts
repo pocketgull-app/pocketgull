@@ -34,7 +34,7 @@ import { POCKETGULL_CORPORATE_IDENTITY } from '../../services/corporate-identity
           </p>
         </div>
 
-        <!-- Silo Boundary Security Pill -->
+        <!-- Silo Boundary Security Badge -->
         <div class="bg-stone-950 px-4 py-3 rounded-2xl border border-stone-800 space-y-1">
           <div class="flex items-center justify-between gap-3 text-[10px] font-mono text-stone-400">
             <span>🔒 Silo Boundary:</span>

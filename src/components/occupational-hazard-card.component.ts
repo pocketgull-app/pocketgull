@@ -29,7 +29,7 @@ import { ActuarialLongevityService, IOccupationalHazardProfile } from '../servic
             </p>
           </div>
 
-          <!-- Actuarial QALY Pill & Survival Reserve -->
+          <!-- Actuarial QALY Badge & Survival Reserve -->
           <div class="flex items-center gap-2">
             @if (actuarialProfile()?.survivalProbability5Year; as survivalProb) {
               <div class="px-3 py-1.5 rounded-xl text-xs font-bold border shadow-sm bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border-cyan-500/30 font-mono">

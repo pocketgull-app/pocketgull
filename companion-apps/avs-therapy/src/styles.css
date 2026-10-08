@@ -1,5 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import './styles/directcurves.css';
+
 
 /* Additional custom styles can go here */
