@@ -82,12 +82,17 @@
     "brace-expansion": "^2.1.7",
     "fast-uri": "^4.1.4",
     "qs": ">=6.16.0",
-    "postcss-selector-parser": ">=6.1.4",
+    "postcss-selector-parser": ">=7.1.6",
     "ip-address": ">=10.4.0",
     "js-yaml": ">=4.3.1",
     "hono": ">=4.13.8",
     "@hono/node-server": ">=2.1.0",
     "@angular/common": "^22.1.7",
-    "browserslist": ">=4.28.7"
+    "browserslist": ">=4.28.7",
+    "@modelcontextprotocol/sdk": ">=1.31.0",
+    "source-map-js": ">=1.2.2",
+    "engine.io": ">=6.6.11",
+    "proxy-addr": ">=2.0.8",
+    "compression": "^1.8.2"
   }
 }

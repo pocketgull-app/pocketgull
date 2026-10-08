@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:4471e7c3-06dc-46fc-999c-d9e889fa5c51",
+  "serialNumber": "urn:uuid:d3cd8a46-e2ca-437b-891d-c03b702a9122",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-10-08T00:19:03.566Z",
+    "timestamp": "2026-10-08T00:54:12.902Z",
     "tools": {
       "components": [
         {
@@ -14721,8 +14721,8 @@
     {
       "type": "library",
       "name": "compression",
-      "version": "1.8.1",
-      "purl": "pkg:npm/compression@1.8.1",
+      "version": "1.8.2",
+      "purl": "pkg:npm/compression@1.8.2",
       "scope": "required",
       "licenses": [
         {
@@ -14734,7 +14734,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "f6602a18f1cb6a48422de372c4f90ae31568ef8eb343f7332c7d4acbebe48ad32759f599a6cf2bd2a5eec21c22cda80246db6c2f895f1b8a483af6962e900fd3"
+          "content": "a3cbc8e5113903a11554e77da38d632a9e35689a26f904c43bf071f0c60d8dec4ca3f06fd963a351f66bf9a2f45a7612832994cbacde82ea8b4ec22157480cbd"
         }
       ]
     },
@@ -23862,8 +23862,8 @@
     {
       "type": "library",
       "name": "proxy-addr",
-      "version": "2.0.7",
-      "purl": "pkg:npm/proxy-addr@2.0.7",
+      "version": "2.0.8",
+      "purl": "pkg:npm/proxy-addr@2.0.8",
       "scope": "required",
       "licenses": [
         {
@@ -23875,7 +23875,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "96542c30b4940d43d3e388ddad4fcedfbaa59e27e2b433fe670ae699972848ac8b2afb59c69c95d27dbf6c3fcde2d040019fe024475953b28cadaa0ad7e5d802"
+          "content": "e679f1d321b2554718eadf519d6700456b704fd1750fc3bdaedd3c86d3ef9dde3d5b522066d98b921bbd59f333423d5c1718c720ee9ca279d43555b993b015c9"
         }
       ]
     },
@@ -25562,8 +25562,8 @@
     {
       "type": "library",
       "name": "shell-quote",
-      "version": "1.10.0",
-      "purl": "pkg:npm/shell-quote@1.10.0",
+      "version": "1.12.0",
+      "purl": "pkg:npm/shell-quote@1.12.0",
       "scope": "excluded",
       "licenses": [
         {
@@ -25575,7 +25575,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "c356a238ac0ab9182dc0045e2088fcf69baa83e23b1af5f821b2ebbe68576f342c8f5f99c22e153b7f9f6ba645f754d64a3231a0490a9cc78770b10e0cae595c"
+          "content": "3dc072a8dc93ff7f05da40cd8b4d3a1c031125a50bb81ceafc53acc37a9d66f5ff180f56fe36a60da46c9201e3b9b1e27ed5cae6c205c4b364beb5d4c1ca1fe9"
         }
       ]
     },
@@ -25922,8 +25922,8 @@
     {
       "type": "library",
       "name": "source-map-js",
-      "version": "1.2.1",
-      "purl": "pkg:npm/source-map-js@1.2.1",
+      "version": "1.2.2",
+      "purl": "pkg:npm/source-map-js@1.2.2",
       "scope": "required",
       "licenses": [
         {
@@ -25935,7 +25935,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "51758c2a12cec1529bef6f0852d40f5f17d853ebac7726ed52b2bff2e184f0240cbeb84ea70bf30c1c23d108522fb31073bbc8b084811bc550f3e203431a5f40"
+          "content": "2868fff18e37c77e5a6550edb7e27898ad61a0b18750b3187d290e0c93508cd0c2de85b53ea3e8c4cc28d292d4b1633f5041b338dfcdc5e1f2c047cd5cd3f757"
         }
       ]
     },
