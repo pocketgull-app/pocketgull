@@ -1,5 +1,6 @@
 import '@angular/compiler';
 import { Injector, runInInjectionContext, PLATFORM_ID, signal, NgZone } from '@angular/core';
+import * as THREE from 'three';
 import { Body3DViewerComponent } from './body-3d-viewer.component';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PatientManagementService } from '../../services/patient-management.service';
@@ -301,5 +302,49 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     const femaleEvent = { target: { value: 'homo_sapiens_female' } } as unknown as Event;
     viewer.onArchetypeChange(femaleEvent);
     expect(viewer.activeArchetype()).toBe('homo_sapiens_female');
+  });
+
+  it('correctly models and renders organs, muscles, bones, silicas, and implants in ghost view', () => {
+    const viewer = createViewer();
+    const event = { target: { value: 'ghost' } } as unknown as Event;
+    viewer.onParadigmChange(event);
+    expect(viewer.effectiveAnatomyViewMode()).toBe('ghost');
+
+    // Create a mock group with skin, bone, muscle, organ, implant, silica
+    const makeMockMesh = (layer: string) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshStandardMaterial());
+      m.userData['layer'] = layer;
+      m.userData['id'] = `part_${layer}`;
+      return m;
+    };
+
+    const skinMesh = makeMockMesh('skin');
+    const boneMesh = makeMockMesh('bone');
+    const muscleMesh = makeMockMesh('muscle');
+    const organMesh = makeMockMesh('organ');
+    const implantMesh = makeMockMesh('implant');
+    const silicaMesh = makeMockMesh('silica');
+
+    const partGroup = new THREE.Group();
+    partGroup.userData['id'] = 'test_part';
+    partGroup.add(skinMesh, boneMesh, muscleMesh, organMesh, implantMesh, silicaMesh);
+    (viewer as any).parts = new Map([['test_part', partGroup]]);
+
+    (viewer as any).updateTransparency('ghost');
+
+    expect((boneMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.95);
+    expect((boneMesh.material as THREE.MeshStandardMaterial).depthWrite).toBe(true);
+
+    expect((muscleMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.55);
+    expect((muscleMesh.material as THREE.MeshStandardMaterial).depthWrite).toBe(true);
+
+    expect((organMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.85);
+    expect((organMesh.material as THREE.MeshStandardMaterial).depthWrite).toBe(true);
+
+    expect((implantMesh.material as THREE.MeshStandardMaterial).opacity).toBe(1.0);
+    expect((implantMesh.material as THREE.MeshStandardMaterial).depthWrite).toBe(true);
+
+    expect((silicaMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.92);
+    expect((silicaMesh.material as THREE.MeshStandardMaterial).depthWrite).toBe(true);
   });
 });

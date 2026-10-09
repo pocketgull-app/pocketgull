@@ -78,7 +78,11 @@ const PART_NAMES: Record<string, string> = {
     'respiratory_airway': 'Micro-Acoustic Wheeze & Stridor Spectrum Lens',
     'chakra_manipura': 'Manipura (Solar Plexus Agni Fire City)',
     'chakra_svadhisthana': 'Svadhisthana (Sacral Water Dwell Chakra)',
-    'chakra_muladhara': 'Muladhara (Root Earth Base Support Chakra)'
+    'chakra_muladhara': 'Muladhara (Root Earth Base Support Chakra)',
+    // 🩺 Orthopedic Fixation Hardware & Bioactive Silica Bone Scaffolds
+    'orthopedic_femur_fixation': 'Femoral DCP Titanium Plate & Cortical Screws',
+    'orthopedic_lumbar_hardware': 'L4-L5 Pedicle Screws & Spinal Fusion Rods',
+    'silica_bone_scaffold': 'Bioactive Silica Scaffold (Bioglass 45S5 Osteoconductive Graft)'
 };
 
 export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing';
@@ -3583,6 +3587,12 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                     if (layer === 'organ') {
                         (material as THREE.MeshStandardMaterial).emissive.setHex(paradigmEmissive);
                         (material as THREE.MeshStandardMaterial).emissiveIntensity = 0.25;
+                    } else if (layer === 'silica') {
+                        (material as THREE.MeshStandardMaterial).emissive.setHex(0x0284c7);
+                        (material as THREE.MeshStandardMaterial).emissiveIntensity = 0.45;
+                    } else if (layer === 'implant') {
+                        (material as THREE.MeshStandardMaterial).emissive.setHex(0x52525b);
+                        (material as THREE.MeshStandardMaterial).emissiveIntensity = 0.25;
                     } else if (layer === 'bone' && maxPain > 0) {
                         (material as THREE.MeshStandardMaterial).emissive.setHex(0xff3333);
                     } else if (layer !== 'molecular') {
@@ -3647,7 +3657,31 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                     } else if (layer === 'muscle') {
                         child.material = baseMaterial;
                         if (baseMaterial instanceof THREE.MeshStandardMaterial) {
-                            baseMaterial.opacity = 0.70;
+                            baseMaterial.opacity = 0.55;
+                            baseMaterial.depthWrite = true;
+                        }
+                    } else if (layer === 'organ') {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0.85;
+                            baseMaterial.depthWrite = true;
+                        }
+                    } else if (layer === 'implant') {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 1.0;
+                            baseMaterial.depthWrite = true;
+                        }
+                    } else if (layer === 'silica') {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0.92;
+                            baseMaterial.depthWrite = true;
+                        }
+                    } else if (layer === 'neurovascular') {
+                        child.material = baseMaterial;
+                        if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                            baseMaterial.opacity = 0.75;
                             baseMaterial.depthWrite = true;
                         }
                     } else {
@@ -3700,12 +3734,15 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                     if (layer === 'skin') { material.opacity = 0.25; material.depthWrite = false; }
                     else if (layer === 'muscle') { material.opacity = 0.0; material.depthWrite = false; }
                     else if (layer === 'bone') { material.opacity = 1.0; material.depthWrite = true; }
+                    else if (layer === 'implant') { material.opacity = 1.0; material.depthWrite = true; }
+                    else if (layer === 'silica') { material.opacity = 0.92; material.depthWrite = true; }
                     else { material.opacity = 0; material.depthWrite = false; }
                 }
                 else if (mode === 'organs') {
                     if (layer === 'skin') { material.opacity = 0.40; material.depthWrite = false; }
                     else if (layer === 'organ') { material.opacity = 0.95; material.depthWrite = true; }
                     else if (layer === 'bone') { material.opacity = 0.20; material.depthWrite = false; }
+                    else if (layer === 'silica') { material.opacity = 0.85; material.depthWrite = true; }
                     else { material.opacity = 0; material.depthWrite = false; }
                 }
                 else if (mode === 'molecular') {
@@ -3726,6 +3763,16 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 else if (mode === 'biomechanical_strain') {
                     if (layer === 'skin') { material.opacity = 0.20; material.depthWrite = false; }
                     else if (layer === 'bone') { material.opacity = 1.0; material.depthWrite = true; }
+                    else if (layer === 'implant') { material.opacity = 1.0; material.depthWrite = true; }
+                    else if (layer === 'silica') { material.opacity = 0.90; material.depthWrite = true; }
+                    else { material.opacity = 0; material.depthWrite = false; }
+                }
+                else if (mode === 'osteopathic') {
+                    if (layer === 'skin') { material.opacity = 0.25; material.depthWrite = false; }
+                    else if (layer === 'bone') { material.opacity = 0.95; material.depthWrite = true; }
+                    else if (layer === 'implant') { material.opacity = 1.0; material.depthWrite = true; }
+                    else if (layer === 'silica') { material.opacity = 0.95; material.depthWrite = true; }
+                    else if (layer === 'organ') { material.opacity = 0.35; material.depthWrite = false; }
                     else { material.opacity = 0; material.depthWrite = false; }
                 }
             });

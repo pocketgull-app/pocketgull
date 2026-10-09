@@ -49,7 +49,8 @@ describe('BodyMeshFactoryService', () => {
       'r_shoulder', 'l_shoulder', 'r_arm', 'l_arm', 'r_hand', 'l_hand',
       'r_thigh', 'l_thigh', 'r_shin', 'l_shin', 'r_foot', 'l_foot',
       'oral_fdi_teeth', 'chakra_sahasrara', 'chakra_muladhara',
-      'acupoint_gv20', 'acupoint_cv17'
+      'acupoint_gv20', 'acupoint_cv17',
+      'orthopedic_femur_fixation', 'orthopedic_lumbar_hardware', 'silica_bone_scaffold'
     ];
 
     for (const partId of requiredParts) {
@@ -74,9 +75,9 @@ describe('BodyMeshFactoryService', () => {
     }
   });
 
-  it('should assign valid layer metadata to all anatomical meshes', () => {
+  it('should assign valid layer metadata to all anatomical meshes including implants and silicas', () => {
     const { group } = service.createMannequinGroup('III', 'ecorche');
-    const validLayers = new Set(['skin', 'muscle', 'bone', 'organ', 'neurovascular', 'dermatome', 'chakra', 'acupoint']);
+    const validLayers = new Set(['skin', 'muscle', 'bone', 'organ', 'neurovascular', 'dermatome', 'chakra', 'acupoint', 'implant', 'silica']);
 
     let nonProxyMeshCount = 0;
     group.traverse((child) => {
@@ -88,6 +89,46 @@ describe('BodyMeshFactoryService', () => {
     });
 
     expect(nonProxyMeshCount).toBeGreaterThan(40);
+  });
+
+  it('should correctly model orthopedic titanium implants and bioactive silica scaffolds', () => {
+    const { parts } = service.createMannequinGroup('III', 'homo_sapiens_male');
+
+    // 1. Femur DCP fixation plate and screws
+    const femurFixation = parts.get('orthopedic_femur_fixation');
+    expect(femurFixation).toBeTruthy();
+    let implantMeshCount = 0;
+    femurFixation?.traverse(c => {
+      if (c instanceof THREE.Mesh && !c.userData['isTouchProxy'] && c.userData['layer'] === 'implant') {
+        implantMeshCount++;
+      }
+    });
+    // Plate (1) + 4 Cortical screws = 5 meshes
+    expect(implantMeshCount).toBe(5);
+
+    // 2. Lumbar L4-L5 pedicle screws and fusion rods
+    const lumbarHardware = parts.get('orthopedic_lumbar_hardware');
+    expect(lumbarHardware).toBeTruthy();
+    let lumbarHardwareMeshCount = 0;
+    lumbarHardware?.traverse(c => {
+      if (c instanceof THREE.Mesh && !c.userData['isTouchProxy'] && c.userData['layer'] === 'implant') {
+        lumbarHardwareMeshCount++;
+      }
+    });
+    // 4 Pedicle screws + 2 bilateral rods = 6 meshes
+    expect(lumbarHardwareMeshCount).toBe(6);
+
+    // 3. Bioactive silica scaffold and granules
+    const silicaScaffold = parts.get('silica_bone_scaffold');
+    expect(silicaScaffold).toBeTruthy();
+    let silicaMeshCount = 0;
+    silicaScaffold?.traverse(c => {
+      if (c instanceof THREE.Mesh && !c.userData['isTouchProxy'] && c.userData['layer'] === 'silica') {
+        silicaMeshCount++;
+      }
+    });
+    // 1 scaffold lattice + 4 micro-granules = 5 meshes
+    expect(silicaMeshCount).toBe(5);
   });
 
   it('should create Fitts Law touch proxies for clickable meshes', () => {

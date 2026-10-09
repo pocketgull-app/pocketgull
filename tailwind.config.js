@@ -37,6 +37,7 @@ module.exports = {
                 }
             },
             fontFamily: {
+                'pocketgull-serif': ['"PocketGull Serif"', '"PocketGull Serif VF"', 'Georgia', 'serif'],
                 'pocketgull-math': ['"PocketGull Math"', '"PocketGull Mono"', 'JetBrains Mono', 'monospace'],
                 'pocketgull-chem': ['"PocketGull Chem"', '"PocketGull"', 'Atkinson Hyperlegible Next', 'sans-serif'],
                 'pocketgull-genome': ['"PocketGull Genome"', '"PocketGull Mono"', 'JetBrains Mono', 'monospace'],

@@ -2,7 +2,10 @@ import { describe, it, expect } from 'vitest';
 import {
   createAnatomicalEllipsoid,
   createProceduralCylinder,
-  createFullScreenQuad
+  createFullScreenQuad,
+  createOrthopedicBoneScrew,
+  createOrthopedicFixationPlate,
+  createBioactiveSilicaScaffold
 } from './procedural-mesh';
 
 describe('Procedural Anatomical Geometry Generators', () => {
@@ -62,4 +65,43 @@ describe('Procedural Anatomical Geometry Generators', () => {
     expect(quad.vertexData[16]).toBe(1.0); // x2
     expect(quad.vertexData[17]).toBe(1.0); // y2
   });
+
+  it('should generate an orthopedic bone screw with countersunk head and helical threads', () => {
+    const shankR = 0.02;
+    const headR = 0.04;
+    const length = 0.25;
+    const screw = createOrthopedicBoneScrew(shankR, headR, length, 0.03, 16, 24, 301);
+
+    expect(screw.partId).toBe(301);
+    expect(screw.vertexData.length % 8).toBe(0);
+    expect(screw.indexCount).toBeGreaterThan(0);
+    expect(screw.indexCount % 3).toBe(0); // Valid triangles
+    expect(screw.indexData.length).toBe(screw.indexCount);
+
+    // Top pole vertex should be at headHeight
+    expect(screw.vertexData[1]).toBeCloseTo(headR * 0.75, 4);
+    // Normal at top should point up (y = 1)
+    expect(screw.vertexData[4]).toBe(1.0);
+  });
+
+  it('should generate an orthopedic fixation plate (DCP) with counterbored screw holes', () => {
+    const plate = createOrthopedicFixationPlate(0.30, 0.06, 0.015, 4, 12, 302);
+
+    expect(plate.partId).toBe(302);
+    expect(plate.vertexData.length % 8).toBe(0);
+    expect(plate.indexCount).toBeGreaterThan(0);
+    expect(plate.indexCount % 3).toBe(0);
+    expect(plate.indexData.length).toBe(plate.indexCount);
+  });
+
+  it('should generate an interconnected porous bioactive silica scaffold (Bioglass 45S5)', () => {
+    const scaffold = createBioactiveSilicaScaffold(0.10, 0.25, 0.65, 303);
+
+    expect(scaffold.partId).toBe(303);
+    expect(scaffold.vertexData.length % 8).toBe(0);
+    expect(scaffold.indexCount).toBeGreaterThan(0);
+    expect(scaffold.indexCount % 3).toBe(0);
+    expect(scaffold.indexData.length).toBe(scaffold.indexCount);
+  });
 });
+
