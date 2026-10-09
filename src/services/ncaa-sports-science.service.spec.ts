@@ -71,4 +71,36 @@ describe('NcaaSportsScienceService Suite', () => {
     service.resetConcussionProtocol();
     expect(service.currentConcussionStage()).toBe(1);
   });
+
+  it('6. Generates UO Knight Campus & Bowerman Tendon Bioprinting Stepped-Care Recovery Plan', () => {
+    const plan = service.getTendonBioprintingRecoveryPlan('uo_ducks', 'Achilles Tendon');
+    expect(plan.partnerId).toBe('uo_ducks');
+    expect(plan.partnerName).toContain('Oregon');
+    expect(plan.scaffoldType).toBe('Knight Campus VAM Hydrogel');
+    expect(plan.targetAnatomy).toBe('Achilles Tendon');
+    expect(plan.phases.length).toBe(4);
+    expect(plan.phases[0].biographeneResonanceBenchmarkHz).toContain('Delta f: -800 to -14,500 Hz');
+    expect(plan.phases[2].trackKinematicsTarget).toContain('Hayward Field');
+    expect(plan.phases[3].allowedMicroStrainPercent).toBe(10.0);
+  });
+
+  it('7. Computes scaffold mechanotransduction safety and collagen alignment scores', () => {
+    // Early post-implant (Day 7) with low strain: should be safe
+    const early = service.computeScaffoldMechanotransductionScore(1.2, 1.0, 7);
+    expect(early.isSafeForProgressiveLoading).toBe(true);
+    expect(early.ruptureRiskPercent).toBeLessThan(25);
+    expect(early.maturationIndexPercent).toBeLessThan(20);
+
+    // Overload on Day 14 with high strain (8%): should warn critical overload
+    const overload = service.computeScaffoldMechanotransductionScore(8.0, 1.5, 14);
+    expect(overload.isSafeForProgressiveLoading).toBe(false);
+    expect(overload.ruptureRiskPercent).toBeGreaterThan(50);
+    expect(overload.recommendation).toContain('CRITICAL OVERLOAD');
+
+    // Mature graft on Day 90 with optimal stimulus: should be safe with high alignment
+    const mature = service.computeScaffoldMechanotransductionScore(4.5, 1.2, 90);
+    expect(mature.isSafeForProgressiveLoading).toBe(true);
+    expect(mature.collagenAlignmentScorePercent).toBeGreaterThan(80);
+  });
 });
+

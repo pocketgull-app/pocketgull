@@ -123,6 +123,7 @@ import { GlycemicMinimalModelCardComponent } from './components/clinical/glycemi
 import { PancreaticIslet3dLensComponent } from './components/anatomy-3d/pancreatic-islet-3d-lens.component';
 import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-matrix-card.component';
 import { Cyp3a4Heme3dLensComponent } from './components/anatomy-3d/cyp3a4-heme-3d-lens.component';
+import { BioprintingScaffold3dLensComponent } from './components/anatomy-3d/bioprinting-scaffold-3d-lens.component';
 import { StewartHamiltonPacCardComponent } from './components/clinical/stewart-hamilton-pac-card.component';
 import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin-tone-equity-card.component';
 
@@ -224,6 +225,7 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
     PancreaticIslet3dLensComponent,
     Cyp450DdiMatrixCardComponent,
     Cyp3a4Heme3dLensComponent,
+    BioprintingScaffold3dLensComponent,
     StewartHamiltonPacCardComponent,
     MonkSkinToneEquityCardComponent
   ],
@@ -1701,6 +1703,15 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
               class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
               🧬 CYP3A4 Heme Slicer (V10)
             </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('bioprinting_scaffold')"
+              [class.bg-emerald-600]="activeBiophysicalLensTab() === 'bioprinting_scaffold'"
+              [class.text-white]="activeBiophysicalLensTab() === 'bioprinting_scaffold'"
+              [class.text-emerald-400]="activeBiophysicalLensTab() !== 'bioprinting_scaffold'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[44px] touch-manipulation focus-visible:ring-2 focus-visible:ring-emerald-400">
+              🧬 UO Knight Bioprinting &amp; Scaffold Lens
+            </button>
 
             <div class="h-4 w-px bg-zinc-700 mx-1 hidden sm:block"></div>
             <div class="text-[10px] uppercase font-bold text-zinc-500 px-2">Clinical Phenotypers:</div>
@@ -1784,6 +1795,8 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
               <app-pancreatic-islet-3d-lens />
             } @else if (activeBiophysicalLensTab() === 'cyp_heme') {
               <app-cyp3a4-heme-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'bioprinting_scaffold') {
+              <app-bioprinting-scaffold-3d-lens />
             } @else if (activeBiophysicalLensTab() === 'kdigo_aki') {
               <app-kdigo-aki-phenotyper-card />
             } @else if (activeBiophysicalLensTab() === 'baroreflex') {
@@ -1855,7 +1868,7 @@ export class AppComponent implements OnDestroy {
   showAustereHudModal = signal(false);
   showKneeHologramModal = signal(false);
   showBiophysicalLensesModal = signal(false);
-  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz' | 'monk_equity'>('cardiac');
+  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'bioprinting_scaffold' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz' | 'monk_equity'>('cardiac');
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
