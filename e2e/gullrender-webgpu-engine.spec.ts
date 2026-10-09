@@ -77,12 +77,36 @@ test.describe('GullRender In-House Browser Rendering Engine Suite', () => {
     await expect(webgpuLens.locator('text=Cerebrum (Frontal/Parietal)')).toBeVisible({ timeout: 5000 });
     await expect(webgpuLens.locator('text=大脳')).toBeVisible();
 
-    // 3. Morph to [ecg_lead_ii] rhythm strip glyph
+    // 3. Morph to [liver] font glyph
+    const liverBtn = webgpuLens.locator('button:has-text("[liver]")').first();
+    await liverBtn.click();
+    await expect(webgpuLens.locator('text=Hepar (Lobus Dexter/Sinister)')).toBeVisible({ timeout: 5000 });
+    await expect(webgpuLens.locator('text=肝臓')).toBeVisible();
+
+    // 4. Morph to [kidney] font glyph
+    const kidneyBtn = webgpuLens.locator('button:has-text("[kidney]")').first();
+    await kidneyBtn.click();
+    await expect(webgpuLens.locator('text=Renes (Renal Cortex & Hilum)')).toBeVisible({ timeout: 5000 });
+    await expect(webgpuLens.locator('text=腎臓')).toBeVisible();
+
+    // 5. Morph to [spine] font glyph
+    const spineBtn = webgpuLens.locator('button:has-text("[spine]")').first();
+    await spineBtn.click();
+    await expect(webgpuLens.locator('text=Columna Vertebralis (C/T/L)')).toBeVisible({ timeout: 5000 });
+    await expect(webgpuLens.locator('text=脊柱').first()).toBeVisible();
+
+    // 6. Morph to [knee] RSNA font glyph
+    const kneeBtn = webgpuLens.locator('button:has-text("[knee]")').first();
+    await kneeBtn.click();
+    await expect(webgpuLens.locator('text=Articulatio Genus (RSNA Knee)')).toBeVisible({ timeout: 5000 });
+    await expect(webgpuLens.locator('text=膝関節')).toBeVisible();
+
+    // 7. Morph to [ecg_lead_ii] rhythm strip glyph
     const ecgBtn = webgpuLens.locator('button:has-text("[ecg_lead_ii]")').first();
     await ecgBtn.click();
     await expect(webgpuLens.locator('text=Eindhoven Lead II ECG')).toBeVisible({ timeout: 5000 });
 
-    // 4. Return to procedural ventricle mesh
+    // 8. Return to procedural ventricle mesh
     const ventricleBtn = webgpuLens.locator('button:has-text("3D Ventricle Mesh")').first();
     await ventricleBtn.click();
     await expect(webgpuLens.locator('text=Cor / Ventriculus Sinister')).toBeVisible({ timeout: 5000 });
@@ -155,6 +179,14 @@ test.describe('GullRender In-House Browser Rendering Engine Suite', () => {
     const ipRgcBadge = webgpuLens.locator('text=480nm ipRGC Safe');
     await expect(ipRgcBadge).toBeVisible({ timeout: 5000 });
 
+    // 2b. Verify Automated mEDI Telemetry Meter satisfies CIE S 026 <10 lx Night Shield standard
+    const mediBadge = webgpuLens.locator('span:has-text("mEDI:")').first();
+    await expect(mediBadge).toBeVisible({ timeout: 5000 });
+    await expect(webgpuLens.locator('text=Night Shield <10 lx').first()).toBeVisible({ timeout: 5000 });
+
+    const mediBottomTile = webgpuLens.locator('text=CIE S 026 Melanopic EDI').first();
+    await expect(mediBottomTile).toBeVisible();
+
     // 3. Test Sloan 5:1 Optotype Selector
     const mesopicBtn = webgpuLens.locator('button:has-text("Mesopic")').first();
     await expect(mesopicBtn).toBeVisible();
@@ -164,5 +196,6 @@ test.describe('GullRender In-House Browser Rendering Engine Suite', () => {
     const dayBtn = webgpuLens.locator('button:has-text("Day")').first();
     await dayBtn.click();
     await expect(helmholtzBadge).not.toBeVisible();
+    await expect(webgpuLens.locator('text=Day Alertness Acuity').first()).toBeVisible({ timeout: 5000 });
   });
 });

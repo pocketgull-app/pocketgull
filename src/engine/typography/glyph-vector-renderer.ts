@@ -64,6 +64,30 @@ export const MEDICAL_GLYPH_REGISTRY: Record<string, { name: string; pathD: strin
     name: 'Eindhoven Lead II P-Q-R-S-T Waveform',
     pathD: 'M -50 0 L -35 0 C -30 -6 -25 -6 -20 0 L -15 0 L -10 6 L 0 -45 L 8 18 L 15 0 L 25 0 C 32 -12 40 -12 48 0 L 60 0',
     partId: 106
+  },
+  // Hepatic / Gastroenterological
+  '[liver]': {
+    name: 'Hepatic Lobes & Visceral Porta Hepatis',
+    pathD: 'M -40 45 C -30 20 10 15 45 35 C 52 50 48 78 38 88 C 20 94 8 85 -5 85 C -18 85 -35 70 -40 45 Z',
+    partId: 107
+  },
+  // Renal / Nephrological (Bilateral Kidneys)
+  '[kidney]': {
+    name: 'Bilateral Renal Lobes & Hilum Morphology',
+    pathD: 'M -30 25 C -50 25 -55 55 -52 80 C -50 100 -40 105 -30 105 C -18 105 -12 85 -18 65 C -22 50 -18 25 -30 25 Z M 30 25 C 18 25 22 50 18 65 C 12 85 18 105 30 105 C 40 105 50 100 52 80 C 55 55 50 25 30 25 Z',
+    partId: 108
+  },
+  // Musculoskeletal / Spinal Column (Segmented Vertebrae)
+  '[spine]': {
+    name: 'Vertebral Column & Facet Architecture',
+    pathD: 'M -18 18 L 18 18 L 26 28 L 14 34 L 14 40 L -14 40 L -14 34 L -26 28 Z M -20 48 L 20 48 L 30 60 L 16 66 L 16 74 L -16 74 L -16 66 L -30 60 Z M -24 82 L 24 82 L 36 96 L 18 104 L 18 114 L -18 114 L -18 104 L -36 96 Z',
+    partId: 109
+  },
+  // Articular / Orthopedic (RSNA Knee Cartilage & Condyles)
+  '[knee]': {
+    name: 'RSNA Articular Knee Cartilage & Meniscus',
+    pathD: 'M -36 20 L -36 50 C -36 68 -18 72 -8 62 C -3 56 3 56 8 62 C 18 72 36 68 36 50 L 36 20 Z M -38 78 C -24 76 -12 80 -4 72 L 0 66 L 4 72 C 12 80 24 76 38 78 C 40 96 32 110 18 114 L -18 114 C -32 110 -40 96 -38 78 Z',
+    partId: 110
   }
 };
 

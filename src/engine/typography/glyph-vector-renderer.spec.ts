@@ -65,7 +65,17 @@ describe('GlyphVectorRenderer (Font Glyph & Anatomical Vector Engine)', () => {
   });
 
   it('should compile medical OpenType ligature tokens into valid 3D anatomical meshes', () => {
-    const tokens = ['[heart]', '[lungs]', '[brain]', '[acupoint_gv20]', '[chakra_anahata]'];
+    const tokens = [
+      '[heart]',
+      '[lungs]',
+      '[brain]',
+      '[acupoint_gv20]',
+      '[chakra_anahata]',
+      '[liver]',
+      '[kidney]',
+      '[spine]',
+      '[knee]'
+    ];
 
     for (const token of tokens) {
       const mesh = GlyphVectorRenderer.compileGlyphSymbolTo3DMesh(token, {
