@@ -59,4 +59,21 @@ describe('WhoEssentialMedicinesService', () => {
     expect(ors.openCompoundingMonograph).toContain('Sodium Chloride 2.6g');
     expect(ors.openCompoundingMonograph).toContain('Potassium Chloride 1.5g');
   });
+
+  it('should include sickle cell disease and HIV antiretroviral therapies in WHO EML catalog', () => {
+    const hydroxyurea = service.searchMedicines('hydroxyurea');
+    expect(hydroxyurea.length).toBeGreaterThan(0);
+    expect(hydroxyurea[0].genericInn).toContain('Hydroxycarbamidum');
+    expect(hydroxyurea[0].clinicalIndication).toContain('Sickle cell disease');
+    expect(hydroxyurea[0].isPediatricFriendly).toBe(true);
+
+    const efavirenz = service.searchMedicines('efavirenz');
+    expect(efavirenz.length).toBeGreaterThan(0);
+    expect(efavirenz[0].openCompoundingMonograph).toContain('CYP2B6*6');
+
+    // Audit with sickle cell medication
+    const audit = service.auditPrescriptionRegimen(['Brand Droxia (Hydroxyurea 500mg)']);
+    expect(audit.auditedCount).toBe(1);
+    expect(audit.netMonthlySavingsUsd).toBeGreaterThan(100);
+  });
 });

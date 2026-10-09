@@ -83,6 +83,16 @@ export const MULTILINGUAL_SMS_PROMPTS: Record<string, { morning: string; afterno
     morning: 'Bom dia! Meça sua pressão sentado após 5m de repouso. Envie os números como "120/80".',
     afternoon: 'Lembrete do meio-dia: Tomou seu remédio? Beba um copo de água. Responda "SIM" ou "AJUDA".',
     evening: 'Checagem noturna: Fez 15m de caminhada hoje? Responda 1 (Sim), 2 (Descansei), 3 (Dor articular).'
+  },
+  sw: {
+    morning: 'Habari ya asubuhi! Pima shinikizo la damu (BP) baada ya kupumzika dakika 5. Jibu namba kama "120/80".',
+    afternoon: 'Kikumbusho cha mchana: Je, umemeza dawa zako ulizopewa? Kunywa glasi ya maji. Jibu "NDIYO" au "MSAADA".',
+    evening: 'Uchunguzi wa jioni: Umetembea dakika 15 leo? Jibu 1 (Ndiyo), 2 (Nimepumzika), 3 (Maumivu ya viungo).'
+  },
+  ha: {
+    morning: 'Barka da safe! Auna hawan jini (BP) bayan ka huta na minti 5. Aiko da lambobi kamar "120/80".',
+    afternoon: 'Tuntubar rana: Ka sha maganinka kuwa? Sha kofin ruwa mai tsafta. Aiko da "EH" ko "TAIMAKO".',
+    evening: 'Duba na yamma: Ka yi tafiyar minti 15 a yau? Aiko da 1 (Eh), 2 (Na huta), 3 (Ciwon gabbai).'
   }
 };
 
@@ -177,6 +187,7 @@ export class SmsEquityBridgeService {
     if (lower.includes('chest pain') || lower.includes('short of breath')) detectedSymptoms.push('Acute Dyspnea / Chest Discomfort');
     if (lower.includes('headache')) detectedSymptoms.push('Tension Cephalea');
     if (lower.includes('sad') || lower.includes('crying') || lower.includes('overwhelmed')) detectedSymptoms.push('Mood Dysphoria');
+    if (lower.includes('fever') || lower.includes('homa') || lower.includes('chills') || lower.includes('zazzabi')) detectedSymptoms.push('Febrile / Malaria Screen Indicated');
 
     // Urgency calculation
     let urgency: 'ROUTINE' | 'ELEVATED' | 'CRITICAL_CALL_911' = 'ROUTINE';
@@ -191,7 +202,7 @@ export class SmsEquityBridgeService {
       urgency = 'ELEVATED';
       autoResponse = `Logged: ${bp ? 'BP ' + bp : ''} ${detectedSymptoms.join(', ')}. Your care team has been notified. Please sit down and rest.`;
       points = 15;
-    } else if (lower.startsWith('med') || lower.includes('taken') || lower.includes('yes')) {
+    } else if (lower.startsWith('med') || lower.includes('taken') || lower.includes('yes') || lower.includes('ndiyo') || lower.includes('eh') || lower.includes('oui') || lower.includes('sim')) {
       points = 15;
       autoResponse = '✅ Pocket Gull: Medication adherence logged (+15 pts Game Theory Rebate). Keep up the great streak!';
     }

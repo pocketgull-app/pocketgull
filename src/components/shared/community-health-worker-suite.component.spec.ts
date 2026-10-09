@@ -577,5 +577,21 @@ describe('CommunityHealthWorkerSuiteComponent', () => {
       await component.flushOfflineQueue();
       expect(flushSpy).toHaveBeenCalled();
     });
+
+    it('should switch to regional_supply_chain tab and expose pharmacy hubs and foodsheds', () => {
+      component.activeTab.set('regional_supply_chain');
+      component.supplyChainService.setRegion('AFRICA_WEST_CENTRAL');
+      fixture.detectChanges();
+
+      const activeReg = component.supplyChainService.activeRegion();
+      expect(activeReg.primaryPharmacies.length).toBeGreaterThanOrEqual(1);
+      expect(activeReg.primaryPharmacies[0].name).toContain('mPharma');
+
+      expect(activeReg.primaryFoodsheds.length).toBeGreaterThanOrEqual(1);
+      expect(activeReg.primaryFoodsheds[0].name).toContain('Sandaga');
+      expect(activeReg.primaryFoodsheds[0].indigenousStaples).toContain('White Fonio (Digitaria exilis)');
+    });
   });
 });
+
+

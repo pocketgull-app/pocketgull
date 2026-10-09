@@ -64,4 +64,22 @@ describe('ProduceRxNutritionReferralService', () => {
     expect(bundle.entry[0].resource.resourceType).toBe('ServiceRequest');
     expect(bundle.entry[1].resource.resourceType).toBe('NutritionOrder');
   });
+
+  it('should generate an international agroecology Produce Rx referral for Dakar Sahelian foodshed', () => {
+    const referral = service.generateProduceRxReferral({
+      patientId: 'pat-sahel-001',
+      patientName: 'Amina Diop',
+      conditions: ['Type 2 Diabetes Mellitus', 'Nutritional Anemia'],
+      destinationCity: 'Dakar & Sahel Foodshed',
+      coopsAndMarkets: ['Marché Sandaga', 'Marché Tilène Agroecology Guild'],
+      specialtyHeritageFoods: ['White Fonio (Digitaria exilis)', 'Moringa Oleifera fresh leaves', 'Baobab fruit powder'],
+      programs: ['African_Agroecology_Coop'],
+      monthlyAllotmentUsd: 45
+    });
+
+    expect(referral.eligiblePrograms).toContain('African_Agroecology_Coop');
+    expect(referral.prescribedDestinationCity).toContain('Sahel');
+    expect(referral.approvedHeritageProduce).toContain('White Fonio (Digitaria exilis)');
+    expect(referral.fhirNutritionOrderJson['oralDiet'].instruction).toContain('White Fonio');
+  });
 });

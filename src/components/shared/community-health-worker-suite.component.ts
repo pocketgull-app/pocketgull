@@ -7,6 +7,7 @@ import { AustereMeshSyncService } from '../../services/austere-mesh-sync.service
 import { PediatricDosingEngineService } from '../../services/pediatric-dosing-engine.service';
 import { UnicefOpenDataService } from '../../services/unicef-open-data.service';
 import { NetworkStateService } from '../../services/network-state.service';
+import { RegionalSupplyChainService } from '../../services/regional-supply-chain.service';
 import { BrandedQrCodeComponent } from './branded-qr-code.component';
 import {
   FrontlineVernacularVoiceService,
@@ -15,7 +16,7 @@ import {
   ITriageVoiceContext
 } from '../../services/frontline-vernacular-voice.service';
 
-export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain' | 'austere_mesh_sync' | 'pediatric_dosing' | 'unicef_open_data';
+export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain' | 'austere_mesh_sync' | 'pediatric_dosing' | 'unicef_open_data' | 'regional_supply_chain';
 
 export interface IMuacTriageResult {
   muacMm: number;
@@ -232,6 +233,16 @@ export interface IDehydrationTriageResult {
                 [class.text-zinc-400]="activeTab() !== 'unicef_open_data'"
                 class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
           <span>🌐</span> 10. UNICEF Open Data &amp; SDMX
+        </button>
+
+        <button type="button"
+                (click)="activeTab.set('regional_supply_chain')"
+                id="btn-tab-regional-supply-chain"
+                [class.bg-emerald-700]="activeTab() === 'regional_supply_chain'"
+                [class.text-white]="activeTab() === 'regional_supply_chain'"
+                [class.text-zinc-400]="activeTab() !== 'regional_supply_chain'"
+                class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
+          <span>🌍</span> 11. Regional Pharmacies &amp; Foodsheds
         </button>
       </nav>
 
@@ -2114,6 +2125,165 @@ export interface IDehydrationTriageResult {
         </section>
       }
 
+      <!-- MODULE 11: Regional Generic Pharmacies & Indigenous Foodsheds -->
+      @if (activeTab() === 'regional_supply_chain') {
+        <section class="mt-4 p-4 sm:p-6 bg-zinc-900/60 rounded-3xl border border-zinc-800 space-y-6 animate-in fade-in duration-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                  <span>🌍</span> Regional Generic Pharmacies &amp; Indigenous Foodsheds
+                </h3>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">
+                  Sovereign Supply Chain
+                </span>
+              </div>
+              <p class="text-xs text-zinc-400 mt-0.5">
+                Connecting patients to local state-subsidized generic dispensaries and ancestral climate-resilient food cooperatives
+              </p>
+            </div>
+
+            <!-- Region Selector Dropdown -->
+            <div class="flex items-center gap-2">
+              <label for="chw-region-supply-select" class="text-xs font-mono text-zinc-400">Continent / Region:</label>
+              <select id="chw-region-supply-select"
+                      [ngModel]="supplyChainService.activeRegionCode()"
+                      (ngModelChange)="supplyChainService.setRegion($event)"
+                      class="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs font-mono text-zinc-200 focus:outline-none focus:border-emerald-500">
+                @for (reg of supplyChainService.availableRegions(); track reg.code) {
+                  <option [value]="reg.code">{{ reg.name }} ({{ reg.currency }})</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Region Benchmark Banner -->
+          <div class="p-4 rounded-2xl bg-zinc-950 border border-emerald-800/40 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
+            <div>
+              <span class="text-zinc-500 block uppercase text-[10px]">Active Geographic Hub:</span>
+              <strong class="text-emerald-300 text-sm block">{{ supplyChainService.activeRegion().regionName }}</strong>
+            </div>
+            <div>
+              <span class="text-zinc-500 block uppercase text-[10px]">Estimated Chronic Essential Bundle:</span>
+              <strong class="text-teal-300 text-sm block">{{ supplyChainService.generateRegionalCarePlanReferral({}).estimatedMonthlyDrugCostLocalCurrency }}</strong>
+            </div>
+            <div class="px-2.5 py-1 rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-700 text-[10px] font-bold">
+              80% - 95% Below Monopoly Retail
+            </div>
+          </div>
+
+          <!-- Two-Column Grid: Pharmacies vs Foodsheds -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <!-- 1. Regional Generic Pharmacy Networks -->
+            <div class="p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800 space-y-3">
+              <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                <h4 class="text-xs font-bold uppercase font-mono text-sky-400 flex items-center gap-1.5">
+                  <span>💊</span> Verified Generic Pharmacies &amp; Compounding Hubs
+                </h4>
+                <span class="text-[10px] font-mono text-zinc-500">WHO EML Prequalified</span>
+              </div>
+
+              <div class="space-y-3">
+                @for (pharm of supplyChainService.activeRegion().primaryPharmacies; track pharm.id) {
+                  <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 space-y-2 text-xs">
+                    <div class="flex items-start justify-between gap-2">
+                      <div>
+                        <strong class="text-zinc-100 font-bold block">{{ pharm.name }}</strong>
+                        <span class="text-[10px] text-zinc-400">{{ pharm.coverageDescription }}</span>
+                      </div>
+                      <span class="px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-mono text-[10px] font-bold whitespace-nowrap">
+                        -{{ pharm.typicalSavingsVsBrandPct }}% Brand
+                      </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-[10px] text-center">
+                      <div class="p-1.5 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block">Metformin</span>
+                        <strong class="text-emerald-400">\${{ pharm.samplePriceBenchmarksUsd.metforminMonthly.toFixed(2) }}/mo</strong>
+                      </div>
+                      <div class="p-1.5 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block">Amlodipine</span>
+                        <strong class="text-emerald-400">\${{ pharm.samplePriceBenchmarksUsd.amlodipineMonthly.toFixed(2) }}/mo</strong>
+                      </div>
+                      <div class="p-1.5 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block">Amoxicillin</span>
+                        <strong class="text-emerald-400">\${{ pharm.samplePriceBenchmarksUsd.amoxicillinCourse.toFixed(2) }}</strong>
+                      </div>
+                      <div class="p-1.5 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block">ORS Sachet</span>
+                        <strong class="text-emerald-400">\${{ pharm.samplePriceBenchmarksUsd.orsSachet.toFixed(2) }}</strong>
+                      </div>
+                    </div>
+
+                    <div class="text-[11px] text-zinc-400 pt-1">
+                      <span class="text-zinc-500 font-mono">Offline Access:</span> {{ pharm.offlineAccessProtocol }}
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- 2. Indigenous Foodshed & Agroecological Cooperatives -->
+            <div class="p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800 space-y-3">
+              <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                <h4 class="text-xs font-bold uppercase font-mono text-emerald-400 flex items-center gap-1.5">
+                  <span>🌾</span> Indigenous Foodshed &amp; Farmer Cooperatives
+                </h4>
+                <span class="text-[10px] font-mono text-zinc-500">Ancestral Whole Foods</span>
+              </div>
+
+              <div class="space-y-3">
+                @for (food of supplyChainService.activeRegion().primaryFoodsheds; track food.id) {
+                  <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 space-y-2 text-xs">
+                    <div class="flex items-start justify-between gap-2">
+                      <div>
+                        <strong class="text-zinc-100 font-bold block">{{ food.name }}</strong>
+                        <span class="text-[10px] text-zinc-400">{{ food.location }}</span>
+                      </div>
+                      <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono text-[10px] font-bold whitespace-nowrap">
+                        -{{ food.averageCostReductionVsImportPct }}% vs Import
+                      </span>
+                    </div>
+
+                    <div class="space-y-1">
+                      <span class="text-[10px] uppercase font-mono text-zinc-400 font-bold block">Ancestral Superfoods &amp; Staples:</span>
+                      <div class="flex flex-wrap gap-1">
+                        @for (staple of food.indigenousStaples; track staple) {
+                          <span class="px-2 py-0.5 rounded-md bg-emerald-950/60 text-emerald-200 border border-emerald-800/40 text-[10px]">
+                            {{ staple }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="space-y-1 pt-1">
+                      <span class="text-[10px] uppercase font-mono text-zinc-400 font-bold block">Clinical &amp; Metabolic Synergies:</span>
+                      <ul class="list-disc list-inside text-[11px] text-zinc-300 space-y-0.5">
+                        @for (synergy of food.clinicalMetabolicSynergies; track synergy) {
+                          <li>{{ synergy }}</li>
+                        }
+                      </ul>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Actionable Sovereignty Directives -->
+          <div class="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2 text-xs">
+            <span class="text-[10px] font-mono uppercase font-bold text-amber-400 block">
+              🛡️ Frontline CHW Clinical Guidance for this Region:
+            </span>
+            <ul class="list-disc list-inside text-zinc-300 space-y-1">
+              @for (directive of supplyChainService.activeRegion().sovereigntyRecommendations; track directive) {
+                <li class="leading-relaxed">{{ directive }}</li>
+              }
+            </ul>
+          </div>
+        </section>
+      }
+
       <!-- Offline QR Handoff Modal Overlay -->
       @if (showQrModal()) {
         <div class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
@@ -2165,6 +2335,7 @@ export class CommunityHealthWorkerSuiteComponent {
   readonly meshSync = inject(AustereMeshSyncService, { optional: true }) ?? new AustereMeshSyncService();
   readonly pediatricDosing = inject(PediatricDosingEngineService, { optional: true }) ?? new PediatricDosingEngineService();
   readonly unicefService = inject(UnicefOpenDataService, { optional: true }) ?? new UnicefOpenDataService();
+  readonly supplyChainService = inject(RegionalSupplyChainService, { optional: true }) ?? new RegionalSupplyChainService();
   readonly network = inject(NetworkStateService, { optional: true }) ?? new NetworkStateService();
   readonly close = output<void>();
 

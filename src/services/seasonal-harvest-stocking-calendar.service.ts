@@ -69,12 +69,81 @@ export class SeasonalHarvestStockingCalendarService {
       case 'dest_loma_linda': return 'Loma Linda Inland Empire, California';
       case 'dest_nicoya': return 'Nicoya Peninsula, Costa Rica';
       case 'dest_lewiston': return 'Lewiston & Androscoggin River, Maine';
+      case 'dest_sahel_dakar': return 'Sahel & West Africa Agroecological Foodshed (Senegal/Mali/Niger)';
+      case 'dest_ethiopia_highlands': return 'Horn of Africa & Ethiopian Highlands (Addis/Rift Valley)';
       default: return 'Regional Foodshed';
     }
   }
 
   private getHarvestDataForCity(cityId: string): Omit<ISeasonalHarvestItem, 'isCurrentlyInPeak' | 'estimatedRetailPriceIndex'>[] {
     switch (cityId) {
+      case 'dest_sahel_dakar':
+        return [
+          {
+            id: 'sahel_fonio',
+            name: 'White Fonio (Acha)',
+            scientificName: 'Digitaria exilis',
+            peakMonths: [8, 9, 10, 11], // Post-monsoon Sahelian harvest
+            phytonutrientHighlight: 'Low glycemic index (GI 49), methionine, cystine, leucine, prebiotic fiber',
+            clinicalTargetBenefit: 'Metabolic disease reversal, diabetes insulin sensitivity, liver glutathione regeneration, and celiac gut healing (100% gluten-free).',
+            storageRecommendation: 'Thoroughly dried whole grains store safely in earthenware or sealed containers for over 2 years without pest damage.',
+            culinarySynergy: 'Steam as a fluffy couscous substitute; pair with moringa leaf sauce and slow-simmered cowpea stew.'
+          },
+          {
+            id: 'sahel_moringa',
+            name: 'Moringa Oleifera ("The Miracle Tree")',
+            scientificName: 'Moringa oleifera',
+            peakMonths: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], // Year-round arid perennial foliage
+            phytonutrientHighlight: '7x vitamin C of oranges, 4x calcium of milk, 3x potassium of bananas, quercetin, chlorogenic acid',
+            clinicalTargetBenefit: 'Pediatric micronutrient fortification, postpartum galactagogue, endothelial antioxidant buffering, and postprandial glucose blunting.',
+            storageRecommendation: 'Dry freshly picked leaves in gentle shade to preserve chlorophyll and polyphenols; grind into fine green powder.',
+            culinarySynergy: 'Stir 1-2 tsp fresh or powdered moringa into vegetable stews, fonio porridge, or warm infusions at the end of cooking.'
+          },
+          {
+            id: 'sahel_cowpeas',
+            name: 'Cowpeas & Bambara Groundnut (Niebe)',
+            scientificName: 'Vigna unguiculata / Vigna subterranea',
+            peakMonths: [9, 10, 11, 12], // Dry season legume harvest
+            phytonutrientHighlight: '24% bioavailable plant protein, resistant starch, soluble pectin, polyphenolic anthocyanins',
+            clinicalTargetBenefit: 'Satiety regulation, colonic short-chain fatty acid (butyrate) synthesis, and blood lipid optimization; fixes living nitrogen into arid soils.',
+            storageRecommendation: 'Sun-dry thoroughly with a dusting of clean wood ash to naturally deter weevils; store in dry clay silos.',
+            culinarySynergy: 'Simmer with heirloom onions, tomatoes, and ground baobab fruit for a complete plant protein profile.'
+          },
+          {
+            id: 'sahel_baobab',
+            name: 'Baobab Fruit Pulp ("Tree of Life")',
+            scientificName: 'Adansonia digitata',
+            peakMonths: [12, 1, 2, 3, 4], // Ripens and dries naturally on tree branches
+            phytonutrientHighlight: '50% dietary fiber (75% soluble prebiotic pectin), 6x vitamin C of citrus, calcium, potassium, magnesium',
+            clinicalTargetBenefit: 'Microbiome prebiotic bifurcation (Akkermansia and Bifidobacteria bloom), immune barrier reinforcement, and electrolyte rehydration.',
+            storageRecommendation: 'Naturally dry within its woody shell; pound dry pulp into powder. Shelf-stable at room temperature for 3 years.',
+            culinarySynergy: 'Dissolve 1 tbsp into cold water, clean goat milk, or hibiscus infusion (Bissap) for an unheated probiotic elixir.'
+          }
+        ];
+
+      case 'dest_ethiopia_highlands':
+        return [
+          {
+            id: 'ethiopia_teff',
+            name: 'Ivory & Brown Teff',
+            scientificName: 'Eragrostis tef',
+            peakMonths: [10, 11, 12, 1], // Post-Meher seasonal harvest
+            phytonutrientHighlight: 'High bioavailable non-heme iron (15mg/100g), calcium (180mg/100g), 8 essential amino acids, slow-release prebiotic resistant starch',
+            clinicalTargetBenefit: 'Severe microcytic anemia resolution, pregnancy red-cell mass expansion, microbiome butyrate fermentation, and steady glycemic curve.',
+            storageRecommendation: 'Tiny grain size resists storage pests; keep in dry ventilated granaries.',
+            culinarySynergy: 'Ferment with wild yeasts for 72 hours into sourdough Injera flatbread, enhancing zinc and iron bioavailability.'
+          },
+          {
+            id: 'ethiopia_sorghum',
+            name: 'Heirloom Bicolor Sorghum',
+            scientificName: 'Sorghum bicolor',
+            peakMonths: [11, 12, 1], // Late autumn harvest
+            phytonutrientHighlight: '3-deoxyanthocyanidins, condensed tannins, insoluble fiber, policosanols',
+            clinicalTargetBenefit: 'Profound antioxidant capacity surpassing blueberries; slows starch digestibility, preventing insulin resistance and metabolic surge.',
+            storageRecommendation: 'Store unhulled grain in sealed earthenware urns in a cool pantry.',
+            culinarySynergy: 'Coarsely crack and simmer into warming breakfast porridge or blend into sourdough flatbreads.'
+          }
+        ];
       case 'dest_ojai':
         return [
           {

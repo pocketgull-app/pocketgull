@@ -71,4 +71,25 @@ describe('SmsEquityBridgeService - Health Equity SMS Bridge Suite', () => {
     expect(parsed.adherencePointsEarned).toBe(15);
     expect(parsed.automatedResponseText).toContain('Medication adherence logged');
   });
+
+  it('6. Generates localized Swahili and Hausa 2G SMS prompts for frontline health equity', () => {
+    const swahiliPlan = service.getBridgePlan(mockPatient, 'sw');
+    expect(swahiliPlan.dailyPrompts[0].messageBody).toContain('shinikizo la damu');
+    expect(swahiliPlan.dailyPrompts[1].messageBody).toContain('dawa zako');
+
+    const hausaPlan = service.getBridgePlan(mockPatient, 'ha');
+    expect(hausaPlan.dailyPrompts[0].messageBody).toContain('hawan jini');
+    expect(hausaPlan.dailyPrompts[1].messageBody).toContain('maganinka');
+  });
+
+  it('7. Parses febrile symptom and multilingual affirmative medication adherence (Swahili/Hausa)', () => {
+    const inboundFever = 'BP 118/76 feeling high fever and chills today';
+    const parsedFever = service.parseInboundSms(inboundFever, 'p001');
+    expect(parsedFever.detectedSymptoms).toContain('Febrile / Malaria Screen Indicated');
+    expect(parsedFever.urgencyLevel).toBe('ELEVATED');
+
+    const inboundSwahiliMed = 'Ndiyo nimekunywa dawa zangu';
+    const parsedSw = service.parseInboundSms(inboundSwahiliMed, 'p001');
+    expect(parsedSw.adherencePointsEarned).toBe(15);
+  });
 });
