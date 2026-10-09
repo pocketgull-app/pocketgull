@@ -31,6 +31,7 @@ export class WebGl2Backend implements IRendererBackend {
   private uniformLocations: Record<string, WebGLUniformLocation | null> = {};
   private meshes: Map<number, IGlMeshHandle> = new Map();
   private nextMeshId = 1;
+  private lastCircadianTone = 0.0;
 
   // Offscreen Framebuffer for Picking
   private pickFbo: WebGLFramebuffer | null = null;
@@ -70,7 +71,7 @@ export class WebGl2Backend implements IRendererBackend {
     const uniformNames = [
       'uViewProjMatrix', 'uModelMatrix', 'uCameraPos', 'uTimeSec',
       'uHeartRateBpm', 'uConductionVelocity', 'uQtcIntervalMs',
-      'uEadInstability', 'uMeshPartId'
+      'uEadInstability', 'uMeshPartId', 'uCircadianTone', 'uVagalResonance'
     ];
     for (const name of uniformNames) {
       this.uniformLocations[name] = gl.getUniformLocation(prog, name);
@@ -191,6 +192,13 @@ export class WebGl2Backend implements IRendererBackend {
     if (this.uniformLocations['uMeshPartId']) {
       gl.uniform1ui(this.uniformLocations['uMeshPartId'], payload.meshPartId);
     }
+    if (this.uniformLocations['uCircadianTone']) {
+      gl.uniform1f(this.uniformLocations['uCircadianTone'], payload.circadianTone ?? 0.0);
+    }
+    if (this.uniformLocations['uVagalResonance']) {
+      gl.uniform1f(this.uniformLocations['uVagalResonance'], payload.vagalResonance ?? 1.0);
+    }
+    this.lastCircadianTone = payload.circadianTone ?? 0.0;
   }
 
   renderFrame(): void {
@@ -199,9 +207,14 @@ export class WebGl2Backend implements IRendererBackend {
 
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
+    const tone = this.lastCircadianTone;
+    const clearR = 0.035 + tone * 0.016;
+    const clearG = 0.035;
+    const clearB = Math.max(0.012, 0.043 - tone * 0.028);
+
     // 1. Render to Screen
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.clearColor(0.035, 0.035, 0.043, 1.0); // Dark obsidian base
+    gl.clearColor(clearR, clearG, clearB, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     gl.useProgram(this.program);

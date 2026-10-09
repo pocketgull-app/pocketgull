@@ -40,6 +40,7 @@ export class WebGpuBackend implements IRendererBackend {
 
   private meshes: Map<number, IGpuMeshHandle> = new Map();
   private nextMeshId = 1;
+  private lastCircadianTone = 0.0;
 
   async init(canvas: HTMLCanvasElement): Promise<boolean> {
     if (typeof navigator === 'undefined' || !navigator.gpu) {
@@ -187,7 +188,11 @@ export class WebGpuBackend implements IRendererBackend {
 
     const uView = new Uint32Array(buf.buffer);
     uView[40] = payload.meshPartId;      // 40: 32-bit uint part ID
+    buf[41] = payload.circadianTone ?? 0.0;   // 41: Circadian tone in [0, 1]
+    buf[42] = payload.vagalResonance ?? 1.0;  // 42: 0.1 Hz vagal pulse strength
+    buf[43] = 0.0; // padding to 16-byte boundary
 
+    this.lastCircadianTone = payload.circadianTone ?? 0.0;
     this.device.queue.writeBuffer(this.uniformBuffer, 0, buf);
   }
 
@@ -197,13 +202,19 @@ export class WebGpuBackend implements IRendererBackend {
     const currentTex = this.context.getCurrentTexture();
     const colorView = currentTex.createView();
 
+    const tone = this.lastCircadianTone;
+    // Circadian substrate: shifts from peat obsidian to warm candlelight obsidian
+    const clearR = 0.035 + tone * 0.016;
+    const clearG = 0.035;
+    const clearB = Math.max(0.012, 0.043 - tone * 0.028);
+
     const encoder = this.device.createCommandEncoder({ label: 'GullRender_Encoder' });
     const pass = encoder.beginRenderPass({
       label: 'GullRender_Pass',
       colorAttachments: [
         {
           view: colorView,
-          clearValue: { r: 0.035, g: 0.035, b: 0.043, a: 1.0 }, // Dark obsidian base
+          clearValue: { r: clearR, g: clearG, b: clearB, a: 1.0 },
           loadOp: 'clear',
           storeOp: 'store'
         },

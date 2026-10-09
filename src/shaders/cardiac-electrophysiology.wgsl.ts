@@ -18,7 +18,9 @@ struct FrameUniforms {
   qtcIntervalMs: f32,
   eadInstability: f32,
   meshPartId: u32,
-  padding: vec3<f32>,
+  circadianTone: f32,
+  vagalResonance: f32,
+  padding: f32,
 };
 
 @group(0) @binding(0) var<uniform> u: FrameUniforms;
@@ -91,21 +93,40 @@ fn fs_main(in: VertexOutput) -> FragmentOutput {
   let viewDir = normalize(u.cameraPos - in.worldPos);
   let fresnel = pow(1.0 - max(dot(viewDir, in.worldNormal), 0.0), 3.0);
 
-  // Action Potential Voltage Color Mapping
-  // Resting (-90mV) = Dark Obsidian Blue (0.04, 0.08, 0.16)
-  // Depolarized (+25mV) = Radiant Rose (0.96, 0.25, 0.35)
-  // EAD Oscillatory Hazard = Saffron Gold (1.0, 0.85, 0.2)
-  let restColor = vec3<f32>(0.04, 0.08, 0.16);
-  let depolarizedColor = vec3<f32>(0.96, 0.25, 0.35);
-  let eadSpikeColor = vec3<f32>(1.0, 0.85, 0.2);
+  // Neuro-Ergonomic & Circadian Color Temperature Mapping (RSNA Standard):
+  // Day (0.0): Clinical acuity high-contrast cyan-blue resting state
+  // Dusk (0.5): Soft amber transition
+  // Night (1.0): Warm Candlelight Phosphor (0.12, 0.07, 0.02) with 480nm ipRGC suppression
+  let dayRestColor = vec3<f32>(0.04, 0.08, 0.16);
+  let nightRestColor = vec3<f32>(0.12, 0.07, 0.02);
+  let restColor = mix(dayRestColor, nightRestColor, u.circadianTone);
+
+  let dayDepolarized = vec3<f32>(0.96, 0.25, 0.35);
+  let nightDepolarized = vec3<f32>(0.98, 0.46, 0.14);
+  let depolarizedColor = mix(dayDepolarized, nightDepolarized, u.circadianTone);
+
+  let eadSpikeColor = mix(vec3<f32>(1.0, 0.85, 0.2), vec3<f32>(1.0, 0.65, 0.1), u.circadianTone);
 
   var finalColor = mix(restColor, depolarizedColor, in.actionPotential);
   if (in.actionPotential > 1.0) {
     finalColor = mix(finalColor, eadSpikeColor, in.actionPotential - 1.0);
   }
 
-  // Emissive Fresnel border
-  finalColor += vec3<f32>(0.1, 0.75, 0.95) * fresnel * 0.55;
+  // 0.1 Hz Vagal Parasympathetic Rhythm Modulation (10-second breath cycle)
+  let vagalWave = sin(u.timeSec * 0.628318) * 0.5 + 0.5; // 0.1 Hz = 2*pi*0.1 rad/s
+  let vagalGlow = vagalWave * u.vagalResonance * 0.12;
+  finalColor += vec3<f32>(0.15, 0.42, 0.22) * vagalGlow; // Parasympathetic restorative jade glow
+
+  // Emissive Fresnel border: softened in night mode to prevent Helmholtz retinal irradiation
+  let fresnelColor = mix(vec3<f32>(0.1, 0.75, 0.95), vec3<f32>(0.85, 0.60, 0.20), u.circadianTone);
+  let fresnelStrength = mix(0.55, 0.22, u.circadianTone);
+  finalColor += fresnelColor * fresnel * fresnelStrength;
+
+  // Blue Wavelength (480nm) Attenuation for Late-Night Melatonin Protection
+  if (u.circadianTone > 0.15) {
+    let blueAtten = 1.0 - (u.circadianTone - 0.15) * 0.82;
+    finalColor.z *= clamp(blueAtten, 0.15, 1.0);
+  }
 
   out.color = vec4<f32>(finalColor, 0.95);
   out.pickId = u.meshPartId;

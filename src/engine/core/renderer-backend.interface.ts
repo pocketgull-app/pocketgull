@@ -27,6 +27,8 @@ export interface IUniformPayload {
   qtcIntervalMs: number;
   eadInstability: number;
   meshPartId: number;
+  circadianTone?: number;       // 0.0 = Day (6500K), 0.5 = Dusk (3500K), 1.0 = Night (2000K, sub-480nm blue suppressed)
+  vagalResonance?: number;      // 0.1 Hz vagal parasympathetic modulation strength
   customFloats?: number[];      // Optional extra bio-parameters
 }
 

@@ -73,6 +73,9 @@ in float vActionPotential;
 
 uniform vec3 uCameraPos;
 uniform uint uMeshPartId;
+uniform float uTimeSec;
+uniform float uCircadianTone;
+uniform float uVagalResonance;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out uint pickId;
@@ -81,16 +84,37 @@ void main() {
     vec3 viewDir = normalize(uCameraPos - vWorldPos);
     float fresnel = pow(1.0 - max(dot(viewDir, vWorldNormal), 0.0), 3.0);
 
-    vec3 restColor = vec3(0.04, 0.08, 0.16);
-    vec3 depolarizedColor = vec3(0.96, 0.25, 0.35);
-    vec3 eadSpikeColor = vec3(1.0, 0.85, 0.2);
+    // Neuro-Ergonomic & Circadian Color Temperature Mapping (RSNA Standard):
+    vec3 dayRestColor = vec3(0.04, 0.08, 0.16);
+    vec3 nightRestColor = vec3(0.12, 0.07, 0.02);
+    vec3 restColor = mix(dayRestColor, nightRestColor, uCircadianTone);
+
+    vec3 dayDepolarized = vec3(0.96, 0.25, 0.35);
+    vec3 nightDepolarized = vec3(0.98, 0.46, 0.14);
+    vec3 depolarizedColor = mix(dayDepolarized, nightDepolarized, uCircadianTone);
+
+    vec3 eadSpikeColor = mix(vec3(1.0, 0.85, 0.2), vec3(1.0, 0.65, 0.1), uCircadianTone);
 
     vec3 finalColor = mix(restColor, depolarizedColor, vActionPotential);
     if (vActionPotential > 1.0) {
         finalColor = mix(finalColor, eadSpikeColor, vActionPotential - 1.0);
     }
 
-    finalColor += vec3(0.1, 0.75, 0.95) * fresnel * 0.55;
+    // 0.1 Hz Vagal Parasympathetic Rhythm Modulation
+    float vagalWave = sin(uTimeSec * 0.628318) * 0.5 + 0.5;
+    float vagalGlow = vagalWave * uVagalResonance * 0.12;
+    finalColor += vec3(0.15, 0.42, 0.22) * vagalGlow;
+
+    // Emissive Fresnel border: softened in night mode
+    vec3 fresnelColor = mix(vec3(0.1, 0.75, 0.95), vec3(0.85, 0.60, 0.20), uCircadianTone);
+    float fresnelStrength = mix(0.55, 0.22, uCircadianTone);
+    finalColor += fresnelColor * fresnel * fresnelStrength;
+
+    // Blue Wavelength (480nm) Attenuation
+    if (uCircadianTone > 0.15) {
+        float blueAtten = 1.0 - (uCircadianTone - 0.15) * 0.82;
+        finalColor.z *= clamp(blueAtten, 0.15, 1.0);
+    }
 
     fragColor = vec4(finalColor, 0.95);
     pickId = uMeshPartId;

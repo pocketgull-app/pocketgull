@@ -131,4 +131,38 @@ test.describe('GullRender In-House Browser Rendering Engine Suite', () => {
     await gullRenderBtn.click();
     await expect(page.locator('app-cardiac-webgpu-lens')).toBeVisible({ timeout: 10000 });
   });
+
+  test('should enforce RSNA eye care principles: Circadian Chrono-Dock, Helmholtz anti-halation, and Sloan optotype', async ({ page }) => {
+    const appsHubBtn = page.locator('#btn-apps-hub-trigger, button:has-text("Apps & Portals")').first();
+    await appsHubBtn.click();
+    await page.waitForTimeout(200);
+
+    const bioLensBtn = page.locator('[data-testid="btn-open-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")').first();
+    await bioLensBtn.click();
+
+    const webgpuLens = page.locator('app-cardiac-webgpu-lens');
+    await expect(webgpuLens).toBeVisible({ timeout: 15000 });
+
+    // 1. Verify Chrono-Dock is visible and click Night
+    const nightBtn = webgpuLens.locator('button:has-text("Night")').first();
+    await expect(nightBtn).toBeVisible();
+    await nightBtn.click();
+
+    // 2. In Night mode, Helmholtz anti-halation and 480nm ipRGC badges become visible
+    const helmholtzBadge = webgpuLens.locator('text=Helmholtz -3.75% Anti-Halation');
+    await expect(helmholtzBadge).toBeVisible({ timeout: 5000 });
+
+    const ipRgcBadge = webgpuLens.locator('text=480nm ipRGC Safe');
+    await expect(ipRgcBadge).toBeVisible({ timeout: 5000 });
+
+    // 3. Test Sloan 5:1 Optotype Selector
+    const mesopicBtn = webgpuLens.locator('button:has-text("Mesopic")').first();
+    await expect(mesopicBtn).toBeVisible();
+    await mesopicBtn.click();
+
+    // 4. Return to Day mode
+    const dayBtn = webgpuLens.locator('button:has-text("Day")').first();
+    await dayBtn.click();
+    await expect(helmholtzBadge).not.toBeVisible();
+  });
 });

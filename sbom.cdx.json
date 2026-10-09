@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:ef254609-ff21-475e-9b23-c9588bbf0cb4",
+  "serialNumber": "urn:uuid:d9d72a17-d061-4db3-9835-9577cdc38749",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-10-08T02:28:09.538Z",
+    "timestamp": "2026-10-09T19:34:19.276Z",
     "tools": {
       "components": [
         {
@@ -18454,8 +18454,8 @@
     {
       "type": "library",
       "name": "handlebars",
-      "version": "4.7.9",
-      "purl": "pkg:npm/handlebars@4.7.9",
+      "version": "4.7.10",
+      "purl": "pkg:npm/handlebars@4.7.10",
       "scope": "required",
       "licenses": [
         {
@@ -18467,7 +18467,7 @@
       "hashes": [
         {
           "alg": "SHA-512",
-          "content": "e04ef5134ae939a42e251d80df10d9f863351f2598bf5725479f2d0bc7a640d7907b7447ecc03349b6adf95d301bbf0b401a3a9ba6f3486fcbe2906e0ac82751"
+          "content": "3f954931533baa0067eaf8d7330f161bdb9523e9dc7f6a62ef68f875ee32cf96542cb8f6446a8b61a28e606b20cab562434b5e3ce565375b430825d7b45a972a"
         }
       ]
     },

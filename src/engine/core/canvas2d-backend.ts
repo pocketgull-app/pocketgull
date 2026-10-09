@@ -54,8 +54,10 @@ export class Canvas2dBackend implements IRendererBackend {
     const hr = this.lastPayload ? this.lastPayload.heartRateBpm : 72;
     const qtc = this.lastPayload ? this.lastPayload.qtcIntervalMs : 440;
 
-    // Dark Obsidian Background
-    ctx.fillStyle = '#09090b';
+    const tone = this.lastPayload?.circadianTone ?? 0.0;
+
+    // Dark Obsidian (Day/Dusk) or Candlelight Obsidian (Night) Background
+    ctx.fillStyle = tone >= 0.6 ? '#0d0906' : '#09090b';
     ctx.fillRect(0, 0, w, h);
 
     // Bio-rhythmic pulsation
@@ -99,10 +101,10 @@ export class Canvas2dBackend implements IRendererBackend {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Institutional Telemetry Stamp
+    // Institutional Telemetry Stamp with Helmholtz Anti-Halation Color
     ctx.font = '11px monospace';
-    ctx.fillStyle = '#a1a1aa';
-    ctx.fillText(`TIER 3 FAILSAFE ACTIVE • HR: ${Math.round(hr)} BPM • QTc: ${Math.round(qtc)} ms`, 16, h - 20);
+    ctx.fillStyle = tone > 0.3 ? '#ede3d2' : '#a1a1aa';
+    ctx.fillText(`TIER 3 FAILSAFE ACTIVE • HR: ${Math.round(hr)} BPM • QTc: ${Math.round(qtc)} ms • CHRONO: ${tone >= 0.8 ? 'NIGHT (2000K)' : (tone >= 0.4 ? 'DUSK (3500K)' : 'DAY (6500K)')}`, 16, h - 20);
   }
 
   async pickPartAt(x: number, y: number): Promise<number> {

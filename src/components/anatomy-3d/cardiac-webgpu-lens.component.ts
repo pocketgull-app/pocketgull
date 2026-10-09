@@ -52,15 +52,31 @@ export type GeometryDisplayMode =
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="flex flex-col w-full bg-zinc-950 font-mono text-zinc-100 rounded-3xl border border-rose-500/30 overflow-hidden shadow-2xl relative mb-6">
+    <div class="flex flex-col w-full font-mono rounded-3xl border overflow-hidden shadow-2xl relative mb-6 transition-all duration-500"
+         [class.bg-zinc-950]="circadianTone() < 0.6"
+         [class.bg-[#0d0906]]="circadianTone() >= 0.6"
+         [class.border-rose-500/30]="circadianTone() < 0.6"
+         [class.border-amber-600/30]="circadianTone() >= 0.6"
+         [style.fontWeight]="circadianTone() > 0.3 ? '385' : '400'"
+         [style.color]="circadianTone() > 0.3 ? '#ede3d2' : '#f4f4f5'">
       
       <!-- Top HUD Header -->
-      <div class="flex flex-wrap items-center justify-between p-4 bg-zinc-900/90 border-b border-zinc-800 gap-3 z-20 shrink-0">
+      <div class="flex flex-wrap items-center justify-between p-4 border-b gap-3 z-20 shrink-0 transition-colors duration-500"
+           [class.bg-zinc-900/90]="circadianTone() < 0.6"
+           [class.bg-[#140e0a]/90]="circadianTone() >= 0.6"
+           [class.border-zinc-800]="circadianTone() < 0.6"
+           [class.border-amber-950/60]="circadianTone() >= 0.6">
         <div class="flex items-center gap-3">
-          <span class="w-3.5 h-3.5 rounded-full bg-rose-500 shadow-[0_0_14px_rgba(244,63,94,0.95)] animate-pulse"></span>
+          <span class="w-3.5 h-3.5 rounded-full transition-colors duration-500"
+                [class.bg-rose-500]="circadianTone() < 0.6"
+                [class.shadow-[0_0_14px_rgba(244,63,94,0.95)]]="circadianTone() < 0.6"
+                [class.bg-amber-500]="circadianTone() >= 0.6"
+                [class.shadow-[0_0_14px_rgba(245,158,11,0.95)]]="circadianTone() >= 0.6"
+                [class.animate-pulse]="true"></span>
           <div>
             <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="text-xs sm:text-sm font-black uppercase text-zinc-100 flex items-center gap-1.5">
+              <h3 class="text-xs sm:text-sm font-black uppercase flex items-center gap-1.5"
+                  [style.color]="circadianTone() > 0.3 ? '#ede3d2' : '#f4f4f5'">
                 <span>⚡</span>
                 <span>GullRender 3D Bio-Electrophysiology Lens</span>
               </h3>
@@ -81,39 +97,95 @@ export type GeometryDisplayMode =
               <span class="px-2 py-0.5 rounded-full text-[9px] font-mono bg-zinc-800/80 text-zinc-300 border border-zinc-700">
                 0B Heap / Frame
               </span>
+              @if (circadianTone() > 0.3) {
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-mono bg-amber-950/60 text-amber-300 border border-amber-800/60" title="Helmholtz Retinal Halation Compensation (-3.75% optical stroke dial-back, warm bone cream on peat obsidian)">
+                  👁️ Helmholtz -3.75% Anti-Halation
+                </span>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-mono bg-rose-950/60 text-rose-300 border border-rose-800/60" title="ipRGC Melatonin Protection (Sub-480nm Cyan/Blue Suppressed >80%)">
+                  🌙 480nm ipRGC Safe
+                </span>
+              }
             </div>
-            <p class="text-[11px] text-zinc-400 font-sans">
-              Zero-Three.js In-House WebGPU/WebGL2 Micro-Renderer • 1000 UPM Font Glyph Extrusion • 5-Phase Action Potential
+            <p class="text-[11px] font-sans" [style.color]="circadianTone() > 0.3 ? '#d1c4b2' : '#a1a1aa'">
+              Zero-Three.js In-House WebGPU Micro-Renderer • 1000 UPM Font Glyph Extrusion • RSNA Neuro-Ergonomic Standard
             </p>
           </div>
         </div>
 
-        <!-- Presets Selector Tabs -->
-        <div class="flex flex-wrap items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs">
-          <button type="button" (click)="setRegime('normal_sinus')"
-                  [class]="regime() === 'normal_sinus' ? 'bg-emerald-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
-            <span>🟢</span>
-            <span>Normal Sinus</span>
-          </button>
-          <button type="button" (click)="setRegime('drug_induced_long_qtc')"
-                  [class]="regime() === 'drug_induced_long_qtc' ? 'bg-amber-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
-            <span>💊</span>
-            <span>Long QTc (hERG)</span>
-          </button>
-          <button type="button" (click)="setRegime('severe_torsades_de_pointes')"
-                  [class]="regime() === 'severe_torsades_de_pointes' ? 'bg-rose-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
-            <span>🚨</span>
-            <span>Torsades de Pointes</span>
-          </button>
-          <button type="button" (click)="setRegime('hypokalemia_arrhythmia')"
-                  [class]="regime() === 'hypokalemia_arrhythmia' ? 'bg-purple-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
-            <span>🧪</span>
-            <span>Hypokalemic EAD</span>
-          </button>
+        <!-- Controls Cluster: Circadian Chrono-Dock + Sloan 5:1 Optotype + Presets -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Circadian Chrono-Dock -->
+          <div class="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs shadow-inner">
+            <span class="text-[10px] text-zinc-400 font-bold uppercase px-1 hidden sm:inline">Chrono:</span>
+            <button type="button" (click)="setCircadianMode('day')"
+                    [class]="circadianMode() === 'day' ? 'bg-teal-600 text-white font-bold' : 'text-zinc-400 hover:text-amber-300'"
+                    class="px-2 py-0.5 rounded-lg transition text-[11px] cursor-pointer" title="Daylight Acuity (6500K - High Diagnostic Contrast)">
+              ☀️ Day
+            </button>
+            <button type="button" (click)="setCircadianMode('dusk')"
+                    [class]="circadianMode() === 'dusk' ? 'bg-amber-600 text-white font-bold' : 'text-zinc-400 hover:text-amber-300'"
+                    class="px-2 py-0.5 rounded-lg transition text-[11px] cursor-pointer" title="Golden Dusk (3500K - Softened Contrast)">
+              🌅 Dusk
+            </button>
+            <button type="button" (click)="setCircadianMode('night')"
+                    [class]="circadianMode() === 'night' ? 'bg-rose-700 text-white font-bold' : 'text-zinc-400 hover:text-amber-400'"
+                    class="px-2 py-0.5 rounded-lg transition text-[11px] cursor-pointer" title="Candlelight Obsidian (2000K - Melatonin Safe, Sub-480nm Blue Suppressed)">
+              🕯️ Night
+            </button>
+            <button type="button" (click)="setCircadianMode('auto')"
+                    [class]="circadianMode() === 'auto' ? 'bg-zinc-700 text-white font-bold' : 'text-zinc-400 hover:text-white'"
+                    class="px-2 py-0.5 rounded-lg transition text-[11px] cursor-pointer font-mono" title="Auto Circadian Tracking (Local Hour)">
+              ⏱️ Auto
+            </button>
+          </div>
+
+          <!-- Sloan 5:1 Optotypic Lens -->
+          <div class="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-[11px]">
+            <span class="text-[10px] text-zinc-400 font-bold uppercase px-1">Sloan:</span>
+            <button type="button" (click)="setOptotypicLens('20_20')"
+                    [class]="optotypicLens() === '20_20' ? 'bg-zinc-700 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                    class="px-2 py-0.5 rounded-lg transition cursor-pointer">
+              20/20
+            </button>
+            <button type="button" (click)="setOptotypicLens('distance_55cm')"
+                    [class]="optotypicLens() === 'distance_55cm' ? 'bg-zinc-700 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                    class="px-2 py-0.5 rounded-lg transition cursor-pointer">
+              📱 55cm
+            </button>
+            <button type="button" (click)="setOptotypicLens('icu_mesopic')"
+                    [class]="optotypicLens() === 'icu_mesopic' ? 'bg-zinc-700 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                    class="px-2 py-0.5 rounded-lg transition cursor-pointer">
+              🌙 Mesopic
+            </button>
+          </div>
+
+          <!-- Presets Selector Tabs -->
+          <div class="flex flex-wrap items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs">
+            <button type="button" (click)="setRegime('normal_sinus')"
+                    [class]="regime() === 'normal_sinus' ? 'bg-emerald-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                    class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+              <span>🟢</span>
+              <span>Normal Sinus</span>
+            </button>
+            <button type="button" (click)="setRegime('drug_induced_long_qtc')"
+                    [class]="regime() === 'drug_induced_long_qtc' ? 'bg-amber-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                    class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+              <span>💊</span>
+              <span>Long QTc (hERG)</span>
+            </button>
+            <button type="button" (click)="setRegime('severe_torsades_de_pointes')"
+                    [class]="regime() === 'severe_torsades_de_pointes' ? 'bg-rose-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                    class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+              <span>🚨</span>
+              <span>Torsades de Pointes</span>
+            </button>
+            <button type="button" (click)="setRegime('hypokalemia_arrhythmia')"
+                    [class]="regime() === 'hypokalemia_arrhythmia' ? 'bg-purple-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                    class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+              <span>🧪</span>
+              <span>Hypokalemic EAD</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -276,6 +348,30 @@ export class CardiacWebgpuLensComponent implements AfterViewInit, OnDestroy {
   flowSpeed = signal<number>(1.0);
   selectedPartName = signal<string | null>(null);
 
+  // RSNA Neuro-Ergonomic Signals (Insight 3)
+  circadianMode = signal<'day' | 'dusk' | 'night' | 'auto'>('auto');
+  optotypicLens = signal<'20_20' | 'distance_55cm' | 'icu_mesopic'>('20_20');
+
+  circadianTone = computed(() => {
+    const mode = this.circadianMode();
+    if (mode === 'day') return 0.0;
+    if (mode === 'dusk') return 0.5;
+    if (mode === 'night') return 1.0;
+    if (!isPlatformBrowser(this.platformId)) return 0.0;
+    const hour = new Date().getHours();
+    if (hour >= 20 || hour < 6) return 1.0;
+    if (hour >= 17 || hour === 6) return 0.5;
+    return 0.0;
+  });
+
+  optotypicScale = computed(() => {
+    switch (this.optotypicLens()) {
+      case 'distance_55cm': return 1.15;
+      case 'icu_mesopic': return 1.30;
+      default: return 1.0;
+    }
+  });
+
   // Performance Telemetry Signals
   fps = signal<number>(60);
   renderLatencyMs = signal<string>('0.7');
@@ -412,9 +508,18 @@ export class CardiacWebgpuLensComponent implements AfterViewInit, OnDestroy {
     const canvas = this.canvasRef().nativeElement;
     this.controls.updateEye(this.eyeVec);
 
+    // Apply Sloan 5:1 Optotypic Scale factor to camera distance
+    const scale = this.optotypicScale();
+    const eyeDist = 3.2 / scale;
+    const currentEye: [number, number, number] = [
+      this.eyeVec[0] * (eyeDist / 3.2),
+      this.eyeVec[1] * (eyeDist / 3.2),
+      this.eyeVec[2] * (eyeDist / 3.2)
+    ];
+
     const aspect = canvas.width / Math.max(1, canvas.height);
     Mat4Math.perspective(this.projMat, (45.0 * Math.PI) / 180.0, aspect, 0.1, 100.0);
-    Mat4Math.lookAt(this.viewMat, this.eyeVec, [0, 0, 0], [0, 1, 0]);
+    Mat4Math.lookAt(this.viewMat, currentEye, [0, 0, 0], [0, 1, 0]);
     Mat4Math.multiply(this.viewProjMat, this.projMat, this.viewMat);
 
     const now = performance.now();
@@ -423,13 +528,15 @@ export class CardiacWebgpuLensComponent implements AfterViewInit, OnDestroy {
     this.engine.updateUniforms({
       viewProjMatrix: this.viewProjMat,
       modelMatrix: this.modelMat,
-      cameraPos: this.eyeVec,
+      cameraPos: currentEye,
       timeSec: elapsedSec,
       heartRateBpm: this.heartRate(),
       conductionVelocity: this.conductionVelocity(),
       qtcIntervalMs: this.qtcIntervalMs(),
       eadInstability: this.eadInstability(),
-      meshPartId: 101
+      meshPartId: 101,
+      circadianTone: this.circadianTone(),
+      vagalResonance: 1.0
     });
 
     this.engine.renderFrame();
@@ -450,6 +557,14 @@ export class CardiacWebgpuLensComponent implements AfterViewInit, OnDestroy {
       this.animFrameId = requestAnimationFrame(this.renderLoop);
     }
   };
+
+  setCircadianMode(mode: 'day' | 'dusk' | 'night' | 'auto'): void {
+    this.circadianMode.set(mode);
+  }
+
+  setOptotypicLens(lens: '20_20' | 'distance_55cm' | 'icu_mesopic'): void {
+    this.optotypicLens.set(lens);
+  }
 
   setRegime(regime: CardiacElectrophysiologyMode): void {
     this.regime.set(regime);
