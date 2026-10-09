@@ -407,7 +407,12 @@ export class PatientStateService {
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
   readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular' | 'decad'>('3d');
-  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing'>('skin');
+  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing' | 'fluid_dynamics' | 'nutrigenomics'>('skin');
+  /** Selected nutrigenomic bioactive ligand for 3D signaling and chromatin visualization */
+  readonly selectedNutrigenomicLigand = signal<'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'omega3_dha' | 'methyl_5mthf'>('all');
+  /** Fasting duration in hours for AMPK / SIRT1 / macroautophagy threshold */
+  readonly fastingDurationHours = signal<number>(14);
+  readonly autophagyAmpkActive = computed<boolean>(() => this.fastingDurationHours() >= 14);
   /** Active rehabilitation condition target for 3D kinematics and ghost mentoring */
   readonly activeRehabCondition = signal<string>('lumbar_pelvic_alignment');
   /** Dynamic rehabilitation correction progress: 0.0 = habitual posture, 1.0 = therapeutic restorative goal */

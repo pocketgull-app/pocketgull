@@ -85,7 +85,7 @@ const PART_NAMES: Record<string, string> = {
     'silica_bone_scaffold': 'Bioactive Silica Scaffold (Bioglass 45S5 Osteoconductive Graft)'
 };
 
-export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing';
+export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing' | 'fluid_dynamics' | 'nutrigenomics';
 
 @Component({
     selector: 'app-body-3d-viewer',
@@ -154,6 +154,8 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             <option value="organs">🫀 Visceral Organs</option>
             <option value="skin">👤 Surface Habitus</option>
             <option value="ghost">👻 Ghost Fresnel Envelope</option>
+            <option value="fluid_dynamics">🌊 Whole-Body Fluid Dynamics (Arterial, Venous, Lymphatic)</option>
+            <option value="nutrigenomics">🧬 Whole-Body Nutrigenomics (Nrf2, Butyrate, AMPK, Methylation)</option>
             <option value="eastern">🌿 TCM Jing-Luo Meridian</option>
             <option value="ayurvedic">🧘 Ayurvedic Sushumna</option>
             <option value="biomechanical_strain">⚖️ Biomechanical Strain</option>
@@ -805,6 +807,169 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             }
           </div>
         }
+
+        <!-- 🌊 Whole-Body Fluid Dynamics HUD Overlay -->
+        @if (effectiveAnatomyViewMode() === 'fluid_dynamics') {
+          <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-2xl bg-zinc-950/95 border border-cyan-500/40 rounded-2xl p-3.5 shadow-2xl backdrop-blur-xl font-mono text-xs select-none">
+            <!-- Header -->
+            <div class="flex items-center justify-between gap-2 pb-2 border-b border-zinc-800 text-[11px]">
+              <div class="flex items-center gap-1.5">
+                <span class="text-cyan-400 font-bold">🌊 WHOLE-BODY FLUID DYNAMICS</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+                  4-CHANNEL STREAMLINES
+                </span>
+              </div>
+              <span class="text-[10px] text-zinc-400 font-mono">
+                CO: <span class="text-rose-400 font-bold">{{ patientCardiacOutput() }} L/min</span> | 
+                HR: <span class="text-amber-400 font-bold">{{ patientHeartRate() }} bpm</span> | 
+                Lymph: <span class="text-emerald-400 font-bold">2.5 mL/min</span>
+              </span>
+            </div>
+
+            <!-- Channel Selector Buttons -->
+            <div class="flex items-center gap-1.5 my-2 flex-wrap text-[10px]">
+              <button type="button" (click)="toggleFluidChannel('arterial')"
+                      [class.bg-rose-600]="fluidShowArterial()"
+                      [class.text-white]="fluidShowArterial()"
+                      [class.bg-zinc-900]="!fluidShowArterial()"
+                      [class.text-zinc-500]="!fluidShowArterial()"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1">
+                <span>🔴</span>
+                <span>Arterial Tree (Pulsatile)</span>
+              </button>
+
+              <button type="button" (click)="toggleFluidChannel('venous')"
+                      [class.bg-sky-600]="fluidShowVenous()"
+                      [class.text-white]="fluidShowVenous()"
+                      [class.bg-zinc-900]="!fluidShowVenous()"
+                      [class.text-zinc-500]="!fluidShowVenous()"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1">
+                <span>🔵</span>
+                <span>Venous Return (Laminar)</span>
+              </button>
+
+              <button type="button" (click)="toggleFluidChannel('lymphatic')"
+                      [class.bg-emerald-600]="fluidShowLymphatic()"
+                      [class.text-white]="fluidShowLymphatic()"
+                      [class.bg-zinc-900]="!fluidShowLymphatic()"
+                      [class.text-zinc-500]="!fluidShowLymphatic()"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1">
+                <span>🟢</span>
+                <span>Lymphatic Drainage</span>
+              </button>
+
+              <button type="button" (click)="toggleFluidChannel('capillary')"
+                      [class.bg-purple-600]="fluidShowCapillary()"
+                      [class.text-white]="fluidShowCapillary()"
+                      [class.bg-zinc-900]="!fluidShowCapillary()"
+                      [class.text-zinc-500]="!fluidShowCapillary()"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1">
+                <span>🟣</span>
+                <span>Microvascular Beds</span>
+              </button>
+            </div>
+
+            <!-- Velocity Multiplier Slider -->
+            <div class="flex items-center justify-between text-zinc-400 text-[10px] pt-1 border-t border-zinc-850">
+              <div class="flex items-center gap-2">
+                <span>Velocity Multiplier:</span>
+                <input type="range" min="0.5" max="3.0" step="0.25"
+                       [value]="fluidFlowVelocity()"
+                       (input)="onFluidVelocityChange($event)"
+                       class="w-24 accent-cyan-400 bg-zinc-800 h-1 rounded cursor-pointer" />
+                <span class="text-cyan-300 font-bold">{{ fluidFlowVelocity().toFixed(2) }}x</span>
+              </div>
+              <span class="text-zinc-500">Poiseuille &amp; Starling-Levick Model</span>
+            </div>
+          </div>
+        }
+
+        <!-- 🧬 Whole-Body Nutrigenomics HUD Overlay -->
+        @if (effectiveAnatomyViewMode() === 'nutrigenomics') {
+          <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-2xl bg-zinc-950/95 border border-emerald-500/40 rounded-2xl p-3.5 shadow-2xl backdrop-blur-xl font-mono text-xs select-none">
+            <!-- Header -->
+            <div class="flex items-center justify-between gap-2 pb-2 border-b border-zinc-800 text-[11px]">
+              <div class="flex items-center gap-1.5">
+                <span class="text-emerald-400 font-bold">🧬 WHOLE-BODY NUTRIGENOMIC SIGNALING</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                  5 EPIGENETIC CIRCUITS
+                </span>
+              </div>
+              <span class="text-[10px] text-zinc-400 font-mono">
+                ARE Transcription: <span class="text-emerald-400 font-bold">+340%</span> | 
+                HDACi: <span class="text-cyan-400 font-bold">88%</span> | 
+                PGC-1&alpha;: <span class="text-rose-400 font-bold">+42%</span>
+              </span>
+            </div>
+
+            <!-- Ligand Selector Buttons -->
+            <div class="flex items-center gap-1.5 my-2 flex-wrap text-[10px]">
+              <button type="button" (click)="setNutriLigand('all')"
+                      [class.bg-emerald-600]="nutriActiveLigand() === 'all'"
+                      [class.text-white]="nutriActiveLigand() === 'all'"
+                      [class.bg-zinc-900]="nutriActiveLigand() !== 'all'"
+                      [class.text-zinc-400]="nutriActiveLigand() !== 'all'"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1">
+                <span>✨</span>
+                <span>All Pathways</span>
+              </button>
+
+              <button type="button" (click)="setNutriLigand('sulforaphane')"
+                      [class.bg-amber-600]="nutriActiveLigand() === 'sulforaphane'"
+                      [class.text-white]="nutriActiveLigand() === 'sulforaphane'"
+                      [class.bg-zinc-900]="nutriActiveLigand() !== 'sulforaphane'"
+                      [class.text-zinc-500]="nutriActiveLigand() !== 'sulforaphane'"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1">
+                <span>🥦</span>
+                <span>Sulforaphane (Liver Nrf2)</span>
+              </button>
+
+              <button type="button" (click)="setNutriLigand('butyrate')"
+                      [class.bg-emerald-600]="nutriActiveLigand() === 'butyrate'"
+                      [class.text-white]="nutriActiveLigand() === 'butyrate'"
+                      [class.bg-zinc-900]="nutriActiveLigand() !== 'butyrate'"
+                      [class.text-zinc-500]="nutriActiveLigand() !== 'butyrate'"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1">
+                <span>🌾</span>
+                <span>Butyrate (Colon SCFA)</span>
+              </button>
+
+              <button type="button" (click)="setNutriLigand('resveratrol')"
+                      [class.bg-rose-600]="nutriActiveLigand() === 'resveratrol'"
+                      [class.text-white]="nutriActiveLigand() === 'resveratrol'"
+                      [class.bg-zinc-900]="nutriActiveLigand() !== 'resveratrol'"
+                      [class.text-zinc-500]="nutriActiveLigand() !== 'resveratrol'"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1">
+                <span>🍇</span>
+                <span>Resveratrol (Muscle Mito)</span>
+              </button>
+
+              <button type="button" (click)="setNutriLigand('methyl')"
+                      [class.bg-purple-600]="nutriActiveLigand() === 'methyl'"
+                      [class.text-white]="nutriActiveLigand() === 'methyl'"
+                      [class.bg-zinc-900]="nutriActiveLigand() !== 'methyl'"
+                      [class.text-zinc-500]="nutriActiveLigand() !== 'methyl'"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1">
+                <span>🧬</span>
+                <span>5-MTHF (Cerebral SAMe)</span>
+              </button>
+            </div>
+
+            <!-- Footer Toggles -->
+            <div class="flex items-center justify-between gap-3 pt-2 border-t border-zinc-850 text-[10px] text-zinc-400">
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" [checked]="nutriShowBeacons()" (change)="toggleNutriBeacons()" class="rounded bg-zinc-900 border-zinc-700 text-emerald-500">
+                <span>Show 3D Epigenetic Hub Beacons</span>
+              </label>
+              <div class="flex items-center gap-2">
+                <span>Flux Velocity:</span>
+                <button type="button" (click)="setNutriVelocity(0.5)" [class.text-emerald-400]="nutriVelocity() === 0.5" class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">0.5x</button>
+                <button type="button" (click)="setNutriVelocity(1.0)" [class.text-emerald-400]="nutriVelocity() === 1.0" class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">1.0x</button>
+                <button type="button" (click)="setNutriVelocity(2.0)" [class.text-emerald-400]="nutriVelocity() === 2.0" class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">2.0x</button>
+              </div>
+            </div>
+          </div>
+        }
       </div>
 
       <!-- 🧬 24-Hour Predictive Biophysical Twin Timeline Scrubber Ribbon -->
@@ -1125,6 +1290,64 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     readonly showDermatomeLayer = signal<boolean>(false);
     readonly activeCameraPreset = signal<'front' | 'back' | 'left' | 'right' | 'cranial' | 'spinal' | 'visceral' | 'peripheral' | 'systemic'>('front');
     readonly activeArchetype = signal<AnatomicalArchetype>('homo_sapiens_male');
+
+    // 🌊 Whole-Body Fluid Dynamics Channels & Telemetry
+    readonly fluidShowArterial = signal<boolean>(true);
+    readonly fluidShowVenous = signal<boolean>(true);
+    readonly fluidShowLymphatic = signal<boolean>(true);
+    readonly fluidShowCapillary = signal<boolean>(true);
+    readonly fluidFlowVelocity = signal<number>(1.0);
+
+    toggleFluidChannel(channel: 'arterial' | 'venous' | 'lymphatic' | 'capillary'): void {
+      if (channel === 'arterial') {
+        this.fluidShowArterial.update(v => !v);
+        if (this.fluidArterialParticles) this.fluidArterialParticles.visible = this.fluidShowArterial();
+      } else if (channel === 'venous') {
+        this.fluidShowVenous.update(v => !v);
+        if (this.fluidVenousParticles) this.fluidVenousParticles.visible = this.fluidShowVenous();
+      } else if (channel === 'lymphatic') {
+        this.fluidShowLymphatic.update(v => !v);
+        if (this.fluidLymphaticParticles) this.fluidLymphaticParticles.visible = this.fluidShowLymphatic();
+      } else if (channel === 'capillary') {
+        this.fluidShowCapillary.update(v => !v);
+        if (this.fluidCapillaryParticles) this.fluidCapillaryParticles.visible = this.fluidShowCapillary();
+      }
+    }
+
+    onFluidVelocityChange(event: Event): void {
+      const val = Number((event.target as HTMLInputElement).value);
+      if (!isNaN(val)) this.fluidFlowVelocity.set(val);
+    }
+
+    readonly patientHeartRate = computed<number>(() => {
+      return parseInt(String(this.state.vitals()?.hr || '72'), 10) || 72;
+    });
+
+    readonly patientCardiacOutput = computed<string>(() => {
+      const hr = this.patientHeartRate();
+      return ((hr * 70) / 1000).toFixed(1);
+    });
+
+    // 🧬 Whole-Body Nutrigenomics Signaling & Telemetry
+    readonly nutriActiveLigand = signal<'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl'>('all');
+    readonly nutriShowBeacons = signal<boolean>(true);
+    readonly nutriVelocity = signal<number>(1.0);
+
+    setNutriLigand(ligand: 'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl'): void {
+      this.nutriActiveLigand.set(ligand);
+      this.updateNutrigenomicParticleColors();
+    }
+
+    toggleNutriBeacons(): void {
+      this.nutriShowBeacons.update(v => !v);
+      if (this.nutriBeaconGroup) {
+        this.nutriBeaconGroup.visible = this.nutriShowBeacons();
+      }
+    }
+
+    setNutriVelocity(v: number): void {
+      this.nutriVelocity.set(v);
+    }
 
     onArchetypeChange(event: Event): void {
       const val = (event.target as HTMLSelectElement).value as AnatomicalArchetype;
@@ -2040,6 +2263,16 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 this.updateLesionPins();
             }
         });
+
+        // React to selected nutrigenomic ligand changes from external components (e.g. Precision Nutrition Calculator)
+        effect(() => {
+            const ligand = this.state.selectedNutrigenomicLigand();
+            const mapped = (ligand === 'methyl_5mthf' ? 'methyl' : ligand === 'omega3_dha' ? 'all' : ligand) as 'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl';
+            if (this.nutriActiveLigand() !== mapped) {
+                this.nutriActiveLigand.set(mapped);
+                this.updateNutrigenomicParticleColors();
+            }
+        });
     }
 
     private updateThemeLightingAndMaterials() {
@@ -2845,6 +3078,8 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         this.createCurieIsotopeNodes();
         this.createMsNeuroLesionNodes();
         this.createUhthoffThermalOverlay();
+        this.createWholeBodyFluidDynamics();
+        this.createWholeBodyNutrigenomics();
 
         this.updatePartColors();
         this.updateTransparency(this.anatomyViewMode());
@@ -2915,6 +3150,543 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         if (pos.rx) mesh.rotation.x = pos.rx;
         if (pos.ry) mesh.rotation.y = pos.ry;
         if (pos.rz) mesh.rotation.z = pos.rz;
+    }
+
+    private wholeBodyFluidDynamicsGroup: THREE.Group | null = null;
+    private fluidArterialParticles: THREE.Points | null = null;
+    private fluidVenousParticles: THREE.Points | null = null;
+    private fluidLymphaticParticles: THREE.Points | null = null;
+    private fluidCapillaryParticles: THREE.Points | null = null;
+    private arterialCurves: THREE.CatmullRomCurve3[] = [];
+    private venousCurves: THREE.CatmullRomCurve3[] = [];
+    private lymphaticCurves: THREE.CatmullRomCurve3[] = [];
+    private arterialProgress: { curveIdx: number; t: number; speedOffset: number }[] = [];
+    private venousProgress: { curveIdx: number; t: number; speedOffset: number }[] = [];
+    private lymphaticProgress: { curveIdx: number; t: number; speedOffset: number }[] = [];
+
+    private createWholeBodyFluidDynamics() {
+        this.wholeBodyFluidDynamicsGroup = new THREE.Group();
+        this.wholeBodyFluidDynamicsGroup.visible = false;
+        this.mannequinGroup.add(this.wholeBodyFluidDynamicsGroup);
+
+        // 1. Arterial Tree Splines (Aorta, Carotids, Brachials, Iliacs, Femorals)
+        this.arterialCurves = [
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0, 1.25, 0.08),
+                new THREE.Vector3(0, 1.38, 0.06),
+                new THREE.Vector3(-0.02, 1.34, 0.02),
+                new THREE.Vector3(-0.02, 1.10, 0.01),
+                new THREE.Vector3(0, 0.75, 0.02)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0, 1.38, 0.06),
+                new THREE.Vector3(-0.05, 1.55, 0.04),
+                new THREE.Vector3(-0.06, 1.76, 0.02)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0, 1.38, 0.06),
+                new THREE.Vector3(0.05, 1.55, 0.04),
+                new THREE.Vector3(0.06, 1.76, 0.02)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-0.02, 1.36, 0.04),
+                new THREE.Vector3(-0.22, 1.35, 0.02),
+                new THREE.Vector3(-0.42, 1.15, 0.0),
+                new THREE.Vector3(-0.58, 0.85, 0.02),
+                new THREE.Vector3(-0.68, 0.65, 0.03)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0.02, 1.36, 0.04),
+                new THREE.Vector3(0.22, 1.35, 0.02),
+                new THREE.Vector3(0.42, 1.15, 0.0),
+                new THREE.Vector3(0.58, 0.85, 0.02),
+                new THREE.Vector3(0.68, 0.65, 0.03)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0, 0.75, 0.02),
+                new THREE.Vector3(-0.08, 0.60, 0.04),
+                new THREE.Vector3(-0.13, 0.35, 0.05),
+                new THREE.Vector3(-0.15, -0.05, 0.04),
+                new THREE.Vector3(-0.14, -0.45, 0.02),
+                new THREE.Vector3(-0.13, -0.85, 0.0)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0, 0.75, 0.02),
+                new THREE.Vector3(0.08, 0.60, 0.04),
+                new THREE.Vector3(0.13, 0.35, 0.05),
+                new THREE.Vector3(0.15, -0.05, 0.04),
+                new THREE.Vector3(0.14, -0.45, 0.02),
+                new THREE.Vector3(0.13, -0.85, 0.0)
+            ])
+        ];
+
+        // 2. Venous Return Splines (Saphenous, IVC, Jugulars, SVC)
+        this.venousCurves = [
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-0.13, -0.85, 0.04),
+                new THREE.Vector3(-0.14, -0.45, 0.06),
+                new THREE.Vector3(-0.16, -0.05, 0.06),
+                new THREE.Vector3(-0.11, 0.35, 0.07),
+                new THREE.Vector3(0.04, 0.60, 0.05),
+                new THREE.Vector3(0.04, 0.95, 0.05),
+                new THREE.Vector3(0.04, 1.22, 0.08)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0.13, -0.85, 0.04),
+                new THREE.Vector3(0.14, -0.45, 0.06),
+                new THREE.Vector3(0.16, -0.05, 0.06),
+                new THREE.Vector3(0.11, 0.35, 0.07),
+                new THREE.Vector3(0.04, 0.60, 0.05),
+                new THREE.Vector3(0.04, 0.95, 0.05),
+                new THREE.Vector3(0.04, 1.22, 0.08)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-0.06, 1.76, 0.04),
+                new THREE.Vector3(-0.05, 1.55, 0.06),
+                new THREE.Vector3(0.04, 1.34, 0.08),
+                new THREE.Vector3(0.04, 1.25, 0.08)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0.06, 1.76, 0.04),
+                new THREE.Vector3(0.05, 1.55, 0.06),
+                new THREE.Vector3(0.04, 1.34, 0.08),
+                new THREE.Vector3(0.04, 1.25, 0.08)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-0.68, 0.65, 0.05),
+                new THREE.Vector3(-0.58, 0.85, 0.04),
+                new THREE.Vector3(-0.42, 1.15, 0.02),
+                new THREE.Vector3(-0.18, 1.32, 0.05),
+                new THREE.Vector3(0.04, 1.30, 0.08)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0.68, 0.65, 0.05),
+                new THREE.Vector3(0.58, 0.85, 0.04),
+                new THREE.Vector3(0.42, 1.15, 0.02),
+                new THREE.Vector3(0.18, 1.32, 0.05),
+                new THREE.Vector3(0.04, 1.30, 0.08)
+            ])
+        ];
+
+        // 3. Lymphatic Network Splines
+        this.lymphaticCurves = [
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-0.13, -0.85, -0.02),
+                new THREE.Vector3(-0.14, -0.35, -0.01),
+                new THREE.Vector3(-0.11, 0.38, 0.04),
+                new THREE.Vector3(0.0, 0.82, -0.02)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0.13, -0.85, -0.02),
+                new THREE.Vector3(0.14, -0.35, -0.01),
+                new THREE.Vector3(0.11, 0.38, 0.04),
+                new THREE.Vector3(0.0, 0.82, -0.02)
+            ]),
+            new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0.0, 0.82, -0.02),
+                new THREE.Vector3(-0.02, 1.10, -0.04),
+                new THREE.Vector3(-0.04, 1.32, -0.03),
+                new THREE.Vector3(-0.08, 1.40, 0.03)
+            ])
+        ];
+
+        // Translucent vessel guide tubes
+        const addVesselTubes = (curves: THREE.CatmullRomCurve3[], color: number, radius: number) => {
+            curves.forEach(curve => {
+                const geo = new THREE.TubeGeometry(curve, 24, radius, 8, false);
+                const mat = new THREE.MeshStandardMaterial({
+                    color,
+                    emissive: color,
+                    emissiveIntensity: 0.3,
+                    transparent: true,
+                    opacity: 0.35,
+                    depthWrite: false
+                });
+                const mesh = new THREE.Mesh(geo, mat);
+                this.wholeBodyFluidDynamicsGroup!.add(mesh);
+            });
+        };
+
+        addVesselTubes(this.arterialCurves, 0xf43f5e, 0.010);
+        addVesselTubes(this.venousCurves, 0x0284c7, 0.011);
+        addVesselTubes(this.lymphaticCurves, 0x10b981, 0.007);
+
+        // A. Arterial Particles
+        const arterialParticleCount = 280;
+        this.arterialProgress = [];
+        const artPositions = new Float32Array(arterialParticleCount * 3);
+        for (let i = 0; i < arterialParticleCount; i++) {
+            const curveIdx = i % this.arterialCurves.length;
+            const t = Math.random();
+            const pt = this.arterialCurves[curveIdx].getPoint(t);
+            artPositions[i * 3] = pt.x;
+            artPositions[i * 3 + 1] = pt.y;
+            artPositions[i * 3 + 2] = pt.z;
+            this.arterialProgress.push({ curveIdx, t, speedOffset: 0.9 + Math.random() * 0.2 });
+        }
+        const artGeo = new THREE.BufferGeometry();
+        artGeo.setAttribute('position', new THREE.BufferAttribute(artPositions, 3));
+        const artMat = new THREE.PointsMaterial({
+            color: 0xf43f5e,
+            size: 0.032,
+            transparent: true,
+            opacity: 0.95,
+            blending: THREE.AdditiveBlending
+        });
+        this.fluidArterialParticles = new THREE.Points(artGeo, artMat);
+        this.wholeBodyFluidDynamicsGroup.add(this.fluidArterialParticles);
+
+        // B. Venous Particles
+        const venousParticleCount = 280;
+        this.venousProgress = [];
+        const venPositions = new Float32Array(venousParticleCount * 3);
+        for (let i = 0; i < venousParticleCount; i++) {
+            const curveIdx = i % this.venousCurves.length;
+            const t = Math.random();
+            const pt = this.venousCurves[curveIdx].getPoint(t);
+            venPositions[i * 3] = pt.x;
+            venPositions[i * 3 + 1] = pt.y;
+            venPositions[i * 3 + 2] = pt.z;
+            this.venousProgress.push({ curveIdx, t, speedOffset: 0.9 + Math.random() * 0.2 });
+        }
+        const venGeo = new THREE.BufferGeometry();
+        venGeo.setAttribute('position', new THREE.BufferAttribute(venPositions, 3));
+        const venMat = new THREE.PointsMaterial({
+            color: 0x38bdf8,
+            size: 0.030,
+            transparent: true,
+            opacity: 0.90,
+            blending: THREE.AdditiveBlending
+        });
+        this.fluidVenousParticles = new THREE.Points(venGeo, venMat);
+        this.wholeBodyFluidDynamicsGroup.add(this.fluidVenousParticles);
+
+        // C. Lymphatic Particles
+        const lymphaticParticleCount = 140;
+        this.lymphaticProgress = [];
+        const lymphPositions = new Float32Array(lymphaticParticleCount * 3);
+        for (let i = 0; i < lymphaticParticleCount; i++) {
+            const curveIdx = i % this.lymphaticCurves.length;
+            const t = Math.random();
+            const pt = this.lymphaticCurves[curveIdx].getPoint(t);
+            lymphPositions[i * 3] = pt.x;
+            lymphPositions[i * 3 + 1] = pt.y;
+            lymphPositions[i * 3 + 2] = pt.z;
+            this.lymphaticProgress.push({ curveIdx, t, speedOffset: 0.8 + Math.random() * 0.4 });
+        }
+        const lymphGeo = new THREE.BufferGeometry();
+        lymphGeo.setAttribute('position', new THREE.BufferAttribute(lymphPositions, 3));
+        const lymphMat = new THREE.PointsMaterial({
+            color: 0x10b981,
+            size: 0.026,
+            transparent: true,
+            opacity: 0.95,
+            blending: THREE.AdditiveBlending
+        });
+        this.fluidLymphaticParticles = new THREE.Points(lymphGeo, lymphMat);
+        this.wholeBodyFluidDynamicsGroup.add(this.fluidLymphaticParticles);
+
+        // D. Capillary Microvascular Bed Particles
+        const capillaryCount = 220;
+        const capPositions = new Float32Array(capillaryCount * 3);
+        const bedCenters = [
+            [0, 1.75, 0],
+            [-0.14, 1.28, 0.08],
+            [0.14, 1.28, 0.08],
+            [0.08, 1.05, 0.05],
+            [-0.08, 0.95, 0.04],
+            [-0.68, 0.65, 0.03],
+            [0.68, 0.65, 0.03],
+            [-0.13, -0.85, 0.0],
+            [0.13, -0.85, 0.0]
+        ];
+
+        for (let i = 0; i < capillaryCount; i++) {
+            const center = bedCenters[i % bedCenters.length];
+            capPositions[i * 3] = center[0] + (Math.random() - 0.5) * 0.09;
+            capPositions[i * 3 + 1] = center[1] + (Math.random() - 0.5) * 0.09;
+            capPositions[i * 3 + 2] = center[2] + (Math.random() - 0.5) * 0.09;
+        }
+        const capGeo = new THREE.BufferGeometry();
+        capGeo.setAttribute('position', new THREE.BufferAttribute(capPositions, 3));
+        const capMat = new THREE.PointsMaterial({
+            color: 0xc084fc,
+            size: 0.025,
+            transparent: true,
+            opacity: 0.85,
+            blending: THREE.AdditiveBlending
+        });
+        this.fluidCapillaryParticles = new THREE.Points(capGeo, capMat);
+        this.wholeBodyFluidDynamicsGroup.add(this.fluidCapillaryParticles);
+    }
+
+    private updateFluidDynamicsAnimation(time: number) {
+        const vel = this.fluidFlowVelocity();
+        const hr = this.patientHeartRate();
+        const cardiacFreq = (hr / 60) * 2 * Math.PI;
+        const systoleFactor = Math.pow(Math.max(0, Math.sin(time * cardiacFreq)), 3);
+
+        if (this.fluidArterialParticles && this.fluidArterialParticles.visible) {
+            const posAttr = this.fluidArterialParticles.geometry.attributes['position'];
+            for (let i = 0; i < this.arterialProgress.length; i++) {
+                const item = this.arterialProgress[i];
+                const curve = this.arterialCurves[item.curveIdx];
+                const speed = (0.007 + 0.018 * systoleFactor) * vel * item.speedOffset;
+                item.t += speed;
+                if (item.t > 1.0) item.t -= 1.0;
+                const pt = curve.getPoint(item.t);
+                posAttr.setXYZ(i, pt.x, pt.y, pt.z);
+            }
+            posAttr.needsUpdate = true;
+        }
+
+        if (this.fluidVenousParticles && this.fluidVenousParticles.visible) {
+            const posAttr = this.fluidVenousParticles.geometry.attributes['position'];
+            for (let i = 0; i < this.venousProgress.length; i++) {
+                const item = this.venousProgress[i];
+                const curve = this.venousCurves[item.curveIdx];
+                const speed = 0.006 * vel * item.speedOffset;
+                item.t += speed;
+                if (item.t > 1.0) item.t -= 1.0;
+                const pt = curve.getPoint(item.t);
+                posAttr.setXYZ(i, pt.x, pt.y, pt.z);
+            }
+            posAttr.needsUpdate = true;
+        }
+
+        if (this.fluidLymphaticParticles && this.fluidLymphaticParticles.visible) {
+            const posAttr = this.fluidLymphaticParticles.geometry.attributes['position'];
+            const lymphPulse = Math.max(0, Math.sin(time * 1.5));
+            for (let i = 0; i < this.lymphaticProgress.length; i++) {
+                const item = this.lymphaticProgress[i];
+                const curve = this.lymphaticCurves[item.curveIdx];
+                const speed = (0.002 + 0.004 * lymphPulse) * vel * item.speedOffset;
+                item.t += speed;
+                if (item.t > 1.0) item.t -= 1.0;
+                const pt = curve.getPoint(item.t);
+                posAttr.setXYZ(i, pt.x, pt.y, pt.z);
+            }
+            posAttr.needsUpdate = true;
+        }
+
+        if (this.fluidCapillaryParticles && this.fluidCapillaryParticles.visible) {
+            const posAttr = this.fluidCapillaryParticles.geometry.attributes['position'];
+            for (let i = 0; i < posAttr.count; i++) {
+                const jx = Math.sin(time * 3 + i) * 0.0008;
+                const jy = Math.cos(time * 3 + i * 2) * 0.0008;
+                posAttr.setXYZ(i, posAttr.getX(i) + jx, posAttr.getY(i) + jy, posAttr.getZ(i));
+            }
+            posAttr.needsUpdate = true;
+        }
+    }
+
+    private wholeBodyNutrigenomicsGroup?: THREE.Group;
+    private nutriBeaconGroup?: THREE.Group;
+    private nutriParticles?: THREE.Points;
+    private nutriBeacons: { core: THREE.Mesh; ring: THREE.Mesh; name: string }[] = [];
+    private nutriCurves: { curve: THREE.CatmullRomCurve3; ligandType: 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl'; defaultColor: number }[] = [];
+    private nutriParticleData: { curveIdx: number; t: number; speedOffset: number; ligandType: 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl' }[] = [];
+
+    private createWholeBodyNutrigenomics() {
+        this.wholeBodyNutrigenomicsGroup = new THREE.Group();
+        this.wholeBodyNutrigenomicsGroup.visible = false;
+        this.mannequinGroup.add(this.wholeBodyNutrigenomicsGroup);
+
+        this.nutriBeaconGroup = new THREE.Group();
+        this.wholeBodyNutrigenomicsGroup.add(this.nutriBeaconGroup);
+
+        // 1. CatmullRom splines for the 4 core nutrigenomic axes
+        this.nutriCurves = [
+            // A. Hepatic Nrf2 Axis (Mesenteric intestine -> Portal vein -> Liver parenchyma)
+            {
+                curve: new THREE.CatmullRomCurve3([
+                    new THREE.Vector3(0, 0.70, 0.12),
+                    new THREE.Vector3(0.08, 0.82, 0.14),
+                    new THREE.Vector3(0.18, 0.90, 0.13),
+                    new THREE.Vector3(0.24, 0.98, 0.11),
+                    new THREE.Vector3(0.20, 1.05, 0.08)
+                ]),
+                ligandType: 'sulforaphane',
+                defaultColor: 0xf59e0b // Amber gold
+            },
+            // B. Colonic Microbiome SCFA Axis (Cecum -> Ascending -> Transverse -> Descending)
+            {
+                curve: new THREE.CatmullRomCurve3([
+                    new THREE.Vector3(0.15, 0.60, 0.10),
+                    new THREE.Vector3(0.16, 0.78, 0.12),
+                    new THREE.Vector3(0.08, 0.85, 0.15),
+                    new THREE.Vector3(-0.08, 0.85, 0.15),
+                    new THREE.Vector3(-0.16, 0.76, 0.12),
+                    new THREE.Vector3(-0.15, 0.58, 0.10)
+                ]),
+                ligandType: 'butyrate',
+                defaultColor: 0x10b981 // Emerald
+            },
+            // C. Mitochondrial Resveratrol / PGC-1a Axis (Heart -> Quadriceps & Muscle beds)
+            {
+                curve: new THREE.CatmullRomCurve3([
+                    new THREE.Vector3(-0.04, 1.25, 0.12),
+                    new THREE.Vector3(0, 1.05, 0.06),
+                    new THREE.Vector3(-0.08, 0.55, 0.04),
+                    new THREE.Vector3(-0.16, 0.20, 0.06),
+                    new THREE.Vector3(-0.15, -0.20, 0.05)
+                ]),
+                ligandType: 'resveratrol',
+                defaultColor: 0xf43f5e // Rose crimson
+            },
+            // D. One-Carbon Folate / SAMe Cerebral Epigenetic Axis (Aorta -> Carotid -> Frontal Cortex)
+            {
+                curve: new THREE.CatmullRomCurve3([
+                    new THREE.Vector3(0, 1.35, 0.06),
+                    new THREE.Vector3(0.04, 1.55, 0.05),
+                    new THREE.Vector3(0.05, 1.70, 0.06),
+                    new THREE.Vector3(0, 1.78, 0.08),
+                    new THREE.Vector3(-0.04, 1.72, 0.04)
+                ]),
+                ligandType: 'methyl',
+                defaultColor: 0xa855f7 // Violet
+            }
+        ];
+
+        // 2. Add glowing conduit tubes
+        this.nutriCurves.forEach(({ curve, defaultColor }) => {
+            const tubeGeo = new THREE.TubeGeometry(curve, 36, 0.008, 6, false);
+            const tubeMat = new THREE.MeshBasicMaterial({
+                color: defaultColor,
+                transparent: true,
+                opacity: 0.35,
+                depthWrite: false
+            });
+            this.wholeBodyNutrigenomicsGroup!.add(new THREE.Mesh(tubeGeo, tubeMat));
+        });
+
+        // 3. Populate Animated Ligand Stream Particles
+        const totalParticles = 240;
+        this.nutriParticleData = [];
+        const positions = new Float32Array(totalParticles * 3);
+        const colors = new Float32Array(totalParticles * 3);
+
+        for (let i = 0; i < totalParticles; i++) {
+            const curveIdx = i % this.nutriCurves.length;
+            const curveItem = this.nutriCurves[curveIdx];
+            const t = Math.random();
+            const pt = curveItem.curve.getPoint(t);
+            positions[i * 3] = pt.x;
+            positions[i * 3 + 1] = pt.y;
+            positions[i * 3 + 2] = pt.z;
+
+            const c = new THREE.Color(curveItem.defaultColor);
+            colors[i * 3] = c.r;
+            colors[i * 3 + 1] = c.g;
+            colors[i * 3 + 2] = c.b;
+
+            this.nutriParticleData.push({
+                curveIdx,
+                t,
+                speedOffset: 0.8 + Math.random() * 0.4,
+                ligandType: curveItem.ligandType
+            });
+        }
+
+        const particleGeo = new THREE.BufferGeometry();
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        particleGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        const particleMat = new THREE.PointsMaterial({
+            size: 0.038,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.9,
+            blending: THREE.AdditiveBlending
+        });
+
+        this.nutriParticles = new THREE.Points(particleGeo, particleMat);
+        this.wholeBodyNutrigenomicsGroup.add(this.nutriParticles);
+
+        // 4. Create 3D Epigenetic Hub Beacons
+        const hubConfigs = [
+            { pos: new THREE.Vector3(0.22, 0.98, 0.12), color: 0xf59e0b, name: 'Hepatic Nrf2 Hub' },
+            { pos: new THREE.Vector3(0.0, 0.72, 0.14), color: 0x10b981, name: 'Colonic SCFA Hub' },
+            { pos: new THREE.Vector3(0.0, 1.76, 0.07), color: 0xa855f7, name: 'Cerebral SAMe Hub' },
+            { pos: new THREE.Vector3(-0.05, 1.25, 0.12), color: 0xf43f5e, name: 'Myocardial SIRT1 Hub' },
+            { pos: new THREE.Vector3(-0.16, 0.15, 0.06), color: 0x06b6d4, name: 'Muscle PGC-1a Hub' }
+        ];
+
+        this.nutriBeacons = [];
+        hubConfigs.forEach(cfg => {
+            const coreGeo = new THREE.SphereGeometry(0.032, 12, 12);
+            const coreMat = new THREE.MeshStandardMaterial({
+                color: cfg.color,
+                emissive: cfg.color,
+                emissiveIntensity: 0.8
+            });
+            const core = new THREE.Mesh(coreGeo, coreMat);
+            core.position.copy(cfg.pos);
+            this.nutriBeaconGroup!.add(core);
+
+            const ringGeo = new THREE.RingGeometry(0.055, 0.068, 24);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: cfg.color,
+                transparent: true,
+                opacity: 0.7,
+                side: THREE.DoubleSide
+            });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.position.copy(cfg.pos);
+            this.nutriBeaconGroup!.add(ring);
+
+            this.nutriBeacons.push({ core, ring, name: cfg.name });
+        });
+    }
+
+    private updateNutrigenomicsAnimation(time: number) {
+        const vel = this.nutriVelocity();
+
+        if (this.nutriParticles) {
+            const posAttr = this.nutriParticles.geometry.attributes['position'];
+            for (let i = 0; i < this.nutriParticleData.length; i++) {
+                const item = this.nutriParticleData[i];
+                const curveItem = this.nutriCurves[item.curveIdx];
+                const speed = 0.007 * vel * item.speedOffset;
+                item.t += speed;
+                if (item.t > 1.0) item.t -= 1.0;
+                const pt = curveItem.curve.getPoint(item.t);
+                posAttr.setXYZ(i, pt.x, pt.y, pt.z);
+            }
+            posAttr.needsUpdate = true;
+        }
+
+        // Animate Beacons
+        this.nutriBeacons.forEach((b, idx) => {
+            const pulse = 1.0 + Math.sin(time * 3.5 + idx) * 0.18;
+            b.core.scale.set(pulse, pulse, pulse);
+            b.ring.rotation.z += 0.02;
+            if (this.camera) {
+                b.ring.quaternion.copy(this.camera.quaternion);
+            }
+        });
+    }
+
+    private updateNutrigenomicParticleColors() {
+        if (!this.nutriParticles) return;
+        const colorAttr = this.nutriParticles.geometry.attributes['color'] as THREE.BufferAttribute;
+        if (!colorAttr) return;
+
+        const active = this.nutriActiveLigand();
+
+        for (let i = 0; i < this.nutriParticleData.length; i++) {
+            const item = this.nutriParticleData[i];
+            const curveItem = this.nutriCurves[item.curveIdx];
+            const matches = active === 'all' || active === item.ligandType;
+
+            const c = new THREE.Color(curveItem.defaultColor);
+            if (!matches) {
+                c.setRGB(0.08, 0.08, 0.08); // dim non-active
+            }
+
+            colorAttr.setXYZ(i, c.r, c.g, c.b);
+        }
+        colorAttr.needsUpdate = true;
     }
 
     private tcmMeridianGroup: THREE.Group | null = null;
@@ -3694,6 +4466,64 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                     return;
                 }
 
+                if (mode === 'fluid_dynamics') {
+                    child.material = baseMaterial;
+                    if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                        if (layer === 'skin') {
+                            baseMaterial.opacity = 0.12;
+                            baseMaterial.depthWrite = false;
+                        } else if (layer === 'bone') {
+                            baseMaterial.opacity = 0.20;
+                            baseMaterial.depthWrite = false;
+                        } else if (layer === 'muscle') {
+                            baseMaterial.opacity = 0.08;
+                            baseMaterial.depthWrite = false;
+                        } else if (layer === 'organ') {
+                            baseMaterial.opacity = 0.50;
+                            baseMaterial.depthWrite = true;
+                        } else if (layer === 'neurovascular') {
+                            baseMaterial.opacity = 0.85;
+                            baseMaterial.depthWrite = true;
+                        } else if (layer === 'implant' || layer === 'silica') {
+                            baseMaterial.opacity = 0.80;
+                            baseMaterial.depthWrite = true;
+                        } else {
+                            baseMaterial.opacity = 0;
+                            baseMaterial.depthWrite = false;
+                        }
+                    }
+                    return;
+                }
+
+                if (mode === 'nutrigenomics') {
+                    child.material = baseMaterial;
+                    if (baseMaterial instanceof THREE.MeshStandardMaterial) {
+                        if (layer === 'skin') {
+                            baseMaterial.opacity = 0.10;
+                            baseMaterial.depthWrite = false;
+                        } else if (layer === 'bone') {
+                            baseMaterial.opacity = 0.20;
+                            baseMaterial.depthWrite = false;
+                        } else if (layer === 'muscle') {
+                            baseMaterial.opacity = 0.08;
+                            baseMaterial.depthWrite = false;
+                        } else if (layer === 'organ') {
+                            baseMaterial.opacity = 0.65;
+                            baseMaterial.depthWrite = true;
+                        } else if (layer === 'neurovascular') {
+                            baseMaterial.opacity = 0.85;
+                            baseMaterial.depthWrite = true;
+                        } else if (layer === 'implant' || layer === 'silica') {
+                            baseMaterial.opacity = 0.80;
+                            baseMaterial.depthWrite = true;
+                        } else {
+                            baseMaterial.opacity = 0;
+                            baseMaterial.depthWrite = false;
+                        }
+                    }
+                    return;
+                }
+
                 if (mode === 'oregonator_turing') {
                     if (layer === 'skin') {
                         child.material = this.oregonatorTuringMaterial || baseMaterial;
@@ -3809,6 +4639,14 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             const philosophy = this.state.activePhilosophy();
             const isAyurvedic = philosophy === 'ayurvedic' || mode === 'organs';
             this.ayurvedicAuraGroup.visible = isAyurvedic;
+        }
+
+        if (this.wholeBodyFluidDynamicsGroup) {
+            this.wholeBodyFluidDynamicsGroup.visible = (mode === 'fluid_dynamics');
+        }
+
+        if (this.wholeBodyNutrigenomicsGroup) {
+            this.wholeBodyNutrigenomicsGroup.visible = (mode === 'nutrigenomics');
         }
     }
 
@@ -4075,7 +4913,17 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                     });
                 }
 
-                // 7. Arboreal Tree & Automotive Chassis Model Animation Cycles
+                // 7. Whole-Body Fluid Dynamics 4-Channel Streamlines Animation
+                if (this.wholeBodyFluidDynamicsGroup && this.wholeBodyFluidDynamicsGroup.visible) {
+                    this.updateFluidDynamicsAnimation(time);
+                }
+
+                // 7b. Whole-Body Nutrigenomics 5-Circuit Epigenetic Animation
+                if (this.wholeBodyNutrigenomicsGroup && this.wholeBodyNutrigenomicsGroup.visible) {
+                    this.updateNutrigenomicsAnimation(time);
+                }
+
+                // 8. Arboreal Tree & Automotive Chassis Model Animation Cycles
                 if (this.arborealTreeGroup && this.arborealTreeGroup.visible) {
                     this.arborealTreeGroup.position.y = Math.sin(time * 1.5) * 0.02;
                     this.arborealTreeGroup.children.forEach(child => {

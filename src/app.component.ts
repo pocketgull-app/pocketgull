@@ -129,6 +129,9 @@ import { Cyp3a4Heme3dLensComponent } from './components/anatomy-3d/cyp3a4-heme-3
 import { BioprintingScaffold3dLensComponent } from './components/anatomy-3d/bioprinting-scaffold-3d-lens.component';
 import { StewartHamiltonPacCardComponent } from './components/clinical/stewart-hamilton-pac-card.component';
 import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin-tone-equity-card.component';
+import { FluidResuscitationTonicityCardComponent } from './components/clinical/fluid-resuscitation-tonicity-card.component';
+import { GlymphaticBrain3dLensComponent } from './components/anatomy-3d/glymphatic-brain-3d-lens.component';
+import { Nutrigenomics3dLensComponent } from './components/anatomy-3d/nutrigenomics-3d-lens.component';
 
 @Component({
   selector: 'app-root',
@@ -233,7 +236,10 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
     Cyp3a4Heme3dLensComponent,
     BioprintingScaffold3dLensComponent,
     StewartHamiltonPacCardComponent,
-    MonkSkinToneEquityCardComponent
+    MonkSkinToneEquityCardComponent,
+    FluidResuscitationTonicityCardComponent,
+    GlymphaticBrain3dLensComponent,
+    Nutrigenomics3dLensComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -1798,6 +1804,33 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
               class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
               🎨 Monk Skin Tone Equity
             </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('fluid_tonicity')"
+              [class.bg-cyan-600]="activeBiophysicalLensTab() === 'fluid_tonicity'"
+              [class.text-white]="activeBiophysicalLensTab() === 'fluid_tonicity'"
+              [class.text-cyan-400]="activeBiophysicalLensTab() !== 'fluid_tonicity'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              💧 IV Fluid &amp; Tonicity Shift (P14)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('glymphatic_brain')"
+              [class.bg-teal-600]="activeBiophysicalLensTab() === 'glymphatic_brain'"
+              [class.text-white]="activeBiophysicalLensTab() === 'glymphatic_brain'"
+              [class.text-teal-400]="activeBiophysicalLensTab() !== 'glymphatic_brain'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🧠 Glymphatic &amp; AQP4 Convection (V10)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('nutrigenomics')"
+              [class.bg-emerald-600]="activeBiophysicalLensTab() === 'nutrigenomics'"
+              [class.text-white]="activeBiophysicalLensTab() === 'nutrigenomics'"
+              [class.text-emerald-400]="activeBiophysicalLensTab() !== 'nutrigenomics'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🧬 3D Nutrigenomics &amp; Epigenetics (V11)
+            </button>
           </div>
 
           <!-- Active Panel Display -->
@@ -1861,6 +1894,12 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
               <app-stewart-hamilton-pac-card />
             } @else if (activeBiophysicalLensTab() === 'monk_equity') {
               <app-monk-skin-tone-equity-card />
+            } @else if (activeBiophysicalLensTab() === 'fluid_tonicity') {
+              <app-fluid-resuscitation-tonicity-card />
+            } @else if (activeBiophysicalLensTab() === 'glymphatic_brain') {
+              <app-glymphatic-brain-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'nutrigenomics') {
+              <app-nutrigenomics-3d-lens />
             }
           </div>
         </div>
@@ -1918,7 +1957,7 @@ export class AppComponent implements OnDestroy {
   showAustereHudModal = signal(false);
   showKneeHologramModal = signal(false);
   showBiophysicalLensesModal = signal(false);
-  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'bioprinting_scaffold' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz' | 'monk_equity'>('cardiac');
+  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'bioprinting_scaffold' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz' | 'monk_equity' | 'fluid_tonicity' | 'glymphatic_brain' | 'nutrigenomics'>('cardiac');
   cardiacEngineMode = signal<'webgpu' | 'threejs'>('webgpu');
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
