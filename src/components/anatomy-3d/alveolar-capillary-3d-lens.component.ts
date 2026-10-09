@@ -58,28 +58,28 @@ export interface IAlveolarTelemetry {
         </div>
 
         <!-- Presets Selector Tabs -->
-        <div class="flex flex-wrap items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs">
+        <div class="flex flex-wrap items-center gap-2 bg-zinc-950 p-1.5 rounded-2xl border border-zinc-800 text-xs">
           <button type="button" (click)="setRegime('healthy_homeostasis')"
-                  [class]="regime() === 'healthy_homeostasis' ? 'bg-emerald-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="regime() === 'healthy_homeostasis' ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
             <span>🟢</span>
             <span>Healthy (0.35 um)</span>
           </button>
           <button type="button" (click)="setRegime('hypoxic_euler_liljestrand')"
-                  [class]="regime() === 'hypoxic_euler_liljestrand' ? 'bg-sky-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="regime() === 'hypoxic_euler_liljestrand' ? 'bg-sky-600 text-white font-bold shadow-md shadow-sky-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
             <span>⚡</span>
             <span>Euler-Liljestrand HPV</span>
           </button>
           <button type="button" (click)="setRegime('early_ards_exudative')"
-                  [class]="regime() === 'early_ards_exudative' ? 'bg-amber-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="regime() === 'early_ards_exudative' ? 'bg-amber-600 text-white font-bold shadow-md shadow-amber-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
             <span>⚠️</span>
             <span>Early ARDS (1.2 um)</span>
           </button>
           <button type="button" (click)="setRegime('severe_ards_alveolar_flooding')"
-                  [class]="regime() === 'severe_ards_alveolar_flooding' ? 'bg-rose-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="regime() === 'severe_ards_alveolar_flooding' ? 'bg-rose-600 text-white font-bold shadow-md shadow-rose-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
             <span>🚨</span>
             <span>Severe Flooding & Shunt</span>
           </button>
@@ -91,33 +91,36 @@ export interface IAlveolarTelemetry {
         <div #canvasContainer class="w-full h-full cursor-grab active:cursor-grabbing"></div>
 
         <!-- Floating Playback & View Controls (Top Right) -->
-        <div class="absolute top-3 right-3 z-30 flex items-center gap-1.5 bg-zinc-900/80 backdrop-blur-md p-1.5 rounded-xl border border-zinc-800 text-xs">
+        <div class="absolute top-3 right-3 z-30 flex items-center gap-2 bg-zinc-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-zinc-800 text-xs shadow-xl">
           <button (click)="togglePlay()" type="button"
-                  class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold hover:bg-cyan-500/30 transition cursor-pointer">
+                  aria-label="Toggle 3D simulation animation playback"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl bg-cyan-500/20 text-cyan-300 font-bold hover:bg-cyan-500/30 transition cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center gap-1.5">
             {{ isPlaying() ? '⏸ Pause' : '▶ Play' }}
           </button>
           <button (click)="toggleSpeed()" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer">
-            {{ flowSpeed() }}x Speed
+                  aria-label="Toggle simulation flow speed multiplier"
+                  class="min-h-[44px] px-3 py-2 rounded-xl bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center gap-1">
+            <span class="tabular-nums">{{ flowSpeed() }}</span>x Speed
           </button>
           <button (click)="resetCamera()" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer">
+                  aria-label="Reset 3D camera to default viewpoint"
+                  class="min-h-[44px] px-3 py-2 rounded-xl bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center gap-1.5">
             🎯 Reset Camera
           </button>
         </div>
 
         <!-- Floating Alveolar Telemetry HUD (Top Left) -->
-        <div class="absolute top-3 left-3 z-30 bg-zinc-900/85 backdrop-blur-md p-3.5 rounded-2xl border border-zinc-800/80 text-xs space-y-2 max-w-xs shadow-xl pointer-events-none sm:pointer-events-auto">
+        <div class="absolute top-3 left-3 z-30 bg-zinc-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-zinc-800/80 text-xs space-y-2 max-w-xs shadow-xl pointer-events-none sm:pointer-events-auto">
           <div class="flex items-center justify-between border-b border-zinc-800 pb-1.5">
             <span class="text-[10px] uppercase font-bold text-cyan-400">Diffusion & Shunt Telemetry</span>
-            <span class="text-[10px] font-mono text-zinc-400">PEEP: {{ telemetry().peepCmH2O }} cmH2O</span>
+            <span class="text-[10px] font-mono tabular-nums text-zinc-400">PEEP: {{ telemetry().peepCmH2O }} cmH2O</span>
           </div>
 
           <div class="grid grid-cols-2 gap-2 text-[11px]">
             <!-- Diffusion Flux -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">O2 Diffusion Flux</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().diffusionFluxMlMin < 150 ? 'text-red-400' : (telemetry().diffusionFluxMlMin < 220 ? 'text-amber-400' : 'text-emerald-400')">
                 {{ telemetry().diffusionFluxMlMin }} mL/min
               </span>
@@ -126,7 +129,7 @@ export interface IAlveolarTelemetry {
             <!-- Membrane Thickness -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">Membrane (T)</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().membraneThicknessUm > 1.0 ? 'text-red-400' : (telemetry().membraneThicknessUm > 0.5 ? 'text-amber-400' : 'text-cyan-400')">
                 {{ telemetry().membraneThicknessUm }} um
               </span>
@@ -135,7 +138,7 @@ export interface IAlveolarTelemetry {
             <!-- Shunt Fraction -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">Shunt (Qs/Qt)</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().shuntFractionPercent > 20 ? 'text-red-400' : (telemetry().shuntFractionPercent > 10 ? 'text-amber-400' : 'text-emerald-400')">
                 {{ telemetry().shuntFractionPercent }}%
               </span>
@@ -144,7 +147,7 @@ export interface IAlveolarTelemetry {
             <!-- V/Q Ratio -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">V/Q Ratio</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().vqRatio < 0.5 ? 'text-red-400' : (telemetry().vqRatio < 0.7 ? 'text-amber-400' : 'text-emerald-400')">
                 {{ telemetry().vqRatio }}
               </span>
@@ -155,11 +158,11 @@ export interface IAlveolarTelemetry {
           <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60 flex items-center justify-between text-[10px]">
             <div>
               <span class="text-zinc-400 block">Recruitment:</span>
-              <strong class="text-cyan-300 font-bold">{{ telemetry().alveolarRecruitmentPercent }}% Open</strong>
+              <strong class="text-cyan-300 font-bold font-mono tabular-nums">{{ telemetry().alveolarRecruitmentPercent }}% Open</strong>
             </div>
             <div class="text-right">
               <span class="text-zinc-400 block">Compliance:</span>
-              <strong class="text-zinc-200 font-bold">{{ telemetry().staticComplianceMlCmH2O }} mL/cmH2O</strong>
+              <strong class="text-zinc-200 font-bold font-mono tabular-nums">{{ telemetry().staticComplianceMlCmH2O }} mL/cmH2O</strong>
             </div>
           </div>
 
@@ -199,43 +202,55 @@ export interface IAlveolarTelemetry {
       <!-- Real-Time Interactive Parameter Sliders Deck -->
       <div class="p-4 bg-zinc-900/90 border-t border-zinc-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
         <!-- PaO2 Slider -->
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <div class="flex justify-between text-[11px]">
-            <span class="text-zinc-400 font-bold uppercase">Alveolar P_A_O2</span>
-            <span class="text-cyan-400 font-mono font-bold">{{ paO2() }} mmHg</span>
+            <label for="alveolar-pao2-slider" class="text-zinc-400 font-bold uppercase cursor-pointer">Alveolar P_A_O2</label>
+            <span class="text-cyan-400 font-mono tabular-nums font-bold">{{ paO2() }} mmHg</span>
           </div>
-          <input type="range" min="30" max="140" step="1" [value]="paO2()" (input)="onPaO2Change($event)"
-                 class="w-full accent-cyan-400 cursor-pointer" />
+          <div class="min-h-[44px] flex items-center">
+            <input id="alveolar-pao2-slider" type="range" min="30" max="140" step="1" [value]="paO2()" (input)="onPaO2Change($event)"
+                   aria-label="Alveolar PAO2 partial pressure in millimeters of mercury"
+                   class="w-full accent-cyan-400 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none" />
+          </div>
         </div>
 
         <!-- Membrane Thickness Slider -->
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <div class="flex justify-between text-[11px]">
-            <span class="text-zinc-400 font-bold uppercase">Membrane Thickness (T)</span>
-            <span class="text-cyan-400 font-mono font-bold">{{ thickness() }} um</span>
+            <label for="alveolar-thickness-slider" class="text-zinc-400 font-bold uppercase cursor-pointer">Membrane Thickness (T)</label>
+            <span class="text-cyan-400 font-mono tabular-nums font-bold">{{ thickness() }} um</span>
           </div>
-          <input type="range" min="0.2" max="2.8" step="0.05" [value]="thickness()" (input)="onThicknessChange($event)"
-                 class="w-full accent-cyan-400 cursor-pointer" />
+          <div class="min-h-[44px] flex items-center">
+            <input id="alveolar-thickness-slider" type="range" min="0.2" max="2.8" step="0.05" [value]="thickness()" (input)="onThicknessChange($event)"
+                   aria-label="Blood-air basement membrane thickness in micrometers"
+                   class="w-full accent-cyan-400 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none" />
+          </div>
         </div>
 
         <!-- PEEP Slider -->
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <div class="flex justify-between text-[11px]">
-            <span class="text-zinc-400 font-bold uppercase">PEEP Recruitment</span>
-            <span class="text-cyan-400 font-mono font-bold">{{ peep() }} cmH2O</span>
+            <label for="alveolar-peep-slider" class="text-zinc-400 font-bold uppercase cursor-pointer">PEEP Recruitment</label>
+            <span class="text-cyan-400 font-mono tabular-nums font-bold">{{ peep() }} cmH2O</span>
           </div>
-          <input type="range" min="0" max="24" step="1" [value]="peep()" (input)="onPeepChange($event)"
-                 class="w-full accent-cyan-400 cursor-pointer" />
+          <div class="min-h-[44px] flex items-center">
+            <input id="alveolar-peep-slider" type="range" min="0" max="24" step="1" [value]="peep()" (input)="onPeepChange($event)"
+                   aria-label="Positive end-expiratory pressure recruitment in centimeters of water"
+                   class="w-full accent-cyan-400 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none" />
+          </div>
         </div>
 
         <!-- Alveolar Flooding Slider -->
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <div class="flex justify-between text-[11px]">
-            <span class="text-zinc-400 font-bold uppercase">ARDS Alveolar Flooding</span>
-            <span class="text-cyan-400 font-mono font-bold">{{ Math.round(flooding() * 100) }}%</span>
+            <label for="alveolar-flooding-slider" class="text-zinc-400 font-bold uppercase cursor-pointer">ARDS Alveolar Flooding</label>
+            <span class="text-cyan-400 font-mono tabular-nums font-bold">{{ Math.round(flooding() * 100) }}%</span>
           </div>
-          <input type="range" min="0.0" max="1.0" step="0.05" [value]="flooding()" (input)="onFloodingChange($event)"
-                 class="w-full accent-cyan-400 cursor-pointer" />
+          <div class="min-h-[44px] flex items-center">
+            <input id="alveolar-flooding-slider" type="range" min="0.0" max="1.0" step="0.05" [value]="flooding()" (input)="onFloodingChange($event)"
+                   aria-label="ARDS alveolar exudative flooding fraction"
+                   class="w-full accent-cyan-400 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none" />
+          </div>
         </div>
       </div>
     </div>

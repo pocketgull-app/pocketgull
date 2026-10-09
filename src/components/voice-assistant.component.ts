@@ -139,7 +139,7 @@ export interface IChatEntry {
                         </span>
                         @if (live.isConnected()) {
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1 shrink-0">
-                                <span>⚡ {{ live.latencyMs() }}ms</span>
+                                <span>⚡ <span class="tabular-nums">{{ live.latencyMs() }}</span>ms</span>
                                 <span class="hidden sm:inline text-zinc-400">• Live Audio</span>
                             </span>
                         } @else {
@@ -151,7 +151,7 @@ export interface IChatEntry {
 
                     @if (telemetryService.isHudActive()) {
                         <span class="hidden md:inline px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 animate-pulse shrink-0">
-                            HUD ({{ telemetryService.overallNeuroVascularScore() }}/100)
+                            HUD (<span class="tabular-nums">{{ telemetryService.overallNeuroVascularScore() }}</span>/100)
                         </span>
                     }
                 </div>
@@ -162,7 +162,7 @@ export interface IChatEntry {
                         <button
                             type="button"
                             (click)="isVoiceMenuOpen.set(!isVoiceMenuOpen()); isSocraticMenuOpen.set(false)"
-                            class="flex items-center gap-1 transition-all px-2 py-1 rounded-lg border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/80 hover:bg-gray-100 dark:hover:bg-zinc-700 text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer shadow-xs"
+                            class="flex items-center gap-1.5 transition-all min-h-[44px] px-3 py-2 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/80 hover:bg-gray-100 dark:hover:bg-zinc-700 text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer shadow-xs touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                             title="Select Gemini Live HD Voice">
                             <span>🎙️</span>
                             <span class="hidden sm:inline">{{ live.selectedVoice() }}</span>
@@ -172,7 +172,7 @@ export interface IChatEntry {
                             <div class="absolute right-0 mt-1 w-32 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-gray-200 dark:border-zinc-800 py-1 z-50 font-mono text-xs animate-in fade-in zoom-in-95">
                                 @for (v of availableVoices; track v) {
                                     <button type="button" (click)="setVoice(v)"
-                                            class="w-full text-left px-3 py-1.5 hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:text-teal-600 dark:hover:text-teal-400 flex items-center justify-between cursor-pointer"
+                                            class="w-full text-left px-3 py-2 hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:text-teal-600 dark:hover:text-teal-400 flex items-center justify-between cursor-pointer min-h-[44px] touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                                             [class.font-bold]="live.selectedVoice() === v">
                                         <span>{{ v }}</span>
                                         @if (live.selectedVoice() === v) { <span class="text-teal-500 font-bold">✓</span> }
@@ -187,7 +187,7 @@ export interface IChatEntry {
                         <button
                             type="button"
                             (click)="isSocraticMenuOpen.set(!isSocraticMenuOpen()); isVoiceMenuOpen.set(false)"
-                            class="flex items-center gap-1 transition-all px-2 py-1 rounded-lg border border-teal-500/30 bg-teal-500/10 hover:bg-teal-500/20 text-[11px] font-mono font-bold text-teal-700 dark:text-teal-300 cursor-pointer shadow-xs"
+                            class="flex items-center gap-1.5 transition-all min-h-[44px] px-3 py-2 rounded-xl border border-teal-500/30 bg-teal-500/10 hover:bg-teal-500/20 text-xs font-mono font-bold text-teal-700 dark:text-teal-300 cursor-pointer shadow-xs touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                             title="Socratic Companion & Autonomic Vagal Pacing Options">
                             <span>🌿</span>
                             <span class="hidden md:inline">{{ socraticVoice.activePersona().name.split(' ')[0] }} ({{ socraticVoice.activePersona().speechRate }}x)</span>
@@ -204,7 +204,7 @@ export interface IChatEntry {
                                         <button
                                             type="button"
                                             (click)="selectSocraticPersona(p.id)"
-                                            class="w-full text-left p-1.5 rounded-lg border text-xs transition cursor-pointer flex flex-col gap-0.5"
+                                            class="w-full text-left p-2 rounded-lg border text-xs transition cursor-pointer flex flex-col gap-0.5 min-h-[44px] touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                                             [class.bg-teal-50]="socraticVoice.selectedPersonaId() === p.id"
                                             [class.dark:bg-teal-950/40]="socraticVoice.selectedPersonaId() === p.id"
                                             [class.border-teal-500]="socraticVoice.selectedPersonaId() === p.id"
@@ -241,7 +241,7 @@ export interface IChatEntry {
                             type="button"
                             (click)="isVernacularVoiceMenuOpen.set(!isVernacularVoiceMenuOpen())"
                             id="btn-chat-vernacular-lang"
-                            class="flex items-center gap-1.5 transition-all px-2 py-1 rounded-lg border text-[11px] font-bold cursor-pointer"
+                            class="flex items-center gap-1.5 transition-all min-h-[44px] px-3 py-2 rounded-xl border text-xs font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                             [ngClass]="vernacularVoice.isSpeaking() ? 'bg-teal-500/20 text-teal-700 dark:text-teal-300 border-teal-500/50 shadow-xs' : 'bg-gray-50 dark:bg-zinc-800/80 text-gray-700 dark:text-zinc-300 border-gray-200 dark:border-zinc-700'"
                             [title]="'Frontline Vernacular Voice: ' + vernacularVoice.activeLanguage().name + ' (' + vernacularVoice.activeLanguage().nativeName + ')'">
                             <span class="text-xs">{{ vernacularVoice.activeLanguage().flagEmoji }}</span>
@@ -268,7 +268,7 @@ export interface IChatEntry {
                                             [class.text-teal-800]="vernacularVoice.activeLanguageCode() === lang.code"
                                             [class.dark:text-teal-200]="vernacularVoice.activeLanguageCode() === lang.code"
                                             [class.font-bold]="vernacularVoice.activeLanguageCode() === lang.code"
-                                            class="w-full text-left px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition flex items-center justify-between text-xs cursor-pointer">
+                                            class="w-full text-left px-2.5 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition flex items-center justify-between text-xs cursor-pointer min-h-[44px] touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
                                             <div class="flex items-center gap-2">
                                                 <span>{{ lang.flagEmoji }}</span>
                                                 <span>{{ lang.nativeName }}</span>
@@ -286,7 +286,7 @@ export interface IChatEntry {
                         type="button"
                         (click)="telemetryService.toggleHud()"
                         [ngClass]="telemetryService.isHudActive() ? 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/40 shadow-xs' : 'bg-gray-50 dark:bg-zinc-800/80 text-gray-600 dark:text-zinc-400 border-gray-200 dark:border-zinc-700'"
-                        class="flex items-center gap-1 transition-all px-2 py-1 rounded-lg border text-[11px] font-bold cursor-pointer"
+                        class="flex items-center gap-1.5 transition-all min-h-[44px] px-3 py-2 rounded-xl border text-xs font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
                         title="Toggle Multimodal Camera & Voice Live Tele-Consult HUD">
                         <span>👁️</span> <span class="hidden sm:inline">Tele-HUD</span>
                     </button>
@@ -296,9 +296,9 @@ export interface IChatEntry {
                         type="button"
                         (click)="exportTranscript()"
                         [disabled]="chatHistory().length === 0"
-                        class="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center justify-center transition-colors p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                        class="min-w-[44px] min-h-[44px] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                         title="Export Consultation Transcript (Download Markdown & Copy to Clipboard)">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </button>
 
                     <!-- Clear Session -->
@@ -306,16 +306,16 @@ export interface IChatEntry {
                         type="button"
                         (click)="confirmClearSession()"
                         [disabled]="chatHistory().length === 0"
-                        class="text-zinc-600 dark:text-zinc-400 hover:text-red-500 flex items-center justify-center transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 border border-gray-200 dark:border-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                        class="min-w-[44px] min-h-[44px] text-zinc-600 dark:text-zinc-400 hover:text-red-500 flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 border border-gray-200 dark:border-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
                         title="Clear Chat History & Start New Consult">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
 
                     <!-- Discord Dispatch -->
                     <button
                         type="button"
                         (click)="dispatchDiscordTranscript()"
-                        class="hidden md:flex text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 items-center gap-1 transition-all px-2 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-[11px] font-bold cursor-pointer"
+                        class="hidden md:flex min-h-[44px] text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 items-center justify-center gap-1.5 transition-all px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:outline-none"
                         title="Dispatch Transcript to Discord Webhook">
                         <span>💬</span> <span class="hidden lg:inline">Discord</span>
                     </button>
@@ -324,15 +324,15 @@ export interface IChatEntry {
                     <button
                         type="button"
                         (click)="isMuted.set(!isMuted())"
-                        class="text-gray-400 dark:text-zinc-500 hover:text-black dark:hover:text-white flex items-center justify-center transition-colors p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer"
+                        class="min-w-[44px] min-h-[44px] text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                         [title]="isMuted() ? 'Unmute Sound' : 'Mute Sound'">
                         @if (isMuted()) {
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                               <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
                             </svg>
                         } @else {
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                             </svg>
                         }
@@ -342,12 +342,12 @@ export interface IChatEntry {
                     <button
                         type="button"
                         (click)="state.toggleLiveAgentExpand()"
-                        class="text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white flex items-center justify-center transition-colors p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer"
+                        class="min-w-[44px] min-h-[44px] text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                         [title]="state.liveAgentWindowMode() === 'expanded' ? 'Collapse to Pocket' : 'Expand to Clinical Cockpit'">
                         @if (state.liveAgentWindowMode() === 'expanded') {
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9L4 4m0 0h5m-5 0v5m11 0l5-5m0 0h-5m5 0v5M9 15l-5 5m0 0h5m-5 0v-5m11 0l5 5m0 0h-5m5 0v-5" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9L4 4m0 0h5m-5 0v5m11 0l5-5m0 0h-5m5 0v5M9 15l-5 5m0 0h5m-5 0v-5m11 0l5 5m0 0h-5m5 0v-5" /></svg>
                         } @else {
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
                         }
                     </button>
 
@@ -355,16 +355,16 @@ export interface IChatEntry {
                     <button
                         type="button"
                         (click)="state.setLiveAgentWindowMode('minimized')"
-                        class="text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white flex items-center justify-center transition-colors p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer"
+                        class="min-w-[44px] min-h-[44px] text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                         title="Minimize Window (Keep Voice Stream Active)">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12" stroke-width="2" stroke-linecap="round"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12" stroke-width="2" stroke-linecap="round"/></svg>
                     </button>
 
                     <!-- Close & End Session -->
                     <button
                         type="button"
                         (click)="endLiveConsult()"
-                        class="text-gray-400 dark:text-zinc-500 hover:text-red-500 flex items-center justify-center transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer"
+                        class="min-w-[44px] min-h-[44px] text-gray-400 dark:text-zinc-500 hover:text-red-500 flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
                         title="Close Session">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
@@ -392,11 +392,19 @@ export interface IChatEntry {
                         </div>
 
                         <!-- Mode Switcher -->
-                        <div class="flex items-center gap-1.5 text-[10px]">
-                            <button (click)="telemetryService.setTelemetryMode('ALL')" [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'ALL'" class="px-2 py-1 rounded bg-zinc-800 text-zinc-200 hover:bg-zinc-700">ALL</button>
-                            <button (click)="telemetryService.setTelemetryMode('OCULAR')" [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'OCULAR'" class="px-2 py-1 rounded bg-zinc-800 text-zinc-200 hover:bg-zinc-700">OCULAR</button>
-                            <button (click)="telemetryService.setTelemetryMode('VOCAL')" [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'VOCAL'" class="px-2 py-1 rounded bg-zinc-800 text-zinc-200 hover:bg-zinc-700">VOCAL</button>
-                            <button (click)="telemetryService.setTelemetryMode('RPPG')" [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'RPPG'" class="px-2 py-1 rounded bg-zinc-800 text-zinc-200 hover:bg-zinc-700">rPPG</button>
+                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                            <button (click)="telemetryService.setTelemetryMode('ALL')"
+                                    [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'ALL'"
+                                    class="min-h-[44px] px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center">ALL</button>
+                            <button (click)="telemetryService.setTelemetryMode('OCULAR')"
+                                    [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'OCULAR'"
+                                    class="min-h-[44px] px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center">OCULAR</button>
+                            <button (click)="telemetryService.setTelemetryMode('VOCAL')"
+                                    [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'VOCAL'"
+                                    class="min-h-[44px] px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center">VOCAL</button>
+                            <button (click)="telemetryService.setTelemetryMode('RPPG')"
+                                    [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'RPPG'"
+                                    class="min-h-[44px] px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center">rPPG</button>
                         </div>
                     </div>
 
@@ -406,24 +414,24 @@ export interface IChatEntry {
                         <div class="p-3 rounded-2xl bg-zinc-900/90 border border-cyan-500/20 space-y-1">
                             <div class="flex items-center justify-between text-[10px] text-zinc-400">
                                 <span class="uppercase font-bold text-cyan-300">Pupillometry</span>
-                                <span class="font-bold text-emerald-400">L:{{ telemetryService.ocular().leftPupilDiameterMm }}mm / R:{{ telemetryService.ocular().rightPupilDiameterMm }}mm</span>
+                                <span class="font-bold text-emerald-400 font-mono tabular-nums">L:{{ telemetryService.ocular().leftPupilDiameterMm }}mm / R:{{ telemetryService.ocular().rightPupilDiameterMm }}mm</span>
                             </div>
                             <div class="text-xs font-bold text-zinc-100 flex items-center justify-between">
-                                <span>Asymmetry: {{ telemetryService.ocular().anisocoriaAsymmetryPct }}%</span>
+                                <span>Asymmetry: <span class="font-mono tabular-nums">{{ telemetryService.ocular().anisocoriaAsymmetryPct }}</span>%</span>
                                 <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">{{ telemetryService.ocular().isPupilSymmetric ? 'Symmetric' : 'Anisocoria Flag' }}</span>
                             </div>
-                            <div class="text-[10px] text-zinc-400 font-sans">Blink Rate: {{ telemetryService.ocular().blinkRatePerMin }}/min &bull; Saccade: {{ telemetryService.ocular().saccadicStabilityScore }}%</div>
+                            <div class="text-[10px] text-zinc-400 font-sans">Blink Rate: <span class="font-mono tabular-nums">{{ telemetryService.ocular().blinkRatePerMin }}</span>/min &bull; Saccade: <span class="font-mono tabular-nums">{{ telemetryService.ocular().saccadicStabilityScore }}</span>%</div>
                         </div>
 
                         <!-- 2. Vocal Acoustics & Micro-Tremor -->
                         <div class="p-3 rounded-2xl bg-zinc-900/90 border border-purple-500/20 space-y-1">
                             <div class="flex items-center justify-between text-[10px] text-zinc-400">
                                 <span class="uppercase font-bold text-purple-300">Vocal Acoustics</span>
-                                <span class="font-bold text-amber-300">F0: {{ telemetryService.vocal().fundamentalFrequencyHz }} Hz</span>
+                                <span class="font-bold text-amber-300 font-mono tabular-nums">F0: {{ telemetryService.vocal().fundamentalFrequencyHz }} Hz</span>
                             </div>
                             <div class="text-xs font-bold text-zinc-100 flex items-center justify-between">
-                                <span>Jitter: {{ telemetryService.vocal().microTremorJitterPct }}%</span>
-                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">HNR: {{ telemetryService.vocal().harmonicToNoiseRatioDb }} dB</span>
+                                <span>Jitter: <span class="font-mono tabular-nums">{{ telemetryService.vocal().microTremorJitterPct }}</span>%</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono tabular-nums">HNR: {{ telemetryService.vocal().harmonicToNoiseRatioDb }} dB</span>
                             </div>
                             <div class="text-[10px] text-zinc-400 font-sans truncate">{{ telemetryService.vocal().acousticNote }}</div>
                         </div>
@@ -432,20 +440,20 @@ export interface IChatEntry {
                         <div class="p-3 rounded-2xl bg-zinc-900/90 border border-rose-500/20 space-y-1">
                             <div class="flex items-center justify-between text-[10px] text-zinc-400">
                                 <span class="uppercase font-bold text-rose-300">rPPG Perfusion</span>
-                                <span class="font-bold text-rose-400">{{ telemetryService.rppg().heartRateBpm }} BPM</span>
+                                <span class="font-bold text-rose-400 font-mono tabular-nums">{{ telemetryService.rppg().heartRateBpm }} BPM</span>
                             </div>
                             <div class="text-xs font-bold text-zinc-100 flex items-center justify-between">
-                                <span>HRV RMSSD: {{ telemetryService.rppg().hrvRmssdMs }} ms</span>
-                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">PWV: {{ telemetryService.rppg().pulseWaveVelocityMps }} m/s</span>
+                                <span>HRV RMSSD: <span class="font-mono tabular-nums">{{ telemetryService.rppg().hrvRmssdMs }}</span> ms</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono tabular-nums">PWV: {{ telemetryService.rppg().pulseWaveVelocityMps }} m/s</span>
                             </div>
-                            <div class="text-[10px] text-zinc-400 font-sans">Capillary SNR: {{ telemetryService.rppg().signalToNoiseRatioDb }} dB &bull; Quality: {{ telemetryService.rppg().perfusionQualityIndex }}%</div>
+                            <div class="text-[10px] text-zinc-400 font-sans">Capillary SNR: <span class="font-mono tabular-nums">{{ telemetryService.rppg().signalToNoiseRatioDb }}</span> dB &bull; Quality: <span class="font-mono tabular-nums">{{ telemetryService.rppg().perfusionQualityIndex }}</span>%</div>
                         </div>
 
                         <!-- 4. Neuro-Vascular Synthesis Score -->
                         <div class="p-3 rounded-2xl bg-zinc-900/90 border border-amber-500/20 space-y-1">
                             <div class="flex items-center justify-between text-[10px] text-zinc-400">
                                 <span class="uppercase font-bold text-amber-300">Autonomic Index</span>
-                                <span class="font-bold text-amber-400">{{ telemetryService.overallNeuroVascularScore() }} / 100</span>
+                                <span class="font-bold text-amber-400 font-mono tabular-nums">{{ telemetryService.overallNeuroVascularScore() }} / 100</span>
                             </div>
                             <div class="w-full bg-zinc-800 rounded-full h-2 overflow-hidden mt-1">
                                 <div class="bg-gradient-to-r from-teal-500 via-cyan-400 to-indigo-500 h-2 rounded-full transition-all duration-500" [style.width.%]="telemetryService.overallNeuroVascularScore()"></div>
@@ -849,7 +857,8 @@ export interface IChatEntry {
                         <form (submit)="sendMessage($event)" class="w-full flex items-center gap-2 bg-gray-50/80 dark:bg-zinc-900/90 border border-gray-200 dark:border-zinc-700/80 rounded-2xl p-1.5 focus-within:border-teal-500/50 dark:focus-within:border-teal-500/50 transition-all shadow-xs">
                             <button type="button" (click)="toggleListening()" [disabled]="agentState() !== 'idle' || !!permissionError()"
                                     title="Start/Stop Voice Capture"
-                                    class="w-10 h-10 flex items-center justify-center rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 cursor-pointer"
+                                    aria-label="Toggle voice microphone capture"
+                                    class="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                                     [class.bg-red-500]="live.isListening()" [class.text-white]="live.isListening()"
                                     [class.bg-white]="!live.isListening()" [class.dark:bg-zinc-800]="!live.isListening()" [class.text-gray-600]="!live.isListening()" [class.dark:text-zinc-300]="!live.isListening()"
                                     [class.hover:bg-red-600]="live.isListening()" [class.hover:bg-gray-100]="!live.isListening()" [class.dark:hover:bg-zinc-700]="!live.isListening()">
@@ -869,20 +878,24 @@ export interface IChatEntry {
                                 </pocket-gull-input>
                             </div>
 
-                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-xl transition-colors cursor-pointer"
+                            <button type="button" class="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-xl transition-colors cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
                                     (click)="isResearchMode.set(!isResearchMode())"
                                     [class.bg-blue-100]="isResearchMode()" [class.dark:bg-blue-900]="isResearchMode()" [class.text-blue-600]="isResearchMode()" [class.dark:text-blue-300]="isResearchMode()"
                                     [class.text-gray-500]="!isResearchMode()" [class.hover:bg-gray-200]="!isResearchMode()" [class.dark:hover:bg-zinc-800]="!isResearchMode()"
-                                    [disabled]="agentState() !== 'idle'" title="Toggle Research Grounding">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                    [disabled]="agentState() !== 'idle'" title="Toggle Research Grounding"
+                                    aria-label="Toggle clinical research grounding mode">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                             </button>
 
-                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-800 disabled:opacity-50 cursor-pointer"
-                                    (click)="captureActive3DViewport()" [disabled]="agentState() !== 'idle'" title="Capture & Attach 3D Anatomy Viewport">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                            <button type="button" class="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-800 disabled:opacity-50 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                                    (click)="captureActive3DViewport()" [disabled]="agentState() !== 'idle'" title="Capture & Attach 3D Anatomy Viewport"
+                                    aria-label="Capture and attach active 3D anatomy viewport snapshot">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                             </button>
 
-                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-800 disabled:opacity-50 cursor-pointer" (click)="triggerFileInput()" [disabled]="agentState() !== 'idle'" title="Attach Files">
+                            <button type="button" class="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-800 disabled:opacity-50 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                                    (click)="triggerFileInput()" [disabled]="agentState() !== 'idle'" title="Attach Files"
+                                    aria-label="Attach clinical files, images, or documents">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                             </button>
                             <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*,application/pdf" multiple class="hidden">
@@ -890,7 +903,8 @@ export interface IChatEntry {
                             <button 
                                 type="submit" 
                                 [disabled]="!messageText().trim() && selectedFiles().length === 0 || agentState() !== 'idle'"
-                                class="w-10 h-10 rounded-xl flex items-center justify-center bg-teal-600 text-white disabled:bg-gray-300 dark:disabled:bg-zinc-700 hover:bg-teal-500 transition-colors shrink-0 cursor-pointer shadow-xs">
+                                aria-label="Send message to clinical AI"
+                                class="min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center bg-teal-600 text-white disabled:bg-gray-300 dark:disabled:bg-zinc-700 hover:bg-teal-500 transition-colors shrink-0 cursor-pointer shadow-xs touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                             </button>
                         </form>

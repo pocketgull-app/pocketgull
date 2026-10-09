@@ -33,7 +33,9 @@ import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
               <p class="text-xs text-zinc-400 font-sans mt-0.5">Interoperable clinical passport payload with scannable QR verification & zero-PII security</p>
             </div>
           </div>
-          <button (click)="closeModal.emit()" class="text-zinc-400 hover:text-white text-2xl font-semibold p-1 cursor-pointer">
+          <button (click)="closeModal.emit()"
+                  aria-label="Close FHIR passport modal"
+                  class="min-w-[44px] min-h-[44px] flex items-center justify-center text-zinc-400 hover:text-white text-2xl font-semibold rounded-xl hover:bg-zinc-800 transition cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:outline-none">
             &times;
           </button>
         </div>
@@ -80,13 +82,13 @@ import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
 
               <!-- Risk Tier Badges -->
               <div class="flex flex-wrap gap-2 pt-1 font-mono">
-                <span class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                <span class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 tabular-nums">
                   30-Day Readmission Risk: LOW (12%)
                 </span>
-                <span class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40">
+                <span class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/40 tabular-nums">
                   90-Day Recovery Index: OPTIMAL (94%)
                 </span>
-                <span class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                <span class="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/40 tabular-nums">
                   QALY Gain: +12.0 QALYs
                 </span>
               </div>
@@ -147,22 +149,22 @@ import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
               <div class="grid grid-cols-2 gap-2 text-xs font-mono">
                 <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-0.5 print:bg-slate-50 print:border-slate-300">
                   <span class="text-[10px] text-zinc-400 uppercase block print:text-slate-600">Blood Pressure</span>
-                  <strong class="text-zinc-100 font-bold print:text-slate-900">{{ activePatient()?.vitals?.bp || '118/76 mmHg' }}</strong>
+                  <strong class="text-zinc-100 font-bold font-mono tabular-nums print:text-slate-900">{{ activePatient()?.vitals?.bp || '118/76 mmHg' }}</strong>
                 </div>
 
                 <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-0.5 print:bg-slate-50 print:border-slate-300">
                   <span class="text-[10px] text-zinc-400 uppercase block print:text-slate-600">Heart Rate</span>
-                  <strong class="text-zinc-100 font-bold print:text-slate-900">{{ activePatient()?.vitals?.hr || '72 bpm' }}</strong>
+                  <strong class="text-zinc-100 font-bold font-mono tabular-nums print:text-slate-900">{{ activePatient()?.vitals?.hr || '72 bpm' }}</strong>
                 </div>
 
                 <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-0.5 print:bg-slate-50 print:border-slate-300">
                   <span class="text-[10px] text-zinc-400 uppercase block print:text-slate-600">SpO2 Oxygen</span>
-                  <strong class="text-zinc-100 font-bold print:text-slate-900">{{ activePatient()?.vitals?.spO2 || '98%' }}</strong>
+                  <strong class="text-zinc-100 font-bold font-mono tabular-nums print:text-slate-900">{{ activePatient()?.vitals?.spO2 || '98%' }}</strong>
                 </div>
 
                 <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-0.5 print:bg-slate-50 print:border-slate-300">
                   <span class="text-[10px] text-zinc-400 uppercase block print:text-slate-600">Vitamin D3</span>
-                  <strong class="text-zinc-100 font-bold print:text-slate-900">{{ activePatient()?.vitals?.vitD3 || '35 ng/mL' }}</strong>
+                  <strong class="text-zinc-100 font-bold font-mono tabular-nums print:text-slate-900">{{ activePatient()?.vitals?.vitD3 || '35 ng/mL' }}</strong>
                 </div>
               </div>
             </div>
@@ -172,7 +174,7 @@ import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
           <!-- Section 3: Pharmacotherapy & Precision Nutrients -->
           <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-3 font-sans print:bg-white print:border-slate-300">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-2.5 font-mono print:border-slate-300">
-              <span class="text-xs font-bold uppercase text-purple-400 print:text-slate-900">💊 Pharmacotherapy & Precision Nutrients</span>
+              <span class="text-xs font-bold uppercase text-purple-400 print:text-slate-900">🩺 Pharmacotherapy & Precision Nutrients</span>
               <span class="text-[9.5px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
                 FHIR MedicationStatement
               </span>
@@ -225,10 +227,10 @@ import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
         <!-- Footer / Action Buttons (Screen Only) -->
         <div class="p-4 bg-zinc-900 border-t border-zinc-800 flex flex-wrap items-center justify-between gap-3 font-mono text-xs no-print">
           <div class="flex items-center gap-2">
-            <button (click)="downloadJson()" class="px-3.5 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-bold transition cursor-pointer flex items-center gap-2 shadow-md">
+            <button (click)="downloadJson()" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-bold transition cursor-pointer flex items-center gap-2 shadow-md touch-manipulation focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:outline-none">
               <span>🔥</span> Download FHIR R4 JSON
             </button>
-            <button (click)="printPassport()" class="px-3.5 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold transition cursor-pointer flex items-center gap-2">
+            <button (click)="printPassport()" class="min-h-[44px] px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold transition cursor-pointer flex items-center gap-2 touch-manipulation focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:outline-none">
               <span>📄</span> Print Passport Card
             </button>
           </div>

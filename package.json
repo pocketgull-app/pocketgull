@@ -381,7 +381,8 @@
     "inflight": "npm:lru-cache@^10.0.0",
     "node-domexception": "npm:domexception@^4.0.0",
     "@google-cloud/opentelemetry-cloud-trace-exporter": "^3.1.0",
-    "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.22.0"
+    "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.22.0",
+    "handlebars": "^4.7.10"
   },
   "lint-staged": {
     "*.ts": "npm run lint",

@@ -1881,7 +1881,7 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
               <span class="text-sky-400">●</span>
               <span>SMART ON FHIR v2 & EHR MARKETPLACE CONFORMANCE</span>
             </div>
-            <button (click)="showSmartEhrModal.set(false)" class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5">
+            <button (click)="showSmartEhrModal.set(false)" class="min-h-[44px] px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold text-xs uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none">
               <span>✕</span>
               <span>Close EHR Hub</span>
             </button>
@@ -1906,7 +1906,9 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
                 <span class="text-xs text-indigo-400 font-mono">Epistemic Uncertainty & Reasoning Transparency</span>
               </div>
             </div>
-            <button (click)="showCdsModal.set(false)" class="w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold flex items-center justify-center cursor-pointer transition">
+            <button (click)="showCdsModal.set(false)"
+                    aria-label="Close FDA CDS modal"
+                    class="min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold flex items-center justify-center cursor-pointer transition touch-manipulation focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:outline-none">
               ✕
             </button>
           </div>
