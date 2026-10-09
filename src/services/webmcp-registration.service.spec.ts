@@ -376,10 +376,11 @@ mathematicalModel: Softmax T=0.85`;
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 94 WebMCP agentic tools on modelContext', () => {
+  it('should register all 95 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(94);
+    expect(registeredTools.size).toBe(95);
+    expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
     expect(registeredTools.has('synthesize_edge_offline_sbar')).toBe(true);
     expect(registeredTools.has('get_edge_offline_queue_status')).toBe(true);
@@ -889,10 +890,11 @@ mathematicalModel: Softmax T=0.85`;
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 94 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 95 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(94);
+    expect(registeredTools.size).toBe(95);
+    expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
     expect(registeredTools.has('run_sepsis_benchmark_evaluation')).toBe(true);
     expect(registeredTools.has('get_benchmark_preprint_dossier')).toBe(true);
@@ -1130,10 +1132,24 @@ mathematicalModel: Softmax T=0.85`;
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(94);
+    expect((service as any).mcpControllers.length).toBe(95);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
+  });
+
+  it('should execute control_gullrender_spatial_substrate tool and return GullRender telemetry', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('control_gullrender_spatial_substrate');
+    expect(tool).toBeDefined();
+
+    const res = await tool.execute({ action: 'MORPH_GEOMETRY', geometryToken: '[heart]', regime: 'normal_sinus' });
+    expect(res.content).toBeDefined();
+    const payload = JSON.parse(res.content[0].text);
+    expect(payload.engine).toContain('GullRender');
+    expect(payload.zeroThreeJs).toBe(true);
+    expect(payload.geometrySelected).toBe('[heart]');
+    expect(payload.actionExecuted).toBe('MORPH_GEOMETRY');
   });
 
   it('should execute get_uspto_provisional_patent_binder and return 20 claims and docket details', async () => {

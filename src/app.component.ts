@@ -115,6 +115,7 @@ import { SpecialistReferralHubComponent } from './components/specialist-referral
 import { SocraticMultilingualTerminalComponent } from './components/socratic-multilingual-terminal.component';
 import { MocaSuiteComponent } from './components/moca/moca-suite.component';
 import { CardiacElectrophysiology3dLensComponent } from './components/anatomy-3d/cardiac-electrophysiology-3d-lens.component';
+import { CardiacWebgpuLensComponent } from './components/anatomy-3d/cardiac-webgpu-lens.component';
 import { AlveolarCapillary3dLensComponent } from './components/anatomy-3d/alveolar-capillary-3d-lens.component';
 import { HepaticSinusoid3dLensComponent } from './components/anatomy-3d/hepatic-sinusoid-3d-lens.component';
 import { GlomerularFiltration3dLensComponent } from './components/anatomy-3d/glomerular-filtration-3d-lens.component';
@@ -219,6 +220,7 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
     IntimacyRelationshipVitalityComponent,
     MocaSuiteComponent,
     CardiacElectrophysiology3dLensComponent,
+    CardiacWebgpuLensComponent,
     AlveolarCapillary3dLensComponent,
     HepaticSinusoid3dLensComponent,
     GlomerularFiltration3dLensComponent,
@@ -1801,7 +1803,38 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
           <!-- Active Panel Display -->
           <div class="w-full">
             @if (activeBiophysicalLensTab() === 'cardiac') {
-              <app-cardiac-electrophysiology-3d-lens />
+              <div class="mb-3 flex items-center justify-between bg-zinc-900/80 p-2.5 rounded-2xl border border-zinc-800 gap-3 flex-wrap">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-zinc-400 font-mono">3D Rendering Engine:</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border"
+                        [class.bg-teal-500/20]="cardiacEngineMode() === 'webgpu'"
+                        [class.text-teal-300]="cardiacEngineMode() === 'webgpu'"
+                        [class.border-teal-500/40]="cardiacEngineMode() === 'webgpu'"
+                        [class.bg-zinc-800]="cardiacEngineMode() === 'threejs'"
+                        [class.text-zinc-400]="cardiacEngineMode() === 'threejs'">
+                    {{ cardiacEngineMode() === 'webgpu' ? '⚡ GullRender (Zero-Three.js)' : '📦 Three.js Legacy' }}
+                  </span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs">
+                  <button type="button" (click)="cardiacEngineMode.set('webgpu')"
+                          [class]="cardiacEngineMode() === 'webgpu' ? 'bg-teal-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                          class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                    <span>⚡</span>
+                    <span>GullRender (WebGPU)</span>
+                  </button>
+                  <button type="button" (click)="cardiacEngineMode.set('threejs')"
+                          [class]="cardiacEngineMode() === 'threejs' ? 'bg-zinc-700 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                          class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                    <span>📦</span>
+                    <span>Three.js (Legacy)</span>
+                  </button>
+                </div>
+              </div>
+              @if (cardiacEngineMode() === 'webgpu') {
+                <app-cardiac-webgpu-lens />
+              } @else {
+                <app-cardiac-electrophysiology-3d-lens />
+              }
             } @else if (activeBiophysicalLensTab() === 'alveolar') {
               <app-alveolar-capillary-3d-lens />
             } @else if (activeBiophysicalLensTab() === 'hepatic') {
@@ -1886,6 +1919,7 @@ export class AppComponent implements OnDestroy {
   showKneeHologramModal = signal(false);
   showBiophysicalLensesModal = signal(false);
   activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'bioprinting_scaffold' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz' | 'monk_equity'>('cardiac');
+  cardiacEngineMode = signal<'webgpu' | 'threejs'>('webgpu');
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;

@@ -374,7 +374,7 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
                       <div class="text-[10px] text-zinc-400 font-normal">Three.js Tri-Plane Slicer</div>
                     </div>
                   </button>
-                  <button type="button" (click)="openBiophysicalLenses.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                  <button type="button" data-testid="btn-open-biophysical-lenses" (click)="openBiophysicalLenses.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🫀</span>
                     <div>
                       <div>Biophysical 3D Lenses &amp; Phenotypers</div>
