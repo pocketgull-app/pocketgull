@@ -25,13 +25,13 @@ import { PocketGullAiSocialCardComponent } from '../shared/pocketgull-ai-social-
         <!-- Header -->
         <div class="text-center max-w-2xl mx-auto mb-6">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-400 text-xs font-mono font-semibold uppercase tracking-wider mb-2">
-            <span>💬 Community Voices &amp; Practitioner Quotes</span>
+            <span>🤝 Partnerships &amp; Client Inquiries</span>
           </div>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-zinc-50 tracking-tight">
-            Share Your Experience with PocketGull
+            Seeking Clients &amp; Customers
           </h2>
-          <p class="text-sm text-zinc-400 mt-1">
-            Read verified clinical testimonials from rural clinics and solo practices, or write in your own quote below.
+          <p class="text-sm text-zinc-300 mt-2 leading-relaxed">
+            I am actively seeking clients, clinical practices, and healthcare customers. No fabricated quotes or synthetic personas—just honest, ground-up partnership.
           </p>
 
           <!-- Mode Toggle -->
@@ -43,7 +43,7 @@ import { PocketGullAiSocialCardComponent } from '../shared/pocketgull-ai-social-
               [class.bg-teal-500]="viewMode() === 'read'"
               [class.text-zinc-950]="viewMode() === 'read'"
               [class.text-zinc-400]="viewMode() !== 'read'">
-              📖 Read Testimonials ({{ testimonialsService.testimonials().length }})
+              🤝 Seeking Clients &amp; Reviews ({{ testimonialsService.testimonials().length }})
             </button>
             <button 
               type="button"
@@ -52,7 +52,7 @@ import { PocketGullAiSocialCardComponent } from '../shared/pocketgull-ai-social-
               [class.bg-teal-500]="viewMode() === 'write'"
               [class.text-zinc-950]="viewMode() === 'write'"
               [class.text-zinc-400]="viewMode() !== 'write'">
-              ✍️ Write a Testimonial
+              ✍️ Submit Client Feedback
             </button>
             <button 
               type="button"
@@ -66,31 +66,84 @@ import { PocketGullAiSocialCardComponent } from '../shared/pocketgull-ai-social-
           </div>
         </div>
 
-        <!-- Mode 1: Read Testimonials List -->
+        <!-- Mode 1: Read Testimonials & Seeking Clients Section -->
         @if (viewMode() === 'read') {
-          <div class="space-y-4 mb-6">
-            @for (item of testimonialsService.testimonials(); track item.id) {
-              <div class="bg-zinc-950/80 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition flex flex-col md:flex-row items-start justify-between gap-4">
-                <div class="flex-1 space-y-2">
-                  <div class="flex items-center gap-2">
-                    <span class="text-lg">{{ item.avatarIcon || '🩺' }}</span>
-                    <div>
-                      <div class="font-bold text-sm text-zinc-100">{{ item.authorName }}</div>
-                      <div class="text-xs text-zinc-400">{{ item.roleOrAffiliation }} &bull; <span class="text-zinc-500">{{ item.location }}</span></div>
-                    </div>
+          <div class="space-y-6 mb-6">
+            <!-- Transparent Founder Callout -->
+            <div class="bg-gradient-to-br from-teal-950/40 via-zinc-950 to-zinc-900 border border-teal-500/30 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xl">
+              <div class="flex flex-col sm:flex-row items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-500/40 text-teal-300 flex items-center justify-center text-2xl shrink-0">
+                  🤝
+                </div>
+                <div class="space-y-2 flex-1">
+                  <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-400 text-xs font-mono font-semibold">
+                    <span>100% Real &bull; Transparent Clinical Outreach</span>
                   </div>
+                  <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight">
+                    I'm Actively Seeking Clients &amp; Customers
+                  </h3>
+                  <p class="text-sm text-zinc-300 leading-relaxed">
+                    Instead of displaying manufactured testimonials or fictional doctor quotes, I believe in being completely direct: PocketGull is in active rollout and I am seeking early clients, medical clinics, and enterprise customers.
+                  </p>
+                  <p class="text-xs text-zinc-400 leading-relaxed">
+                    Whether you operate a solo direct primary care practice, run an integrative health clinic, or need zero-egress on-device AI and FHIR R4 pipelines for your health system, I would love to partner with you. Founding clients receive white-glove onboarding, direct founder support, and locked-in early partner rates.
+                  </p>
 
-                  <blockquote class="text-xs text-zinc-300 italic border-l-2 border-teal-500/60 pl-3 py-1 font-serif leading-relaxed">
-                    "{{ item.quoteText }}"
-                  </blockquote>
+                  <div class="flex flex-wrap items-center gap-3 pt-3">
+                    <a 
+                      href="mailto:dpo@pocketgull.app?subject=PocketGull%20Client%20%26%20Customer%20Inquiry"
+                      class="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-zinc-950 font-bold text-xs uppercase tracking-wider rounded-lg transition shadow-md flex items-center gap-2 cursor-pointer">
+                      <span>✉️ Reach Out &bull; dpo&#64;pocketgull.app</span>
+                    </a>
+                    <button 
+                      type="button"
+                      (click)="viewMode.set('write')"
+                      class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-semibold text-xs rounded-lg border border-zinc-700 transition cursor-pointer flex items-center gap-1.5">
+                      <span>✍️ Leave Client Feedback</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- List of verified client submissions (if any exist) -->
+            @if (testimonialsService.testimonials().length > 0) {
+              <div class="space-y-4">
+                <div class="text-xs font-mono text-zinc-400 uppercase tracking-wider flex items-center gap-2">
+                  <span>Verified Client &amp; Early Adopter Feedback:</span>
+                  <span class="px-2 py-0.5 rounded bg-teal-500/10 text-teal-400 text-[10px] font-bold">{{ testimonialsService.testimonials().length }}</span>
                 </div>
 
-                @if (item.impactMetric) {
-                  <div class="shrink-0 bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-lg text-center min-w-[120px]">
-                    <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Reported Impact</div>
-                    <div class="text-xs font-extrabold text-teal-400 mt-0.5">{{ item.impactMetric }}</div>
+                @for (item of testimonialsService.testimonials(); track item.id) {
+                  <div class="bg-zinc-950/80 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition flex flex-col md:flex-row items-start justify-between gap-4">
+                    <div class="flex-1 space-y-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-lg">{{ item.avatarIcon || '🩺' }}</span>
+                        <div>
+                          <div class="font-bold text-sm text-zinc-100">{{ item.authorName }}</div>
+                          <div class="text-xs text-zinc-400">{{ item.roleOrAffiliation }} &bull; <span class="text-zinc-500">{{ item.location }}</span></div>
+                        </div>
+                      </div>
+
+                      <blockquote class="text-xs text-zinc-300 italic border-l-2 border-teal-500/60 pl-3 py-1 font-serif leading-relaxed">
+                        "{{ item.quoteText }}"
+                      </blockquote>
+                    </div>
+
+                    @if (item.impactMetric) {
+                      <div class="shrink-0 bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-lg text-center min-w-[120px]">
+                        <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Reported Impact</div>
+                        <div class="text-xs font-extrabold text-teal-400 mt-0.5">{{ item.impactMetric }}</div>
+                      </div>
+                    }
                   </div>
                 }
+              </div>
+            } @else {
+              <!-- Zero Fabricated Reviews Assurance -->
+              <div class="bg-zinc-950/60 border border-zinc-800/80 rounded-xl p-5 text-center text-xs text-zinc-400 space-y-1">
+                <div class="text-zinc-300 font-semibold">Zero Synthetic Reviews</div>
+                <p>We do not seed manufactured or stock testimonials. Real reviews and case outcomes will be posted here as founding clients and pilot clinics go live.</p>
               </div>
             }
           </div>
@@ -103,7 +156,7 @@ import { PocketGullAiSocialCardComponent } from '../shared/pocketgull-ai-social-
             <!-- Left: Input Form -->
             <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-5 space-y-4">
               <h3 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
-                <span>📝 Your Details &amp; Quote</span>
+                <span>📝 Real Client Feedback &amp; Experience</span>
               </h3>
 
               <div>
@@ -117,7 +170,7 @@ import { PocketGullAiSocialCardComponent } from '../shared/pocketgull-ai-social-
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-xs font-semibold text-zinc-400 mb-1">Role or Specialty</label>
+                  <label class="block text-xs font-semibold text-zinc-400 mb-1">Role, Specialty or Practice</label>
                   <input 
                     type="text" 
                     [(ngModel)]="roleOrAffiliation" 
@@ -125,7 +178,7 @@ import { PocketGullAiSocialCardComponent } from '../shared/pocketgull-ai-social-
                     class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-100 focus:outline-none focus:border-teal-400" />
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-zinc-400 mb-1">Location / Island / Clinic</label>
+                  <label class="block text-xs font-semibold text-zinc-400 mb-1">Location / Clinic</label>
                   <input 
                     type="text" 
                     [(ngModel)]="location" 
@@ -147,11 +200,11 @@ import { PocketGullAiSocialCardComponent } from '../shared/pocketgull-ai-social-
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-zinc-400 mb-1">Your Quote or Story *</label>
+                <label class="block text-xs font-semibold text-zinc-400 mb-1">Your Experience or Feedback *</label>
                 <textarea 
                   [(ngModel)]="quoteText" 
                   rows="4"
-                  placeholder="How has PocketGull helped your clinical workflow, diagnostic triage, or patient communication?"
+                  placeholder="Share your pilot experience, clinical evaluation, or feedback on PocketGull's on-device AI and charting..."
                   class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-100 focus:outline-none focus:border-teal-400 leading-relaxed"></textarea>
               </div>
 
@@ -168,7 +221,7 @@ import { PocketGullAiSocialCardComponent } from '../shared/pocketgull-ai-social-
                 type="button"
                 (click)="onSubmitTestimonial()"
                 class="w-full py-2.5 bg-teal-500 hover:bg-teal-400 text-zinc-950 font-bold text-xs uppercase tracking-wider rounded-lg transition cursor-pointer">
-                Submit Testimonial
+                Submit Client Feedback
               </button>
 
               @if (submissionMessage()) {

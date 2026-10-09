@@ -1019,6 +1019,9 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
             <button type="button" (click)="showTalentHrPortalModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>🤝 Join Team &amp; Fellowships</span>
             </button>
+            <button type="button" (click)="showTestimonialsModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>💬 Seeking Clients &amp; Reviews</span>
+            </button>
             <button type="button" (click)="showModelGardenModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>🌿 Vertex Model Garden</span>
             </button>

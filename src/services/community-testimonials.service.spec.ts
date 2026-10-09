@@ -12,12 +12,9 @@ describe('CommunityTestimonialsService', () => {
     service = TestBed.inject(CommunityTestimonialsService);
   });
 
-  it('should initialize with curated seed testimonials including Nantucket doctor quote', () => {
-    expect(service.testimonials().length).toBeGreaterThanOrEqual(3);
-    const nantucket = service.testimonials().find(t => t.id === 'test_nantucket_md');
-    expect(nantucket).toBeDefined();
-    expect(nantucket?.quoteText).toContain('Babesia');
-    expect(nantucket?.location).toContain('Nantucket');
+  it('should initialize with empty seed testimonials (transparently seeking real clients)', () => {
+    expect(service.testimonials().length).toBe(0);
+    expect(SEED_TESTIMONIALS.length).toBe(0);
   });
 
   it('should allow submitting a new clinician testimonial with live update', () => {
