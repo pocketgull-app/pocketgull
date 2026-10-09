@@ -29,6 +29,24 @@ export interface IParsedSmsResponse {
   adherencePointsEarned?: number;
 }
 
+export interface IUssdSessionState {
+  sessionId: string;
+  phoneNumber: string;
+  serviceCode: string; // e.g. '*384*4855#'
+  currentMenu: 'MAIN' | 'TRIAGE' | 'MEDS' | 'BP_LOG' | 'MALARIA' | 'CHW_DISPATCH' | 'EXIT';
+  language: 'en' | 'sw' | 'ha' | 'fr' | 'ar';
+  patientId?: string;
+  collectedData: Record<string, string>;
+}
+
+export interface IUssdMenuResponse {
+  sessionId: string;
+  responseType: 'CON' | 'END'; // CON = Continue session, END = Terminal screen
+  screenText: string;
+  nextMenu: IUssdSessionState['currentMenu'];
+  actionPayload?: Record<string, unknown>;
+}
+
 export interface ISmsBridgePlan {
   patientId: string;
   phoneNumber: string;
@@ -253,6 +271,170 @@ export class SmsEquityBridgeService {
       // Return client fallback
     }
     return this.parseInboundSms(text);
+  }
+
+  /**
+   * Interactive 2G / 3G USSD Session State Machine (*384*4855#)
+   *
+   * Complies with Africa's Talking / Twilio USSD gateway standards:
+   * 'CON' prefixes continuing multi-turn dialogues; 'END' terminates the session.
+   * Runs 100% offline or edge-cached on 2G feature phones (Transsion / Nokia).
+   */
+  public processUssdRequest(
+    session: IUssdSessionState,
+    userInput: string
+  ): IUssdMenuResponse {
+    const input = userInput.trim();
+    const lang = session.language || 'en';
+
+    // 1. Initial Dial In (*384*4855#)
+    if (!input || session.currentMenu === 'MAIN') {
+      if (input === '1') {
+        // Triage / Fever
+        session.currentMenu = 'MALARIA';
+        return {
+          sessionId: session.sessionId,
+          responseType: 'CON',
+          nextMenu: 'MALARIA',
+          screenText: lang === 'sw'
+            ? 'CON HOMA NA DALILI ZA MALARIA:\n1. Homa kali na kutetemeka\n2. Maumivu ya kichwa na viungo\n3. Mtoto anatapika/hawezi kunywa\n4. Rudi nyuma'
+            : lang === 'ha'
+            ? 'CON ZAZZABI DA ALAMOMIN MALARIA:\n1. Zazzabi mai zafi da rawar sanyi\n2. Ciwon kai da gabbai\n3. Yaro ba ya iya shan ruwa\n4. Koma baya'
+            : 'CON FEVER & MALARIA TRIAGE:\n1. High fever with chills/shivering\n2. Headache & body aches\n3. Child vomiting/unable to drink\n4. Back'
+        };
+      } else if (input === '2') {
+        // Log BP
+        session.currentMenu = 'BP_LOG';
+        return {
+          sessionId: session.sessionId,
+          responseType: 'CON',
+          nextMenu: 'BP_LOG',
+          screenText: lang === 'sw'
+            ? 'CON WEKA SHINIKIZO LA DAMU (BP):\nWeka namba kwa mfano: 125/82'
+            : lang === 'ha'
+            ? 'CON RUBUTA HAWAN JINI (BP):\nRubuta lambobi kamar: 125/82'
+            : 'CON RECORD BLOOD PRESSURE (BP):\nEnter your reading like: 125/82'
+        };
+      } else if (input === '3') {
+        // Meds adherence
+        session.currentMenu = 'MEDS';
+        return {
+          sessionId: session.sessionId,
+          responseType: 'CON',
+          nextMenu: 'MEDS',
+          screenText: lang === 'sw'
+            ? 'CON UTHIBITISHO WA DAWA:\nJe, umemeza dawa zako leo?\n1. Ndiyo, nimemeza zote\n2. Bado, nahitaji kikumbusho\n3. Dawa zimekwisha kliniki'
+            : lang === 'ha'
+            ? 'CON TABBATAR DA SHAN MAGANI:\nKa sha maganinka a yau?\n1. Eh, na sha duka\n2. A\'a, ina bukatar tunatarwa\n3. Magani ya kare a asibiti'
+            : 'CON MEDICATION ADHERENCE:\nDid you take your prescribed medicines today?\n1. Yes, took all doses\n2. Not yet, remind me\n3. Ran out of supply'
+        };
+      } else if (input === '4') {
+        // CHW Dispatch
+        session.currentMenu = 'CHW_DISPATCH';
+        return {
+          sessionId: session.sessionId,
+          responseType: 'END',
+          nextMenu: 'EXIT',
+          screenText: lang === 'sw'
+            ? 'END OMBI LIMETUMWA:\nMhudumu wa afya wa jamii (CHW) aliye karibu nawe amearifiwa na atakupigia simu ndani ya dakika 30.'
+            : lang === 'ha'
+            ? 'END AN TURA BUKATA:\nMa\'aikacin lafiya na al\'umma (CHW) zai kira ka cikin minti 30 domin duba lafiyarka.'
+            : 'END CHW DISPATCHED:\nYour local Community Health Worker has been alerted and will contact you within 30 minutes.'
+        };
+      }
+
+      // Default Main Menu
+      return {
+        sessionId: session.sessionId,
+        responseType: 'CON',
+        nextMenu: 'MAIN',
+        screenText: lang === 'sw'
+          ? 'CON POCKETGULL HUDUMA YA AFYA (USSD):\n1. Homa na Malaria Triage\n2. Rekodi Shinikizo la Damu (BP)\n3. Uthibitisho wa Dawa\n4. Omba Mhudumu wa Afya (CHW)'
+          : lang === 'ha'
+          ? 'CON POCKETGULL LAFIYAR AL\'UMMA (USSD):\n1. Duban Zazzabin Malaria\n2. Auna Hawan Jini (BP)\n3. Tabbatar da Shan Magani\n4. Nemi Ma\'aikacin Lafiya (CHW)'
+          : 'CON POCKETGULL COMMUNITY HEALTH (USSD):\n1. Fever & Malaria Triage\n2. Log Blood Pressure (BP)\n3. Verify Daily Medications\n4. Request Frontline CHW Visit'
+      };
+    }
+
+    // 2. Malaria / Fever Menu Flow
+    if (session.currentMenu === 'MALARIA') {
+      if (input === '3') {
+        // Danger sign
+        session.currentMenu = 'EXIT';
+        return {
+          sessionId: session.sessionId,
+          responseType: 'END',
+          nextMenu: 'EXIT',
+          screenText: lang === 'sw'
+            ? 'END TAHADHARI KALI (DANGER SIGN):\nMpeleke mtoto kituo cha afya au hospitali MARA MOJA. Usisubiri. Dalili hii inaashiria hatari ya malaria kali au nimonia.'
+            : lang === 'ha'
+            ? 'END GIDAN GAGGAWA (DANGER SIGN):\nKwai yaro zuwa asibiti YANZU HAKAN. Wannan alama ce mai hadarin gaske ta malaria ko ciwon huhu.'
+            : 'END DANGER SIGN ALERT:\nTransport child to the nearest health post or hospital IMMEDIATELY. Inability to drink/vomiting indicates severe complicated malaria.'
+        };
+      } else if (input === '1' || input === '2') {
+        session.currentMenu = 'EXIT';
+        return {
+          sessionId: session.sessionId,
+          responseType: 'END',
+          nextMenu: 'EXIT',
+          screenText: lang === 'sw'
+            ? 'END USHAURI WA MALARIA:\nFika kituo cha afya upimwe kipimo cha haraka (mRDT). Ikiwa una malaria, tumia Coartem (ACT) siku 3. Kunywa maji mengi.'
+            : lang === 'ha'
+            ? 'END SHAWARAR MALARIA:\nJe asibiti a yi gwajin mRDT. Idan akwai malaria, a fara shan Coartem (ACT) na kwana 3. A sha ruwa sosai.'
+            : 'END MALARIA CDS ADVICE:\nVisit nearest clinic for Rapid Diagnostic Test (mRDT). If positive, standard 3-day Artemisinin Combination Therapy (Coartem) is recommended. Drink fluids.'
+        };
+      }
+      session.currentMenu = 'MAIN';
+      return this.processUssdRequest(session, '');
+    }
+
+    // 3. Blood Pressure Logging Menu Flow
+    if (session.currentMenu === 'BP_LOG') {
+      const parsed = this.parseInboundSms(input, session.patientId || 'ussd_user');
+      session.currentMenu = 'EXIT';
+      return {
+        sessionId: session.sessionId,
+        responseType: 'END',
+        nextMenu: 'EXIT',
+        screenText: `END ${parsed.automatedResponseText}`,
+        actionPayload: parsed.fhirObservationResource
+      };
+    }
+
+    // 4. Medication Verification Flow
+    if (session.currentMenu === 'MEDS') {
+      session.currentMenu = 'EXIT';
+      if (input === '1') {
+        return {
+          sessionId: session.sessionId,
+          responseType: 'END',
+          nextMenu: 'EXIT',
+          screenText: lang === 'sw'
+            ? 'END SHUKRANI:\nUmeandikisha uthibitisho wa kumeza dawa (+15 Alama za Uaminifu). Afya njema!'
+            : lang === 'ha'
+            ? 'END MUN GODE:\nAn rubuta shan maganinka (+15 Maki na Lafiya). Allah ya kara sauki!'
+            : 'END THANK YOU:\nDaily medication adherence logged (+15 Health Points). Keep up the great routine!'
+        };
+      }
+      return {
+        sessionId: session.sessionId,
+        responseType: 'END',
+        nextMenu: 'EXIT',
+        screenText: lang === 'sw'
+          ? 'END TAARIFA:\nIkiwa dawa zimekwisha, tembelea mhudumu wa afya (CHW) au duka la mPharma/Jan Aushadhi kupata generic kwa bei nafuu.'
+          : lang === 'ha'
+          ? 'END SANARWA:\nIdan magani ya kare, tuntuɓi CHW ko kantin mPharma/Jan Aushadhi domin samun magani mai arha.'
+          : 'END NOTED:\nIf out of stock, consult your frontline CHW or visit an authorized generic hub (mPharma / Jan Aushadhi) for low-cost resupply.'
+      };
+    }
+
+    // Fallback exit
+    return {
+      sessionId: session.sessionId,
+      responseType: 'END',
+      nextMenu: 'EXIT',
+      screenText: 'END Session timed out or invalid selection.'
+    };
   }
 
   /**

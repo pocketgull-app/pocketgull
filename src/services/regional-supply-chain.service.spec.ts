@@ -79,4 +79,51 @@ describe('RegionalSupplyChainService - Global Health Sovereignty Supply Chain', 
     expect(referral.recommendedFoodsheds.length).toBeGreaterThan(0);
     expect(referral.sovereigntyDirectives.length).toBeGreaterThan(0);
   });
+
+  it('7. Maps North Africa & Maghreb to Officines PPV and Souk Municipal Barley & Olive Oil', () => {
+    service.setRegion('AFRICA_NORTH_MAGHREB');
+    const profile = service.activeRegion();
+    expect(profile.regionName).toContain('North Africa & Maghreb');
+    expect(profile.localCurrencyCode).toContain('MAD');
+
+    const officine = profile.primaryPharmacies.find(p => p.id === 'pharm_maghreb_officine');
+    expect(officine).toBeDefined();
+    expect(officine?.typicalSavingsVsBrandPct).toBeGreaterThanOrEqual(75);
+
+    const souk = profile.primaryFoodsheds.find(f => f.id === 'food_souk_maghreb');
+    expect(souk?.indigenousStaples).toContain('Barley couscous (Dchicha)');
+    expect(souk?.indigenousStaples).toContain('Cold-pressed extra virgin olive oil (Zit Zitoun)');
+  });
+
+  it('8. Maps Southeast Asia & Philippines to The Generics Pharmacy and Palengke Ampalaya', () => {
+    service.setRegion('SOUTHEAST_ASIA_PHILIPPINES');
+    const profile = service.activeRegion();
+    expect(profile.regionName).toContain('Philippines');
+
+    const tgp = profile.primaryPharmacies.find(p => p.id === 'pharm_generics_pharmacy');
+    expect(tgp?.coverageDescription).toContain('barangay');
+
+    const palengke = profile.primaryFoodsheds.find(f => f.id === 'food_palengke_southeast');
+    expect(palengke?.indigenousStaples).toContain('Malunggay (Moringa oleifera)');
+    expect(palengke?.indigenousStaples).toContain('Ampalaya (Bitter melon / Momordica charantia)');
+  });
+
+  it('9. Maps Caribbean Basin to National Health Fund (NHF) and Coronation Market Callaloo', () => {
+    service.setRegion('CARIBBEAN_ISLANDS');
+    const profile = service.activeRegion();
+    expect(profile.regionName).toContain('Caribbean Basin');
+
+    const nhf = profile.primaryPharmacies.find(p => p.id === 'pharm_caribbean_nhf');
+    expect(nhf?.keyCapabilities).toContain('NHF card subsidies covering 17 chronic diseases');
+
+    const coronation = profile.primaryFoodsheds.find(f => f.id === 'food_caribbean_markets');
+    expect(coronation?.indigenousStaples).toContain('Callaloo (Amaranthus viridis)');
+    expect(coronation?.indigenousStaples).toContain('Breadfruit (Artocarpus altilis)');
+
+    // Phone resolution check
+    expect(service.resolveRegionFromPhoneOrCountry('+212 612 345678')).toBe('AFRICA_NORTH_MAGHREB');
+    expect(service.resolveRegionFromPhoneOrCountry('+63 917 123 4567')).toBe('SOUTHEAST_ASIA_PHILIPPINES');
+    expect(service.resolveRegionFromPhoneOrCountry('+1876 922 1234')).toBe('CARIBBEAN_ISLANDS');
+  });
 });
+

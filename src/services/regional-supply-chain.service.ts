@@ -17,10 +17,13 @@ export type GeographicRegionCode =
   | 'AFRICA_WEST_CENTRAL'
   | 'AFRICA_EAST'
   | 'AFRICA_SOUTH'
+  | 'AFRICA_NORTH_MAGHREB'
   | 'SOUTH_ASIA'
+  | 'SOUTHEAST_ASIA_PHILIPPINES'
   | 'LATIN_AMERICA_MEXICO'
   | 'LATIN_AMERICA_ANDES'
   | 'LATIN_AMERICA_BRAZIL'
+  | 'CARIBBEAN_ISLANDS'
   | 'NORTH_AMERICA_AUSTERE';
 
 export interface IRegionalPharmacyNetwork {
@@ -464,6 +467,163 @@ export const REGIONAL_SUPPLY_CHAIN_DATABASE: Record<GeographicRegionCode, IRegio
       'Direct patients to Walmart $4 retail generic benchmarks and Cost Plus Drugs to bypass opaque commercial copay tiers.',
       'Support Indigenous Food Sovereignty through GusNIP and Produce Rx vouchers redeemable for traditional wild rice and heirloom beans.'
     ]
+  },
+  AFRICA_NORTH_MAGHREB: {
+    regionCode: 'AFRICA_NORTH_MAGHREB',
+    regionName: 'North Africa & Maghreb (Morocco, Algeria, Tunisia, Egypt)',
+    localCurrencyCode: 'MAD / EGP',
+    exchangeRateToUsd: 10.2, // ~10 MAD or ~48 EGP
+    primaryPharmacies: [
+      {
+        id: 'pharm_maghreb_officine',
+        name: 'Réseau National des Officines & Pharmacie Centrale',
+        networkType: 'STATE_SUBSIDIZED_GENERIC',
+        countryCoverage: ['Morocco', 'Algeria', 'Tunisia'],
+        coverageDescription: 'National regulated price ceiling network guaranteeing fixed statutory prices (PPV) for essential chronic disease treatments.',
+        typicalSavingsVsBrandPct: 78,
+        keyCapabilities: ['Statutory regulated public pricing (PPV)', 'National health insurance (AMO / CNAM) direct integration', 'Neighborhood dispensary proximity'],
+        offlineAccessProtocol: 'Standard paper prescription with statutory AMO barcode stamp; available at all licensed communal pharmacies.',
+        samplePriceBenchmarksUsd: {
+          metforminMonthly: 2.10,
+          amlodipineMonthly: 1.85,
+          amoxicillinCourse: 1.60,
+          orsSachet: 0.20,
+          hydroxyureaMonthly: 5.80
+        }
+      },
+      {
+        id: 'pharm_egypt_gumhouria',
+        name: 'Egyptian Holding Co. & El-Ezaby Public Dispensaries',
+        networkType: 'STATE_SUBSIDIZED_GENERIC',
+        countryCoverage: ['Egypt'],
+        coverageDescription: 'Large-scale domestic API manufacturing supplying subsidized chronic therapies across the Nile Delta.',
+        typicalSavingsVsBrandPct: 82,
+        keyCapabilities: ['Domestic insulin and cardiovascular formulation', 'Subsidized hepatitis C and metabolic disease packages', '24/7 urban accessibility'],
+        offlineAccessProtocol: 'National ID card verification at municipal health bureau or public dispensary.',
+        samplePriceBenchmarksUsd: {
+          metforminMonthly: 1.40,
+          amlodipineMonthly: 1.20,
+          amoxicillinCourse: 1.10,
+          orsSachet: 0.15,
+          hydroxyureaMonthly: 4.80
+        }
+      }
+    ],
+    primaryFoodsheds: [
+      {
+        id: 'food_souk_maghreb',
+        name: 'Souk Municipal & Marché Central (Fez, Tunis, Cairo)',
+        marketType: 'OPEN_AIR_MUNICIPAL',
+        location: 'Morocco, Tunisia, and Egypt urban peripheries',
+        indigenousStaples: ['Barley couscous (Dchicha)', 'Cold-pressed extra virgin olive oil (Zit Zitoun)', 'Fava beans (Foul Mudammas)', 'Fenugreek (Helba)', 'Carob pods (Kharroub)', 'Pomegranate molasses'],
+        clinicalMetabolicSynergies: ['Barley beta-glucan lowers postprandial glucose surges and LDL cholesterol', 'Polyphenol-rich olive oil protects vascular endothelium against atherosclerosis', 'Fenugreek 4-hydroxyisoleucine stimulates glucose-dependent insulin secretion'],
+        averageCostReductionVsImportPct: 62,
+        produceRxAccepted: true
+      }
+    ],
+    sovereigntyRecommendations: [
+      'Encourage ancestral barley and legume consumption (Foul & Dchicha) over refined French baguette / white wheat imports to combat soaring Type 2 Diabetes.',
+      'Promote local cold-pressed olive oil as primary lipid source to support cardiovascular longevity.'
+    ]
+  },
+  SOUTHEAST_ASIA_PHILIPPINES: {
+    regionCode: 'SOUTHEAST_ASIA_PHILIPPINES',
+    regionName: 'Southeast Asia & Philippines (Philippines, Indonesia, Vietnam)',
+    localCurrencyCode: 'PHP / IDR',
+    exchangeRateToUsd: 58.5, // ~58 PHP or ~16,200 IDR
+    primaryPharmacies: [
+      {
+        id: 'pharm_generics_pharmacy',
+        name: 'The Generics Pharmacy (TGP) & Botika ng Bayan',
+        networkType: 'DISCOUNT_GENERIC',
+        countryCoverage: ['Philippines'],
+        coverageDescription: 'Largest community pharmacy network in the Philippines with over 2,000 barangay-accessible franchises.',
+        typicalSavingsVsBrandPct: 88,
+        keyCapabilities: ['Barangay-level rural penetration', 'PhilHealth outpatient benefit alignment', 'Generic Cheaper Medicines Act adherence'],
+        offlineAccessProtocol: 'Direct walk-in with physician prescription slip; generic equivalent automatically dispensed.',
+        samplePriceBenchmarksUsd: {
+          metforminMonthly: 1.65,
+          amlodipineMonthly: 1.30,
+          amoxicillinCourse: 1.40,
+          orsSachet: 0.18,
+          hydroxyureaMonthly: 6.20
+        }
+      },
+      {
+        id: 'pharm_kimia_farma',
+        name: 'Kimia Farma & Apotek K-24',
+        networkType: 'STATE_SUBSIDIZED_GENERIC',
+        countryCoverage: ['Indonesia'],
+        coverageDescription: 'State-owned pharmaceutical network distributing BPJS Kesehatan covered generic medications.',
+        typicalSavingsVsBrandPct: 84,
+        keyCapabilities: ['BPJS Kesehatan universal coverage dispensing', 'Halal pharmaceutical certification', 'Inter-island cold chain transport'],
+        offlineAccessProtocol: 'BPJS digital or paper card presented at Puskesmas community clinic or state pharmacy.',
+        samplePriceBenchmarksUsd: {
+          metforminMonthly: 1.50,
+          amlodipineMonthly: 1.25,
+          amoxicillinCourse: 1.20,
+          orsSachet: 0.15,
+          hydroxyureaMonthly: 5.50
+        }
+      }
+    ],
+    primaryFoodsheds: [
+      {
+        id: 'food_palengke_southeast',
+        name: 'Palengke & Pasar Tradisional Community Markets',
+        marketType: 'OPEN_AIR_MUNICIPAL',
+        location: 'Manila, Cebu, Jakarta, Yogyakarta',
+        indigenousStaples: ['Malunggay (Moringa oleifera)', 'Ampalaya (Bitter melon / Momordica charantia)', 'Camote tops (Ipomoea batatas leaves)', 'Red heirloom rice (Kalinga)', 'Virgin coconut oil (VCO)', 'Tempeh (fermented soybean)'],
+        clinicalMetabolicSynergies: ['Ampalaya charantin and vicine act as natural plant-derived insulin mimetics', 'Malunggay provides bioavailable iron, calcium, and zinc for maternal-child resilience', 'Tempeh isoflavones and probiotic fermentation support gut microbiome diversity'],
+        averageCostReductionVsImportPct: 65,
+        produceRxAccepted: true
+      }
+    ],
+    sovereigntyRecommendations: [
+      'Prescribe Ampalaya (Bitter Melon) and Malunggay as daily frontline adjuncts for metabolic glycemic control and postpartum lactation.',
+      'Steer patients to The Generics Pharmacy (TGP) or Botika ng Bayan to avoid devastating out-of-pocket brand markup in private chains.'
+    ]
+  },
+  CARIBBEAN_ISLANDS: {
+    regionCode: 'CARIBBEAN_ISLANDS',
+    regionName: 'Caribbean Basin (Jamaica, Haiti, Trinidad, Dominican Republic)',
+    localCurrencyCode: 'JMD / DOP',
+    exchangeRateToUsd: 155, // ~155 JMD or ~59 DOP
+    primaryPharmacies: [
+      {
+        id: 'pharm_caribbean_nhf',
+        name: 'National Health Fund (NHF) & Farmacias del Pueblo (PROMESE/CAL)',
+        networkType: 'STATE_SUBSIDIZED_GENERIC',
+        countryCoverage: ['Jamaica', 'Dominican Republic', 'CARICOM'],
+        coverageDescription: 'Government-subsidized chronic disease dispensaries providing free or nominal-cost generic medications.',
+        typicalSavingsVsBrandPct: 90,
+        keyCapabilities: ['NHF card subsidies covering 17 chronic diseases', 'PROMESE/CAL network of over 500 Farmacias del Pueblo', 'Emergency hurricane reserve stockpiling'],
+        offlineAccessProtocol: 'Present NHF card or Cedula at local public hospital or Farmacia del Pueblo window.',
+        samplePriceBenchmarksUsd: {
+          metforminMonthly: 1.20,
+          amlodipineMonthly: 1.10,
+          amoxicillinCourse: 1.50,
+          orsSachet: 0.15,
+          hydroxyureaMonthly: 4.90
+        }
+      }
+    ],
+    primaryFoodsheds: [
+      {
+        id: 'food_caribbean_markets',
+        name: 'Coronation Market (Kingston) & Mercado Modelo (Santo Domingo)',
+        marketType: 'OPEN_AIR_MUNICIPAL',
+        location: 'Kingston, Port-au-Prince, Santo Domingo, Port of Spain',
+        indigenousStaples: ['Callaloo (Amaranthus viridis)', 'Breadfruit (Artocarpus altilis)', 'Scotch Bonnet peppers (Capsaicin)', 'Soursop / Guanábana (Annona muricata)', 'Sorrel / Hibiscus', 'Cassava & Plantains'],
+        clinicalMetabolicSynergies: ['Callaloo provides rich dietary folate, magnesium, and dietary fiber for hypertensive vascular relaxation', 'Breadfruit offers complex low-GI carbohydrate energy preventing rapid glycemic spikes', 'Capsaicin stimulates transient receptor potential vanilloid 1 (TRPV1) improving insulin sensitivity'],
+        averageCostReductionVsImportPct: 56,
+        produceRxAccepted: true
+      }
+    ],
+    sovereigntyRecommendations: [
+      'Encourage traditional starchy root vegetables (Boiled green banana, cassava, breadfruit) over ultra-processed imported snacks and sugary drinks.',
+      'Leverage NHF / PROMESE/CAL Farmacias del Pueblo as the frontline dispensary for diabetes and hypertension maintenance.'
+    ]
   }
 };
 
@@ -511,8 +671,14 @@ export class RegionalSupplyChainService {
     if (cleaned.includes('+27') || cleaned.includes('+260') || cleaned.includes('south africa') || cleaned.includes('zambia')) {
       return 'AFRICA_SOUTH';
     }
+    if (cleaned.includes('+212') || cleaned.includes('+213') || cleaned.includes('+216') || cleaned.includes('+20') || cleaned.includes('morocco') || cleaned.includes('algeria') || cleaned.includes('tunisia') || cleaned.includes('egypt')) {
+      return 'AFRICA_NORTH_MAGHREB';
+    }
     if (cleaned.includes('+91') || cleaned.includes('+880') || cleaned.includes('+977') || cleaned.includes('india') || cleaned.includes('bharat') || cleaned.includes('bangladesh')) {
       return 'SOUTH_ASIA';
+    }
+    if (cleaned.includes('+63') || cleaned.includes('+62') || cleaned.includes('+84') || cleaned.includes('philippines') || cleaned.includes('indonesia') || cleaned.includes('vietnam')) {
+      return 'SOUTHEAST_ASIA_PHILIPPINES';
     }
     if (cleaned.includes('+52') || cleaned.includes('mexico') || cleaned.includes('guatemala')) {
       return 'LATIN_AMERICA_MEXICO';
@@ -522,6 +688,9 @@ export class RegionalSupplyChainService {
     }
     if (cleaned.includes('+55') || cleaned.includes('brazil') || cleaned.includes('brasil')) {
       return 'LATIN_AMERICA_BRAZIL';
+    }
+    if (cleaned.includes('+1876') || cleaned.includes('+509') || cleaned.includes('+1809') || cleaned.includes('+1829') || cleaned.includes('+1849') || cleaned.includes('+1868') || cleaned.includes('jamaica') || cleaned.includes('haiti') || cleaned.includes('trinidad') || cleaned.includes('dominican')) {
+      return 'CARIBBEAN_ISLANDS';
     }
     return 'NORTH_AMERICA_AUSTERE';
   }
