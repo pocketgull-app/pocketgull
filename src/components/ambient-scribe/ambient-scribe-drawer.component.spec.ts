@@ -3,12 +3,15 @@ import { AmbientScribeDrawerComponent } from './ambient-scribe-drawer.component'
 import { AmbientScribeAdapterService } from '../../services/ambient-scribe-adapter.service';
 import { PatientStateService } from '../../services/patient-state.service';
 import { IsmpSafetyGuardService } from '../../services/ismp-safety-guard.service';
+import { EhrWritebackService } from '../../services/fhir/ehr-writeback.service';
+import { MimicOmopBenchmarkService } from '../../services/research/mimic-omop-benchmark.service';
 
 describe('AmbientScribeDrawerComponent', () => {
   let component: AmbientScribeDrawerComponent;
   let fixture: ComponentFixture<AmbientScribeDrawerComponent>;
   let scribeService: AmbientScribeAdapterService;
   let patientState: PatientStateService;
+  let ehrService: EhrWritebackService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -16,7 +19,9 @@ describe('AmbientScribeDrawerComponent', () => {
       providers: [
         AmbientScribeAdapterService,
         PatientStateService,
-        IsmpSafetyGuardService
+        IsmpSafetyGuardService,
+        EhrWritebackService,
+        MimicOmopBenchmarkService
       ]
     }).compileComponents();
 
@@ -24,6 +29,7 @@ describe('AmbientScribeDrawerComponent', () => {
     component = fixture.componentInstance;
     scribeService = TestBed.inject(AmbientScribeAdapterService);
     patientState = TestBed.inject(PatientStateService);
+    ehrService = TestBed.inject(EhrWritebackService);
     fixture.detectChanges();
   });
 
@@ -125,5 +131,31 @@ describe('AmbientScribeDrawerComponent', () => {
     expect(adjudicateSpy).toHaveBeenCalledWith(expect.objectContaining({
       autoCommitToPatientState: true
     }));
+  });
+
+  it('7. Files SBAR note as FHIR R4 DocumentReference to EHR via EhrWritebackService', async () => {
+    const writebackSpy = vi.spyOn(ehrService, 'executeWriteback');
+
+    await component.adjudicate();
+    fixture.detectChanges();
+
+    expect(component.ehrWritebackReceipt()).toBeNull();
+    await component.writeBackToEhr();
+    fixture.detectChanges();
+
+    expect(component.ehrWritebackReceipt()).toBeDefined();
+    expect(component.ehrWritebackReceipt()?.overallStatus).toBe('SUCCESS_FILED_TO_EHR');
+    expect(writebackSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ patientName: expect.any(String) }),
+      expect.objectContaining({
+        chiefComplaint: expect.any(String),
+        situation: expect.any(String),
+        assessment: expect.any(String)
+      })
+    );
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('FHIR R4 DocumentReference Filed:');
+    expect(el.textContent).toContain('HTTP 201 Created');
   });
 });

@@ -104,6 +104,7 @@ import { MimicOmopBenchmarkHubComponent } from './components/research/mimic-omop
 import { SmartFhirLauncherComponent } from './components/smart-fhir-launcher.component';
 import { EhrWritebackConsoleComponent } from './components/ehr-writeback/ehr-writeback-console.component';
 import { EdgeAutonomousVoiceAgentComponent } from './components/voice/edge-autonomous-voice-agent.component';
+import { CowsAssessmentModalComponent } from './components/modals/cows-assessment-modal.component';
 import { RoleDemoModalComponent } from './components/role-demo-modal.component';
 import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
 import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component';
@@ -211,6 +212,7 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
     SmartFhirLauncherComponent,
     EhrWritebackConsoleComponent,
     EdgeAutonomousVoiceAgentComponent,
+    CowsAssessmentModalComponent,
     RoleDemoModalComponent,
     IntimacyRelationshipVitalityComponent,
     MocaSuiteComponent,
@@ -468,6 +470,11 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
             <app-edge-autonomous-voice-agent (close)="navShell.closeEdgeVoiceModal()"></app-edge-autonomous-voice-agent>
           </div>
         </div>
+      }
+
+      <!-- Yale COWS & Restorative Buprenorphine Induction Suite Modal -->
+      @if (navShell.showCowsModal()) {
+        <app-cows-assessment-modal (close)="navShell.closeCowsModal()"></app-cows-assessment-modal>
       }
 
       @defer (on idle) {
@@ -2747,6 +2754,34 @@ export class AppComponent implements OnDestroy {
 
       // Check URL query parameters for deep-linked case studies (e.g. ?case=nantucket or ?caseStudy=nantucket-tick-radar)
       this.handleCaseStudyDeepLink();
+
+      // Deep link to MIMIC-IV & CMS OMOP Conformal Sepsis Benchmark Hub
+      const currentPath = (window.location.pathname || '').toLowerCase();
+      const currentSearch = (window.location.search || '').toLowerCase();
+      const currentHash = (window.location.hash || '').toLowerCase();
+      if (
+        currentPath.startsWith('/research/mimic-benchmark') ||
+        currentPath.startsWith('/research/sepsis') ||
+        currentSearch.includes('modal=mimic-benchmark') ||
+        currentSearch.includes('modal=sepsis') ||
+        currentSearch.includes('benchmark=mimic') ||
+        currentHash === '#mimic-benchmark' ||
+        currentHash === '#sepsis-benchmark'
+      ) {
+        this.navShell.openSepsisBenchmarkModal();
+      }
+
+      // Deep link to Yale COWS & Restorative Buprenorphine Induction Suite
+      if (
+        currentPath.startsWith('/clinical/cows') ||
+        currentPath.startsWith('/cows') ||
+        currentSearch.includes('modal=cows') ||
+        currentSearch.includes('view=cows') ||
+        currentHash === '#cows' ||
+        currentHash === '#yale-cows'
+      ) {
+        this.navShell.openCowsModal();
+      }
 
       this.isMobile.set(window.innerWidth < 768);
 
