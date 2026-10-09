@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { MedicalDecoderService } from '../services/medical-decoder.service';
 import { ClinicalSpecialtyRiskSuiteService } from '../services/clinical-specialty-risk-suite.service';
+import { NavigationShellService } from '../services/navigation-shell.service';
 
 export interface IToothData {
   fdiCode: number; // e.g. 11, 18, 21, 31, 48
@@ -28,6 +29,92 @@ export interface IToothData {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-5 bg-white dark:bg-zinc-900 border border-teal-500/30 rounded-2xl shadow-xl space-y-6 font-sans">
+      <!-- FDA Buprenorphine Oral Health Safety Directive Banner -->
+      <div class="p-4 rounded-2xl border transition-all"
+           [class.bg-teal-950/20]="!buprenorphineTherapyActive()"
+           [class.border-teal-800/40]="!buprenorphineTherapyActive()"
+           [class.bg-gradient-to-r]="buprenorphineTherapyActive()"
+           [class.from-amber-950/40]="buprenorphineTherapyActive()"
+           [class.via-zinc-900]="buprenorphineTherapyActive()"
+           [class.to-rose-950/30]="buprenorphineTherapyActive()"
+           [class.border-amber-500/60]="buprenorphineTherapyActive()">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">{{ buprenorphineTherapyActive() ? '⚠️' : '🌿' }}</span>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">
+                  FDA 2022 Drug Safety Directive • Transmucosal Buprenorphine Oral Defense
+                </span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border"
+                      [class.bg-zinc-800]="!buprenorphineTherapyActive()"
+                      [class.text-zinc-400]="!buprenorphineTherapyActive()"
+                      [class.border-zinc-700]="!buprenorphineTherapyActive()"
+                      [class.bg-amber-500/20]="buprenorphineTherapyActive()"
+                      [class.text-amber-300]="buprenorphineTherapyActive()"
+                      [class.border-amber-500/40]="buprenorphineTherapyActive()">
+                  {{ buprenorphineTherapyActive() ? 'ACTIVE SUBMOUTH THERAPY' : 'INACTIVE / STANDARD DENTAL' }}
+                </span>
+              </div>
+              <p class="text-xs text-zinc-300 mt-1 max-w-2xl leading-relaxed">
+                Sublingual dissolution creates an acidic microenvironment (pH 3.5–5.0) paired with opioid-mediated salivary hypofunction (xerostomia), accelerating cervical decay.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button type="button"
+                    (click)="toggleBuprenorphineTherapy()"
+                    class="px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition cursor-pointer"
+                    [class.bg-amber-950]="buprenorphineTherapyActive()"
+                    [class.text-amber-200]="buprenorphineTherapyActive()"
+                    [class.border-amber-500]="buprenorphineTherapyActive()"
+                    [class.bg-zinc-800]="!buprenorphineTherapyActive()"
+                    [class.text-zinc-300]="!buprenorphineTherapyActive()"
+                    [class.border-zinc-700]="!buprenorphineTherapyActive()">
+              {{ buprenorphineTherapyActive() ? 'Disable Buprenorphine Mode' : 'Activate Buprenorphine Mode' }}
+            </button>
+
+            @if (navShell) {
+              <button type="button"
+                      (click)="navShell.openCowsModal()"
+                      title="Open Yale COWS Protocol Suite"
+                      class="px-3 py-1.5 rounded-xl bg-teal-950/70 border border-teal-600/50 text-teal-300 text-xs font-mono font-bold hover:bg-teal-900 transition cursor-pointer flex items-center gap-1">
+                <span>🌿</span> <span>Yale COWS Suite</span>
+              </button>
+              <button type="button"
+                      id="btn-odontogram-recovery-log"
+                      (click)="navShell.openRecoveryModal()"
+                      title="Open Recovery Companion Daily Check-In"
+                      class="px-3 py-1.5 rounded-xl bg-emerald-950/70 border border-emerald-600/50 text-emerald-300 text-xs font-mono font-bold hover:bg-emerald-900 transition cursor-pointer flex items-center gap-1">
+                <span>🌱</span> <span>Daily Recovery Log</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        @if (buprenorphineTherapyActive()) {
+          <div class="mt-4 pt-3.5 border-t border-amber-500/30 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs font-mono animate-in fade-in duration-200">
+            <div class="p-2.5 bg-zinc-950/80 rounded-xl border border-amber-800/40 space-y-1">
+              <span class="text-amber-400 font-bold block text-[11px]">1. Neutral Water Rinse</span>
+              <p class="text-[10px] text-zinc-300">Gently swish and swallow water immediately after complete dissolution. Never spit early.</p>
+            </div>
+            <div class="p-2.5 bg-zinc-950/80 rounded-xl border border-rose-800/40 space-y-1">
+              <span class="text-rose-400 font-bold block text-[11px]">2. 1-Hr Brushing Delay (Strict)</span>
+              <p class="text-[10px] text-zinc-300">Do NOT brush teeth immediately after dosing. Wait at least 60 min to protect acid-softened enamel.</p>
+            </div>
+            <div class="p-2.5 bg-zinc-950/80 rounded-xl border border-teal-800/40 space-y-1">
+              <span class="text-teal-400 font-bold block text-[11px]">3. 5000 ppm High-Fluoride</span>
+              <p class="text-[10px] text-zinc-300">Prescribe 1.1% NaF (Prevident 5000) or nHAp paste nightly to remineralize cervical margins.</p>
+            </div>
+            <div class="p-2.5 bg-zinc-950/80 rounded-xl border border-emerald-800/40 space-y-1">
+              <span class="text-emerald-400 font-bold block text-[11px]">4. Xylitol Salivary Pacing</span>
+              <p class="text-[10px] text-zinc-300">Chew xylitol gum 3–5x daily to restore bicarbonate buffering and inhibit S. mutans.</p>
+            </div>
+          </div>
+        }
+      </div>
+
       <!-- Header -->
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 dark:border-zinc-800 pb-3.5">
         <div class="flex items-center gap-2.5">
@@ -338,11 +425,13 @@ export class TeledentistryOdontogramComponent {
   private state = inject(PatientStateService);
   private decoder = inject(MedicalDecoderService);
   private riskSuite = inject(ClinicalSpecialtyRiskSuiteService, { optional: true });
+  readonly navShell = inject(NavigationShellService, { optional: true });
 
   readonly selectedFdiCode = signal<number>(11);
   readonly salivaryPh = signal<number>(6.9);
   readonly hsCrpMgL = signal<number>(1.5);
   readonly microbiomeRisk = signal<'Low' | 'Moderate' | 'High'>('Low');
+  readonly buprenorphineTherapyActive = signal<boolean>(false);
 
   readonly endotoxinSpikeData = computed(() => {
     const maxDepth = this.maxPocketDepth();
@@ -442,9 +531,45 @@ export class TeledentistryOdontogramComponent {
     const deepPockets = this.deepProbingSitesCount();
     const bop = this.bopPercentage();
     const crp = this.hsCrpMgL();
-    const score = Math.round((deepPockets * 6) + (bop * 0.8) + (crp * 12));
+    const bupFactor = this.buprenorphineTherapyActive() ? 8 : 0;
+    const score = Math.round((deepPockets * 6) + (bop * 0.8) + (crp * 12) + bupFactor);
     return Math.min(100, Math.max(0, score));
   });
+
+  toggleBuprenorphineTherapy(): void {
+    const next = !this.buprenorphineTherapyActive();
+    this.buprenorphineTherapyActive.set(next);
+    if (next) {
+      this.salivaryPh.set(6.2); // Acidic sublingual dissolution shift
+      this.hsCrpMgL.set(3.2);
+      this.teeth.update(teethList =>
+        teethList.map(t => {
+          if ([31, 32, 41, 42].includes(t.fdiCode)) {
+            return {
+              ...t,
+              wearGrade: 2,
+              surfaces: { ...t.surfaces, facial: true, lingual: true },
+              probingDepthMm: 4,
+              bleedingOnProbing: true
+            };
+          }
+          if ([16, 26, 36, 46].includes(t.fdiCode)) {
+            return {
+              ...t,
+              wearGrade: 2,
+              surfaces: { ...t.surfaces, occlusal: true, mesial: true },
+              probingDepthMm: 5,
+              bleedingOnProbing: true
+            };
+          }
+          return t;
+        })
+      );
+    } else {
+      this.salivaryPh.set(6.9);
+      this.hsCrpMgL.set(1.5);
+    }
+  }
 
   readonly cardiovascularMultiplier = computed(() => {
     const sibi = this.sibiScore();

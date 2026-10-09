@@ -105,6 +105,7 @@ import { SmartFhirLauncherComponent } from './components/smart-fhir-launcher.com
 import { EhrWritebackConsoleComponent } from './components/ehr-writeback/ehr-writeback-console.component';
 import { EdgeAutonomousVoiceAgentComponent } from './components/voice/edge-autonomous-voice-agent.component';
 import { CowsAssessmentModalComponent } from './components/modals/cows-assessment-modal.component';
+import { RecoveryCompanionModalComponent } from './components/modals/recovery-companion-modal.component';
 import { RoleDemoModalComponent } from './components/role-demo-modal.component';
 import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
 import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component';
@@ -213,6 +214,7 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
     EhrWritebackConsoleComponent,
     EdgeAutonomousVoiceAgentComponent,
     CowsAssessmentModalComponent,
+    RecoveryCompanionModalComponent,
     RoleDemoModalComponent,
     IntimacyRelationshipVitalityComponent,
     MocaSuiteComponent,
@@ -475,6 +477,11 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
       <!-- Yale COWS & Restorative Buprenorphine Induction Suite Modal -->
       @if (navShell.showCowsModal()) {
         <app-cows-assessment-modal (close)="navShell.closeCowsModal()"></app-cows-assessment-modal>
+      }
+
+      <!-- Patient Recovery Companion Daily Check-In Modal -->
+      @if (navShell.showRecoveryModal()) {
+        <app-recovery-companion-modal (close)="navShell.closeRecoveryModal()"></app-recovery-companion-modal>
       }
 
       @defer (on idle) {
@@ -2781,6 +2788,18 @@ export class AppComponent implements OnDestroy {
         currentHash === '#yale-cows'
       ) {
         this.navShell.openCowsModal();
+      }
+
+      // Deep link to Patient-Facing Recovery Companion Log
+      if (
+        currentPath.startsWith('/clinical/recovery') ||
+        currentPath.startsWith('/recovery') ||
+        currentSearch.includes('modal=recovery') ||
+        currentSearch.includes('view=recovery') ||
+        currentHash === '#recovery' ||
+        currentHash === '#recovery-companion'
+      ) {
+        this.navShell.openRecoveryModal();
       }
 
       this.isMobile.set(window.innerWidth < 768);

@@ -41,6 +41,7 @@ export class NavigationShellService {
   readonly showEhrWritebackModal = signal<boolean>(false);
   readonly showEdgeVoiceModal = signal<boolean>(false);
   readonly showCowsModal = signal<boolean>(false);
+  readonly showRecoveryModal = signal<boolean>(false);
   readonly activeGameId = signal<string>('luminaries');
 
   /** Developer Mode: Gates investor pitch portals, experimental showcases, and auxiliary demos. Defaults to false. */
@@ -194,6 +195,7 @@ export class NavigationShellService {
     this.showEhrWritebackModal.set(false);
     this.showEdgeVoiceModal.set(false);
     this.showCowsModal.set(false);
+    this.showRecoveryModal.set(false);
   }
 
   public openAmbientScribeDrawer(): void { this.showAmbientScribeDrawer.set(true); }
@@ -231,5 +233,9 @@ export class NavigationShellService {
   public openCowsModal(): void { this.showCowsModal.set(true); }
   public closeCowsModal(): void { this.showCowsModal.set(false); }
   public toggleCowsModal(): void { this.showCowsModal.update(v => !v); }
+
+  public openRecoveryModal(): void { this.showRecoveryModal.set(true); }
+  public closeRecoveryModal(): void { this.showRecoveryModal.set(false); }
+  public toggleRecoveryModal(): void { this.showRecoveryModal.update(v => !v); }
 }
 

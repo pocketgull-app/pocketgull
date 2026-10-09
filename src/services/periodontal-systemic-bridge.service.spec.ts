@@ -45,4 +45,12 @@ describe('PeriodontalSystemicBridgeService', () => {
     expect(analysis.cardiovascularRiskMultiplier).toBe(2.4);
     expect(analysis.predictedHba1cElevation).toBe(0.6);
   });
+
+  it('should include FDA 2022 Buprenorphine Dental Defense Protocol in interventions when buprenorphine therapy is active', () => {
+    teledentistryService.loadBuprenorphineXerostomiaPreset();
+    const analysis = service.systemicRiskAnalysis();
+    expect(analysis.recommendedInterventions.some(i => i.title.includes('Buprenorphine'))).toBe(true);
+    expect(analysis.recommendedInterventions[0].description).toContain('Neutral water rinse');
+    expect(analysis.recommendedInterventions[0].description).toContain('1-hour mechanical tooth brushing delay');
+  });
 });

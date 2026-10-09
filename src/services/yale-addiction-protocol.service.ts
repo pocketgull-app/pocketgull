@@ -474,6 +474,7 @@ export class YaleAddictionProtocolService {
         'Neuromuscular Mineral Matrix: Supplement with Magnesium Glycinate / L-Threonate to blunt nocturnal NMDA hyperalgesia without sedation.'
       ],
       phase3EntericBiomechanics: [
+        'FDA 2022 Buprenorphine Oral Health Defense: Neutral water rinse post-dissolution, strict 1-hour tooth brushing delay, prescription 5000 ppm NaF, and xylitol pacing to prevent cervical decay and xerostomia.',
         'Reverse Opioid-Induced Bowel Dysfunction (OIBD): PAMORA therapy (Naloxegol) or osmotic hydration (PEG-3350) to normalize enteric motility.',
         'Epithelial Barrier Repair: Dietary L-Glutamine, prebiotic soluble fibers (inulin), and short-chain fatty acids (butyrate) to suppress systemic LPS endotoxemia.',
         'Extinguish Centralized Pain: Graded Motor Imagery (GMI), McKenzie directional preference, and gentle seated sciatic nerve flossing.',

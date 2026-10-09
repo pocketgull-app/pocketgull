@@ -8,6 +8,7 @@ import {
   CowsSeverityTier
 } from '../../services/yale-addiction-protocol.service';
 import { IEhrWritebackBatchResult } from '../../services/fhir/ehr-writeback.service';
+import { NavigationShellService } from '../../services/navigation-shell.service';
 
 type ActiveViewTab = 'ASSESSMENT' | 'DECISION_SUPPORT' | 'RESTORATIVE_PLAN';
 
@@ -282,6 +283,33 @@ type ActiveViewTab = 'ASSESSMENT' | 'DECISION_SUPPORT' | 'RESTORATIVE_PLAN';
           @if (activeTab() === 'RESTORATIVE_PLAN') {
             @if (assessmentResult(); as res) {
               <div class="space-y-4">
+
+                <!-- Interactive Patient Recovery Cross-Link Banner -->
+                <div class="p-3.5 bg-gradient-to-r from-emerald-950/40 via-teal-950/30 to-zinc-900 rounded-2xl border border-emerald-500/40 flex flex-wrap items-center justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <span class="text-2xl">🌱</span>
+                    <div>
+                      <strong class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-300 block">
+                        Patient Recovery Companion &amp; Longitudinal Telemetry
+                      </strong>
+                      <span class="text-[11px] text-zinc-300 font-sans">
+                        Phase 2/3 patient daily log tracking Craving VAS (0–10), Wearable Deep Sleep/HR Dip, Bristol Stool (OIBD), and FDA Buprenorphine Dental Defense.
+                      </span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    @if (navShell) {
+                      <button
+                        type="button"
+                        id="btn-open-recovery-companion"
+                        (click)="launchRecoveryCompanion()"
+                        class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs font-mono transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+                        <span>🌱</span> <span>Launch Daily Recovery Log</span>
+                      </button>
+                    }
+                  </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                   <!-- Phase 1: Acute Stabilization -->
@@ -386,6 +414,7 @@ type ActiveViewTab = 'ASSESSMENT' | 'DECISION_SUPPORT' | 'RESTORATIVE_PLAN';
 })
 export class CowsAssessmentModalComponent implements OnInit {
   protocolService = inject(YaleAddictionProtocolService);
+  readonly navShell = inject(NavigationShellService, { optional: true });
 
   close = output<void>();
 
@@ -490,5 +519,9 @@ export class CowsAssessmentModalComponent implements OnInit {
 
   closeModal(): void {
     this.close.emit();
+  }
+
+  launchRecoveryCompanion(): void {
+    this.navShell?.openRecoveryModal();
   }
 }

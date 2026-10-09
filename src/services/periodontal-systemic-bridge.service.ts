@@ -51,29 +51,41 @@ export class PeriodontalSystemicBridgeService {
       grade = 'Moderate';
     }
 
+    const interventions: IPeriodontalSystemicRisk['recommendedInterventions'] = [];
+
+    if (this.teledentistry.buprenorphineTherapyActive()) {
+      interventions.push({
+        title: 'FDA 2022 Transmucosal Buprenorphine Dental Defense Protocol',
+        description: 'Neutral water rinse immediately post-dissolution, strict 1-hour mechanical tooth brushing delay, prescription 5000 ppm sodium fluoride, and xylitol salivary pacing to arrest severe cervical decay.',
+        evidenceGrade: 'Grade A'
+      });
+    }
+
+    interventions.push(
+      {
+        title: 'Scaling & Root Planing (SRP) + Subantimicrobial Doxycycline',
+        description: 'Mechanical debridement of subgingival bio-calculus reduces systemic TNF-alpha and hs-CRP by up to 35%.',
+        evidenceGrade: 'Grade A'
+      },
+      {
+        title: 'Green Tea EGCG & Essential Oil Oral Rinse',
+        description: 'Matcha epigallocatechin gallate inhibits P. gingivalis cysteine proteases (gingipains) and attenuates endothelial vascular adhesion.',
+        evidenceGrade: 'Grade B'
+      },
+      {
+        title: 'Coenzyme Q10 & Omega-3 Fatty Acid Supplementation',
+        description: 'Mitochondrial antioxidant support reduces gingival crevicular fluid oxidative distress and lowers systemic hs-CRP.',
+        evidenceGrade: 'Grade B'
+      }
+    );
+
     return {
       sibiScore: sibi,
       cardiovascularRiskMultiplier: parseFloat(cvMultiplier.toFixed(2)),
       predictedHba1cElevation: parseFloat(hba1cAdd.toFixed(2)),
       endothelialDysfunctionGrade: grade,
       primaryPathogens: ['Porphyromonas gingivalis', 'Tannerella forsythia', 'Treponema denticola'],
-      recommendedInterventions: [
-        {
-          title: 'Scaling & Root Planing (SRP) + Subantimicrobial Doxycycline',
-          description: 'Mechanical debridement of subgingival bio-calculus reduces systemic TNF-alpha and hs-CRP by up to 35%.',
-          evidenceGrade: 'Grade A'
-        },
-        {
-          title: 'Green Tea EGCG & Essential Oil Oral Rinse',
-          description: 'Matcha epigallocatechin gallate inhibits P. gingivalis cysteine proteases (gingipains) and attenuates endothelial vascular adhesion.',
-          evidenceGrade: 'Grade B'
-        },
-        {
-          title: 'Coenzyme Q10 & Omega-3 Fatty Acid Supplementation',
-          description: 'Mitochondrial antioxidant support reduces gingival crevicular fluid oxidative distress and lowers systemic hs-CRP.',
-          evidenceGrade: 'Grade B'
-        }
-      ]
+      recommendedInterventions: interventions
     };
   });
 }

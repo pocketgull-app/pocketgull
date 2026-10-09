@@ -5,6 +5,8 @@ import { EhrWritebackService } from '../../services/fhir/ehr-writeback.service';
 import { PatientStateService } from '../../services/patient-state.service';
 import { provideHttpClient } from '@angular/common/http';
 
+import { NavigationShellService } from '../../services/navigation-shell.service';
+
 describe('CowsAssessmentModalComponent', () => {
   let component: CowsAssessmentModalComponent;
   let fixture: ComponentFixture<CowsAssessmentModalComponent>;
@@ -17,6 +19,7 @@ describe('CowsAssessmentModalComponent', () => {
         YaleAddictionProtocolService,
         EhrWritebackService,
         PatientStateService,
+        NavigationShellService,
         provideHttpClient()
       ]
     }).compileComponents();
@@ -144,5 +147,23 @@ describe('CowsAssessmentModalComponent', () => {
 
     component.closeModal();
     expect(emitted).toBe(true);
+  });
+
+  it('9. Renders Recovery Companion cross-link and triggers modal launch', async () => {
+    await component.loadPreset('moderate');
+    component.activeTab.set('RESTORATIVE_PLAN');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Patient Recovery Companion & Longitudinal Telemetry');
+    expect(compiled.textContent).toContain('Launch Daily Recovery Log');
+
+    const btn = Array.from(compiled.querySelectorAll('button')).find(b => b.id === 'btn-open-recovery-companion');
+    expect(btn).toBeTruthy();
+
+    const navShell = TestBed.inject(NavigationShellService);
+    const spy = vi.spyOn(navShell, 'openRecoveryModal');
+    component.launchRecoveryCompanion();
+    expect(spy).toHaveBeenCalled();
   });
 });
