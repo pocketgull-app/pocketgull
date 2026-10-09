@@ -100,6 +100,19 @@ describe('MimicOmopBenchmarkHubComponent', () => {
     expect(component.bibtexCopied()).toBe(true);
   });
 
+  it('should copy share URL to clipboard and toggle linkCopied indicator', () => {
+    const writeTextMock = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, {
+      clipboard: {
+        writeText: writeTextMock,
+      },
+    });
+
+    component.onCopyShareLink();
+    expect(writeTextMock).toHaveBeenCalledWith(expect.stringContaining('/research/mimic-benchmark'));
+    expect(component.linkCopied()).toBe(true);
+  });
+
   it('should emit close output when close button or method is invoked', () => {
     let closed = false;
     component.close.subscribe(() => {

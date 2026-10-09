@@ -1300,6 +1300,7 @@
   --font-chisel: 'PocketGull Marker Raw', 'PocketGull Chiseltip', cursive;
   --font-serif: 'PocketGull Serif', 'PocketGull Serif Fallback', Georgia, Cambria, 'Times New Roman', serif;
   --font-vf: 'PocketGull VF', 'PocketGull', 'PocketGull Fallback', -apple-system, sans-serif;
+  --font-soft: 'PocketGull Soft', 'PocketGull VF', 'PocketGull Fallback', -apple-system, sans-serif;
 }
 
 /* Developer Utility Classes */
@@ -1310,11 +1311,25 @@
 .font-chisel { font-family: var(--font-chisel) !important; }
 .font-serif { font-family: var(--font-serif) !important; }
 .font-vf { font-family: var(--font-vf) !important; }
+.font-soft, .pg-soft { font-family: var(--font-soft) !important; }
+.font-soft-bold, .pg-soft-bold { font-family: 'PocketGull Soft', 'PocketGull VF', sans-serif !important; font-weight: 700 !important; }
+.font-pediatric-care, .font-bedside-comfort {
+  font-family: var(--font-soft) !important;
+  font-feature-settings: "cv12" 1, "cv05" 1, "ss02" 1, "cv09" 1, "ss07" 1 !important;
+  letter-spacing: 0.015em;
+  line-height: 1.5;
+}
 
 /* OpenType Feature Utility Classes for Clinical & Ecological Best Practices */
 .font-feature-clinical {
   font-feature-settings: "zero" 1, "cv05" 1, "ss02" 1, "cv11" 1;
   font-variant-numeric: slashed-zero;
+}
+.zero-dotted,
+.font-feature-zero-dotted,
+.font-feature-clinical-gentle {
+  font-feature-settings: "cv12" 1, "cv05" 1, "ss02" 1, "cv11" 1;
+  font-variant-numeric: normal;
 }
 .font-feature-eco {
   font-feature-settings: "ss01" 1;
@@ -1598,14 +1613,14 @@ body.red-dash .iphillyg-heart::after {
 .iphillyg-heart:hover::after,
 .philocardia-j:hover::after {
   transform: translate(-50%, -50%) scale(1.22);
-  color: #f43f5e;
-  filter: drop-shadow(0 0 5px rgba(244, 63, 94, 0.8));
+  color: #10b981;
+  filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.8));
 }
 
 .philocardia-arabic-heart:hover::after {
   transform: translateX(50%) scale(1.22);
-  color: #f43f5e;
-  filter: drop-shadow(0 0 5px rgba(244, 63, 94, 0.8));
+  color: #10b981;
+  filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.8));
 }
 
 /* Physiological S1/S2 Cardiac Pulse Animation (72 BPM = 0.833s period) */
@@ -1665,6 +1680,53 @@ body.red-dash .iphillyg-heart::after {
 
 .philocardia-pacing-sanctuary::after {
   animation: philocardia-vagal-sanctuary 10s infinite ease-in-out;
+}
+
+/* Tactile Braille Philocardia: Paced Cardiac Sinus Rhythm & Optic Healing Sanctuary */
+.philocardia-braille {
+  display: inline-block;
+  color: var(--emerald, #10b981);
+  letter-spacing: 0.04em;
+  filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.45));
+  transition: color 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+  transform-origin: center bottom;
+}
+
+.night-flight .philocardia-braille,
+body.night-flight .philocardia-braille,
+body.red-dash .philocardia-braille {
+  color: var(--teal-accent, #f87171);
+  filter: drop-shadow(0 0 4px rgba(248, 113, 113, 0.5));
+}
+
+.philocardia-braille:hover {
+  transform: scale(1.15);
+  color: #34d399;
+  filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.8));
+}
+
+.philocardia-braille.philocardia-pacing-72 {
+  animation: philocardia-braille-beat-72 0.8333s infinite ease-in-out;
+}
+
+.philocardia-braille.philocardia-pacing-60 {
+  animation: philocardia-braille-beat-60 1.0000s infinite ease-in-out;
+}
+
+@keyframes philocardia-braille-beat-72 {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.35)); }
+  14%      { transform: scale(1.12); filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.75)); color: #34d399; }
+  22%      { transform: scale(1.02); filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.40)); }
+  32%      { transform: scale(1.07); filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.65)); color: #34d399; }
+  45%      { transform: scale(1); filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.35)); }
+}
+
+@keyframes philocardia-braille-beat-60 {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.35)); }
+  12%      { transform: scale(1.12); filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.75)); color: #34d399; }
+  20%      { transform: scale(1.03); filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.40)); }
+  30%      { transform: scale(1.08); filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.65)); color: #34d399; }
+  42%      { transform: scale(1); filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.35)); }
 }
 
 body.philocardia-sanctuary-active {
@@ -1927,6 +1989,7 @@ body.philocardia-sanctuary-active {
     animation: none !important;
     box-shadow: 0 0 0 3px #2dd4bf !important;
   }
+  .philocardia-braille,
   .philocardia-pacing-72,
   .philocardia-pacing-60,
   .philocardia-pacing-breath,
@@ -2177,6 +2240,12 @@ body.eco-dark-canopy {
   font-family: 'PocketGull', -apple-system, BlinkMacSystemFont, sans-serif !important;
   font-feature-settings: "zero" 1, "cv08" 1, "cv05" 1, "ss02" 1, "cv11" 1, "tnum" 1, "frac" 1 !important;
   font-variant-numeric: tabular-nums slashed-zero diagonal-fractions !important;
+}
+
+.font-paradigm-pediatric {
+  font-family: 'PocketGull Soft', 'PocketGull', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-feature-settings: "cv12" 1, "cv05" 1, "ss02" 1, "cv11" 1, "tnum" 1, "frac" 1 !important;
+  font-variant-numeric: tabular-nums diagonal-fractions !important;
 }
 
 .font-paradigm-ayurvedic {

@@ -41,6 +41,7 @@ describe('Research Routes (/api/research)', () => {
   const getBigQueryDatasetsHandler = (router.stack.find((layer: any) => layer.route?.path === '/bigquery/datasets')?.route?.stack.slice(-1)[0] as any)?.handle;
   const getBigQueryCrosswalkHandler = (router.stack.find((layer: any) => layer.route?.path === '/bigquery/crosswalk')?.route?.stack.slice(-1)[0] as any)?.handle;
   const getUnicefBenchmarksHandler = (router.stack.find((layer: any) => layer.route?.path === '/unicef/benchmarks')?.route?.stack.slice(-1)[0] as any)?.handle;
+  const getMimicBenchmarkHandler = (router.stack.find((layer: any) => layer.route?.path === '/mimic-benchmark')?.route?.stack.slice(-1)[0] as any)?.handle;
 
   it('GET /api/research/cohorts should return accredited disease cohorts with k-anonymity scores and zero compensation', () => {
     const { req, res } = createMockReqRes();
@@ -237,6 +238,35 @@ describe('Research Routes (/api/research)', () => {
       expect(data['activeRegion']).toBe('SSA_WEST_CENTRAL');
       const profile = data['benchmarkProfile'] as Record<string, unknown>;
       expect(profile['regionName']).toContain('West & Central');
+    });
+  });
+
+  describe('MIMIC-IV & CMS OMOP Conformal Sepsis Benchmark Endpoint', () => {
+    it('GET /api/research/mimic-benchmark should return full preprint model comparison and BigQuery SQL', () => {
+      const { req, res } = createMockReqRes();
+      getMimicBenchmarkHandler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      const data = res.getJson();
+      expect(data['success']).toBe(true);
+      expect(data['activeCohort']).toBe('MULTI_CENTER_COMBINED');
+      expect(data['cohortInfo']).toBeDefined();
+      expect(data['modelComparisons']).toBeDefined();
+      expect(data['fatigueReduction']).toBeDefined();
+      expect(data['preprintMetadata']).toBeDefined();
+      expect(data['bigQuerySql']).toContain('physionet-data.mimiciv_derived');
+    });
+
+    it('GET /api/research/mimic-benchmark?cohort=MIMIC_IV_ICU should return PhysioNet ICU specific cohort', () => {
+      const { req, res } = createMockReqRes({}, { cohort: 'MIMIC_IV_ICU' });
+      getMimicBenchmarkHandler(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      const data = res.getJson();
+      expect(data['success']).toBe(true);
+      expect(data['activeCohort']).toBe('MIMIC_IV_ICU');
+      const cohortInfo = data['cohortInfo'] as Record<string, unknown>;
+      expect(cohortInfo['cohortName']).toContain('MIMIC-IV');
     });
   });
 });

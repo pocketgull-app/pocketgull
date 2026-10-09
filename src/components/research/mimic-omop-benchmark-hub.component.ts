@@ -363,12 +363,20 @@ export interface ISimulatedSepsisVitals {
                 <span class="text-xs font-bold text-zinc-200 block">{{ preprint().title }}</span>
                 <span class="text-[11px] text-zinc-400">DOI: {{ preprint().doi }} • Target: {{ preprint().journalTarget }}</span>
               </div>
-              <button type="button"
-                      (click)="onCopyBibtex()"
-                      id="btn-copy-bibtex"
-                      class="px-3 py-1.5 rounded-xl bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-bold hover:bg-zinc-700 transition cursor-pointer min-h-[44px]">
-                {{ bibtexCopied() ? '✓ BibTeX Copied' : '📄 Copy BibTeX' }}
-              </button>
+              <div class="flex items-center gap-2">
+                <button type="button"
+                        (click)="onCopyShareLink()"
+                        id="btn-copy-share-link"
+                        class="px-3 py-1.5 rounded-xl bg-cyan-950/60 text-cyan-300 border border-cyan-800 text-xs font-bold hover:bg-cyan-900/60 transition cursor-pointer min-h-[44px]">
+                  {{ linkCopied() ? '✓ Link Copied' : '🔗 Share URL' }}
+                </button>
+                <button type="button"
+                        (click)="onCopyBibtex()"
+                        id="btn-copy-bibtex"
+                        class="px-3 py-1.5 rounded-xl bg-zinc-800 text-zinc-200 border border-zinc-700 text-xs font-bold hover:bg-zinc-700 transition cursor-pointer min-h-[44px]">
+                  {{ bibtexCopied() ? '✓ BibTeX Copied' : '📄 Copy BibTeX' }}
+                </button>
+              </div>
             </div>
 
             <!-- Abstract Box -->
@@ -397,6 +405,7 @@ export class MimicOmopBenchmarkHubComponent {
   readonly Math = Math;
   readonly activeTab = signal<'comparison' | 'calculator' | 'calibration' | 'preprint'>('comparison');
   readonly bibtexCopied = signal<boolean>(false);
+  readonly linkCopied = signal<boolean>(false);
 
   readonly simVitals = signal<ISimulatedSepsisVitals>({
     heartRate: 102,
@@ -450,5 +459,14 @@ export class MimicOmopBenchmarkHubComponent {
     }
     this.bibtexCopied.set(true);
     setTimeout(() => this.bibtexCopied.set(false), 2000);
+  }
+
+  onCopyShareLink(): void {
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      const shareUrl = `${window.location.origin}/research/mimic-benchmark`;
+      void navigator.clipboard.writeText(shareUrl);
+      this.linkCopied.set(true);
+      setTimeout(() => this.linkCopied.set(false), 2000);
+    }
   }
 }

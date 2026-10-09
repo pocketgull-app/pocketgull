@@ -466,7 +466,9 @@ PocketGull Applied Clinical AI Consortium`;
    * Executes automated bi-directional writeback of SBAR, CarePlan, and Conformal Observation to EHR.
    */
   public async executeWriteback(
-    overrideContext?: Partial<IEhrWritebackContext>
+    overrideContext?: Partial<IEhrWritebackContext>,
+    customSbar?: Partial<ISbarClinicalNote>,
+    customPathway?: Partial<ICarePathwayPayload>
   ): Promise<IEhrWritebackBatchResult> {
     this.isWritingBack.set(true);
 
@@ -492,17 +494,17 @@ PocketGull Applied Clinical AI Consortium`;
 
       // Synthesize SBAR Note
       const sbarNote: ISbarClinicalNote = {
-        chiefComplaint: patient?.condition || 'Post-operative abdominal resection with borderline tachycardia',
-        situation: 'Patient vital signs exhibit mild hemodynamic elevation (HR 104 bpm, MAP 72 mmHg). 95% Conformal Sepsis screening evaluated.',
-        background: 'Day 2 post-laparotomy. Current medications: Cefazolin IV, Acetaminophen, Hydromorphone PRN, Ginger botanical decoction. Zero active CYP3A4 blockade.',
-        assessment: 'Mondrian Inductive Conformal Prediction set Γ^α = {0, 1}. Epistemic abstention actively engaged: both Sepsis and Non-Sepsis remain statistically compatible at 95% confidence. Interruptive alarm suppressed to prevent nurse alert fatigue.',
-        recommendation: 'Stepwise Care Plan: 1. Accelerate IoMT telemetry polling to 2-minute cadence. 2. Automated reflex order for serum lactate and procalcitonin placed. 3. Continue autonomic pacing and gentle oral fluid replenishment.',
-        timestamp: new Date().toISOString()
+        chiefComplaint: customSbar?.chiefComplaint || patient?.condition || 'Post-operative abdominal resection with borderline tachycardia',
+        situation: customSbar?.situation || 'Patient vital signs exhibit mild hemodynamic elevation (HR 104 bpm, MAP 72 mmHg). 95% Conformal Sepsis screening evaluated.',
+        background: customSbar?.background || 'Day 2 post-laparotomy. Current medications: Cefazolin IV, Acetaminophen, Hydromorphone PRN, Ginger botanical decoction. Zero active CYP3A4 blockade.',
+        assessment: customSbar?.assessment || 'Mondrian Inductive Conformal Prediction set Γ^α = {0, 1}. Epistemic abstention actively engaged: both Sepsis and Non-Sepsis remain statistically compatible at 95% confidence. Interruptive alarm suppressed to prevent nurse alert fatigue.',
+        recommendation: customSbar?.recommendation || 'Stepwise Care Plan: 1. Accelerate IoMT telemetry polling to 2-minute cadence. 2. Automated reflex order for serum lactate and procalcitonin placed. 3. Continue autonomic pacing and gentle oral fluid replenishment.',
+        timestamp: customSbar?.timestamp || new Date().toISOString()
       };
 
       // Synthesize Care Pathway
       const carePathway: ICarePathwayPayload = {
-        title: 'Tri-Paradigm Autonomic Stabilization & Sepsis Preemption Plan',
+        title: customPathway?.title || 'Tri-Paradigm Autonomic Stabilization & Sepsis Preemption Plan',
         summary: 'Stepped-care pathway reconciling allopathic antimicrobials with TCM Qi tonics and Ayurvedic pitta soothing, under strict CYP450 safety filter.',
         threeActsStage: 'Act I',
         cyp450ClearanceVerified: true,

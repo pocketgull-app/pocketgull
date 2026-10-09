@@ -12,6 +12,7 @@ import { randomBytes } from 'node:crypto';
 import { sanitizeLogInput } from '../../utils/security-helper';
 import { BigQueryCohortExporterService } from '../../services/bigquery-cohort-exporter.service';
 import { UnicefOpenDataService } from '../../services/unicef-open-data.service';
+import { MimicOmopBenchmarkService } from '../../services/research/mimic-omop-benchmark.service';
 
 export function createResearchRouter(): Router {
   const router = Router();
@@ -376,6 +377,44 @@ export function createResearchRouter(): Router {
       const msg = err instanceof Error ? err.message : String(err);
       console.error('[ResearchRoutes] Error fetching UNICEF benchmarks:', sanitizeLogInput(msg));
       res.status(500).json({ error: 'Internal error fetching UNICEF benchmarks' });
+    }
+  });
+
+  // GET /api/research/mimic-benchmark (MIMIC-IV & CMS OMOP Conformal Sepsis Benchmark Preprint)
+  router.get('/mimic-benchmark', limiter, (req: Request, res: Response) => {
+    try {
+      const benchmark = new MimicOmopBenchmarkService();
+      const cohortParam = req.query['cohort'] as string | undefined;
+      if (cohortParam === 'MIMIC_IV_ICU' || cohortParam === 'CMS_OMOP_INPATIENT' || cohortParam === 'MULTI_CENTER_COMBINED') {
+        benchmark.selectCohort(cohortParam);
+      }
+      const alphaParam = req.query['alpha'] ? parseFloat(String(req.query['alpha'])) : undefined;
+      if (alphaParam && alphaParam > 0 && alphaParam < 1) {
+        benchmark.setSignificanceAlpha(alphaParam);
+      }
+
+      const activeCohort = benchmark.activeCohort();
+      const cohortInfo = benchmark.cohortDemographics()[activeCohort];
+      const modelComparisons = benchmark.modelComparisons()[activeCohort];
+      const fatigueReduction = benchmark.fatigueReductionSummary();
+      const calibrationSweep = benchmark.calibrationSweep();
+      const preprintMetadata = benchmark.preprintMetadata();
+      const bigQuerySql = benchmark.exportReproducibleSqlQueries();
+
+      res.status(200).json({
+        success: true,
+        activeCohort,
+        cohortInfo,
+        modelComparisons,
+        fatigueReduction,
+        calibrationSweep,
+        preprintMetadata,
+        bigQuerySql
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[ResearchRoutes] Error fetching MIMIC-IV benchmark:', sanitizeLogInput(msg));
+      res.status(500).json({ error: 'Internal error fetching MIMIC-IV benchmark' });
     }
   });
 

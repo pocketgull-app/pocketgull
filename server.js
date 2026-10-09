@@ -180,6 +180,67 @@ function sanitizeLogInput(val) {
 // Trust single reverse proxy hop on Google Cloud Run
 app.set('trust proxy', 1);
 
+// =========================================================================
+// 🛡️ Zero-Cost IP Blocklist & Automated Threat Banlist Engine ($0.00 Cost)
+// =========================================================================
+// Pre-seeded static blocklist of known abusive scanner IPs (e.g. AS48090 proxy scanners)
+const STATIC_BLOCKED_IPS = new Set([
+  '93.123.109.152', // Flagged scanner: rapid-fire .git/config probe on 2026-10-08
+  ...(process.env['BLOCKED_IPS'] ? process.env['BLOCKED_IPS'].split(',').map(s => s.trim()).filter(Boolean) : [])
+]);
+
+// Dynamic in-memory auto-ban cache with TTL (24-hour ban for exploit scanners)
+const DYNAMIC_BANNED_IPS = new Map();
+const AUTO_BAN_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+function extractClientIp(req) {
+  const xff = req.headers['x-forwarded-for'];
+  const raw = xff ? String(xff).split(',')[0].trim() : (req.socket?.remoteAddress || req.ip || '');
+  return raw.replace(/^::ffff:/, '').trim();
+}
+
+// 1. IP Blocklist Gatekeeper: rejects blocked or banned IPs instantly with 403 Forbidden
+app.use((req, res, next) => {
+  const clientIp = extractClientIp(req);
+  if (!clientIp) return next();
+
+  // Check static permanent blocklist
+  if (STATIC_BLOCKED_IPS.has(clientIp)) {
+    return res.status(403).json({ error: 'Access denied: IP blocked' });
+  }
+
+  // Check dynamic temporary auto-ban
+  const dynamicBan = DYNAMIC_BANNED_IPS.get(clientIp);
+  if (dynamicBan) {
+    if (Date.now() < dynamicBan.expiresAt) {
+      return res.status(403).json({ error: 'Access denied: IP temporarily banned' });
+    } else {
+      DYNAMIC_BANNED_IPS.delete(clientIp); // Expired ban cleanup
+    }
+  }
+
+  next();
+});
+
+// 2. High-efficiency zero-allocation short-circuit & auto-ban trigger for vulnerability probes
+const MALICIOUS_PROBE_REGEX = /^\/(?:(?:wp-(?:admin|content|includes|login|config|cron|load)|phpmyadmin|pma|actuator|xmlrpc\.php|cgi-bin|\.aws|\.ssh)(?:[./]|$)|(?:[^\/]+\/)*\.(?:git|env|ds_store|bak|swp|sql|tar|zip)(?:[./]|$))/i;
+
+app.use((req, res, next) => {
+  if (MALICIOUS_PROBE_REGEX.test(req.path)) {
+    const clientIp = extractClientIp(req);
+    if (clientIp && !DYNAMIC_BANNED_IPS.has(clientIp)) {
+      DYNAMIC_BANNED_IPS.set(clientIp, {
+        bannedAt: Date.now(),
+        expiresAt: Date.now() + AUTO_BAN_DURATION_MS,
+        path: req.path
+      });
+      console.warn(`[SECURITY AUTO-BAN] IP ${clientIp} attempted scanner exploit "${sanitizeLogInput(req.path)}". Auto-banned for 24h.`);
+    }
+    return res.status(404).send('Not Found');
+  }
+  next();
+});
+
 // Primary Business Site Handler for pocketgull.com & www.pocketgull.com
 app.use((req, res, next) => {
   const xfh = String(req.headers['x-forwarded-host'] || '').toLowerCase();
