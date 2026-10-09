@@ -22,11 +22,19 @@ import { PantryLazySusanComponent } from './pantry-lazy-susan.component';
 import { ChronoClockDecisionRailComponent } from './chrono-clock-decision-rail.component';
 import { MobileMenuQrModalComponent } from './modals/mobile-menu-qr-modal.component';
 import { ChronoWeeklyMealPlannerComponent } from './chrono-weekly-meal-planner.component';
+import { LocalFoodshedOnlineMenuComponent } from './local-foodshed-online-menu.component';
 
 @Component({
   selector: 'app-clinical-menu',
   standalone: true,
-  imports: [CommonModule, PantryLazySusanComponent, ChronoClockDecisionRailComponent, MobileMenuQrModalComponent, ChronoWeeklyMealPlannerComponent],
+  imports: [
+    CommonModule, 
+    PantryLazySusanComponent, 
+    ChronoClockDecisionRailComponent, 
+    MobileMenuQrModalComponent, 
+    ChronoWeeklyMealPlannerComponent,
+    LocalFoodshedOnlineMenuComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 
 
@@ -213,6 +221,11 @@ import { ChronoWeeklyMealPlannerComponent } from './chrono-weekly-meal-planner.c
 
           </div>
         }
+      </div>
+
+      <!-- Local Foodshed, CSAs, Online Delivery & Ancestral Multi-Paradigm Resilience -->
+      <div class="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-800">
+        <app-local-foodshed-online-menu />
       </div>
 
       <!-- Emoji Translucent Badge Showcase Ribbon -->
