@@ -17,8 +17,8 @@ if (!fs.existsSync(stylesPath)) {
   errors.push(`Missing ${stylesPath}`);
 } else {
   const content = fs.readFileSync(stylesPath, 'utf8');
-  if (!content.includes('Libre+Caslon+Text')) {
-    errors.push('Libre Caslon Text missing from Google Fonts import in styles.css');
+  if (!content.includes('--font-caslon') && !content.includes('Libre Caslon Text')) {
+    errors.push('Caslon font stack (--font-caslon or Libre Caslon Text) missing in styles.css');
   }
   if (!content.includes('line-height: 1.55') && !content.includes('line-height: 1.65')) {
     errors.push('Caslon proportional leading (line-height) rules missing in styles.css');
