@@ -8,6 +8,7 @@ import { PediatricDosingEngineService } from '../../services/pediatric-dosing-en
 import { UnicefOpenDataService } from '../../services/unicef-open-data.service';
 import { NetworkStateService } from '../../services/network-state.service';
 import { RegionalSupplyChainService } from '../../services/regional-supply-chain.service';
+import { SmsEquityBridgeService, IUssdSessionState, IUssdMenuResponse } from '../../services/sms-equity-bridge.service';
 import { BrandedQrCodeComponent } from './branded-qr-code.component';
 import {
   FrontlineVernacularVoiceService,
@@ -16,7 +17,7 @@ import {
   ITriageVoiceContext
 } from '../../services/frontline-vernacular-voice.service';
 
-export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain' | 'austere_mesh_sync' | 'pediatric_dosing' | 'unicef_open_data' | 'regional_supply_chain';
+export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain' | 'austere_mesh_sync' | 'pediatric_dosing' | 'unicef_open_data' | 'regional_supply_chain' | 'ussd_simulator';
 
 export interface IMuacTriageResult {
   muacMm: number;
@@ -243,6 +244,16 @@ export interface IDehydrationTriageResult {
                 [class.text-zinc-400]="activeTab() !== 'regional_supply_chain'"
                 class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
           <span>🌍</span> 11. Regional Pharmacies &amp; Foodsheds
+        </button>
+
+        <button type="button"
+                (click)="activeTab.set('ussd_simulator')"
+                id="btn-tab-ussd-simulator"
+                [class.bg-amber-700]="activeTab() === 'ussd_simulator'"
+                [class.text-white]="activeTab() === 'ussd_simulator'"
+                [class.text-zinc-400]="activeTab() !== 'ussd_simulator'"
+                class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
+          <span>📟</span> 12. 2G USSD Dialpad Simulator
         </button>
       </nav>
 
@@ -2284,6 +2295,103 @@ export interface IDehydrationTriageResult {
         </section>
       }
 
+      <!-- 12. 2G / 3G USSD Feature Phone Simulator (*384*4855#) -->
+      @if (activeTab() === 'ussd_simulator') {
+        <section class="mt-4 p-4 sm:p-6 bg-zinc-900/60 rounded-3xl border border-zinc-800 space-y-6 animate-in fade-in duration-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                  <span>📟</span> 2G / 3G USSD Feature Phone Simulator
+                </h3>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-950 text-amber-300 border border-amber-800 font-bold">
+                  *384*4855# Protocol
+                </span>
+              </div>
+              <p class="text-xs text-zinc-400 mt-0.5">
+                Simulating interactive zero-data cellular text menus for Transsion, Nokia, and low-cost feature phones
+              </p>
+            </div>
+
+            <!-- USSD Language Selector -->
+            <div class="flex items-center gap-2">
+              <label for="ussd-lang-select" class="text-xs font-mono text-zinc-400">Language:</label>
+              <select id="ussd-lang-select"
+                      [ngModel]="ussdLanguage()"
+                      (ngModelChange)="setUssdLanguage($event)"
+                      class="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs font-mono text-zinc-200 focus:outline-none focus:border-amber-500">
+                <option value="en">English (Global)</option>
+                <option value="sw">Kiswahili (East Africa)</option>
+                <option value="ha">Hausa (West Africa / Sahel)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Feature Phone Retro Frame -->
+          <div class="max-w-md mx-auto p-5 rounded-3xl bg-zinc-950 border-4 border-zinc-800 shadow-2xl space-y-4">
+            <!-- Retro LCD Screen (Monochrome Amber / Green Glow) -->
+            <div class="p-4 rounded-xl bg-[#1a2318] border-2 border-[#2d422a] text-[#76c867] font-mono text-xs shadow-inner min-h-[170px] flex flex-col justify-between whitespace-pre-wrap leading-relaxed select-text">
+              <div class="flex items-center justify-between border-b border-[#2d422a] pb-1 mb-2 text-[10px] opacity-80">
+                <span>📶 2G GSM (Full Bars)</span>
+                <span>{{ ussdResponse().responseType }} • *384*4855#</span>
+              </div>
+
+              <div class="font-bold flex-1 py-1">
+                {{ ussdResponse().screenText }}
+              </div>
+
+              @if (ussdResponse().actionPayload) {
+                <div class="mt-2 pt-1 border-t border-[#2d422a] text-[10px] text-[#a5e69a]">
+                  ✓ FHIR R4 Observation Emitted &amp; Sealed
+                </div>
+              }
+            </div>
+
+            <!-- Dialpad Input Bar -->
+            <form (ngSubmit)="submitUssdInput()" class="space-y-3">
+              <div class="flex items-center gap-2">
+                <input type="text"
+                       [ngModel]="ussdUserInput()"
+                       (ngModelChange)="ussdUserInput.set($event)"
+                       name="ussdInput"
+                       [disabled]="ussdResponse().responseType === 'END'"
+                       placeholder="Enter option or BP (e.g. 1, 2, 125/80)"
+                       class="flex-1 px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-100 font-mono text-sm placeholder:text-zinc-600 focus:outline-none focus:border-amber-500 disabled:opacity-40">
+                <button type="submit"
+                        [disabled]="ussdResponse().responseType === 'END' || !ussdUserInput().trim()"
+                        class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 disabled:opacity-40 text-black font-mono font-bold text-xs cursor-pointer transition">
+                  Send ⏎
+                </button>
+              </div>
+
+              <!-- Quick T9 Keypad Dial Buttons -->
+              <div class="grid grid-cols-3 gap-2 font-mono text-xs">
+                @for (key of ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#']; track key) {
+                  <button type="button"
+                          (click)="pressUssdKey(key)"
+                          [disabled]="ussdResponse().responseType === 'END'"
+                          class="py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-700 text-zinc-300 border border-zinc-800 disabled:opacity-30 cursor-pointer font-bold transition text-center shadow-xs">
+                    {{ key }}
+                  </button>
+                }
+              </div>
+
+              <!-- Reset / Redial Session Button -->
+              <div class="pt-2 flex justify-between items-center text-xs font-mono">
+                <button type="button"
+                        (click)="resetUssdSession()"
+                        class="text-amber-400 hover:underline cursor-pointer flex items-center gap-1">
+                  <span>🔄</span> Redial *384*4855#
+                </button>
+                <span class="text-zinc-500 text-[11px]">
+                  Menu: {{ currentUssdSession().currentMenu }}
+                </span>
+              </div>
+            </form>
+          </div>
+        </section>
+      }
+
       <!-- Offline QR Handoff Modal Overlay -->
       @if (showQrModal()) {
         <div class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
@@ -2336,12 +2444,68 @@ export class CommunityHealthWorkerSuiteComponent {
   readonly pediatricDosing = inject(PediatricDosingEngineService, { optional: true }) ?? new PediatricDosingEngineService();
   readonly unicefService = inject(UnicefOpenDataService, { optional: true }) ?? new UnicefOpenDataService();
   readonly supplyChainService = inject(RegionalSupplyChainService, { optional: true }) ?? new RegionalSupplyChainService();
+  readonly smsEquityService = inject(SmsEquityBridgeService, { optional: true }) ?? new SmsEquityBridgeService();
   readonly network = inject(NetworkStateService, { optional: true }) ?? new NetworkStateService();
   readonly close = output<void>();
 
   hasCloseButton = true;
   activeTab = signal<ChwTab>('malnutrition_muac');
   lastQueuedMessage = signal<string | null>(null);
+
+  // --- 2G USSD Dialpad Simulator State ---
+  readonly ussdLanguage = signal<'en' | 'sw' | 'ha'>('en');
+  readonly currentUssdSession = signal<IUssdSessionState>({
+    sessionId: `ussd_${Date.now()}`,
+    phoneNumber: '+254712345678',
+    serviceCode: '*384*4855#',
+    currentMenu: 'MAIN',
+    language: 'en',
+    collectedData: {}
+  });
+  readonly ussdUserInput = signal<string>('');
+  readonly ussdResponse = signal<IUssdMenuResponse>({
+    sessionId: 'init',
+    responseType: 'CON',
+    nextMenu: 'MAIN',
+    screenText: 'CON POCKETGULL COMMUNITY HEALTH (USSD):\n1. Fever & Malaria Triage\n2. Log Blood Pressure (BP)\n3. Verify Daily Medications\n4. Request Frontline CHW Visit'
+  });
+
+  setUssdLanguage(lang: 'en' | 'sw' | 'ha'): void {
+    this.ussdLanguage.set(lang);
+    this.resetUssdSession();
+  }
+
+  pressUssdKey(digit: string): void {
+    if (this.ussdResponse().responseType === 'END') return;
+    this.ussdUserInput.update(val => val + digit);
+  }
+
+  submitUssdInput(): void {
+    const input = this.ussdUserInput().trim();
+    if (!input || this.ussdResponse().responseType === 'END') return;
+
+    const session = { ...this.currentUssdSession(), language: this.ussdLanguage() };
+    const res = this.smsEquityService.processUssdRequest(session, input);
+
+    this.currentUssdSession.set(session);
+    this.ussdResponse.set(res);
+    this.ussdUserInput.set('');
+  }
+
+  resetUssdSession(): void {
+    const session: IUssdSessionState = {
+      sessionId: `ussd_${Date.now()}`,
+      phoneNumber: '+254712345678',
+      serviceCode: '*384*4855#',
+      currentMenu: 'MAIN',
+      language: this.ussdLanguage(),
+      collectedData: {}
+    };
+    const initRes = this.smsEquityService.processUssdRequest(session, '');
+    this.currentUssdSession.set(session);
+    this.ussdResponse.set(initRes);
+    this.ussdUserInput.set('');
+  }
 
   queueOfflineMuacAssessment(): void {
     const triage = this.muacTriage();

@@ -591,7 +591,31 @@ describe('CommunityHealthWorkerSuiteComponent', () => {
       expect(activeReg.primaryFoodsheds[0].name).toContain('Sandaga');
       expect(activeReg.primaryFoodsheds[0].indigenousStaples).toContain('White Fonio (Digitaria exilis)');
     });
+
+    it('should switch to ussd_simulator tab and simulate interactive feature phone session', () => {
+      component.activeTab.set('ussd_simulator');
+      component.setUssdLanguage('sw');
+      fixture.detectChanges();
+
+      expect(component.ussdResponse().screenText).toContain('POCKETGULL HUDUMA YA AFYA');
+
+      // Press key '1'
+      component.pressUssdKey('1');
+      expect(component.ussdUserInput()).toBe('1');
+
+      // Submit option 1 (Malaria)
+      component.submitUssdInput();
+      expect(component.ussdResponse().screenText).toContain('HOMA NA DALILI ZA MALARIA');
+      expect(component.ussdResponse().responseType).toBe('CON');
+
+      // Submit option 3 (Danger sign)
+      component.pressUssdKey('3');
+      component.submitUssdInput();
+      expect(component.ussdResponse().responseType).toBe('END');
+      expect(component.ussdResponse().screenText).toContain('TAHADHAR');
+    });
   });
 });
+
 
 
