@@ -22,7 +22,10 @@ def export_models():
         "cyp_phenoconversion_model.joblib",
         "anticholinergic_delirium_model.joblib",
         "ms_pira_velocity_model.joblib",
-        "endotoxin_sibi_spike_model.joblib"
+        "endotoxin_sibi_spike_model.joblib",
+        "cgm_glycemic_excursion_model.joblib",
+        "monk_skintone_ppg_debiasing_model.joblib",
+        "african_pharmacogenomic_risk_model.joblib"
     ]
 
     for mf in model_files:

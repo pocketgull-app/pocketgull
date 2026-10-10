@@ -458,6 +458,55 @@ def test_mondrian_conformal_engine_coverage_and_strata():
     bss = compute_brier_skill_score(brier_model=0.02, brier_reference=0.10)
     assert bss == 0.80
 
+def test_cgm_glycemic_excursion_model_exists_and_predicts():
+    model = load_or_train_model('cgm_glycemic_excursion_model.joblib', 'train_cgm_glycemic_excursion_model')
+    if model is None:
+        return
+    sample_df = make_prediction_df(model, {
+        'glycemic_load': 48.0,
+        'net_carbs_grams': 95.0,
+        'dietary_fiber_grams': 2.0,
+        'fat_protein_ratio': 0.2,
+        'fasting_glucose_mg_dl': 140.0,
+        'homa_ir_score': 5.2,
+        'mayer_wave_vagal_tone': 0.2
+    })
+    prob = model.predict_proba(sample_df)[0, 1]
+    assert 0.0 <= prob <= 1.0
+    assert prob > 0.5, f"High glycemic load with low fiber and high HOMA-IR should predict excursion spike, got {prob}"
+
+def test_monk_skintone_ppg_debiasing_model_exists_and_predicts():
+    model = load_or_train_model('monk_skintone_ppg_debiasing_model.joblib', 'train_monk_skintone_ppg_debiasing_model')
+    if model is None:
+        return
+    sample_df = make_prediction_df(model, {
+        'monk_skin_tone_scale': 9, # MST 9 (dark skin)
+        'raw_spo2_optical_ratio_r': 1.4,
+        'perfusion_index_pi': 0.8,
+        'ambient_lux_leakage': 280.0,
+        'motion_sqi_score': 0.3
+    })
+    prob = model.predict_proba(sample_df)[0, 1]
+    assert 0.0 <= prob <= 1.0
+    assert prob > 0.5, f"High MST scale with optical ratio displacement should flag occult hypoxemia risk, got {prob}"
+
+def test_african_pharmacogenomic_risk_model_exists_and_predicts():
+    model = load_or_train_model('african_pharmacogenomic_risk_model.joblib', 'train_african_pharmacogenomic_risk_model')
+    if model is None:
+        return
+    sample_df = make_prediction_df(model, {
+        'apol1_high_risk_genotype': 1,
+        'g6pd_deficiency_present': 1,
+        'cyp2b6_star6_slow_metabolizer': 2,
+        'estimated_gfr_ml_min': 42.0,
+        'active_prescriptions_count': 6,
+        'prescribed_antiretroviral_or_antimalarial': 1,
+        'hypertension_stage_2': 1
+    })
+    prob = model.predict_proba(sample_df)[0, 1]
+    assert 0.0 <= prob <= 1.0
+    assert prob > 0.5, f"APOL1 high risk + G6PD deficiency with ARV polypharmacy should flag high clinical alert, got {prob}"
+
 
 
 

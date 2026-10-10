@@ -1,0 +1,9 @@
+{
+  "model_name": "monk_skintone_ppg_debiasing_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 5,
+  "classes": [
+    0,
+    1
+  ]
+}
