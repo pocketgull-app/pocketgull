@@ -317,5 +317,28 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
       expect(suite.lastActionStatus()).toContain('Exported Act II Glymphatic Care Plan JSON');
       expect(suite.lastActionStatus()).toContain('GCI:');
     });
+
+    it('should compute live GCI telemetry, provide active chrono-posology, and respond to Oral SIBI bridge', () => {
+      const suite = TestBed.runInInjectionContext(() => new TuringSuiteComponent());
+
+      // Initial state: normal SIBI (18), optimal GCI
+      expect(suite.periodontalSibiScore()).toBe(18);
+      expect(suite.gciTelemetry().score).toBeGreaterThanOrEqual(75);
+      expect(suite.gciTelemetry().status).toBe('Optimal Proteopathy Washout');
+      expect(suite.activeChronoRec().moleculeName).toBeDefined();
+
+      // Simulate Periodontal Flare (SIBI rises to 65 -> penalizes GCI by -18%)
+      suite.simulateOralPeriodontalFlare();
+      expect(suite.periodontalSibiScore()).toBe(65);
+      expect(suite.lastActionStatus()).toContain('bacteremic flare');
+      expect(suite.gciTelemetry().score).toBe(82 - 18); // penalized
+      expect(suite.gciTelemetry().aqp4PolarityEstimate).toContain('Oral LPS Endotoxemia');
+
+      // Simulate Periodontal Debridement (SIBI normalizes to 12 -> restores GCI)
+      suite.simulatePeriodontalDebridement();
+      expect(suite.periodontalSibiScore()).toBe(12);
+      expect(suite.lastActionStatus()).toContain('Periodontal debridement');
+      expect(suite.gciTelemetry().score).toBe(82); // full baseline restored
+    });
   });
 });

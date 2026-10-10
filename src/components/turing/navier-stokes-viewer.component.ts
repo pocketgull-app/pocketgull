@@ -18,6 +18,11 @@ export interface ISoluteMolecule {
   color: string;
   shadowColor: string;
   description: string;
+  foodScienceProfile?: {
+    dietarySources: string;
+    foodMatrixBioavailability: string;
+    farmerAgronomyTip: string;
+  };
 }
 
 export const SOLUTE_MOLECULES: ISoluteMolecule[] = [
@@ -33,7 +38,12 @@ export const SOLUTE_MOLECULES: ISoluteMolecule[] = [
     basePeclet: 62.4,
     color: '#f43f5e',
     shadowColor: '#e11d48',
-    description: '4.5 kDa neurotoxic monomer/oligomer. Bulky solute dependent on AQP4 bulk convective flow.'
+    description: '4.5 kDa neurotoxic monomer/oligomer. Bulky solute dependent on AQP4 bulk convective flow.',
+    foodScienceProfile: {
+      dietarySources: 'Endogenous neural proteopathy. Elevated by high-glycemic ultra-processed foods & saturated trans-fats.',
+      foodMatrixBioavailability: 'Non-dietary. Cleared by N3 convective wash; polyphenols & EVOO oleocanthal enhance BBB efflux.',
+      farmerAgronomyTip: 'Regenerative farming maximizing mycorrhizal soil biodiversity yields crops with superior neuroprotective polyphenols.'
+    }
   },
   {
     id: 'tau_protein',
@@ -47,7 +57,12 @@ export const SOLUTE_MOLECULES: ISoluteMolecule[] = [
     basePeclet: 118.5,
     color: '#c084fc',
     shadowColor: '#a855f7',
-    description: '48 kDa microtubule-associated protein. Negligible passive diffusion; requires N3 glymphatic wash.'
+    description: '48 kDa microtubule-associated protein. Negligible passive diffusion; requires N3 glymphatic wash.',
+    foodScienceProfile: {
+      dietarySources: 'Endogenous hyperphosphorylated axonal stabilizer. Exacerbated by systemic metabolic endotoxemia.',
+      foodMatrixBioavailability: 'High molecular weight (Pe = 118.5). Glymphatic flushing requires lateral sleep posture & vagal tone.',
+      farmerAgronomyTip: 'Low-pesticide organic berries rich in anthocyanins attenuate tau hyperphosphorylation in animal models.'
+    }
   },
   {
     id: 'spermidine',
@@ -61,7 +76,12 @@ export const SOLUTE_MOLECULES: ISoluteMolecule[] = [
     basePeclet: 12.8,
     color: '#34d399',
     shadowColor: '#10b981',
-    description: '145 Da natural polyamine and autophagy inducer. High permeability; diffuses easily across interstitium.'
+    description: '145 Da natural polyamine and autophagy inducer. High permeability; diffuses easily across interstitium.',
+    foodScienceProfile: {
+      dietarySources: 'Wheat germ (243 mg/kg), fermented natto, aged cheddar, shiitake mushrooms, green peas.',
+      foodMatrixBioavailability: 'High natural polyamine absorption via SLC transporters; highly stable in standard culinary preparation.',
+      farmerAgronomyTip: 'Regulated Deficit Irrigation (RDI) in legumes and durum wheat triggers osmotic stress, boosting grain spermidine by 25–40%.'
+    }
   },
   {
     id: 'curcumin',
@@ -75,7 +95,12 @@ export const SOLUTE_MOLECULES: ISoluteMolecule[] = [
     basePeclet: 24.6,
     color: '#fbbf24',
     shadowColor: '#f59e0b',
-    description: '368 Da polyphenolic NLRP3/NF-κB inhibitor. Moderate diffusion coefficient with lipid-affinity.'
+    description: '368 Da polyphenolic NLRP3/NF-κB inhibitor. Moderate diffusion coefficient with lipid-affinity.',
+    foodScienceProfile: {
+      dietarySources: 'Whole Curcuma longa (turmeric) rhizomes, curry blends, golden milk preparations.',
+      foodMatrixBioavailability: 'Hydrophobic. Pair with dietary lipids (olive oil, coconut) or piperine to increase absorption by 2000%.',
+      farmerAgronomyTip: 'Inoculating turmeric with symbiotic arbuscular mycorrhizal fungi (AMF) increases rhizome curcuminoids by 30%.'
+    }
   },
   {
     id: 'akba',
@@ -89,7 +114,12 @@ export const SOLUTE_MOLECULES: ISoluteMolecule[] = [
     basePeclet: 32.4,
     color: '#2dd4bf',
     shadowColor: '#14b8a6',
-    description: '513 Da 5-LOX allosteric blocker. Favorable PVS clearance kinetics during N2/N3 sleep stages.'
+    description: '513 Da 5-LOX allosteric blocker. Favorable PVS clearance kinetics during N2/N3 sleep stages.',
+    foodScienceProfile: {
+      dietarySources: 'Resin extract of Boswellia serrata (Indian Frankincense).',
+      foodMatrixBioavailability: 'Lipophilic triterpene. Consume with dinner fat matrix to enhance lymphatic chylomicron delivery.',
+      farmerAgronomyTip: 'Sustainable rotational bark tapping on wild Boswellia trees preserves tree vitality and increases acetyl-11-keto yield.'
+    }
   }
 ];
 
@@ -236,6 +266,21 @@ interface IFluidParticle {
           🌪️ Atheroprone Low Shear (<0.4 Pa)
         </button>
       </div>
+
+      <!-- Farm-to-Brain Food Science & Agronomy Profile -->
+      @if (selectedMolecule().foodScienceProfile; as food) {
+        <div class="mt-2 p-2 rounded-xl bg-sky-950/40 border border-sky-800/40 text-[10px] text-sky-200/90 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 shadow-inner">
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="text-sm">🌾</span>
+            <span class="font-bold text-sky-300 uppercase tracking-wider text-[9.5px]">Farm-to-Brain Profile:</span>
+          </div>
+          <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2 text-[9px] leading-snug">
+            <div><strong class="text-emerald-300">Dietary Matrix:</strong> {{ food.dietarySources }}</div>
+            <div><strong class="text-amber-300">Food Science:</strong> {{ food.foodMatrixBioavailability }}</div>
+            <div><strong class="text-teal-300">Agronomy / Soil:</strong> {{ food.farmerAgronomyTip }}</div>
+          </div>
+        </div>
+      }
 
       <!-- Metrics Footer -->
       <div class="mt-2 flex flex-wrap items-center justify-between gap-3 text-xs pt-2 border-t border-sky-900/30">

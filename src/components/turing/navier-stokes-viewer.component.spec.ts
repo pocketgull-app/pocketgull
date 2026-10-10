@@ -203,4 +203,18 @@ describe('NavierStokesViewerComponent', () => {
     expect(component.selectedMolecule().isPathological).toBe(false);
     expect(component.caaStasisRisk()).toBe(false);
   });
+
+  it('10. Exposes Farm-to-Brain Food Science and Agronomy profiles across solute molecules', () => {
+    const spermidine = component.soluteMolecules.find(m => m.id === 'spermidine')!;
+    expect(spermidine.foodScienceProfile).toBeDefined();
+    expect(spermidine.foodScienceProfile?.dietarySources).toContain('Wheat germ');
+    expect(spermidine.foodScienceProfile?.farmerAgronomyTip).toContain('Regulated Deficit Irrigation');
+
+    const curcumin = component.soluteMolecules.find(m => m.id === 'curcumin')!;
+    expect(curcumin.foodScienceProfile?.dietarySources).toContain('Curcuma longa');
+    expect(curcumin.foodScienceProfile?.foodMatrixBioavailability).toContain('piperine');
+
+    const akba = component.soluteMolecules.find(m => m.id === 'akba')!;
+    expect(akba.foodScienceProfile?.farmerAgronomyTip).toContain('Boswellia');
+  });
 });
