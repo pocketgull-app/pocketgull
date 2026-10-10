@@ -454,20 +454,20 @@ The present disclosure overcomes the aforementioned deficiencies through ten int
      - a processor configured to solve coupled Navier-Stokes momentum advection and Turing reaction-diffusion morphogen equations;
      - an endothelial shear stress module computing local wall shear stress ($\tau$) heatmaps; and
      - a visualization renderer generating real-time interactive vector stream fields inside an electronic medical chart.
-242. The system of claim 241, wherein the Péclet number is configured to simulate advection-dominated solute transport ($Pe \approx 48.5$).
+242. The system of claim 241, wherein the dynamic Péclet number ($Pe$) scales with solute molecular weight ($145\text{ Da} \le MW \le 48\text{ kDa}$) and Stokes-Einstein hydrodynamic radius ($R_H \approx 0.066 \cdot MW^{1/3}\text{ nm}$) to distinguish convective from diffusive parenchymal transport.
 243. The system of claim 241, wherein local endothelial wall shear stress is calculated as $\tau = \mu (\partial u / \partial y)_{y=0} \approx 1.42\text{ Pa}$.
-244. The system of claim 241, simulating glymphatic cerebrospinal fluid solute clearance during simulated slow-wave sleep cycles.
+244. The system of claim 241, simulating glymphatic cerebrospinal fluid solute clearance during simulated slow-wave sleep cycles modulated by astrocytic Aquaporin-4 (AQP4) polarization and 0.1 Hz Mayer wave parasympathetic vasomotion.
 245. The system of claim 241, coupled to a stochastic Petri net modeling intracellular kinase cascade concurrency.
 246. The system of claim 245, wherein kinase cascades comprise MAPK/ERK, mTORC1, and AMPK/ULK1 autophagy pathways.
 247. The system of claim 241, modulating fluid viscosity based on patient hematocrit and plasma protein concentrations.
-248. The system of claim 241, predicting therapeutic nanoparticle extravasation across compromised blood-brain barriers.
-249. The system of claim 241, executing on client-side WebGL and WebGPU shader pipelines at $\ge 30\text{ frames per second}$.
-250. The system of claim 241, dynamically perturbed by clinical trial medication parameters including Rapamycin and Metformin.
+248. The system of claim 241, predicting therapeutic nanoparticle extravasation across compromised blood-brain barriers and simulating Cerebral Amyloid Angiopathy (CAA) perivascular nucleation when clearance stalls.
+249. The system of claim 241, executing on client-side WebGL, WebGPU, and Canvas 2D pipelines at $\ge 30\text{ frames per second}$ with Womersley number $\alpha \in [0.08, 0.24]$ and creeping Stokes flow ($Re \ll 1$).
+250. The system of claim 241, dynamically perturbed by therapeutic molecules including Spermidine, Curcumin, and AKBA, and cross-coupled to Flory-Huggins liquid-liquid phase separation (LLPS) engines to evaluate amyloid gelation risk.
 251. **A method for simulating microvascular drug advection and clearance**, comprising claims 241 to 250.
 252. The method of claim 251, modeling renal tubular clearance kinetics.
 253. The method of claim 251, evaluating coronary bifurcation atherosclerotic plaque shear vulnerability.
-254. The method of claim 251, incorporating pulsatile systemic arterial pressure waveforms.
-255. The method of claim 251, outputting quantitative solute clearance half-lives.
+254. The method of claim 251, incorporating pulsatile systemic arterial pressure waveforms and 10-second respiratory Mayer wave cycles.
+255. The method of claim 251, outputting quantitative solute clearance half-lives and FHIR R4 Diagnostic Observations.
 256. **A non-transitory computer-readable medium** storing instructions executing the method of claims 251 to 255.
 257. The medium of claim 256, allowing user-drawn obstacles and microvascular stenosis geometries.
 258. The medium of claim 256, computing multi-component diffusion matrices with cross-species interaction terms.

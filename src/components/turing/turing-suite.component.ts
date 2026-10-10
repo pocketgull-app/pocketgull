@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, computed, viewChild, signal
 import { CommonModule } from '@angular/common';
 import { CellularAutomataViewerComponent } from './cellular-automata-viewer.component';
 import { PetriNetViewerComponent } from './petri-net-viewer.component';
-import { NavierStokesViewerComponent } from './navier-stokes-viewer.component';
+import { NavierStokesViewerComponent, ISoluteMolecule } from './navier-stokes-viewer.component';
 import { LensBiomolecularPhysicsComponent } from './lens-biomolecular-physics.component';
 import { CernLhc3dVisualizerComponent } from '../anatomy-3d/cern-lhc-3d-visualizer.component';
 import { SocraticRoundsHudComponent } from '../socratic-rounds-hud.component';
@@ -106,7 +106,9 @@ import { PatientStateService } from '../../services/patient-state.service';
 
       <!-- Fluid Dynamics Section -->
       <div class="h-[460px]">
-        <app-navier-stokes-viewer #nsViewer />
+        <app-navier-stokes-viewer #nsViewer
+                                  (moleculeSelected)="onMoleculeSelected($event)"
+                                  (glymphaticStateChange)="onGlymphaticStateChange($event)" />
       </div>
 
       <!-- Frontier Molecular Biophysics Suite (LLPS, PROTAC, Quantum, MOF) -->
@@ -157,7 +159,8 @@ export class TuringSuiteComponent {
     this.petriViewer()?.injectEndotoxinSurge();
     this.nsViewer()?.pulseHypertension();
     this.nsViewer()?.setSleepStage('wake');
-    this.lastActionStatus.set('🔥 Sympathetic Shock Protocol active: Cytokines surged in CA, Endotoxemia simulated in Petri Net, Vasoconstriction in Glymphatic Flow.');
+    this.nsViewer()?.setAqp4Polarization(false);
+    this.lastActionStatus.set('🔥 Sympathetic Shock Protocol active: Cytokines surged in CA, Endotoxemia simulated in Petri Net, Vasoconstriction & AQP4 Depolarization in Glymphatic Flow.');
   }
 
   triggerVagalRestoration() {
@@ -165,7 +168,8 @@ export class TuringSuiteComponent {
     this.petriViewer()?.injectVagusNerveStimulation();
     this.petriViewer()?.injectMitochondrialCofactor();
     this.nsViewer()?.induceSlowWaveDeepSleep();
-    this.lastActionStatus.set('🌿 Vagal Restoration Protocol active: Antioxidant pulse cleared tissue, VNS tokens injected, N3 Deep Sleep +600% Glymphatic surge engaged.');
+    this.nsViewer()?.setAqp4Polarization(true);
+    this.lastActionStatus.set('🌿 Vagal Restoration Protocol active: Antioxidant pulse cleared tissue, VNS tokens injected, N3 Deep Sleep +600% Glymphatic surge & AQP4 Repolarization engaged.');
   }
 
   syncAllEngines() {
@@ -200,6 +204,32 @@ export class TuringSuiteComponent {
         {
           code: { text: 'Navier-Stokes Glymphatic Velocity mm/s' },
           valueString: this.nsViewer()?.csfVelocity() || '0.0'
+        },
+        {
+          code: { text: 'Aquaporin-4 Astrocytic Polarization' },
+          valueString: this.nsViewer()?.aqp4Polarized() ? 'POLARIZED_90%' : 'DEPOLARIZED_25%'
+        },
+        {
+          code: { text: 'Glymphatic Active Solute Molecule' },
+          valueString: this.nsViewer()?.selectedMolecule()?.name || 'Amyloid-beta (Aβ 1-42)'
+        },
+        {
+          code: { text: 'Solute Molecular Weight Da' },
+          valueInteger: this.nsViewer()?.selectedMolecule()?.molecularWeightDa || 4514
+        },
+        {
+          code: { text: 'Solute Hydrodynamic Radius nm' },
+          valueString: (this.nsViewer()?.selectedMolecule()?.hydrodynamicRadiusNm ?? 1.10).toFixed(2)
+        },
+        {
+          code: { text: 'Solute Péclet Number' },
+          valueString: (this.nsViewer()?.pecletNumber() ?? 18.2).toFixed(1)
+        },
+        {
+          code: { text: 'Solute Transport Regime' },
+          valueString: (this.nsViewer()?.selectedMolecule()?.molecularWeightDa || 4514) > 3000
+            ? 'Convective (High Bulk Flow Dependency)'
+            : 'Diffusive-Permissive Interstitial'
         }
       ]
     };
@@ -212,5 +242,58 @@ export class TuringSuiteComponent {
     a.click();
     URL.revokeObjectURL(url);
     this.lastActionStatus.set('📥 Exported Turing Diagnostic Snapshot JSON successfully.');
+  }
+
+  onMoleculeSelected(molecule: ISoluteMolecule) {
+    if (molecule.id === 'spermidine') {
+      // 1. Petri Net: Inject AMPK activation & Mitophagy flux
+      this.petriViewer()?.injectAmpkActivation();
+      // 2. Cellular Automata: Administer antioxidant cytoprotection
+      this.caViewer()?.administerAntioxidantPulse();
+      // 3. LLPS: Reset lattice to sub-spinodal clearance state (chi < 2.0)
+      this.biophysViewer()?.resetLlpsGrid();
+      this.lastActionStatus.set(`✨ [PK/PD Coupling] Spermidine (145 Da): Stimulated AMPK/Mitophagy flux in Petri Net, antioxidant survival in CA, and rapid interstitial diffusion.`);
+    } else if (molecule.id === 'curcumin' || molecule.id === 'akba') {
+      // 1. Petri Net: Anti-inflammatory T-Reg restraint
+      this.petriViewer()?.injectVagusNerveStimulation();
+      // 2. Cellular Automata: Administer antioxidant pulse
+      this.caViewer()?.administerAntioxidantPulse();
+      // 3. LLPS: Keep chi sub-spinodal
+      this.biophysViewer()?.resetLlpsGrid();
+      this.lastActionStatus.set(`🌿 [PK/PD Coupling] ${molecule.name}: Engaged T-Reg anti-inflammatory restraint in Petri Net and antioxidant cytoprotection in CA.`);
+    } else if (molecule.id === 'amyloid_beta_42') {
+      // 1. Petri Net: Influx of endotoxin/damage priming
+      this.petriViewer()?.injectEndotoxinSurge();
+      // 2. Cellular Automata: Stress lesion nucleation
+      this.caViewer()?.injectCytokineStorm();
+      // 3. LLPS: Stress granule & amyloid phase separation nucleation
+      this.biophysViewer()?.triggerStressGranulePulse();
+      this.lastActionStatus.set(`⚠️ [PK/PD Coupling] Amyloid-β 1-42 (4.5 kDa): Injected cytokine/endothelial damage in Petri Net & CA; triggered LLPS amyloid nucleation.`);
+    } else if (molecule.id === 'tau_protein') {
+      // 1. Petri Net: Influx of inflammatory cascade & endothelial lesions
+      this.petriViewer()?.injectEndotoxinSurge();
+      // 2. Cellular Automata: Apoptosis stress cascade
+      this.caViewer()?.injectCytokineStorm();
+      // 3. LLPS: Elevate chi to 3.2 (Tau hyperphosphorylation & fibrillar gelation risk)
+      this.biophysViewer()?.triggerTauHyperphosphorylation();
+      this.lastActionStatus.set(`🚨 [PK/PD Coupling] p-Tau 181 (48 kDa): Driven into LLPS gelation risk (χ=3.2); induced endothelial stress in Petri Net & CA.`);
+    }
+  }
+
+  onGlymphaticStateChange(state: { sleepStage: 'wake' | 'n2' | 'n3'; aqp4Polarized: boolean; clearanceRate: number }) {
+    const activeMol = this.nsViewer()?.selectedMolecule();
+    if (!activeMol) return;
+
+    if (activeMol.category === 'Pathological Proteopathy') {
+      if (!state.aqp4Polarized || state.sleepStage === 'wake') {
+        // Glymphatic clearance stalled -> trigger LLPS Tau hyperphosphorylation / amyloid gelation
+        this.biophysViewer()?.triggerTauHyperphosphorylation();
+        this.lastActionStatus.set(`⚠️ [Glymphatic Stagnation] Impaired convective wash (clearance: ${Math.round(state.clearanceRate * 100)}%) drove ${activeMol.name} into LLPS gelation risk (χ=3.2).`);
+      } else if (state.sleepStage === 'n3' && state.aqp4Polarized) {
+        // Active N3 slow-wave sleep + polarized AQP4 -> restorative clearance
+        this.biophysViewer()?.resetLlpsGrid();
+        this.lastActionStatus.set(`💤 [Convective Clearance] N3 Slow-Wave Sleep + Polarized AQP4 restored ${activeMol.name} convective flush; LLPS fibrillization prevented.`);
+      }
+    }
   }
 }

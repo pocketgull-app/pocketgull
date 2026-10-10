@@ -240,5 +240,59 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
       suite.syncAllEngines();
       expect(suite.lastActionStatus()).toContain('synchronized');
     });
+
+    it('should cross-couple selected molecule into Petri Net, CA, and LLPS engines', () => {
+      const suite = TestBed.runInInjectionContext(() => new TuringSuiteComponent());
+
+      // Test Spermidine selection (AMPK / autophagy & antioxidant survival)
+      suite.onMoleculeSelected({
+        id: 'spermidine',
+        name: 'Spermidine',
+        symbol: '✨',
+        category: 'Therapeutic Small Molecule',
+        isPathological: false,
+        molecularWeightDa: 145.25,
+        hydrodynamicRadiusNm: 0.35,
+        diffusionRateMultiplier: 1.8,
+        basePeclet: 12.8,
+        color: '#34d399',
+        shadowColor: '#10b981',
+        description: 'Autophagy inducer'
+      });
+      expect(suite.lastActionStatus()).toContain('Spermidine');
+      expect(suite.lastActionStatus()).toContain('AMPK/Mitophagy');
+
+      // Test p-Tau 181 selection (Tau hyperphosphorylation & LLPS gelation risk)
+      suite.onMoleculeSelected({
+        id: 'tau_protein',
+        name: 'p-Tau 181',
+        symbol: '🧶',
+        category: 'Pathological Proteopathy',
+        isPathological: true,
+        molecularWeightDa: 48000,
+        hydrodynamicRadiusNm: 2.45,
+        diffusionRateMultiplier: 0.12,
+        basePeclet: 118.5,
+        color: '#c084fc',
+        shadowColor: '#a855f7',
+        description: 'Microtubule-associated protein'
+      });
+      expect(suite.lastActionStatus()).toContain('p-Tau 181');
+      expect(suite.lastActionStatus()).toContain('LLPS gelation risk');
+    });
+
+    it('should export Turing diagnostic snapshot with enriched solute hydrodynamics telemetry', () => {
+      const suite = TestBed.runInInjectionContext(() => new TuringSuiteComponent());
+      if (!globalThis.URL.createObjectURL) {
+        globalThis.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url');
+        globalThis.URL.revokeObjectURL = vi.fn();
+      } else {
+        vi.spyOn(globalThis.URL, 'createObjectURL').mockReturnValue('blob:mock-url');
+        vi.spyOn(globalThis.URL, 'revokeObjectURL').mockImplementation(() => {});
+      }
+
+      suite.exportTuringSnapshot();
+      expect(suite.lastActionStatus()).toContain('Exported Turing Diagnostic Snapshot JSON successfully');
+    });
   });
 });
