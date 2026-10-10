@@ -587,6 +587,13 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
                       <div class="text-[10px] text-zinc-400 font-normal">Local SLM • ISMP Intercept • Store &amp; Forward FHIR</div>
                     </div>
                   </button>
+                  <button type="button" (click)="navShell?.openDisasterMeshModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/20">
+                    <span class="text-sm">📡</span>
+                    <div>
+                      <div>BLE Disaster Mesh &amp; Mutual-Aid</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Zero-Grid • Offline Kiosk • QR Sneakernet • 72h Battery</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openComplianceCertificate.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">📜</span>
                     <div>
@@ -1033,6 +1040,11 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
             <!-- 🎙️ Edge Offline Voice Scribe -->
             <button type="button" (click)="navShell?.openEdgeVoiceModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🎙️</span> <span>Edge Voice Agent (Air-Gapped SLM)</span>
+            </button>
+
+            <!-- 📡 Decentralized BLE Disaster Mesh & Mutual-Aid Beacon -->
+            <button type="button" (click)="navShell?.openDisasterMeshModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">📡</span> <span>BLE Disaster Mesh &amp; Mutual-Aid (Zero-Grid)</span>
             </button>
 
             <!-- Ambient Flow Background Music Player -->

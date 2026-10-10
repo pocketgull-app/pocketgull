@@ -102,6 +102,7 @@ import { EnterpriseIdentityConsoleComponent } from './components/enterprise-iden
 import { DirectIomtConsoleComponent } from './components/iomt-wearables/direct-iomt-console.component';
 import { MimicOmopBenchmarkHubComponent } from './components/research/mimic-omop-benchmark-hub.component';
 import { SmartFhirLauncherComponent } from './components/smart-fhir-launcher.component';
+import { DisasterBleMeshBeaconComponent } from './components/disaster-ble-mesh-beacon.component';
 import { EhrWritebackConsoleComponent } from './components/ehr-writeback/ehr-writeback-console.component';
 import { EdgeAutonomousVoiceAgentComponent } from './components/voice/edge-autonomous-voice-agent.component';
 import { CowsAssessmentModalComponent } from './components/modals/cows-assessment-modal.component';
@@ -215,6 +216,7 @@ import { Nutrigenomics3dLensComponent } from './components/anatomy-3d/nutrigenom
     DirectIomtConsoleComponent,
     MimicOmopBenchmarkHubComponent,
     SmartFhirLauncherComponent,
+    DisasterBleMeshBeaconComponent,
     EhrWritebackConsoleComponent,
     EdgeAutonomousVoiceAgentComponent,
     CowsAssessmentModalComponent,
@@ -460,6 +462,23 @@ import { Nutrigenomics3dLensComponent } from './components/anatomy-3d/nutrigenom
               <button type="button" (click)="navShell.closeEhrMarketplaceModal()" aria-label="Close EHR Marketplace Modal" class="w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer transition min-h-[44px] min-w-[44px]">✕</button>
             </div>
             <app-smart-fhir-launcher></app-smart-fhir-launcher>
+          </div>
+        </div>
+      }
+
+      <!-- Decentralized BLE Disaster Mesh & Offline Community Mutual-Aid Beacon Modal -->
+      @if (navShell.showDisasterMeshModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Decentralized BLE Disaster Mesh and Offline Community Mutual-Aid Beacon">
+          <div class="relative w-full max-w-5xl my-auto bg-zinc-950 rounded-3xl border border-zinc-800 p-4 sm:p-6 shadow-2xl text-gray-100">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-zinc-800">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">📡</span>
+                <span class="text-sm font-mono font-bold text-emerald-400">DECENTRALIZED BLE DISASTER MESH &amp; MUTUAL-AID BEACON</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Zero-Grid • BLE 5.2 • Sneakernet</span>
+              </div>
+              <button type="button" (click)="navShell.closeDisasterMeshModal()" aria-label="Close Disaster Mesh Modal" class="w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer transition min-h-[44px] min-w-[44px]">✕</button>
+            </div>
+            <app-disaster-ble-mesh-beacon></app-disaster-ble-mesh-beacon>
           </div>
         </div>
       }
