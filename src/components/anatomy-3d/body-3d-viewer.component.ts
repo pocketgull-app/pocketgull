@@ -1329,11 +1329,11 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     });
 
     // 🧬 Whole-Body Nutrigenomics Signaling & Telemetry
-    readonly nutriActiveLigand = signal<'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl'>('all');
+    readonly nutriActiveLigand = signal<'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl' | 'curcumin' | 'nitric_oxide'>('all');
     readonly nutriShowBeacons = signal<boolean>(true);
     readonly nutriVelocity = signal<number>(1.0);
 
-    setNutriLigand(ligand: 'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl'): void {
+    setNutriLigand(ligand: 'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl' | 'curcumin' | 'nitric_oxide'): void {
       this.nutriActiveLigand.set(ligand);
       this.updateNutrigenomicParticleColors();
     }
@@ -2267,7 +2267,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         // React to selected nutrigenomic ligand changes from external components (e.g. Precision Nutrition Calculator)
         effect(() => {
             const ligand = this.state.selectedNutrigenomicLigand();
-            const mapped = (ligand === 'methyl_5mthf' ? 'methyl' : ligand === 'omega3_dha' ? 'all' : ligand) as 'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl';
+            const mapped = (ligand === 'methyl_5mthf' ? 'methyl' : ligand === 'omega3_dha' ? 'all' : ligand) as 'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl' | 'curcumin' | 'nitric_oxide';
             if (this.nutriActiveLigand() !== mapped) {
                 this.nutriActiveLigand.set(mapped);
                 this.updateNutrigenomicParticleColors();
@@ -3484,8 +3484,8 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     private nutriBeaconGroup?: THREE.Group;
     private nutriParticles?: THREE.Points;
     private nutriBeacons: { core: THREE.Mesh; ring: THREE.Mesh; name: string }[] = [];
-    private nutriCurves: { curve: THREE.CatmullRomCurve3; ligandType: 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl'; defaultColor: number }[] = [];
-    private nutriParticleData: { curveIdx: number; t: number; speedOffset: number; ligandType: 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl' }[] = [];
+    private nutriCurves: { curve: THREE.CatmullRomCurve3; ligandType: 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl' | 'curcumin' | 'nitric_oxide'; defaultColor: number }[] = [];
+    private nutriParticleData: { curveIdx: number; t: number; speedOffset: number; ligandType: 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl' | 'curcumin' | 'nitric_oxide' }[] = [];
 
     private createWholeBodyNutrigenomics() {
         this.wholeBodyNutrigenomicsGroup = new THREE.Group();
@@ -3495,7 +3495,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         this.nutriBeaconGroup = new THREE.Group();
         this.wholeBodyNutrigenomicsGroup.add(this.nutriBeaconGroup);
 
-        // 1. CatmullRom splines for the 4 core nutrigenomic axes
+        // 1. CatmullRom splines for the 6 core nutrigenomic axes
         this.nutriCurves = [
             // A. Hepatic Nrf2 Axis (Mesenteric intestine -> Portal vein -> Liver parenchyma)
             {
@@ -3545,6 +3545,30 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 ]),
                 ligandType: 'methyl',
                 defaultColor: 0xa855f7 // Violet
+            },
+            // E. Curcumin-Piperine Hepatic Complex (Ileum -> Portal Vein -> Right Hepatic Sinusoids)
+            {
+                curve: new THREE.CatmullRomCurve3([
+                    new THREE.Vector3(0.04, 0.65, 0.12),
+                    new THREE.Vector3(0.12, 0.75, 0.14),
+                    new THREE.Vector3(0.16, 0.88, 0.12),
+                    new THREE.Vector3(0.20, 1.00, 0.10),
+                    new THREE.Vector3(0.18, 1.10, 0.08)
+                ]),
+                ligandType: 'curcumin',
+                defaultColor: 0xeab308 // Rich Golden Turmeric
+            },
+            // F. Entero-Salivary Nitric Oxide Vasodilation Axis (Submandibular -> Gastric -> Aorta -> Brachial tree)
+            {
+                curve: new THREE.CatmullRomCurve3([
+                    new THREE.Vector3(0.05, 1.58, 0.08),
+                    new THREE.Vector3(0.0, 1.38, 0.07),
+                    new THREE.Vector3(-0.06, 1.28, 0.10),
+                    new THREE.Vector3(-0.25, 1.15, 0.04),
+                    new THREE.Vector3(-0.45, 0.85, 0.02)
+                ]),
+                ligandType: 'nitric_oxide',
+                defaultColor: 0x06b6d4 // Cyan-Teal Luminescence
             }
         ];
 
@@ -3609,7 +3633,9 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             { pos: new THREE.Vector3(0.0, 0.72, 0.14), color: 0x10b981, name: 'Colonic SCFA Hub' },
             { pos: new THREE.Vector3(0.0, 1.76, 0.07), color: 0xa855f7, name: 'Cerebral SAMe Hub' },
             { pos: new THREE.Vector3(-0.05, 1.25, 0.12), color: 0xf43f5e, name: 'Myocardial SIRT1 Hub' },
-            { pos: new THREE.Vector3(-0.16, 0.15, 0.06), color: 0x06b6d4, name: 'Muscle PGC-1a Hub' }
+            { pos: new THREE.Vector3(-0.16, 0.15, 0.06), color: 0x06b6d4, name: 'Muscle PGC-1a Hub' },
+            { pos: new THREE.Vector3(0.18, 1.05, 0.10), color: 0xeab308, name: 'Curcumin-Piperine Hepatic Complex' },
+            { pos: new THREE.Vector3(-0.06, 1.28, 0.10), color: 0x06b6d4, name: 'Endothelial Nitric Oxide Dilator' }
         ];
 
         this.nutriBeacons = [];

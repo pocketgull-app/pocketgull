@@ -180,4 +180,18 @@ export class MicrobiomeFermentationVaultService {
   updateOralNitrate(mg: number): void {
     this.oralNitrateIntakeMg.set(Math.max(0, mg));
   }
+
+  /**
+   * Activates colonic SCFA or entero-salivary nitric oxide vasodilation simulation in 3D anatomy.
+   */
+  trigger3dScfaOrNitricOxideSimulation(type: 'butyrate' | 'nitric_oxide'): void {
+    if (this.patientState && typeof this.patientState.anatomyViewMode?.set === 'function') {
+      this.patientState.anatomyViewMode.set('nutrigenomics');
+      if (typeof this.patientState.selectedNutrigenomicLigand?.set === 'function') {
+        this.patientState.selectedNutrigenomicLigand.set(type);
+      }
+    }
+    // eslint-disable-next-line no-console
+    console.log(`[PocketGull 3D Simulation] Triggered 3D nutrigenomic pathway for: ${type}`);
+  }
 }

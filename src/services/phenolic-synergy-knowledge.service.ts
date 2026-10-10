@@ -302,6 +302,19 @@ export class PhenolicSynergyKnowledgeService {
 
     if (this.patientState && typeof this.patientState.anatomyViewMode?.set === 'function') {
       this.patientState.anatomyViewMode.set('nutrigenomics');
+      if (typeof this.patientState.selectedNutrigenomicLigand?.set === 'function') {
+        if (compound.compoundName.toLowerCase().includes('curcumin')) {
+          this.patientState.selectedNutrigenomicLigand.set('curcumin');
+        } else if (compound.compoundName.toLowerCase().includes('sulforaphane')) {
+          this.patientState.selectedNutrigenomicLigand.set('sulforaphane');
+        } else if (compound.compoundName.toLowerCase().includes('resveratrol')) {
+          this.patientState.selectedNutrigenomicLigand.set('resveratrol');
+        } else if (compound.compoundName.toLowerCase().includes('anthocyanin')) {
+          this.patientState.selectedNutrigenomicLigand.set('methyl_5mthf');
+        } else {
+          this.patientState.selectedNutrigenomicLigand.set('all');
+        }
+      }
     }
 
     // eslint-disable-next-line no-console

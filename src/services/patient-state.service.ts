@@ -409,7 +409,7 @@ export class PatientStateService {
   readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular' | 'decad'>('3d');
   readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing' | 'fluid_dynamics' | 'nutrigenomics'>('skin');
   /** Selected nutrigenomic bioactive ligand for 3D signaling and chromatin visualization */
-  readonly selectedNutrigenomicLigand = signal<'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'omega3_dha' | 'methyl_5mthf'>('all');
+  readonly selectedNutrigenomicLigand = signal<'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'omega3_dha' | 'methyl_5mthf' | 'curcumin' | 'nitric_oxide'>('all');
   /** Fasting duration in hours for AMPK / SIRT1 / macroautophagy threshold */
   readonly fastingDurationHours = signal<number>(14);
   readonly autophagyAmpkActive = computed<boolean>(() => this.fastingDurationHours() >= 14);
