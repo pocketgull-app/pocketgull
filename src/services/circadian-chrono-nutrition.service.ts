@@ -146,4 +146,73 @@ export class CircadianChronoNutritionService {
       guidance: 'Meal timing perfectly aligned with circadian metabolic window. Robust pancreatic response expected.'
     };
   }
+
+  /**
+   * Get Chrono-Posology Recommendation for Hydrodynamic Solutes
+   * Synchronizes peak plasma Cmax with early-night N3 slow-wave sleep & AQP4 convective clearance.
+   */
+  getChronoPosologyRecommendation(moleculeId: string, targetBedtime = '22:30'): IChronoPosologyRecommendation {
+    switch (moleculeId) {
+      case 'spermidine':
+        return {
+          moleculeId: 'spermidine',
+          moleculeName: 'Spermidine',
+          molecularWeightDa: 145.25,
+          hydrodynamicRadiusNm: 0.35,
+          recommendedIngestionTime: '21:15 (75 min pre-sleep)',
+          targetCircadianPhase: 'Dusk_Tapering / Early Melatonin Surge',
+          targetMechanism: 'AMPK / ULK1 Mitophagy Induction & Interstitial Paracellular Diffusion',
+          rationale: 'Small 145 Da polyamine diffuses rapidly (Pe = 12.8). Ingestion 75 min before sleep aligns peak plasma Cmax with the onset of N3 slow-wave sleep, potentiating cellular autophagy during nocturnal metabolic fasting.',
+          dietaryCoFactor: 'Water or light herbal tea; avoid protein-rich foods to prevent mTORC1 competition.'
+        };
+      case 'curcumin':
+        return {
+          moleculeId: 'curcumin',
+          moleculeName: 'Curcumin',
+          molecularWeightDa: 368.38,
+          hydrodynamicRadiusNm: 0.48,
+          recommendedIngestionTime: '21:00 (90 min pre-sleep)',
+          targetCircadianPhase: 'Dusk_Tapering / Supper Completion',
+          targetMechanism: 'NLRP3 Inflammasome Repression & Microglial Quenching',
+          rationale: 'Moderate diffusion coefficient (Pe = 24.6). 90-minute pre-sleep lead time ensures tissue absorption, suppressing neuroinflammation and microglial activation prior to astrocytic AQP4 endfoot fluid expansion.',
+          dietaryCoFactor: 'Take with evening meal containing healthy lipids (omega-3, olive oil) or piperine to enhance bioavailability.'
+        };
+      case 'akba':
+        return {
+          moleculeId: 'akba',
+          moleculeName: 'AKBA (Boswellia)',
+          molecularWeightDa: 512.72,
+          hydrodynamicRadiusNm: 0.54,
+          recommendedIngestionTime: '21:00 (90 min pre-sleep)',
+          targetCircadianPhase: 'Dusk_Tapering',
+          targetMechanism: '5-LOX Inhibition & Perivascular Basement Membrane Protection',
+          rationale: '513 Da triterpenic acid shields cerebral microvasculature from nocturnal leukotriene degradation, maintaining astrocytic AQP4 polarization and tight junction integrity.',
+          dietaryCoFactor: 'Consume with standard evening supper.'
+        };
+      default:
+        return {
+          moleculeId,
+          moleculeName: 'Endogenous Proteopathy / Substrate',
+          molecularWeightDa: 4514,
+          hydrodynamicRadiusNm: 1.09,
+          recommendedIngestionTime: 'N/A (Endogenous Clearance Target)',
+          targetCircadianPhase: 'Melatonin_Fast_Window / N3 SWS',
+          targetMechanism: 'Convective Bulk Flow Glymphatic Clearance',
+          rationale: 'High molecular weight proteopathies (Aβ42, p-Tau) require advection-dominated convective bulk flow (Pe > 50). Prioritize 0.10 Hz vagal breathing, dark cool environment (66°F), and lateral sleep positioning to maximize N3 drainage.',
+          dietaryCoFactor: 'Complete fast 3+ hours before bed to prevent insulin blunting of SCN melatonin.'
+        };
+    }
+  }
+}
+
+export interface IChronoPosologyRecommendation {
+  moleculeId: string;
+  moleculeName: string;
+  molecularWeightDa: number;
+  hydrodynamicRadiusNm: number;
+  recommendedIngestionTime: string;
+  targetCircadianPhase: string;
+  targetMechanism: string;
+  rationale: string;
+  dietaryCoFactor: string;
 }

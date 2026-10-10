@@ -1728,6 +1728,53 @@ Pain Areas:   `;
     };
   });
 
+  /**
+   * Glymphatic Clearance Index (GCI: 0-100%):
+   * Quantifies trans-parenchymal convective clearance efficiency and proteopathy washout
+   * based on slow-wave N3 deep sleep duration, astrocytic AQP4 polarization risk, and nocturnal HRV.
+   */
+  readonly glymphaticClearanceIndex = computed(() => {
+    const v = this.vitals();
+    const rem = this.remSleepArchitectureScore();
+    const cdi = this.circadianDisruptionIndex();
+
+    // Baseline from slow-wave deep sleep fraction (target 80-100 min, ~18-22%)
+    let baseGci = Math.min(100, Math.round((rem.deepPct / 20) * 80));
+
+    // Blood pressure / AQP4 polarization risk penalty:
+    // SBP >= 140 mmHg or DBP >= 90 mmHg depolarizes AQP4 from perivascular endfeet to soma (-25% clearance)
+    const bp = v.bp || '120/80';
+    const sbp = parseInt(bp.split('/')[0] || '120', 10);
+    if (sbp >= 140) baseGci -= 18;
+    else if (sbp >= 130) baseGci -= 8;
+
+    // Circadian disruption penalty
+    if (cdi > 60) baseGci -= 15;
+    else if (cdi > 40) baseGci -= 7;
+
+    // Nocturnal HRV vagal bonus (if hrvRmssd >= 45ms)
+    const hrv = parseInt(v.hrvRmssd || '38', 10);
+    if (hrv >= 50) baseGci += 12;
+    else if (hrv >= 40) baseGci += 6;
+
+    const finalScore = Math.min(100, Math.max(12, baseGci));
+    const status: 'Optimal Proteopathy Washout' | 'Moderate Convective Flow' | 'CAA Stasis Risk (Impaired Drainage)' =
+      finalScore >= 75
+        ? 'Optimal Proteopathy Washout'
+        : finalScore >= 45
+        ? 'Moderate Convective Flow'
+        : 'CAA Stasis Risk (Impaired Drainage)';
+
+    return {
+      score: finalScore,
+      status,
+      deepSleepMinutes: Math.round((rem.deepPct / 100) * 450), // estimated out of 7.5 hr sleep
+      aqp4PolarityEstimate: sbp < 135 ? 'Polarized (90% Endfoot Targeting)' : 'Depolarized (Elevated Hydrostatic Stress)',
+      clearanceVelocityMmS: (finalScore >= 75 ? 4.8 : finalScore >= 45 ? 2.1 : 0.6).toFixed(1),
+      stasisRiskDetected: finalScore < 45
+    };
+  });
+
   readonly systemicInflammatoryBurden = computed(() => {
     const issues = this.selectedIssues();
     let score = 20; // baseline

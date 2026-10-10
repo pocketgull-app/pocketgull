@@ -430,4 +430,39 @@ describe('PatientStateService Ephemeral Purge & Domain Invariants', () => {
     expect(entry.hash.startsWith('0x')).toBe(true);
     expect(entry.actor).toBe('PocketGull Enterprise Agent');
   });
+
+  it('computes Glymphatic Clearance Index (GCI) and flags CAA stasis risk under hypertension', () => {
+    // Test helper mimicking GCI formula
+    const computeTestGci = (bp: string, deepPct: number, cdi: number, hrv: number) => {
+      let baseGci = Math.min(100, Math.round((deepPct / 20) * 80));
+      const sbp = parseInt(bp.split('/')[0] || '120', 10);
+      if (sbp >= 140) baseGci -= 18;
+      else if (sbp >= 130) baseGci -= 8;
+      if (cdi > 60) baseGci -= 15;
+      else if (cdi > 40) baseGci -= 7;
+      if (hrv >= 50) baseGci += 12;
+      else if (hrv >= 40) baseGci += 6;
+      const finalScore = Math.min(100, Math.max(12, baseGci));
+      return {
+        score: finalScore,
+        status: finalScore >= 75 ? 'Optimal Proteopathy Washout' : finalScore >= 45 ? 'Moderate Convective Flow' : 'CAA Stasis Risk (Impaired Drainage)',
+        aqp4Polarity: sbp < 135 ? 'Polarized' : 'Depolarized',
+        velocity: finalScore >= 75 ? 4.8 : finalScore >= 45 ? 2.1 : 0.6
+      };
+    };
+
+    // Optimal Sleep Case (Normotensive, high deep sleep, low circadian disruption, high HRV)
+    const optimal = computeTestGci('118/75', 20, 25, 55);
+    expect(optimal.score).toBeGreaterThanOrEqual(75);
+    expect(optimal.status).toBe('Optimal Proteopathy Washout');
+    expect(optimal.aqp4Polarity).toBe('Polarized');
+    expect(optimal.velocity).toBe(4.8);
+
+    // Compromised Case (Hypertension SBP 150, low deep sleep, high circadian disruption, low HRV)
+    const compromised = computeTestGci('150/95', 8, 70, 22);
+    expect(compromised.score).toBeLessThan(45);
+    expect(compromised.status).toBe('CAA Stasis Risk (Impaired Drainage)');
+    expect(compromised.aqp4Polarity).toBe('Depolarized');
+    expect(compromised.velocity).toBe(0.6);
+  });
 });

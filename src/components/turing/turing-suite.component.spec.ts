@@ -14,7 +14,15 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
     mockPatientState = {
       vitals: signal({ bp: '120/80', hr: '74', spO2: '99', cgmGlucoseMgDl: '115' }),
       issues: signal({}),
-      preexistingConditions: signal([])
+      preexistingConditions: signal([]),
+      glymphaticClearanceIndex: signal({
+        score: 82,
+        status: 'Optimal Proteopathy Washout',
+        deepSleepMinutes: 84,
+        aqp4PolarityEstimate: 'Polarized (90% Endfoot Targeting)',
+        clearanceVelocityMmS: '4.8',
+        stasisRiskDetected: false
+      })
     };
 
     TestBed.configureTestingModule({
@@ -293,6 +301,21 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
 
       suite.exportTuringSnapshot();
       expect(suite.lastActionStatus()).toContain('Exported Turing Diagnostic Snapshot JSON successfully');
+    });
+
+    it('should export Act II Glymphatic Care Plan combining GCI, AQP4, and Chrono-Posology', () => {
+      const suite = TestBed.runInInjectionContext(() => new TuringSuiteComponent());
+      if (!globalThis.URL.createObjectURL) {
+        globalThis.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url');
+        globalThis.URL.revokeObjectURL = vi.fn();
+      } else {
+        vi.spyOn(globalThis.URL, 'createObjectURL').mockReturnValue('blob:mock-url');
+        vi.spyOn(globalThis.URL, 'revokeObjectURL').mockImplementation(() => {});
+      }
+
+      suite.exportAct2CarePlan();
+      expect(suite.lastActionStatus()).toContain('Exported Act II Glymphatic Care Plan JSON');
+      expect(suite.lastActionStatus()).toContain('GCI:');
     });
   });
 });

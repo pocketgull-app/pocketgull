@@ -10,6 +10,7 @@ import { NanobotSwarm3dComponent } from './nanobot-swarm-3d.component';
 import { WhispySwarmBioreactor3dComponent } from './whispy-swarm-bioreactor-3d.component';
 import { InsightGridComponent } from '../synthesis/insight-grid.component';
 import { PatientStateService } from '../../services/patient-state.service';
+import { CircadianChronoNutritionService } from '../../services/circadian-chrono-nutrition.service';
 
 @Component({
   selector: 'app-turing-suite',
@@ -81,10 +82,16 @@ import { PatientStateService } from '../../services/patient-state.service';
             </button>
           </div>
 
-          <button (click)="exportTuringSnapshot()"
-                  class="px-3 py-1.5 rounded-lg bg-purple-900/60 hover:bg-purple-800 border border-purple-400/50 text-purple-200 text-[10.5px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 ml-auto">
-            📥 Export Turing State JSON
-          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button (click)="exportAct2CarePlan()"
+                    class="px-3 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-200 text-[10.5px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 shadow-sm">
+              📋 Export Act II Glymphatic Plan
+            </button>
+            <button (click)="exportTuringSnapshot()"
+                    class="px-3 py-1.5 rounded-lg bg-purple-900/60 hover:bg-purple-800 border border-purple-400/50 text-purple-200 text-[10.5px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5">
+              📥 Export Turing State JSON
+            </button>
+          </div>
         </div>
 
         @if (lastActionStatus()) {
@@ -145,6 +152,7 @@ import { PatientStateService } from '../../services/patient-state.service';
 })
 export class TuringSuiteComponent {
   private readonly patientState = inject(PatientStateService, { optional: true });
+  private readonly chronoService = inject(CircadianChronoNutritionService, { optional: true });
 
   readonly caViewer = viewChild<CellularAutomataViewerComponent>('caViewer');
   readonly petriViewer = viewChild<PetriNetViewerComponent>('petriViewer');
@@ -242,6 +250,113 @@ export class TuringSuiteComponent {
     a.click();
     URL.revokeObjectURL(url);
     this.lastActionStatus.set('📥 Exported Turing Diagnostic Snapshot JSON successfully.');
+  }
+
+  exportAct2CarePlan() {
+    const gci = (typeof this.patientState?.glymphaticClearanceIndex === 'function'
+      ? this.patientState.glymphaticClearanceIndex()
+      : null) || {
+      score: 78,
+      status: 'Optimal Proteopathy Washout',
+      deepSleepMinutes: 81,
+      aqp4PolarityEstimate: 'Polarized (90% Endfoot Targeting)',
+      clearanceVelocityMmS: '4.8',
+      stasisRiskDetected: false
+    };
+
+    const activeMol = this.nsViewer()?.selectedMolecule() || {
+      id: 'amyloid_beta_42',
+      name: 'Amyloid-β 1-42',
+      molecularWeightDa: 4514,
+      hydrodynamicRadiusNm: 1.09,
+      basePeclet: 62.4
+    };
+
+    const chronoRec = (typeof this.chronoService?.getChronoPosologyRecommendation === 'function'
+      ? this.chronoService.getChronoPosologyRecommendation(activeMol.id)
+      : null) || {
+      moleculeId: activeMol.id,
+      moleculeName: activeMol.name,
+      recommendedIngestionTime: '21:15 (75 min pre-sleep)',
+      targetCircadianPhase: 'Dusk_Tapering / Early Melatonin Surge',
+      targetMechanism: 'Autophagy Induction & Convective Flush',
+      rationale: 'Aligns peak plasma concentration with N3 slow-wave sleep and astrocytic AQP4 bulk flow.',
+      dietaryCoFactor: 'Water or light herbal tea; avoid protein-rich foods to prevent mTORC1 competition.'
+    };
+
+    const carePlan = {
+      resourceType: 'CarePlan',
+      id: 'act-2-glymphatic-sleep-plan-' + Date.now(),
+      status: 'active',
+      intent: 'plan',
+      title: 'Act II: Sleep Architecture, Glymphatic Protection & Autonomic Pacing',
+      description: 'Quantitative in silico glymphatic clearance optimization, chronotherapy timing, and non-pharmacologic restorative sleep architecture protocol.',
+      period: {
+        start: new Date().toISOString(),
+        end: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      category: [
+        {
+          coding: [
+            { system: 'https://pocketgull.com/care-plans', code: 'ACT_2_GLYMPHATIC_OPTIMIZATION', display: 'Act II Glymphatic & Autonomic Protocol' }
+          ]
+        }
+      ],
+      addresses: [
+        { display: 'Proteopathy Accumulation & Interstitial Clearance Stasis Risk' },
+        { display: 'Circadian Phase Misalignment & Sympathetic Dominance' }
+      ],
+      supportingInfo: [
+        { display: `Glymphatic Clearance Index (GCI): ${gci.score}% (${gci.status})` },
+        { display: `Astrocytic AQP4 Status: ${gci.aqp4PolarityEstimate}` },
+        { display: `CSF Convective Bulk Velocity: ${gci.clearanceVelocityMmS} mm/s` },
+        { display: `Active Solute: ${activeMol.name} (${activeMol.molecularWeightDa} Da, RH=${activeMol.hydrodynamicRadiusNm} nm)` }
+      ],
+      activity: [
+        {
+          detail: {
+            kind: 'CommunicationRequest',
+            code: { text: '0.10 Hz Resonance Vagal Breathing Pacing' },
+            status: 'in-progress',
+            description: '10–15 minutes of slow diaphragmatic breathing (4s inhale, 6s exhale) 30 min before bed to activate the cholinergic anti-inflammatory pathway and prime AQP4 water channels.'
+          }
+        },
+        {
+          detail: {
+            kind: 'NutritionOrder',
+            code: { text: `Targeted Chrono-Posology: ${chronoRec.moleculeName}` },
+            status: 'scheduled',
+            scheduledTiming: { event: [chronoRec.recommendedIngestionTime] },
+            description: `${chronoRec.targetMechanism}. ${chronoRec.rationale} Dietary Co-factor: ${chronoRec.dietaryCoFactor}`
+          }
+        },
+        {
+          detail: {
+            kind: 'ServiceRequest',
+            code: { text: 'Lateral Decubitus Sleep Posture Ergonomics' },
+            status: 'in-progress',
+            description: 'Encourage lateral (side) sleeping over supine/prone; clinical studies demonstrate ~24% greater convective CSF perivascular drainage volume in lateral recumbency.'
+          }
+        },
+        {
+          detail: {
+            kind: 'DeviceUseStatement',
+            code: { text: 'Bedroom Thermal & Photonic Nadir' },
+            status: 'completed',
+            description: 'Maintain bedroom ambient temperature between 65–68°F (18–20°C) and reduce melanopic EDI (<10 lx) 2 hours before bed to facilitate core temperature drop and uninhibited pineal melatonin release.'
+          }
+        }
+      ]
+    };
+
+    const blob = new Blob([JSON.stringify(carePlan, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `act2_glymphatic_care_plan_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    this.lastActionStatus.set(`📋 Exported Act II Glymphatic Care Plan JSON (GCI: ${gci.score}%, Solute: ${activeMol.name}) successfully.`);
   }
 
   onMoleculeSelected(molecule: ISoluteMolecule) {

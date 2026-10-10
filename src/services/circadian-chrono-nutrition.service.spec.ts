@@ -50,4 +50,19 @@ describe('CircadianChronoNutritionService', () => {
     expect(evalRes.approved).toBe(true);
     expect(evalRes.severity).toBe('Safe');
   });
+
+  it('should generate chrono-posology recommendations for hydrodynamic solutes', () => {
+    const spermidineRec = service.getChronoPosologyRecommendation('spermidine');
+    expect(spermidineRec.moleculeName).toBe('Spermidine');
+    expect(spermidineRec.recommendedIngestionTime).toContain('75 min pre-sleep');
+    expect(spermidineRec.targetMechanism).toContain('Mitophagy');
+
+    const curcuminRec = service.getChronoPosologyRecommendation('curcumin');
+    expect(curcuminRec.moleculeName).toBe('Curcumin');
+    expect(curcuminRec.recommendedIngestionTime).toContain('90 min pre-sleep');
+    expect(curcuminRec.targetMechanism).toContain('NLRP3');
+
+    const defaultRec = service.getChronoPosologyRecommendation('amyloid_beta_42');
+    expect(defaultRec.targetMechanism).toContain('Convective Bulk Flow');
+  });
 });
