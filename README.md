@@ -5,8 +5,8 @@
 <h1 align="center">Pocket Gull</h1>
 
 <p align="center">
-  <strong>An AI care-plan assistant for clinicians.</strong><br>
-  Evidence-grounded care-plan strategy and live voice consults powered by Google Gemini, with FHIR R4 interoperability.
+  <strong>A Living Medical Intelligence & Salutogenic Care Engine.</strong><br>
+  Grounding clinical decision support in Aaron Antonovsky’s salutogenesis, non-linear biophysical trajectories, and open, peer-reviewable case studies.
 </p>
 
 <p align="center">
@@ -19,33 +19,69 @@
 
 <p align="center">
   <a href="https://pocketgull.app"><strong>Live app</strong></a> ·
+  <a href="https://pocketgull.com/case-studies"><strong>Case Studies Journal</strong></a> ·
   <a href="docs/FEATURES.md"><strong>Features</strong></a> ·
   <a href="https://huggingface.co/philgear"><strong>Models</strong></a> ·
   <a href="ARCHITECTURE.md"><strong>Architecture</strong></a> ·
-  <a href="SECURITY.md"><strong>Security</strong></a>
+  <a href="SECURITY.md"><strong>Security &amp; HIPAA</strong></a>
 </p>
 
 > [!IMPORTANT]
-> **Research preview.** Pocket Gull is clinical decision support and educational software for licensed clinicians, who remain responsible for every clinical decision. It is not a medical device, does not diagnose, and is not intended for emergency use. In an emergency, contact local emergency services. See the [regulatory notice](#regulatory--clinical-use-notice).
+> **Research preview & clinical epistemology.** Pocket Gull is clinical decision support and educational software for licensed clinicians, who remain responsible for every clinical decision. It is designed to meet §520(o)(1)(E) non-device criteria: recommendations are transparent, cite peer-reviewed literature, and require practitioner review. It is not an autonomous diagnostic device. In an emergency, contact local emergency services. See the [regulatory notice](#regulatory--clinical-use-notice).
 
 <p align="center">
   <img src="docs/images/dashboard.png" alt="Pocket Gull clinical dashboard showing a care plan, 3D anatomy view, and live consult panel" width="800" height="307">
 </p>
 
+> *"Medicine is not merely the eradication of pathogen-induced disease (pathogenesis); it is the active generation and reinforcement of coherence, autonomic resilience, and human agency (salutogenesis)."*  
+> — **The Pocket Gull Clinical Invariant**
+
 ---
 
-## What it does
+## 📖 The Salutogenic Research Commons & Case Studies
 
-- **Care-plan strategy.** Turns symptoms, vitals, and validated instruments (PHQ-9, GAD-7, C-SSRS, ISI, PRAPARE, and more) into structured care plans that a clinician reviews before anything is saved.
-- **Live AI consult.** Streaming text and full-duplex voice consults with Gemini, with patient context held by a multi-agent [Google ADK](https://google.github.io/adk-docs/) runtime.
-- **Evidence grounding.** Recommendations cite PubMed literature and are tagged by evidence level (A: RCTs, B: cohort, C: expert consensus).
-- **Interoperability.** HL7® FHIR® R4 Bundle export, SMART on FHIR identity, LOINC / SNOMED CT coding, and PDF care plans.
-- **Privacy by default.** No server-side PHI persistence: patient state lives in memory or is encrypted on device, with optional on-device inference through Chrome built-in AI and WebGPU.
-- **3D anatomy.** An interactive Three.js body map for locating and grading symptoms.
+Rather than treating health records as static retrospective charts or billing encounters, Pocket Gull documents living, non-linear recovery trajectories in an open, reproducible commons at [`https://pocketgull.com/case-studies`](https://pocketgull.com/case-studies). Grounded in neuroscientist David Eagleman & composer Anthony Brandt's **3B Innovation Architecture** (*Breaking, Bending, Blending*):
 
-Optional complementary lenses (Traditional Chinese Medicine, Ayurveda) are presented alongside, never in place of, the conventional plan and are labelled with their evidence level.
+| Case Study & Archetype | The 3B Salutogenic Operation | Biophysical Focus & Recovery Trajectory |
+| :--- | :--- | :--- |
+| **Case #01: Long COVID & Microvascular Endothelitis** | 🔨 *Breaking* monolithic chronic fatigue into amyloid microclots & shear stress | 90-day non-linear endothelial regeneration, cold-water vagal reconditioning & fibrinolytic nutrition |
+| **Case #02: Multiple Sclerosis Neuro-Axonal Sanctuary** | 🌀 *Bending* thermal Uhthoff pacing within a tight 0.5°C autonomic buffer | Mitochondrial bioenergetics, 0.10 Hz resonant breathing (*Philocardia*) & neuroplastic pacing |
+| **Case #03: Cardiometabolic Phase-Space Radar** | 🧬 *Blending* hepatic glucose velocity ($dG/dt$) with non-insulin GLUT4 soleus pacing | Dynamic postprandial AUC trajectories, diurnal BMAL1 daylight feeding & living water mineral matrix |
+| **Case #05: Charles Darwin & The Vagal Enigma** | 🌀 *Bending* a 40-year historical symptom journal across 5 decades | Retrospective HRV spectral power analysis, autonomic dysautonomia & restorative pacing |
 
-The complete module catalogue (clinical tools, assessment instruments, agent personas, accessibility modes, and distributables) is in **[docs/FEATURES.md](docs/FEATURES.md)**.
+Each case study includes an interactive Canvas biophysical radar visualizer and 1-click export to a syntactically valid **HL7® FHIR® R4 Research Bundle**.  
+👉 **[Explore the Live Case Studies](https://pocketgull.com/case-studies)** · **[Read the Commons Methodology](docs/CLINICAL_CASE_STUDIES_COMMONS.md)**
+
+---
+
+## 🌿 The Three Acts of Salutogenic Care
+
+Pocket Gull structures care-plan strategy, ambient journaling, and clinical decision support around the evolutionary arc of healing:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│ ACT I: Auxiliary Metabolic Bridge & Baseline Screening (Days 0–30)     │
+│ • De-escalate acute crises & establish Antonovsky Sense of Coherence   │
+│ • First-line salutogenic stepped-care intercepts prior to prescribing  │
+│   (CBT-I sleep stimulus control, McKenzie biomechanics, IMST breathing)│
+├────────────────────────────────────────────────────────────────────────┤
+│ ACT II: Sleep Architecture, Glymphatic Protection & Pacing (Weeks 2–12)│
+│ • 0.10 Hz Mayer-wave vagal parasympathetic modulation (6 breaths/min)  │
+│ • Glymphatic restoration, evening 650nm scotopic light shift & pacing  │
+├────────────────────────────────────────────────────────────────────────┤
+│ ACT III: Multi-Modal Partnership & Long-Term Resilience (Months 3+)    │
+│ • Somatosensory grounding (viscous tremor damping, pottery wheel)      │
+│ • Lifelong generalized resistance resources & patient self-healing     │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+### Aaron Antonovsky’s Sense of Coherence (SOC) Invariant
+Every diagnostic insight, risk disclosure, and ambient consultation strictly enforces Antonovsky's three pillars:
+- **Comprehensibility**: Demystifies pathophysiology for patients through interactive 3D anatomy and Socratic clarity without Latinate jargon.
+- **Manageability**: Strict prohibition on iatrogenic panic—every environmental or clinical hazard disclosure must provide an immediate, accessible, and low-cost action pathway.
+- **Meaningfulness**: Honoring the patient's lived values, personal narrative, and intrinsic agency in their own recovery.
+
+---
 
 ## Who it's for
 
@@ -176,22 +212,29 @@ graph TB
 
 ---
 
-## Open models & demos
+## 🕊️ The Avian Navigator Tier (Open Research Models)
 
-Fine-tuned Gemma models and interactive demos are published on [Hugging Face](https://huggingface.co/philgear). They are research artifacts and have not been validated for clinical use.
+Fine-tuned Gemma models and interactive Spaces are published on [Hugging Face](https://huggingface.co/philgear). They are research artifacts for local edge inference and have not been validated for autonomous clinical use:
 
-| Model | Focus |
-| :--- | :--- |
-| [`pocketgull-compass-2b`](https://huggingface.co/philgear/pocketgull-compass-2b) | Stepped-care triage and health-literacy explanations |
-| [`pocketgull-scribe-soap`](https://huggingface.co/philgear/pocketgull-scribe-soap) | On-device SOAP / SBAR note drafting |
-| [`pocketgull-rxguard-pgx`](https://huggingface.co/philgear/pocketgull-rxguard-pgx) | Pharmacogenomic and supplement interaction screening |
-| [`pocketgull-tern-edge`](https://huggingface.co/philgear/pocketgull-tern-edge) | Lightweight WebGPU / mobile inference |
+| Model | Focus & Salutogenic Capability | Target Runtimes |
+| :--- | :--- | :--- |
+| [`pocketgull-compass-2b`](https://huggingface.co/philgear/pocketgull-compass-2b) | Stepped-care triage, Socratic health literacy & 3-Act narrative generation | Ollama · vLLM · llama.cpp |
+| [`pocketgull-scribe-soap`](https://huggingface.co/philgear/pocketgull-scribe-soap) | Ambient encounter journaling converting dialogues into structured SOAP & SBAR notes | Ollama · llama.cpp |
+| [`pocketgull-sentinel-peft`](https://huggingface.co/philgear/pocketgull-sentinel-peft) | Zero-tolerance emergency red-flag interceptor & ISMP decimal safety guard | Ollama · vLLM |
+| [`pocketgull-tern-edge`](https://huggingface.co/philgear/pocketgull-tern-edge) | Sub-45ms ultra-lightweight on-device engine for browser-based patient journaling | WebGPU · ONNX · Mobile |
+| [`pocketgull-rxguard-pgx`](https://huggingface.co/philgear/pocketgull-rxguard-pgx) | Pharmacogenomics, CYP450 metabolism & botanical supplement interaction screening | Ollama · llama.cpp |
+| [`pocketgull-albatross-multimodal`](https://huggingface.co/philgear/pocketgull-albatross-multimodal) | Tri-paradigm clinical synthesis bridging Western Allopathic, TCM & Ayurvedic lenses | Ollama · PyTorch |
 
-All six models and four Spaces are listed in [docs/FEATURES.md](docs/FEATURES.md#-live-demos--open-hugging-face-ecosystem). To run them locally with [Ollama](https://ollama.com):
+All six models and four Spaces are catalogued in [docs/FEATURES.md](docs/FEATURES.md#-live-demos--open-hugging-face-ecosystem). To run them locally with [Ollama](https://ollama.com):
 
 ```bash
-bash ollama/install_models.sh                                        # macOS / Linux
-powershell -ExecutionPolicy Bypass -File ollama/install_models.ps1   # Windows
+# macOS / Linux
+bash ollama/install_models.sh
+
+# Windows
+powershell -ExecutionPolicy Bypass -File ollama/install_models.ps1
+
+# Run interactive stepped-care triage
 ollama run pocketgull-compass-2b
 ```
 
