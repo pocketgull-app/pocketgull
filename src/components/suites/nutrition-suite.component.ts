@@ -8,6 +8,7 @@ import { FamilyHealthQuestComponent } from '../family/family-health-quest.compon
 import { PermaFlourishingSuiteComponent } from '../perma-flourishing-suite.component';
 import { PatientUnderTreeComponent } from '../patient-under-tree.component';
 import { LocalFoodshedOnlineMenuComponent } from '../local-foodshed-online-menu.component';
+import { CulinaryClinicalIntelligenceSuiteComponent } from '../culinary-clinical-intelligence-suite.component';
 
 @Component({
   selector: 'app-nutrition-suite',
@@ -17,6 +18,7 @@ import { LocalFoodshedOnlineMenuComponent } from '../local-foodshed-online-menu.
     ChronoWeeklyMealPlannerComponent, 
     PantryLazySusanComponent,
     LocalFoodshedOnlineMenuComponent,
+    CulinaryClinicalIntelligenceSuiteComponent,
     HealthyHobbiesLifestyleComponent,
     FamilyHealthQuestComponent,
     PermaFlourishingSuiteComponent,
@@ -53,6 +55,10 @@ import { LocalFoodshedOnlineMenuComponent } from '../local-foodshed-online-menu.
 
         <div>
           <app-local-foodshed-online-menu />
+        </div>
+
+        <div>
+          <app-culinary-clinical-intelligence-suite />
         </div>
 
         <!-- Universal Health Hero Quest & 4 Companion Modes -->

@@ -3,6 +3,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NutritionSuiteComponent } from './nutrition-suite.component';
 import { LocalFoodshedOnlineMenuComponent } from '../local-foodshed-online-menu.component';
+import { CulinaryClinicalIntelligenceSuiteComponent } from '../culinary-clinical-intelligence-suite.component';
 import { PatientStateService } from '../../services/patient-state.service';
 import { LocalFoodshedOnlineMenuService } from '../../services/local-foodshed-online-menu.service';
 import { IntelligenceProviderToken } from '../../services/ai/intelligence.provider.token';
@@ -29,7 +30,7 @@ describe('NutritionSuiteComponent', () => {
     })
     .overrideComponent(NutritionSuiteComponent, {
       set: {
-        imports: [CommonModule, LocalFoodshedOnlineMenuComponent],
+        imports: [CommonModule, LocalFoodshedOnlineMenuComponent, CulinaryClinicalIntelligenceSuiteComponent],
         schemas: [NO_ERRORS_SCHEMA]
       }
     })
