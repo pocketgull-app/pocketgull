@@ -45,7 +45,8 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
       activeShadingProfile: signal('atelier'),
       anatomyViewMode: signal('skin'),
       selectedPartId: signal(null),
-      selectedPartName: signal(null)
+      selectedPartName: signal(null),
+      selectedNutrigenomicLigand: signal('all')
     };
 
     const injector = Injector.create({
@@ -427,6 +428,10 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     expect(viewer.nutriActiveLigand()).toBe('sulforaphane');
     viewer.setNutriLigand('butyrate');
     expect(viewer.nutriActiveLigand()).toBe('butyrate');
+    viewer.setNutriLigand('curcumin');
+    expect(viewer.nutriActiveLigand()).toBe('curcumin');
+    viewer.setNutriLigand('nitric_oxide');
+    expect(viewer.nutriActiveLigand()).toBe('nitric_oxide');
 
     // Test beacon toggling
     expect(viewer.nutriShowBeacons()).toBe(true);

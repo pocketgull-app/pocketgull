@@ -953,6 +953,28 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                 <span>🧬</span>
                 <span>5-MTHF (Cerebral SAMe)</span>
               </button>
+
+              <button type="button" (click)="setNutriLigand('curcumin')"
+                      [class.bg-amber-500]="nutriActiveLigand() === 'curcumin'"
+                      [class.text-black]="nutriActiveLigand() === 'curcumin'"
+                      [class.bg-zinc-900]="nutriActiveLigand() !== 'curcumin'"
+                      [class.text-zinc-500]="nutriActiveLigand() !== 'curcumin'"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1"
+                      title="Curcumin-Piperine Hepatic Complex (Mesenteric Portal Vein, 2000% Bioavailability & Nrf2 Translocation)">
+                <span>🟡</span>
+                <span>Curcumin (Portal Nrf2)</span>
+              </button>
+
+              <button type="button" (click)="setNutriLigand('nitric_oxide')"
+                      [class.bg-cyan-600]="nutriActiveLigand() === 'nitric_oxide'"
+                      [class.text-white]="nutriActiveLigand() === 'nitric_oxide'"
+                      [class.bg-zinc-900]="nutriActiveLigand() !== 'nitric_oxide'"
+                      [class.text-zinc-500]="nutriActiveLigand() !== 'nitric_oxide'"
+                      class="px-2.5 py-1 rounded-md font-bold border border-zinc-800 transition cursor-pointer flex items-center gap-1"
+                      title="Entero-Salivary Nitrate-Nitrite-NO Pathway (Oral Veillonella to Systemic Endothelial Vasodilation)">
+                <span>🌊</span>
+                <span>Nitric Oxide (NO Vasodilation)</span>
+              </button>
             </div>
 
             <!-- Footer Toggles -->
@@ -1336,6 +1358,9 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     setNutriLigand(ligand: 'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'methyl' | 'curcumin' | 'nitric_oxide'): void {
       this.nutriActiveLigand.set(ligand);
       this.updateNutrigenomicParticleColors();
+      if (this.state.selectedNutrigenomicLigand?.set) {
+        this.state.selectedNutrigenomicLigand.set(ligand === 'methyl' ? 'methyl_5mthf' : ligand === 'all' ? 'omega3_dha' : ligand);
+      }
     }
 
     toggleNutriBeacons(): void {
