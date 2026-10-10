@@ -11,12 +11,12 @@ describe('IpPatentRegistryService', () => {
     service = TestBed.inject(IpPatentRegistryService);
   });
 
-  it('should initialize with all 17 patent claim clusters', () => {
-    expect(service.totalClusters()).toBe(17);
+  it('should initialize with all 20 patent claim clusters', () => {
+    expect(service.totalClusters()).toBe(20);
   });
 
-  it('should sum exactly 340 total staked patent claims', () => {
-    expect(service.totalClaims()).toBe(340);
+  it('should sum exactly 400 total staked patent claims', () => {
+    expect(service.totalClaims()).toBe(400);
   });
 
   it('should load all 9 core statutory copyright, invention, and open pledge clauses', () => {
@@ -25,12 +25,13 @@ describe('IpPatentRegistryService', () => {
 
   it('should return complete patent summary with charter document link', () => {
     const summary = service.getPatentSummary();
-    expect(summary.totalClaimClusters).toBe(17);
-    expect(summary.totalClaimsCount).toBe(340);
+    expect(summary.totalClaimClusters).toBe(20);
+    expect(summary.totalClaimsCount).toBe(400);
+    expect(summary.lastUpdated).toBe('2026-10-09');
     expect(summary.charterDocumentPath).toBe('docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md');
     expect(summary.clausesDocumentPath).toBe('docs/legal/INVENTION_ASSIGNMENT_AND_COPYRIGHT_CLAUSES.md');
     expect(summary.pledgeDocumentPath).toBe('docs/patents/OPEN_PATENT_PLEDGE_AND_RESEARCH_COVENANT.md');
-    expect(summary.clusters.length).toBe(17);
+    expect(summary.clusters.length).toBe(20);
     expect(summary.statutoryClauses.length).toBe(9);
   });
 
@@ -48,6 +49,30 @@ describe('IpPatentRegistryService', () => {
     expect(cluster?.clusterNumber).toBe(17);
     expect(cluster?.claimRange).toBe('Claims 321 – 340');
     expect(cluster?.title).toContain('Tri-Paradigm Consilience');
+  });
+
+  it('should retrieve cluster 18 TIPPSS circular IoMT', () => {
+    const cluster = service.getClusterById('cluster-18-tippss-circular-iomt');
+    expect(cluster).toBeDefined();
+    expect(cluster?.clusterNumber).toBe(18);
+    expect(cluster?.claimRange).toBe('Claims 341 – 360');
+    expect(cluster?.title).toContain('TIPPSS Trust Ingestion Guard');
+  });
+
+  it('should retrieve cluster 19 watershed exposome lineage', () => {
+    const cluster = service.getClusterById('cluster-19-watershed-exposome-lineage');
+    expect(cluster).toBeDefined();
+    expect(cluster?.clusterNumber).toBe(19);
+    expect(cluster?.claimRange).toBe('Claims 361 – 380');
+    expect(cluster?.title).toContain('Watershed Lineage');
+  });
+
+  it('should retrieve cluster 20 transgenerational epigenetics', () => {
+    const cluster = service.getClusterById('cluster-20-transgenerational-epigenetics');
+    expect(cluster).toBeDefined();
+    expect(cluster?.clusterNumber).toBe(20);
+    expect(cluster?.claimRange).toBe('Claims 381 – 400');
+    expect(cluster?.title).toContain('Transgenerational Epigenetics');
   });
 
   it('should retrieve specific cluster by cluster number', () => {
@@ -107,5 +132,6 @@ describe('IpPatentRegistryService', () => {
     expect(pledgeMd).toContain('Defensive Termination Condition');
     expect(pledgeMd).toContain('35 U.S.C. § 102(a)(1)');
     expect(pledgeMd).toContain('Phil Gear');
+    expect(pledgeMd).toContain('all 20 Invention Clusters, Claims 1–400');
   });
 });
