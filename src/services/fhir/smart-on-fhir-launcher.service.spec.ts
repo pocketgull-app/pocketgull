@@ -81,4 +81,72 @@ describe('SmartOnFhirLauncherService Unit Suite', () => {
     expect(result.checks.length).toBe(6);
     expect(result.checks.every(c => c.passed)).toBe(true);
   });
+
+  it('7. Simulates CDS Hook order-select for Atorvastatin with Grapefruit Furanocoumarin card', () => {
+    const cards = service.simulateCdsHookTrigger({
+      vendorId: 'epic',
+      hook: 'order-select',
+      patientId: 'P001',
+      medicationOrder: 'Atorvastatin 40mg PO QHS',
+      labs: { hba1c: 7.2, egfr: 68 }
+    });
+
+    expect(cards.length).toBe(1);
+    expect(cards[0].indicator).toBe('warning');
+    expect(cards[0].summary).toContain('Furanocoumarin Surge Risk');
+    expect(cards[0].detail).toContain('+330%');
+    expect(cards[0].suggestions?.[0]?.label).toContain('Citrus Sinensis');
+    expect(cards[0].links?.[0]?.type).toBe('smart');
+    expect(service.activeCdsCards().length).toBe(1);
+  });
+
+  it('8. Simulates CDS Hook order-select for Lisinopril with severe hyperkalemia trigger', () => {
+    const cards = service.simulateCdsHookTrigger({
+      vendorId: 'cerner',
+      hook: 'order-select',
+      patientId: 'P001',
+      medicationOrder: 'Lisinopril 20mg PO Daily',
+      labs: { serumPotassium: 5.3 }
+    });
+
+    expect(cards.length).toBe(1);
+    expect(cards[0].indicator).toBe('critical'); // K+ >= 5.0
+    expect(cards[0].summary).toContain('Salt-Substitute & Potassium Hyperkalemia');
+    expect(cards[0].detail).toContain('5.3 mEq/L');
+    expect(cards[0].suggestions?.[0]?.label).toContain('Mineral-Balanced Herb Seasoning');
+  });
+
+  it('9. Generates and signs HL7 FHIR R4 NutritionOrder, CarePlan, and Provenance transaction bundle', () => {
+    const result = service.generateSignedNutritionOrderCarePlanBundle('P001', {
+      triggerMed: 'Atorvastatin 40mg',
+      dietarySubstitution: 'Individualized low-furanocoumarin Mediterranean ancestral plate',
+      restrictions: ['Grapefruit', 'Pomelos', 'Seville Oranges'],
+      suggestions: ['Substitute sweet oranges or blueberries', 'Time polyphenols 3 hours post-prandial']
+    });
+
+    expect(result.status).toBe('SIGNED_AND_CERTIFIED');
+    expect(result.resourceCount).toBe(3);
+    expect(result.sha256Seal.length).toBe(64);
+    expect(result.bundle.resourceType).toBe('Bundle');
+    expect(result.bundle.type).toBe('transaction');
+    expect(result.bundle.entry.some((e: any) => e.resource.resourceType === 'NutritionOrder')).toBe(true);
+    expect(result.bundle.entry.some((e: any) => e.resource.resourceType === 'CarePlan')).toBe(true);
+    expect(result.bundle.entry.some((e: any) => e.resource.resourceType === 'Provenance')).toBe(true);
+    expect(service.lastSignedBundle()).toEqual(result);
+  });
+
+  it('10. Launches and closes embedded SMART on FHIR iframe session', () => {
+    service.launchEmbeddedSmartApp({
+      vendorId: 'epic',
+      patientId: 'P001',
+      triggerMed: 'Atorvastatin 40mg',
+      launchMode: 'chrono_nutrition'
+    });
+
+    expect(service.embeddedIframeOpen()).toBe(true);
+    expect(service.activeEmbeddedAppPayload()?.triggerMed).toBe('Atorvastatin 40mg');
+
+    service.closeEmbeddedSmartApp();
+    expect(service.embeddedIframeOpen()).toBe(false);
+  });
 });
