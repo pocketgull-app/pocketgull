@@ -407,7 +407,12 @@ export class PatientStateService {
   readonly requestedSearchEngine = signal<'google' | 'pubmed' | 'ayurveda' | 'tcm' | 'datacard' | 'ncaa' | 'international' | 'dividend' | 'squadron' | null>(null);
   readonly viewingPastVisit = signal<HistoryEntry | null>(null);
   readonly bodyViewerMode = signal<'3d' | '2d' | 'quad' | 'cellular' | 'decad'>('3d');
-  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing'>('skin');
+  readonly anatomyViewMode = signal<'skin' | 'muscle' | 'skeleton' | 'organs' | 'molecular' | 'eastern' | 'ayurvedic' | 'osteopathic' | 'typographic' | 'biomechanical_strain' | 'vesalian_woodcut' | 'ghost' | 'oregonator_turing' | 'fluid_dynamics' | 'nutrigenomics'>('skin');
+  /** Selected nutrigenomic bioactive ligand for 3D signaling and chromatin visualization */
+  readonly selectedNutrigenomicLigand = signal<'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'omega3_dha' | 'methyl_5mthf' | 'curcumin' | 'nitric_oxide'>('all');
+  /** Fasting duration in hours for AMPK / SIRT1 / macroautophagy threshold */
+  readonly fastingDurationHours = signal<number>(14);
+  readonly autophagyAmpkActive = computed<boolean>(() => this.fastingDurationHours() >= 14);
   /** Active rehabilitation condition target for 3D kinematics and ghost mentoring */
   readonly activeRehabCondition = signal<string>('lumbar_pelvic_alignment');
   /** Dynamic rehabilitation correction progress: 0.0 = habitual posture, 1.0 = therapeutic restorative goal */
@@ -1720,6 +1725,53 @@ Pain Areas:   `;
       deepPct,
       deltaPowerUv2,
       qualityRating: remPct >= 20 && deepPct >= 15 ? 'Optimal Restorative Architecture' : 'Fragmented Sleep Architecture'
+    };
+  });
+
+  /**
+   * Glymphatic Clearance Index (GCI: 0-100%):
+   * Quantifies trans-parenchymal convective clearance efficiency and proteopathy washout
+   * based on slow-wave N3 deep sleep duration, astrocytic AQP4 polarization risk, and nocturnal HRV.
+   */
+  readonly glymphaticClearanceIndex = computed(() => {
+    const v = this.vitals();
+    const rem = this.remSleepArchitectureScore();
+    const cdi = this.circadianDisruptionIndex();
+
+    // Baseline from slow-wave deep sleep fraction (target 80-100 min, ~18-22%)
+    let baseGci = Math.min(100, Math.round((rem.deepPct / 20) * 80));
+
+    // Blood pressure / AQP4 polarization risk penalty:
+    // SBP >= 140 mmHg or DBP >= 90 mmHg depolarizes AQP4 from perivascular endfeet to soma (-25% clearance)
+    const bp = v.bp || '120/80';
+    const sbp = parseInt(bp.split('/')[0] || '120', 10);
+    if (sbp >= 140) baseGci -= 18;
+    else if (sbp >= 130) baseGci -= 8;
+
+    // Circadian disruption penalty
+    if (cdi > 60) baseGci -= 15;
+    else if (cdi > 40) baseGci -= 7;
+
+    // Nocturnal HRV vagal bonus (if hrvRmssd >= 45ms)
+    const hrv = parseInt(v.hrvRmssd || '38', 10);
+    if (hrv >= 50) baseGci += 12;
+    else if (hrv >= 40) baseGci += 6;
+
+    const finalScore = Math.min(100, Math.max(12, baseGci));
+    const status: 'Optimal Proteopathy Washout' | 'Moderate Convective Flow' | 'CAA Stasis Risk (Impaired Drainage)' =
+      finalScore >= 75
+        ? 'Optimal Proteopathy Washout'
+        : finalScore >= 45
+        ? 'Moderate Convective Flow'
+        : 'CAA Stasis Risk (Impaired Drainage)';
+
+    return {
+      score: finalScore,
+      status,
+      deepSleepMinutes: Math.round((rem.deepPct / 100) * 450), // estimated out of 7.5 hr sleep
+      aqp4PolarityEstimate: sbp < 135 ? 'Polarized (90% Endfoot Targeting)' : 'Depolarized (Elevated Hydrostatic Stress)',
+      clearanceVelocityMmS: (finalScore >= 75 ? 4.8 : finalScore >= 45 ? 2.1 : 0.6).toFixed(1),
+      stasisRiskDetected: finalScore < 45
     };
   });
 

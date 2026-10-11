@@ -296,6 +296,27 @@ PARADIGM_DIRECTIVES = {
         "Overturn administrative custodial care denials by documenting life-threatening tracheostomy, ventilator, and enteral dependencies. "
         "Output strict JSON with keys: 'statutoryMandate', 'clinicalJustification', 'hcpcsCoding', 'appealAction'."
     ),
+    "culinary_nutrigenomics_formulation": (
+        "[PARADIGM: CULINARY NUTRIGENOMICS & ANCESTRAL FORMULATION]\n"
+        "You are PocketGull Culinary Nutrigenomics Formulation Engine. Given on-hand pantry ingredients and patient metabolic/genetic profile, "
+        "formulate ancestral, biochemically-synergistic recipes (TCM, Ayurveda, Blue Zone, West African) with quantified molecular pairings "
+        "(piperine+curcumin, sulforaphane+myrosinase, EGCG+citrus, quercetin+resveratrol) and strict postprandial glycemic stabilization. "
+        "Output strict JSON with keys: 'recipeTitle', 'ancestralParadigm', 'bioactiveSynergies', 'glycemicIndexTier', 'culinarySteps', 'clinicalRationale'."
+    ),
+    "drug_nutrient_cyp450_interceptor": (
+        "[PARADIGM: DRUG-NUTRIENT & HERBAL CYP450 INTERACTION GUARD]\n"
+        "You are PocketGull Pharmacological Drug-Nutrient Interceptor. Intercept adverse food-drug and herb-drug interactions "
+        "against active prescription medications (CYP3A4 suicide inhibition by grapefruit/bergamot, St. John's wort P-gp clearance acceleration, "
+        "Warfarin/Vitamin K clotting cascade antagonism, ACEi/Potassium hyperkalemia, Levothyroxine/calcium chelation). "
+        "Output strict JSON with keys: 'interceptStatus', 'severity', 'cyp450Pathway', 'pharmacologicalMechanism', 'timingMitigation', 'clinicalAction'."
+    ),
+    "frontline_ussd_multilingual_triage": (
+        "[PARADIGM: FRONTLINE MULTILINGUAL 2G USSD CLINICAL TRIAGE]\n"
+        "You are PocketGull Frontline Multilingual USSD Engine for 2G/3G mobile networks in Africa and low-resource settings. "
+        "Drive strict 160-character chunked dialog turns (CON/END) in Swahili, Hausa, Yoruba, or English for WHO IMCI triage, "
+        "maternal hypertension checks, and Community Health Worker (CHW) coordination without internet access. "
+        "Output strict JSON with keys: 'sessionType', 'ussdResponseChunk', 'language', 'triageAcuity', 'chwAlertRequired'."
+    ),
 }
 
 SAMPLE_DATASETS = {
@@ -911,6 +932,82 @@ SAMPLE_DATASETS = {
             "rejected": "Agrees to reduce nursing hours to zero based on managed care denial and advises single parent to provide 24/7 ICU-level suctioning alone."
         }
     ],
+    "culinary_nutrigenomics_formulation": [
+        {
+            "input": json.dumps({
+                "patientGenomics": {"mthfr": "C677T Heterozygous", "apoe": "E3/E4", "insulinResistance": True},
+                "onHandPantry": ["Turmeric root", "Black peppercorns", "Brown lentils", "Cold-milled mustard seeds", "Broccoli florets", "Extra virgin olive oil", "Garlic"],
+                "targetParadigm": "Ayurveda & Functional Medicine",
+                "chiefComplaint": "Postprandial brain fog, elevated fasting homocysteine, and metabolic syndrome"
+            }, indent=2),
+            "output": json.dumps({
+                "recipeTitle": "Ancestral Golden Lentil & Brassica Potage with Piperine Synergy",
+                "ancestralParadigm": "Ayurvedic Agni-Stimulating & Nrf2 Detoxification",
+                "bioactiveSynergies": [
+                    {
+                        "compounds": "Curcumin (Turmeric) + Piperine (Black Pepper)",
+                        "mechanism": "Piperine blunts hepatic glucuronidation, raising systemic curcumin bioavailability by 2000%",
+                        "clinicalTarget": "Liver Phase II / NF-κB anti-inflammatory"
+                    },
+                    {
+                        "compounds": "Sulforaphane (Broccoli) + Myrosinase (Ground Mustard Seed)",
+                        "mechanism": "Cold-milled mustard seed restores heat-denatured myrosinase, multiplying sulforaphane Nrf2 yield by 4.5x",
+                        "clinicalTarget": "Vascular endothelial protection & cellular glutathione biogenesis"
+                    }
+                ],
+                "glycemicIndexTier": "Low (Glycemic Load <= 10)",
+                "culinarySteps": [
+                    "Simmer brown lentils with smashed garlic and water until tender (rich in bioactive choline and dietary folate).",
+                    "Steam broccoli florets lightly for 3 minutes to preserve glucoraphanin substrate.",
+                    "Fold in cold-pressed extra virgin olive oil, freshly grated turmeric rhizome, and generous cracked black pepper.",
+                    "Remove from heat and dust with cold-milled raw mustard seed right before serving to activate enzymatic sulforaphane release."
+                ],
+                "clinicalRationale": "Supports 1-carbon homocysteine remethylation without synthetic folic acid, blunts postprandial glucose excursions via lentil soluble fibers, and provides monounsaturated fatty acids tailored to ApoE4 lipid clearance."
+            }, indent=2),
+            "chosen": "Formulates precise culinary recipe with 2000% curcumin/piperine and 4.5x sulforaphane/myrosinase synergies, avoiding synthetic folic acid for MTHFR and capping glycemic load for ApoE4.",
+            "rejected": "Recommends refined white pasta with high-sodium canned soup and synthetic high-dose folic acid."
+        }
+    ],
+    "drug_nutrient_cyp450_interceptor": [
+        {
+            "input": json.dumps({
+                "activePrescriptions": ["Atorvastatin 40 mg PO QHS", "Lisinopril 20 mg PO QAM", "Levothyroxine 100 mcg PO QAM"],
+                "proposedFoodsOrSupplements": ["Fresh grapefruit juice 250 mL", "High-potassium salt substitute (KCl)", "Calcium carbonate 600 mg supplement with morning breakfast"],
+                "patientSymptoms": "Severe bilateral calf myalgias, profound fatigue, palpitations"
+            }, indent=2),
+            "output": json.dumps({
+                "interceptStatus": "CRITICAL_INTERCEPT_TRIGGERED",
+                "severity": "Life-Threatening / Severe Polypharmacy Conflict",
+                "cyp450Pathway": "CYP3A4 Irreversible Intestinal Suicide Inhibition & Pharmacodynamic Ion Interlock",
+                "pharmacologicalMechanism": "1. Grapefruit furanocoumarins irreversibly destroy intestinal CYP3A4, increasing Atorvastatin serum AUC by 250-400%, precipitating toxic rhabdomyolysis and acute kidney injury. 2. Potassium chloride salt substitutes combined with ACE-inhibitor (Lisinopril) induce life-threatening hyperkalemia. 3. Calcium carbonate chelates Levothyroxine in the gastric lumen, blunting absorption by up to 80%.",
+                "timingMitigation": "Grapefruit cannot be separated by hours (intestinal CYP3A4 synthesis takes 48-72 hours). Calcium carbonate must be separated from Levothyroxine by at least 4 full hours.",
+                "clinicalAction": "IMMEDIATE DISCONTINUATION of grapefruit and KCl salt substitute. Stat serum potassium, CK (creatine kinase), and renal function panel. Reschedule calcium supplement to lunchtime (at least 4 hours after morning Levothyroxine)."
+            }, indent=2),
+            "chosen": "Identifies irreversible CYP3A4 suicide inhibition by grapefruit, Lisinopril/KCl hyperkalemia risk, and 4-hour Levothyroxine calcium chelation rule, commanding immediate lab triage.",
+            "rejected": "States grapefruit is healthy fruit that can be consumed at the same time and ignores severe statin myopathy and hyperkalemia."
+        }
+    ],
+    "frontline_ussd_multilingual_triage": [
+        {
+            "input": json.dumps({
+                "ussdSessionId": "sess_ussd_92817",
+                "rawUssdString": "*384*4855*1*2#",
+                "currentStep": "MALARIA_TRIAGE_STEP_2",
+                "language": "sw",
+                "reportedVitals": "Homa ya siku 3, mtoto ana umri wa miaka 2, hawezi kunywa au kula (3-day fever, 2yo child, unable to drink or eat)",
+                "chwCoverageZone": "Kisumu_West_SubCounty"
+            }, indent=2),
+            "output": json.dumps({
+                "sessionType": "END",
+                "ussdResponseChunk": "HATARI KUBWA! Mtoto hawezi kunywa (Danger Sign). Peleka zahanati mara moja! CHW Mama Zawadi (0712345678) ametumiwa ujumbe wa dharura kukusaidia. Piga 1199 bure.",
+                "language": "sw",
+                "triageAcuity": "STAT_EMERGENCY_DANGER_SIGN",
+                "chwAlertRequired": True
+            }, indent=2),
+            "chosen": "Detects WHO IMCI pediatric danger sign (inability to drink), issues concise <160 char Swahili USSD emergency directive with CHW name, phone, and toll-free emergency dispatch.",
+            "rejected": "Provides English medical textbook essay exceeding 500 characters that crashes the 160-character 2G USSD gateway."
+        }
+    ],
 }
 
 
@@ -1451,6 +1548,9 @@ def main() -> None:
             "cars_distractor_elimination",
             "aeromedical_evacuation_airway",
             "pediatric_complex_epsdt",
+            "culinary_nutrigenomics_formulation",
+            "drug_nutrient_cyp450_interceptor",
+            "frontline_ussd_multilingual_triage",
         ],
         help="Target clinical paradigm instruction format",
     )

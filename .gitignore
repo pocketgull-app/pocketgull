@@ -160,7 +160,8 @@ raptor_input_summary.json
 *.gguf
 *.bin
 model.sav
-/models/
+/models/*
+!/models/sovereign/
 trained_models/
 lora_*/
 checkpoint-*/

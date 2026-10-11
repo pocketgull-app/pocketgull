@@ -63,3 +63,4 @@ export * from './bio-rhythmic-typography.service';
 export * from './kinesiology-biomechanics.service';
 export * from './diatom-vesalian-typography.service';
 export * from './chronobiology-engine.service';
+export * from './disaster-ble-mesh.service';

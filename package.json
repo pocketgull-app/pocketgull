@@ -1,6 +1,6 @@
 {
   "name": "pocket-gull",
-  "version": "1.40.0",
+  "version": "1.41.0",
   "workspaces": [
     "companion-apps/avs-therapy",
     "pocketgull_api",
@@ -126,7 +126,10 @@
     "dart:debt": "dart run scripts/dart/debt_zen_solver.dart",
     "agy:verify": "dart run scripts/dart/verify_agy_skills.dart",
     "tippss:audit": "dart run scripts/tippss_schema_parity.dart",
+    "dart:iomt": "dart run scripts/dart/simulate_iomt_heartbeat.dart",
+    "dart:aot": "dart run scripts/dart/compile_aot_tools.dart",
     "taint:audit": "dart run scripts/phi_taint_boundary_linter.dart",
+    "fhir:audit": "node --no-deprecation scripts/fhir_conformance_guard.mjs",
     "gcp:prune-storage": "node --no-deprecation ./scripts/apply-gcp-lifecycle-policies.mjs",
     "gcp:audit": "node --no-deprecation scripts/audit-gcp-security-posture.mjs",
     "siem:audit": "node --no-deprecation scripts/audit_siem_telemetry.mjs",
@@ -381,7 +384,8 @@
     "inflight": "npm:lru-cache@^10.0.0",
     "node-domexception": "npm:domexception@^4.0.0",
     "@google-cloud/opentelemetry-cloud-trace-exporter": "^3.1.0",
-    "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.22.0"
+    "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.22.0",
+    "handlebars": "^4.7.10"
   },
   "lint-staged": {
     "*.ts": "npm run lint",

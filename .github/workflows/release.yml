@@ -150,6 +150,14 @@ jobs:
           echo "cosign verify --certificate-identity-regexp 'https://github.com/${{ github.repository }}' --certificate-oidc-issuer https://token.actions.githubusercontent.com ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}" >> release_notes.md
           echo '```' >> release_notes.md
 
+      - name: Attest Release Artifacts Provenance (SLSA)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            pocketgull-${{ github.ref_name }}.tar.gz
+            sbom.cdx.json
+
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3

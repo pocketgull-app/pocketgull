@@ -14,7 +14,15 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
     mockPatientState = {
       vitals: signal({ bp: '120/80', hr: '74', spO2: '99', cgmGlucoseMgDl: '115' }),
       issues: signal({}),
-      preexistingConditions: signal([])
+      preexistingConditions: signal([]),
+      glymphaticClearanceIndex: signal({
+        score: 82,
+        status: 'Optimal Proteopathy Washout',
+        deepSleepMinutes: 84,
+        aqp4PolarityEstimate: 'Polarized (90% Endfoot Targeting)',
+        clearanceVelocityMmS: '4.8',
+        stasisRiskDetected: false
+      })
     };
 
     TestBed.configureTestingModule({
@@ -239,6 +247,98 @@ describe('TuringSuiteComponent - Turing-Complete Computational Diagnostic Suite'
 
       suite.syncAllEngines();
       expect(suite.lastActionStatus()).toContain('synchronized');
+    });
+
+    it('should cross-couple selected molecule into Petri Net, CA, and LLPS engines', () => {
+      const suite = TestBed.runInInjectionContext(() => new TuringSuiteComponent());
+
+      // Test Spermidine selection (AMPK / autophagy & antioxidant survival)
+      suite.onMoleculeSelected({
+        id: 'spermidine',
+        name: 'Spermidine',
+        symbol: '✨',
+        category: 'Therapeutic Small Molecule',
+        isPathological: false,
+        molecularWeightDa: 145.25,
+        hydrodynamicRadiusNm: 0.35,
+        diffusionRateMultiplier: 1.8,
+        basePeclet: 12.8,
+        color: '#34d399',
+        shadowColor: '#10b981',
+        description: 'Autophagy inducer'
+      });
+      expect(suite.lastActionStatus()).toContain('Spermidine');
+      expect(suite.lastActionStatus()).toContain('AMPK/Mitophagy');
+
+      // Test p-Tau 181 selection (Tau hyperphosphorylation & LLPS gelation risk)
+      suite.onMoleculeSelected({
+        id: 'tau_protein',
+        name: 'p-Tau 181',
+        symbol: '🧶',
+        category: 'Pathological Proteopathy',
+        isPathological: true,
+        molecularWeightDa: 48000,
+        hydrodynamicRadiusNm: 2.45,
+        diffusionRateMultiplier: 0.12,
+        basePeclet: 118.5,
+        color: '#c084fc',
+        shadowColor: '#a855f7',
+        description: 'Microtubule-associated protein'
+      });
+      expect(suite.lastActionStatus()).toContain('p-Tau 181');
+      expect(suite.lastActionStatus()).toContain('LLPS gelation risk');
+    });
+
+    it('should export Turing diagnostic snapshot with enriched solute hydrodynamics telemetry', () => {
+      const suite = TestBed.runInInjectionContext(() => new TuringSuiteComponent());
+      if (!globalThis.URL.createObjectURL) {
+        globalThis.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url');
+        globalThis.URL.revokeObjectURL = vi.fn();
+      } else {
+        vi.spyOn(globalThis.URL, 'createObjectURL').mockReturnValue('blob:mock-url');
+        vi.spyOn(globalThis.URL, 'revokeObjectURL').mockImplementation(() => {});
+      }
+
+      suite.exportTuringSnapshot();
+      expect(suite.lastActionStatus()).toContain('Exported Turing Diagnostic Snapshot JSON successfully');
+    });
+
+    it('should export Act II Glymphatic Care Plan combining GCI, AQP4, and Chrono-Posology', () => {
+      const suite = TestBed.runInInjectionContext(() => new TuringSuiteComponent());
+      if (!globalThis.URL.createObjectURL) {
+        globalThis.URL.createObjectURL = vi.fn().mockReturnValue('blob:mock-url');
+        globalThis.URL.revokeObjectURL = vi.fn();
+      } else {
+        vi.spyOn(globalThis.URL, 'createObjectURL').mockReturnValue('blob:mock-url');
+        vi.spyOn(globalThis.URL, 'revokeObjectURL').mockImplementation(() => {});
+      }
+
+      suite.exportAct2CarePlan();
+      expect(suite.lastActionStatus()).toContain('Exported Act II Glymphatic Care Plan JSON');
+      expect(suite.lastActionStatus()).toContain('GCI:');
+    });
+
+    it('should compute live GCI telemetry, provide active chrono-posology, and respond to Oral SIBI bridge', () => {
+      const suite = TestBed.runInInjectionContext(() => new TuringSuiteComponent());
+
+      // Initial state: normal SIBI (18), optimal GCI
+      expect(suite.periodontalSibiScore()).toBe(18);
+      expect(suite.gciTelemetry().score).toBeGreaterThanOrEqual(75);
+      expect(suite.gciTelemetry().status).toBe('Optimal Proteopathy Washout');
+      expect(suite.activeChronoRec().moleculeName).toBeDefined();
+
+      // Simulate Periodontal Flare (SIBI rises to 65 -> penalizes GCI by -18%)
+      suite.simulateOralPeriodontalFlare();
+      expect(suite.periodontalSibiScore()).toBe(65);
+      expect(suite.lastActionStatus()).toContain('bacteremic flare');
+      expect(suite.gciTelemetry().score).toBe(82 - 18); // penalized
+      expect(suite.gciTelemetry().aqp4PolarityEstimate).toContain('Oral LPS Endotoxemia');
+
+      // Simulate Periodontal Debridement (SIBI normalizes to 12 -> restores GCI)
+      suite.simulatePeriodontalDebridement();
+      expect(suite.periodontalSibiScore()).toBe(12);
+      expect(suite.lastActionStatus()).toContain('Periodontal debridement');
+      expect(suite.gciTelemetry().score).toBe(82); // full baseline restored
     });
   });
 });

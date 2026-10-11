@@ -81,7 +81,7 @@
   --font-pocketgull-brand: 'PocketGull', 'PocketGull Bold', sans-serif;
   --font-pocketgull-clinical: 'PocketGull', 'PocketGull Bold', sans-serif;
   --font-pocketgull-mono: 'PocketGull Mono', monospace;
-  --font-pocketgull-serif: 'PocketGull', serif;
+  --font-pocketgull-serif: 'PocketGull Serif', 'PocketGull Serif VF', Georgia, serif;
 
   /* 🧬 9. Live Bio-Rhythmic Variable Font Kinetics (0.1 Hz Autonomic Vagal Pacing) */
   --pg-live-wght: 400;

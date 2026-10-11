@@ -52,4 +52,15 @@ describe('TeledentistryOdontogramComponent', () => {
     component.setProbingDepth(11, 5);
     expect(component.deepProbingSitesCount()).toBe(3);
   });
+
+  it('should toggle buprenorphine oral therapy mode and elevate SIBI score and salivary acidity', () => {
+    const baselineSibi = component.sibiScore();
+    expect(component.buprenorphineTherapyActive()).toBe(false);
+
+    component.toggleBuprenorphineTherapy();
+    expect(component.buprenorphineTherapyActive()).toBe(true);
+    expect(component.salivaryPh()).toBe(6.2);
+    expect(component.pHStatus()).toContain('Acidic');
+    expect(component.sibiScore()).toBeGreaterThan(baselineSibi);
+  });
 });

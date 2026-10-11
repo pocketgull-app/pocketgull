@@ -294,6 +294,45 @@ export class IpPatentRegistryService {
       mathematicalFormulation: 'min_C Σ wk·D(C, Pk) + λ·Ω(C) s.t. CYP450(C) ≤ τ;  Γ^α(x) = {y : s(x, y) ≤ q̂_{1-α}};  P(Y ∈ Γ^α) ≥ 1 - α;  |Γ^α|=2 ⟹ Abstain',
       filingTier: 'Provisional Ready',
       targetAgencies: ['USPTO', 'WIPO PCT', 'FDA CDRH']
+    },
+    {
+      id: 'cluster-18-tippss-circular-iomt',
+      clusterNumber: 18,
+      title: 'IEEE P2933™ TIPPSS Trust Ingestion Guard & Circular IoMT Hardware Lifecycle Architecture',
+      claimRange: 'Claims 341 – 360',
+      totalClaims: 20,
+      inventors: ['PocketGull Medical Device & IoMT Architecture Group'],
+      primaryServicePath: 'src/services/hardware/tippss-ingestion-guard.service.ts',
+      abstract: 'Six-pillar statutory trust verification (Trust, Identity, Privacy, Protection, Safety, Security) conforming to IEEE P2933™ with hardware Root of Trust attestation, RSSI proximity gating (≥ -85 dBm), anti-swelling Web Battery API charge modulation (20%–80% cycling), and anti-data landfill edge waveform filtering discarding ≥99.5% un-anomalous telemetry.',
+      mathematicalFormulation: 'Trust = Attest(RoT, UDI) ∧ (RSSI ≥ -85 dBm) ∧ (Seq_k > Seq_{k-1});  SwellingRisk = 𝕀(V_batt ≥ 4.20V ∧ t > 14400s ∧ T > 35°C);  DropRatio ≥ 0.995',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'FDA CDRH']
+    },
+    {
+      id: 'cluster-19-watershed-exposome-lineage',
+      clusterNumber: 19,
+      title: 'Cross-Agency Environmental Exposome & Hydrological Watershed Lineage Engine (NSF OKN)',
+      claimRange: 'Claims 361 – 380',
+      totalClaims: 20,
+      inventors: ['PocketGull Environmental Exposomics & Translational Health Group'],
+      primaryServicePath: 'src/services/okn-knowledge-graph.service.ts',
+      abstract: 'Cross-agency knowledge graph engine bridging USGS HUC-12 watershed hydrology, EPA toxicant registries (PFAS/microcystins/hardness), and NIH pharmacogenomics to identify occult drug-environment phenoconversions and generate cryptographically linked FHIR R4 Environmental Observation resources.',
+      mathematicalFormulation: 'PathConfidence(e_env, m_rx) = Π w_k · Sim_Mesh(Node_k, Node_{k+1});  PhenoconversionRisk = f(Hardness_USGS, PFAS_EPA, CYP450_NIH)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'EPA / USGS Health Informatics']
+    },
+    {
+      id: 'cluster-20-transgenerational-epigenetics',
+      clusterNumber: 20,
+      title: 'Transgenerational Epigenetics & 150-Year Multi-Generational Longevity Simulator',
+      claimRange: 'Claims 381 – 400',
+      totalClaims: 20,
+      inventors: ['PocketGull Computational Epigenetics & Lineage Longevity Group'],
+      primaryServicePath: 'pocketgull_api/engines/transgenerational_stewardship_engine.py',
+      abstract: 'Non-reductionist multi-generational biological trajectory simulator using JAX / Flax NNX neural operators with Orbax state checkpointing, modeling endocrine disruptor (EDC) exposure, 1-carbon germline methylation, matrilineal mtDNA heteroplasmy decay, and paternal sperm tsRNA stress remodeling across 7 generational epochs (150+ years).',
+      mathematicalFormulation: 'Δℰ_{g+1} = T_germ · ℰ_g + η_EDC · X_env - γ_manage · R_folate;  Heteroplasmy_{g+1} = Heteroplasmy_g · (1 + λ_ROS) · e^{-ΔG/RT}',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'NIH NIEHS']
     }
   ]);
 
@@ -321,8 +360,8 @@ export class IpPatentRegistryService {
       article: 'Article II',
       section: 'Section 2.01',
       title: 'Statutory Invention Reservation & Patent Notice',
-      summary: 'Formally reserves patent rights under 35 U.S.C. §101 et seq. for 10 core algorithm clusters across 200 staked patent claims.',
-      fullText: 'Notice is hereby given that the computational algorithms, data pipelines, WebGPU shaders, and hardware integration architectures disclosed herein represent proprietary inventions subject to pending domestic and international patent applications under 35 U.S.C. § 101 et seq. and the Patent Cooperation Treaty (PCT), spanning 200 formal patent claims across 10 distinct invention clusters.',
+      summary: 'Formally reserves patent rights under 35 U.S.C. §101 et seq. for 20 core algorithm clusters across 400 staked patent claims.',
+      fullText: 'Notice is hereby given that the computational algorithms, data pipelines, WebGPU shaders, and hardware integration architectures disclosed herein represent proprietary inventions subject to pending domestic and international patent applications under 35 U.S.C. § 101 et seq. and the Patent Cooperation Treaty (PCT), spanning 400 formal patent claims across 20 distinct invention clusters.',
       governingLaw: '35 U.S.C. § 101, 102, 103 / PCT'
     },
     {
@@ -400,7 +439,7 @@ export class IpPatentRegistryService {
       charterDocumentPath: 'docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md',
       clausesDocumentPath: 'docs/legal/INVENTION_ASSIGNMENT_AND_COPYRIGHT_CLAUSES.md',
       pledgeDocumentPath: 'docs/patents/OPEN_PATENT_PLEDGE_AND_RESEARCH_COVENANT.md',
-      lastUpdated: '2026-10-04',
+      lastUpdated: '2026-10-09',
       clusters: this.claimClusters(),
       statutoryClauses: this.statutoryClauses()
     };
@@ -818,7 +857,7 @@ ${figures.map(f => `### ${f.title}\n${f.description}\n\`\`\`\n${f.asciiArt}\n\`\
 **Governing Statutory Frameworks**: 35 U.S.C. § 101 et seq., 35 U.S.C. § 102(a)(1), 35 U.S.C. § 122(e), 37 CFR 1.290
 
 ## 1. Open Patent Research Grant & Non-Assertion Covenant
-Subject to the defensive conditions herein, PocketGull and Phil Gear irrevocably covenant not to assert any patent, patent application, or exclusive rights (spanning all 17 Invention Clusters, Claims 1–340, and Provisional Specification Docket PG-PAT-2026-CONF-001) against any academic medical center, university laboratory, hospital, or non-profit research institute for:
+Subject to the defensive conditions herein, PocketGull and Phil Gear irrevocably covenant not to assert any patent, patent application, or exclusive rights (spanning all 20 Invention Clusters, Claims 1–400, and Provisional Specification Docket PG-PAT-2026-CONF-001) against any academic medical center, university laboratory, hospital, or non-profit research institute for:
 - Academic bench trial benchmarking and algorithmic reproduction
 - Observational clinical validation studies (MIMIC-IV, eICU, OMOP cohorts)
 - Peer-reviewed scientific publication and open educational use

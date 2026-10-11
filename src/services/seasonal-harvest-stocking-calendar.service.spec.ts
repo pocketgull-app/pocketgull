@@ -43,4 +43,31 @@ describe('SeasonalHarvestStockingCalendarService', () => {
     expect(fiddlehead?.isCurrentlyInPeak).toBe(true);
     expect(fiddlehead?.phytonutrientHighlight).toContain('Omega-3 ALA');
   });
+
+  it('should accurately provide Sahelian agroecological crops (Fonio, Moringa, Cowpeas, Baobab)', () => {
+    const sahelCal = service.getSeasonalCalendar('dest_sahel_dakar', 9); // September
+    expect(sahelCal.regionName).toContain('Sahel');
+    expect(sahelCal.harvestItems.length).toBe(4);
+
+    const fonio = sahelCal.harvestItems.find(i => i.id === 'sahel_fonio');
+    expect(fonio).toBeDefined();
+    expect(fonio?.isCurrentlyInPeak).toBe(true);
+    expect(fonio?.phytonutrientHighlight).toContain('Low glycemic index');
+
+    const moringa = sahelCal.harvestItems.find(i => i.id === 'sahel_moringa');
+    expect(moringa?.isCurrentlyInPeak).toBe(true); // year-round
+    expect(moringa?.phytonutrientHighlight).toContain('vitamin C');
+
+    const baobab = sahelCal.harvestItems.find(i => i.id === 'sahel_baobab');
+    expect(baobab?.phytonutrientHighlight).toContain('prebiotic pectin');
+  });
+
+  it('should accurately provide Ethiopian Highlands orphan crops (Teff, Sorghum)', () => {
+    const ethiopiaCal = service.getSeasonalCalendar('dest_ethiopia_highlands', 11); // November
+    expect(ethiopiaCal.regionName).toContain('Ethiopian Highlands');
+    const teff = ethiopiaCal.harvestItems.find(i => i.id === 'ethiopia_teff');
+    expect(teff).toBeDefined();
+    expect(teff?.isCurrentlyInPeak).toBe(true);
+    expect(teff?.clinicalTargetBenefit).toContain('microcytic anemia');
+  });
 });

@@ -18,7 +18,7 @@ To empower universities, academic medical centers, non-profit institutions, inde
 ## 2. The Open Patent Research Grant & Non-Assertion Covenant
 
 ### 2.1 Irrevocable Royalty-Free Research License
-Subject to the terms and defensive conditions of this Covenant, PocketGull and Phil Gear irrevocably pledge and covenant that they will **not assert** any patent, patent application, or exclusive rights owned or controlled by them (including all 17 Invention Clusters, Claims 1 through 340, and Provisional Specification Docket `PG-PAT-2026-CONF-001`) against any individual, university, hospital, academic medical center, or non-profit research institute for:
+Subject to the terms and defensive conditions of this Covenant, PocketGull and Phil Gear irrevocably pledge and covenant that they will **not assert** any patent, patent application, or exclusive rights owned or controlled by them (including all 20 Invention Clusters, Claims 1 through 400, and Provisional Specification Docket `PG-PAT-2026-CONF-001`) against any individual, university, hospital, academic medical center, or non-profit research institute for:
 1. **Academic & Laboratory Research**: Building, testing, reproducing, benchmarking, and modifying any claimed invention within a laboratory, university clinic, or simulation environment.
 2. **Clinical Validation Studies**: Executing retrospective or prospective observational cohorts (e.g., MIMIC-IV, eICU, CMS OMOP datasets) to evaluate algorithm calibration, sensitivity, specificity, and alarm fatigue suppression.
 3. **Peer-Reviewed Scientific Publication**: Publishing findings, critiques, mathematical proofs, and comparative efficacy studies in open-access journals, conference proceedings, or preprints (e.g., medRxiv, arXiv).
@@ -95,4 +95,4 @@ For institutional IRB inquiries, multi-center research partnerships, or formal w
 
 * **Data Protection & IP Compliance Officer**: Phil Gear / Legal Team
 * **Email**: `dpo@pocketgull.app`
-* **Address**: PocketGull Health AI PBC, Seattle, WA / Geneva, Switzerland
+* **Address**: PocketGull Health AI PBC, Portland, OR / Geneva, Switzerland

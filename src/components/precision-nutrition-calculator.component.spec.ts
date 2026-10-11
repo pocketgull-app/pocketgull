@@ -12,7 +12,9 @@ describe('PrecisionNutritionCalculatorComponent', () => {
 
   beforeEach(() => {
     mockPatientState = {
-      vitals: signal({ hr: '72', spO2: '98%', cgmGlucoseMgDl: 95 })
+      vitals: signal({ hr: '72', spO2: '98%', cgmGlucoseMgDl: 95 }),
+      selectedNutrigenomicLigand: signal('all'),
+      anatomyViewMode: signal('skin')
     };
 
     mockThemeService = {
@@ -44,5 +46,16 @@ describe('PrecisionNutritionCalculatorComponent', () => {
     const spikeWithBuffer = component.estimatedPeakGlucose();
 
     expect(spikeWithBuffer).toBeLessThan(spikeWithoutBuffer);
+  });
+
+  it('should spotlight selected functional food in 3D nutrigenomics mode', () => {
+    const broccoli = component.functionalFoods().find(f => f.name === 'Broccoli Sprouts')!;
+    component.spotlightIn3D(broccoli);
+    expect(mockPatientState.selectedNutrigenomicLigand()).toBe('sulforaphane');
+    expect(mockPatientState.anatomyViewMode()).toBe('nutrigenomics');
+
+    const oats = component.functionalFoods().find(f => f.name.includes('Oats'))!;
+    component.spotlightIn3D(oats);
+    expect(mockPatientState.selectedNutrigenomicLigand()).toBe('butyrate');
   });
 });

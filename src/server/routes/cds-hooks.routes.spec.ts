@@ -22,9 +22,10 @@ describe('HL7 SMART-on-FHIR CDS Hooks Router', () => {
     getHandler(req, res, () => {});
     expect(statusCode).toBe(200);
     expect(jsonResult).toBeDefined();
-    expect(jsonResult.services.length).toBe(4);
+    expect(jsonResult.services.length).toBe(5);
     expect(jsonResult.services[0].id).toBe('pocketgull-rx-phenoconversion');
     expect(jsonResult.services.some((s: any) => s.id === 'pocketgull-cardiometabolic-radar')).toBe(true);
+    expect(jsonResult.services.some((s: any) => s.id === 'pocketgull-chrono-nutrition-guard')).toBe(true);
   });
 
   it('should return critical CDS warning card when Berberine and Metformin clash', () => {
@@ -160,5 +161,102 @@ describe('HL7 SMART-on-FHIR CDS Hooks Router', () => {
     const ddiCard = jsonResult.cards.find((c: any) => c.summary.includes('CYP3A4 Inhibition Risk'));
     expect(ddiCard).toBeDefined();
     expect(ddiCard.indicator).toBe('warning');
+  });
+
+  it('should flag Grapefruit Furanocoumarin surge when Atorvastatin is prescribed', () => {
+    const postHandler = (cdsHooksRouter.stack.find((layer: any) => layer.route?.path === '/pocketgull-chrono-nutrition-guard' && layer.route?.methods?.post)?.route?.stack[0]?.handle);
+    expect(postHandler).toBeDefined();
+
+    let jsonResult: any = null;
+    let statusCode = 0;
+    const req: any = {
+      body: {
+        hook: 'order-select',
+        context: {
+          patientId: 'P001',
+          draftOrders: [{ resourceType: 'MedicationRequest', medicationCodeableConcept: { text: 'Atorvastatin 40mg PO QHS' } }]
+        }
+      }
+    };
+    const res: any = {
+      setHeader: () => {},
+      status: (code: number) => {
+        statusCode = code;
+        return { json: (payload: any) => { jsonResult = payload; } };
+      }
+    };
+
+    postHandler(req, res, () => {});
+    expect(statusCode).toBe(200);
+    const statinCard = jsonResult.cards.find((c: any) => c.summary.includes('Furanocoumarin Surge Risk'));
+    expect(statinCard).toBeDefined();
+    expect(statinCard.indicator).toBe('warning');
+    expect(statinCard.detail).toContain('+330%');
+    expect(statinCard.links[0].type).toBe('smart');
+    expect(statinCard.suggestions[0].label).toContain('Citrus Sinensis');
+  });
+
+  it('should flag Potassium Chloride salt-substitute hyperkalemia when Lisinopril is prescribed', () => {
+    const postHandler = (cdsHooksRouter.stack.find((layer: any) => layer.route?.path === '/pocketgull-chrono-nutrition-guard' && layer.route?.methods?.post)?.route?.stack[0]?.handle);
+    expect(postHandler).toBeDefined();
+
+    let jsonResult: any = null;
+    let statusCode = 0;
+    const req: any = {
+      body: {
+        hook: 'order-select',
+        context: {
+          patientId: 'P001',
+          draftOrders: [{ resourceType: 'MedicationRequest', medicationCodeableConcept: { text: 'Lisinopril 20mg PO Daily' } }],
+          labs: { serumPotassium: 5.2 }
+        }
+      }
+    };
+    const res: any = {
+      setHeader: () => {},
+      status: (code: number) => {
+        statusCode = code;
+        return { json: (payload: any) => { jsonResult = payload; } };
+      }
+    };
+
+    postHandler(req, res, () => {});
+    expect(statusCode).toBe(200);
+    const aceiCard = jsonResult.cards.find((c: any) => c.summary.includes('Salt-Substitute & Potassium Hyperkalemia'));
+    expect(aceiCard).toBeDefined();
+    expect(aceiCard.indicator).toBe('critical'); // K+ >= 5.0 triggers critical
+    expect(aceiCard.detail).toContain('5.2 mEq/L');
+    expect(aceiCard.links[0].type).toBe('smart');
+  });
+
+  it('should validate and commit signed FHIR R4 CarePlan and NutritionOrder bundle', () => {
+    const postHandler = (cdsHooksRouter.stack.find((layer: any) => layer.route?.path === '/pocketgull-push-careplan' && layer.route?.methods?.post)?.route?.stack[0]?.handle);
+    expect(postHandler).toBeDefined();
+
+    let jsonResult: any = null;
+    let statusCode = 0;
+    const req: any = {
+      body: {
+        resourceType: 'Bundle',
+        id: 'bundle-tx-99',
+        type: 'transaction',
+        entry: [
+          { resource: { resourceType: 'NutritionOrder', id: 'no-1' } },
+          { resource: { resourceType: 'CarePlan', id: 'cp-1' } }
+        ]
+      }
+    };
+    const res: any = {
+      setHeader: () => {},
+      status: (code: number) => {
+        statusCode = code;
+        return { json: (payload: any) => { jsonResult = payload; } };
+      }
+    };
+
+    postHandler(req, res, () => {});
+    expect(statusCode).toBe(201);
+    expect(jsonResult.status).toBe('TRANSFERRED_TO_EHR');
+    expect(jsonResult.sha256TamperSeal.length).toBe(64);
   });
 });

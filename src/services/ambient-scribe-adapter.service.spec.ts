@@ -177,4 +177,27 @@ describe('AmbientScribeAdapterService', () => {
     expect(cpt99454).toBeDefined();
     expect(result.totalEstimatedAnnualReimbursementUsd).toBeGreaterThanOrEqual(1000);
   });
+
+  it('10. Recommends Salutogenic Stepped-Care Intercept prior to prescribing', async () => {
+    const request: IScribeIngestRequest = {
+      scribeSource: 'abridge',
+      rawTranscript: `
+        Clinician: Patient has lower back pain and severe insomnia.
+        Plan: Start gabapentin 300 mg and clonazepam 0.5 mg.
+      `
+    };
+
+    const result = await service.adjudicateTranscript(request);
+
+    // Verify Salutogenic First-Line Pathway is recommended
+    const salutogenicPathway = result.recommendedPathways.find(p => p.actTier === 'SALUTOGENIC_PRE_Rx');
+    expect(salutogenicPathway).toBeDefined();
+    expect(salutogenicPathway?.pathwayName).toContain('Salutogenic Stepped-Care Intercept');
+    expect(salutogenicPathway?.actionDirectives.some(d => d.includes('McKenzie') || d.includes('nerve flossing'))).toBe(true);
+    expect(salutogenicPathway?.actionDirectives.some(d => d.includes('CBT-I'))).toBe(true);
+    expect(salutogenicPathway?.actionDirectives.some(d => d.includes('Antonovsky'))).toBe(true);
+
+    // Verify SBAR Recommendation prioritizes salutogenic stepped-care
+    expect(result.sbarSummary.recommendation).toContain('Prioritize Salutogenic Stepped-Care Interventions');
+  });
 });

@@ -93,4 +93,35 @@ describe('SovereigntyHealthModelsService - Quantitative Health Models', () => {
       expect(res.hypoxiaOrApneaScreeningIndicated).toBe(true);
     });
   });
+
+  describe('7. African Evolutionary Genomics & Pharmacogenomics Evaluation', () => {
+    it('flags G6PD deficiency and contraindicates oxidizing medications like primaquine and dapsone', () => {
+      service.setAfricanGenomicInputs('G6PD_DEFICIENT_CLASS_III_AFRICAN_A_MINUS', 'G0_G0_WILDTYPE', 'EXTENSIVE_NORMAL_STAR1');
+      const evalResult = service.africanGenomicsEvaluation();
+      expect(evalResult.g6pdAssessment.hemolysisRiskLevel).toBe('MODERATE');
+      expect(evalResult.g6pdAssessment.contraindicatedOxidants.some(d => d.includes('Primaquine'))).toBe(true);
+      expect(evalResult.g6pdAssessment.contraindicatedOxidants.some(d => d.includes('Dapsone'))).toBe(true);
+      expect(evalResult.g6pdAssessment.safeAlternativeAntimalarials).toContain('Artemether-Lumefantrine (ACT)');
+      expect(evalResult.g6pdAssessment.clinicalGuidance).toContain('acute intravascular hemolysis');
+    });
+
+    it('identifies APOL1 2-allele high-risk genotypes, elevating 10-year FSGS odds ratio and lowering SBP target to <120 mmHg', () => {
+      service.setAfricanGenomicInputs('G6PD_NORMAL', 'G1_G2_COMPOUND_HIGH_RISK', 'EXTENSIVE_NORMAL_STAR1');
+      const evalResult = service.africanGenomicsEvaluation();
+      expect(evalResult.apol1RenalAssessment.highRiskTwoAllelePresent).toBe(true);
+      expect(evalResult.apol1RenalAssessment.tenYearFsgsRenalFailureOddsRatio).toBe(10.5);
+      expect(evalResult.apol1RenalAssessment.recommendedSbpTargetMmhg).toBe(120);
+      expect(evalResult.apol1RenalAssessment.aceiArbIndication).toContain('MANDATORY FIRST-LINE');
+      expect(evalResult.apol1RenalAssessment.clinicalSurveillanceProtocol).toContain('trypanosomal selection');
+    });
+
+    it('identifies CYP2B6 *6/*6 slow metabolizer, recommending Efavirenz dose reduction to 400mg or Dolutegravir switch', () => {
+      service.setAfricanGenomicInputs('G6PD_NORMAL', 'G0_G0_WILDTYPE', 'POOR_SLOW_STAR6_STAR6');
+      const evalResult = service.africanGenomicsEvaluation();
+      expect(evalResult.cyp2b6EfavirenzAssessment.cnsNeurotoxicityRisk).toBe('SEVERE_TOXIC_CONCENTRATION');
+      expect(evalResult.cyp2b6EfavirenzAssessment.recommendedEfavirenzDoseMg).toBe(400);
+      expect(evalResult.cyp2b6EfavirenzAssessment.actionablePrescribingGuidance).toContain('Dolutegravir');
+      expect(evalResult.cyp2b6EfavirenzAssessment.actionablePrescribingGuidance).toContain('ENCORE1');
+    });
+  });
 });

@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 const stylesPath = path.resolve(__dirname, '../src/styles.css');
 const markerStylesPath = path.resolve(__dirname, '../src/styles/pocketgull-marker-font.css');
 
-console.log('🔤 Running Caslon Typography & Leading/Kerning Verification...');
+console.log('🔤 Running Sovereign PocketGull Serif Typography & Rhythm Verification...');
 
 let errors = [];
 
@@ -17,14 +17,14 @@ if (!fs.existsSync(stylesPath)) {
   errors.push(`Missing ${stylesPath}`);
 } else {
   const content = fs.readFileSync(stylesPath, 'utf8');
-  if (!content.includes('Libre+Caslon+Text')) {
-    errors.push('Libre Caslon Text missing from Google Fonts import in styles.css');
+  if (!content.includes('--font-pocketgull-serif') && !content.includes('--font-caslon') && !content.includes('Libre Caslon Text')) {
+    errors.push('PocketGull Serif font stack (--font-pocketgull-serif or --font-caslon) missing in styles.css');
   }
   if (!content.includes('line-height: 1.55') && !content.includes('line-height: 1.65')) {
-    errors.push('Caslon proportional leading (line-height) rules missing in styles.css');
+    errors.push('Clinical serif proportional leading (line-height) rules missing in styles.css');
   }
   if (!content.includes('letter-spacing: -0.011em') && !content.includes('letter-spacing: -0.012em')) {
-    errors.push('Caslon optical kerning (letter-spacing) rules missing in styles.css');
+    errors.push('Clinical serif optical kerning (letter-spacing) rules missing in styles.css');
   }
 }
 
@@ -42,14 +42,14 @@ if (!fs.existsSync(markerStylesPath)) {
 }
 
 if (errors.length > 0) {
-  console.error('❌ Caslon Typography Audit Failed:');
+  console.error('❌ Sovereign PocketGull Serif Typography Audit Failed:');
   errors.forEach(e => console.error(`  - ${e}`));
   process.exit(1);
 } else {
-  console.log('✅ Caslon Typography Audit Passed!');
-  console.log('  - Master Caslon Serif stack: Libre Caslon Text');
-  console.log('  - Display Sans stack: Outfit / Plus Jakarta Sans');
-  console.log('  - Body Sans stack: Inter (with cv05, cv08, cv11 features)');
+  console.log('✅ Sovereign PocketGull Serif Typography Audit Passed!');
+  console.log('  - Master Sovereign Serif: PocketGull Serif / PocketGull Serif VF');
+  console.log('  - Clinical Display/Body Sans: PocketGull & PocketGull Bold');
+  console.log('  - Technical Monospace: PocketGull Mono');
   console.log('  - Proportional Leading: 1.55 - 1.65');
   console.log('  - Optical Kerning: -0.011em to -0.025em');
 }

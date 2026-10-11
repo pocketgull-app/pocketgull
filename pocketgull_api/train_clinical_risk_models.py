@@ -1020,6 +1020,113 @@ def train_endotoxin_sibi_spike_model():
         'Teledentistry FDI-SIBI Periodontal Translocation & 30-Day hs-CRP Vascular Inflammatory Spike Predictor'
     )
 
+def train_cgm_glycemic_excursion_model():
+    np.random.seed(66)
+    n_samples = 4000
+    glycemic_load = np.random.uniform(2.0, 55.0, n_samples)
+    net_carbs_grams = np.random.uniform(5.0, 110.0, n_samples)
+    dietary_fiber_grams = np.random.uniform(1.0, 35.0, n_samples)
+    fat_protein_ratio = np.random.uniform(0.1, 2.5, n_samples)
+    fasting_glucose_mg_dl = np.random.uniform(70.0, 180.0, n_samples)
+    homa_ir_score = np.random.uniform(0.5, 8.5, n_samples)
+    mayer_wave_vagal_tone = np.random.uniform(0.1, 1.0, n_samples)
+
+    risk = (
+        (glycemic_load / 15.0) * 1.4 +
+        (net_carbs_grams / 30.0) * 1.1 -
+        (dietary_fiber_grams / 10.0) * 1.2 -
+        (fat_protein_ratio / 1.0) * 0.8 +
+        ((fasting_glucose_mg_dl - 100.0) / 25.0) * 1.3 +
+        (homa_ir_score / 2.5) * 1.2 -
+        (mayer_wave_vagal_tone * 0.9) - 2.8
+    )
+    prob = 1.0 / (1.0 + np.exp(-risk))
+    y = (prob > 0.50).astype(int)
+
+    X = pd.DataFrame({
+        'glycemic_load': glycemic_load,
+        'net_carbs_grams': net_carbs_grams,
+        'dietary_fiber_grams': dietary_fiber_grams,
+        'fat_protein_ratio': fat_protein_ratio,
+        'fasting_glucose_mg_dl': fasting_glucose_mg_dl,
+        'homa_ir_score': homa_ir_score,
+        'mayer_wave_vagal_tone': mayer_wave_vagal_tone
+    })
+    return train_and_save_platinum_model(
+        'cgm_glycemic_excursion_model', X, y, 66,
+        'Continuous Glucose Monitoring (CGM) Postprandial Excursion & Minimal Model Spike Predictor'
+    )
+
+def train_monk_skintone_ppg_debiasing_model():
+    np.random.seed(67)
+    n_samples = 4000
+    monk_skin_tone_scale = np.random.choice(range(1, 11), n_samples) # MST 1 to 10
+    raw_spo2_optical_ratio_r = np.random.uniform(0.4, 1.6, n_samples)
+    perfusion_index_pi = np.random.uniform(0.2, 12.0, n_samples)
+    ambient_lux_leakage = np.random.uniform(0.0, 450.0, n_samples)
+    motion_sqi_score = np.random.uniform(0.1, 1.0, n_samples)
+
+    # Risk of occult hypoxemia increases with darker Monk Skin Tones (MST 6-10) due to melanin optical absorption
+    melanin_bias = np.where(monk_skin_tone_scale >= 6, (monk_skin_tone_scale - 5) * 0.45, 0.0)
+    risk = (
+        melanin_bias +
+        ((raw_spo2_optical_ratio_r - 1.0) / 0.25) * 1.2 -
+        (perfusion_index_pi / 3.0) * 0.9 +
+        (ambient_lux_leakage / 150.0) * 0.8 -
+        (motion_sqi_score * 1.5) - 1.8
+    )
+    prob = 1.0 / (1.0 + np.exp(-risk))
+    y = (prob > 0.50).astype(int)
+
+    X = pd.DataFrame({
+        'monk_skin_tone_scale': monk_skin_tone_scale,
+        'raw_spo2_optical_ratio_r': raw_spo2_optical_ratio_r,
+        'perfusion_index_pi': perfusion_index_pi,
+        'ambient_lux_leakage': ambient_lux_leakage,
+        'motion_sqi_score': motion_sqi_score
+    })
+    return train_and_save_platinum_model(
+        'monk_skintone_ppg_debiasing_model', X, y, 67,
+        'Monk Skin Tone (MST 1-10) Optical PPG Melanin Calibration & Occult Hypoxemia Interceptor'
+    )
+
+def train_african_pharmacogenomic_risk_model():
+    np.random.seed(68)
+    n_samples = 4000
+    apol1_high_risk_genotype = np.random.choice([0, 1], n_samples, p=[0.85, 0.15])
+    g6pd_deficiency_present = np.random.choice([0, 1], n_samples, p=[0.88, 0.12])
+    cyp2b6_star6_slow_metabolizer = np.random.choice([0, 1, 2], n_samples, p=[0.60, 0.30, 0.10])
+    estimated_gfr_ml_min = np.random.uniform(20.0, 115.0, n_samples)
+    active_prescriptions_count = np.random.choice(range(1, 10), n_samples)
+    prescribed_antiretroviral_or_antimalarial = np.random.choice([0, 1], n_samples, p=[0.70, 0.30])
+    hypertension_stage_2 = np.random.choice([0, 1], n_samples, p=[0.65, 0.35])
+
+    risk = (
+        apol1_high_risk_genotype * 2.2 +
+        g6pd_deficiency_present * 1.8 +
+        (cyp2b6_star6_slow_metabolizer * 1.3) +
+        ((90.0 - estimated_gfr_ml_min) / 25.0) * 1.1 +
+        (active_prescriptions_count / 3.0) * 0.8 +
+        prescribed_antiretroviral_or_antimalarial * 1.2 +
+        hypertension_stage_2 * 1.0 - 4.2
+    )
+    prob = 1.0 / (1.0 + np.exp(-risk))
+    y = (prob > 0.50).astype(int)
+
+    X = pd.DataFrame({
+        'apol1_high_risk_genotype': apol1_high_risk_genotype,
+        'g6pd_deficiency_present': g6pd_deficiency_present,
+        'cyp2b6_star6_slow_metabolizer': cyp2b6_star6_slow_metabolizer,
+        'estimated_gfr_ml_min': estimated_gfr_ml_min,
+        'active_prescriptions_count': active_prescriptions_count,
+        'prescribed_antiretroviral_or_antimalarial': prescribed_antiretroviral_or_antimalarial,
+        'hypertension_stage_2': hypertension_stage_2
+    })
+    return train_and_save_platinum_model(
+        'african_pharmacogenomic_risk_model', X, y, 68,
+        'African Multi-Ancestry Pharmacogenomic Diversity & APOL1/G6PD/CYP2B6 Adverse Response Model'
+    )
+
 if __name__ == '__main__':
     train_icu_mortality_model()
     train_readmission_model()
@@ -1046,7 +1153,10 @@ if __name__ == '__main__':
     train_anticholinergic_delirium_model()
     train_ms_pira_velocity_model()
     train_endotoxin_sibi_spike_model()
-    print("\n[COMPLETE] All 25 Platinum-Grade Clinical Models Trained & Metadata Cards Emitted Successfully!")
+    train_cgm_glycemic_excursion_model()
+    train_monk_skintone_ppg_debiasing_model()
+    train_african_pharmacogenomic_risk_model()
+    print("\n[COMPLETE] All 28 Platinum-Grade Clinical Models Trained & Metadata Cards Emitted Successfully!")
 
 
 

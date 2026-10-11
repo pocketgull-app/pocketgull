@@ -454,6 +454,40 @@ export const WHO_ESSENTIAL_MEDICINES_CATALOG: IWhoEssentialMedicine[] = [
     clinicalIndication: 'Major depressive disorder, generalized anxiety, panic disorder, obsessive-compulsive disorder.',
     whoTargetTherapy: 'WHO mhGAP First-line Selective Serotonin Reuptake Inhibitor (SSRI).',
     isPediatricFriendly: true
+  },
+
+  // 9. Hematology, Sickle Cell & Antiretroviral Sovereignty
+  {
+    id: 'who-eml-hydroxyurea',
+    name: 'Hydroxyurea (Hydroxycarbamide)',
+    genericInn: 'Hydroxycarbamidum',
+    category: 'ANALGESIC_ANTIINFLAMMATORY',
+    dosageForms: ['500 mg capsule', '100 mg dispersible scored tablet for pediatrics'],
+    atcCode: 'L01XX05',
+    emlListingType: 'CORE',
+    medianGlobalCostPerDoseUsd: 0.12,
+    standardRetailBenchmarkMonthlyCostUsd: 110.00,
+    savingsPercent: 96.7,
+    openCompoundingMonograph: 'USP/BP: Hydroxycarbamide pure crystalline API. Dispersible tablet base enables precise pediatric titration (15-20 mg/kg/day) for fetal hemoglobin (HbF) induction in sickle cell disease.',
+    clinicalIndication: 'Sickle cell disease (HbSS, HbSC) crisis prevention, stroke prophylaxis, fetal hemoglobin induction.',
+    whoTargetTherapy: 'WHO Model List Core Medicine for sickle cell disease; reduces vaso-occlusive crises by >50% and acute chest syndrome.',
+    isPediatricFriendly: true
+  },
+  {
+    id: 'who-eml-efavirenz',
+    name: 'Efavirenz',
+    genericInn: 'Efavirenzum',
+    category: 'ANTIBIOTIC',
+    dosageForms: ['600 mg tablet', '200 mg capsule'],
+    atcCode: 'J05AG03',
+    emlListingType: 'CORE',
+    medianGlobalCostPerDoseUsd: 0.10,
+    standardRetailBenchmarkMonthlyCostUsd: 135.00,
+    savingsPercent: 97.8,
+    openCompoundingMonograph: 'WHO Technical Report Series 948: Non-nucleoside reverse transcriptase inhibitor (NNRTI). Grounded in African pharmacogenomics (CYP2B6*6 slow clearance requires dose reduction to 400mg to prevent CNS neurotoxicity).',
+    clinicalIndication: 'HIV-1 infection combination antiretroviral therapy (cART).',
+    whoTargetTherapy: 'WHO First-line NNRTI component in fixed-dose generic combinations (TLE/TLD transition).',
+    isPediatricFriendly: true
   }
 ];
 
@@ -553,6 +587,10 @@ export class WhoEssentialMedicinesService {
         matched = this.getById('who-eml-fluoxetine');
       } else if (lower.includes('iron') || lower.includes('ferrous') || lower.includes('folic')) {
         matched = this.getById('who-eml-iron-folate');
+      } else if (lower.includes('hydroxyurea') || lower.includes('hydrea') || lower.includes('droxia') || lower.includes('sickle')) {
+        matched = this.getById('who-eml-hydroxyurea');
+      } else if (lower.includes('efavirenz') || lower.includes('sustiva') || lower.includes('atripla')) {
+        matched = this.getById('who-eml-efavirenz');
       }
 
       if (matched) {

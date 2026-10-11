@@ -79,6 +79,35 @@ export interface IErythrocytosisTrajectory {
   clinicalRecommendation: string;
 }
 
+// --- 7. African Evolutionary Genomics & Pharmacogenomics Types ---
+export type G6pdStatus = 'G6PD_NORMAL' | 'G6PD_DEFICIENT_CLASS_II_MEDITERRANEAN' | 'G6PD_DEFICIENT_CLASS_III_AFRICAN_A_MINUS' | 'G6PD_UNKNOWN';
+export type Apol1Genotype = 'G0_G0_WILDTYPE' | 'G1_G0_HETEROZYGOUS' | 'G2_G0_HETEROZYGOUS' | 'G1_G1_HIGH_RISK' | 'G2_G2_HIGH_RISK' | 'G1_G2_COMPOUND_HIGH_RISK';
+export type Cyp2b6Metabolizer = 'EXTENSIVE_NORMAL_STAR1' | 'INTERMEDIATE_STAR1_STAR6' | 'POOR_SLOW_STAR6_STAR6';
+
+export interface IAfricanGenomicRiskProfile {
+  g6pdAssessment: {
+    status: G6pdStatus;
+    contraindicatedOxidants: string[];
+    safeAlternativeAntimalarials: string[];
+    clinicalGuidance: string;
+    hemolysisRiskLevel: 'LOW' | 'MODERATE' | 'CRITICAL_LETHAL';
+  };
+  apol1RenalAssessment: {
+    genotype: Apol1Genotype;
+    highRiskTwoAllelePresent: boolean;
+    tenYearFsgsRenalFailureOddsRatio: number;
+    recommendedSbpTargetMmhg: number;
+    aceiArbIndication: string;
+    clinicalSurveillanceProtocol: string;
+  };
+  cyp2b6EfavirenzAssessment: {
+    metabolizerStatus: Cyp2b6Metabolizer;
+    recommendedEfavirenzDoseMg: number; // 600mg vs 400mg vs switch to DTG
+    cnsNeurotoxicityRisk: 'LOW' | 'ELEVATED' | 'SEVERE_TOXIC_CONCENTRATION';
+    actionablePrescribingGuidance: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -135,6 +164,13 @@ export class SovereigntyHealthModelsService {
   readonly monthsOnTestosterone = signal<number>(9);
   readonly weeklyTestosteroneDoseMg = signal<number>(100);
   readonly hasNocturnalSnoringOrApnea = signal<boolean>(true);
+
+  // ==========================================
+  // 7. African Evolutionary Genomics Signals
+  // ==========================================
+  readonly g6pdStatus = signal<G6pdStatus>('G6PD_DEFICIENT_CLASS_III_AFRICAN_A_MINUS');
+  readonly apol1Genotype = signal<Apol1Genotype>('G1_G2_COMPOUND_HIGH_RISK');
+  readonly cyp2b6Metabolizer = signal<Cyp2b6Metabolizer>('POOR_SLOW_STAR6_STAR6');
 
   // ==========================================
   // COMPUTED MODELS & EQUATIONS
@@ -416,6 +452,91 @@ export class SovereigntyHealthModelsService {
     };
   });
 
+  /**
+   * 7. African Evolutionary Genomics & Pharmacogenomics Evaluation:
+   * Grounded in evolutionary malaria and trypanosomiasis selective pressure:
+   * - G6PD Deficiency: X-linked erythrocyte enzymopathy with oxidative hemolysis danger.
+   * - APOL1 Nephropathy: G1/G2 lytic factor against T. b. rhodesiense with accelerated glomerulosclerosis.
+   * - CYP2B6*6: Allelic slow efavirenz clearance requiring dose reduction (600mg -> 400mg).
+   */
+  readonly africanGenomicsEvaluation = computed<IAfricanGenomicRiskProfile>(() => {
+    const g6pd = this.g6pdStatus();
+    const apol1 = this.apol1Genotype();
+    const cyp = this.cyp2b6Metabolizer();
+
+    // 1. G6PD Assessment
+    let g6pdRiskLevel: 'LOW' | 'MODERATE' | 'CRITICAL_LETHAL' = 'LOW';
+    let g6pdGuidance = 'G6PD enzyme activity within reference range. Standard antimalarial and antibiotic formularies are safe.';
+    const contraindicated: string[] = [];
+    const safeAlternatives: string[] = ['Artemether-Lumefantrine (ACT)', 'Artesunate-Amodiaquine', 'Amoxicillin', 'Azithromycin'];
+
+    if (g6pd === 'G6PD_DEFICIENT_CLASS_II_MEDITERRANEAN' || g6pd === 'G6PD_DEFICIENT_CLASS_III_AFRICAN_A_MINUS') {
+      g6pdRiskLevel = g6pd === 'G6PD_DEFICIENT_CLASS_II_MEDITERRANEAN' ? 'CRITICAL_LETHAL' : 'MODERATE';
+      contraindicated.push(
+        'Primaquine (unless weekly supervised 0.75 mg/kg with close monitoring)',
+        'Dapsone',
+        'Nitrofurantoin',
+        'Cotrimoxazole (high dose)',
+        'Methylene Blue',
+        'Rasburicase',
+        'Fava Beans (Vicia faba)'
+      );
+      g6pdGuidance = `G6PD Deficiency Detected (${g6pd === 'G6PD_DEFICIENT_CLASS_III_AFRICAN_A_MINUS' ? 'Class III African A-' : 'Class II Mediterranean'}). Exposure to oxidizing compounds causes acute intravascular hemolysis, dark tea-colored hemoglobinuria, and renal tubular necrosis. Administer non-oxidizing ACTs (Artemether-Lumefantrine) for acute malaria.`;
+    } else if (g6pd === 'G6PD_UNKNOWN') {
+      g6pdGuidance = 'G6PD status unverified. If administering 14-day anti-relapse Primaquine or Tafenoquine, perform point-of-care G6PD quantitative enzymatic strip test first.';
+    }
+
+    // 2. APOL1 Renal Assessment
+    const isTwoAllele = apol1 === 'G1_G1_HIGH_RISK' || apol1 === 'G2_G2_HIGH_RISK' || apol1 === 'G1_G2_COMPOUND_HIGH_RISK';
+    const oddsRatio = isTwoAllele ? 10.5 : (apol1 === 'G1_G0_HETEROZYGOUS' || apol1 === 'G2_G0_HETEROZYGOUS' ? 1.4 : 1.0);
+    const sbpTarget = isTwoAllele ? 120 : 130;
+    const aceiArb = isTwoAllele 
+      ? 'MANDATORY FIRST-LINE: Prioritize ACE-Inhibitor (Lisinopril) or ARB (Losartan) for intensive intraglomerular pressure reduction and proteinuria suppression.'
+      : 'Standard guideline-directed hypertension therapy.';
+    const renalProtocol = isTwoAllele
+      ? 'APOL1 High-Risk 2-Allele Genotype: Evolved under African trypanosomal selection (immunity against T. brucei rhodesiense), but confers 10-fold elevated risk of focal segmental glomerulosclerosis (FSGS) and hypertensive end-stage kidney disease. Maintain strict SBP < 120 mmHg, obtain baseline urine albumin-to-creatinine ratio (uACR), and avoid repetitive nephrotoxic NSAID exposure.'
+      : 'Low to moderate APOL1 genetic renal risk. Maintain routine blood pressure and kidney surveillance.';
+
+    // 3. CYP2B6 Efavirenz Assessment
+    let efavirenzDose = 600;
+    let cnsRisk: 'LOW' | 'ELEVATED' | 'SEVERE_TOXIC_CONCENTRATION' = 'LOW';
+    let cypGuidance = 'Normal CYP2B6 extensive metabolizer. Standard 600 mg daily Efavirenz or standard TLD/TLE fixed-dose combination.';
+
+    if (cyp === 'POOR_SLOW_STAR6_STAR6') {
+      efavirenzDose = 400;
+      cnsRisk = 'SEVERE_TOXIC_CONCENTRATION';
+      cypGuidance = 'CYP2B6 *6/*6 Slow Metabolizer (prevalent in up to 20% of African populations): Markedly impaired hepatic 8-hydroxylation leads to 3-fold higher plasma efavirenz concentrations, precipitating severe neuropsychiatric toxicity, sleep disturbance, psychosis, and early treatment abandonment. Transition immediately to Dolutegravir-based TLD regimen, or reduce Efavirenz dose to 400 mg daily (ENCORE1 trial protocol).';
+    } else if (cyp === 'INTERMEDIATE_STAR1_STAR6') {
+      efavirenzDose = 400;
+      cnsRisk = 'ELEVATED';
+      cypGuidance = 'CYP2B6 *1/*6 Intermediate Metabolizer: Mildly elevated efavirenz concentrations. Monitor for central nervous system side effects or consider 400 mg daily dose titration.';
+    }
+
+    return {
+      g6pdAssessment: {
+        status: g6pd,
+        contraindicatedOxidants: contraindicated,
+        safeAlternativeAntimalarials: safeAlternatives,
+        clinicalGuidance: g6pdGuidance,
+        hemolysisRiskLevel: g6pdRiskLevel
+      },
+      apol1RenalAssessment: {
+        genotype: apol1,
+        highRiskTwoAllelePresent: isTwoAllele,
+        tenYearFsgsRenalFailureOddsRatio: oddsRatio,
+        recommendedSbpTargetMmhg: sbpTarget,
+        aceiArbIndication: aceiArb,
+        clinicalSurveillanceProtocol: renalProtocol
+      },
+      cyp2b6EfavirenzAssessment: {
+        metabolizerStatus: cyp,
+        recommendedEfavirenzDoseMg: efavirenzDose,
+        cnsNeurotoxicityRisk: cnsRisk,
+        actionablePrescribingGuidance: cypGuidance
+      }
+    };
+  });
+
   // Mutator helpers
   setPcosLabs(glu: number, ins: number, tt: number, shbg: number): void {
     this.fastingGlucoseMgDl.set(glu);
@@ -456,5 +577,11 @@ export class SovereigntyHealthModelsService {
     this.monthsOnTestosterone.set(months);
     this.weeklyTestosteroneDoseMg.set(dose);
     this.hasNocturnalSnoringOrApnea.set(apnea);
+  }
+
+  setAfricanGenomicInputs(g6pd: G6pdStatus, apol1: Apol1Genotype, cyp: Cyp2b6Metabolizer): void {
+    this.g6pdStatus.set(g6pd);
+    this.apol1Genotype.set(apol1);
+    this.cyp2b6Metabolizer.set(cyp);
   }
 }

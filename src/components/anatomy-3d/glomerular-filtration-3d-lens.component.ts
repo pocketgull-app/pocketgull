@@ -41,28 +41,28 @@ export interface IGlomerularTelemetry {
         </div>
 
         <!-- Presets Selector Tabs -->
-        <div class="flex flex-wrap items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs">
+        <div class="flex flex-wrap items-center gap-2 bg-zinc-950 p-1.5 rounded-2xl border border-zinc-800 text-xs">
           <button type="button" (click)="setRegime('healthy_homeostasis')"
-                  [class]="regime() === 'healthy_homeostasis' ? 'bg-teal-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="regime() === 'healthy_homeostasis' ? 'bg-teal-600 text-white font-bold shadow-md shadow-teal-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
             <span>🛡️</span>
             <span>Homeostasis</span>
           </button>
           <button type="button" (click)="setRegime('diabetic_hyperfiltration')"
-                  [class]="regime() === 'diabetic_hyperfiltration' ? 'bg-amber-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="regime() === 'diabetic_hyperfiltration' ? 'bg-amber-600 text-white font-bold shadow-md shadow-amber-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
             <span>⚡</span>
             <span>Hyperfiltration</span>
           </button>
           <button type="button" (click)="setRegime('nephrotic_effacement')"
-                  [class]="regime() === 'nephrotic_effacement' ? 'bg-rose-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="regime() === 'nephrotic_effacement' ? 'bg-rose-600 text-white font-bold shadow-md shadow-rose-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
             <span>🚨</span>
             <span>Nephrotic Effacement</span>
           </button>
           <button type="button" (click)="setRegime('membranous_immune_complex')"
-                  [class]="regime() === 'membranous_immune_complex' ? 'bg-purple-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="regime() === 'membranous_immune_complex' ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
             <span>🧪</span>
             <span>Membranous</span>
           </button>
@@ -74,33 +74,36 @@ export interface IGlomerularTelemetry {
         <div #canvasContainer class="w-full h-full cursor-grab active:cursor-grabbing"></div>
 
         <!-- Floating Playback & View Controls (Top Right) -->
-        <div class="absolute top-3 right-3 z-30 flex items-center gap-1.5 bg-zinc-900/80 backdrop-blur-md p-1.5 rounded-xl border border-zinc-800 text-xs">
+        <div class="absolute top-3 right-3 z-30 flex items-center gap-2 bg-zinc-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-zinc-800 text-xs shadow-xl">
           <button (click)="togglePlay()" type="button"
-                  class="px-3 py-1.5 rounded-lg bg-teal-500/20 text-teal-300 font-bold hover:bg-teal-500/30 transition cursor-pointer">
+                  aria-label="Toggle 3D simulation animation playback"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl bg-teal-500/20 text-teal-300 font-bold hover:bg-teal-500/30 transition cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none flex items-center justify-center gap-1.5">
             {{ isPlaying() ? '⏸ Pause' : '▶ Play' }}
           </button>
           <button (click)="toggleSpeed()" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer">
-            {{ flowSpeed() }}x Speed
+                  aria-label="Toggle simulation flow speed multiplier"
+                  class="min-h-[44px] px-3 py-2 rounded-xl bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none flex items-center justify-center gap-1">
+            <span class="tabular-nums">{{ flowSpeed() }}</span>x Speed
           </button>
           <button (click)="resetCamera()" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer">
+                  aria-label="Reset 3D camera to default viewpoint"
+                  class="min-h-[44px] px-3 py-2 rounded-xl bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none flex items-center justify-center gap-1.5">
             🎯 Reset Camera
           </button>
         </div>
 
         <!-- Floating Glomerular Telemetry HUD (Top Left) -->
-        <div class="absolute top-3 left-3 z-30 bg-zinc-900/85 backdrop-blur-md p-3.5 rounded-2xl border border-zinc-800/80 text-xs space-y-2 max-w-xs shadow-xl pointer-events-none sm:pointer-events-auto">
+        <div class="absolute top-3 left-3 z-30 bg-zinc-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-zinc-800/80 text-xs space-y-2 max-w-xs shadow-xl pointer-events-none sm:pointer-events-auto">
           <div class="flex items-center justify-between border-b border-zinc-800 pb-1.5">
             <span class="text-[10px] uppercase font-bold text-teal-400">Glomerular Filtration HUD</span>
-            <span class="text-[10px] font-mono text-zinc-400">ΔP: {{ telemetry().intraglomerularPressureMmHg }} mmHg</span>
+            <span class="text-[10px] font-mono tabular-nums text-zinc-400">ΔP: {{ telemetry().intraglomerularPressureMmHg }} mmHg</span>
           </div>
 
           <div class="grid grid-cols-2 gap-2 text-[11px]">
             <!-- Podocyte Effacement -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">Effacement</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().effacementRatioPercent > 50 ? 'text-red-400' : (telemetry().effacementRatioPercent > 10 ? 'text-amber-400' : 'text-teal-400')">
                 {{ telemetry().effacementRatioPercent }}%
               </span>
@@ -109,7 +112,7 @@ export interface IGlomerularTelemetry {
             <!-- GBM Negative Charge Integrity -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">GBM Charge Shield</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().gbmChargeIntegrityPercent < 50 ? 'text-red-400' : 'text-cyan-400'">
                 {{ telemetry().gbmChargeIntegrityPercent }}%
               </span>
@@ -118,7 +121,7 @@ export interface IGlomerularTelemetry {
             <!-- Slit Diaphragm Width -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">Slit Width</span>
-              <span class="text-sm font-black font-sans text-zinc-200">
+              <span class="text-sm font-black font-mono tabular-nums text-zinc-200">
                 {{ telemetry().slitDiaphragmWidthNm }} nm
               </span>
             </div>
@@ -126,7 +129,7 @@ export interface IGlomerularTelemetry {
             <!-- Albuminuria Leak Rate -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">Albumin Leak</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().albuminuriaMgPerDay > 300 ? 'text-red-400' : (telemetry().albuminuriaMgPerDay >= 30 ? 'text-amber-400' : 'text-emerald-400')">
                 {{ telemetry().albuminuriaMgPerDay }} mg/d
               </span>

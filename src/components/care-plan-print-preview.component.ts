@@ -24,7 +24,7 @@ export interface IPrintPageThumbnail {
   imports: [CommonModule, ClinicalDataCardComponent, BrandedQrCodeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-zinc-200/80 dark:border-zinc-800 shadow-xl mb-8 font-sans">
+    <div class="bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-zinc-200/80 dark:border-zinc-800/80 shadow-xl mb-8 font-sans">
       
       <!-- Header Banner -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5 mb-6">
@@ -46,6 +46,7 @@ export interface IPrintPageThumbnail {
         <!-- Action Buttons: Audio Readback, Print PDF & Edit Mode Toggle -->
         <div class="flex flex-wrap items-center gap-2 font-mono">
           <button (click)="isSpeaking() ? stopSpeaking() : speakCarePlan()"
+            [attr.aria-label]="isSpeaking() ? 'Stop Audio Readback' : 'Listen to Care Plan Audio'"
             [class.bg-teal-600]="isSpeaking()"
             [class.hover:bg-teal-700]="isSpeaking()"
             [class.bg-zinc-100]="!isSpeaking()"
@@ -53,19 +54,21 @@ export interface IPrintPageThumbnail {
             [class.text-white]="isSpeaking()"
             [class.text-zinc-700]="!isSpeaking()"
             [class.dark:text-zinc-300]="!isSpeaking()"
-            class="px-3.5 py-2 rounded-xl text-xs font-bold uppercase transition active:scale-95 cursor-pointer border border-zinc-200/80 dark:border-zinc-700 flex items-center gap-1.5 shadow-2xs">
+            class="px-3.5 py-2.5 min-h-[44px] rounded-xl text-xs font-bold uppercase transition active:scale-95 cursor-pointer border border-zinc-200/80 dark:border-zinc-700 flex items-center gap-1.5 shadow-2xs touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
             <span>{{ isSpeaking() ? '🛑' : '🔊' }}</span>
             <span>{{ isSpeaking() ? 'Stop Audio' : 'Listen to Care Plan' }}</span>
           </button>
 
           <button (click)="toggleEditBox()"
-            class="px-3.5 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-bold uppercase transition active:scale-95 cursor-pointer border border-zinc-200/80 dark:border-zinc-700 flex items-center gap-1.5">
+            [attr.aria-label]="isEditBoxOpen() ? 'Close Care Plan Notes Editor' : 'Open Care Plan Notes Editor'"
+            class="px-3.5 py-2.5 min-h-[44px] rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-xs font-bold uppercase transition active:scale-95 cursor-pointer border border-zinc-200/80 dark:border-zinc-700 flex items-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:outline-none">
             <span>✏️</span>
             <span>{{ isEditBoxOpen() ? 'Close Edit Box' : 'Edit Care Plan Notes' }}</span>
           </button>
 
           <button (click)="triggerPrintPdf()"
-            class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider transition shadow-md active:scale-95 cursor-pointer flex items-center gap-2">
+            aria-label="Print Care Plan PDF Document"
+            class="px-4 py-2.5 min-h-[44px] rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider transition shadow-md active:scale-95 cursor-pointer flex items-center gap-2 touch-manipulation focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none">
             <span>🖨️</span>
             <span>Print Care Plan PDF</span>
           </button>
@@ -88,7 +91,7 @@ export interface IPrintPageThumbnail {
               [class.dark:bg-zinc-800]="activePhilosophy() !== 'western'"
               [class.dark:text-zinc-300]="activePhilosophy() !== 'western'"
               aria-label="Select Western Allopathic Philosophy"
-              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center">
+              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center touch-manipulation focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none">
               🔵 Western Allopathic
             </button>
             <button (click)="selectPhilosophy('eastern')"
@@ -99,7 +102,7 @@ export interface IPrintPageThumbnail {
               [class.dark:bg-zinc-800]="activePhilosophy() !== 'eastern'"
               [class.dark:text-zinc-300]="activePhilosophy() !== 'eastern'"
               aria-label="Select Eastern TCM Philosophy"
-              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center">
+              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center touch-manipulation focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none">
               🟢 Eastern (TCM)
             </button>
             <button (click)="selectPhilosophy('ayurvedic')"
@@ -110,7 +113,7 @@ export interface IPrintPageThumbnail {
               [class.dark:bg-zinc-800]="activePhilosophy() !== 'ayurvedic'"
               [class.dark:text-zinc-300]="activePhilosophy() !== 'ayurvedic'"
               aria-label="Select Ayurvedic Medicine Philosophy"
-              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center">
+              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none">
               🟡 Ayurvedic Medicine
             </button>
             <button (click)="selectPhilosophy('osteopathic')"
@@ -121,7 +124,7 @@ export interface IPrintPageThumbnail {
               [class.dark:bg-zinc-800]="activePhilosophy() !== 'osteopathic'"
               [class.dark:text-zinc-300]="activePhilosophy() !== 'osteopathic'"
               aria-label="Select Osteopathic Medicine Philosophy"
-              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center">
+              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center touch-manipulation focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:outline-none">
               🦴 Osteopathic Medicine
             </button>
             <button (click)="selectPhilosophy('who_nih')"
@@ -132,7 +135,7 @@ export interface IPrintPageThumbnail {
               [class.dark:bg-zinc-800]="activePhilosophy() !== 'who_nih'"
               [class.dark:text-zinc-300]="activePhilosophy() !== 'who_nih'"
               aria-label="Select NIH/GARD Rare Disease Screener"
-              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center relative overflow-hidden group">
+              class="px-2.5 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center relative overflow-hidden group touch-manipulation focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none">
               <span class="absolute inset-0 bg-[url('/assets/textures/noise.svg')] opacity-20 pointer-events-none group-hover:opacity-30 transition-opacity"></span>
               🌐 NIH/GARD Rare Disease
             </button>
@@ -150,7 +153,8 @@ export interface IPrintPageThumbnail {
               [class.text-zinc-700]="activeCognitiveLevel() !== 'standard'"
               [class.dark:bg-zinc-800]="activeCognitiveLevel() !== 'standard'"
               [class.dark:text-zinc-300]="activeCognitiveLevel() !== 'standard'"
-              class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
+              aria-label="Select Standard MD Cognitive Assessment Level"
+              class="px-3 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center touch-manipulation focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:outline-none">
               ⚙️ Standard MD
             </button>
             <button (click)="selectCognitiveLevel('simplified')"
@@ -160,7 +164,8 @@ export interface IPrintPageThumbnail {
               [class.text-zinc-700]="activeCognitiveLevel() !== 'simplified'"
               [class.dark:bg-zinc-800]="activeCognitiveLevel() !== 'simplified'"
               [class.dark:text-zinc-300]="activeCognitiveLevel() !== 'simplified'"
-              class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
+              aria-label="Select Simplified Grade 8 Cognitive Assessment Level"
+              class="px-3 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
               📄 Simplified Grade 8
             </button>
             <button (click)="selectCognitiveLevel('dyslexia')"
@@ -170,7 +175,8 @@ export interface IPrintPageThumbnail {
               [class.text-zinc-700]="activeCognitiveLevel() !== 'dyslexia'"
               [class.dark:bg-zinc-800]="activeCognitiveLevel() !== 'dyslexia'"
               [class.dark:text-zinc-300]="activeCognitiveLevel() !== 'dyslexia'"
-              class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
+              aria-label="Select Dyslexia-Friendly Cognitive Assessment Level"
+              class="px-3 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center touch-manipulation focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:outline-none">
               📖 Dyslexia-Friendly
             </button>
             <button (click)="selectCognitiveLevel('child')"
@@ -180,14 +186,15 @@ export interface IPrintPageThumbnail {
               [class.text-zinc-700]="activeCognitiveLevel() !== 'child'"
               [class.dark:bg-zinc-800]="activeCognitiveLevel() !== 'child'"
               [class.dark:text-zinc-300]="activeCognitiveLevel() !== 'child'"
-              class="px-2.5 py-1 rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent">
+              aria-label="Select Child-Friendly Grade 4 Cognitive Assessment Level"
+              class="px-3 py-2 min-h-[44px] rounded-lg font-bold uppercase tracking-wider transition cursor-pointer border border-transparent flex items-center touch-manipulation focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:outline-none">
               🧸 Child-Friendly (Grade 4)
             </button>
           </div>
         </div>
 
         <div class="text-right text-[11px] text-zinc-500 dark:text-zinc-400">
-          <span>Active Patient: <strong class="text-zinc-800 dark:text-zinc-200">{{ activePatientName() }}</strong></span>
+          <span>Active Patient: <strong class="text-zinc-900 dark:text-[#F5EFE6] font-bold">{{ activePatientName() }}</strong></span>
         </div>
       </div>
 
@@ -196,7 +203,7 @@ export interface IPrintPageThumbnail {
         <div class="mb-6 p-5 rounded-2xl bg-[#FFFDF8] dark:bg-zinc-950 text-[#1C1C1C] dark:text-zinc-100 border-2 border-[#1C1C1C] dark:border-zinc-700 shadow-[3px_4px_0px_0px_rgba(28,28,28,0.85)] font-mono sub-panel">
           <div class="flex items-center justify-between border-b-2 border-[#1C1C1C] pb-3 mb-3">
             <div class="flex items-center gap-2">
-              <span class="text-lg">💊</span>
+              <span class="text-lg">🩺</span>
               <h3 class="text-xs font-black uppercase tracking-wider">Active Prescribed Clinical Apps & Interventions ({{ patientState.prescribedToolsList().length }})</h3>
             </div>
             <span class="text-[10px] px-2 py-0.5 rounded-md bg-[#10B981] text-white font-bold uppercase">Care Plan Attached</span>

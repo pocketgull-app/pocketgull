@@ -10,6 +10,8 @@ describe('ClinicalMenuComponent Unit Suite', () => {
   let mockPatientState: {
     patientAge: ReturnType<typeof signal<number>>;
     vitals: ReturnType<typeof signal<{ bp?: string; hr?: string }>>;
+    selectedNutrigenomicLigand: ReturnType<typeof signal<string>>;
+    anatomyViewMode: ReturnType<typeof signal<string>>;
     addClinicalNote: ReturnType<typeof vi.fn>;
     addDraftSummaryItem: ReturnType<typeof vi.fn>;
   };
@@ -22,6 +24,8 @@ describe('ClinicalMenuComponent Unit Suite', () => {
     mockPatientState = {
       patientAge: signal(52),
       vitals: signal({ bp: '138/88', hr: '90' }),
+      selectedNutrigenomicLigand: signal('all'),
+      anatomyViewMode: signal('skin'),
       addClinicalNote: vi.fn(),
       addDraftSummaryItem: vi.fn()
     };

@@ -102,8 +102,11 @@ import { EnterpriseIdentityConsoleComponent } from './components/enterprise-iden
 import { DirectIomtConsoleComponent } from './components/iomt-wearables/direct-iomt-console.component';
 import { MimicOmopBenchmarkHubComponent } from './components/research/mimic-omop-benchmark-hub.component';
 import { SmartFhirLauncherComponent } from './components/smart-fhir-launcher.component';
+import { DisasterBleMeshBeaconComponent } from './components/disaster-ble-mesh-beacon.component';
 import { EhrWritebackConsoleComponent } from './components/ehr-writeback/ehr-writeback-console.component';
 import { EdgeAutonomousVoiceAgentComponent } from './components/voice/edge-autonomous-voice-agent.component';
+import { CowsAssessmentModalComponent } from './components/modals/cows-assessment-modal.component';
+import { RecoveryCompanionModalComponent } from './components/modals/recovery-companion-modal.component';
 import { RoleDemoModalComponent } from './components/role-demo-modal.component';
 import { IntimacyRelationshipVitalityComponent } from './components/intimacy-relationship-vitality.component';
 import { ArcadeHubModalComponent } from './components/arcade-hub-modal.component';
@@ -113,6 +116,7 @@ import { SpecialistReferralHubComponent } from './components/specialist-referral
 import { SocraticMultilingualTerminalComponent } from './components/socratic-multilingual-terminal.component';
 import { MocaSuiteComponent } from './components/moca/moca-suite.component';
 import { CardiacElectrophysiology3dLensComponent } from './components/anatomy-3d/cardiac-electrophysiology-3d-lens.component';
+import { CardiacWebgpuLensComponent } from './components/anatomy-3d/cardiac-webgpu-lens.component';
 import { AlveolarCapillary3dLensComponent } from './components/anatomy-3d/alveolar-capillary-3d-lens.component';
 import { HepaticSinusoid3dLensComponent } from './components/anatomy-3d/hepatic-sinusoid-3d-lens.component';
 import { GlomerularFiltration3dLensComponent } from './components/anatomy-3d/glomerular-filtration-3d-lens.component';
@@ -123,8 +127,12 @@ import { GlycemicMinimalModelCardComponent } from './components/clinical/glycemi
 import { PancreaticIslet3dLensComponent } from './components/anatomy-3d/pancreatic-islet-3d-lens.component';
 import { Cyp450DdiMatrixCardComponent } from './components/clinical/cyp450-ddi-matrix-card.component';
 import { Cyp3a4Heme3dLensComponent } from './components/anatomy-3d/cyp3a4-heme-3d-lens.component';
+import { BioprintingScaffold3dLensComponent } from './components/anatomy-3d/bioprinting-scaffold-3d-lens.component';
 import { StewartHamiltonPacCardComponent } from './components/clinical/stewart-hamilton-pac-card.component';
 import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin-tone-equity-card.component';
+import { FluidResuscitationTonicityCardComponent } from './components/clinical/fluid-resuscitation-tonicity-card.component';
+import { GlymphaticBrain3dLensComponent } from './components/anatomy-3d/glymphatic-brain-3d-lens.component';
+import { Nutrigenomics3dLensComponent } from './components/anatomy-3d/nutrigenomics-3d-lens.component';
 
 @Component({
   selector: 'app-root',
@@ -208,12 +216,16 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
     DirectIomtConsoleComponent,
     MimicOmopBenchmarkHubComponent,
     SmartFhirLauncherComponent,
+    DisasterBleMeshBeaconComponent,
     EhrWritebackConsoleComponent,
     EdgeAutonomousVoiceAgentComponent,
+    CowsAssessmentModalComponent,
+    RecoveryCompanionModalComponent,
     RoleDemoModalComponent,
     IntimacyRelationshipVitalityComponent,
     MocaSuiteComponent,
     CardiacElectrophysiology3dLensComponent,
+    CardiacWebgpuLensComponent,
     AlveolarCapillary3dLensComponent,
     HepaticSinusoid3dLensComponent,
     GlomerularFiltration3dLensComponent,
@@ -224,8 +236,12 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
     PancreaticIslet3dLensComponent,
     Cyp450DdiMatrixCardComponent,
     Cyp3a4Heme3dLensComponent,
+    BioprintingScaffold3dLensComponent,
     StewartHamiltonPacCardComponent,
-    MonkSkinToneEquityCardComponent
+    MonkSkinToneEquityCardComponent,
+    FluidResuscitationTonicityCardComponent,
+    GlymphaticBrain3dLensComponent,
+    Nutrigenomics3dLensComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -450,6 +466,23 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
         </div>
       }
 
+      <!-- Decentralized BLE Disaster Mesh & Offline Community Mutual-Aid Beacon Modal -->
+      @if (navShell.showDisasterMeshModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Decentralized BLE Disaster Mesh and Offline Community Mutual-Aid Beacon">
+          <div class="relative w-full max-w-5xl my-auto bg-zinc-950 rounded-3xl border border-zinc-800 p-4 sm:p-6 shadow-2xl text-gray-100">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-zinc-800">
+              <div class="flex items-center gap-2">
+                <span class="text-xl">📡</span>
+                <span class="text-sm font-mono font-bold text-emerald-400">DECENTRALIZED BLE DISASTER MESH &amp; MUTUAL-AID BEACON</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Zero-Grid • BLE 5.2 • Sneakernet</span>
+              </div>
+              <button type="button" (click)="navShell.closeDisasterMeshModal()" aria-label="Close Disaster Mesh Modal" class="w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer transition min-h-[44px] min-w-[44px]">✕</button>
+            </div>
+            <app-disaster-ble-mesh-beacon></app-disaster-ble-mesh-beacon>
+          </div>
+        </div>
+      }
+
       <!-- EHR Bi-Directional Writeback & Subscription ADT Modal -->
       @if (navShell.showEhrWritebackModal()) {
         <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="EHR Bi-Directional Writeback and Subscription ADT Console">
@@ -466,6 +499,16 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
             <app-edge-autonomous-voice-agent (close)="navShell.closeEdgeVoiceModal()"></app-edge-autonomous-voice-agent>
           </div>
         </div>
+      }
+
+      <!-- Yale COWS & Restorative Buprenorphine Induction Suite Modal -->
+      @if (navShell.showCowsModal()) {
+        <app-cows-assessment-modal (close)="navShell.closeCowsModal()"></app-cows-assessment-modal>
+      }
+
+      <!-- Patient Recovery Companion Daily Check-In Modal -->
+      @if (navShell.showRecoveryModal()) {
+        <app-recovery-companion-modal (close)="navShell.closeRecoveryModal()"></app-recovery-companion-modal>
       }
 
       @defer (on idle) {
@@ -1002,6 +1045,9 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
             </button>
             <button type="button" (click)="showTalentHrPortalModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>🤝 Join Team &amp; Fellowships</span>
+            </button>
+            <button type="button" (click)="showTestimonialsModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+              <span>💬 Seeking Clients &amp; Reviews</span>
             </button>
             <button type="button" (click)="showModelGardenModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>🌿 Vertex Model Garden</span>
@@ -1701,6 +1747,15 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
               class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
               🧬 CYP3A4 Heme Slicer (V10)
             </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('bioprinting_scaffold')"
+              [class.bg-emerald-600]="activeBiophysicalLensTab() === 'bioprinting_scaffold'"
+              [class.text-white]="activeBiophysicalLensTab() === 'bioprinting_scaffold'"
+              [class.text-emerald-400]="activeBiophysicalLensTab() !== 'bioprinting_scaffold'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[44px] touch-manipulation focus-visible:ring-2 focus-visible:ring-emerald-400">
+              🧬 UO Knight Bioprinting &amp; Scaffold Lens
+            </button>
 
             <div class="h-4 w-px bg-zinc-700 mx-1 hidden sm:block"></div>
             <div class="text-[10px] uppercase font-bold text-zinc-500 px-2">Clinical Phenotypers:</div>
@@ -1768,12 +1823,70 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
               class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
               🎨 Monk Skin Tone Equity
             </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('fluid_tonicity')"
+              [class.bg-cyan-600]="activeBiophysicalLensTab() === 'fluid_tonicity'"
+              [class.text-white]="activeBiophysicalLensTab() === 'fluid_tonicity'"
+              [class.text-cyan-400]="activeBiophysicalLensTab() !== 'fluid_tonicity'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              💧 IV Fluid &amp; Tonicity Shift (P14)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('glymphatic_brain')"
+              [class.bg-teal-600]="activeBiophysicalLensTab() === 'glymphatic_brain'"
+              [class.text-white]="activeBiophysicalLensTab() === 'glymphatic_brain'"
+              [class.text-teal-400]="activeBiophysicalLensTab() !== 'glymphatic_brain'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🧠 Glymphatic &amp; AQP4 Convection (V10)
+            </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('nutrigenomics')"
+              [class.bg-emerald-600]="activeBiophysicalLensTab() === 'nutrigenomics'"
+              [class.text-white]="activeBiophysicalLensTab() === 'nutrigenomics'"
+              [class.text-emerald-400]="activeBiophysicalLensTab() !== 'nutrigenomics'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              🧬 3D Nutrigenomics &amp; Epigenetics (V11)
+            </button>
           </div>
 
           <!-- Active Panel Display -->
           <div class="w-full">
             @if (activeBiophysicalLensTab() === 'cardiac') {
-              <app-cardiac-electrophysiology-3d-lens />
+              <div class="mb-3 flex items-center justify-between bg-zinc-900/80 p-2.5 rounded-2xl border border-zinc-800 gap-3 flex-wrap">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-zinc-400 font-mono">3D Rendering Engine:</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border"
+                        [class.bg-teal-500/20]="cardiacEngineMode() === 'webgpu'"
+                        [class.text-teal-300]="cardiacEngineMode() === 'webgpu'"
+                        [class.border-teal-500/40]="cardiacEngineMode() === 'webgpu'"
+                        [class.bg-zinc-800]="cardiacEngineMode() === 'threejs'"
+                        [class.text-zinc-400]="cardiacEngineMode() === 'threejs'">
+                    {{ cardiacEngineMode() === 'webgpu' ? '⚡ GullRender (Zero-Three.js)' : '📦 Three.js Legacy' }}
+                  </span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs">
+                  <button type="button" (click)="cardiacEngineMode.set('webgpu')"
+                          [class]="cardiacEngineMode() === 'webgpu' ? 'bg-teal-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                          class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                    <span>⚡</span>
+                    <span>GullRender (WebGPU)</span>
+                  </button>
+                  <button type="button" (click)="cardiacEngineMode.set('threejs')"
+                          [class]="cardiacEngineMode() === 'threejs' ? 'bg-zinc-700 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
+                          class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                    <span>📦</span>
+                    <span>Three.js (Legacy)</span>
+                  </button>
+                </div>
+              </div>
+              @if (cardiacEngineMode() === 'webgpu') {
+                <app-cardiac-webgpu-lens />
+              } @else {
+                <app-cardiac-electrophysiology-3d-lens />
+              }
             } @else if (activeBiophysicalLensTab() === 'alveolar') {
               <app-alveolar-capillary-3d-lens />
             } @else if (activeBiophysicalLensTab() === 'hepatic') {
@@ -1784,6 +1897,8 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
               <app-pancreatic-islet-3d-lens />
             } @else if (activeBiophysicalLensTab() === 'cyp_heme') {
               <app-cyp3a4-heme-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'bioprinting_scaffold') {
+              <app-bioprinting-scaffold-3d-lens />
             } @else if (activeBiophysicalLensTab() === 'kdigo_aki') {
               <app-kdigo-aki-phenotyper-card />
             } @else if (activeBiophysicalLensTab() === 'baroreflex') {
@@ -1798,6 +1913,12 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
               <app-stewart-hamilton-pac-card />
             } @else if (activeBiophysicalLensTab() === 'monk_equity') {
               <app-monk-skin-tone-equity-card />
+            } @else if (activeBiophysicalLensTab() === 'fluid_tonicity') {
+              <app-fluid-resuscitation-tonicity-card />
+            } @else if (activeBiophysicalLensTab() === 'glymphatic_brain') {
+              <app-glymphatic-brain-3d-lens />
+            } @else if (activeBiophysicalLensTab() === 'nutrigenomics') {
+              <app-nutrigenomics-3d-lens />
             }
           </div>
         </div>
@@ -1855,7 +1976,8 @@ export class AppComponent implements OnDestroy {
   showAustereHudModal = signal(false);
   showKneeHologramModal = signal(false);
   showBiophysicalLensesModal = signal(false);
-  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz' | 'monk_equity'>('cardiac');
+  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'bioprinting_scaffold' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz' | 'monk_equity' | 'fluid_tonicity' | 'glymphatic_brain' | 'nutrigenomics'>('cardiac');
+  cardiacEngineMode = signal<'webgpu' | 'threejs'>('webgpu');
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
@@ -2734,6 +2856,46 @@ export class AppComponent implements OnDestroy {
 
       // Check URL query parameters for deep-linked case studies (e.g. ?case=nantucket or ?caseStudy=nantucket-tick-radar)
       this.handleCaseStudyDeepLink();
+
+      // Deep link to MIMIC-IV & CMS OMOP Conformal Sepsis Benchmark Hub
+      const currentPath = (window.location.pathname || '').toLowerCase();
+      const currentSearch = (window.location.search || '').toLowerCase();
+      const currentHash = (window.location.hash || '').toLowerCase();
+      if (
+        currentPath.startsWith('/research/mimic-benchmark') ||
+        currentPath.startsWith('/research/sepsis') ||
+        currentSearch.includes('modal=mimic-benchmark') ||
+        currentSearch.includes('modal=sepsis') ||
+        currentSearch.includes('benchmark=mimic') ||
+        currentHash === '#mimic-benchmark' ||
+        currentHash === '#sepsis-benchmark'
+      ) {
+        this.navShell.openSepsisBenchmarkModal();
+      }
+
+      // Deep link to Yale COWS & Restorative Buprenorphine Induction Suite
+      if (
+        currentPath.startsWith('/clinical/cows') ||
+        currentPath.startsWith('/cows') ||
+        currentSearch.includes('modal=cows') ||
+        currentSearch.includes('view=cows') ||
+        currentHash === '#cows' ||
+        currentHash === '#yale-cows'
+      ) {
+        this.navShell.openCowsModal();
+      }
+
+      // Deep link to Patient-Facing Recovery Companion Log
+      if (
+        currentPath.startsWith('/clinical/recovery') ||
+        currentPath.startsWith('/recovery') ||
+        currentSearch.includes('modal=recovery') ||
+        currentSearch.includes('view=recovery') ||
+        currentHash === '#recovery' ||
+        currentHash === '#recovery-companion'
+      ) {
+        this.navShell.openRecoveryModal();
+      }
 
       this.isMobile.set(window.innerWidth < 768);
 

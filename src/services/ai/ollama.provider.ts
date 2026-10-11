@@ -20,6 +20,8 @@ export interface IOllamaModelInfo {
 }
 
 export const RECOMMENDED_OLLAMA_MODELS = [
+  'pocketgull-clinical:latest',
+  'pocketgull-edge:3b',
   'gemma4:latest',
   'gemma4:31b-cloud',
   'moondream:latest',
@@ -34,7 +36,7 @@ export class OllamaProvider implements IIntelligenceProvider {
 
   // Server & Connection Signals
   readonly baseUrl = signal<string>('http://localhost:11434');
-  readonly selectedModelId = signal<string>('gemma4:latest');
+  readonly selectedModelId = signal<string>('pocketgull-clinical:latest');
   readonly isConnected = signal<boolean>(false);
   readonly isCheckingStatus = signal<boolean>(false);
   readonly statusMessage = signal<string>('Initializing local Ollama connection...');
@@ -69,16 +71,23 @@ export class OllamaProvider implements IIntelligenceProvider {
         this.availableModels.set(models);
         this.isConnected.set(true);
 
-        // Prefer gemma4:latest if available, else first available model
+        // Prioritize sovereign PocketGull models, followed by gemma4
+        const hasClinical = models.some(m => m.name.includes('pocketgull-clinical'));
+        const hasEdge = models.some(m => m.name.includes('pocketgull-edge'));
         const hasGemma4 = models.some(m => m.name.includes('gemma4'));
-        if (hasGemma4 && !this.selectedModelId().includes('gemma4')) {
+
+        if (hasClinical) {
+          this.selectedModelId.set('pocketgull-clinical:latest');
+        } else if (hasEdge) {
+          this.selectedModelId.set('pocketgull-edge:3b');
+        } else if (hasGemma4 && !this.selectedModelId().includes('gemma4')) {
           this.selectedModelId.set('gemma4:latest');
         } else if (models.length > 0 && !models.some(m => m.name === this.selectedModelId())) {
           this.selectedModelId.set(models[0].name);
         }
 
         this.statusMessage.set(
-          `Ollama Server Connected (Active: ${this.selectedModelId()}, ${models.length} model(s) available)`
+          `Ollama Sovereign Brain Connected (Active: ${this.selectedModelId()}, ${models.length} model(s) available)`
         );
         return true;
       }

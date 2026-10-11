@@ -115,6 +115,23 @@ export interface IFunctionalFoodItem {
                 <div class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1">Autophagy Activation & Melatonin Secretion.</div>
               </div>
             </div>
+
+            <!-- Live Fasting Chronobiology Telemetry -->
+            <div class="mt-3 p-3 bg-zinc-900 border border-zinc-800 rounded-xl text-xs flex flex-wrap items-center justify-between text-zinc-300 gap-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full" [class.bg-emerald-400]="isAutophagyActive()" [class.bg-amber-400]="!isAutophagyActive()"></span>
+                <span class="font-bold">Nocturnal Fasting Window: {{ fastingHours() }} Hours</span>
+              </div>
+              <span class="text-[11px] font-mono px-2 py-0.5 rounded font-bold border"
+                    [class.bg-emerald-950]="isAutophagyActive()"
+                    [class.text-emerald-300]="isAutophagyActive()"
+                    [class.border-emerald-700]="isAutophagyActive()"
+                    [class.bg-amber-950]="!isAutophagyActive()"
+                    [class.text-amber-300]="!isAutophagyActive()"
+                    [class.border-amber-700]="!isAutophagyActive()">
+                {{ isAutophagyActive() ? '⚡ AMPK & Macroautophagy Active in 3D' : '⏳ Postprandial mTOR Phase' }}
+              </span>
+            </div>
           </div>
         </div>
       }
@@ -150,6 +167,14 @@ export interface IFunctionalFoodItem {
                         [class.text-gray-400]="food.energeticProperty === 'Neutral'">
                     {{ food.energeticProperty === 'Cooling' ? '❄️ Cooling' : food.energeticProperty === 'Warming' ? '🔥 Warming' : '⚖️ Neutral' }}
                   </span>
+                </div>
+                <div class="pt-2 border-t border-gray-200 dark:border-zinc-700/80 flex items-center justify-between gap-2">
+                  <button (click)="spotlightIn3D(food)" 
+                          type="button"
+                          class="w-full py-1.5 px-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold text-[10.5px] border border-emerald-500/30 flex items-center justify-center gap-1.5 cursor-pointer transition">
+                    <span>🧬</span>
+                    <span>Spotlight in 3D Nutrigenomics</span>
+                  </button>
                 </div>
               </div>
             }
@@ -341,8 +366,47 @@ export class PrecisionNutritionCalculatorComponent {
       targetMechanism: 'Tonifies Kidney Jing essence & reduces vascular oxidative stress.',
       energeticProperty: 'Warming',
       dosageOrPortion: '2 Cloves Aged Garlic'
+    },
+    {
+      name: 'Resistant Starch Prebiotic Oats',
+      category: 'western',
+      bioactiveCompound: 'Beta-Glucan & Butyrate Precursor',
+      targetMechanism: 'Fermented by commensal taxa into Butyrate, inhibiting HDACs and sealing tight junctions.',
+      energeticProperty: 'Neutral',
+      dosageOrPortion: '1/2 Cup Soaked Oats'
+    },
+    {
+      name: 'Wild Nettles & Organic Spinach',
+      category: 'western',
+      bioactiveCompound: '5-MTHF Active Folate & Iron',
+      targetMechanism: 'Drives one-carbon SAMe methylation cycle for DNA stability and homocysteine clearance.',
+      energeticProperty: 'Cooling',
+      dosageOrPortion: '1 Cup Steamed Greens'
     }
   ]);
+
+  readonly fastingHours = computed(() => 24 - 8);
+  readonly isAutophagyActive = computed(() => this.fastingHours() >= 14);
+
+  spotlightIn3D(food: IFunctionalFoodItem): void {
+    const text = (food.bioactiveCompound + ' ' + food.name).toLowerCase();
+    let ligand: 'all' | 'sulforaphane' | 'butyrate' | 'resveratrol' | 'omega3_dha' | 'methyl_5mthf' = 'sulforaphane';
+
+    if (text.includes('sulforaphane') || text.includes('curcumin') || text.includes('glucoraphanin')) {
+      ligand = 'sulforaphane';
+    } else if (text.includes('butyrate') || text.includes('starch') || text.includes('beta-glucan') || text.includes('oats')) {
+      ligand = 'butyrate';
+    } else if (text.includes('resveratrol') || text.includes('egcg') || text.includes('polyphenol')) {
+      ligand = 'resveratrol';
+    } else if (text.includes('omega') || text.includes('epa') || text.includes('dha') || text.includes('salmon')) {
+      ligand = 'omega3_dha';
+    } else if (text.includes('folate') || text.includes('mthf') || text.includes('methyl') || text.includes('nettle') || text.includes('sac')) {
+      ligand = 'methyl_5mthf';
+    }
+
+    this.state.selectedNutrigenomicLigand.set(ligand);
+    this.state.anatomyViewMode.set('nutrigenomics');
+  }
 
   onStartHourChange(e: Event): void {
     const val = parseInt((e.target as HTMLInputElement).value, 10);

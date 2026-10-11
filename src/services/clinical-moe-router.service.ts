@@ -114,6 +114,110 @@ export interface ICrossAttentionBridge {
   benchmarkMetric: string;
 }
 
+export interface ICoreLensDefinition {
+  id: string;
+  indexNumber: string;
+  label: string;
+  shortLabel: string;
+  icon: string;
+  defaultWeight: number;
+  relevanceKeywords: string[];
+}
+
+export interface ICoreLensGatingScore {
+  lens: ICoreLensDefinition;
+  weight: number;
+  rawScore: number;
+  routingRationale: string;
+  isActive: boolean;
+  rank: number;
+}
+
+export interface IParadigmSparsityRouting {
+  westernWeight: number;
+  easternWeight: number;
+  ayurvedicWeight: number;
+  dominantParadigm: 'western' | 'eastern' | 'ayurvedic';
+  secondaryParadigm: 'western' | 'eastern' | 'ayurvedic' | null;
+  dormantParadigms: Array<'western' | 'eastern' | 'ayurvedic'>;
+  clinicalDomainRationale: string;
+}
+
+export const REGISTERED_CORE_LENSES: ICoreLensDefinition[] = [
+  {
+    id: 'Summary Overview',
+    indexNumber: '01',
+    label: 'Summary Overview',
+    shortLabel: 'Overview',
+    icon: '📋',
+    defaultWeight: 0.20,
+    relevanceKeywords: ['overview', 'summary', 'history', 'synthesis', 'baseline', 'chief complaint', 'intake', 'patient', 'darwin', 'palpitation', 'vagus']
+  },
+  {
+    id: 'Treatment Matrix',
+    indexNumber: '02',
+    label: 'Treatment & Tri-Paradigm',
+    shortLabel: 'Treatment',
+    icon: '💊',
+    defaultWeight: 0.18,
+    relevanceKeywords: ['treatment', 'intervention', 'medication', 'protocol', 'prescription', 'posology', 'drug', 'therapy', 'acute', 'decompression', 'radiculopathy', 'trauma', 'infection']
+  },
+  {
+    id: 'Functional Protocols',
+    indexNumber: '03',
+    label: 'Functional & Nutrition',
+    shortLabel: 'Functional & Nutri',
+    icon: '🌿',
+    defaultWeight: 0.16,
+    relevanceKeywords: ['functional', 'nutrition', 'diet', 'cgm', 'glucose', 'metabolic', 'gut', 'microbiome', 'zonulin', 'atp', 'mitochondria', 'dyspepsia', 'gastroparesis']
+  },
+  {
+    id: 'ASSESSMENTS',
+    indexNumber: '04',
+    label: 'Assessments',
+    shortLabel: 'Assessments',
+    icon: '📊',
+    defaultWeight: 0.15,
+    relevanceKeywords: ['assessment', 'phq9', 'gad7', 'mbi', 'allostatic', 'strain', 'screening', 'moca', 'questionnaire', 'vagal', 'palpitations', 'autonomic']
+  },
+  {
+    id: 'Monitoring & Follow-up',
+    indexNumber: '05',
+    label: 'Monitoring & Longevity',
+    shortLabel: 'Monitoring',
+    icon: '📡',
+    defaultWeight: 0.12,
+    relevanceKeywords: ['monitoring', 'longevity', 'follow-up', 'telemetry', 'trajectory', 'epigenetic', 'wearable', 'cgm', 'continuous', 'trend', 'glucose']
+  },
+  {
+    id: 'Environmental Exposomics & Toxicology',
+    indexNumber: '06',
+    label: 'Exposomics & Tox',
+    shortLabel: 'Exposomics',
+    icon: '☣️',
+    defaultWeight: 0.08,
+    relevanceKeywords: ['exposome', 'toxicology', 'aqi', 'pm25', 'wildfire', 'xenobiotic', 'water', 'lead', 'pfas', 'mold', 'infection', 'toxin', 'allergy']
+  },
+  {
+    id: 'Global Health & WHO Initiatives',
+    indexNumber: '07',
+    label: 'Global Health',
+    shortLabel: 'Global Health',
+    icon: '🌍',
+    defaultWeight: 0.06,
+    relevanceKeywords: ['who', 'global health', 'sdg', 'cvd', 'icd-11', 'epidemiology', 'population', 'task-shifting', 'public health']
+  },
+  {
+    id: 'Skeptical Epistemology & Socratic Audit',
+    indexNumber: '08',
+    label: 'Socratic Audit',
+    shortLabel: 'Socratic Audit',
+    icon: '⚖️',
+    defaultWeight: 0.05,
+    relevanceKeywords: ['socratic', 'epistemology', 'audit', 'fallacy', 'bias', 'popperian', 'counterfactual', 'uncertainty', 'bayesian']
+  }
+];
+
 export const REGISTERED_UI_EXPERTS: IUiExpertDefinition[] = [
   {
     id: 'knee-hologram',
@@ -1124,6 +1228,11 @@ export class ClinicalMoERouterService {
   readonly activeShiftPatientId = signal<string | null>(null);
   readonly analysisViewMode = signal<'canvas' | 'lenses' | 'suites'>('lenses');
 
+  // 8 Lens Focus Areas & Dynamic Paradigm Sparsity Signals
+  readonly lensKValue = signal<number>(2); // Top-k for 8 core lenses (default 2)
+  readonly isSparseLensRoutingEnabled = signal<boolean>(true);
+  readonly clinicalGranularityMode = signal<'specialist' | 'frontline' | 'caregiver'>('specialist');
+
   /** Active 12-Hour Shift Roster Patient Record */
   readonly activeShiftPatient = computed<IShiftPatientRecord | null>(() => {
     const id = this.activeShiftPatientId();
@@ -1504,8 +1613,369 @@ export class ClinicalMoERouterService {
   });
 
   // ---------------------------------------------------------------------------
+  // 8 LENS FOCUS AREAS & CROSS-PARADIGM SPARSITY GATING ENGINE
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Computes the Softmax-normalized routing weights for the 8 core clinical lenses
+   * based on the active patient profile, continuous telemetry, chief complaints, and vitals.
+   */
+  readonly coreLensGatingScores = computed<ICoreLensGatingScore[]>(() => {
+    const pId = this.patientState?.patientId() || this.activeShiftPatientId() || '';
+    const name = (this.patientState?.patientName() || '').toLowerCase();
+    const goals = (this.patientState?.patientGoals?.() || '').toLowerCase();
+    const vitals = this.patientState?.vitals();
+    const issues = this.patientState?.issues() || {};
+
+    const activeIssueDescriptions: string[] = [];
+    for (const key of Object.keys(issues)) {
+      const issueList = issues[key] || [];
+      for (const it of issueList) {
+        if (it.description) activeIssueDescriptions.push(it.description.toLowerCase());
+        if (it.name) activeIssueDescriptions.push(it.name.toLowerCase());
+        if (Array.isArray(it.symptoms)) {
+          it.symptoms.forEach(s => {
+            if (typeof s === 'string') activeIssueDescriptions.push(s.toLowerCase());
+            else if (s && typeof s === 'object' && s.name) activeIssueDescriptions.push(s.name.toLowerCase());
+          });
+        }
+      }
+    }
+    const combinedContext = `${pId} ${name} ${goals} ${activeIssueDescriptions.join(' ')} ${this.activeTranscriptQuery().toLowerCase()}`.toLowerCase();
+
+    // Physiological feature extraction
+    const cgm = parseFloat(vitals?.cgmGlucoseMgDl || '110');
+    const hr = parseFloat(vitals?.hr || '72');
+    const isCgmAlert = cgm > 140 || cgm < 70;
+    const isHrElevated = hr > 100 || hr < 50;
+
+    // Clinical Phenotype Vector Detection
+    const hasMetabolicPhenotype = isCgmAlert || /diabet|glucose|insulin|metabolic|hba1c|obesity|steato|fatty liver|edema|cpap/i.test(combinedContext);
+    const hasExposomePhenotype = /wildfire|pm2\.5|aqi|air quality|particulate|xenobiotic|lead|pfas|toxic|mold|chemical|groundwater/i.test(combinedContext);
+    const hasAutonomicVagalPhenotype = /vagus|vagal|dysautonomia|dyspepsia|flatulence|palpitation|allostatic|anxiety|exhaustion|gastroparesis|nausea/i.test(combinedContext);
+    const hasStructuralPhenotype = /spine|radiculopathy|cervical|fracture|l4-l5|joint|meniscus|knee|orthopedic|decompression|atrophy/i.test(combinedContext);
+    const hasCognitivePhenotype = /moca|cognitive|memory|dementia|alzheimer|recall|glymphatic|confusion/i.test(combinedContext);
+    const hasInfectiousInflammatoryPhenotype = /infection|fever|sepsis|hscrp|amebic|abscess|parasit|pneumonia|tpo|autoimmune/i.test(combinedContext);
+    const hasGlobalHealthPhenotype = /who|sdg|hearts|epidemic|outbreak|population|public health|task-shifting|icd-11 tm1/i.test(combinedContext);
+    const hasEpistemicUncertainty = /suspected|unexplained|idiopathic|paradoxical|audit|bias|fallacy|counterfactual|uncertain/i.test(combinedContext);
+    const isMultiSystemComplex = (Object.keys(issues).length >= 3) || /chronic|complex|multisystem|syndrome/i.test(combinedContext);
+
+    const rawScores = REGISTERED_CORE_LENSES.map(def => {
+      let score = def.defaultWeight;
+      let rationale = 'Baseline diagnostic affinity';
+
+      switch (def.id) {
+        case 'Summary Overview':
+          if (hasAutonomicVagalPhenotype && /darwin|fatigue|exhaustion/i.test(combinedContext)) {
+            score += 4.2;
+            rationale = 'Foundational multi-system dysautonomia & enteric axis synthesis';
+          } else if (hasStructuralPhenotype) {
+            score += 3.2;
+            rationale = 'Dermatomal mapping & anatomical neurological status';
+          } else if (isMultiSystemComplex) {
+            score += 3.4;
+            rationale = 'Multi-system co-morbidity & cross-organ harmonization synthesis';
+          } else {
+            score += 1.8;
+            rationale = 'Core clinical intake & past medical history';
+          }
+          break;
+
+        case 'Treatment Matrix':
+          if (hasStructuralPhenotype) {
+            score += 4.4;
+            rationale = 'Acute mechanical intervention, decompression & physical therapy';
+          } else if (hasInfectiousInflammatoryPhenotype || hasExposomePhenotype) {
+            score += 3.6;
+            rationale = 'Acute pharmacotherapy titration & posology safety clearance';
+          } else if (/ldn|naltrexone|titrat|biologic|dupilumab|cftr/i.test(combinedContext)) {
+            score += 3.8;
+            rationale = 'Targeted drug initiation & micro-titration protocol';
+          } else {
+            score += 1.2;
+            rationale = 'Standard multi-modal intervention matrix';
+          }
+          break;
+
+        case 'Functional Protocols':
+          if (hasMetabolicPhenotype) {
+            score += 4.5;
+            rationale = 'Metabolic & continuous glucose regulation (CGM alert)';
+          } else if (/cachexia|malnutrition|cftr|pancreatic|pert|b12/i.test(combinedContext)) {
+            score += 4.2;
+            rationale = 'Targeted nutritional re-alimentation & mucosal barrier repair';
+          } else if (hasAutonomicVagalPhenotype) {
+            score += 2.2;
+            rationale = 'Gut-brain axis, zonulin permeability & vagal pacing';
+          } else {
+            score += 0.8;
+            rationale = 'Functional lifestyle & chronobiology baseline';
+          }
+          break;
+
+        case 'ASSESSMENTS':
+          if (hasAutonomicVagalPhenotype || /mbi|anxiety|strain|palpitation/i.test(combinedContext)) {
+            score += 3.8;
+            rationale = 'Allostatic strain index & autonomic stress evaluation (MBI / GAD-7)';
+          } else if (hasCognitivePhenotype) {
+            score += 4.2;
+            rationale = 'Objective 30-point Montreal Cognitive Assessment (MoCA)';
+          } else if (/pain|fibromyalgia|fatigue|tender point/i.test(combinedContext)) {
+            score += 3.4;
+            rationale = 'Quantified clinical symptom burden & validated rating scales';
+          } else {
+            score += 0.6;
+            rationale = 'Standardized screening questionnaires';
+          }
+          break;
+
+        case 'Monitoring & Follow-up':
+          if (hasMetabolicPhenotype || /cgm|continuous|wearable/i.test(combinedContext)) {
+            score += 3.8;
+            rationale = 'Continuous glycemic trajectory & bio-sensor telemetry';
+          } else if (hasCognitivePhenotype) {
+            score += 3.4;
+            rationale = 'Glymphatic slow-wave sleep tracking & neuro-perfusion monitoring';
+          } else if (isHrElevated) {
+            score += 3.2;
+            rationale = 'Cardiovascular rhythm surveillance & hemodynamic drift tracking';
+          } else {
+            score += 0.5;
+            rationale = 'Longitudinal biometric surveillance';
+          }
+          break;
+
+        case 'Environmental Exposomics & Toxicology':
+          if (hasExposomePhenotype) {
+            score += 4.5;
+            rationale = 'Active environmental toxicant, particulate (PM2.5) or xenobiotic exposure';
+          } else if (/water|alluvial|aquifer|usgs|epa/i.test(combinedContext)) {
+            score += 3.5;
+            rationale = 'Aquifer geochemical percolation & environmental contaminant registry';
+          } else {
+            score += 0.2;
+            rationale = 'Dormant: no acute environmental toxicant triggers';
+          }
+          break;
+
+        case 'Global Health & WHO Initiatives':
+          if (hasGlobalHealthPhenotype || /hearts|sdg 3\.4|task-shifting|population/i.test(combinedContext)) {
+            score += 4.0;
+            rationale = 'WHO HEARTS protocol & SDG 3.4 cardiovascular risk registry active';
+          } else if (/icd-11|tm1|snomed/i.test(combinedContext)) {
+            score += 2.8;
+            rationale = 'Dual traditional-allopathic clinical classification';
+          } else {
+            score += 0.1;
+            rationale = 'Dormant: specialized population health registry';
+          }
+          break;
+
+        case 'Skeptical Epistemology & Socratic Audit':
+          if (hasEpistemicUncertainty || /diagnostic dilemma|refractory|rule out|paradox/i.test(combinedContext)) {
+            score += 4.0;
+            rationale = 'Socratic fallacy audit & Bayesian diagnostic counterfactual analysis';
+          } else {
+            score += 0.2;
+            rationale = 'Dormant: baseline standard-of-care sufficient';
+          }
+          break;
+      }
+
+      // Keyword reinforcement
+      let keywordHits = 0;
+      for (const kw of def.relevanceKeywords) {
+        if (combinedContext.includes(kw)) keywordHits++;
+      }
+      if (keywordHits > 0) {
+        score += Math.min(1.5, keywordHits * 0.4);
+      }
+
+      return { def, rawScore: score, rationale };
+    });
+
+    // Softmax normalization across the 8 lenses
+    const maxScore = Math.max(...rawScores.map(s => s.rawScore));
+    const expScores = rawScores.map(s => Math.exp(s.rawScore - maxScore));
+    const sumExp = expScores.reduce((acc, v) => acc + v, 0);
+
+    const scored: ICoreLensGatingScore[] = rawScores.map((s, idx) => ({
+      lens: s.def,
+      rawScore: s.rawScore,
+      weight: expScores[idx] / sumExp,
+      routingRationale: s.rationale,
+      isActive: false,
+      rank: 0
+    }));
+
+    // Sort descending by weight
+    scored.sort((a, b) => b.weight - a.weight);
+
+    const k = this.lensKValue();
+    scored.forEach((item, index) => {
+      item.rank = index + 1;
+      item.isActive = index < k;
+    });
+
+    return scored;
+  });
+
+  /** Active Top-k Core Lenses to render prominently */
+  readonly topKCoreLenses = computed<ICoreLensGatingScore[]>(() => {
+    return this.coreLensGatingScores().filter(s => s.isActive);
+  });
+
+  /** Dormant Core Lenses placed in collapsed shelf / drawer */
+  readonly dormantCoreLenses = computed<ICoreLensGatingScore[]>(() => {
+    return this.coreLensGatingScores().filter(s => !s.isActive);
+  });
+
+  /** Screen noise reduction achieved by pruning to Top-k Core Lenses */
+  readonly coreLensNoiseReductionPercent = computed<number>(() => {
+    const k = this.lensKValue();
+    return Math.round(((8 - k) / 8) * 100);
+  });
+
+  /**
+   * Cross-Paradigm Sparsity Routing:
+   * Selectively computes and activates Western, Eastern (TCM), and Ayurvedic traditions
+   * based on the condition domain rather than forcing an equal 3-way monolithic blend.
+   */
+  readonly paradigmSparsityWeights = computed<IParadigmSparsityRouting>(() => {
+    const pId = this.patientState?.patientId() || this.activeShiftPatientId() || '';
+    const name = (this.patientState?.patientName() || '').toLowerCase();
+    const goals = (this.patientState?.patientGoals?.() || '').toLowerCase();
+    const issues = this.patientState?.issues() || {};
+    const text = `${pId} ${name} ${goals} ${Object.keys(issues).join(' ')} ${this.activeTranscriptQuery()}`.toLowerCase();
+
+    // 1. Structural / Mechanical / Surgical / Acute Trauma
+    // (e.g. Edwin Smith, Frida Kahlo, radiculopathy, fracture, joint tear)
+    if (/radiculopathy|cervical|spine|fracture|l4-l5|pelvi|thenar|orthopedic|trauma|surgical|decompression/i.test(text)) {
+      const hasPainNeedleTrigger = /pain|spasm|hypertonicity|acupuncture/i.test(text);
+      const tcmShare = hasPainNeedleTrigger ? 0.20 : 0.10;
+      const westShare = 1.0 - tcmShare;
+      return {
+        westernWeight: westShare,
+        easternWeight: tcmShare,
+        ayurvedicWeight: 0.00,
+        dominantParadigm: 'western',
+        secondaryParadigm: 'eastern',
+        dormantParadigms: ['ayurvedic'],
+        clinicalDomainRationale: 'Structural & mechanical pathology: Western allopathic decompression & surgery primary; TCM acupuncture pain modulation secondary; Ayurvedic uncomputed.'
+      };
+    }
+
+    // 2. Chronic Autonomic / Functional Gastrointestinal / Dysautonomia / Sleep Architecture
+    // (e.g. Charles Darwin, gastroparesis, allostatic fatigue, dyspepsia, IBS)
+    if (/vagus|vagal|dysautonomia|dyspepsia|flatulence|allostatic|gastroparesis|darwin|ibs|bloat|nausea/i.test(text)) {
+      return {
+        westernWeight: 0.25,
+        easternWeight: 0.10,
+        ayurvedicWeight: 0.65,
+        dominantParadigm: 'ayurvedic',
+        secondaryParadigm: 'western',
+        dormantParadigms: ['eastern'],
+        clinicalDomainRationale: 'Chronic autonomic & GI dysregulation: Ayurvedic (Tridosha/Agni) specialized in long-term autonomic balancing; Western baseline telemetry active; TCM dormant.'
+      };
+    }
+
+    // 3. Chronic Metabolic Syndrome / Glycemic Instability
+    // (e.g. p001, diabetes, glucose 145-170, insulin resistance, GLP-1)
+    if (/diabet|glucose|cgm|insulin|metabolic|hba1c|steato|edema/i.test(text)) {
+      return {
+        westernWeight: 0.60,
+        easternWeight: 0.10,
+        ayurvedicWeight: 0.30,
+        dominantParadigm: 'western',
+        secondaryParadigm: 'ayurvedic',
+        dormantParadigms: ['eastern'],
+        clinicalDomainRationale: 'Cardiometabolic syndrome: Western allopathic pharmacotherapy (GLP-1/SGLT2) primary; Ayurvedic Agni digestive pacing secondary; TCM dormant.'
+      };
+    }
+
+    // 4. Environmental Exposomics / Pulmonary Allergy / Airway
+    // (e.g. p002, wildfire smoke, PM2.5, eosinophilic asthma, CF)
+    if (/wildfire|pm2\.5|asthma|wheez|pulmonary|eosinophil|dupilumab|cftr|cystic fibrosis/i.test(text)) {
+      return {
+        westernWeight: 0.70,
+        easternWeight: 0.20,
+        ayurvedicWeight: 0.10,
+        dominantParadigm: 'western',
+        secondaryParadigm: 'eastern',
+        dormantParadigms: ['ayurvedic'],
+        clinicalDomainRationale: 'Environmental & pulmonary flare: Western biologic immunology & spirometry primary; TCM Lung Qi dispersion secondary; Ayurvedic dormant.'
+      };
+    }
+
+    // 5. Neurogeriatric Cognitive / Glymphatic Clearance
+    // (e.g. p003, MoCA, memory, sleep fragmentation, Alzheimer)
+    if (/moca|cognitive|memory|dementia|alzheimer|glymphatic|sleep fragmentation/i.test(text)) {
+      return {
+        westernWeight: 0.50,
+        easternWeight: 0.15,
+        ayurvedicWeight: 0.35,
+        dominantParadigm: 'western',
+        secondaryParadigm: 'ayurvedic',
+        dormantParadigms: ['eastern'],
+        clinicalDomainRationale: 'Neuro-cognitive & glymphatic decline: Western neuro-imaging & rule-outs coupled with Ayurvedic Rasayana & slow-wave sleep Dinacharya; TCM dormant.'
+      };
+    }
+
+    // 6. Neuro-Endocrine / Autoimmune / Chronic Fatigue
+    // (e.g. p004, Hashimoto, anti-TPO, LDN, fibromyalgia)
+    if (/tpo|thyroid|hashimoto|autoimmune|naltrexone|ldn|fibromyalgia|fatigue crash/i.test(text)) {
+      return {
+        westernWeight: 0.45,
+        easternWeight: 0.15,
+        ayurvedicWeight: 0.40,
+        dominantParadigm: 'western',
+        secondaryParadigm: 'ayurvedic',
+        dormantParadigms: ['eastern'],
+        clinicalDomainRationale: 'Autoimmune & neuro-endocrine strain: Balanced Western micro-immunotherapy (LDN) and Ayurvedic gut barrier/Ojas restitution; TCM dormant.'
+      };
+    }
+
+    // 7. Infectious Cachexia & Nutritional Rehabilitation
+    // (e.g. Srinivasa Ramanujan, hepatic amebiasis, severe wasting)
+    if (/cachexia|amebic|abscess|hepatic|malnutrition|wasting|b12 deficiency/i.test(text)) {
+      return {
+        westernWeight: 0.60,
+        easternWeight: 0.10,
+        ayurvedicWeight: 0.30,
+        dominantParadigm: 'western',
+        secondaryParadigm: 'ayurvedic',
+        dormantParadigms: ['eastern'],
+        clinicalDomainRationale: 'Infectious hepatology & cachexia: Western antiparasitic eradication primary; Ayurvedic digestive fire (Agni) re-alimentation secondary; TCM dormant.'
+      };
+    }
+
+    // 8. General Balanced Baseline for any unrecognized phenotype
+    return {
+      westernWeight: 0.50,
+      easternWeight: 0.25,
+      ayurvedicWeight: 0.25,
+      dominantParadigm: 'western',
+      secondaryParadigm: 'eastern',
+      dormantParadigms: [],
+      clinicalDomainRationale: 'General clinical baseline: Balanced tri-paradigm evaluation.'
+    };
+  });
+
+  // ---------------------------------------------------------------------------
   // PUBLIC CONTROLS & EVENT HANDLERS
   // ---------------------------------------------------------------------------
+
+  public setLensKValue(k: number): void {
+    this.lensKValue.set(Math.max(1, Math.min(4, k)));
+  }
+
+  public toggleSparseLensRouting(): void {
+    this.isSparseLensRoutingEnabled.set(!this.isSparseLensRoutingEnabled());
+  }
+
+  public setClinicalGranularityMode(mode: 'specialist' | 'frontline' | 'caregiver'): void {
+    this.clinicalGranularityMode.set(mode);
+  }
 
   public setActiveLens(lens: AnalysisLens): void {
     this.activeLens.set(lens);

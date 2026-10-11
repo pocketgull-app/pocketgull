@@ -7,6 +7,8 @@ import { AustereMeshSyncService } from '../../services/austere-mesh-sync.service
 import { PediatricDosingEngineService } from '../../services/pediatric-dosing-engine.service';
 import { UnicefOpenDataService } from '../../services/unicef-open-data.service';
 import { NetworkStateService } from '../../services/network-state.service';
+import { RegionalSupplyChainService } from '../../services/regional-supply-chain.service';
+import { SmsEquityBridgeService, IUssdSessionState, IUssdMenuResponse } from '../../services/sms-equity-bridge.service';
 import { BrandedQrCodeComponent } from './branded-qr-code.component';
 import {
   FrontlineVernacularVoiceService,
@@ -15,7 +17,7 @@ import {
   ITriageVoiceContext
 } from '../../services/frontline-vernacular-voice.service';
 
-export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain' | 'austere_mesh_sync' | 'pediatric_dosing' | 'unicef_open_data';
+export type ChwTab = 'malnutrition_muac' | 'pneumonia_timer' | 'dehydration_ors' | 'danger_signs' | 'open_formulary' | 'who_edl_rdt' | 'cold_chain' | 'austere_mesh_sync' | 'pediatric_dosing' | 'unicef_open_data' | 'regional_supply_chain' | 'ussd_simulator';
 
 export interface IMuacTriageResult {
   muacMm: number;
@@ -232,6 +234,26 @@ export interface IDehydrationTriageResult {
                 [class.text-zinc-400]="activeTab() !== 'unicef_open_data'"
                 class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
           <span>🌐</span> 10. UNICEF Open Data &amp; SDMX
+        </button>
+
+        <button type="button"
+                (click)="activeTab.set('regional_supply_chain')"
+                id="btn-tab-regional-supply-chain"
+                [class.bg-emerald-700]="activeTab() === 'regional_supply_chain'"
+                [class.text-white]="activeTab() === 'regional_supply_chain'"
+                [class.text-zinc-400]="activeTab() !== 'regional_supply_chain'"
+                class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
+          <span>🌍</span> 11. Regional Pharmacies &amp; Foodsheds
+        </button>
+
+        <button type="button"
+                (click)="activeTab.set('ussd_simulator')"
+                id="btn-tab-ussd-simulator"
+                [class.bg-amber-700]="activeTab() === 'ussd_simulator'"
+                [class.text-white]="activeTab() === 'ussd_simulator'"
+                [class.text-zinc-400]="activeTab() !== 'ussd_simulator'"
+                class="px-3.5 py-2 rounded-xl border border-transparent transition cursor-pointer flex items-center gap-1.5">
+          <span>📟</span> 12. 2G USSD Dialpad Simulator
         </button>
       </nav>
 
@@ -2114,6 +2136,262 @@ export interface IDehydrationTriageResult {
         </section>
       }
 
+      <!-- MODULE 11: Regional Generic Pharmacies & Indigenous Foodsheds -->
+      @if (activeTab() === 'regional_supply_chain') {
+        <section class="mt-4 p-4 sm:p-6 bg-zinc-900/60 rounded-3xl border border-zinc-800 space-y-6 animate-in fade-in duration-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                  <span>🌍</span> Regional Generic Pharmacies &amp; Indigenous Foodsheds
+                </h3>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">
+                  Sovereign Supply Chain
+                </span>
+              </div>
+              <p class="text-xs text-zinc-400 mt-0.5">
+                Connecting patients to local state-subsidized generic dispensaries and ancestral climate-resilient food cooperatives
+              </p>
+            </div>
+
+            <!-- Region Selector Dropdown -->
+            <div class="flex items-center gap-2">
+              <label for="chw-region-supply-select" class="text-xs font-mono text-zinc-400">Continent / Region:</label>
+              <select id="chw-region-supply-select"
+                      [ngModel]="supplyChainService.activeRegionCode()"
+                      (ngModelChange)="supplyChainService.setRegion($event)"
+                      class="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs font-mono text-zinc-200 focus:outline-none focus:border-emerald-500">
+                @for (reg of supplyChainService.availableRegions(); track reg.code) {
+                  <option [value]="reg.code">{{ reg.name }} ({{ reg.currency }})</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Region Benchmark Banner -->
+          <div class="p-4 rounded-2xl bg-zinc-950 border border-emerald-800/40 flex flex-wrap items-center justify-between gap-4 font-mono text-xs">
+            <div>
+              <span class="text-zinc-500 block uppercase text-[10px]">Active Geographic Hub:</span>
+              <strong class="text-emerald-300 text-sm block">{{ supplyChainService.activeRegion().regionName }}</strong>
+            </div>
+            <div>
+              <span class="text-zinc-500 block uppercase text-[10px]">Estimated Chronic Essential Bundle:</span>
+              <strong class="text-teal-300 text-sm block">{{ supplyChainService.generateRegionalCarePlanReferral({}).estimatedMonthlyDrugCostLocalCurrency }}</strong>
+            </div>
+            <div class="px-2.5 py-1 rounded-lg bg-emerald-950/80 text-emerald-300 border border-emerald-700 text-[10px] font-bold">
+              80% - 95% Below Monopoly Retail
+            </div>
+          </div>
+
+          <!-- Two-Column Grid: Pharmacies vs Foodsheds -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <!-- 1. Regional Generic Pharmacy Networks -->
+            <div class="p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800 space-y-3">
+              <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                <h4 class="text-xs font-bold uppercase font-mono text-sky-400 flex items-center gap-1.5">
+                  <span>💊</span> Verified Generic Pharmacies &amp; Compounding Hubs
+                </h4>
+                <span class="text-[10px] font-mono text-zinc-500">WHO EML Prequalified</span>
+              </div>
+
+              <div class="space-y-3">
+                @for (pharm of supplyChainService.activeRegion().primaryPharmacies; track pharm.id) {
+                  <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 space-y-2 text-xs">
+                    <div class="flex items-start justify-between gap-2">
+                      <div>
+                        <strong class="text-zinc-100 font-bold block">{{ pharm.name }}</strong>
+                        <span class="text-[10px] text-zinc-400">{{ pharm.coverageDescription }}</span>
+                      </div>
+                      <span class="px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-mono text-[10px] font-bold whitespace-nowrap">
+                        -{{ pharm.typicalSavingsVsBrandPct }}% Brand
+                      </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-[10px] text-center">
+                      <div class="p-1.5 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block">Metformin</span>
+                        <strong class="text-emerald-400">\${{ pharm.samplePriceBenchmarksUsd.metforminMonthly.toFixed(2) }}/mo</strong>
+                      </div>
+                      <div class="p-1.5 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block">Amlodipine</span>
+                        <strong class="text-emerald-400">\${{ pharm.samplePriceBenchmarksUsd.amlodipineMonthly.toFixed(2) }}/mo</strong>
+                      </div>
+                      <div class="p-1.5 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block">Amoxicillin</span>
+                        <strong class="text-emerald-400">\${{ pharm.samplePriceBenchmarksUsd.amoxicillinCourse.toFixed(2) }}</strong>
+                      </div>
+                      <div class="p-1.5 rounded bg-black/40 border border-zinc-800">
+                        <span class="text-zinc-500 block">ORS Sachet</span>
+                        <strong class="text-emerald-400">\${{ pharm.samplePriceBenchmarksUsd.orsSachet.toFixed(2) }}</strong>
+                      </div>
+                    </div>
+
+                    <div class="text-[11px] text-zinc-400 pt-1">
+                      <span class="text-zinc-500 font-mono">Offline Access:</span> {{ pharm.offlineAccessProtocol }}
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- 2. Indigenous Foodshed & Agroecological Cooperatives -->
+            <div class="p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800 space-y-3">
+              <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                <h4 class="text-xs font-bold uppercase font-mono text-emerald-400 flex items-center gap-1.5">
+                  <span>🌾</span> Indigenous Foodshed &amp; Farmer Cooperatives
+                </h4>
+                <span class="text-[10px] font-mono text-zinc-500">Ancestral Whole Foods</span>
+              </div>
+
+              <div class="space-y-3">
+                @for (food of supplyChainService.activeRegion().primaryFoodsheds; track food.id) {
+                  <div class="p-3 rounded-xl bg-zinc-900 border border-zinc-800 space-y-2 text-xs">
+                    <div class="flex items-start justify-between gap-2">
+                      <div>
+                        <strong class="text-zinc-100 font-bold block">{{ food.name }}</strong>
+                        <span class="text-[10px] text-zinc-400">{{ food.location }}</span>
+                      </div>
+                      <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono text-[10px] font-bold whitespace-nowrap">
+                        -{{ food.averageCostReductionVsImportPct }}% vs Import
+                      </span>
+                    </div>
+
+                    <div class="space-y-1">
+                      <span class="text-[10px] uppercase font-mono text-zinc-400 font-bold block">Ancestral Superfoods &amp; Staples:</span>
+                      <div class="flex flex-wrap gap-1">
+                        @for (staple of food.indigenousStaples; track staple) {
+                          <span class="px-2 py-0.5 rounded-md bg-emerald-950/60 text-emerald-200 border border-emerald-800/40 text-[10px]">
+                            {{ staple }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="space-y-1 pt-1">
+                      <span class="text-[10px] uppercase font-mono text-zinc-400 font-bold block">Clinical &amp; Metabolic Synergies:</span>
+                      <ul class="list-disc list-inside text-[11px] text-zinc-300 space-y-0.5">
+                        @for (synergy of food.clinicalMetabolicSynergies; track synergy) {
+                          <li>{{ synergy }}</li>
+                        }
+                      </ul>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Actionable Sovereignty Directives -->
+          <div class="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2 text-xs">
+            <span class="text-[10px] font-mono uppercase font-bold text-amber-400 block">
+              🛡️ Frontline CHW Clinical Guidance for this Region:
+            </span>
+            <ul class="list-disc list-inside text-zinc-300 space-y-1">
+              @for (directive of supplyChainService.activeRegion().sovereigntyRecommendations; track directive) {
+                <li class="leading-relaxed">{{ directive }}</li>
+              }
+            </ul>
+          </div>
+        </section>
+      }
+
+      <!-- 12. 2G / 3G USSD Feature Phone Simulator (*384*4855#) -->
+      @if (activeTab() === 'ussd_simulator') {
+        <section class="mt-4 p-4 sm:p-6 bg-zinc-900/60 rounded-3xl border border-zinc-800 space-y-6 animate-in fade-in duration-200">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-sm font-bold text-zinc-100 flex items-center gap-2">
+                  <span>📟</span> 2G / 3G USSD Feature Phone Simulator
+                </h3>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-950 text-amber-300 border border-amber-800 font-bold">
+                  *384*4855# Protocol
+                </span>
+              </div>
+              <p class="text-xs text-zinc-400 mt-0.5">
+                Simulating interactive zero-data cellular text menus for Transsion, Nokia, and low-cost feature phones
+              </p>
+            </div>
+
+            <!-- USSD Language Selector -->
+            <div class="flex items-center gap-2">
+              <label for="ussd-lang-select" class="text-xs font-mono text-zinc-400">Language:</label>
+              <select id="ussd-lang-select"
+                      [ngModel]="ussdLanguage()"
+                      (ngModelChange)="setUssdLanguage($event)"
+                      class="px-3 py-1.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs font-mono text-zinc-200 focus:outline-none focus:border-amber-500">
+                <option value="en">English (Global)</option>
+                <option value="sw">Kiswahili (East Africa)</option>
+                <option value="ha">Hausa (West Africa / Sahel)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Feature Phone Retro Frame -->
+          <div class="max-w-md mx-auto p-5 rounded-3xl bg-zinc-950 border-4 border-zinc-800 shadow-2xl space-y-4">
+            <!-- Retro LCD Screen (Monochrome Amber / Green Glow) -->
+            <div class="p-4 rounded-xl bg-[#1a2318] border-2 border-[#2d422a] text-[#76c867] font-mono text-xs shadow-inner min-h-[170px] flex flex-col justify-between whitespace-pre-wrap leading-relaxed select-text">
+              <div class="flex items-center justify-between border-b border-[#2d422a] pb-1 mb-2 text-[10px] opacity-80">
+                <span>📶 2G GSM (Full Bars)</span>
+                <span>{{ ussdResponse().responseType }} • *384*4855#</span>
+              </div>
+
+              <div class="font-bold flex-1 py-1">
+                {{ ussdResponse().screenText }}
+              </div>
+
+              @if (ussdResponse().actionPayload) {
+                <div class="mt-2 pt-1 border-t border-[#2d422a] text-[10px] text-[#a5e69a]">
+                  ✓ FHIR R4 Observation Emitted &amp; Sealed
+                </div>
+              }
+            </div>
+
+            <!-- Dialpad Input Bar -->
+            <form (ngSubmit)="submitUssdInput()" class="space-y-3">
+              <div class="flex items-center gap-2">
+                <input type="text"
+                       [ngModel]="ussdUserInput()"
+                       (ngModelChange)="ussdUserInput.set($event)"
+                       name="ussdInput"
+                       [disabled]="ussdResponse().responseType === 'END'"
+                       placeholder="Enter option or BP (e.g. 1, 2, 125/80)"
+                       class="flex-1 px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-700 text-zinc-100 font-mono text-sm placeholder:text-zinc-600 focus:outline-none focus:border-amber-500 disabled:opacity-40">
+                <button type="submit"
+                        [disabled]="ussdResponse().responseType === 'END' || !ussdUserInput().trim()"
+                        class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 disabled:opacity-40 text-black font-mono font-bold text-xs cursor-pointer transition">
+                  Send ⏎
+                </button>
+              </div>
+
+              <!-- Quick T9 Keypad Dial Buttons -->
+              <div class="grid grid-cols-3 gap-2 font-mono text-xs">
+                @for (key of ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#']; track key) {
+                  <button type="button"
+                          (click)="pressUssdKey(key)"
+                          [disabled]="ussdResponse().responseType === 'END'"
+                          class="py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-700 text-zinc-300 border border-zinc-800 disabled:opacity-30 cursor-pointer font-bold transition text-center shadow-xs">
+                    {{ key }}
+                  </button>
+                }
+              </div>
+
+              <!-- Reset / Redial Session Button -->
+              <div class="pt-2 flex justify-between items-center text-xs font-mono">
+                <button type="button"
+                        (click)="resetUssdSession()"
+                        class="text-amber-400 hover:underline cursor-pointer flex items-center gap-1">
+                  <span>🔄</span> Redial *384*4855#
+                </button>
+                <span class="text-zinc-500 text-[11px]">
+                  Menu: {{ currentUssdSession().currentMenu }}
+                </span>
+              </div>
+            </form>
+          </div>
+        </section>
+      }
+
       <!-- Offline QR Handoff Modal Overlay -->
       @if (showQrModal()) {
         <div class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
@@ -2165,12 +2443,69 @@ export class CommunityHealthWorkerSuiteComponent {
   readonly meshSync = inject(AustereMeshSyncService, { optional: true }) ?? new AustereMeshSyncService();
   readonly pediatricDosing = inject(PediatricDosingEngineService, { optional: true }) ?? new PediatricDosingEngineService();
   readonly unicefService = inject(UnicefOpenDataService, { optional: true }) ?? new UnicefOpenDataService();
+  readonly supplyChainService = inject(RegionalSupplyChainService, { optional: true }) ?? new RegionalSupplyChainService();
+  readonly smsEquityService = inject(SmsEquityBridgeService, { optional: true }) ?? new SmsEquityBridgeService();
   readonly network = inject(NetworkStateService, { optional: true }) ?? new NetworkStateService();
   readonly close = output<void>();
 
   hasCloseButton = true;
   activeTab = signal<ChwTab>('malnutrition_muac');
   lastQueuedMessage = signal<string | null>(null);
+
+  // --- 2G USSD Dialpad Simulator State ---
+  readonly ussdLanguage = signal<'en' | 'sw' | 'ha'>('en');
+  readonly currentUssdSession = signal<IUssdSessionState>({
+    sessionId: `ussd_${Date.now()}`,
+    phoneNumber: '+254712345678',
+    serviceCode: '*384*4855#',
+    currentMenu: 'MAIN',
+    language: 'en',
+    collectedData: {}
+  });
+  readonly ussdUserInput = signal<string>('');
+  readonly ussdResponse = signal<IUssdMenuResponse>({
+    sessionId: 'init',
+    responseType: 'CON',
+    nextMenu: 'MAIN',
+    screenText: 'CON POCKETGULL COMMUNITY HEALTH (USSD):\n1. Fever & Malaria Triage\n2. Log Blood Pressure (BP)\n3. Verify Daily Medications\n4. Request Frontline CHW Visit'
+  });
+
+  setUssdLanguage(lang: 'en' | 'sw' | 'ha'): void {
+    this.ussdLanguage.set(lang);
+    this.resetUssdSession();
+  }
+
+  pressUssdKey(digit: string): void {
+    if (this.ussdResponse().responseType === 'END') return;
+    this.ussdUserInput.update(val => val + digit);
+  }
+
+  submitUssdInput(): void {
+    const input = this.ussdUserInput().trim();
+    if (!input || this.ussdResponse().responseType === 'END') return;
+
+    const session = { ...this.currentUssdSession(), language: this.ussdLanguage() };
+    const res = this.smsEquityService.processUssdRequest(session, input);
+
+    this.currentUssdSession.set(session);
+    this.ussdResponse.set(res);
+    this.ussdUserInput.set('');
+  }
+
+  resetUssdSession(): void {
+    const session: IUssdSessionState = {
+      sessionId: `ussd_${Date.now()}`,
+      phoneNumber: '+254712345678',
+      serviceCode: '*384*4855#',
+      currentMenu: 'MAIN',
+      language: this.ussdLanguage(),
+      collectedData: {}
+    };
+    const initRes = this.smsEquityService.processUssdRequest(session, '');
+    this.currentUssdSession.set(session);
+    this.ussdResponse.set(initRes);
+    this.ussdUserInput.set('');
+  }
 
   queueOfflineMuacAssessment(): void {
     const triage = this.muacTriage();

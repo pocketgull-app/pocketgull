@@ -1,6 +1,45 @@
 import { Injectable, inject } from '@angular/core';
 import * as THREE from 'three';
 import { AdobeFireflyTextureService } from './adobe-firefly-texture.service';
+import {
+  createOrthopedicBoneScrew,
+  createOrthopedicFixationPlate,
+  createBioactiveSilicaScaffold
+} from '../engine/geometry/procedural-mesh';
+import { IRawGpuMesh } from '../engine/core/renderer-backend.interface';
+
+/**
+ * Converts zero-overhead IRawGpuMesh interleaved buffer into a Three.js BufferGeometry.
+ */
+function rawGpuMeshToBufferGeometry(raw: IRawGpuMesh): THREE.BufferGeometry {
+  const geom = new THREE.BufferGeometry();
+  const vertexCount = raw.vertexData.length / 8;
+  const positions = new Float32Array(vertexCount * 3);
+  const normals = new Float32Array(vertexCount * 3);
+  const uvs = new Float32Array(vertexCount * 2);
+
+  for (let i = 0; i < vertexCount; i++) {
+    const src = i * 8;
+    positions[i * 3] = raw.vertexData[src];
+    positions[i * 3 + 1] = raw.vertexData[src + 1];
+    positions[i * 3 + 2] = raw.vertexData[src + 2];
+
+    normals[i * 3] = raw.vertexData[src + 3];
+    normals[i * 3 + 1] = raw.vertexData[src + 4];
+    normals[i * 3 + 2] = raw.vertexData[src + 5];
+
+    uvs[i * 2] = raw.vertexData[src + 6];
+    uvs[i * 2 + 1] = raw.vertexData[src + 7];
+  }
+
+  geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geom.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+  geom.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+  geom.setIndex(new THREE.BufferAttribute(raw.indexData, 1));
+  geom.computeBoundingBox();
+  geom.computeBoundingSphere();
+  return geom;
+}
 
 export type FitzpatrickSkinType = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI';
 export type AnatomicalArchetype = 'homo_sapiens_female' | 'homo_sapiens_male' | 'homo_sapiens_senior' | 'homo_sapiens_pediatric' | 'ecorche' | 'pongo_pygmaeus';
@@ -220,6 +259,30 @@ export class BodyMeshFactoryService {
       emissiveIntensity: 0.1
     });
 
+    // Surgical Grade 5 Titanium (Ti-6Al-4V) Orthopedic Fixation Hardware Material
+    const titaniumHardwareMaterial = new THREE.MeshStandardMaterial({
+      color: 0xa1a1aa,
+      roughness: 0.20,
+      metalness: 0.95,
+      emissive: 0x52525b,
+      emissiveIntensity: 0.25,
+      transparent: true,
+      opacity: 1.0,
+      depthWrite: true
+    });
+
+    // Bioactive Silica Osteoconductive Scaffold (Bioglass 45S5 SiO2-CaO-P2O5-Na2O) Material
+    const bioactiveSilicaMaterial = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      roughness: 0.15,
+      metalness: 0.12,
+      emissive: 0x0284c7,
+      emissiveIntensity: 0.45,
+      transparent: true,
+      opacity: 0.92,
+      depthWrite: true
+    });
+
     // Helper: Register part & attach touch target proxy
     const addPart = (id: string, groupOrMesh: THREE.Group | THREE.Mesh) => {
       groupOrMesh.userData['id'] = id;
@@ -261,7 +324,7 @@ export class BodyMeshFactoryService {
     const createMesh = (
       geom: THREE.BufferGeometry,
       mat: THREE.Material,
-      layer: 'skin' | 'muscle' | 'bone' | 'organ' | 'neurovascular' | 'dermatome' | 'chakra' | 'acupoint',
+      layer: 'skin' | 'muscle' | 'bone' | 'organ' | 'neurovascular' | 'dermatome' | 'chakra' | 'acupoint' | 'implant' | 'silica',
       pos?: [number, number, number],
       rot?: [number, number, number],
       scale?: [number, number, number]
@@ -958,6 +1021,122 @@ export class BodyMeshFactoryService {
       );
       addPart(ap.id, aMesh);
     });
+
+    // ==========================================
+    // 12. ORTHOPEDIC FIXATION HARDWARE & BIOACTIVE SILICA SCAFFOLDS
+    // ==========================================
+    // A. Right Femoral Titanium DCP Fixation Plate & 4 Cortical Screws
+    const femurHardwareGroup = new THREE.Group();
+    const dcpPlateLength = 0.22 * limbScaleY;
+    const dcpPlateWidth = 0.024;
+    const dcpPlateThickness = 0.007;
+
+    const dcpRaw = createOrthopedicFixationPlate(dcpPlateLength, dcpPlateWidth, dcpPlateThickness, 4, 12, 310);
+    const dcpGeom = rawGpuMeshToBufferGeometry(dcpRaw);
+    const dcpMesh = createMesh(
+      dcpGeom,
+      titaniumHardwareMaterial,
+      'implant',
+      [hipX + 0.034, 0.38 * limbScaleY, 0.02],
+      [0, 0, -qAngle]
+    );
+    femurHardwareGroup.add(dcpMesh);
+
+    // 4 Cortical Bone Screws penetrating through plate and lateral femur cortex
+    const screwSpacing = dcpPlateLength / 4;
+    for (let s = 0; s < 4; s++) {
+      const screwLocalY = -dcpPlateLength / 2 + (s + 0.5) * screwSpacing;
+      const screwRaw = createOrthopedicBoneScrew(0.0035, 0.006, 0.038, 0.004, 12, 20, 311 + s);
+      const screwGeom = rawGpuMeshToBufferGeometry(screwRaw);
+      // Screw inserted horizontally through plate into bone
+      const screwMesh = createMesh(
+        screwGeom,
+        titaniumHardwareMaterial,
+        'implant',
+        [hipX + 0.034, 0.38 * limbScaleY + screwLocalY * Math.cos(qAngle), 0.02 - screwLocalY * Math.sin(qAngle)],
+        [0, 0, Math.PI / 2 - qAngle]
+      );
+      femurHardwareGroup.add(screwMesh);
+    }
+    addPart('orthopedic_femur_fixation', femurHardwareGroup);
+
+    // B. Lumbar L4-L5 Bilateral Pedicle Screws & Posterior Stabilization Rods
+    const lumbarHardwareGroup = new THREE.Group();
+    const pedicleYLevels = [0.89 * torsoScaleY, 0.84 * torsoScaleY];
+    const pedicleXOffset = 0.026;
+    const pedicleZOffset = -0.048;
+
+    pedicleYLevels.forEach((py, idx) => {
+      // Right pedicle screw
+      const rScrewRaw = createOrthopedicBoneScrew(0.004, 0.007, 0.045, 0.0045, 12, 20, 320 + idx * 2);
+      const rScrewMesh = createMesh(
+        rawGpuMeshToBufferGeometry(rScrewRaw),
+        titaniumHardwareMaterial,
+        'implant',
+        [pedicleXOffset, py, pedicleZOffset],
+        [-Math.PI / 2, 0, 0.12]
+      );
+      // Left pedicle screw
+      const lScrewRaw = createOrthopedicBoneScrew(0.004, 0.007, 0.045, 0.0045, 12, 20, 321 + idx * 2);
+      const lScrewMesh = createMesh(
+        rawGpuMeshToBufferGeometry(lScrewRaw),
+        titaniumHardwareMaterial,
+        'implant',
+        [-pedicleXOffset, py, pedicleZOffset],
+        [-Math.PI / 2, 0, -0.12]
+      );
+      lumbarHardwareGroup.add(rScrewMesh);
+      lumbarHardwareGroup.add(lScrewMesh);
+    });
+
+    // Dual vertical titanium spinal stabilization rods connecting screws
+    const rodLength = 0.085 * torsoScaleY;
+    const rRod = createMesh(
+      new THREE.CylinderGeometry(0.0035, 0.0035, rodLength, 12),
+      titaniumHardwareMaterial,
+      'implant',
+      [pedicleXOffset + 0.002, 0.865 * torsoScaleY, pedicleZOffset - 0.012]
+    );
+    const lRod = createMesh(
+      new THREE.CylinderGeometry(0.0035, 0.0035, rodLength, 12),
+      titaniumHardwareMaterial,
+      'implant',
+      [-pedicleXOffset - 0.002, 0.865 * torsoScaleY, pedicleZOffset - 0.012]
+    );
+    lumbarHardwareGroup.add(rRod);
+    lumbarHardwareGroup.add(lRod);
+    addPart('orthopedic_lumbar_hardware', lumbarHardwareGroup);
+
+    // C. Bioactive Silica Porous Osteoconductive Scaffold (Bioglass 45S5)
+    const silicaScaffoldGroup = new THREE.Group();
+    const scaffoldRaw = createBioactiveSilicaScaffold(0.042, 0.28, 0.68, 330);
+    const scaffoldGeom = rawGpuMeshToBufferGeometry(scaffoldRaw);
+    const scaffoldMesh = createMesh(
+      scaffoldGeom,
+      bioactiveSilicaMaterial,
+      'silica',
+      [hipX + 0.018, 0.22 * limbScaleY, 0.032],
+      [0.1, 0.2, -qAngle]
+    );
+    silicaScaffoldGroup.add(scaffoldMesh);
+
+    // Bioluminescent silica nanosphere granules clustered around the osteoconductive scaffold
+    const granuleOffsets = [
+      [0.018, 0.012, 0.010],
+      [-0.014, 0.016, -0.008],
+      [0.012, -0.018, 0.014],
+      [-0.016, -0.012, 0.012],
+    ];
+    granuleOffsets.forEach(([gx, gy, gz]) => {
+      const gMesh = createMesh(
+        new THREE.SphereGeometry(0.006, 10, 10),
+        bioactiveSilicaMaterial,
+        'silica',
+        [hipX + 0.018 + gx, 0.22 * limbScaleY + gy, 0.032 + gz]
+      );
+      silicaScaffoldGroup.add(gMesh);
+    });
+    addPart('silica_bone_scaffold', silicaScaffoldGroup);
 
     return { group: mannequinGroup, parts };
   }

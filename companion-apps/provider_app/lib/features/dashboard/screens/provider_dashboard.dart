@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/api/api_client.dart';
 import '../../../../core/models/patient.dart';
 import '../../../../core/services/triage_cache_service.dart';
+import '../../field_kit/screens/backpack_dispensary_screen.dart';
+import '../../field_kit/screens/multilingual_passport_screen.dart';
 import 'triage_command_board.dart';
 
 class ProviderDashboard extends StatefulWidget {
@@ -63,6 +65,28 @@ class _ProviderDashboardState extends State<ProviderDashboard> {
         elevation: 0,
         iconTheme: IconThemeData(color: textColor),
         actions: [
+          IconButton(
+            iconSize: isWatch ? 16 : 22,
+            icon: const Icon(Icons.medication_liquid_outlined),
+            tooltip: 'Offline WHO EML Dispensary',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const BackpackDispensaryScreen()),
+              );
+            },
+          ),
+          IconButton(
+            iconSize: isWatch ? 16 : 22,
+            icon: const Icon(Icons.qr_code_2_outlined),
+            tooltip: '6-Language Health Passport',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MultilingualPassportScreen()),
+              );
+            },
+          ),
           IconButton(
             iconSize: isWatch ? 16 : 22,
             icon: const Icon(Icons.refresh),

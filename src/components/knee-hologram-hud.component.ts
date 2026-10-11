@@ -44,48 +44,52 @@ export interface IKneeAbnormalityLocus {
         </div>
 
         <!-- Controls: Active Plane & ROM Flexion Angle -->
-        <div class="flex items-center gap-2 font-mono text-xs">
-          <div class="flex items-center bg-zinc-900 border border-zinc-800 rounded-xl p-1 gap-1">
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+          <div class="flex items-center bg-zinc-900 border border-zinc-800 rounded-xl p-1 gap-1" role="group" aria-label="Anatomical Slice Plane Selector">
             <button 
               (click)="setSlicePlane('Sagittal')"
+              [attr.aria-pressed]="activePlane() === 'Sagittal'"
               [class.bg-cyan-500]="activePlane() === 'Sagittal'"
               [class.text-zinc-950]="activePlane() === 'Sagittal'"
               [class.text-cyan-400]="activePlane() !== 'Sagittal'"
-              class="px-2.5 py-1 rounded-lg font-bold transition text-[11px] min-h-[32px] touch-manipulation cursor-pointer">
+              class="px-3 py-2 rounded-lg font-bold transition text-[11px] min-h-[44px] touch-manipulation cursor-pointer focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
               Sagittal (ACL)
             </button>
             <button 
               (click)="setSlicePlane('Coronal')"
+              [attr.aria-pressed]="activePlane() === 'Coronal'"
               [class.bg-teal-500]="activePlane() === 'Coronal'"
               [class.text-zinc-950]="activePlane() === 'Coronal'"
               [class.text-teal-400]="activePlane() !== 'Coronal'"
-              class="px-2.5 py-1 rounded-lg font-bold transition text-[11px] min-h-[32px] touch-manipulation cursor-pointer">
+              class="px-3 py-2 rounded-lg font-bold transition text-[11px] min-h-[44px] touch-manipulation cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
               Coronal (MCL/Meniscus)
             </button>
             <button 
               (click)="setSlicePlane('Axial')"
+              [attr.aria-pressed]="activePlane() === 'Axial'"
               [class.bg-amber-400]="activePlane() === 'Axial'"
               [class.text-zinc-950]="activePlane() === 'Axial'"
               [class.text-amber-300]="activePlane() !== 'Axial'"
-              class="px-2.5 py-1 rounded-lg font-bold transition text-[11px] min-h-[32px] touch-manipulation cursor-pointer">
+              class="px-3 py-2 rounded-lg font-bold transition text-[11px] min-h-[44px] touch-manipulation cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none">
               Axial (Patella/Baker's)
             </button>
           </div>
 
           <button 
             (click)="toggleStressHeatmap()"
+            [attr.aria-pressed]="showStressHeatmap()"
             [class.bg-rose-500]="showStressHeatmap()"
             [class.text-white]="showStressHeatmap()"
             [class.bg-zinc-900]="!showStressHeatmap()"
             [class.text-zinc-400]="!showStressHeatmap()"
-            class="px-3 py-1.5 rounded-xl border border-zinc-800 transition text-[11px] min-h-[36px] font-mono font-bold flex items-center gap-1.5 cursor-pointer">
+            class="px-3 py-2 rounded-xl border border-zinc-800 transition text-[11px] min-h-[44px] font-mono font-bold flex items-center gap-1.5 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none">
             <span>🔥</span>
             <span>{{ showStressHeatmap() ? 'FEA Stress ON' : 'FEA Stress OFF' }}</span>
           </button>
 
           <button 
             (click)="toggleAutoRotate()"
-            class="px-3 py-1.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-300 hover:text-cyan-300 transition text-[11px] min-h-[36px] cursor-pointer">
+            class="px-3 py-2 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-300 hover:text-cyan-300 transition text-[11px] min-h-[44px] cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
             {{ isAutoRotating() ? '⏸ Pause Spin' : '▶ 360° Spin' }}
           </button>
         </div>
@@ -102,7 +106,7 @@ export interface IKneeAbnormalityLocus {
           <div class="absolute top-3 left-3 pointer-events-none flex flex-col gap-1 text-[11px] font-mono bg-zinc-950/80 backdrop-blur-md p-2 rounded-xl border border-zinc-800 text-zinc-400">
             <div class="flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-              <span class="text-zinc-200">Joint Flexion: {{ flexionAngle() }}°</span>
+              <span class="text-zinc-200">Joint Flexion: <span class="tabular-nums font-bold">{{ flexionAngle() }}°</span></span>
             </div>
             <span>Slice Plane: <span class="text-cyan-300 font-bold">{{ activePlane() }}</span></span>
             <span>Target Loci: <span class="text-amber-300">12 RSNA Markers</span></span>
@@ -113,20 +117,20 @@ export interface IKneeAbnormalityLocus {
               <div class="mt-1 pt-1.5 border-t border-zinc-800/80 flex flex-col gap-0.5 text-[10px]">
                 <div class="flex items-center justify-between gap-2">
                   <span class="text-zinc-400">Medial Bias:</span>
-                  <span class="text-rose-400 font-bold font-mono">{{ medialContactBias() }}% load</span>
+                  <span class="text-rose-400 font-bold font-mono tabular-nums">{{ medialContactBias() }}% load</span>
                 </div>
                 <div class="flex items-center justify-between gap-2">
                   <span class="text-zinc-400">Peak Shear:</span>
-                  <span class="text-amber-300 font-bold font-mono">{{ peakVonMisesMpa() }} MPa</span>
+                  <span class="text-amber-300 font-bold font-mono tabular-nums">{{ peakVonMisesMpa() }} MPa</span>
                 </div>
                 <div class="flex items-center justify-between gap-2">
                   <span class="text-zinc-400">WORMS Defect:</span>
-                  <span class="text-teal-300 font-mono">Grade {{ wormsGrade() }}</span>
+                  <span class="text-teal-300 font-mono tabular-nums">Grade {{ wormsGrade() }}</span>
                 </div>
                 <div class="mt-1 flex items-center gap-1.5 text-[9px] font-mono">
-                  <span class="text-cyan-400">1.5M</span>
+                  <span class="text-cyan-400 tabular-nums">1.5M</span>
                   <div class="w-16 h-1.5 rounded-full bg-gradient-to-r from-cyan-400 via-amber-400 to-rose-500"></div>
-                  <span class="text-rose-400">7.5M</span>
+                  <span class="text-rose-400 tabular-nums">7.5M</span>
                 </div>
               </div>
             }
@@ -141,7 +145,8 @@ export interface IKneeAbnormalityLocus {
               max="90" 
               [value]="flexionAngle()" 
               (input)="onFlexionChange($event)"
-              class="w-full accent-cyan-400 cursor-pointer h-1.5 bg-zinc-800 rounded-lg"
+              aria-label="Joint flexion angle in degrees"
+              class="w-full accent-cyan-400 cursor-pointer h-1.5 bg-zinc-800 rounded-lg touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
             />
             <span class="text-cyan-300 font-bold tabular-nums shrink-0">{{ flexionAngle() }}°</span>
           </div>
@@ -160,11 +165,11 @@ export interface IKneeAbnormalityLocus {
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-cyan-300 font-mono">{{ locus.name }}</span>
                 <span class="text-[10px] px-2 py-0.5 rounded font-mono font-bold"
-                  [class.bg-rose-500-20]="locus.severity === 'Severe'"
+                  [class.bg-rose-500/20]="locus.severity === 'Severe'"
                   [class.text-rose-400]="locus.severity === 'Severe'"
-                  [class.bg-amber-500-20]="locus.severity === 'Moderate'"
+                  [class.bg-amber-500/20]="locus.severity === 'Moderate'"
                   [class.text-amber-300]="locus.severity === 'Moderate'"
-                  [class.bg-teal-500-20]="locus.severity === 'Mild'"
+                  [class.bg-teal-500/20]="locus.severity === 'Mild'"
                   [class.text-teal-400]="locus.severity === 'Mild'">
                   {{ locus.severity }}
                 </span>

@@ -20,9 +20,9 @@ describe('PatentClaimsHudModalComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should default to inventions tab with 17 clusters', () => {
+  it('should default to inventions tab with 20 clusters', () => {
     expect(component.activeTab()).toBe('inventions');
-    expect(component.filteredClusters().length).toBe(17);
+    expect(component.filteredClusters().length).toBe(20);
   });
 
   it('should filter clusters based on search query', () => {

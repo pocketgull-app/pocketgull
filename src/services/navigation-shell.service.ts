@@ -40,6 +40,9 @@ export class NavigationShellService {
   readonly showEhrMarketplaceModal = signal<boolean>(false);
   readonly showEhrWritebackModal = signal<boolean>(false);
   readonly showEdgeVoiceModal = signal<boolean>(false);
+  readonly showCowsModal = signal<boolean>(false);
+  readonly showRecoveryModal = signal<boolean>(false);
+  readonly showDisasterMeshModal = signal<boolean>(false);
   readonly activeGameId = signal<string>('luminaries');
 
   /** Developer Mode: Gates investor pitch portals, experimental showcases, and auxiliary demos. Defaults to false. */
@@ -192,6 +195,9 @@ export class NavigationShellService {
     this.showEhrMarketplaceModal.set(false);
     this.showEhrWritebackModal.set(false);
     this.showEdgeVoiceModal.set(false);
+    this.showCowsModal.set(false);
+    this.showRecoveryModal.set(false);
+    this.showDisasterMeshModal.set(false);
   }
 
   public openAmbientScribeDrawer(): void { this.showAmbientScribeDrawer.set(true); }
@@ -225,5 +231,17 @@ export class NavigationShellService {
   public openEdgeVoiceModal(): void { this.showEdgeVoiceModal.set(true); }
   public closeEdgeVoiceModal(): void { this.showEdgeVoiceModal.set(false); }
   public toggleEdgeVoiceModal(): void { this.showEdgeVoiceModal.update(v => !v); }
+
+  public openCowsModal(): void { this.showCowsModal.set(true); }
+  public closeCowsModal(): void { this.showCowsModal.set(false); }
+  public toggleCowsModal(): void { this.showCowsModal.update(v => !v); }
+
+  public openRecoveryModal(): void { this.showRecoveryModal.set(true); }
+  public closeRecoveryModal(): void { this.showRecoveryModal.set(false); }
+  public toggleRecoveryModal(): void { this.showRecoveryModal.update(v => !v); }
+
+  public openDisasterMeshModal(): void { this.showDisasterMeshModal.set(true); }
+  public closeDisasterMeshModal(): void { this.showDisasterMeshModal.set(false); }
+  public toggleDisasterMeshModal(): void { this.showDisasterMeshModal.update(v => !v); }
 }
 

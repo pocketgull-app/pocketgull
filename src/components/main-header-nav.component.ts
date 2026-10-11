@@ -374,7 +374,7 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
                       <div class="text-[10px] text-zinc-400 font-normal">Three.js Tri-Plane Slicer</div>
                     </div>
                   </button>
-                  <button type="button" (click)="openBiophysicalLenses.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
+                  <button type="button" data-testid="btn-open-biophysical-lenses" (click)="openBiophysicalLenses.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">🫀</span>
                     <div>
                       <div>Biophysical 3D Lenses &amp; Phenotypers</div>
@@ -468,6 +468,20 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
                     <div>
                       <div>MIMIC-IV / OMOP Conformal Hub</div>
                       <div class="text-[10px] text-zinc-400 font-normal">Preprint • 95% Coverage vs Epic ESM Sepsis</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openCowsModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-teal-700 dark:text-teal-300 cursor-pointer border border-teal-500/20 bg-teal-50/40 dark:bg-teal-950/20">
+                    <span class="text-sm">🌿</span>
+                    <div>
+                      <div>Yale COWS &amp; Addiction Suite</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Buprenorphine Induction • Restorative Care • LOINC 72514-3</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openRecoveryModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/20">
+                    <span class="text-sm">🌱</span>
+                    <div>
+                      <div>Recovery Companion Check-In</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Daily Craving VAS • Wearable Sleep • Bristol OIBD</div>
                     </div>
                   </button>
                 </div>
@@ -571,6 +585,13 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
                     <div>
                       <div>Edge Offline Voice Scribe</div>
                       <div class="text-[10px] text-zinc-400 font-normal">Local SLM • ISMP Intercept • Store &amp; Forward FHIR</div>
+                    </div>
+                  </button>
+                  <button type="button" (click)="navShell?.openDisasterMeshModal(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/20">
+                    <span class="text-sm">📡</span>
+                    <div>
+                      <div>BLE Disaster Mesh &amp; Mutual-Aid</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">Zero-Grid • Offline Kiosk • QR Sneakernet • 72h Battery</div>
                     </div>
                   </button>
                   <button type="button" (click)="openComplianceCertificate.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
@@ -1001,9 +1022,29 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
               <span class="text-base">⚡</span> <span>EHR Writeback &amp; ADT (RFC 7523)</span>
             </button>
 
+            <!-- 🎙️ Ambient AI Scribe Co-Pilot Showcase -->
+            <button type="button" (click)="navShell?.openAmbientScribeDrawer(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🎙️</span> <span>Ambient Scribe Co-Pilot (DAX / Abridge)</span>
+            </button>
+
+            <!-- 🌿 Yale COWS & Restorative Addiction Suite -->
+            <button type="button" (click)="navShell?.openCowsModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🌿</span> <span>Yale COWS &amp; Restorative Addiction Suite</span>
+            </button>
+
+            <!-- 🌱 Patient Recovery Companion Daily Check-In -->
+            <button type="button" (click)="navShell?.openRecoveryModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">🌱</span> <span>Recovery Companion Check-In (Daily Log)</span>
+            </button>
+
             <!-- 🎙️ Edge Offline Voice Scribe -->
             <button type="button" (click)="navShell?.openEdgeVoiceModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🎙️</span> <span>Edge Voice Agent (Air-Gapped SLM)</span>
+            </button>
+
+            <!-- 📡 Decentralized BLE Disaster Mesh & Mutual-Aid Beacon -->
+            <button type="button" (click)="navShell?.openDisasterMeshModal(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+              <span class="text-base">📡</span> <span>BLE Disaster Mesh &amp; Mutual-Aid (Zero-Grid)</span>
             </button>
 
             <!-- Ambient Flow Background Music Player -->

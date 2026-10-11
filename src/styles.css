@@ -2,6 +2,7 @@
 @import './styles/pocketgull-icon-font.css';
 @import './styles/pocketgull-tokens.css';
 
+@import './styles/pocketshoal.css';
 @import './styles/directcurves.css';
 
 :root {
@@ -32,8 +33,9 @@
   font-family: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-sans: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-heading: 'PocketGull Bold', 'PocketGull', sans-serif;
-  --font-serif: 'PocketGull', serif;
-  --font-caslon: 'PocketGull', serif;
+  --font-serif: 'PocketGull Serif', 'PocketGull Serif VF', Georgia, serif;
+  --font-pocketgull-serif: 'PocketGull Serif', 'PocketGull Serif VF', Georgia, serif;
+  --font-caslon: var(--font-pocketgull-serif);
   --font-mono: 'PocketGull Mono', monospace;
   --font-rounded: 'PocketGull', 'PocketGull Bold', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -46,8 +48,8 @@ body, html {
   letter-spacing: -0.012em;
 }
 
-.font-caslon, .caslon-prose {
-  font-family: var(--font-caslon);
+.font-pocketgull-serif, .pocketgull-serif-prose, .font-caslon, .caslon-prose {
+  font-family: var(--font-pocketgull-serif);
   line-height: 1.65;
   letter-spacing: -0.012em;
 }

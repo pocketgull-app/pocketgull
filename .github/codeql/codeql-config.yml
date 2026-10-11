@@ -13,4 +13,3 @@ paths-ignore:
   - 'run-playwright.cjs'
   - 'vitest.config.ts'
   - 'playwright.config.ts'
-  - 'tailwind.config.js'

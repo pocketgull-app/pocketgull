@@ -11,7 +11,7 @@ export interface IFhirProduceRxReferral {
   issueDate: string;
   validThroughDate: string;
   monthlyAllotmentUsd: number;
-  eligiblePrograms: ('GusNIP' | 'SNAP_Incentive' | 'WIC_FMNP' | 'Medicaid_1115_Waiver')[];
+  eligiblePrograms: ('GusNIP' | 'SNAP_Incentive' | 'WIC_FMNP' | 'Medicaid_1115_Waiver' | 'PMBJP_Nutrition_Mission' | 'African_Agroecology_Coop' | 'SUS_Alimentacao_Saudavel')[];
   targetedHealthConditions: string[];
   prescribedDestinationCity: string;
   approvedCoopsAndMarkets: string[];
@@ -43,6 +43,7 @@ export class ProduceRxNutritionReferralService {
     coopsAndMarkets: string[];
     specialtyHeritageFoods: string[];
     monthlyAllotmentUsd?: number;
+    programs?: IFhirProduceRxReferral['eligiblePrograms'];
     providerName?: string;
     providerNpi?: string;
   }): IFhirProduceRxReferral {
@@ -171,7 +172,7 @@ export class ProduceRxNutritionReferralService {
       issueDate,
       validThroughDate,
       monthlyAllotmentUsd: monthlyAllotment,
-      eligiblePrograms: ['GusNIP', 'SNAP_Incentive', 'WIC_FMNP', 'Medicaid_1115_Waiver'],
+      eligiblePrograms: params.programs || ['GusNIP', 'SNAP_Incentive', 'WIC_FMNP', 'Medicaid_1115_Waiver'],
       targetedHealthConditions: conditions,
       prescribedDestinationCity: params.destinationCity,
       approvedCoopsAndMarkets: params.coopsAndMarkets,

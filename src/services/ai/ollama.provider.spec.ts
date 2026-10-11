@@ -17,11 +17,11 @@ describe('OllamaProvider Suite', () => {
     globalThis.fetch = originalFetch;
   });
 
-  it('1. Initializes with default configuration and gemma4:latest model', () => {
+  it('1. Initializes with default configuration and sovereign model', () => {
     provider = TestBed.inject(OllamaProvider);
     expect(provider).toBeTruthy();
     expect(provider.baseUrl()).toBe('http://localhost:11434');
-    expect(provider.selectedModelId()).toBe('gemma4:latest');
+    expect(provider.selectedModelId()).toBe('pocketgull-clinical:latest');
   });
 
   it('2. Discovers installed models via checkServerHealth()', async () => {
@@ -56,7 +56,7 @@ describe('OllamaProvider Suite', () => {
     expect(provider.isConnected()).toBe(true);
     expect(provider.availableModels().length).toBe(2);
     expect(provider.selectedModelId()).toBe('gemma4:latest');
-    expect(provider.statusMessage()).toContain('Ollama Server Connected');
+    expect(provider.statusMessage()).toContain('Ollama Sovereign Brain Connected');
   });
 
   it('3. Handles offline/unreachable server gracefully without crashing', async () => {

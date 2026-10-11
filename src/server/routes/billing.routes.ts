@@ -4,6 +4,7 @@ import { rateLimit } from 'express-rate-limit';
 import { Firestore } from '@google-cloud/firestore';
 import { resolveTierFromPriceId } from '../services/tier-config';
 import { gaapAccountingService } from '../services/gaap-accounting.service';
+import { pppPricingService } from '../services/ppp.service';
 
 let _db: Firestore | null = null;
 function getDb(): Firestore {
@@ -32,8 +33,19 @@ export function createBillingRouter() {
     try {
       const isGet = req.method === 'GET';
       const params = isGet ? req.query : req.body;
-      const { priceId, tier, successUrl, cancelUrl, customerEmail, endowmentFund, revenueSplit } = params || {};
+      const { priceId, tier, successUrl, cancelUrl, customerEmail, endowmentFund, revenueSplit, country } = params || {};
       const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
+
+      // Geolocation country resolution (Cloud Run, Cloudflare, Fastly, or user override)
+      const detectedCountry = String(
+        country ||
+        req.headers['x-client-geo-country'] ||
+        req.headers['cf-ipcountry'] ||
+        req.headers['x-country-code'] ||
+        'US'
+      ).trim().toUpperCase();
+
+      const pppInfo = pppPricingService.resolvePppInfo(detectedCountry);
 
       let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
       let mode: Stripe.Checkout.SessionCreateParams.Mode = 'subscription';
@@ -42,6 +54,7 @@ export function createBillingRouter() {
         lineItems = [{ price: String(priceId), quantity: 1 }];
       } else if (tier === 'founder_lifetime' || tier === 'founder' || tier === 'lifetime') {
         mode = 'payment';
+        const { finalAmountCents } = pppPricingService.calculateAdjustedAmountCents(29900, detectedCountry);
         lineItems = [{
           price_data: {
             currency: 'usd',
@@ -50,12 +63,13 @@ export function createBillingRouter() {
               description: '100% on-device offline AI scribing forever, standard SOAP templates, EHR export, and lifetime software updates (Zero recurring monthly fees).',
               tax_code: 'txcd_10103001',
             },
-            unit_amount: 29900, // $299.00
+            unit_amount: finalAmountCents,
           },
           quantity: 1,
         }];
       } else if (tier === 'clinic_annual' || tier === 'annual') {
         mode = 'subscription';
+        const { finalAmountCents } = pppPricingService.calculateAdjustedAmountCents(49000, detectedCountry);
         lineItems = [{
           price_data: {
             currency: 'usd',
@@ -64,13 +78,14 @@ export function createBillingRouter() {
               description: 'Ambient AI voice scribing, custom specialty note templates, medication & herb-drug safety screening, priority clinician support & onboarding.',
               tax_code: 'txcd_10103001',
             },
-            unit_amount: 49000, // $490.00 / yr
+            unit_amount: finalAmountCents,
             recurring: { interval: 'year' },
           },
           quantity: 1,
         }];
       } else if (tier === 'clinic_onboarding' || tier === 'onboarding') {
         mode = 'payment';
+        const { finalAmountCents } = pppPricingService.calculateAdjustedAmountCents(125000, detectedCountry);
         lineItems = [{
           price_data: {
             currency: 'usd',
@@ -79,12 +94,13 @@ export function createBillingRouter() {
               description: 'Up to 5 clinician licenses, white-glove EHR template customization, 1-on-1 workflow integration, dedicated HIPAA BAA.',
               tax_code: 'txcd_10103001',
             },
-            unit_amount: 125000, // $1,250.00
+            unit_amount: finalAmountCents,
           },
           quantity: 1,
         }];
       } else if (tier === 'clinic_pro_monthly' || tier === 'practitioner' || tier === 'monthly') {
         mode = 'subscription';
+        const { finalAmountCents } = pppPricingService.calculateAdjustedAmountCents(4900, detectedCountry);
         lineItems = [{
           price_data: {
             currency: 'usd',
@@ -93,13 +109,14 @@ export function createBillingRouter() {
               description: 'Ambient AI voice scribing, custom specialty templates, medication & herb-drug safety checker, priority support.',
               tax_code: 'txcd_10103001',
             },
-            unit_amount: 4900, // $49.00 / mo
+            unit_amount: finalAmountCents,
             recurring: { interval: 'month' },
           },
           quantity: 1,
         }];
       } else if (tier === 'pilot') {
         mode = 'subscription';
+        const { finalAmountCents } = pppPricingService.calculateAdjustedAmountCents(29900, detectedCountry);
         lineItems = [{
           price_data: {
             currency: 'usd',
@@ -108,13 +125,14 @@ export function createBillingRouter() {
               description: 'Ambient Clinical Scribe + SOAP notes, RxGuard PGx & herb-drug screening, Socratic patient intake triage (Up to 3 clinicians)',
               tax_code: 'txcd_10103001',
             },
-            unit_amount: 29900, // $299.00
+            unit_amount: finalAmountCents,
             recurring: { interval: 'month' },
           },
           quantity: 1,
         }];
       } else if (tier === 'sprint') {
         mode = 'payment';
+        const { finalAmountCents } = pppPricingService.calculateAdjustedAmountCents(350000, detectedCountry);
         lineItems = [{
           price_data: {
             currency: 'usd',
@@ -123,12 +141,13 @@ export function createBillingRouter() {
               description: 'Turnkey 2-week implementation: HIPAA §164.514 Safe Harbor setup, Custom LoRA model fine-tuning, FHIR R4 / GA4GH Phenopackets pipeline integration',
               tax_code: 'txcd_10103001',
             },
-            unit_amount: 350000, // $3,500.00
+            unit_amount: finalAmountCents,
           },
           quantity: 1,
         }];
       } else if (tier === 'academic') {
         mode = 'subscription';
+        const { finalAmountCents } = pppPricingService.calculateAdjustedAmountCents(120000, detectedCountry);
         lineItems = [{
           price_data: {
             currency: 'usd',
@@ -137,13 +156,14 @@ export function createBillingRouter() {
               description: 'GA4GH Phenopackets v2 rare disease pipelines, 11-paradigm open science datasets, unlimited OSCE simulation training seats',
               tax_code: 'txcd_10103001',
             },
-            unit_amount: 120000, // $1,200.00 / yr
+            unit_amount: finalAmountCents,
             recurring: { interval: 'year' },
           },
           quantity: 1,
         }];
       } else if (tier === 'enterprise') {
         mode = 'subscription';
+        const { finalAmountCents } = pppPricingService.calculateAdjustedAmountCents(99900, detectedCountry);
         lineItems = [{
           price_data: {
             currency: 'usd',
@@ -152,7 +172,7 @@ export function createBillingRouter() {
               description: 'Unlimited clinician seats, Google SAIF Level 3 defense, dedicated Vertex AI endpoint deployment, priority SLA',
               tax_code: 'txcd_10103001',
             },
-            unit_amount: 99900, // $999.00 / mo
+            unit_amount: finalAmountCents,
             recurring: { interval: 'month' },
           },
           quantity: 1,
@@ -171,14 +191,14 @@ export function createBillingRouter() {
         return res.json({ url: fallbackUrl, sessionId: 'cs_simulated_' + Date.now() });
       }
 
-      // Create a live Stripe Checkout Session with best enterprise and GAAP provisions
-      const session = await getStripe().checkout.sessions.create({
+      // Create a live Stripe Checkout Session with best enterprise, geofencing, and GAAP provisions
+      const sessionParams: Stripe.Checkout.SessionCreateParams = {
         line_items: lineItems,
         mode: mode,
-        success_url: String(successUrl || `${origin}/?billing=success&session_id={CHECKOUT_SESSION_ID}`),
+        success_url: String(successUrl || `${origin}/?billing=success&session_id={CHECKOUT_SESSION_ID}&onboarding=true`),
         cancel_url: String(cancelUrl || `${origin}/?billing=canceled`),
         customer_email: customerEmail ? String(customerEmail) : undefined,
-        billing_address_collection: 'auto',
+        billing_address_collection: 'required',
         allow_promotion_codes: true,
         automatic_tax: { enabled: true },
         phone_number_collection: { enabled: true },
@@ -188,7 +208,10 @@ export function createBillingRouter() {
           metadata: {
             tier: String(tier || 'clinic_pro'),
             gaap_covenant: 'ASC_958_85PCT_PROGRAMMATIC',
-            entity: 'PocketGull LLC (Registry: 258869891)'
+            entity: 'PocketGull LLC (Registry: 258869891)',
+            ppp_country: pppInfo.countryCode,
+            ppp_tier: String(pppInfo.tier),
+            geofenced: 'true',
           }
         } : undefined,
         metadata: {
@@ -200,9 +223,22 @@ export function createBillingRouter() {
           entity: 'PocketGull LLC',
           registry: '258869891',
           fhir_r4_compliance: 'true',
-          founder_dispensation: 'true'
+          founder_dispensation: 'true',
+          ppp_country: pppInfo.countryCode,
+          ppp_tier: String(pppInfo.tier),
+          geofenced: 'true',
+          geofence_origin_country: pppInfo.countryCode,
         }
-      });
+      };
+
+      // Strict Geofencing: Restrict billing/shipping country to detected jurisdiction
+      if (detectedCountry && detectedCountry.length === 2) {
+        sessionParams.shipping_address_collection = {
+          allowed_countries: [detectedCountry as Stripe.Checkout.SessionCreateParams.ShippingAddressCollection.AllowedCountry]
+        };
+      }
+
+      const session = await getStripe().checkout.sessions.create(sessionParams);
 
       if (isGet) {
         return res.redirect(303, session.url!);

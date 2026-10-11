@@ -59,34 +59,34 @@ export interface IHepaticTelemetry {
         </div>
 
         <!-- Presets Selector Tabs -->
-        <div class="flex flex-wrap items-center gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs">
+        <div class="flex flex-wrap items-center gap-2 bg-zinc-950 p-1.5 rounded-2xl border border-zinc-800 text-xs">
           <button type="button" (click)="setPreset('f0_healthy')"
-                  [class]="preset() === 'f0_healthy' ? 'bg-emerald-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="preset() === 'f0_healthy' ? 'bg-emerald-600 text-white font-bold shadow-md shadow-emerald-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none">
             <span>🟢</span>
             <span>F0 Normal</span>
           </button>
           <button type="button" (click)="setPreset('f1_portal_expansion')"
-                  [class]="preset() === 'f1_portal_expansion' ? 'bg-sky-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="preset() === 'f1_portal_expansion' ? 'bg-sky-600 text-white font-bold shadow-md shadow-sky-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none">
             <span>🔵</span>
             <span>F1 Portal</span>
           </button>
           <button type="button" (click)="setPreset('f2_periportal_fibrosis')"
-                  [class]="preset() === 'f2_periportal_fibrosis' ? 'bg-amber-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="preset() === 'f2_periportal_fibrosis' ? 'bg-amber-600 text-white font-bold shadow-md shadow-amber-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none">
             <span>🟡</span>
             <span>F2 Periportal</span>
           </button>
           <button type="button" (click)="setPreset('f3_bridging_fibrosis')"
-                  [class]="preset() === 'f3_bridging_fibrosis' ? 'bg-orange-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="preset() === 'f3_bridging_fibrosis' ? 'bg-orange-600 text-white font-bold shadow-md shadow-orange-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none">
             <span>🟠</span>
             <span>F3 Bridging (CSPH)</span>
           </button>
           <button type="button" (click)="setPreset('f4_cirrhosis_varices')"
-                  [class]="preset() === 'f4_cirrhosis_varices' ? 'bg-rose-600 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'"
-                  class="px-2.5 py-1 rounded-lg transition cursor-pointer text-xs flex items-center gap-1">
+                  [class]="preset() === 'f4_cirrhosis_varices' ? 'bg-rose-600 text-white font-bold shadow-md shadow-rose-950/50' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60'"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl transition cursor-pointer text-xs flex items-center justify-center gap-1.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none">
             <span>🚨</span>
             <span>F4 Cirrhosis (Varices)</span>
           </button>
@@ -98,33 +98,36 @@ export interface IHepaticTelemetry {
         <div #canvasContainer class="w-full h-full cursor-grab active:cursor-grabbing"></div>
 
         <!-- Floating Playback & View Controls (Top Right) -->
-        <div class="absolute top-3 right-3 z-30 flex items-center gap-1.5 bg-zinc-900/80 backdrop-blur-md p-1.5 rounded-xl border border-zinc-800 text-xs">
+        <div class="absolute top-3 right-3 z-30 flex items-center gap-2 bg-zinc-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-zinc-800 text-xs shadow-xl">
           <button (click)="togglePlay()" type="button"
-                  class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 font-bold hover:bg-amber-500/30 transition cursor-pointer">
+                  aria-label="Toggle 3D simulation animation playback"
+                  class="min-h-[44px] px-3.5 py-2 rounded-xl bg-amber-500/20 text-amber-300 font-bold hover:bg-amber-500/30 transition cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none flex items-center justify-center gap-1.5">
             {{ isPlaying() ? '⏸ Pause' : '▶ Play' }}
           </button>
           <button (click)="toggleSpeed()" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer">
-            {{ flowSpeed() }}x Speed
+                  aria-label="Toggle simulation flow speed multiplier"
+                  class="min-h-[44px] px-3 py-2 rounded-xl bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none flex items-center justify-center gap-1">
+            <span class="tabular-nums">{{ flowSpeed() }}</span>x Speed
           </button>
           <button (click)="resetCamera()" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer">
+                  aria-label="Reset 3D camera to default viewpoint"
+                  class="min-h-[44px] px-3 py-2 rounded-xl bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none flex items-center justify-center gap-1.5">
             🎯 Reset Camera
           </button>
         </div>
 
         <!-- Floating Hepatic Telemetry HUD (Top Left) -->
-        <div class="absolute top-3 left-3 z-30 bg-zinc-900/85 backdrop-blur-md p-3.5 rounded-2xl border border-zinc-800/80 text-xs space-y-2 max-w-xs shadow-xl pointer-events-none sm:pointer-events-auto">
+        <div class="absolute top-3 left-3 z-30 bg-zinc-900/90 backdrop-blur-md p-3.5 rounded-2xl border border-zinc-800/80 text-xs space-y-2 max-w-xs shadow-xl pointer-events-none sm:pointer-events-auto">
           <div class="flex items-center justify-between border-b border-zinc-800 pb-1.5">
             <span class="text-[10px] uppercase font-bold text-amber-400">Sinusoidal Hemodynamics</span>
-            <span class="text-[10px] font-mono text-zinc-400">METAVIR: {{ telemetry().stageLabel }}</span>
+            <span class="text-[10px] font-mono tabular-nums text-zinc-400">METAVIR: {{ telemetry().stageLabel }}</span>
           </div>
 
           <div class="grid grid-cols-2 gap-2 text-[11px]">
             <!-- HVPG -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">HVPG Gradient</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().hvpgMmHg >= 12.0 ? 'text-red-400' : (telemetry().hvpgMmHg >= 10.0 ? 'text-amber-400' : 'text-emerald-400')">
                 {{ telemetry().hvpgMmHg }} mmHg
               </span>
@@ -133,7 +136,7 @@ export interface IHepaticTelemetry {
             <!-- Bleed Risk -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">Variceal Bleed Hazard</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().varicealBleedRiskPercent > 30 ? 'text-red-400' : (telemetry().varicealBleedRiskPercent > 10 ? 'text-amber-400' : 'text-emerald-400')">
                 {{ telemetry().varicealBleedRiskPercent }}%
               </span>
@@ -142,7 +145,7 @@ export interface IHepaticTelemetry {
             <!-- Porosity -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">Sieve Porosity</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().fenestrationPorosityPercent < 30 ? 'text-red-400' : (telemetry().fenestrationPorosityPercent < 70 ? 'text-amber-400' : 'text-cyan-400')">
                 {{ telemetry().fenestrationPorosityPercent }}%
               </span>
@@ -151,7 +154,7 @@ export interface IHepaticTelemetry {
             <!-- Metabolic Clearance -->
             <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60">
               <span class="text-[9px] uppercase font-bold text-zinc-400 block">Metabolic Clearance</span>
-              <span class="text-sm font-black font-sans"
+              <span class="text-sm font-black font-mono tabular-nums"
                     [ngClass]="telemetry().metabolicClearancePercent < 40 ? 'text-red-400' : 'text-emerald-400'">
                 {{ telemetry().metabolicClearancePercent }}%
               </span>
@@ -162,7 +165,7 @@ export interface IHepaticTelemetry {
           <div class="p-2 bg-zinc-950/70 rounded-lg border border-zinc-800/60 flex items-center justify-between text-[10px]">
             <div>
               <span class="text-zinc-400 block">Albumin Reserve:</span>
-              <strong class="text-amber-300 font-bold">{{ telemetry().albuminReservePercent }}%</strong>
+              <strong class="text-amber-300 font-bold font-mono tabular-nums">{{ telemetry().albuminReservePercent }}%</strong>
             </div>
             <div class="text-right">
               <span class="text-zinc-400 block">Portal Status:</span>
@@ -206,43 +209,55 @@ export interface IHepaticTelemetry {
       <!-- Real-Time Interactive Parameter Sliders Deck -->
       <div class="p-4 bg-zinc-900/90 border-t border-zinc-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
         <!-- Fibrosis Stage Slider -->
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <div class="flex justify-between text-[11px]">
-            <span class="text-zinc-400 font-bold uppercase">METAVIR Fibrosis Stage</span>
-            <span class="text-amber-400 font-mono font-bold">Stage F{{ fibrosisStage() }}</span>
+            <label for="hepatic-fibrosis-slider" class="text-zinc-400 font-bold uppercase cursor-pointer">METAVIR Fibrosis Stage</label>
+            <span class="text-amber-400 font-mono tabular-nums font-bold">Stage F{{ fibrosisStage() }}</span>
           </div>
-          <input type="range" min="0" max="4" step="1" [value]="fibrosisStage()" (input)="onFibrosisChange($event)"
-                 class="w-full accent-amber-400 cursor-pointer" />
+          <div class="min-h-[44px] flex items-center">
+            <input id="hepatic-fibrosis-slider" type="range" min="0" max="4" step="1" [value]="fibrosisStage()" (input)="onFibrosisChange($event)"
+                   aria-label="METAVIR fibrosis stage from zero normal to four cirrhosis"
+                   class="w-full accent-amber-400 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none" />
+          </div>
         </div>
 
         <!-- Collagen Density Slider -->
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <div class="flex justify-between text-[11px]">
-            <span class="text-zinc-400 font-bold uppercase">Disse Collagen Scarring</span>
-            <span class="text-amber-400 font-mono font-bold">{{ Math.round(collagenDensity() * 100) }}%</span>
+            <label for="hepatic-collagen-slider" class="text-zinc-400 font-bold uppercase cursor-pointer">Disse Collagen Scarring</label>
+            <span class="text-amber-400 font-mono tabular-nums font-bold">{{ Math.round(collagenDensity() * 100) }}%</span>
           </div>
-          <input type="range" min="0.0" max="1.0" step="0.05" [value]="collagenDensity()" (input)="onCollagenChange($event)"
-                 class="w-full accent-amber-400 cursor-pointer" />
+          <div class="min-h-[44px] flex items-center">
+            <input id="hepatic-collagen-slider" type="range" min="0.0" max="1.0" step="0.05" [value]="collagenDensity()" (input)="onCollagenChange($event)"
+                   aria-label="Space of Disse collagen scarring percentage"
+                   class="w-full accent-amber-400 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none" />
+          </div>
         </div>
 
         <!-- Sieve Porosity Slider -->
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <div class="flex justify-between text-[11px]">
-            <span class="text-zinc-400 font-bold uppercase">LSEC Sieve Plate Porosity</span>
-            <span class="text-amber-400 font-mono font-bold">{{ Math.round(fenestrationPorosity() * 100) }}%</span>
+            <label for="hepatic-porosity-slider" class="text-zinc-400 font-bold uppercase cursor-pointer">LSEC Sieve Plate Porosity</label>
+            <span class="text-amber-400 font-mono tabular-nums font-bold">{{ Math.round(fenestrationPorosity() * 100) }}%</span>
           </div>
-          <input type="range" min="0.05" max="1.0" step="0.05" [value]="fenestrationPorosity()" (input)="onPorosityChange($event)"
-                 class="w-full accent-amber-400 cursor-pointer" />
+          <div class="min-h-[44px] flex items-center">
+            <input id="hepatic-porosity-slider" type="range" min="0.05" max="1.0" step="0.05" [value]="fenestrationPorosity()" (input)="onPorosityChange($event)"
+                   aria-label="Liver sinusoidal endothelial cell fenestration sieve plate porosity percentage"
+                   class="w-full accent-amber-400 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none" />
+          </div>
         </div>
 
         <!-- Stellate Cell Activation Slider -->
-        <div class="space-y-1">
+        <div class="space-y-1.5">
           <div class="flex justify-between text-[11px]">
-            <span class="text-zinc-400 font-bold uppercase">Stellate Myofibroblast Tone</span>
-            <span class="text-amber-400 font-mono font-bold">{{ Math.round(stellateActivation() * 100) }}%</span>
+            <label for="hepatic-stellate-slider" class="text-zinc-400 font-bold uppercase cursor-pointer">Stellate Myofibroblast Tone</label>
+            <span class="text-amber-400 font-mono tabular-nums font-bold">{{ Math.round(stellateActivation() * 100) }}%</span>
           </div>
-          <input type="range" min="0.0" max="1.0" step="0.05" [value]="stellateActivation()" (input)="onStellateChange($event)"
-                 class="w-full accent-amber-400 cursor-pointer" />
+          <div class="min-h-[44px] flex items-center">
+            <input id="hepatic-stellate-slider" type="range" min="0.0" max="1.0" step="0.05" [value]="stellateActivation()" (input)="onStellateChange($event)"
+                   aria-label="Hepatic stellate cell myofibroblast tone and transdifferentiation percentage"
+                   class="w-full accent-amber-400 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none" />
+          </div>
         </div>
       </div>
     </div>

@@ -205,4 +205,26 @@ describe('EhrWritebackService', () => {
     expect(service.totalWritebacksCount()).toBe(1);
     expect(service.lastBatchResult()).toEqual(result);
   });
+
+  it('should accept custom SBAR and custom CarePathway from ambient scribe adjudication', async () => {
+    const customSbar = {
+      chiefComplaint: 'Severe Sciatica & Radiculopathy',
+      situation: 'SBAR generated from ambient clinical scribe ingestion.',
+      background: 'Patient taking gabapentin and clonazepam.',
+      assessment: 'Critical lethal DDI detected; ISMP posology defects corrected.',
+      recommendation: 'De-prescribe clonazepam; titrate gabapentin to bedtime.',
+      timestamp: '2026-10-09T09:00:00Z'
+    };
+
+    const result = await service.executeWriteback(
+      { patientName: 'Marcus Davis', patientMrn: 'MRN-449102' },
+      customSbar
+    );
+
+    expect(result.overallStatus).toBe('SUCCESS_FILED_TO_EHR');
+    const docRef = result.sbarDocumentReference;
+    expect(docRef.subject.display).toBe('Marcus Davis');
+    const docReceipt = result.receipts.find(r => r.resourceType === 'DocumentReference');
+    expect(docReceipt?.httpStatus).toBe(201);
+  });
 });

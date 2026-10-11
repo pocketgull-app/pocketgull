@@ -1,13 +1,14 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { GeminiProvider } from './ai/gemini.provider';
 import { InteractionsProvider } from './ai/interactions.provider';
+import { OllamaProvider } from './ai/ollama.provider';
 import { WebGpuEdgeAiService } from './webgpu-edge-ai.service';
 import { OnnxWebGpuEngineService } from './onnx-webgpu-engine.service';
 import { MicrosoftHealthNuanceService } from './microsoft-health-nuance.service';
 import { IbmWatsonxClinicalService } from './ibm-watsonx-clinical.service';
 import { QuantumClinicalEngineService } from './quantum-clinical-engine.service';
 
-export type ClinicalAiEngineId = 'gemini-interactions' | 'gcp-gemini' | 'local-webgpu' | 'onnx-neural-edge' | 'azure-nuance' | 'ibm-watsonx' | 'quantum-vqe';
+export type ClinicalAiEngineId = 'sovereign-ollama' | 'gemini-interactions' | 'gcp-gemini' | 'local-webgpu' | 'onnx-neural-edge' | 'azure-nuance' | 'ibm-watsonx' | 'quantum-vqe';
 
 export interface IClinicalAiEngineProfile {
   id: ClinicalAiEngineId;
@@ -25,6 +26,7 @@ export interface IClinicalAiEngineProfile {
 export class ClinicalAiProviderRegistryService {
   private readonly gemini = inject(GeminiProvider, { optional: true });
   private readonly interactions = inject(InteractionsProvider, { optional: true });
+  private readonly ollama = inject(OllamaProvider, { optional: true });
   private readonly webgpu = inject(WebGpuEdgeAiService, { optional: true });
   private readonly onnx = inject(OnnxWebGpuEngineService, { optional: true });
   private readonly nuance = inject(MicrosoftHealthNuanceService, { optional: true });

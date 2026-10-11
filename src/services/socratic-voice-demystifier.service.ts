@@ -84,6 +84,78 @@ export class SocraticVoiceDemystifierService {
     }
   ];
 
+  // Gull Squadron Avian Voice Personas Catalog
+  readonly gullSquadronPersonas: IVoicePersonaProfile[] = [
+    {
+      id: 'gull-gulliver',
+      name: 'Gulliver (Nautical Captain)',
+      role: 'Warm Socratic Mentor',
+      speechRate: 0.95,
+      speechPitch: 1.05,
+      vagalCadencePauseMs: 600,
+      description: 'Warm, breezy, panoramic coastal cadence; opens clinical findings with reassuring clarity like a steady harbor captain.'
+    },
+    {
+      id: 'gull-swoop',
+      name: 'Swoop (Aviator Apothecary)',
+      role: 'Warm Socratic Mentor',
+      speechRate: 1.10,
+      speechPitch: 1.18,
+      vagalCadencePauseMs: 450,
+      description: 'Cheerful, bubbly, and uplifting; delivers dosage adjustments and herbal steps with an encouraging chirp.'
+    },
+    {
+      id: 'gull-sentinel',
+      name: 'Sentinel (Cozy Lighthouse Keeper)',
+      role: 'Direct Clinical Scribe',
+      speechRate: 0.88,
+      speechPitch: 0.98,
+      vagalCadencePauseMs: 700,
+      description: 'Cozy, gentle, and protective; keeps a steady vigil over recovery trends and vital rhythms with warm amber patience.'
+    },
+    {
+      id: 'gull-samaritan',
+      name: 'Samaritan (Emergency Guardian)',
+      role: 'Parasympathetic Calming Guide',
+      speechRate: 0.82,
+      speechPitch: 0.90,
+      vagalCadencePauseMs: 800,
+      description: 'Deeply grounded, anti-panic rhythm; speaks deliberately to prevent hyperventilation and guide through acute crises.'
+    },
+    {
+      id: 'gull-drift',
+      name: 'Drift (Circadian Vagal Whisper)',
+      role: 'Parasympathetic Calming Guide',
+      speechRate: 0.75,
+      speechPitch: 0.88,
+      vagalCadencePauseMs: 950,
+      description: 'Silky, meditative cadence tuned precisely to 0.1 Hz resonant breathing to induce deep parasympathetic calm.'
+    },
+    {
+      id: 'gull-quill',
+      name: 'Quill (Storybook Narrator)',
+      role: 'Elder High-Clarity Voice',
+      speechRate: 0.90,
+      speechPitch: 1.12,
+      vagalCadencePauseMs: 600,
+      description: 'Melodic, expressive, and dyslexia-friendly; articulates every syllable crisply with comforting storybook cadence.'
+    },
+    {
+      id: 'gull-skimmer',
+      name: 'Skimmer (Fast Edge Chirp)',
+      role: 'Direct Clinical Scribe',
+      speechRate: 1.15,
+      speechPitch: 1.22,
+      vagalCadencePauseMs: 400,
+      description: 'Playful, sub-second edge chirp; ultra-crisp responsive delivery with zero network lag.'
+    }
+  ];
+
+  // Combined all personas list
+  readonly allPersonas = computed<IVoicePersonaProfile[]>(() => {
+    return [...this.personas, ...this.gullSquadronPersonas];
+  });
+
   // Comprehensive Socratic Demystification Knowledge Base
   readonly jargonDictionary: ISocraticAnalogy[] = [
     {
@@ -138,7 +210,7 @@ export class SocraticVoiceDemystifierService {
 
   // Active persona object
   readonly activePersona = computed<IVoicePersonaProfile>(() => {
-    return this.personas.find(p => p.id === this.selectedPersonaId()) || this.personas[0];
+    return this.allPersonas().find(p => p.id === this.selectedPersonaId()) || this.personas[0];
   });
 
   /**
@@ -211,6 +283,23 @@ export class SocraticVoiceDemystifierService {
 
   setPersona(personaId: string): void {
     this.selectedPersonaId.set(personaId);
+  }
+
+  setGullPersona(agentKey: string): void {
+    const key = agentKey.toLowerCase();
+    const mapping: Record<string, string> = {
+      gulliver: 'gull-gulliver',
+      swoop: 'gull-swoop',
+      sentinel: 'gull-sentinel',
+      samaritan: 'gull-samaritan',
+      drift: 'gull-drift',
+      monk: 'gull-drift',
+      quill: 'gull-quill',
+      scribes: 'gull-quill',
+      skimmer: 'gull-skimmer'
+    };
+    const targetId = mapping[key] || 'gull-gulliver';
+    this.setPersona(targetId);
   }
 
   toggleHandsFree(): void {

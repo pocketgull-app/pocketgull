@@ -339,14 +339,38 @@ export class EdgeAutonomousVoiceAgentService {
     this.persistBundles([]);
   }
 
-  // --- Private Helpers & Subsystems ---
+  // Gemma 4 Edge Session Reuse Cache
+  private cachedGemmaModel: any = null;
+  private cachedGemmaSystemPrompt = 'You are PocketGull Edge Clinical Reasoner. Structure the raw dialogue into clean SBAR clinical format. Prohibit naked decimals and trailing zeroes.';
+
+  private async getOrCreateGemmaSession(): Promise<any> {
+    const ai = (window as any).ai;
+    if (!ai?.languageModel) return null;
+
+    if (this.cachedGemmaModel) {
+      if (typeof this.cachedGemmaModel.clone === 'function') {
+        try {
+          return await this.cachedGemmaModel.clone();
+        } catch {
+          // If clone fails due to memory or session expiry, re-create below
+        }
+      } else {
+        return this.cachedGemmaModel;
+      }
+    }
+
+    this.cachedGemmaModel = await ai.languageModel.create({
+      systemPrompt: this.cachedGemmaSystemPrompt
+    });
+    return this.cachedGemmaModel;
+  }
 
   private async synthesizeWithGemma4PromptApi(transcript: string, startMs: number): Promise<ISbarSynthesisResult> {
     try {
-      const ai = (window as any).ai;
-      const model = await ai.languageModel.create({
-        systemPrompt: 'You are PocketGull Edge Clinical Reasoner. Structure the raw dialogue into clean SBAR clinical format. Prohibit naked decimals and trailing zeroes.'
-      });
+      const model = await this.getOrCreateGemmaSession();
+      if (!model) {
+        throw new Error('Gemma 4 LanguageModel session could not be established.');
+      }
 
       const response = await model.prompt(`Format this clinical consultation dialogue into SBAR:\n${transcript}`);
       const duration = Date.now() - startMs;

@@ -71,4 +71,97 @@ describe('SmsEquityBridgeService - Health Equity SMS Bridge Suite', () => {
     expect(parsed.adherencePointsEarned).toBe(15);
     expect(parsed.automatedResponseText).toContain('Medication adherence logged');
   });
+
+  it('6. Generates localized Swahili and Hausa 2G SMS prompts for frontline health equity', () => {
+    const swahiliPlan = service.getBridgePlan(mockPatient, 'sw');
+    expect(swahiliPlan.dailyPrompts[0].messageBody).toContain('shinikizo la damu');
+    expect(swahiliPlan.dailyPrompts[1].messageBody).toContain('dawa zako');
+
+    const hausaPlan = service.getBridgePlan(mockPatient, 'ha');
+    expect(hausaPlan.dailyPrompts[0].messageBody).toContain('hawan jini');
+    expect(hausaPlan.dailyPrompts[1].messageBody).toContain('maganinka');
+  });
+
+  it('7. Parses febrile symptom and multilingual affirmative medication adherence (Swahili/Hausa)', () => {
+    const inboundFever = 'BP 118/76 feeling high fever and chills today';
+    const parsedFever = service.parseInboundSms(inboundFever, 'p001');
+    expect(parsedFever.detectedSymptoms).toContain('Febrile / Malaria Screen Indicated');
+    expect(parsedFever.urgencyLevel).toBe('ELEVATED');
+
+    const inboundSwahiliMed = 'Ndiyo nimekunywa dawa zangu';
+    const parsedSw = service.parseInboundSms(inboundSwahiliMed, 'p001');
+    expect(parsedSw.adherencePointsEarned).toBe(15);
+  });
+
+  it('8. Simulates interactive USSD session (*384*4855#) for Malaria Triage and Danger Sign', () => {
+    const session = {
+      sessionId: 'sess_ussd_001',
+      phoneNumber: '+254712345678',
+      serviceCode: '*384*4855#',
+      currentMenu: 'MAIN' as const,
+      language: 'en' as const,
+      collectedData: {}
+    };
+
+    // Step 1: Initial dial-in
+    const initRes = service.processUssdRequest(session, '');
+    expect(initRes.responseType).toBe('CON');
+    expect(initRes.screenText).toContain('POCKETGULL COMMUNITY HEALTH');
+
+    // Step 2: User selects option '1' (Fever & Malaria)
+    const triageMenu = service.processUssdRequest(session, '1');
+    expect(triageMenu.responseType).toBe('CON');
+    expect(triageMenu.screenText).toContain('FEVER & MALARIA TRIAGE');
+
+    // Step 3: User flags option '3' (Child vomiting/unable to drink)
+    const dangerRes = service.processUssdRequest(session, '3');
+    expect(dangerRes.responseType).toBe('END');
+    expect(dangerRes.screenText).toContain('DANGER SIGN ALERT');
+    expect(dangerRes.screenText).toContain('IMMEDIATELY');
+  });
+
+  it('9. Simulates interactive USSD blood pressure capture and FHIR observation creation', () => {
+    const session = {
+      sessionId: 'sess_ussd_002',
+      phoneNumber: '+2348031234567',
+      serviceCode: '*384*4855#',
+      currentMenu: 'MAIN' as const,
+      language: 'en' as const,
+      patientId: 'patient_af_09',
+      collectedData: {}
+    };
+
+    // Dial into BP Log
+    service.processUssdRequest(session, '2');
+    expect(session.currentMenu).toBe('BP_LOG');
+
+    // User submits reading '134/86'
+    const bpResult = service.processUssdRequest(session, '134/86');
+    expect(bpResult.responseType).toBe('END');
+    expect(bpResult.actionPayload).toBeDefined();
+    expect((bpResult.actionPayload as any)?.resourceType).toBe('Observation');
+    expect((bpResult.actionPayload as any)?.subject?.reference).toBe('Patient/patient_af_09');
+  });
+
+  it('10. Simulates interactive USSD session in Swahili for frontline CHW dispatch', () => {
+    const session = {
+      sessionId: 'sess_ussd_003',
+      phoneNumber: '+255784112233',
+      serviceCode: '*384*4855#',
+      currentMenu: 'MAIN' as const,
+      language: 'sw' as const,
+      collectedData: {}
+    };
+
+    // Initial dial in Swahili
+    const mainSw = service.processUssdRequest(session, '');
+    expect(mainSw.screenText).toContain('POCKETGULL HUDUMA YA AFYA');
+
+    // Select option '4' (Omba Mhudumu wa Afya / CHW)
+    const chwRes = service.processUssdRequest(session, '4');
+    expect(chwRes.responseType).toBe('END');
+    expect(chwRes.screenText).toContain('OMBI LIMETUMWA');
+    expect(chwRes.screenText).toContain('dakika 30');
+  });
 });
+

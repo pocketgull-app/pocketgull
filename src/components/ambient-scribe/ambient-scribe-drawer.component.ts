@@ -7,6 +7,13 @@ import {
   IScribeAdjudicationResult,
   IScribeCptReimbursementCode
 } from '../../services/ambient-scribe-adapter.service';
+import {
+  EhrWritebackService,
+  IEhrWritebackBatchResult,
+  ISbarClinicalNote
+} from '../../services/fhir/ehr-writeback.service';
+import { PatientStateService } from '../../services/patient-state.service';
+import { NavigationShellService } from '../../services/navigation-shell.service';
 
 interface IScribePreset {
   id: string;
@@ -212,7 +219,7 @@ export type ScribeViewMode = 'SHOWCASE' | 'DETAILS' | 'AUDIT_JSON';
           </div>
 
           @if (adjudicationResult()) {
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
               <button type="button"
                       (click)="commitToChart()"
                       id="btn-commit-to-chart"
@@ -220,9 +227,47 @@ export type ScribeViewMode = 'SHOWCASE' | 'DETAILS' | 'AUDIT_JSON';
                       class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs min-h-[40px]">
                 <span>{{ hasCommitted() ? '✓ Committed to Chart' : '📥 Approve & Commit to Chart' }}</span>
               </button>
+
+              <button type="button"
+                      (click)="writeBackToEhr()"
+                      id="btn-writeback-to-ehr"
+                      [disabled]="isWritingBackEhr() || ehrWritebackReceipt() !== null"
+                      class="px-4 py-2 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/40 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs min-h-[40px]">
+                @if (isWritingBackEhr()) {
+                  <span class="animate-spin text-cyan-400">⏳</span> <span>Writing Back to EHR...</span>
+                } @else if (ehrWritebackReceipt()) {
+                  <span>✓ Filed to EHR ({{ ehrWritebackReceipt()?.ehrVendor }})</span>
+                } @else {
+                  <span>🏥 Write Back to EHR (RFC 7523)</span>
+                }
+              </button>
+
+              @if (navShell) {
+                <button type="button"
+                        (click)="navShell.openCowsModal()"
+                        title="Open Yale COWS & Restorative Buprenorphine Induction Suite"
+                        class="px-3.5 py-2 rounded-xl bg-teal-950/70 hover:bg-teal-900 text-teal-300 border border-teal-600/50 text-xs font-bold font-mono transition cursor-pointer flex items-center gap-1.5 shadow-xs min-h-[40px]">
+                  <span>🌿</span>
+                  <span>Yale COWS Suite</span>
+                </button>
+              }
             </div>
           }
         </div>
+
+        @if (ehrWritebackReceipt(); as receipt) {
+          <div class="p-3 bg-cyan-950/40 border border-cyan-700/50 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs font-mono animate-in fade-in duration-150">
+            <div class="flex items-center gap-2">
+              <span class="text-emerald-400 font-bold">✓ FHIR R4 DocumentReference Filed:</span>
+              <span class="text-cyan-300 font-bold">{{ receipt.sbarDocumentReference?.id }}</span>
+              <span class="text-zinc-500 text-[10px]">({{ receipt.authMethod }})</span>
+            </div>
+            <div class="flex items-center gap-2 text-[10px] text-zinc-400">
+              <span>Part 11 Seal: {{ receipt.receipts[0]?.sha256AttestationSeal?.slice(0, 16) }}...</span>
+              <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">HTTP 201 Created</span>
+            </div>
+          </div>
+        }
       </div>
 
       <!-- Real-Time Adjudication HUD Results -->
@@ -391,8 +436,14 @@ export type ScribeViewMode = 'SHOWCASE' | 'DETAILS' | 'AUDIT_JSON';
                     </span>
                     <div class="flex flex-wrap gap-1.5 pt-1">
                       @for (pathway of res.recommendedPathways; track pathway.pathwayId) {
-                        <span class="px-2 py-0.5 rounded-lg text-[10px] bg-zinc-900 border border-teal-500/30 text-teal-300">
-                          {{ pathway.pathwayName }}
+                        <span class="px-2 py-0.5 rounded-lg text-[10px] border transition-colors"
+                              [class.bg-emerald-950/70]="pathway.actTier === 'SALUTOGENIC_PRE_Rx'"
+                              [class.border-emerald-500/50]="pathway.actTier === 'SALUTOGENIC_PRE_Rx'"
+                              [class.text-emerald-300]="pathway.actTier === 'SALUTOGENIC_PRE_Rx'"
+                              [class.bg-zinc-900]="pathway.actTier !== 'SALUTOGENIC_PRE_Rx'"
+                              [class.border-teal-500/30]="pathway.actTier !== 'SALUTOGENIC_PRE_Rx'"
+                              [class.text-teal-300]="pathway.actTier !== 'SALUTOGENIC_PRE_Rx'">
+                          {{ pathway.actTier === 'SALUTOGENIC_PRE_Rx' ? '🌱 ' + pathway.pathwayName : pathway.pathwayName }}
                         </span>
                       }
                     </div>
@@ -518,11 +569,30 @@ export type ScribeViewMode = 'SHOWCASE' | 'DETAILS' | 'AUDIT_JSON';
                 <span class="font-mono font-bold uppercase tracking-wider text-zinc-400 block text-[10px]">
                   Mapped Three Acts Clinical CDS Pathways
                 </span>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   @for (pathway of res.recommendedPathways; track pathway.pathwayId) {
-                    <div class="p-2.5 bg-zinc-950 rounded-xl border border-zinc-800 font-mono text-[11px] space-y-0.5">
-                      <span class="text-teal-300 font-bold block">{{ pathway.pathwayName }}</span>
+                    <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 font-mono text-[11px] space-y-1.5"
+                         [class.border-emerald-500/50]="pathway.actTier === 'SALUTOGENIC_PRE_Rx'"
+                         [class.bg-emerald-950/20]="pathway.actTier === 'SALUTOGENIC_PRE_Rx'">
+                      <div class="flex items-center justify-between">
+                        <span class="text-teal-300 font-bold block"
+                              [class.text-emerald-300]="pathway.actTier === 'SALUTOGENIC_PRE_Rx'">
+                          {{ pathway.actTier === 'SALUTOGENIC_PRE_Rx' ? '🌱 ' + pathway.pathwayName : pathway.pathwayName }}
+                        </span>
+                        @if (pathway.actTier === 'SALUTOGENIC_PRE_Rx') {
+                          <span class="px-1.5 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-200 border border-emerald-500/40 font-bold tracking-wider">
+                            FIRST-LINE
+                          </span>
+                        }
+                      </div>
                       <p class="text-zinc-400 text-[10px] font-sans">{{ pathway.rationale }}</p>
+                      @if (pathway.actionDirectives.length > 0) {
+                        <ul class="pt-1 space-y-1 text-[10px] text-zinc-300 list-disc list-inside font-sans">
+                          @for (dir of pathway.actionDirectives; track dir) {
+                            <li>{{ dir }}</li>
+                          }
+                        </ul>
+                      }
                     </div>
                   }
                 </div>
@@ -562,6 +632,9 @@ export type ScribeViewMode = 'SHOWCASE' | 'DETAILS' | 'AUDIT_JSON';
 })
 export class AmbientScribeDrawerComponent {
   readonly scribeService = inject(AmbientScribeAdapterService);
+  readonly ehrWritebackService = inject(EhrWritebackService);
+  readonly patientState = inject(PatientStateService, { optional: true });
+  readonly navShell = inject(NavigationShellService, { optional: true });
   readonly close = output<void>();
 
   presets = PRESETS;
@@ -576,6 +649,9 @@ export class AmbientScribeDrawerComponent {
   adjudicationResult = signal<IScribeAdjudicationResult | null>(null);
   hasCommitted = signal<boolean>(false);
 
+  isWritingBackEhr = signal<boolean>(false);
+  ehrWritebackReceipt = signal<IEhrWritebackBatchResult | null>(null);
+
   loadPreset(preset: IScribePreset): void {
     this.selectedPresetId.set(preset.id);
     this.selectedSource.set(preset.source);
@@ -583,6 +659,8 @@ export class AmbientScribeDrawerComponent {
     this.adjudicationResult.set(null);
     this.hasCommitted.set(false);
     this.isPlayingAudio.set(false);
+    this.ehrWritebackReceipt.set(null);
+    this.isWritingBackEhr.set(false);
   }
 
   toggleAudioSimulation(): void {
@@ -603,6 +681,7 @@ export class AmbientScribeDrawerComponent {
       });
       this.adjudicationResult.set(result);
       this.hasCommitted.set(false);
+      this.ehrWritebackReceipt.set(null);
     } finally {
       this.isAdjudicating.set(false);
     }
@@ -619,5 +698,35 @@ export class AmbientScribeDrawerComponent {
       autoCommitToPatientState: true
     });
     this.hasCommitted.set(true);
+  }
+
+  async writeBackToEhr(): Promise<void> {
+    const res = this.adjudicationResult();
+    if (!res) return;
+
+    this.isWritingBackEhr.set(true);
+    try {
+      const patientSnapshot = this.patientState?.asPatientSnapshot ? this.patientState.asPatientSnapshot() : null;
+      const customSbar: Partial<ISbarClinicalNote> = {
+        chiefComplaint: res.extractedEntities.chiefComplaint || 'Ambient Scribe Consultation',
+        situation: res.sbarSummary.situation,
+        background: res.sbarSummary.background,
+        assessment: res.sbarSummary.assessment,
+        recommendation: res.sbarSummary.recommendation,
+        timestamp: res.timestamp
+      };
+
+      const result = await this.ehrWritebackService.executeWriteback(
+        {
+          patientName: patientSnapshot?.name || 'Marcus Davis',
+          patientMrn: patientSnapshot?.id ? `MRN-${patientSnapshot.id}` : 'MRN-784920'
+        },
+        customSbar
+      );
+
+      this.ehrWritebackReceipt.set(result);
+    } finally {
+      this.isWritingBackEhr.set(false);
+    }
   }
 }

@@ -1,5 +1,6 @@
 import '@angular/compiler';
 import { Injector, runInInjectionContext, PLATFORM_ID, signal, NgZone } from '@angular/core';
+import * as THREE from 'three';
 import { Body3DViewerComponent } from './body-3d-viewer.component';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PatientManagementService } from '../../services/patient-management.service';
@@ -44,7 +45,8 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
       activeShadingProfile: signal('atelier'),
       anatomyViewMode: signal('skin'),
       selectedPartId: signal(null),
-      selectedPartName: signal(null)
+      selectedPartName: signal(null),
+      selectedNutrigenomicLigand: signal('all')
     };
 
     const injector = Injector.create({
@@ -301,5 +303,143 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     const femaleEvent = { target: { value: 'homo_sapiens_female' } } as unknown as Event;
     viewer.onArchetypeChange(femaleEvent);
     expect(viewer.activeArchetype()).toBe('homo_sapiens_female');
+  });
+
+  it('correctly models and renders organs, muscles, bones, silicas, and implants in ghost view', () => {
+    const viewer = createViewer();
+    const event = { target: { value: 'ghost' } } as unknown as Event;
+    viewer.onParadigmChange(event);
+    expect(viewer.effectiveAnatomyViewMode()).toBe('ghost');
+
+    // Create a mock group with skin, bone, muscle, organ, implant, silica
+    const makeMockMesh = (layer: string) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshStandardMaterial());
+      m.userData['layer'] = layer;
+      m.userData['id'] = `part_${layer}`;
+      return m;
+    };
+
+    const skinMesh = makeMockMesh('skin');
+    const boneMesh = makeMockMesh('bone');
+    const muscleMesh = makeMockMesh('muscle');
+    const organMesh = makeMockMesh('organ');
+    const implantMesh = makeMockMesh('implant');
+    const silicaMesh = makeMockMesh('silica');
+
+    const partGroup = new THREE.Group();
+    partGroup.userData['id'] = 'test_part';
+    partGroup.add(skinMesh, boneMesh, muscleMesh, organMesh, implantMesh, silicaMesh);
+    (viewer as any).parts = new Map([['test_part', partGroup]]);
+
+    (viewer as any).updateTransparency('ghost');
+
+    expect((boneMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.95);
+    expect((boneMesh.material as THREE.MeshStandardMaterial).depthWrite).toBe(true);
+
+    expect((muscleMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.55);
+    expect((muscleMesh.material as THREE.MeshStandardMaterial).depthWrite).toBe(true);
+
+    expect((organMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.85);
+    expect((organMesh.material as THREE.MeshStandardMaterial).depthWrite).toBe(true);
+
+    expect((implantMesh.material as THREE.MeshStandardMaterial).opacity).toBe(1.0);
+    expect((implantMesh.material as THREE.MeshStandardMaterial).depthWrite).toBe(true);
+
+    expect((silicaMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.92);
+    expect((silicaMesh.material as THREE.MeshStandardMaterial).depthWrite).toBe(true);
+  });
+
+  it('18. Activates Whole-Body Fluid Dynamics mode and toggles streamline channels', () => {
+    const viewer = createViewer();
+    const event = { target: { value: 'fluid_dynamics' } } as any;
+    viewer.onParadigmChange(event);
+    expect(viewer.effectiveAnatomyViewMode()).toBe('fluid_dynamics');
+
+    // Create a mock group with layers
+    const makeMockMesh = (layer: string) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshStandardMaterial());
+      m.userData['layer'] = layer;
+      m.userData['id'] = `part_${layer}`;
+      return m;
+    };
+
+    const skinMesh = makeMockMesh('skin');
+    const boneMesh = makeMockMesh('bone');
+    const organMesh = makeMockMesh('organ');
+    const neuroMesh = makeMockMesh('neurovascular');
+
+    const partGroup = new THREE.Group();
+    partGroup.userData['id'] = 'test_part';
+    partGroup.add(skinMesh, boneMesh, organMesh, neuroMesh);
+    (viewer as any).parts = new Map([['test_part', partGroup]]);
+
+    const fluidGroup = new THREE.Group();
+    (viewer as any).wholeBodyFluidDynamicsGroup = fluidGroup;
+
+    (viewer as any).updateTransparency('fluid_dynamics');
+
+    expect((skinMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.12);
+    expect((boneMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.20);
+    expect((organMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.50);
+    expect((neuroMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.85);
+    expect(fluidGroup.visible).toBe(true);
+
+    // Test channel toggling
+    expect(viewer.fluidShowArterial()).toBe(true);
+    viewer.toggleFluidChannel('arterial');
+    expect(viewer.fluidShowArterial()).toBe(false);
+    viewer.toggleFluidChannel('arterial');
+    expect(viewer.fluidShowArterial()).toBe(true);
+
+    // Test velocity changes
+    const velEvent = { target: { value: '2.5' } } as any;
+    viewer.onFluidVelocityChange(velEvent);
+    expect(viewer.fluidFlowVelocity()).toBe(2.5);
+  });
+
+  it('19. Handles whole-body nutrigenomics mode, transparency and ligand switches', () => {
+    const viewer = createViewer();
+
+    const skinMesh = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshStandardMaterial({ opacity: 1 }));
+    skinMesh.userData['layer'] = 'skin';
+    const boneMesh = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshStandardMaterial({ opacity: 1 }));
+    boneMesh.userData['layer'] = 'bone';
+    const organMesh = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshStandardMaterial({ opacity: 1 }));
+    organMesh.userData['layer'] = 'organ';
+
+    const partGroup = new THREE.Group();
+    partGroup.userData['id'] = 'test_part';
+    partGroup.add(skinMesh, boneMesh, organMesh);
+    (viewer as any).parts = new Map([['test_part', partGroup]]);
+
+    const nutriGroup = new THREE.Group();
+    (viewer as any).wholeBodyNutrigenomicsGroup = nutriGroup;
+
+    (viewer as any).updateTransparency('nutrigenomics');
+
+    expect((skinMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.10);
+    expect((boneMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.20);
+    expect((organMesh.material as THREE.MeshStandardMaterial).opacity).toBe(0.65);
+    expect(nutriGroup.visible).toBe(true);
+
+    // Test ligand switching
+    expect(viewer.nutriActiveLigand()).toBe('all');
+    viewer.setNutriLigand('sulforaphane');
+    expect(viewer.nutriActiveLigand()).toBe('sulforaphane');
+    viewer.setNutriLigand('butyrate');
+    expect(viewer.nutriActiveLigand()).toBe('butyrate');
+    viewer.setNutriLigand('curcumin');
+    expect(viewer.nutriActiveLigand()).toBe('curcumin');
+    viewer.setNutriLigand('nitric_oxide');
+    expect(viewer.nutriActiveLigand()).toBe('nitric_oxide');
+
+    // Test beacon toggling
+    expect(viewer.nutriShowBeacons()).toBe(true);
+    viewer.toggleNutriBeacons();
+    expect(viewer.nutriShowBeacons()).toBe(false);
+
+    // Test velocity setting
+    viewer.setNutriVelocity(2.0);
+    expect(viewer.nutriVelocity()).toBe(2.0);
   });
 });

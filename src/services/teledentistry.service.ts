@@ -3,6 +3,56 @@ import { Injectable, signal, computed } from '@angular/core';
 export type ToothSurface = 'M' | 'O' | 'D' | 'F' | 'L';
 export type TWIGrade = 0 | 1 | 2 | 3 | 4;
 
+export interface IFdaBuprenorphineOralSafetyDirective {
+  warningTitle: string;
+  fdaWarningYear: 2022;
+  mechanism: string;
+  coreDirectives: Array<{
+    ruleNumber: number;
+    action: string;
+    clinicalRationale: string;
+    urgency: 'MANDATORY' | 'HIGH_PRIORITY' | 'ROUTINE';
+  }>;
+}
+
+export const FDA_BUPRENORPHINE_DENTAL_DIRECTIVE: IFdaBuprenorphineOralSafetyDirective = {
+  warningTitle: 'FDA Drug Safety Communication: Dental Adverse Events with Transmucosal Buprenorphine',
+  fdaWarningYear: 2022,
+  mechanism: 'Sublingual and buccal buprenorphine formulations are inherently acidic (pH ~3.5 to 5.0). Mu-opioid receptor stimulation concurrently inhibits salivary secretion (xerostomia), depleting the bicarbonate buffer and accelerating cervical caries, enamel erosion, and severe periodontal attachment loss.',
+  coreDirectives: [
+    {
+      ruleNumber: 1,
+      action: 'Neutral Water Rinse Post-Dissolution',
+      clinicalRationale: 'After the sublingual film or tablet completely dissolves (~5–10 min), take a sip of water, gently swish over all dental arches, and swallow. Never spit medication out prematurely.',
+      urgency: 'MANDATORY'
+    },
+    {
+      ruleNumber: 2,
+      action: '1-Hour Toothbrushing Delay (Strict)',
+      clinicalRationale: 'Do NOT brush teeth immediately after dosing. Mechanical brushing on acid-softened enamel causes severe cervical abrasions. Wait at least 60 minutes before brushing.',
+      urgency: 'MANDATORY'
+    },
+    {
+      ruleNumber: 3,
+      action: 'Prescription 5000 ppm High-Fluoride Toothpaste / Varnish',
+      clinicalRationale: 'Prescribe 1.1% Sodium Fluoride (Prevident 5000) or apply 5% NaF varnish quarterly to remineralize incipient demineralization.',
+      urgency: 'HIGH_PRIORITY'
+    },
+    {
+      ruleNumber: 4,
+      action: 'Salivary Stimulation & Xylitol Pacing',
+      clinicalRationale: 'Chew xylitol gum or use salivary secretagogues 3–5 times daily to stimulate endogenous buffer flow and inhibit S. mutans proliferation.',
+      urgency: 'HIGH_PRIORITY'
+    },
+    {
+      ruleNumber: 5,
+      action: 'Bilateral Dental Linkage & 3-Month Periodontal Recalls',
+      clinicalRationale: 'Establish dental baseline within 30 days of induction with tight 3-month periodontal probing and caries surveillance.',
+      urgency: 'HIGH_PRIORITY'
+    }
+  ]
+};
+
 export interface IToothState {
   fdiNumber: number; // 11-18, 21-28, 31-38, 41-48
   name: string;
@@ -19,6 +69,9 @@ export interface IToothState {
 export class TeledentistryService {
   readonly teeth = signal<IToothState[]>(this.initOdontogram());
   readonly hsCRP = signal<number>(2.4); // mg/L baseline
+  readonly buprenorphineTherapyActive = signal<boolean>(false);
+  readonly salivaryPh = signal<number>(6.8);
+  readonly fdaDirective = FDA_BUPRENORPHINE_DENTAL_DIRECTIVE;
 
   // Filtered computed state
   readonly deepPocketsCount = computed(() =>
@@ -34,14 +87,15 @@ export class TeledentistryService {
 
   /**
    * Systemic Inflammatory Burden Index (SIBI 0-100)
-   * SIBI = min(100, (Deep Pockets * 6) + (%BOP * 0.8) + (hs-CRP * 12))
+   * SIBI = min(100, (Deep Pockets * 6) + (%BOP * 0.8) + (hs-CRP * 12) + BupAddend)
    */
   readonly sibiScore = computed(() => {
     const deepPockets = this.deepPocketsCount();
     const bop = this.bleedingPercentage();
     const crp = this.hsCRP();
+    const bupFactor = this.buprenorphineTherapyActive() ? 8 : 0;
 
-    const raw = (deepPockets * 6) + (bop * 0.8) + (crp * 12);
+    const raw = (deepPockets * 6) + (bop * 0.8) + (crp * 12) + bupFactor;
     return Math.min(100, Math.round(raw));
   });
 
@@ -140,5 +194,43 @@ export class TeledentistryService {
     this.teeth.update(list =>
       list.map(t => (t.fdiNumber === fdiNumber ? { ...t, hasBleedingOnProbing: !t.hasBleedingOnProbing } : t))
     );
+  }
+
+  loadBuprenorphineXerostomiaPreset(): void {
+    this.buprenorphineTherapyActive.set(true);
+    this.salivaryPh.set(6.2); // Acidic sublingual dissolution shift
+    this.hsCRP.set(3.2); // Elevated inflammatory marker
+    this.teeth.update(list =>
+      list.map(t => {
+        // Mandibular anterior sublingual pooling area (teeth 31, 32, 41, 42)
+        if ([31, 32, 41, 42].includes(t.fdiNumber)) {
+          return {
+            ...t,
+            twiGrade: 2,
+            cariesSurfaces: ['F', 'L'],
+            probingDepthMm: 4,
+            hasBleedingOnProbing: true
+          };
+        }
+        // First molars with cervical demineralization
+        if ([16, 26, 36, 46].includes(t.fdiNumber)) {
+          return {
+            ...t,
+            twiGrade: 2,
+            cariesSurfaces: ['O', 'M'],
+            probingDepthMm: 5,
+            hasBleedingOnProbing: true
+          };
+        }
+        return t;
+      })
+    );
+  }
+
+  resetOdontogram(): void {
+    this.buprenorphineTherapyActive.set(false);
+    this.salivaryPh.set(6.8);
+    this.hsCRP.set(2.4);
+    this.teeth.set(this.initOdontogram());
   }
 }

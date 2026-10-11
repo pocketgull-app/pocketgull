@@ -20,10 +20,11 @@ describe('CommunityTestimonialModalComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should render initial testimonials in read mode', () => {
+  it('should render seeking clients message in read mode when empty', () => {
     expect(component.viewMode()).toBe('read');
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.textContent).toContain('Dr. Rebecca Vance, MD');
+    expect(el.textContent?.toLowerCase()).toContain('seeking clients');
+    expect(el.textContent?.toLowerCase()).toContain('customers');
   });
 
   it('should toggle to write mode and allow submitting a testimonial', () => {

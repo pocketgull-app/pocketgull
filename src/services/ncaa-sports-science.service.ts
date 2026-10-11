@@ -64,6 +64,41 @@ export interface IUniversityAthleticPartner {
   sportsMedicineCenter: string;
   irbSiloId: string;
   nihCtsaHub: string;
+  bioprintingScaffoldLab?: string;
+  grapheneResonatorLab?: string;
+}
+
+export interface ITendonBioprintingRecoveryPlan {
+  partnerId: string;
+  partnerName: string;
+  scaffoldType: 'Knight Campus VAM Hydrogel' | 'Melt Electrowriting (MEW) Micro-Fiber' | 'Hybrid Collagen-Graphene Matrix';
+  targetAnatomy: 'Achilles Tendon' | 'Patellar Tendon' | 'Plantar Fascia' | 'Hamstring Myotendinous Junction';
+  totalPhases: number;
+  currentPhase: number;
+  estimatedWeeksToFullCompetition: number;
+  phases: Array<{
+    phase: number;
+    name: string;
+    timelineWeeks: string;
+    allowedMicroStrainPercent: number;
+    mechanotransductionLoading: string;
+    biographeneResonanceBenchmarkHz: string;
+    clinicalClearanceCriteria: string;
+    trackKinematicsTarget: string;
+  }>;
+  irbSiloAttestation: string;
+  residencyJurisdiction: string;
+}
+
+export interface IScaffoldMechanotransductionMetric {
+  currentMicroStrainPercent: number;
+  cyclicFrequencyHz: number;
+  daysPostImplant: number;
+  maturationIndexPercent: number;
+  collagenAlignmentScorePercent: number;
+  ruptureRiskPercent: number;
+  isSafeForProgressiveLoading: boolean;
+  recommendation: string;
 }
 
 export interface ISiloedResearchEnvironment {
@@ -122,10 +157,12 @@ export class NcaaSportsScienceService {
       conference: 'Big Ten',
       network: 'Big Ten Network (BTN)',
       flagshipLab: 'Knight Campus for Accelerating Scientific Impact & Bowerman Sports Science',
-      researchFocus: '3D bioprinted tendon scaffolds, track & field sprinting kinematics, and cognitive stress resilience',
+      researchFocus: '3D bioprinted tendon scaffolds, bio-graphene nanomechanical cellular force sensing, track & field sprinting kinematics on Hayward Field, and cognitive stress resilience',
       sportsMedicineCenter: 'Marcus Mariota Sports Performance Complex (Autzen / Hayward)',
       irbSiloId: 'IRB-UO-2026-R1-KNIGHT-1102',
-      nihCtsaHub: 'OCTRI / OHSU-UO Biomedical Collaborative'
+      nihCtsaHub: 'OCTRI / OHSU-UO Biomedical Collaborative',
+      bioprintingScaffoldLab: 'Knight Campus Bioengineering Biofoundry (Dalton / Guldberg)',
+      grapheneResonatorLab: 'Alemán Physics Lab & CAMCOR Nanomechanical Facility'
     },
     {
       id: 'pac12_regional_hub',
@@ -434,5 +471,113 @@ export class NcaaSportsScienceService {
 
   setNetwork(network: ConferenceNetworkTier): void {
     this.selectedNetwork.set(network);
+  }
+
+  /**
+   * Generates a stepped-care return-to-competition protocol for 3D bioprinted tendon scaffolds,
+   * developed in collaboration with the University of Oregon Knight Campus and Bowerman Sports Science.
+   */
+  getTendonBioprintingRecoveryPlan(
+    partnerId: string = 'uo_ducks',
+    targetAnatomy: ITendonBioprintingRecoveryPlan['targetAnatomy'] = 'Achilles Tendon'
+  ): ITendonBioprintingRecoveryPlan {
+    const partner = this.academicPartners().find(p => p.id === partnerId) || this.academicPartners().find(p => p.id === 'uo_ducks')!;
+
+    return {
+      partnerId: partner.id,
+      partnerName: partner.name,
+      scaffoldType: 'Knight Campus VAM Hydrogel',
+      targetAnatomy,
+      totalPhases: 4,
+      currentPhase: 1,
+      estimatedWeeksToFullCompetition: 16,
+      phases: [
+        {
+          phase: 1,
+          name: 'Phase I: Cellular Ingress & Hydrogel Imbibition',
+          timelineWeeks: 'Weeks 0 - 3',
+          allowedMicroStrainPercent: 1.5,
+          mechanotransductionLoading: 'Sub-maximal isometric holding (<20% MVC), un-weighted active ankle ROM in aquatic tank',
+          biographeneResonanceBenchmarkHz: 'Delta f: -800 to -14,500 Hz (Integrin clustering & tenocyte attachment)',
+          clinicalClearanceCriteria: 'Zero localized effusion, graft boundary intact on diagnostic ultrasound, resting pain 0/10',
+          trackKinematicsTarget: 'Non-weightbearing / anti-gravity treadmill (AlterG at 40% body weight)'
+        },
+        {
+          phase: 2,
+          name: 'Phase II: Controlled Mechanotransduction & Axial Loading',
+          timelineWeeks: 'Weeks 4 - 7',
+          allowedMicroStrainPercent: 4.0,
+          mechanotransductionLoading: 'Axial eccentric calf lowering, progressive blood-flow restriction (BFR) hypertrophy drills',
+          biographeneResonanceBenchmarkHz: 'Delta f: -25,000 to -48,000 Hz (Focal adhesion maturation & Type I collagen deposition)',
+          clinicalClearanceCriteria: 'Symmetric tendon cross-sectional thickness, >=80% isometric force vs uninjured limb',
+          trackKinematicsTarget: 'Flat grass jogging at 60% velocity, cadence 160-170 spm'
+        },
+        {
+          phase: 3,
+          name: 'Phase III: Plyometric Stretch-Shortening Cycle (SSC)',
+          timelineWeeks: 'Weeks 8 - 11',
+          allowedMicroStrainPercent: 7.0,
+          mechanotransductionLoading: 'Elastic energy recoil jumps, pogo hops, high-cadence reactive bounding on Mondo track',
+          biographeneResonanceBenchmarkHz: 'Delta f: -50,000 to -65,000 Hz (High-tensile fibril alignment confirmed)',
+          clinicalClearanceCriteria: 'Limb Symmetry Index (LSI) >= 90% on single-leg hop test, zero post-exertion stiffness',
+          trackKinematicsTarget: 'Hayward Field curve sprinting at 85% velocity with dual-force plate kinematic attestation'
+        },
+        {
+          phase: 4,
+          name: 'Phase IV: Full Sprint Velocity & Collegiate Competition',
+          timelineWeeks: 'Weeks 12 - 16',
+          allowedMicroStrainPercent: 10.0,
+          mechanotransductionLoading: 'Unrestricted maximal acceleration, block starts, elite collegiate sprint mechanics',
+          biographeneResonanceBenchmarkHz: 'Delta f: Stabilized limit cycle, Q-factor > 800 in vivo attestation',
+          clinicalClearanceCriteria: 'Full team physician clearance, 100% LSI, psychological readiness score (ACL-RSI) >= 90',
+          trackKinematicsTarget: 'Unrestricted NCAA Big Ten championship competition on Hayward Field track'
+        }
+      ],
+      irbSiloAttestation: partner.irbSiloId,
+      residencyJurisdiction: 'us-west1 (Oregon Local Zone) / HIPAA Safe Harbor'
+    };
+  }
+
+  /**
+   * Computes biomechanical mechanotransduction safety score for implanted 3D bioprinted scaffolds
+   */
+  computeScaffoldMechanotransductionScore(
+    microStrainPercent: number,
+    cyclicFrequencyHz: number,
+    daysPostImplant: number
+  ): IScaffoldMechanotransductionMetric {
+    const safeMaxStrain = Math.min(10.0, 1.5 + (daysPostImplant / 90) * 8.5);
+    const maturationIndex = Math.min(100, Math.round((daysPostImplant / 84) * 100));
+    
+    // Collagen alignment develops with cyclic stimulation between 0.5 - 2.0 Hz
+    let alignmentBonus = 0;
+    if (cyclicFrequencyHz >= 0.5 && cyclicFrequencyHz <= 2.0) {
+      alignmentBonus = 15;
+    }
+    const collagenAlignment = Math.min(100, Math.round(maturationIndex * 0.85 + alignmentBonus));
+
+    const strainOverload = Math.max(0, microStrainPercent - safeMaxStrain);
+    const ruptureRisk = Math.min(100, parseFloat((strainOverload * 18.5 + (100 - maturationIndex) * 0.15).toFixed(1)));
+    const isSafe = ruptureRisk < 25.0;
+
+    let recommendation = 'Optimal mechanotransduction stimulus: proceed with current progressive loading.';
+    if (ruptureRisk >= 50.0) {
+      recommendation = 'CRITICAL OVERLOAD: Micro-strain exceeds tensile limit for current graft maturity. Immediate rest required.';
+    } else if (ruptureRisk >= 25.0) {
+      recommendation = 'Caution: Approaching yield strain threshold. Reduce cyclic loading volume by 30%.';
+    } else if (microStrainPercent < 1.0 && daysPostImplant > 28) {
+      recommendation = 'Under-stimulation: Increase axial load to stimulate collagen fiber maturation and prevent stress shielding.';
+    }
+
+    return {
+      currentMicroStrainPercent: microStrainPercent,
+      cyclicFrequencyHz,
+      daysPostImplant,
+      maturationIndexPercent: maturationIndex,
+      collagenAlignmentScorePercent: collagenAlignment,
+      ruptureRiskPercent: ruptureRisk,
+      isSafeForProgressiveLoading: isSafe,
+      recommendation
+    };
   }
 }

@@ -38,7 +38,7 @@ export interface IScribeExtractedEntities {
 export interface IScribeCdsPathwayRecommendation {
   pathwayId: string;
   pathwayName: string;
-  actTier: 'ACT_I_METABOLIC' | 'ACT_II_GLYMPHATIC' | 'ACT_III_RESILIENCE' | 'ACUTE_CRITICAL';
+  actTier: 'ACT_I_METABOLIC' | 'ACT_II_GLYMPHATIC' | 'ACT_III_RESILIENCE' | 'ACUTE_CRITICAL' | 'SALUTOGENIC_PRE_Rx';
   rationale: string;
   actionDirectives: string[];
 }
@@ -403,6 +403,35 @@ export class AmbientScribeAdapterService {
   ): IScribeCdsPathwayRecommendation[] {
     const recommendations: IScribeCdsPathwayRecommendation[] = [];
 
+    // Salutogenic Stepped-Care Intercept (Prior to Prescribing)
+    // Triggered whenever medications are proposed or when acute pain, insomnia, or elevated blood pressure are identified
+    const hasMedicationsProposed = entities.medications.length > 0;
+    const hasPainOrInsomnia = entities.symptoms.some(s => ['burning pain', 'back pain', 'insomnia', 'fatigue', 'numbness', 'anxiety'].includes(s));
+    const hasElevatedBp = !!(entities.vitals.bloodPressureSystolic && entities.vitals.bloodPressureSystolic >= 130);
+
+    if (hasMedicationsProposed || hasPainOrInsomnia || hasElevatedBp) {
+      const salutogenicDirectives: string[] = [];
+
+      if (entities.symptoms.includes('burning pain') || entities.symptoms.includes('back pain') || entities.symptoms.includes('numbness')) {
+        salutogenicDirectives.push('Biomechanical Decompression: Initiate McKenzie directional preference (repeated lumbar extensions) and seated sciatic nerve flossing to reduce radicular mechanical tension before gabapentinoids or opioids.');
+      }
+      if (entities.symptoms.includes('insomnia') || entities.symptoms.includes('fatigue')) {
+        salutogenicDirectives.push('Sleep Architecture & Circadian Entrainment: Enforce first-line CBT-I stimulus control (bed for sleep only), morning outdoor daylight exposure (10,000+ lux), and evening 650nm scotopic light shift prior to hypnotic sedatives.');
+      }
+      if (hasElevatedBp) {
+        salutogenicDirectives.push('Autonomic Nitric Oxide Scaffolding: Prescribe high-resistance Inspiratory Muscle Strength Training (IMST, 30 breaths/day) and dietary magnesium bicarbonate/potassium repletion (-9 to -12 mmHg systolic reduction target).');
+      }
+      salutogenicDirectives.push('Antonovsky Sense of Coherence (SOC): Demystify symptom pathophysiology with the patient, establish daily 0.10 Hz vagal resonant breathing (Philocardia), and preserve patient self-healing agency.');
+
+      recommendations.push({
+        pathwayId: 'SALUTOGENIC_PRE_RX_BASELINE',
+        pathwayName: 'Salutogenic Stepped-Care Intercept (Evidence-Based Baseline Prior to Prescribing)',
+        actTier: 'SALUTOGENIC_PRE_Rx',
+        rationale: 'Clinical guidelines prioritize non-pharmacological, biomechanical, and autonomic interventions to restore endogenous regulation before escalating to prescription pharmacotherapy.',
+        actionDirectives: salutogenicDirectives
+      });
+    }
+
     // Critical Lethal DDI Pathway
     if (interactions.some(i => i.severity === 'CRITICAL_LETHAL')) {
       recommendations.push({
@@ -493,7 +522,7 @@ export class AmbientScribeAdapterService {
       situation: `Ambient transcript ingested from ${sourceLabel}. Chief Complaint / Focus: ${entities.chiefComplaint}.`,
       background: `Symptoms noted: ${entities.symptoms.join(', ') || 'Routine encounter'}. Current recorded vitals: ${vitalsStr}. Medications in discussion: ${medsStr}.`,
       assessment: `${ddiAlertsStr}\n${ismpStatusStr}`,
-      recommendation: `1. Review medication safety alerts before e-prescribing.\n2. Verify suggested CDS care pathways.\n3. Clinical decision support staged for practitioner sign-off.`
+      recommendation: `1. Prioritize Salutogenic Stepped-Care Interventions (CBT-I, biomechanical flossing, 0.10 Hz autonomic pacing) prior to initiating or escalating pharmacotherapy.\n2. Review medication safety alerts before e-prescribing.\n3. Verify suggested CDS care pathways.\n4. Clinical decision support staged for practitioner sign-off.`
     };
   }
 
