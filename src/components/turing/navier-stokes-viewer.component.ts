@@ -299,7 +299,12 @@ interface IFluidParticle {
             </span>
           }
         </div>
-        <span class="text-[10px] text-zinc-500 font-mono">2D Poiseuille-Stokes + Solute Transport</span>
+        <div class="flex items-center gap-2">
+          <span class="text-[9px] px-1.5 py-0.5 rounded bg-sky-950/80 border border-sky-600/40 text-sky-300 font-mono">
+            ⚡ Edge PINN Surrogate (0 Cloud Egress)
+          </span>
+          <span class="text-[10px] text-zinc-500 font-mono">2D Poiseuille-Stokes + Solute Transport</span>
+        </div>
       </div>
     </div>
   `,
