@@ -45,7 +45,7 @@
 - **Evidence grounding.** Recommendations cite PubMed literature and are tagged by evidence level (A: RCTs, B: cohort, C: expert consensus).
 - **Interoperability.** HL7® FHIR® R4 Bundle export, SMART on FHIR identity, LOINC / SNOMED CT coding, and PDF care plans.
 - **Privacy by default.** No server-side PHI persistence: patient state lives in memory or is encrypted on device, with optional on-device inference through Chrome built-in AI and WebGPU.
-- **3D anatomy.** An interactive Three.js body map for locating and grading symptoms.
+- **3D anatomy (GullRenderEngine).** A direct WebGL2 / WebGPU zero-dependency body map (<10KB runtime) replacing Three.js for interactive symptom localization and O(1) offscreen color picking.
 
 Optional complementary lenses (Traditional Chinese Medicine, Ayurveda) are presented alongside, never in place of, the conventional plan and are labelled with their evidence level.
 
@@ -145,28 +145,36 @@ Without a `GEMINI_API_KEY`, use the built-in demo mode (de-identified sample pat
 ```mermaid
 graph TB
     classDef cloud fill:#0f172a,stroke:#6366f1,stroke-width:2px,color:#f8fafc
+    classDef mobile fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
     classDef ingestion fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
     classDef hub fill:#18181b,stroke:#a855f7,stroke-width:3px,color:#fafafa
     classDef lenses fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#f8fafc
     classDef foundation fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#f8fafc
 
-    subgraph Cloud ["Cloud & Backend"]
-        CloudRun["Cloud Run"]
-        Express["Express SSR + Proxy"]
-        FastAPI["FastAPI Sidecar (ML)"]
-        Vertex["Vertex AI / Gemini"]
+    subgraph Mobile ["📱 Mobile & Wearable Ecosystem (Flutter / Dart)"]
+        PatientApp["Patient App\n(Recovery & Health Connect)"]
+        ProviderApp["Provider Field Kit\n(Backpack Dispensary & Triage)"]
+        WearApp["Wear OS Smartwatch\n(0.10 Hz Vagal Reset & CEDA)"]
+        AvsApp["AVS Photobiomodulation\n(Web Companion PWA)"]
     end
 
-    subgraph Ingestion ["Ingestion & Portals"]
-        Body3D["Three.js 3D Anatomy"]
+    subgraph Ingestion ["Ingestion & Direct Graphics"]
+        Body3D["Direct WebGL2 3D Anatomy\n(GullRenderEngine)"]
         Voice["Voice Assistant"]
         Intake["Diagnostic Intake"]
     end
 
     subgraph Hub ["Central State & AI Orchestration"]
-        State["PatientStateService\n(Signal Store)"]
-        ADK["ADK InMemoryRunner\n(Multi-Agent)"]
+        State["PatientStateService\n(Signal Store & FHIR R4)"]
+        Sovereign["Sovereign Model Fleet\n(pocketgull-clinical / edge)"]
+        ADK["ADK InMemoryRunner\n(Multi-Agent Orchestration)"]
         WebMCP["WebMCP Tool Catalog"]
+    end
+
+    subgraph Cloud ["Cloud & Machine Learning"]
+        CloudRun["Cloud Run (SSR + Proxy)"]
+        FastAPI["FastAPI Sidecar (ML)"]
+        Vertex["Vertex AI / Gemini"]
     end
 
     subgraph Lenses ["Clinical Lenses"]
@@ -182,16 +190,20 @@ graph TB
         PubMed["PubMed Grounding"]
     end
 
-    CloudRun --> Express
-    Express <--> FastAPI
-    Express <--> Vertex
+    PatientApp <-->|Zero-Egress QR & REST| State
+    ProviderApp <-->|BLE Mesh / Triage Sync| State
+    WearApp <-->|BLE Pulse & Haptics| State
+    AvsApp <-->|Photobiomodulation| State
 
     Body3D -->|Spatial Signals| State
     Voice -->|Audio Stream| ADK
     Intake -->|Vitals| State
 
-    Express <-->|WS & REST| Hub
+    CloudRun <-->|WS & REST| Hub
+    CloudRun <--> FastAPI
+    CloudRun <--> Vertex
 
+    State <--> Sovereign
     State <--> ADK
     ADK <--> WebMCP
 
@@ -200,9 +212,10 @@ graph TB
     State --> FHIR & Cache
     ADK --> PubMed
 
-    class CloudRun,Express,FastAPI,Vertex cloud
+    class CloudRun,FastAPI,Vertex cloud
+    class PatientApp,ProviderApp,WearApp,AvsApp mobile
     class Body3D,Voice,Intake ingestion
-    class State,ADK,WebMCP hub
+    class State,Sovereign,ADK,WebMCP hub
     class Western,TCM,Ayurvedic,Ortho lenses
     class FHIR,Cache,PubMed foundation
 ```
@@ -211,18 +224,22 @@ graph TB
 | :--- | :--- |
 | Frontend | Angular 22 (standalone components, Signals, zoneless), Tailwind CSS |
 | Backend / SSR | Node.js 24, Express, Angular SSR |
-| AI | Google Gemini, Google ADK, Genkit, Vertex AI |
-| 3D / Voice | Three.js, Web Speech API |
+| AI | Sovereign Fleet (`pocketgull-clinical` / `edge`), Google Gemini, Google ADK |
+| 3D / Voice | Direct WebGL2 / WebGPU (`GullRenderEngine`), Web Speech API |
+| Mobile & Wearables | Flutter / Dart (iOS HealthKit, Android Health Connect, Wear OS) |
+| Desktop HUD | Tauri v2 + Rust (macOS Universal M1–M4 / Intel, Windows 11) |
 | ML sidecar | Python FastAPI, scikit-learn, XGBoost, ONNX Runtime |
-| Mobile | Flutter / Dart (Riverpod) |
 | Privacy | DOMPurify, Google Tink AEAD, FHIR R4 |
 | Quality | Vitest, Playwright, pytest, CodeQL, SLSA provenance |
 
 | Workspace | Language | Purpose |
 | :--- | :--- | :--- |
-| `/` (root) | TypeScript | Angular + Express SSR application |
-| `companion-apps/avs-therapy` | TypeScript | AVS therapy companion |
-| `companion-apps/patient_app`, `provider_app` | Dart / Flutter | Mobile companion apps |
+| `/` (root) | TypeScript | Angular + Express SSR application & GullRenderEngine |
+| `src-tauri` | Rust / TypeScript | Native macOS (Apple Silicon M1–M4) & Windows 11 Desktop Suite HUD |
+| `companion-apps/patient_app` | Dart / Flutter | iOS (Apple HealthKit) & Android mobile companion (care cards, movement quests) |
+| `companion-apps/provider_app` | Dart / Flutter | iOS / iPadOS & Android clinician field kit (WHO EML dispensary, multilingual passport) |
+| `companion-apps/avs_wear_app` | Dart / Flutter | Wear OS smartwatch app (0.10 Hz haptic vagal reset & CEDA biofeedback) |
+| `companion-apps/avs-therapy` | TypeScript | Audio-visual-tactile photobiomodulation PWA (432Hz/528Hz Solfeggio) |
 | `pocketgull_api` | Python | FastAPI ML scoring sidecar ([OpenAPI](pocketgull_api/openapi.yaml)) |
 
 ---
