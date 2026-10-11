@@ -1,21 +1,14 @@
 # PocketGull Acoustic Completion Hook Handler
-# Strictly implements Antigravity Hook Contract (reads JSON stdin, writes JSON stdout)
-
-try {
-    # Drain stdin
-    if ([Console]::IsInputRedirected) {
-        $null = [Console]::In.ReadToEnd()
-    }
-} catch { }
+# Strictly implements Antigravity Hook Contract (writes JSON stdout)
 
 # Soft Ceramic Kiln Chime / 528Hz Solfeggio
 $soundPath = "C:\Users\philg\AppData\Local\PocketGull\Sounds\pocketgull_ceramic_chime.wav"
 
 if (Test-Path $soundPath) {
     try {
-        # Play asynchronously without blocking shell
+        # Play synchronously to ensure full acoustic resonance before shell exit
         $player = New-Object System.Media.SoundPlayer $soundPath
-        $player.Play()
+        $player.PlaySync()
     } catch { }
 }
 
