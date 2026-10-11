@@ -144,43 +144,50 @@ Without a `GEMINI_API_KEY`, use the built-in demo mode (de-identified sample pat
 ## Architecture
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 graph TB
-    classDef cloud fill:#0f172a,stroke:#6366f1,stroke-width:2px,color:#f8fafc
-    classDef mobile fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
-    classDef ingestion fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
-    classDef hub fill:#18181b,stroke:#a855f7,stroke-width:3px,color:#fafafa
-    classDef lenses fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#f8fafc
-    classDef foundation fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#f8fafc
+    classDef cloud fill:#e2e8f0,stroke:#6366f1,stroke-width:2px,color:#0f172a
+    classDef mobile fill:#c7d2fe,stroke:#818cf8,stroke-width:2px,color:#0f172a
+    classDef ingestion fill:#e0f2fe,stroke:#38bdf8,stroke-width:2px,color:#0f172a
+    classDef hub fill:#f3e8ff,stroke:#a855f7,stroke-width:3px,color:#0f172a
+    classDef lenses fill:#d1fae5,stroke:#10b981,stroke-width:2px,color:#0f172a
+    classDef foundation fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#0f172a
+    classDef security fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#0f172a
 
-    subgraph Mobile ["📱 Mobile & Wearable Ecosystem (Flutter / Dart)"]
-        PatientApp["Patient App\n(Recovery & Health Connect)"]
-        ProviderApp["Provider Field Kit\n(Backpack Dispensary & Triage)"]
-        WearApp["Wear OS Smartwatch\n(0.10 Hz Vagal Reset & CEDA)"]
-        AvsApp["AVS Photobiomodulation\n(Web Companion PWA)"]
+    subgraph Endpoints ["📱 Endpoints (Mobile, Wearable, Desktop)"]
+        PatientApp["Patient App\n(Recovery / Health Connect)"]
+        ProviderApp["Provider Field Kit\n(Offline Dispensary)"]
+        WearApp["Wear OS Smartwatch\n(0.10 Hz Vagal Reset)"]
+        DesktopHUD["Desktop HUD\n(Tauri v2 / Rust Native)"]
     end
 
     subgraph Ingestion ["Ingestion & Direct Graphics"]
-        Body3D["Direct WebGL2 3D Anatomy\n(GullRenderEngine)"]
-        Voice["Voice Assistant"]
+        Body3D["Direct WebGL2/WebGPU\n(GullRenderEngine)"]
+        Voice["Voice Assistant\n(Local STT/VAD)"]
         Intake["Diagnostic Intake"]
     end
 
-    subgraph Hub ["Central State & AI Orchestration"]
-        State["PatientStateService\n(Signal Store & FHIR R4)"]
-        Sovereign["Sovereign Model Fleet\n(pocketgull-clinical / edge)"]
-        ADK["ADK InMemoryRunner\n(Multi-Agent Orchestration)"]
+    subgraph Hub ["🧠 Central State & AI Orchestration"]
+        TelemetryBus["Telemetry Bus\n(High-Freq Signals)"]
+        SyncEngine["Sync Engine\n(CRDT / Offline Mesh)"]
+        State["PatientStateService\n(FHIR R4 State Store)"]
+        
+        Sovereign["Sovereign Model Fleet\n(Edge AI)"]
+        ADK["ADK InMemoryRunner\n(Multi-Agent)"]
         WebMCP["WebMCP Tool Catalog"]
+        LensRegistry["Clinical Lens Registry"]
     end
 
-    subgraph Cloud ["Cloud & Machine Learning"]
+    subgraph Cloud ["☁️ Cloud Egress (Zero-PHI)"]
+        DeID["HIPAA Safe Harbor Proxy\n(PHI Scrubber Boundary)"]:::security
         CloudRun["Cloud Run (SSR + Proxy)"]
         FastAPI["FastAPI Sidecar (ML)"]
         Vertex["Vertex AI / Gemini"]
     end
 
-    subgraph Lenses ["Clinical Lenses"]
+    subgraph Lenses ["Clinical Paradigms"]
         Western["Conventional (Allopathic)"]
-        TCM["Traditional Chinese Medicine"]
+        TCM["Traditional Chinese"]
         Ayurvedic["Ayurveda"]
         Ortho["Orthomolecular"]
     end
@@ -191,34 +198,43 @@ graph TB
         PubMed["PubMed Grounding"]
     end
 
-    PatientApp <-->|Zero-Egress QR & REST| State
-    ProviderApp <-->|BLE Mesh / Triage Sync| State
-    WearApp <-->|BLE Pulse & Haptics| State
-    AvsApp <-->|Photobiomodulation| State
+    %% Client & Ingestion Flows
+    Endpoints <-->|REST / BLE Mesh| SyncEngine
+    DesktopHUD <-->|Local IPC| SyncEngine
+    WearApp -->|BLE Pulse Streams| TelemetryBus
+    Body3D -->|Spatial Signals (60fps)| TelemetryBus
+    
+    Voice -->|Transcribed Text| ADK
+    Intake --> State
 
-    Body3D -->|Spatial Signals| State
-    Voice -->|Audio Stream| ADK
-    Intake -->|Vitals| State
-
-    CloudRun <-->|WS & REST| Hub
-    CloudRun <--> FastAPI
-    CloudRun <--> Vertex
+    %% Hub Internal Routing
+    TelemetryBus -->|Aggregated Milestones| State
+    SyncEngine <--> State
 
     State <--> Sovereign
     State <--> ADK
     ADK <--> WebMCP
+    
+    %% AI Synthesis & Lenses
+    ADK <--> LensRegistry
+    LensRegistry <--> Western & TCM & Ayurvedic & Ortho
 
-    Hub <--> Western & TCM & Ayurvedic & Ortho
+    %% Cloud Boundary (Strict Security Enforcement)
+    State -->|PHI Payload| DeID
+    DeID -->|De-Identified Context| CloudRun
+    CloudRun <--> FastAPI
+    CloudRun <--> Vertex
 
+    %% Exports
     State --> FHIR & Cache
     ADK --> PubMed
 
     class CloudRun,FastAPI,Vertex cloud
-    class PatientApp,ProviderApp,WearApp,AvsApp mobile
+    class Endpoints,PatientApp,ProviderApp,WearApp,DesktopHUD mobile
     class Body3D,Voice,Intake ingestion
-    class State,Sovereign,ADK,WebMCP hub
+    class Hub,TelemetryBus,SyncEngine,State,Sovereign,ADK,WebMCP,LensRegistry hub
     class Western,TCM,Ayurvedic,Ortho lenses
-    class FHIR,Cache,PubMed foundation
+    class Foundation,FHIR,Cache,PubMed foundation
 ```
 
 | Layer | Technology |

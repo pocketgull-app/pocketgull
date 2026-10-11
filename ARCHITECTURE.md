@@ -10,34 +10,51 @@
 PocketGull is an open-source clinical intelligence ecosystem designed to bridge evidence-grounded Clinical Decision Support (CDS), multimodal real-time AI consultations, and standardized healthcare data exchange.
 
 ```
-                             ┌──────────────────────────────────────────┐
-                             │       CLINICAL CLIENT (PORTABLE)         │
-                             │   Angular 22 Standalone + Signals        │
-                             │   • Direct WebGL2/WebGPU Engine          │
-                             │   • Web Speech API (Bidirectional)       │
-                             │   • Sensory Studio & Scotopic UI         │
-                             └────────────┬─────────────────────────────┘
-                                          │
-                    ┌─────────────────────┼─────────────────────┐
-                    │                     │                     │
-                    ▼                     ▼                     ▼
-      ┌───────────────────────────┐ ┌───────────┐ ┌───────────────────────────┐
-      │   OFFLINE LOCAL EDGE AI   │ │  MOBILE & │ │    HYBRID BACKEND / SSR   │
-      │  pocketgull-clinical:v1.41│ │  DESKTOP  │ │  Node 24 + Express + SSR  │
-      │  Ollama / Apple Metal UMA │ │  COMPANION│ │  WebSocket Streaming Proxy│
-      │  WebLLM / DirectML / Nano │ │  Apple/And│ │  DOMPurify Sanitization   │
-      │  Zero-Egress Sovereign    │ │  Tauri HUD│ └─────────────┬─────────────┘
-      └───────────────────────────┘ └───────────┘               │
-                                                                │
-                                              ┌─────────────────┴─────────────────┐
-                                              │                                   │
-                                              ▼                                   ▼
-                                ┌───────────────────────────┐       ┌───────────────────────────┐
-                                │   PYTHON ML SIDECAR       │       │    UPSTREAM CLOUD AI      │
-                                │  FastAPI (Port 8000)      │       │  Google Gemini 2.5 / Flash│
-                                │  Asymmetric Loss Models   │       │  Genkit Multi-turn Chat   │
-                                │  DICOM / FHIR Converters  │       │  Secret Manager KMS       │
-                                └───────────────────────────┘       └───────────────────────────┘
+                             ┌────────────────────────────────────────────────────────┐
+                             │               ENDPOINTS & CLIENT INTERFACES            │
+                             │  • Angular 22 Client (Zoneless + Direct WebGL2/WebGPU) │
+                             │  • Tauri v2 Desktop HUD (Rust, Metal UMA, EHR Hotkey)  │
+                             │  • Mobile & Wearables (Flutter, HealthKit, Wear OS)    │
+                             └──────────────┬──────────────────────────┬──────────────┘
+                                            │                          │
+                         [High-Frequency]   │                          │ [Low-Frequency / CRDT]
+                         Spatial 60fps / BLE▼                          ▼
+                             ┌──────────────────────┐    ┌────────────────────────────┐
+                             │    TELEMETRY BUS     │    │      CRDT SYNC ENGINE      │
+                             │ (Throttled Streams,  │    │  (Automerge/Yjs, BLE Mesh, │
+                             │  HRV/Derivatives)    │    │   Deterministic Merging)   │
+                             └──────────────┬───────┘    └─────────────┬──────────────┘
+                                            │                          │
+                                            ▼ Aggregated Milestones    ▼ State Sync
+                             ┌────────────────────────────────────────────────────────┐
+                             │          PATIENT STATE SERVICE (FHIR R4 STORE)         │
+                             │   In-Memory Reactive Signals, Ephemeral Zero-PHI Disk  │
+                             └──────────────┬──────────────────────────┬──────────────┘
+                                            │                          │
+                    ┌───────────────────────┴──────┐                   │ [Zero-PHI Egress]
+                    ▼                              ▼                   ▼
+      ┌───────────────────────────┐  ┌───────────────────────────┐   ┌───────────────────────────┐
+      │   OFFLINE LOCAL EDGE AI   │  │   CLINICAL LENS REGISTRY  │   │   SAFE HARBOR SCRUBBER    │
+      │  pocketgull-clinical:v1.41│  │  (Pluggable Paradigms:    │   │ (HIPAA §164.514 Scrubber, │
+      │  Ollama / Apple Metal UMA │  │   Allopathic, TCM, Ayur,  │   │  Taint Boundary Guard)    │
+      │  WebLLM / DirectML / Nano │  │   Orthomolecular Plugins) │   └─────────────┬─────────────┘
+      │  ADK InMemoryRunner       │  └───────────────────────────┘                 │
+      └───────────────────────────┘                                                ▼ De-Identified Payload
+                                                                     ┌───────────────────────────┐
+                                                                     │     HYBRID BACKEND / SSR  │
+                                                                     │  Node 24 + Express + SSR  │
+                                                                     │  WebSocket Streaming Proxy│
+                                                                     └─────────────┬─────────────┘
+                                                                                   │
+                                                                 ┌─────────────────┴─────────────────┐
+                                                                 │                                   │
+                                                                 ▼                                   ▼
+                                                   ┌───────────────────────────┐       ┌───────────────────────────┐
+                                                   │   PYTHON ML SIDECAR       │       │    UPSTREAM CLOUD AI      │
+                                                   │  FastAPI (Port 8000)      │       │  Google Gemini 2.5 / Flash│
+                                                   │  Asymmetric Loss Models   │       │  Genkit Multi-turn Chat   │
+                                                   │  DICOM / FHIR Converters  │       │  Secret Manager KMS       │
+                                                   └───────────────────────────┘       └───────────────────────────┘
 ```
 
 ---
@@ -96,6 +113,23 @@ PocketGull is an open-source clinical intelligence ecosystem designed to bridge 
 * **Complete Three.js Removal**: Three.js was completely purged from the codebase (`src/rendering/gull-render.engine.ts`, `src/engine/core/webgl2-backend.ts`, `src/rendering/direct-cardiac.renderer.ts`) to eliminate ~650 KB of bundle overhead.
 * **Zero-Allocation Rendering Loop**: Custom GLSL 3.0 ES and WebGPU shaders run inside `requestAnimationFrame` with zero heap allocations, eliminating GC frame stutter.
 * **O(1) Offscreen Picking**: GPU-accelerated offscreen color framebuffers enable instantaneous anatomical hotspot identification and touch targeting without CPU raycasting.
+
+### 2.8 High-Frequency Telemetry Bus
+* **Separation of Concerns**: High-frequency real-time signals (60 FPS WebGL2 spatial coordinates from `GullRenderEngine`, 0.10 Hz continuous BLE pulse streams from `WearApp`) are decoupled from the clinical state store.
+* **Transient Hot-Signal Buffering**: Uses reactive streams (transient Signals / RxJS Subjects) to throttle, buffer, and compute real-time derivatives (e.g. RMSSD HRV from inter-beat intervals).
+* **Downsampled Milestones**: Only discrete clinical milestones and aggregated trends commit down into the heavy `PatientStateService` FHIR R4 store, preventing state thrashing and memory bloat.
+
+### 2.9 Offline Mesh Sync & Deterministic CRDT Engine
+* **Conflict-Free Replication**: Decentralized synchronization engine utilizing Conflict-Free Replicated Data Types (CRDTs via Automerge / Yjs) across peer endpoints (`ProviderApp`, `PatientApp`, `Desktop HUD`).
+* **Multi-Master Resolution**: Eliminates destructive "last-write-wins" REST overwrite risks when clinicians and patients asynchronously edit care plans or triage states over ad-hoc BLE Mesh in disaster zones or low-connectivity environments.
+
+### 2.10 HIPAA §164.514 Safe Harbor Scrubber Boundary
+* **Architectural Taint Gate**: All state exports and prompts transitioning from the local client or workstation state toward cloud runtimes (`Cloud Run`, `Vertex AI`, `Gemini`) MUST pass through an explicit Safe Harbor proxy filter.
+* **Automated De-Identification**: Automatically strips the 18 statutory HIPAA identifiers (names, dates, contact details, device IDs, biometric data) in memory before any external egress, ensuring the cloud perimeter is strictly zero-PHI.
+
+### 2.11 Clinical Lens Registry (Plugin Pattern)
+* **Open-Closed Principle (OCP)**: Replaces hardcoded peer orchestrator routing with an extensible Clinical Lens Registry.
+* **Pluggable Paradigms**: Clinical perspectives (`Conventional/Allopathic`, `TCM`, `Ayurvedic`, `Orthomolecular`) register as discrete clinical lens modules with explicit evidence-grade tagging (Grades A/B/C) and standardized reasoning hooks, allowing new paradigms to be introduced with zero changes to core routing.
 
 ---
 

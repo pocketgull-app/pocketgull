@@ -194,6 +194,11 @@ public/*.bundle.js.map
 documentation/fonts/
 documentation/fonts.css
 
+# Heavy Typography & Desktop Font Binaries (Hosted on https://font.pocketgull.app)
+*.ttf
+public/brand/fonts/
+packages/**/*.vsix
+
 # ------------------------------------------------------------------------------
 # 8. Testing, Coverage, Benchmarks & Lighthouse Reports
 # ------------------------------------------------------------------------------
