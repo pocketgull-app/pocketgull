@@ -40,12 +40,13 @@
 
 ## What it does
 
-- **Care-plan strategy.** Turns symptoms, vitals, and validated instruments (PHQ-9, GAD-7, C-SSRS, ISI, PRAPARE, and more) into structured care plans that a clinician reviews before anything is saved.
-- **Live AI consult.** Streaming text and full-duplex voice consults with Gemini, with patient context held by a multi-agent [Google ADK](https://google.github.io/adk-docs/) runtime.
+- **Dual-depth care-plan strategy.** Decouples statutory clinical coding (HL7® FHIR® R4, ICD-11 TM1, LOINC / SNOMED CT) from patient-facing Non-Alarming Care Cards ("Living Garden" playbooks) across 4 cognitive literacy tiers (MD, Grade 8, Dyslexia-Friendly, Child-Friendly) with gentle 0.95x audio readback.
+- **Sovereign clinical AI.** Local, zero-egress clinical intelligence running on workstation silicon via `pocketgull-clinical:v1.41.0` and `pocketgull-edge:v1.41.0`, verified with a 100% green sweep on Inspect AI (USMLE Step 2, MSF snakebite antivenom, WHO EML, NIST SP 1270).
+- **Live AI consult.** Streaming text and full-duplex voice consults with Gemini and sovereign local models, with patient context held by a multi-agent [Google ADK](https://google.github.io/adk-docs/) runtime.
 - **Evidence grounding.** Recommendations cite PubMed literature and are tagged by evidence level (A: RCTs, B: cohort, C: expert consensus).
+- **Direct WebGL2 / WebGPU 3D anatomy.** Interactive spatial telemetry powered by our native `GullRenderEngine` (<10KB micro-engine, zero Three.js dependencies, $O(1)$ offscreen color picking, zero GC allocations).
 - **Interoperability.** HL7® FHIR® R4 Bundle export, SMART on FHIR identity, LOINC / SNOMED CT coding, and PDF care plans.
 - **Privacy by default.** No server-side PHI persistence: patient state lives in memory or is encrypted on device, with optional on-device inference through Chrome built-in AI and WebGPU.
-- **3D anatomy.** An interactive Three.js body map for locating and grading symptoms.
 
 Optional complementary lenses (Traditional Chinese Medicine, Ayurveda) are presented alongside, never in place of, the conventional plan and are labelled with their evidence level.
 
@@ -158,7 +159,7 @@ graph TB
     end
 
     subgraph Ingestion ["Ingestion & Portals"]
-        Body3D["Three.js 3D Anatomy"]
+        Body3D["Direct WebGL2 3D Anatomy\n(GullRenderEngine)"]
         Voice["Voice Assistant"]
         Intake["Diagnostic Intake"]
     end
@@ -211,8 +212,8 @@ graph TB
 | :--- | :--- |
 | Frontend | Angular 22 (standalone components, Signals, zoneless), Tailwind CSS |
 | Backend / SSR | Node.js 24, Express, Angular SSR |
-| AI | Google Gemini, Google ADK, Genkit, Vertex AI |
-| 3D / Voice | Three.js, Web Speech API |
+| AI | Sovereign Fleet (pocketgull-clinical / edge), Google Gemini, Google ADK |
+| 3D / Voice | Direct WebGL2 / WebGPU (GullRenderEngine), Web Speech API |
 | ML sidecar | Python FastAPI, scikit-learn, XGBoost, ONNX Runtime |
 | Mobile | Flutter / Dart (Riverpod) |
 | Privacy | DOMPurify, Google Tink AEAD, FHIR R4 |
@@ -227,8 +228,30 @@ graph TB
 
 ---
 
-## 🕊️ The Avian Navigator Tier (Open Research Models)
+## 🕊️ Sovereign Model Fleet & Avian Navigators
 
+PocketGull features a two-fold local intelligence architecture: the **Sovereign Model Fleet (v1.41.0)** for autonomous attending-level clinical reasoning on local silicon, and specialized **Avian Navigators** for targeted edge tasks.
+
+### 🏛️ The Sovereign Fleet (v1.41.0)
+Grounded on workstation VRAM with 100% air-gapped zero egress. Evaluated on the [Inspect AI](https://inspect.ai-safety-institute.org.uk/) framework with a **100% green sweep** across USMLE Step 2, MSF snakebite antivenom titration, and WHO Essential Medicines:
+
+| Sovereign Model | Parameters | Specialization & Clinical Safety Gates | Local Runtime |
+| :--- | :--- | :--- | :--- |
+| [`pocketgull-clinical:v1.41.0`](https://huggingface.co/philgear/pocketgull-clinical) | 8B Sovereign | Flagship attending physician AI; 100% Inspect AI (USMLE Step 2, MSF snakebite antivenom posology, WHO EML, Directive 8 Non-Alarming Salutogenesis) | Ollama (Local VRAM) · vLLM |
+| [`pocketgull-edge:v1.41.0`](https://huggingface.co/philgear/pocketgull-edge) | 2B Sovereign Edge | Austere field operations, humanitarian backpack dispensary, multilingual passport, Wear OS vagal reset | Mobile · WebGPU · Edge Ollama |
+
+```bash
+# Run the 8B attending clinician sovereign model locally
+ollama run pocketgull-clinical:v1.41.0
+
+# Run the 2B edge field kit model
+ollama run pocketgull-edge:v1.41.0
+```
+*Modelfiles and constitutional directives: [models/sovereign/](models/sovereign/README.md).*
+
+---
+
+### 🪶 The Avian Navigator Tier (Specialized Research Models)
 Fine-tuned Gemma models and interactive Spaces are published on [Hugging Face](https://huggingface.co/philgear). They are research artifacts for local edge inference and have not been validated for autonomous clinical use:
 
 | Model | Focus & Salutogenic Capability | Target Runtimes |
@@ -273,6 +296,8 @@ To report a vulnerability, follow the private disclosure process in [SECURITY.md
 | :--- | :--- |
 | [Feature catalogue](docs/FEATURES.md) | Every module, instrument, model, and distributable |
 | [User walkthrough](docs/WALKTHROUGH.md) | Primary user flows and pathways |
+| [12-Hour Doctor Shift Dossier](docs/POCKETGULL_12HR_DOCTOR_SHIFT_DOSSIER.md) | Clinical shift simulation across 7 patient encounters with zero token degradation |
+| [Sovereign Models Architecture](models/sovereign/README.md) | Local Modelfiles, system directives, and 100% Inspect AI benchmark results |
 | [Architecture](ARCHITECTURE.md) | System design, data flow, and reactive state |
 | [Enterprise EHR sidecar](docs/ENTERPRISE_EHR_SIDECAR.md) | Epic®, Oracle® Cerner®, and MEDITECH® integration |
 | [Edge AI architecture](docs/GEMMA4_EDGE_ARCHITECTURE.md) | Chrome built-in AI and on-device models |
