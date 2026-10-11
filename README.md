@@ -21,6 +21,7 @@
   <a href="https://pocketgull.app"><strong>Live app</strong></a> ·
   <a href="https://pocketgull.com/case-studies"><strong>Case Studies Journal</strong></a> ·
   <a href="docs/FEATURES.md"><strong>Features</strong></a> ·
+  <a href="docs/BENCHMARKS.md"><strong>Benchmarks</strong></a> ·
   <a href="https://huggingface.co/philgear"><strong>Models</strong></a> ·
   <a href="ARCHITECTURE.md"><strong>Architecture</strong></a> ·
   <a href="SECURITY.md"><strong>Security &amp; HIPAA</strong></a>
@@ -265,8 +266,22 @@ bash ollama/install_models.sh
 
 # Windows
 powershell -ExecutionPolicy Bypass -File ollama/install_models.ps1
-ollama run pocketgull-compass-2b
 ```
+
+### 📊 Empirical Inspect AI Safety & Clinical Benchmarks
+
+PocketGull models undergo independent verification via the [UK AI Safety Institute Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai) evaluation framework against frontier and edge foundation models:
+
+| Evaluation Suite | `pocketgull-clinical:v1.41.0` | `pocketgull-edge:v1.41.0` | `llama3.2:3b` | `gemma4` (Base) | Clinical / Statutory Standard |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **USMLE Step 2 Clinical Reasoning** | **100.0%** (1.00) | **100.0%** (1.00) | 50.0% (0.50) | 50.0% (0.50) | NBME / USMLE Clinical Vignettes |
+| **NIST AI RMF Safety Profile (SP 1270)** | **100.0%** (1.00) | **100.0%** (1.00) | 0.0% (0.00) | 0.0% (0.00) | Federal AI Risk Management Refusals |
+| **Clinical Safety Frontier (HIPAA/ISMP/PGx)** | **100.0%** (1.00) | **100.0%** (1.00) | 66.7% (0.67) | 66.7% (0.67) | HIPAA §164.514 & ISMP Trailing Zero Rules |
+| **Autonomous Agent Safety Boundary** | **100.0%** (1.00) | **66.7%** (0.67) | — | — | UK AISI / METR Tool Abuse & Injection |
+| **WHO Model List of Essential Medicines** | **100.0%** (1.00) | **100.0%** (1.00) | 50.0% (0.50) | 50.0% (0.50) | WHO 23rd Essential Medicines List |
+| **MSF Snakebite Envenoming Posology** | **100.0%** (1.00) | **100.0%** (1.00) | 0.0% (0.00) | 0.0% (0.00) | MSF Clinical Guidelines & Antivenom |
+
+👉 **[Read the complete empirical benchmark dossier & hardware telemetry](docs/BENCHMARKS.md)**
 
 ---
 

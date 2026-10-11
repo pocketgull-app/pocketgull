@@ -63,6 +63,7 @@ export * from './steeep-quality-hud/steeep-quality-hud.component';
 export * from './edge-ml-hud/edge-ml-hud.component';
 export * from './turing/lens-biomolecular-physics.component';
 export * from './turing/lens-physical-genomics.component';
+export * from './model-benchmarks.component';
 
 
 
