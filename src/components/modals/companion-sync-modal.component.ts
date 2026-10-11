@@ -7,16 +7,17 @@ import { PeerNetworkService } from '../../services/peer-network.service';
 import { CrossDeviceSyncService } from '../../services/cross-device-sync.service';
 import { PocketgullDesktopSuiteComponent } from '../pocketgull-desktop-suite.component';
 import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
+import { ModelBenchmarksComponent } from '../model-benchmarks.component';
 import { QrBrandVariant } from '../../services/branded-qr-code.service';
 
 @Component({
   selector: 'app-companion-sync-modal',
   standalone: true,
-  imports: [CommonModule, PocketgullDesktopSuiteComponent, BrandedQrCodeComponent],
+  imports: [CommonModule, PocketgullDesktopSuiteComponent, BrandedQrCodeComponent, ModelBenchmarksComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300" role="dialog" aria-modal="true">
-      <div [class]="syncMode() === 'desktop' ? 'relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-zinc-800 max-w-3xl w-full p-6 text-gray-900 dark:text-gray-100 flex flex-col gap-5 max-h-[90vh] overflow-y-auto' : 'relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-zinc-800 max-w-md w-full p-6 text-gray-900 dark:text-gray-100 flex flex-col gap-5'">
+      <div [class]="(syncMode() === 'desktop' || syncMode() === 'benchmarks') ? 'relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-zinc-800 max-w-4xl w-full p-6 text-gray-900 dark:text-gray-100 flex flex-col gap-5 max-h-[90vh] overflow-y-auto' : 'relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-zinc-800 max-w-md w-full p-6 text-gray-900 dark:text-gray-100 flex flex-col gap-5'">
         
         <!-- Header -->
         <div class="flex items-center justify-between border-b border-gray-100 dark:border-zinc-800 pb-3">
@@ -35,7 +36,7 @@ import { QrBrandVariant } from '../../services/branded-qr-code.service';
         </div>
 
         <!-- Mode Toggle -->
-        <div class="grid grid-cols-5 p-1 bg-gray-100 dark:bg-zinc-800 rounded-xl text-[11px] font-bold uppercase tracking-wider">
+        <div class="grid grid-cols-6 p-1 bg-gray-100 dark:bg-zinc-800 rounded-xl text-[11px] font-bold uppercase tracking-wider">
           <button 
             (click)="syncMode.set('sync')" 
             [class]="syncMode() === 'sync' ? 'bg-white dark:bg-zinc-900 text-teal-600 dark:text-teal-400 shadow-sm rounded-lg py-2' : 'text-gray-500 py-2 hover:text-gray-900 dark:hover:text-gray-200'">
@@ -61,9 +62,16 @@ import { QrBrandVariant } from '../../services/branded-qr-code.service';
             [class]="syncMode() === 'desktop' ? 'bg-white dark:bg-zinc-900 text-indigo-600 dark:text-indigo-400 shadow-sm rounded-lg py-2' : 'text-gray-500 py-2 hover:text-gray-900 dark:hover:text-gray-200'">
             🖥️ Desktop
           </button>
+          <button 
+            (click)="syncMode.set('benchmarks')" 
+            [class]="syncMode() === 'benchmarks' ? 'bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm rounded-lg py-2' : 'text-gray-500 py-2 hover:text-gray-900 dark:hover:text-gray-200'">
+            🏆 Evals
+          </button>
         </div>
 
-        @if (syncMode() === 'desktop') {
+        @if (syncMode() === 'benchmarks') {
+          <app-model-benchmarks></app-model-benchmarks>
+        } @else if (syncMode() === 'desktop') {
           <app-pocketgull-desktop-suite></app-pocketgull-desktop-suite>
         } @else if (syncMode() === 'sync') {
           <!-- Real-Time Cross-Device Sync Telemetry Panel -->
@@ -181,7 +189,7 @@ export class CompanionSyncModalComponent {
   peerNetwork = inject(PeerNetworkService);
   readonly crossSync = inject(CrossDeviceSyncService);
 
-  syncMode = signal<'sync' | 'doctor' | 'patient' | 'network' | 'desktop'>('sync');
+  syncMode = signal<'sync' | 'doctor' | 'patient' | 'network' | 'desktop' | 'benchmarks'>('sync');
   copied = signal(false);
 
   triggerEsiSync(): void {
