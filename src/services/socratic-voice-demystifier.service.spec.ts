@@ -50,4 +50,29 @@ describe('SocraticVoiceDemystifierService', () => {
     service.toggleHandsFree();
     expect(service.isHandsFreeActive()).toBe(false);
   });
+
+  it('6. Activates Gull Squadron cute avian voice profiles with distinct pitches and vagal cadences', () => {
+    expect(service.gullSquadronPersonas.length).toBe(7);
+
+    // Test Drift (Circadian Vagal Whisper at 0.1 Hz)
+    service.setGullPersona('drift');
+    expect(service.activePersona().id).toBe('gull-drift');
+    expect(service.activePersona().speechRate).toBe(0.75); // Calming slow pace
+    expect(service.activePersona().vagalCadencePauseMs).toBe(950);
+
+    // Test Swoop (Cheerful Aviator Apothecary)
+    service.setGullPersona('swoop');
+    expect(service.activePersona().id).toBe('gull-swoop');
+    expect(service.activePersona().speechPitch).toBe(1.18); // Bubbly higher pitch
+
+    // Test Samaritan (Gentle Lifesaver)
+    service.setGullPersona('samaritan');
+    expect(service.activePersona().id).toBe('gull-samaritan');
+    expect(service.activePersona().speechRate).toBe(0.82); // Anti-panic slow rhythm
+
+    // Test Quill (Plain Language & Dyslexia Friendly)
+    service.setGullPersona('quill');
+    expect(service.activePersona().id).toBe('gull-quill');
+    expect(service.activePersona().speechPitch).toBe(1.12);
+  });
 });

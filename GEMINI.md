@@ -158,6 +158,14 @@ export class MetricCardComponent {
   - **Australia**: Privacy Act 1988 (APPs), My Health Record Act 2012, TGA SaMD, FHIR AU Base, Lifeline 13 11 14.
   - **New Zealand**: Health Information Privacy Code 2020 (HIPC), NZ HISO 10029/10064, FHIR NZ Base, 1737 Need to Talk.
 
+## CASMI 2026 Lineage of Gratitude & Tri-Paradigm Explainability Standard
+- **The Lineage of Gratitude Invariant**: Every CASMI 2026 submission notebook, commit, and generated artifact MUST preserve and prominently display the Lineage of Gratitude dedicating our work to open-source pioneers: Hengck23 (DreaMS foundation model & safe-tail matching), Eveliaveldrine (Python 3.13 RDKit wheels), Enveda Biosciences & CASMI organizers, ICEBERG & GLACIER forward simulation architects, LOTUS & COCONUT open natural product curators, and Countess Ada Lovelace & Hermann von Helmholtz.
+- **Tri-Paradigm Adaptive Representation**: All visualizations, specimen plates, and architectural narratives MUST support the 3 cognitive lenses:
+  1. *6th-Grade Explorer*: Wind-tunnel ion mobility and Lego-brick snapping.
+  2. *Advanced Biochemist*: 4D timsTOF coordinate space, in-silico RDA transition states, and Wasserstein-1 geodesics.
+  3. *Clinical Research*: Gut microbial aglycone biotransformation, CYP3A4 metabolic boundaries, and FHIR R4 interoperability.
+- **100% Self-Contained Offline Artifacts**: All exported visualizers must execute natively in HTML5 Canvas/SVG without external CDNs, maintaining RSNA neuro-ergonomics and melanopic EDI < 10 lx.
+
 ## IEEE P2933™ TIPPSS & Circular IoMT Standard
 - **6-Pillar Statutory Trust**: All connected wearables, IoMT sensors, and bedside kiosks MUST strictly verify IEEE P2933™ Trust, Identity, Privacy, Protection, Safety, and Security before vital ingestion:
   - *Trust*: Hardware Root of Trust attestation (Titan M2, Apple Secure Enclave, ARM TrustZone).

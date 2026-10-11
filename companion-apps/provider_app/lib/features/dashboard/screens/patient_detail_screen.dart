@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/models/patient.dart';
+import '../../field_kit/screens/multilingual_passport_screen.dart';
 import 'provider_dashboard.dart';
 
 class PatientDetailScreen extends StatefulWidget {
@@ -221,7 +222,32 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                 ],
               ),
             ),
-          ]
+          ],
+          const SizedBox(height: 24),
+          _buildSectionTitle('CROSS-BORDER EMERGENCY PASSPORT', const Color(0xFF7C3AED), sectionTitleFontSize),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF7C3AED),
+                side: const BorderSide(color: Color(0xFF7C3AED)),
+                padding: EdgeInsets.symmetric(vertical: buttonVerticalPadding),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              ),
+              icon: const Icon(Icons.qr_code_2_outlined, size: 18),
+              label: Text(
+                'GENERATE 6-LANGUAGE QR PASSPORT',
+                style: TextStyle(fontSize: isWatch ? 10 : 12, letterSpacing: 1.2, fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MultilingualPassportScreen(patient: widget.patient)),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );

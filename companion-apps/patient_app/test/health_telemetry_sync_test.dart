@@ -10,7 +10,7 @@ void main() {
       expect(data.activeEnergyKcal, greaterThan(300.0));
       expect(data.heartRateBpm, equals(72));
       expect(data.activeTransitMinutes, equals(35));
-      expect(data.syncProvider, contains('HealthKit'));
+      expect(data.syncProvider, anyOf(contains('HealthKit'), contains('Health Connect')));
     });
 
     test('2. Serializes and deserializes correctly via JSON', () {

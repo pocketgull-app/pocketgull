@@ -80,6 +80,7 @@ import { SleepVagalFlourishingHubComponent } from './sleep-vagal-flourishing-hub
 import { SystemsEquilibriumHudComponent, SystemsNavMode } from './analysis-report/systems-equilibrium-hud.component';
 import { InterSystemCrosstalkCardComponent } from './analysis-report/inter-system-crosstalk-card.component';
 import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precondition-alert-banner.component';
+import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clinical-moe-router.service';
 
 @Component({
   selector: 'app-analysis-report',
@@ -213,101 +214,171 @@ import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precon
       <div class="px-3 sm:px-8 py-2.5 no-print w-full bg-slate-100/95 dark:bg-zinc-950/95 border-b border-slate-200 dark:border-zinc-800">
         <div class="max-w-4xl mx-auto flex flex-col gap-2 font-mono">
           
-          <!-- Row 1: Primary Lens Navigation Tabs (Full Width Precision Strip) -->
+          <!-- Row 1: Primary Lens Navigation Tabs (Adaptive SMoE Precision Strip) -->
           <div class="flex items-center justify-between gap-1 w-full relative z-10 border-b border-slate-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 font-mono text-xs">
-            <!-- Scroll Left Arrow -->
-            <button type="button" (click)="scrollLensBar('left')" 
-              class="px-2 py-2 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-transparent border-r border-zinc-200 dark:border-zinc-800 shrink-0 cursor-pointer transition" title="Scroll Lenses Left">
-              ◀
-            </button>
+            @if (moeRouter.isSparseLensRoutingEnabled()) {
+              <!-- Adaptive SMoE Gating Router Indicator -->
+              <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-950/40 border-r border-emerald-500/30 text-emerald-300 shrink-0 font-mono text-[10px]">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="font-bold uppercase tracking-wider">SMoE Top-{{ moeRouter.lensKValue() }} Route</span>
+                <span class="hidden sm:inline px-1.5 py-0.5 rounded bg-emerald-900/60 text-[9px] text-emerald-200 border border-emerald-700/50">+{{ moeRouter.coreLensNoiseReductionPercent() }}% Noise Shield</span>
+              </div>
 
-            <div #lensBarContainer class="flex items-center gap-1 overflow-x-auto scroll-smooth hide-scrollbar flex-1 min-w-0">
-              <button (click)="changeLens('Summary Overview')"
-                data-testid="tab-overview"
-                [class]="activeLens() === 'Summary Overview' 
-                  ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
-                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
-                class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
-                <span class="text-teal-600 dark:text-teal-400 font-bold">01</span>
-                <span>Summary Overview</span>
+              <!-- Top-k Active Lenses Strip -->
+              <div #lensBarContainer class="flex items-center gap-1 overflow-x-auto scroll-smooth hide-scrollbar flex-1 min-w-0">
+                @for (item of moeRouter.topKCoreLenses(); track item.lens.id) {
+                  <button (click)="changeLens(item.lens.id)"
+                    [attr.data-testid]="'tab-' + item.lens.id.toLowerCase().replace(' ', '-')"
+                    [class]="activeLens() === item.lens.id 
+                      ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/10 -mb-px' 
+                      : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                    class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono"
+                    [title]="item.routingRationale">
+                    <span class="text-teal-600 dark:text-teal-400 font-bold">{{ item.lens.indexNumber }}</span>
+                    <span>{{ item.lens.label }}</span>
+                    <span class="px-1.5 py-0.2 rounded-full bg-teal-500/15 text-teal-700 dark:text-teal-300 text-[9px] font-bold border border-teal-500/20">
+                      {{ (item.weight * 100).toFixed(0) }}%
+                    </span>
+                  </button>
+                }
+              </div>
+
+              <!-- Dormant Lenses Vault & Density Controls -->
+              <div class="relative shrink-0 flex items-center gap-1 pr-1 font-mono">
+                <button type="button" (click)="showDormantLensesMenu.set(!showDormantLensesMenu())"
+                  class="min-h-[36px] px-2.5 py-1 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-300 hover:text-white text-[10px] uppercase font-bold tracking-wider cursor-pointer flex items-center gap-1 transition"
+                  title="View dormant uncomputed lenses collapsed to save cognitive & compute overhead">
+                  <span>[+{{ moeRouter.dormantCoreLenses().length }} DORMANT ▾]</span>
+                </button>
+
+                @if (showDormantLensesMenu()) {
+                  <div class="absolute right-0 top-full mt-1 w-72 p-2 bg-zinc-950 border border-zinc-700 shadow-2xl z-50 flex flex-col gap-1 rounded-xl text-xs font-mono">
+                    <div class="px-2 py-1 border-b border-zinc-800 text-[10px] text-zinc-400 font-bold uppercase tracking-wider flex items-center justify-between">
+                      <span>Dormant Experts (Uncomputed)</span>
+                      <span class="text-emerald-400">SMoE Pruned</span>
+                    </div>
+                    @for (item of moeRouter.dormantCoreLenses(); track item.lens.id) {
+                      <button type="button" (click)="changeLens(item.lens.id); showDormantLensesMenu.set(false)"
+                        class="px-2 py-1.5 text-left rounded-lg text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer group">
+                        <div class="flex items-center gap-1.5 min-w-0">
+                          <span class="text-zinc-500 font-bold text-[10px]">{{ item.lens.indexNumber }}</span>
+                          <span class="truncate">{{ item.lens.label }}</span>
+                        </div>
+                        <span class="text-[9px] font-mono text-zinc-500 group-hover:text-teal-400">
+                          {{ (item.weight * 100).toFixed(0) }}%
+                        </span>
+                      </button>
+                    }
+                  </div>
+                }
+
+                <button type="button" (click)="moeRouter.toggleSparseLensRouting()"
+                  class="min-h-[36px] px-2.5 py-1 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-400 hover:text-zinc-200 text-[10px] uppercase font-bold tracking-wider cursor-pointer transition"
+                  title="Switch to full 8-lens dense view">
+                  <span>[DENSE]</span>
+                </button>
+              </div>
+            } @else {
+              <!-- Dense 8-Lens Mode -->
+              <button type="button" (click)="scrollLensBar('left')" 
+                class="px-2 py-2 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-transparent border-r border-zinc-200 dark:border-zinc-800 shrink-0 cursor-pointer transition" title="Scroll Lenses Left">
+                ◀
               </button>
 
-              <button (click)="changeLens('Treatment Matrix')"
-                data-testid="tab-treatment-matrix"
-                [class]="activeLens() === 'Treatment Matrix' 
-                  ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
-                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
-                class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
-                <span class="text-teal-600 dark:text-teal-400 font-bold">02</span>
-                <span>Treatment &amp; Tri-Paradigm</span>
+              <div #lensBarContainer class="flex items-center gap-1 overflow-x-auto scroll-smooth hide-scrollbar flex-1 min-w-0">
+                <button (click)="changeLens('Summary Overview')"
+                  data-testid="tab-overview"
+                  [class]="activeLens() === 'Summary Overview' 
+                    ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
+                    : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                  class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                  <span class="text-teal-600 dark:text-teal-400 font-bold">01</span>
+                  <span>Summary Overview</span>
+                </button>
+
+                <button (click)="changeLens('Treatment Matrix')"
+                  data-testid="tab-treatment-matrix"
+                  [class]="activeLens() === 'Treatment Matrix' 
+                    ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
+                    : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                  class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                  <span class="text-teal-600 dark:text-teal-400 font-bold">02</span>
+                  <span>Treatment &amp; Tri-Paradigm</span>
+                </button>
+
+                <button (click)="changeLens('Functional Protocols')"
+                  data-testid="tab-functional-protocols"
+                  [class]="(activeLens() === 'Functional Protocols' || activeLens() === 'Nutrition' || activeLens() === 'Precision Nutrients') 
+                    ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
+                    : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                  class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                  <span class="text-teal-600 dark:text-teal-400 font-bold">03</span>
+                  <span>Functional &amp; Nutrition</span>
+                </button>
+
+                <button (click)="changeLens('ASSESSMENTS')"
+                  data-testid="tab-assessments"
+                  [class]="activeLens() === 'ASSESSMENTS' 
+                    ? 'border-b-2 border-indigo-500 text-zinc-950 dark:text-white font-bold bg-indigo-500/5 -mb-px' 
+                    : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                  class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                  <span class="text-indigo-400 font-bold">04</span>
+                  <span>Assessments</span>
+                </button>
+
+                <button (click)="changeLens('Monitoring & Follow-up')"
+                  data-testid="tab-monitoring-follow-up"
+                  [class]="activeLens() === 'Monitoring & Follow-up' 
+                    ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
+                    : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                  class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                  <span class="text-teal-600 dark:text-teal-400 font-bold">05</span>
+                  <span>Monitoring &amp; Longevity</span>
+                </button>
+
+                <button (click)="changeLens('Environmental Exposomics & Toxicology')"
+                  data-testid="tab-exposomics-toxicology"
+                  [class]="activeLens() === 'Environmental Exposomics & Toxicology' 
+                    ? 'border-b-2 border-amber-500 text-zinc-950 dark:text-white font-bold bg-amber-500/5 -mb-px' 
+                    : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                  class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                  <span class="text-amber-500 font-bold">06</span>
+                  <span>Exposomics &amp; Tox</span>
+                </button>
+
+                <button (click)="changeLens('Global Health & WHO Initiatives')"
+                  data-testid="tab-global-health"
+                  [class]="activeLens() === 'Global Health & WHO Initiatives' 
+                    ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
+                    : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                  class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                  <span class="text-teal-500 font-bold">07</span>
+                  <span>Global Health</span>
+                </button>
+
+                <button (click)="changeLens('Skeptical Epistemology & Socratic Audit')"
+                  data-testid="tab-socratic-audit"
+                  [class]="activeLens() === 'Skeptical Epistemology & Socratic Audit' 
+                    ? 'border-b-2 border-purple-500 text-zinc-950 dark:text-white font-bold bg-purple-500/5 -mb-px' 
+                    : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
+                  class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
+                  <span class="text-purple-400 font-bold">08</span>
+                  <span>Socratic Audit</span>
+                </button>
+              </div>
+
+              <!-- Scroll Right Arrow -->
+              <button type="button" (click)="scrollLensBar('right')" 
+                class="px-2 py-2 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-transparent border-l border-zinc-200 dark:border-zinc-800 shrink-0 cursor-pointer transition" title="Scroll Lenses Right">
+                ▶
               </button>
 
-              <button (click)="changeLens('Functional Protocols')"
-                data-testid="tab-functional-protocols"
-                [class]="(activeLens() === 'Functional Protocols' || activeLens() === 'Nutrition' || activeLens() === 'Precision Nutrients') 
-                  ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
-                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
-                class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
-                <span class="text-teal-600 dark:text-teal-400 font-bold">03</span>
-                <span>Functional &amp; Nutrition</span>
+              <button type="button" (click)="moeRouter.toggleSparseLensRouting()"
+                class="min-h-[36px] px-2.5 py-1 mr-1 rounded bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-300 text-[10px] uppercase font-bold tracking-wider cursor-pointer transition shrink-0"
+                title="Activate Sparse Top-k MoE lens routing">
+                <span>[SMoE SPARSE]</span>
               </button>
-
-              <button (click)="changeLens('ASSESSMENTS')"
-                data-testid="tab-assessments"
-                [class]="activeLens() === 'ASSESSMENTS' 
-                  ? 'border-b-2 border-indigo-500 text-zinc-950 dark:text-white font-bold bg-indigo-500/5 -mb-px' 
-                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
-                class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
-                <span class="text-indigo-400 font-bold">04</span>
-                <span>Assessments</span>
-              </button>
-
-              <button (click)="changeLens('Monitoring & Follow-up')"
-                data-testid="tab-monitoring-follow-up"
-                [class]="activeLens() === 'Monitoring & Follow-up' 
-                  ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
-                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
-                class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
-                <span class="text-teal-600 dark:text-teal-400 font-bold">05</span>
-                <span>Monitoring &amp; Longevity</span>
-              </button>
-
-              <button (click)="changeLens('Environmental Exposomics & Toxicology')"
-                data-testid="tab-exposomics-toxicology"
-                [class]="activeLens() === 'Environmental Exposomics & Toxicology' 
-                  ? 'border-b-2 border-amber-500 text-zinc-950 dark:text-white font-bold bg-amber-500/5 -mb-px' 
-                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
-                class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
-                <span class="text-amber-500 font-bold">06</span>
-                <span>Exposomics &amp; Tox</span>
-              </button>
-
-              <button (click)="changeLens('Global Health & WHO Initiatives')"
-                data-testid="tab-global-health"
-                [class]="activeLens() === 'Global Health & WHO Initiatives' 
-                  ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/5 -mb-px' 
-                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
-                class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
-                <span class="text-teal-500 font-bold">07</span>
-                <span>Global Health</span>
-              </button>
-
-              <button (click)="changeLens('Skeptical Epistemology & Socratic Audit')"
-                data-testid="tab-socratic-audit"
-                [class]="activeLens() === 'Skeptical Epistemology & Socratic Audit' 
-                  ? 'border-b-2 border-purple-500 text-zinc-950 dark:text-white font-bold bg-purple-500/5 -mb-px' 
-                  : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
-                class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
-                <span class="text-purple-400 font-bold">08</span>
-                <span>Socratic Audit</span>
-              </button>
-            </div>
-
-            <!-- Scroll Right Arrow -->
-            <button type="button" (click)="scrollLensBar('right')" 
-              class="px-2 py-2 text-xs font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white bg-transparent border-l border-zinc-200 dark:border-zinc-800 shrink-0 cursor-pointer transition" title="Scroll Lenses Right">
-              ▶
-            </button>
+            }
           </div>
 
           <!-- Row 2: Secondary Utilities & Sensory Controls Sub-Bar -->
@@ -2059,6 +2130,7 @@ export class AnalysisReportComponent implements OnDestroy {
   protected readonly skepticalService = inject(SkepticalEpistemologyService);
   protected readonly fhirIntegration = inject(FhirIntegrationService);
   protected readonly avsService = inject(AvsEngineService);
+  protected readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
   private readonly cdr = inject(ChangeDetectorRef);
 
   setAvsBitrate(tier: AvsBitrateTier): void {
@@ -2070,6 +2142,7 @@ export class AnalysisReportComponent implements OnDestroy {
   showSec1557Modal = signal<boolean>(false);
   showCdsModal = signal<boolean>(false);
   showRpmModal = signal<boolean>(false);
+  showDormantLensesMenu = signal<boolean>(false);
 
   private get exportPatientData(): Partial<IPatient> {
     const rawVitals = this.state.vitals();

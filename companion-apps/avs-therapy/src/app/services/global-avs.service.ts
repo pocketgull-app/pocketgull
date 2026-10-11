@@ -10,6 +10,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { PatientStateService } from './patient-state.service';
 import { AvsUiService } from './avs-ui.service';
+import { AvsWatchBleService } from './avs-watch-ble.service';
 
 /**
  * GlobalAvsService — Unified AVS Engine v1.1
@@ -19,6 +20,8 @@ import { AvsUiService } from './avs-ui.service';
  *  - requestAnimationFrame loop → drives --avs-breath-phase CSS var
  *  - body.avs-active + data-avs-wave → all CSS animations cascade
  *  - Breath duration token → --avs-breath-duration
+ *  - Pixel Watch 2 Bidirectional AVTS Haptic Lockstep
+ *  - Closed-Loop Autonomic Neuro-Visceral Feedback
  *
  * Consumes PatientStateService signals as the single source of truth.
  * All components receive AVS state purely through CSS — no per-component
@@ -28,6 +31,7 @@ import { AvsUiService } from './avs-ui.service';
 export class GlobalAvsService {
   private readonly state = inject(PatientStateService);
   private readonly avsUi = inject(AvsUiService);
+  private readonly watchBle = inject(AvsWatchBleService);
   private readonly zone = inject(NgZone);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
@@ -68,11 +72,12 @@ export class GlobalAvsService {
 
   readonly activeSolfeggioHz = signal<number>(528);
   readonly isHapticsActive = signal<boolean>(false);
+  readonly isAdaptiveBridgeActive = signal<boolean>(false);
 
   constructor() {
     if (!this.isBrowser) return;
 
-    // React to AVS session state changes
+    // React to AVS session state changes & drive Watch Haptics in Lockstep
     effect(() => {
       const active = this.state.isAvsSessionActive();
       const wave = this.state.avsBrainwaveFrequency();
@@ -86,10 +91,44 @@ export class GlobalAvsService {
           } else {
             this.activateAvsMode(wave, bpm, freqHz);
           }
+
+          // Transmit matching haptic band to Pixel Watch 2
+          let bandCode = 3; // Default Alpha
+          if (wave === 'delta') bandCode = 1;
+          else if (wave === 'theta') bandCode = 2;
+          else if (wave === 'alpha' || wave === 'schumann') bandCode = 3;
+          else if (wave === 'beta' || wave === 'gamma') bandCode = 4;
+          if (bpm === 6 || freqHz === 0.1) bandCode = 5; // 0.1 Hz Mayer Wave
+
+          this.watchBle.sendHapticCommand(bandCode);
+          this.isHapticsActive.set(true);
         } else {
           this.deactivateAvsMode();
+          this.watchBle.sendHapticCommand(0); // Stop watch haptics
+          this.isHapticsActive.set(false);
+          this.isAdaptiveBridgeActive.set(false);
         }
       });
+    });
+
+    // Closed-Loop Autonomic Feedback: Amygdala soothing bridge on sympathetic surge
+    effect(() => {
+      const tone = this.watchBle.autonomicTone();
+      const active = this.state.isAvsSessionActive();
+
+      if (active && tone === 'SYMPATHETIC') {
+        untracked(() => {
+          this.isAdaptiveBridgeActive.set(true);
+          // Hold soothing 528 Hz Solfeggio carrier with 10 Hz Alpha bridge
+          this.activeSolfeggioHz.set(528);
+          this.updateFrequencyHz(10.0);
+          this.watchBle.sendHapticCommand(3); // Soft Alpha haptics
+        });
+      } else if (active && tone === 'PARASYMPATHETIC') {
+        untracked(() => {
+          this.isAdaptiveBridgeActive.set(false);
+        });
+      }
     });
   }
 

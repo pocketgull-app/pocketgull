@@ -194,13 +194,13 @@ export interface IChatEntry {
                             <span class="text-[8px] text-teal-500">▼</span>
                         </button>
                         @if (isSocraticMenuOpen()) {
-                            <div class="absolute right-0 mt-1 w-64 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-gray-200 dark:border-zinc-800 p-2 z-50 text-xs animate-in fade-in zoom-in-95 space-y-2">
+                            <div class="absolute right-0 mt-1 w-72 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-gray-200 dark:border-zinc-800 p-2 z-50 text-xs animate-in fade-in zoom-in-95 space-y-2">
                                 <div class="px-1 py-0.5 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between font-mono text-[10px] text-zinc-500 uppercase tracking-wider">
-                                    <span>Socratic Voice Persona</span>
+                                    <span>Gull Squadron Voice Personas</span>
                                     <span class="text-teal-600 dark:text-teal-400 font-bold">0.1 Hz Pacing</span>
                                 </div>
-                                <div class="space-y-1">
-                                    @for (p of socraticVoice.personas; track p.id) {
+                                <div class="space-y-1 max-h-80 overflow-y-auto pr-1">
+                                    @for (p of socraticVoice.allPersonas(); track p.id) {
                                         <button
                                             type="button"
                                             (click)="selectSocraticPersona(p.id)"
@@ -214,7 +214,7 @@ export interface IChatEntry {
                                                 <span>{{ p.name }}</span>
                                                 <span class="font-mono text-[10px] text-teal-600 dark:text-teal-400">{{ p.speechRate }}x</span>
                                             </div>
-                                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1">{{ p.role }}</span>
+                                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1">{{ p.description }}</span>
                                         </button>
                                     }
                                 </div>

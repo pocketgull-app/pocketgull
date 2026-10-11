@@ -61,4 +61,32 @@ export class CompassionateAnalogyService {
       ]
     };
   }
+
+  /**
+   * Generates a Non-Alarming, Salutogenic Restorative Summary grounded in Countess Ada Lovelace
+   * and Aaron Antonovsky principles: zero militaristic metaphors, gentle ecological analogies,
+   * and profound somatic safety.
+   */
+  public generateNonAlarmingSalutogenicSummary(patientName: string, contextDescription: string): {
+    title: string;
+    greeting: string;
+    gardenAnalogy: string;
+    bodyWisdom: string;
+    gentlePractices: string[];
+    peacefulClosing: string;
+  } {
+    const name = patientName || 'Friend';
+    return {
+      title: '🌿 Gentle Restorative Care Summary',
+      greeting: `Dear ${name}, we speak to you with the deepest sense of calm, warmth, and hope.`,
+      gardenAnalogy: `Think of your body not as a machine that has broken, but as a magnificent, living garden. After periods of intense growth or stress, the garden naturally invites a quiet pause—where morning mist settles and leaves rest in the soothing shade to gather deep nourishment.`,
+      bodyWisdom: `Your body possesses an inherent, quiet wisdom that guides it toward balance. Our role is not to fight your body, but to walk alongside it as gentle companions, supporting its natural ability to settle, soothe, and restore ease.`,
+      gentlePractices: [
+        '🌱 The Quiet Pause: Allow for deep, unhurried rest, letting your nervous system draw a slow, nourishing breath.',
+        '🌅 The Gentle Light: Enjoy soft morning daylight to guide your body clock, and embrace peaceful, warm scotopic light in the evening for cellular mending.',
+        '🌊 The Deep Breath: Slow, rhythmic breathing (like a gentle ocean tide) sends a message of profound safety to your heart and mind.'
+      ],
+      peacefulClosing: `You are safe, supported, and surrounded by care. We trust in the resilient, healing rhythm of your own body.`
+    };
+  }
 }

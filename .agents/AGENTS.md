@@ -212,6 +212,17 @@ To prevent context window degradation, attention drift, and token exhaustion:
     - **FlashAttention-2 / SDPA Invariant**: Transformer self-attention blocks MUST use `torch.nn.functional.scaled_dot_product_attention` to tile attention in GPU SRAM rather than materializing $O(N^2)$ attention matrices in global VRAM.
     - **Memory Bandwidth Hygiene**: Use `optimizer.zero_grad(set_to_none=True)` to deallocate gradient memory buffers instead of zero-filling them.
     - **cuDNN Auto-Tuning**: Enable `torch.backends.cudnn.benchmark = True` on fixed-shape inputs.
+14. **CASMI 2026 Lineage of Gratitude & Tri-Paradigm Explainability Standard**:
+    - **The Lineage of Gratitude Invariant**: Every CASMI 2026 submission notebook, commit, and generated artifact MUST preserve and prominently display the Lineage of Gratitude dedicating our work to open-source pioneers: Hengck23 (DreaMS foundation model & safe-tail matching), Eveliaveldrine (Python 3.13 RDKit wheels), Enveda Biosciences & CASMI organizers, ICEBERG & GLACIER forward simulation architects, LOTUS & COCONUT open natural product curators, and Countess Ada Lovelace & Hermann von Helmholtz.
+    - **Tri-Paradigm Adaptive Representation**: All visualizations, specimen plates, and architectural narratives MUST support the 3 cognitive lenses:
+      1. *6th-Grade Explorer*: Wind-tunnel ion mobility and Lego-brick snapping.
+      2. *Advanced Biochemist*: 4D timsTOF coordinate space, in-silico RDA transition states, and Wasserstein-1 geodesics.
+      3. *Clinical Research*: Gut microbial aglycone biotransformation, CYP3A4 metabolic boundaries, and FHIR R4 interoperability.
+    - **100% Self-Contained Offline Artifacts**: All exported visualizers must execute natively in HTML5 Canvas/SVG without external CDNs, maintaining RSNA neuro-ergonomics and melanopic EDI < 10 lx.
+15. **Kaggle Semantic Versioning (SemVer 2.0.0) & Progressive Disclosure Protocol**:
+    - **SemVer Source of Truth**: All competition inference kernels must maintain a root `VERSION` file (e.g. `1.3.1`) and `CHANGELOG.md` following *Keep a Changelog* standards, with `__version__` stamped into execution logs and submission metadata.
+    - **Beyoncé Rule Pre-Flight Gate**: Submissions MUST run automated pre-flight assertions (verifying non-empty outputs, row count alignment, and zero NaNs) prior to writing `submission.csv`.
+    - **Progressive Disclosure UX**: Visualizations and notebooks MUST present a clean, welcoming hero card above the fold, followed by the interactive 3D laboratory, and allow readers to scroll down naturally to discover the deep story and open-source lineage.
 
 ## Anti-Surveillance & Ephemeral Data Sovereignty Standards
 - **Default to Edge Computation**: All real-time telemetry calculations, biophysical equations, and clinical symptom classifications MUST run locally on the client device via WebAssembly (WASM), WebGPU, or client-side Web Workers (`OfflineEdgeAiService`). External API calls are reserved for explicit, user-initiated AI consults.

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component';
 import { LifePerilsParadigmMatrixComponent } from '../life-perils-paradigm-matrix.component';
+import { ClinicalMoERouterService } from '../../services/clinical-moe-router.service';
 
 export interface IChronoDoseStep {
   time: string;
@@ -88,27 +89,130 @@ export interface ICrossParadigmInteraction {
           </div>
         </div>
 
+        <!-- SMoE Cross-Paradigm Sparsity Telemetry Bar -->
+        <div class="mb-5 p-3 rounded-xl bg-slate-100 dark:bg-zinc-800/80 border border-slate-300 dark:border-zinc-700 font-mono text-xs flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="font-bold text-slate-800 dark:text-zinc-100 uppercase tracking-wider text-[11px]">SMoE Paradigm Gating:</span>
+            <span class="text-[11px] text-slate-600 dark:text-zinc-400 font-sans">{{ paradigmWeights().clinicalDomainRationale }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <!-- Western -->
+            <div class="px-2 py-0.5 rounded border text-[10px] flex items-center gap-1 font-mono"
+                 [class.bg-indigo-100]="paradigmWeights().dominantParadigm === 'western'"
+                 [class.dark:bg-indigo-950]="paradigmWeights().dominantParadigm === 'western'"
+                 [class.border-indigo-400]="paradigmWeights().dominantParadigm === 'western'"
+                 [class.text-indigo-900]="paradigmWeights().dominantParadigm === 'western'"
+                 [class.dark:text-indigo-200]="paradigmWeights().dominantParadigm === 'western'"
+                 [class.bg-slate-200/50]="paradigmWeights().dominantParadigm !== 'western'"
+                 [class.dark:bg-zinc-900]="paradigmWeights().dominantParadigm !== 'western'"
+                 [class.border-slate-300]="paradigmWeights().dominantParadigm !== 'western'"
+                 [class.dark:border-zinc-800]="paradigmWeights().dominantParadigm !== 'western'"
+                 [class.text-slate-500]="paradigmWeights().dominantParadigm !== 'western'">
+              <span>🔬 Western: {{ (paradigmWeights().westernWeight * 100).toFixed(0) }}%</span>
+              @if (paradigmWeights().dominantParadigm === 'western') { <span class="font-bold text-indigo-600 dark:text-indigo-400">★ TOP-1</span> }
+            </div>
+
+            <!-- TCM -->
+            <div class="px-2 py-0.5 rounded border text-[10px] flex items-center gap-1 font-mono"
+                 [class.bg-emerald-100]="paradigmWeights().dominantParadigm === 'eastern'"
+                 [class.dark:bg-emerald-950]="paradigmWeights().dominantParadigm === 'eastern'"
+                 [class.border-emerald-400]="paradigmWeights().dominantParadigm === 'eastern'"
+                 [class.text-emerald-900]="paradigmWeights().dominantParadigm === 'eastern'"
+                 [class.dark:text-emerald-200]="paradigmWeights().dominantParadigm === 'eastern'"
+                 [class.bg-slate-200/50]="paradigmWeights().dominantParadigm !== 'eastern'"
+                 [class.dark:bg-zinc-900]="paradigmWeights().dominantParadigm !== 'eastern'"
+                 [class.border-slate-300]="paradigmWeights().dominantParadigm !== 'eastern'"
+                 [class.dark:border-zinc-800]="paradigmWeights().dominantParadigm !== 'eastern'"
+                 [class.text-slate-500]="paradigmWeights().dominantParadigm !== 'eastern'">
+              <span>☯️ TCM: {{ (paradigmWeights().easternWeight * 100).toFixed(0) }}%</span>
+              @if (paradigmWeights().dominantParadigm === 'eastern') { <span class="font-bold text-emerald-600 dark:text-emerald-400">★ TOP-1</span> }
+              @if (paradigmWeights().dormantParadigms.includes('eastern')) { <span class="text-zinc-500 text-[9px]">[DORMANT]</span> }
+            </div>
+
+            <!-- Ayurvedic -->
+            <div class="px-2 py-0.5 rounded border text-[10px] flex items-center gap-1 font-mono"
+                 [class.bg-amber-100]="paradigmWeights().dominantParadigm === 'ayurvedic'"
+                 [class.dark:bg-amber-950]="paradigmWeights().dominantParadigm === 'ayurvedic'"
+                 [class.border-amber-400]="paradigmWeights().dominantParadigm === 'ayurvedic'"
+                 [class.text-amber-900]="paradigmWeights().dominantParadigm === 'ayurvedic'"
+                 [class.dark:text-amber-200]="paradigmWeights().dominantParadigm === 'ayurvedic'"
+                 [class.bg-slate-200/50]="paradigmWeights().dominantParadigm !== 'ayurvedic'"
+                 [class.dark:bg-zinc-900]="paradigmWeights().dominantParadigm !== 'ayurvedic'"
+                 [class.border-slate-300]="paradigmWeights().dominantParadigm !== 'ayurvedic'"
+                 [class.dark:border-zinc-800]="paradigmWeights().dominantParadigm !== 'ayurvedic'"
+                 [class.text-slate-500]="paradigmWeights().dominantParadigm !== 'ayurvedic'">
+              <span>🌿 Ayurvedic: {{ (paradigmWeights().ayurvedicWeight * 100).toFixed(0) }}%</span>
+              @if (paradigmWeights().dominantParadigm === 'ayurvedic') { <span class="font-bold text-amber-600 dark:text-amber-400">★ TOP-1</span> }
+              @if (paradigmWeights().dormantParadigms.includes('ayurvedic')) { <span class="text-zinc-500 text-[9px]">[DORMANT]</span> }
+            </div>
+          </div>
+        </div>
+
         <!-- 3-Way Epistemological Consensus Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200 dark:border-zinc-700/80">
-            <div class="text-[11px] font-bold text-indigo-700 dark:text-indigo-400 mb-1 flex items-center gap-1">
-              <span>🔬</span> Western Epistemology
+          <div class="p-3.5 rounded-xl border transition-all"
+               [class.bg-indigo-50\/80]="paradigmWeights().dominantParadigm === 'western'"
+               [class.dark:bg-indigo-950\/30]="paradigmWeights().dominantParadigm === 'western'"
+               [class.border-indigo-500]="paradigmWeights().dominantParadigm === 'western'"
+               [class.ring-2]="paradigmWeights().dominantParadigm === 'western'"
+               [class.ring-indigo-500\/40]="paradigmWeights().dominantParadigm === 'western'"
+               [class.bg-slate-50]="paradigmWeights().dominantParadigm !== 'western'"
+               [class.dark:bg-zinc-800\/60]="paradigmWeights().dominantParadigm !== 'western'"
+               [class.border-slate-200]="paradigmWeights().dominantParadigm !== 'western'"
+               [class.dark:border-zinc-700\/80]="paradigmWeights().dominantParadigm !== 'western'"
+               [class.opacity-60]="paradigmWeights().dormantParadigms.includes('western')">
+            <div class="flex items-center justify-between text-[11px] font-bold text-indigo-700 dark:text-indigo-400 mb-1">
+              <span class="flex items-center gap-1"><span>🔬</span> Western Epistemology</span>
+              @if (paradigmWeights().dominantParadigm === 'western') {
+                <span class="px-1.5 py-0.2 rounded bg-indigo-500 text-white text-[9px] font-mono">PRIMARY</span>
+              }
             </div>
             <p class="text-xs font-semibold text-slate-800 dark:text-zinc-200">Sympathetic Dominance + Insulin Resistance</p>
             <p class="text-[11px] text-slate-600 dark:text-zinc-400 mt-1">Elevated vascular tone, blunted postprandial glucose uptake, subclinical metabolic fatigue.</p>
           </div>
 
-          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200 dark:border-zinc-700/80">
-            <div class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mb-1 flex items-center gap-1">
-              <span>☯️</span> TCM Zang-Fu Axis
+          <div class="p-3.5 rounded-xl border transition-all"
+               [class.bg-emerald-50\/80]="paradigmWeights().dominantParadigm === 'eastern'"
+               [class.dark:bg-emerald-950\/30]="paradigmWeights().dominantParadigm === 'eastern'"
+               [class.border-emerald-500]="paradigmWeights().dominantParadigm === 'eastern'"
+               [class.ring-2]="paradigmWeights().dominantParadigm === 'eastern'"
+               [class.ring-emerald-500\/40]="paradigmWeights().dominantParadigm === 'eastern'"
+               [class.bg-slate-50]="paradigmWeights().dominantParadigm !== 'eastern'"
+               [class.dark:bg-zinc-800\/60]="paradigmWeights().dominantParadigm !== 'eastern'"
+               [class.border-slate-200]="paradigmWeights().dominantParadigm !== 'eastern'"
+               [class.dark:border-zinc-700\/80]="paradigmWeights().dominantParadigm !== 'eastern'"
+               [class.opacity-60]="paradigmWeights().dormantParadigms.includes('eastern')">
+            <div class="flex items-center justify-between text-[11px] font-bold text-emerald-700 dark:text-emerald-400 mb-1">
+              <span class="flex items-center gap-1"><span>☯️</span> TCM Zang-Fu Axis</span>
+              @if (paradigmWeights().dominantParadigm === 'eastern') {
+                <span class="px-1.5 py-0.2 rounded bg-emerald-500 text-white text-[9px] font-mono">PRIMARY</span>
+              } @else if (paradigmWeights().dormantParadigms.includes('eastern')) {
+                <span class="px-1.5 py-0.2 rounded bg-zinc-700 text-zinc-300 text-[9px] font-mono">DORMANT</span>
+              }
             </div>
             <p class="text-xs font-semibold text-slate-800 dark:text-zinc-200">{{ tcmMetrics().pattern }}</p>
             <p class="text-[11px] text-slate-600 dark:text-zinc-400 mt-1">Pulse: {{ tcmMetrics().pulse }} • Tongue: {{ tcmMetrics().tongue }}</p>
           </div>
 
-          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-200 dark:border-zinc-700/80">
-            <div class="text-[11px] font-bold text-amber-700 dark:text-amber-400 mb-1 flex items-center gap-1">
-              <span>🌿</span> Ayurvedic Tridosha
+          <div class="p-3.5 rounded-xl border transition-all"
+               [class.bg-amber-50\/80]="paradigmWeights().dominantParadigm === 'ayurvedic'"
+               [class.dark:bg-amber-950\/30]="paradigmWeights().dominantParadigm === 'ayurvedic'"
+               [class.border-amber-500]="paradigmWeights().dominantParadigm === 'ayurvedic'"
+               [class.ring-2]="paradigmWeights().dominantParadigm === 'ayurvedic'"
+               [class.ring-amber-500\/40]="paradigmWeights().dominantParadigm === 'ayurvedic'"
+               [class.bg-slate-50]="paradigmWeights().dominantParadigm !== 'ayurvedic'"
+               [class.dark:bg-zinc-800\/60]="paradigmWeights().dominantParadigm !== 'ayurvedic'"
+               [class.border-slate-200]="paradigmWeights().dominantParadigm !== 'ayurvedic'"
+               [class.dark:border-zinc-700\/80]="paradigmWeights().dominantParadigm !== 'ayurvedic'"
+               [class.opacity-60]="paradigmWeights().dormantParadigms.includes('ayurvedic')">
+            <div class="flex items-center justify-between text-[11px] font-bold text-amber-700 dark:text-amber-400 mb-1">
+              <span class="flex items-center gap-1"><span>🌿</span> Ayurvedic Tridosha</span>
+              @if (paradigmWeights().dominantParadigm === 'ayurvedic') {
+                <span class="px-1.5 py-0.2 rounded bg-amber-500 text-white text-[9px] font-mono">PRIMARY (65%)</span>
+              } @else if (paradigmWeights().dormantParadigms.includes('ayurvedic')) {
+                <span class="px-1.5 py-0.2 rounded bg-zinc-700 text-zinc-300 text-[9px] font-mono">DORMANT</span>
+              }
             </div>
             <p class="text-xs font-semibold text-slate-800 dark:text-zinc-200">{{ ayurvedaMetrics().imbalance }}</p>
             <p class="text-[11px] text-slate-600 dark:text-zinc-400 mt-1">Agni: {{ ayurvedaMetrics().agniType }} • Ama: {{ ayurvedaMetrics().amaScore }}/10 ({{ ayurvedaMetrics().nadiPulse }})</p>
@@ -549,6 +653,18 @@ export interface ICrossParadigmInteraction {
 })
 export class TriParadigmIntegrativeLensTabComponent {
   private state = inject(PatientStateService);
+  protected readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
+  readonly paradigmWeights = computed(() => {
+    return this.moeRouter?.paradigmSparsityWeights() || {
+      westernWeight: 0.33,
+      easternWeight: 0.33,
+      ayurvedicWeight: 0.34,
+      dominantParadigm: 'western' as const,
+      secondaryParadigm: 'eastern' as const,
+      dormantParadigms: [],
+      clinicalDomainRationale: 'Standard baseline balance.'
+    };
+  });
 
   readonly activeParadigmView = signal<'all' | 'tcm' | 'ayurveda' | 'allopathic'>('all');
 
