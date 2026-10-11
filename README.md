@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>A Living Medical Intelligence & Salutogenic Care Engine.</strong><br>
-  Grounding clinical decision support in Aaron Antonovsky’s salutogenesis, non-linear biophysical trajectories, and open, peer-reviewable case studies.
+  Evidence-grounded care-plan strategy, salutogenesis, and sovereign multi-paradigm clinical intelligence with FHIR R4 interoperability.
 </p>
 
 <p align="center">
@@ -35,6 +35,21 @@
 
 > *"Medicine is not merely the eradication of pathogen-induced disease (pathogenesis); it is the active generation and reinforcement of coherence, autonomic resilience, and human agency (salutogenesis)."*  
 > — **The Pocket Gull Clinical Invariant**
+
+---
+
+## What it does
+
+- **Care-plan strategy.** Turns symptoms, vitals, and validated instruments (PHQ-9, GAD-7, C-SSRS, ISI, PRAPARE, and more) into structured care plans that a clinician reviews before anything is saved.
+- **Live AI consult.** Streaming text and full-duplex voice consults with Gemini, with patient context held by a multi-agent [Google ADK](https://google.github.io/adk-docs/) runtime.
+- **Evidence grounding.** Recommendations cite PubMed literature and are tagged by evidence level (A: RCTs, B: cohort, C: expert consensus).
+- **Interoperability.** HL7® FHIR® R4 Bundle export, SMART on FHIR identity, LOINC / SNOMED CT coding, and PDF care plans.
+- **Privacy by default.** No server-side PHI persistence: patient state lives in memory or is encrypted on device, with optional on-device inference through Chrome built-in AI and WebGPU.
+- **3D anatomy.** An interactive Three.js body map for locating and grading symptoms.
+
+Optional complementary lenses (Traditional Chinese Medicine, Ayurveda) are presented alongside, never in place of, the conventional plan and are labelled with their evidence level.
+
+The complete module catalogue (clinical tools, assessment instruments, agent personas, accessibility modes, and distributables) is in **[docs/FEATURES.md](docs/FEATURES.md)**.
 
 ---
 
@@ -233,8 +248,6 @@ bash ollama/install_models.sh
 
 # Windows
 powershell -ExecutionPolicy Bypass -File ollama/install_models.ps1
-
-# Run interactive stepped-care triage
 ollama run pocketgull-compass-2b
 ```
 
