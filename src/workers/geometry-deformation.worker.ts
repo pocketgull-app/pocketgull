@@ -9,7 +9,7 @@
 
 export interface IDeformationJobPayload {
   jobId: string;
-  organType: 'HEART' | 'LUNG' | 'KIDNEY' | 'SPINE';
+  organType: 'HEART' | 'LUNG' | 'KIDNEY' | 'SPINE' | 'STOKES_FLUID';
   positions: Float32Array;
   normals: Float32Array;
   phaseTime: number;
@@ -50,6 +50,12 @@ self.onmessage = (event: MessageEvent<IDeformationJobPayload>) => {
     } else if (organType === 'LUNG') {
       // 0.1 Hz vagal respiration parenchyma tidal inflation
       displacement = Math.sin(phaseTime * 0.6283) * intensity * 0.12;
+    } else if (organType === 'STOKES_FLUID') {
+      // 2D Poiseuille parabolic profile with convective advection
+      const yNorm = Math.min(1.0, Math.max(-1.0, positions[idx + 1]));
+      const parabolicVelocity = Math.max(0.1, 1.0 - yNorm * yNorm);
+      positions[idx] = (positions[idx] + parabolicVelocity * intensity * 0.05) % 400.0;
+      continue;
     } else {
       displacement = Math.sin(phaseTime) * intensity * 0.02;
     }

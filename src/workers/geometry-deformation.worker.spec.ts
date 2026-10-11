@@ -19,6 +19,11 @@ describe('GeometryDeformationWorker Kernel Logic', () => {
         displacement = Math.sin(phaseTime * 6.28318 + yNorm * 2.0) * intensity * 0.08;
       } else if (organType === 'LUNG') {
         displacement = Math.sin(phaseTime * 0.6283) * intensity * 0.12;
+      } else if (organType === 'STOKES_FLUID') {
+        const yNorm = Math.min(1.0, Math.max(-1.0, positions[idx + 1]));
+        const parabolicVelocity = Math.max(0.1, 1.0 - yNorm * yNorm);
+        positions[idx] = (positions[idx] + parabolicVelocity * intensity * 0.05) % 400.0;
+        continue;
       } else {
         displacement = Math.sin(phaseTime) * intensity * 0.02;
       }
@@ -75,5 +80,26 @@ describe('GeometryDeformationWorker Kernel Logic', () => {
     expect(result.success).toBe(true);
     expect(result.jobId).toBe('job-2');
     expect(result.computeDurationMs).toBeGreaterThanOrEqual(0);
+  });
+
+  it('should advance STOKES_FLUID particles with Poiseuille parabolic profile', () => {
+    // 2 particles: center (y=0) and near-wall (y=0.9)
+    const positions = new Float32Array([10, 0, 0, 10, 0.9, 0]);
+    const normals = new Float32Array([0, 1, 0, 0, 1, 0]);
+
+    const result = runKernel({
+      jobId: 'job-3',
+      organType: 'STOKES_FLUID',
+      positions,
+      normals,
+      phaseTime: 1.0,
+      intensity: 2.0
+    });
+
+    expect(result.success).toBe(true);
+    // Center particle (y=0) moves faster than near-wall particle (y=0.9)
+    const deltaCenter = result.positions[0] - 10;
+    const deltaWall = result.positions[3] - 10;
+    expect(deltaCenter).toBeGreaterThan(deltaWall);
   });
 });

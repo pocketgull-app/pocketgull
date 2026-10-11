@@ -127,6 +127,7 @@
     "agy:verify": "dart run scripts/dart/verify_agy_skills.dart",
     "tippss:audit": "dart run scripts/tippss_schema_parity.dart",
     "dart:iomt": "dart run scripts/dart/simulate_iomt_heartbeat.dart",
+    "dart:aot": "dart run scripts/dart/compile_aot_tools.dart",
     "taint:audit": "dart run scripts/phi_taint_boundary_linter.dart",
     "fhir:audit": "node --no-deprecation scripts/fhir_conformance_guard.mjs",
     "gcp:prune-storage": "node --no-deprecation ./scripts/apply-gcp-lifecycle-policies.mjs",
