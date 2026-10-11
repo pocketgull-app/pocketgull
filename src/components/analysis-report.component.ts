@@ -2555,7 +2555,7 @@ export class AnalysisReportComponent implements OnDestroy {
     this.historyEntries.set(entries.filter(e => e.value?._isSnapshot));
   }
 
-  activeLens = signal<AnalysisLens | 'EMT Handoff' | 'ASSESSMENTS' | 'Maternal & Postpartum'>('Summary Overview');
+  activeLens = signal<AnalysisLens | 'EMT Handoff' | 'ASSESSMENTS' | 'Maternal & Postpartum' | string>('Summary Overview');
   screenerTab = signal<'ybocs' | 'suite' | 'venn' | 'kaizen' | 'suggestions'>('ybocs');
   showRawFhir = signal(false);
 
@@ -3832,7 +3832,7 @@ export class AnalysisReportComponent implements OnDestroy {
     }
   }
 
-  changeLens(lens: AnalysisLens | 'EMT Handoff' | 'ASSESSMENTS' | 'Maternal & Postpartum') {
+  changeLens(lens: AnalysisLens | 'EMT Handoff' | 'ASSESSMENTS' | 'Maternal & Postpartum' | string) {
     this.audit.logAction('VIEW_LENS', this.patientManager.selectedPatientId(), { lens });
     this.flushAutoSave();
     this.activeLens.set(lens);

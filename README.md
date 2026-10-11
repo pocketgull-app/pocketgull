@@ -45,7 +45,7 @@
 - **Evidence grounding.** Recommendations cite PubMed literature and are tagged by evidence level (A: RCTs, B: cohort, C: expert consensus).
 - **Interoperability.** HL7® FHIR® R4 Bundle export, SMART on FHIR identity, LOINC / SNOMED CT coding, and PDF care plans.
 - **Privacy by default.** No server-side PHI persistence: patient state lives in memory or is encrypted on device, with optional on-device inference through Chrome built-in AI and WebGPU.
-- **3D anatomy.** An interactive Three.js body map for locating and grading symptoms.
+- **3D anatomy.** An interactive Direct WebGL2 / WebGPU body map (`GullRenderEngine`) for locating and grading symptoms with zero Three.js runtime overhead.
 
 Optional complementary lenses (Traditional Chinese Medicine, Ayurveda) are presented alongside, never in place of, the conventional plan and are labelled with their evidence level.
 
@@ -158,7 +158,7 @@ graph TB
     end
 
     subgraph Ingestion ["Ingestion & Portals"]
-        Body3D["Three.js 3D Anatomy"]
+        Body3D["Direct WebGL2 3D Anatomy\n(GullRenderEngine)"]
         Voice["Voice Assistant"]
         Intake["Diagnostic Intake"]
     end
@@ -212,7 +212,7 @@ graph TB
 | Frontend | Angular 22 (standalone components, Signals, zoneless), Tailwind CSS |
 | Backend / SSR | Node.js 24, Express, Angular SSR |
 | AI | Google Gemini, Google ADK, Genkit, Vertex AI |
-| 3D / Voice | Three.js, Web Speech API |
+| 3D / Voice | Direct WebGL2 / WebGPU (GullRenderEngine), Web Speech API |
 | ML sidecar | Python FastAPI, scikit-learn, XGBoost, ONNX Runtime |
 | Mobile | Flutter / Dart (Riverpod) |
 | Privacy | DOMPurify, Google Tink AEAD, FHIR R4 |
