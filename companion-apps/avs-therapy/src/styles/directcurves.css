@@ -28,14 +28,20 @@
   --pg-fillet-2xl: 1rem;
   --pg-fillet-3xl: 1.5rem;
 
-  /* Louise Sloan 5:1 Clinical Optotype Features */
-  --sloan-font-features: "zero" 1, "cv08" 1, "cv05" 1, "ss02" 1;
+  /* DirectCurves Optotypes & Numerics */
+  --sloan-font-features: "zero" 1, "cv08" 1, "tnum" 1;
+  --ismp-clinical-features: "zero" 1, "cv08" 1, "cv05" 1, "ss02" 1, "tnum" 1;
 }
 
 /* Sloan Optotype & Tabular Numerics Enhancement */
 .font-sloan, .directcurves-optotypes {
   font-feature-settings: var(--sloan-font-features);
   font-variant-numeric: slashed-zero tabular-nums;
+}
+
+.clinical-dosage-guard, .clinical-ismp-safe {
+  font-feature-settings: var(--ismp-clinical-features) !important;
+  font-variant-numeric: slashed-zero tabular-nums !important;
 }
 
 /* ==========================================================================
