@@ -268,37 +268,77 @@ export function createEnterpriseIdentityRouter(): Router {
         return res.status(401).json({ error: 'SAML Authentication rejected by Identity Provider' });
       }
 
-      // Extract Claims (CodeQL alerts #3001-#3005: eliminate polynomial backtracking regexes)
-      const extractSamlTag = (xml: string, tagName: string): string | null => {
-        const openIdx = xml.indexOf(`<${tagName}`);
-        const altOpenIdx = openIdx === -1 ? xml.indexOf(`:${tagName}`) : openIdx;
-        const start = altOpenIdx !== -1 ? xml.indexOf('>', altOpenIdx) : -1;
-        if (start === -1) return null;
-        const closeIdx = xml.indexOf(`</`, start);
+      // Extract Claims (CodeQL alerts #3001-#3005: eliminate polynomial backtracking regexes via pure substring indexing)
+      const extractTagValue = (xml: string, tag: string): string | null => {
+        let openIdx = xml.indexOf(`<${tag}>`);
+        let tagLen = tag.length + 2;
+        if (openIdx === -1) {
+          const colonMatch = xml.indexOf(`:${tag}>`);
+          if (colonMatch !== -1) {
+            const openAngle = xml.lastIndexOf('<', colonMatch);
+            if (openAngle !== -1) {
+              openIdx = openAngle;
+              tagLen = (colonMatch + tag.length + 1) - openAngle + 1;
+            }
+          }
+        }
+        if (openIdx === -1) {
+          // Check for tag with attributes, e.g. <saml:NameID Format="...">
+          let pos = 0;
+          while (pos < xml.length) {
+            const nextTag = xml.indexOf(tag, pos);
+            if (nextTag === -1) break;
+            const openAngle = xml.lastIndexOf('<', nextTag);
+            const closeAngle = xml.indexOf('>', nextTag);
+            if (openAngle !== -1 && closeAngle !== -1 && closeAngle > nextTag && !xml.slice(openAngle, closeAngle).includes('/')) {
+              openIdx = openAngle;
+              tagLen = closeAngle - openAngle + 1;
+              break;
+            }
+            pos = nextTag + tag.length;
+          }
+        }
+        if (openIdx === -1) return null;
+        const valStart = openIdx + tagLen;
+        const closeIdx = xml.indexOf('</', valStart);
         if (closeIdx === -1) return null;
-        return xml.slice(start + 1, closeIdx).trim();
+        return xml.slice(valStart, closeIdx).trim();
       };
 
-      const extractSamlAttribute = (xml: string, attrNamePattern: RegExp): string | null => {
-        // Fast linear search over isolated Attribute blocks without greedy multi-character spans
-        const attrBlocks = xml.split(/<\/(?:[a-zA-Z0-9_-]+:)?Attribute>/i);
-        for (const block of attrBlocks) {
-          const openTagMatch = block.match(/<(?:[a-zA-Z0-9_-]+:)?Attribute\s+[^>]*Name="([^"]+)"/i);
-          if (openTagMatch && attrNamePattern.test(openTagMatch[1])) {
-            const valMatch = block.match(/<(?:[a-zA-Z0-9_-]+:)?AttributeValue[^>]*>([^<]+)<\//i);
-            if (valMatch) return valMatch[1].trim();
+      const extractAttributeValue = (xml: string, targetNames: string[]): string | null => {
+        for (const targetName of targetNames) {
+          const patterns = [`Name="${targetName}"`, `Name='${targetName}'`];
+          for (const pattern of patterns) {
+            let searchPos = 0;
+            while (searchPos < xml.length) {
+              const nameIdx = xml.indexOf(pattern, searchPos);
+              if (nameIdx === -1) break;
+              // Find enclosing Attribute block start (<saml:Attribute or <Attribute)
+              const blockStart = xml.lastIndexOf('<', nameIdx);
+              // Find closing tag for this Attribute
+              let blockEnd = xml.indexOf('Attribute>', nameIdx);
+              if (blockEnd !== -1) {
+                blockEnd = xml.indexOf('>', blockEnd) + 1;
+              } else {
+                blockEnd = xml.length;
+              }
+              const block = xml.slice(blockStart, blockEnd);
+              const val = extractTagValue(block, 'AttributeValue');
+              if (val) return val;
+              searchPos = nameIdx + pattern.length;
+            }
           }
         }
         return null;
       };
 
-      const nameIdMatch = rawXml.match(/<(?:[a-zA-Z0-9_-]+:)?NameID[^>]*>([^<]+)<\/(?:[a-zA-Z0-9_-]+:)?NameID>/i);
-      const emailVal = extractSamlAttribute(rawXml, /^(?:email|User\.Email|.*emailaddress)$/i);
-      const nameVal = extractSamlAttribute(rawXml, /^(?:displayName|name|cn|.*displayname)$/i);
-      const roleVal = extractSamlAttribute(rawXml, /clinicalRole$/i);
-      const tenantVal = extractSamlAttribute(rawXml, /tenantId$/i);
+      const nameIdVal = extractTagValue(rawXml, 'NameID');
+      const emailVal = extractAttributeValue(rawXml, ['email', 'User.Email', 'mail', 'emailaddress']);
+      const nameVal = extractAttributeValue(rawXml, ['displayName', 'name', 'cn', 'displayname']);
+      const roleVal = extractAttributeValue(rawXml, ['clinicalRole']);
+      const tenantVal = extractAttributeValue(rawXml, ['tenantId']);
 
-      const userEmail = emailVal || (nameIdMatch ? nameIdMatch[1].trim() : 'clinician@hospital.org');
+      const userEmail = emailVal || nameIdVal || 'clinician@hospital.org';
       const userName = nameVal || 'Attending Clinician';
       const role = roleVal || 'roles/aiplatform.user';
       const tenantId = tenantVal || 'tenant_hospital_enterprise';

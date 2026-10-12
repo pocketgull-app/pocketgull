@@ -275,16 +275,9 @@ app.use((req, res, next) => {
     const cleanPath = req.path.split('?')[0];
     const ext = extname(cleanPath).toLowerCase();
     const staticExts = new Set(['.svg', '.png', '.jpg', '.jpeg', '.webp', '.gif', '.css', '.js', '.webmanifest', '.woff2', '.woff', '.ttf', '.ico', '.json', '.txt', '.map']);
-    const targetOrigin = 'https://pocketgull.com';
-    let safeRedirectPath = '/';
-    try {
-      const parsed = new URL(req.url, targetOrigin);
-      if (parsed.origin === targetOrigin) {
-        const normalized = parsed.pathname.startsWith('/') ? parsed.pathname : `/${parsed.pathname}`;
-        safeRedirectPath = normalized === '/business' ? '/' : `${normalized}${parsed.search}`;
-      }
-    } catch {}
-    return res.redirect(301, `${targetOrigin}${safeRedirectPath}`);
+    const rawPath = req.path === '/business' ? '/' : req.path;
+    const safePath = '/' + rawPath.split('/').filter(Boolean).map(encodeURIComponent).join('/');
+    return res.redirect(301, `https://pocketgull.com${safePath}`);
   }
 
   // Redirect legacy alias domains to primary app domain pocketgull.app

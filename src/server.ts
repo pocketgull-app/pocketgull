@@ -420,17 +420,17 @@ function getSafePocketgullComRedirectUrl(req: express.Request, defaultPath: stri
 
 // Redirect business marketing site & case study routes to dedicated repo portal https://pocketgull.com
 app.use((req, res, next) => {
-  if (
-    req.path === '/case-studies' || req.path.startsWith('/case-studies/') ||
-    req.path === '/articles' || req.path.startsWith('/articles/') ||
-    req.path === '/nantucket' || req.path === '/neuro-sanctuary' ||
-    req.path === '/cardiometabolic' || req.path === '/darwin' ||
-    req.path === '/okn' || req.path === '/okn-grounding' ||
-    req.path === '/business' || req.path === '/preview' ||
-    req.path === '/store' || req.path === '/community'
-  ) {
-    const defaultFallback = (req.path === '/business' || req.path === '/preview') ? '/' : req.path;
-    return res.redirect(301, getSafePocketgullComRedirectUrl(req, defaultFallback));
+  const allowedExact = new Set([
+    '/case-studies', '/articles', '/nantucket', '/neuro-sanctuary',
+    '/cardiometabolic', '/darwin', '/curie', '/long-covid', '/kahlo',
+    '/okn', '/okn-grounding', '/business', '/preview', '/store', '/community'
+  ]);
+  const isAllowedPrefix = req.path.startsWith('/case-studies/') || req.path.startsWith('/articles/');
+
+  if (allowedExact.has(req.path) || isAllowedPrefix) {
+    const dest = (req.path === '/business' || req.path === '/preview') ? '/' : req.path;
+    const safePath = '/' + dest.split('/').filter(Boolean).map(encodeURIComponent).join('/');
+    return res.redirect(301, `https://pocketgull.com${safePath}`);
   }
   next();
 });
@@ -456,7 +456,8 @@ app.use((req, res, next) => {
       return next();
     }
     const defaultPath = req.path === '/business' ? '/' : req.path;
-    return res.redirect(301, getSafePocketgullComRedirectUrl(req, defaultPath));
+    const safePath = '/' + defaultPath.split('/').filter(Boolean).map(encodeURIComponent).join('/');
+    return res.redirect(301, `https://pocketgull.com${safePath}`);
   }
 
   // Redirect legacy alias domains to primary app domain pocketgull.app
@@ -1140,12 +1141,14 @@ app.use((req, res, next) => {
     req.path === '/curie' || req.path === '/long-covid' || req.path === '/kahlo' ||
     req.path === '/okn' || req.path === '/okn-grounding'
   ) {
-    return res.redirect(301, getSafePocketgullComRedirectUrl(req, req.path));
+    const safePath = '/' + req.path.split('/').filter(Boolean).map(encodeURIComponent).join('/');
+    return res.redirect(301, `https://pocketgull.com${safePath}`);
   }
 
   if ((isBusinessDomain || isBusinessPath) && !req.path.startsWith('/api') && !req.path.startsWith('/assets') && !req.path.includes('.')) {
     const defaultPath = req.path === '/business' ? '/' : req.path;
-    return res.redirect(301, getSafePocketgullComRedirectUrl(req, defaultPath));
+    const safePath = '/' + defaultPath.split('/').filter(Boolean).map(encodeURIComponent).join('/');
+    return res.redirect(301, `https://pocketgull.com${safePath}`);
   }
 
   if (process.env['SKIP_SSR'] === 'true' || req.query['csr'] === '1') {
