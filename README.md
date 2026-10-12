@@ -31,7 +31,7 @@
 > **Research preview & clinical epistemology.** Pocket Gull is clinical decision support and educational software for licensed clinicians, who remain responsible for every clinical decision. It is designed to meet §520(o)(1)(E) non-device criteria: recommendations are transparent, cite peer-reviewed literature, and require practitioner review. It is not an autonomous diagnostic device. In an emergency, contact local emergency services. See the [regulatory notice](#regulatory--clinical-use-notice).
 
 <p align="center">
-  <img src="docs/images/dashboard.png" alt="Pocket Gull clinical dashboard showing a care plan, 3D anatomy view, and live consult panel" width="800" height="307">
+  <img src="docs/images/gull_squadron_brand_banner.svg" alt="PocketGull Clinical Intelligence & CDS Team Banner" width="800">
 </p>
 
 > *"Medicine is not merely the eradication of pathogen-induced disease (pathogenesis); it is the active generation and reinforcement of coherence, autonomic resilience, and human agency (salutogenesis)."*  
@@ -144,6 +144,7 @@ Without a `GEMINI_API_KEY`, use the built-in demo mode (de-identified sample pat
 ## Architecture
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 graph TB
     classDef cloud fill:#0f172a,stroke:#6366f1,stroke-width:2px,color:#f8fafc
     classDef mobile fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
@@ -151,36 +152,43 @@ graph TB
     classDef hub fill:#18181b,stroke:#a855f7,stroke-width:3px,color:#fafafa
     classDef lenses fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#f8fafc
     classDef foundation fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#f8fafc
+    classDef security fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2
 
-    subgraph Mobile ["📱 Mobile & Wearable Ecosystem (Flutter / Dart)"]
+    subgraph Endpoints ["📱 Endpoints & Companion Apps"]
         PatientApp["Patient App\n(Recovery & Health Connect)"]
         ProviderApp["Provider Field Kit\n(Backpack Dispensary & Triage)"]
         WearApp["Wear OS Smartwatch\n(0.10 Hz Vagal Reset & CEDA)"]
         AvsApp["AVS Photobiomodulation\n(Web Companion PWA)"]
+        DesktopHUD["Desktop HUD\n(Tauri v2 / Rust Native)"]
     end
 
     subgraph Ingestion ["Ingestion & Direct Graphics"]
-        Body3D["Direct WebGL2 3D Anatomy\n(GullRenderEngine)"]
-        Voice["Voice Assistant"]
+        Body3D["Direct WebGL2/WebGPU\n(GullRenderEngine)"]
+        Voice["Voice Assistant\n(Local STT/VAD)"]
         Intake["Diagnostic Intake"]
     end
 
-    subgraph Hub ["Central State & AI Orchestration"]
-        State["PatientStateService\n(Signal Store & FHIR R4)"]
-        Sovereign["Sovereign Model Fleet\n(pocketgull-clinical / edge)"]
-        ADK["ADK InMemoryRunner\n(Multi-Agent Orchestration)"]
+    subgraph Hub ["🧠 Central State & AI Orchestration"]
+        TelemetryBus["Telemetry Bus\n(High-Freq Signals)"]
+        SyncEngine["Sync Engine\n(CRDT / Offline Mesh)"]
+        State["PatientStateService\n(FHIR R4 State Store)"]
+        
+        Sovereign["Sovereign Model Fleet\n(Edge AI)"]
+        ADK["ADK InMemoryRunner\n(Multi-Agent)"]
         WebMCP["WebMCP Tool Catalog"]
+        LensRegistry["Clinical Lens Registry"]
     end
 
-    subgraph Cloud ["Cloud & Machine Learning"]
+    subgraph Cloud ["☁️ Cloud Egress (Zero-PHI)"]
+        DeID["HIPAA Safe Harbor Proxy\n(PHI Scrubber Boundary)"]:::security
         CloudRun["Cloud Run (SSR + Proxy)"]
         FastAPI["FastAPI Sidecar (ML)"]
         Vertex["Vertex AI / Gemini"]
     end
 
-    subgraph Lenses ["Clinical Lenses"]
+    subgraph Lenses ["Clinical Paradigms"]
         Western["Conventional (Allopathic)"]
-        TCM["Traditional Chinese Medicine"]
+        TCM["Traditional Chinese"]
         Ayurvedic["Ayurveda"]
         Ortho["Orthomolecular"]
     end
@@ -191,34 +199,44 @@ graph TB
         PubMed["PubMed Grounding"]
     end
 
-    PatientApp <-->|Zero-Egress QR & REST| State
-    ProviderApp <-->|BLE Mesh / Triage Sync| State
-    WearApp <-->|BLE Pulse & Haptics| State
+    %% Client & Ingestion Flows
+    Endpoints <-->|REST / BLE Mesh| SyncEngine
+    DesktopHUD <-->|Local IPC| SyncEngine
+    WearApp -->|BLE Pulse Streams| TelemetryBus
+    Body3D -->|Spatial Signals (60fps)| TelemetryBus
     AvsApp <-->|Photobiomodulation| State
+    
+    Voice -->|Transcribed Text| ADK
+    Intake --> State
 
-    Body3D -->|Spatial Signals| State
-    Voice -->|Audio Stream| ADK
-    Intake -->|Vitals| State
-
-    CloudRun <-->|WS & REST| Hub
-    CloudRun <--> FastAPI
-    CloudRun <--> Vertex
+    %% Hub Internal Routing
+    TelemetryBus -->|Aggregated Milestones| State
+    SyncEngine <--> State
 
     State <--> Sovereign
     State <--> ADK
     ADK <--> WebMCP
+    
+    %% AI Synthesis & Lenses
+    ADK <--> LensRegistry
+    LensRegistry <--> Western & TCM & Ayurvedic & Ortho
 
-    Hub <--> Western & TCM & Ayurvedic & Ortho
+    %% Cloud Boundary (Strict Security Enforcement)
+    State -->|PHI Payload| DeID
+    DeID -->|De-Identified Context| CloudRun
+    CloudRun <--> FastAPI
+    CloudRun <--> Vertex
 
+    %% Exports
     State --> FHIR & Cache
     ADK --> PubMed
 
     class CloudRun,FastAPI,Vertex cloud
-    class PatientApp,ProviderApp,WearApp,AvsApp mobile
+    class Endpoints,PatientApp,ProviderApp,WearApp,AvsApp,DesktopHUD mobile
     class Body3D,Voice,Intake ingestion
-    class State,Sovereign,ADK,WebMCP hub
+    class Hub,TelemetryBus,SyncEngine,State,Sovereign,ADK,WebMCP,LensRegistry hub
     class Western,TCM,Ayurvedic,Ortho lenses
-    class FHIR,Cache,PubMed foundation
+    class Foundation,FHIR,Cache,PubMed foundation
 ```
 
 | Layer | Technology |
@@ -322,6 +340,14 @@ Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and th
 
 Pocket Gull is open source. You can support development through [GitHub Sponsors](https://github.com/sponsors/philgear). For pilots, integrations, or enterprise support, contact [dpo@pocketgull.app](mailto:dpo@pocketgull.app).
 
+## 🙏 Acknowledgments & Lineage of Gratitude
+
+Pocket Gull is dedicated first and foremost to **Indigenous Peoples, Native American Nations & Tribal Health Sovereignty**—the first stewards of these lands, waters, and forests. 
+
+Our work is grounded in the shoulders of open-source craftsmen, clinicians, engineers, cybersecurity defenders, teachers, and family—including the ASU Graphic Design faculty, Google Developer Groups (Portland & Seattle), Women Techmakers, Women Who Code, Google DeepMind, the Cloud Native Computing Foundation (CNCF), the Academic Integrative Medicine community, Cabrera Lab, Portland Type Tuesday, NedSpace, our lifelong mentors, and family.
+
+See the complete, living roll of honor in **[ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md)**.
+
 ## Citation
 
 If you use Pocket Gull in research, please cite it (see also [CITATION.cff](CITATION.cff)):
@@ -333,7 +359,7 @@ If you use Pocket Gull in research, please cite it (see also [CITATION.cff](CITA
   month     = sep,
   year      = 2026,
   publisher = {Zenodo},
-  version   = {v1.38.0},
+  version   = {v1.41.0},
   doi       = {10.5281/zenodo.20647514},
   url       = {https://doi.org/10.5281/zenodo.20647514}
 }

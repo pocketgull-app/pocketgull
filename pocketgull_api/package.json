@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node-dev src/index.ts",
+    "dev": "node --watch --loader ts-node/esm src/index.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
@@ -40,7 +40,6 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^26.1.2",
-    "ts-node-dev": "^2.0.0",
     "typescript": "~5.5.4"
   }
 }

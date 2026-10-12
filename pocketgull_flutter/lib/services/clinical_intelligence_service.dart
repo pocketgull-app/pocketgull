@@ -29,15 +29,18 @@ class ClinicalMetrics {
 class ClinicalIntelligenceService {
   final GenerativeModel _model;
   final String apiKey;
+  final String modelName;
   ChatSession? _chatSession;
 
   void resetAIState() {
     _chatSession = null;
   }
 
-  ClinicalIntelligenceService({required this.apiKey})
-      : _model = GenerativeModel(
-          model: 'gemini-3.8-flash',
+  ClinicalIntelligenceService({
+    required this.apiKey,
+    this.modelName = 'gemini-3.8-flash',
+  }) : _model = GenerativeModel(
+          model: modelName,
           apiKey: apiKey.isNotEmpty ? apiKey : 'placeholder_key',
           generationConfig: GenerationConfig(
             temperature: 0.2,
