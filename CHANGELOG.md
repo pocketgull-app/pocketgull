@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.41.2] - 2026-10-12
+
+**🛡️ Complete CodeQL Hardening (Zero Alerts), GullRenderEngine Direct-Curve Architectural Transition, Zero-Regex SAML Extraction, and Multi-Platform Companion Parity**
+
+### Added
+- **[Research Air-Gapping & Sensitive Data Leak Directives] (`.agents/AGENTS.md`, `.gitignore`)**:
+  - Enforced strict read-only boundary for research subagents and added `.research/`, `research_scratch/`, and `*.scraped.*` patterns to `.gitignore` to prevent experimental artifacts from ever entering the git tree.
+- **[IEEE P2933™ TIPPSS Cross-Language Schema & Modality Parity] (`scripts/tippss_schema_parity.dart`)**:
+  - Validated 100% field, type, and unit parity across TypeScript, Dart, and Python for all 7 biomedical modalities.
+
+### Changed
+- **[Sovereign GullRenderEngine Direct-Curve Architecture]**:
+  - Fully removed legacy Three.js portal files (`public/uo-knight-portal.html`), achieving 100% direct WebGL2/WebGPU shader rendering with zero garbage-collection allocations.
+  - Aligned Flutter and Dart SDK workspace constraints across all companion apps to `>=3.11.0 <4.0.0`.
+
+### Security & Fixed
+- **[Complete Resolution of 15 CodeQL Security Alerts (#3001–#3016)]**:
+  - **Alert #3016 (High - URL scheme check)**: Stripped control characters and strictly blocked `javascript:`, `vbscript:`, and `data:` schemes in `BrandedQrCodeService`.
+  - **Alert #3015 (High - URL substring sanitization)**: Replaced substring matching with strict `new URL(profile).hostname` checks in `EhrInteroperabilityEngineService`.
+  - **Alert #3008 (High - String escaping)**: Escaped backslashes and double quotes in BigQuery DDL cohort descriptions.
+  - **Alerts #3006 & #3007 (High - Multi-character sanitization)**: Implemented loop-based HTML tag stripping eliminating nested tag bypasses in AI routes and biomarker components.
+  - **Alerts #3001–#3005 (High - Polynomial ReDoS)**: Replaced regex parsing in SAML assertion claims with pure zero-regex substring indexing (`indexOf`/`slice`).
+  - **Alert #3014 (Medium - Untrusted source script)**: Removed legacy Three.js prototype portal from `public/`.
+  - **Alerts #3009–#3013 (Medium - Unvalidated URL redirect)**: Bound all marketing and case-study redirects strictly to sanitized relative paths on `https://pocketgull.com`.
+
 ## [1.40.0] - 2026-10-07
 
 **🛡️ Zero-Pill Clinical Demarcation & Dieter Rams Design Token Architecture, DirectCurves Zero-Runtime CSS Engine, Multi-Workspace Supply Chain Vulnerability Remediation (Zero-Alert Posture), EU CRA CycloneDX 1.6 SBOM, and Dual-Service Google Cloud Run Production Deployment**
