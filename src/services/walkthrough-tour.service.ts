@@ -64,7 +64,7 @@ export class WalkthroughTourService {
       title: 'Patient Wellness & Ephemeral Sovereignty',
       subtitle: 'Camera tremor/rPPG vitals, Zen 432Hz Sanctuary, anonymous healing & 1-click purge.',
       icon: '🧘',
-      stepCount: 5
+      stepCount: 7
     }
   ];
 
@@ -187,6 +187,20 @@ export class WalkthroughTourService {
             body: 'Your health data belongs to you and only you. One tap wipes every trace—symptoms, notes, session history—completely and permanently. No backups. No lingering copies. Gone.',
             position: 'top',
             badge: 'Data Sovereignty'
+          },
+          {
+            targetId: 'tour-earth-biophysics',
+            title: 'Earth Biophysics & Somatic Resilience',
+            body: 'Explore how your cellular bioelectricity, natural sunlight near-infrared, and soil minerals shape health. Practice 0.1 Hz Mayer wave breathing to soothe autonomic alarms without medical gaslighting.',
+            position: 'bottom',
+            badge: 'Salutogenesis'
+          },
+          {
+            targetId: 'tour-abacus-reckoning',
+            title: 'Tactile Dosage Reckoning',
+            body: 'Verify pediatric oral drops and neonatal syringe measurements with the zero-pill Clinical Soroban Abacus. Physical, audible boxwood clicks eliminate calculation errors.',
+            position: 'top',
+            badge: 'Posology'
           }
         ];
 

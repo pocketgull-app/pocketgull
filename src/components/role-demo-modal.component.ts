@@ -22,7 +22,7 @@ import { ClinicalRolePathway } from '../services/role-pathway-docs.service';
             <div>
               <h3 class="text-base sm:text-lg font-black uppercase tracking-wider text-white flex items-center gap-2">
                 Experience Pocket-Gull by Clinical Role
-                <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/30">
+                <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-teal-500/20 text-teal-300 rounded-md border border-teal-500/30">
                   Interactive Demo Mode
                 </span>
               </h3>

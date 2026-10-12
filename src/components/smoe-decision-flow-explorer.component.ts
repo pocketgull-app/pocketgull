@@ -27,11 +27,11 @@ import { ClinicalMoERouterService, IPatientDecisionFlow, SHIFT_CARE_PLAN_ROSTER 
                 <h2 class="text-base sm:text-lg font-bold text-zinc-100 font-mono tracking-wide">
                   SMoE Gating Network Decision Flow Explorer
                 </h2>
-                <span class="px-2 py-0.5 text-[10px] font-mono tracking-widest uppercase bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded-full font-bold">
-                  Temperature T=0.85 • Top-k=2
+                <span class="px-2 py-0.5 text-[10px] font-mono tracking-widest uppercase bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded-md font-bold">
+                  <span class="font-algo">T=0.85</span> • <span class="font-algo">Top-k=2</span>
                 </span>
-                <span class="px-2 py-0.5 text-[10px] font-mono tracking-widest uppercase bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-full font-bold">
-                  {{ moeRouter.cognitiveNoiseReductionPercent() }}% Cognitive Noise Shield
+                <span class="px-2 py-0.5 text-[10px] font-mono tracking-widest uppercase bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-md font-bold">
+                  <span class="font-math">{{ moeRouter.cognitiveNoiseReductionPercent() }}%</span> Cognitive Noise Shield
                 </span>
               </div>
               <p class="text-xs text-zinc-400 mt-0.5">
@@ -44,7 +44,7 @@ import { ClinicalMoERouterService, IPatientDecisionFlow, SHIFT_CARE_PLAN_ROSTER 
             <button
               type="button"
               (click)="closeModal.emit()"
-              class="w-9 h-9 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700/80 flex items-center justify-center text-sm font-bold transition shadow cursor-pointer focus-visible:ring-2 focus-visible:ring-purple-400"
+              class="w-9 h-9 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700/80 flex items-center justify-center text-sm font-bold transition shadow cursor-pointer focus-visible:ring-2 focus-visible:ring-purple-400"
               aria-label="Close Decision Flow Explorer"
             >
               ✕
@@ -233,19 +233,19 @@ import { ClinicalMoERouterService, IPatientDecisionFlow, SHIFT_CARE_PLAN_ROSTER 
                           </div>
 
                           <div class="flex items-center gap-2 font-mono shrink-0">
-                            <span class="text-xs font-bold" [class.text-emerald-400]="prob.isTop1" [class.text-teal-300]="prob.isTop2" [class.text-zinc-500]="!prob.isTop1 && !prob.isTop2">
+                            <span class="text-xs font-bold font-math" [class.text-emerald-400]="prob.isTop1" [class.text-teal-300]="prob.isTop2" [class.text-zinc-500]="!prob.isTop1 && !prob.isTop2">
                               {{ prob.probabilityPercent }}%
                             </span>
-                            <span class="text-[10px] text-zinc-500">
+                            <span class="text-[10px] text-zinc-500 font-algo">
                               (logit {{ prob.logit }})
                             </span>
                           </div>
                         </div>
 
                         <!-- Progress Bar Indicator -->
-                        <div class="w-full bg-zinc-800 rounded-full h-1.5 mt-1.5 overflow-hidden">
+                        <div class="w-full bg-zinc-800 rounded-xs h-1.5 mt-1.5 overflow-hidden">
                           <div
-                            class="h-full rounded-full transition-all duration-500"
+                            class="h-full rounded-xs transition-all duration-500"
                             [class.bg-emerald-500]="prob.isTop1"
                             [class.bg-teal-400]="prob.isTop2"
                             [class.bg-zinc-600]="!prob.isTop1 && !prob.isTop2"

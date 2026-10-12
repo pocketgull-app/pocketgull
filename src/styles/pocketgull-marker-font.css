@@ -166,6 +166,92 @@
        url('/assets/fonts/PocketGull-Genome.ttf') format('truetype');
 }
 
+/* PocketGull Algo (Computer Science, AST Graphs & Algorithm Monospace) */
+@font-face {
+  font-family: 'PocketGull Algo';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Algo.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Algo.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Algo.woff2') format('woff2');
+  unicode-range: U+0020-007E, U+03BB, U+2190-21FF, U+22A2, U+22A8, U+2500-257F, U+27E6-27E7, U+E000-F8FF;
+}
+
+/* PocketGull Music (W3C SMuFL Notation, Music Therapy & Audiology Telemetry) */
+@font-face {
+  font-family: 'PocketGull Music';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Music.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Music.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Music.woff2') format('woff2');
+  unicode-range: U+0020-007E, U+1D100-1D1FF, U+2660-267F, U+E000-F8FF;
+}
+
+/* PocketGull Learn (K-12 Elementary Literacy & Dyslexia Grounded) */
+@font-face {
+  font-family: 'PocketGull Learn';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Learn.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Learn.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Learn.woff2') format('woff2');
+}
+
+/* PocketGull Lab (Clinical Laboratory, Pathology SOPs & Diagnostics) */
+@font-face {
+  font-family: 'PocketGull Lab';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Lab.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Lab.woff2') format('woff2'),
+       url('/assets/fonts/PocketGull-Lab.woff2') format('woff2');
+}
+
+/* PocketGull Sign (Manual Cued Speech & Fingerspelling) */
+@font-face {
+  font-family: 'PocketGull Sign';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Sign.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Sign.woff2') format('woff2');
+}
+
+/* PocketGull ASL (American Sign Language Monospace) */
+@font-face {
+  font-family: 'PocketGull ASL';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-ASL.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-ASL.woff2') format('woff2');
+}
+
+/* PocketGull Emoji (Humanist Clinical & Telemetry Monochromatic Glyphs) */
+@font-face {
+  font-family: 'PocketGull Emoji';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Emoji.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Emoji.woff2') format('woff2');
+}
+
+/* PocketGull Press (Spot-Color Letterpress & Broadsheet) */
+@font-face {
+  font-family: 'PocketGull Press';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Press.woff2?v=3.3.0') format('woff2'),
+       url('/fonts/PocketGull-Press.woff2') format('woff2');
+}
+
 /* ==========================================================================
    🖋️ 2. Typeface Utility Classes with Quaker Dovetail Kerning
    ========================================================================== */
@@ -204,7 +290,8 @@
 }
 
 /* 🧮 PocketGull Math & Scientific Notation Stack (OpenType Math v3.100 • ISMP Safe) */
-.font-pocketgull-math {
+.font-pocketgull-math,
+.font-math {
   font-family: 'PocketGull Math', 'STIX Two Math', 'Cambria Math', 'Latin Modern Math', ui-monospace, monospace !important;
   font-feature-settings: "cv08" 1, "cv05" 1, "ss02" 1, "cv11" 1, "tnum" 1, "zero" 1, "ssty" 1 !important;
   font-variant-numeric: tabular-nums slashed-zero !important;
@@ -215,7 +302,8 @@
 }
 
 /* 🧪 PocketGull Clinical Chemistry & Pharmacology Stack */
-.font-pocketgull-chem {
+.font-pocketgull-chem,
+.font-chem {
   font-family: 'PocketGull Chem', 'PocketGull Math', 'PocketGull Mono', monospace !important;
   font-feature-settings: "cv08" 1, "cv05" 1, "ss02" 1, "tnum" 1, "zero" 1, "subs" 1, "sups" 1 !important;
   font-variant-numeric: tabular-nums slashed-zero !important;
@@ -225,12 +313,74 @@
 }
 
 /* 🧬 PocketGull Clinical Genomics & CRISPR Stack */
-.font-pocketgull-genome {
+.font-pocketgull-genome,
+.font-genome {
   font-family: 'PocketGull Genome', 'PocketGull Mono', ui-monospace, monospace !important;
   font-feature-settings: "tnum" 1, "zero" 1;
   letter-spacing: 0.05em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* 💻 PocketGull Algorithm & State Machine Stack (AST & Automata) */
+.font-pocketgull-algo,
+.font-algo {
+  font-family: 'PocketGull Algo', 'PocketGull Mono', ui-monospace, monospace !important;
+  font-feature-settings: "calt" 1, "liga" 1, "tnum" 1, "zero" 1 !important;
+  font-variant-numeric: tabular-nums slashed-zero !important;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 🎵 PocketGull Music & Vagal Harmonics Stack (W3C SMuFL & Mayer Wave) */
+.font-pocketgull-music,
+.font-music {
+  font-family: 'PocketGull Music', 'PocketGull Mono', ui-monospace, monospace !important;
+  font-feature-settings: "calt" 1, "liga" 1, "tnum" 1 !important;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 📚 PocketGull Learn & Elementary Literacy */
+.font-pocketgull-learn,
+.font-learn {
+  font-family: 'PocketGull Learn', 'PocketGull', sans-serif !important;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 🔬 PocketGull Lab & Clinical Pathology SOPs */
+.font-pocketgull-lab,
+.font-lab {
+  font-family: 'PocketGull Lab', 'PocketGull Mono', monospace !important;
+  font-feature-settings: "tnum" 1, "zero" 1 !important;
+  font-variant-numeric: tabular-nums slashed-zero !important;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 🤟 PocketGull Sign & ASL */
+.font-pocketgull-sign,
+.font-sign,
+.font-asl {
+  font-family: 'PocketGull Sign', 'PocketGull ASL', monospace !important;
+  letter-spacing: 0.08em;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* 😀 PocketGull Emoji Humanist Telemetry Glyphs */
+.font-pocketgull-emoji,
+.font-emoji {
+  font-family: 'PocketGull Emoji', 'PocketGull Mono', monospace !important;
+  font-feature-settings: "calt" 1, "liga" 1 !important;
+  font-variant-numeric: tabular-nums !important;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* 🖋️ PocketGull Chisel / Black Display Variant (900 Weight) */
@@ -1155,13 +1305,13 @@
   font-size: 0.78rem;
 }
 
-/* Universal Dosage Badge Chip */
+/* Universal Dosage Badge Chip (DirectCurves 6px Fillet) */
 .dosage-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   padding: 0.15rem 0.55rem;
-  border-radius: 9999px;
+  border-radius: 0.375rem;
   font-family: 'PocketGull Mono', monospace;
   font-size: 0.8rem;
   font-weight: 600;

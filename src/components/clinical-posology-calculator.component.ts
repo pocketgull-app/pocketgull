@@ -14,6 +14,7 @@ import {
   ICriticalSlowingDownMetrics,
   IHypergraphPolypharmacyAssessment
 } from '../services/complex-adaptive-systems.service';
+import { ClinicalAbacusComponent } from './shared/clinical-abacus.component';
 
 export type PosologyPersonaMode = 'patient' | 'family' | 'clinician' | 'community';
 
@@ -49,7 +50,7 @@ export interface IPosology3ActTrajectory {
 @Component({
   selector: 'app-clinical-posology-calculator',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ClinicalAbacusComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-6 animate-in fade-in duration-300">
@@ -60,7 +61,7 @@ export interface IPosology3ActTrajectory {
           <div class="flex items-center gap-2 mb-1">
             <span class="text-xl">👶 🧒 🧑 🧓</span>
             <h3 class="text-lg font-bold tracking-wide">Age-Stratified Posology &amp; Precision Dosage Engine</h3>
-            <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+            <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
               ISMP &amp; AGS Beers Compliant
             </span>
           </div>
@@ -230,6 +231,16 @@ export interface IPosology3ActTrajectory {
 
               <div class="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-950 dark:text-rose-200 text-xs font-mono">
                 🛡️ <strong>NICU Clinical Guard:</strong> All neonatal dosages strictly enforce leading zeros (e.g. 0.05 mL, never .05 mL). Microbore syringes calibrated to 0.01 mL accuracy prevent 10-fold volumetric errors.
+              </div>
+
+              <!-- Tactile Soroban Abacus for NICU Microbore Syringe Precision -->
+              <div class="mt-3">
+                <app-clinical-abacus
+                  mode="posology_dosing"
+                  [initialValue]="friedResult().microboreSyringeVolumeMl"
+                  label="NICU Microbore Syringe Soroban (0.01 mL Accuracy)"
+                  unit="mL"
+                />
               </div>
             </div>
           }
@@ -488,7 +499,7 @@ export interface IPosology3ActTrajectory {
           @if (activeAgeTier() === 'environmental_heat') {
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/30 flex items-center gap-1.5">
+                <span class="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/30 flex items-center gap-1.5">
                   <span>☀️</span> Thermal Strain &amp; Heat-Vulnerability Posology (ASU)
                 </span>
                 <span class="text-xs font-mono text-orange-600 dark:text-orange-400 font-bold">
@@ -572,7 +583,7 @@ export interface IPosology3ActTrajectory {
           @if (activeAgeTier() === 'sfi_complex_adaptive') {
             <div class="space-y-4">
               <div class="flex items-center justify-between">
-                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/30 flex items-center gap-1.5">
+                <span class="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/30 flex items-center gap-1.5">
                   <span>🧬</span> SFI Complex Adaptive Systems &amp; Fractal Allometry
                 </span>
                 <span class="text-xs font-mono text-teal-600 dark:text-teal-400 font-bold">
@@ -586,7 +597,7 @@ export interface IPosology3ActTrajectory {
                   <span class="text-xs font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-1.5">
                     <span>📐</span> West-Brown-Enquist (WBE) Fractal Scaling vs. Naive Linear
                   </span>
-                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold">
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold">
                     M^0.75 FRACTAL POWER LAW
                   </span>
                 </div>
@@ -727,7 +738,7 @@ export interface IPosology3ActTrajectory {
           <div>
             <h4 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-zinc-100 flex items-center gap-2">
               <span>✍️</span> Clinical Alignment &amp; Improper Dosage "Spellcheck" Engine
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 font-bold">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 font-bold">
                 ISMP TALL MAN &amp; DECIMALS
               </span>
             </h4>
@@ -849,7 +860,7 @@ export interface IPosology3ActTrajectory {
                 <h3 class="text-base font-extrabold tracking-wide text-white uppercase font-mono">
                   Structured 3-Act Posology &amp; Care Trajectory
                 </h3>
-                <span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/40 uppercase">
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-md bg-teal-500/20 text-teal-300 border border-teal-500/40 uppercase">
                   Quiet Workshop Voice
                 </span>
               </div>
@@ -1110,27 +1121,27 @@ export interface IPosology3ActTrajectory {
             <!-- Feedback Toasts / Luster Badges -->
             <div class="flex items-center gap-2 text-xs font-mono">
               @if (showAppliedToast()) {
-                <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 animate-in fade-in duration-200">
+                <span class="px-3 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 animate-in fade-in duration-200">
                   ✓ Recorded to Care Plan, SOAP Note &amp; Audit Log
                 </span>
               }
               @if (showPrintedToast()) {
-                <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 animate-in fade-in duration-200">
+                <span class="px-3 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 animate-in fade-in duration-200">
                   ✓ Opening Print Dialog for AVS Handout
                 </span>
               }
               @if (showCopiedEhrToast()) {
-                <span class="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/50 animate-in fade-in duration-200">
+                <span class="px-3 py-1 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/50 animate-in fade-in duration-200">
                   ✓ EHR S/O/A/P Text Copied
                 </span>
               }
               @if (showCopiedFhirToast()) {
-                <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 animate-in fade-in duration-200">
+                <span class="px-3 py-1 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 animate-in fade-in duration-200">
                   ✓ FHIR R4 MedicationStatement Copied
                 </span>
               }
               @if (showCopiedAsuToast()) {
-                <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/50 animate-in fade-in duration-200">
+                <span class="px-3 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/50 animate-in fade-in duration-200">
                   ✓ ASU/SFI Python Simulation Copied
                 </span>
               }
@@ -1591,9 +1602,9 @@ export interface IPosology3ActTrajectory {
                       <span>16-Day Medicare Compliance Target (CPT 99454)</span>
                       <span>{{ avsMilestonePct() }}% ({{ isAvsCompliant() ? 'Goal Met!' : avsDaysNeeded() + ' days needed' }})</span>
                     </div>
-                    <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                    <div class="w-full bg-slate-200 rounded-xs h-2 overflow-hidden">
                       <div 
-                        class="h-full rounded-full transition-all duration-300"
+                        class="h-full rounded-xs transition-all duration-300"
                         [class.bg-emerald-600]="isAvsCompliant()"
                         [class.bg-teal-600]="!isAvsCompliant()"
                         [style.width.%]="avsMilestonePct()">
@@ -1725,7 +1736,7 @@ export interface IPosology3ActTrajectory {
                 <!-- Origami Pacing Progress Header -->
                 <div class="flex items-center justify-between text-xs font-mono border-b border-stone-200 pb-3">
                   <div class="flex items-center gap-1.5">
-                    <span class="w-6 h-6 rounded-full bg-teal-800 text-white flex items-center justify-center font-bold text-xs">
+                    <span class="w-6 h-6 rounded-md bg-teal-800 text-white flex items-center justify-center font-bold text-xs">
                       {{ origamiUnfurlStep() + 1 }}
                     </span>
                     <span class="font-bold text-slate-900">
@@ -1741,7 +1752,7 @@ export interface IPosology3ActTrajectory {
                   <div class="flex items-center gap-1">
                     @for (dot of [0, 1, 2, 3]; track dot) {
                       <span
-                        class="w-2.5 h-2.5 rounded-full transition-all"
+                        class="w-2.5 h-2.5 rounded-full status-dot transition-all"
                         [class.bg-teal-600]="origamiUnfurlStep() >= dot"
                         [class.bg-slate-300]="origamiUnfurlStep() < dot"></span>
                     }

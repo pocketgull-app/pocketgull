@@ -124,6 +124,18 @@ export class MetricCardComponent {
 - **Exclusive Brand & Copyright Boundary**: The custom handwritten/display Marker Font (`font-pocketgull-handwritten`, `.marker-bold-emphasis`, `.bionic-pocketgull-marker`, marker SVG strokes) MUST **ONLY** be utilized when displaying the official **Brand Lettering ("PocketGull")** and **Copyright / Legal Footer imprint** lines.
 - **Universal Clinical Legibility**: All clinical UI, research frame literature, telemetric navigation, data HUDs, vitals tables, and reading frames MUST strictly utilize the clean, high-legibility clinical typography stacks (`font-pocketgull-sans-clinical`, `font-pocketgull-inter`, `font-pocketgull-mono`, `font-pocketgull-notofu`) to guarantee zero dosage misinterpretation and optimal optical legibility.
 
+## Typographic Energy & Time Preservation Standard (Cognitive, Hardware, Operational)
+- **Cognitive & Foveal Energy (Subitizing vs Saccadic Fatigue)**:
+  - *Single-Fixation Comprehension ($<200\text{ ms}$)*: In high-stakes clinical monitoring or during neuromuscular fatigue (Project Ataxia), reading a paragraph or decoding disjointed numerical labels causes repetitive ocular saccades across an ultrawide canvas.
+  - *Instant Visual Subitizing*: Native glyphs—like Kaktovik base-20 tallies (`U+1D2C0`–`U+1D2D3`), Rod of Asclepius `⚕`, ISMP Do-Not-Crush mark `⊘`, and bioelectric $V_{\text{mem}}$ state—are processed by the visual cortex in a single fixation, eliminating cognitive translation steps and preventing gaze-tracking strain.
+- **Hardware & Battery Energy (Font Atlas vs DOM Layout Churn)**:
+  - *Zero Layout Reflow ($0\text{ ms}$)*: Rendering dynamic SVG icons requires the browser engine to calculate vector paths, compute bounding boxes, and execute composite paint cycles on every scroll or resize.
+  - *GPU Texture Atlas Caching*: Font glyphs are rasterized once by the OS (DirectWrite / CoreText) into the GPU texture cache. Displaying 100 glyphs costs essentially $0\text{ W}$ in CPU overhead, dramatically prolonging battery life on mobile diagnostic tablets and thin-client bedside workstations.
+- **Clinical Operational Time (Searchable, Copy-Pasteable Plaintext)**:
+  - *Immunity to Formatting Breakdown*: SVGs and Canvas diagrams cannot be copied into an electronic health record (EHR), FHIR R4 clinical note, or terminal shell without breaking.
+  - *Plaintext Interoperability*: Standard Unicode characters and fixed-pitch font glyphs allow clinicians to highlight, copy, grep, and paste calculations, dosages, and telemetry symbols directly into patient charts with zero manual re-typing.
+
+
 ## Trademark & Intellectual Property Governance Standard (VS Code Themes & Marketplace Assets)
 - **Zero Third-Party Corporate / Model Marks**: Never use protected third-party brand names or product designations (such as `Braun`, `ET66`, `Risograph`, `RISO`, `E Ink`) in theme labels, identifiers, or manifest declarations. Always substitute generic aesthetic or descriptive terms (`Rams Functionalist`, `Spot-Color Press`, `Electrophoretic`, `Reflective Slate`).
 - **Zero Intergovernmental Protected Acronyms (Paris Convention Art. 6ter)**: Strictly avoid using protected intergovernmental emblems or acronyms (such as `CERN`, `WHO`, `NASA`) in distributed software packaging. Use public-domain historical descriptors (`Hypertext 1991`, `WorldWideWeb`).
@@ -231,6 +243,12 @@ Every new feature, component, API endpoint, or clinical model shipped in Pocket-
 - **Spatial Continuity & Origami Unfurling (FLIP)**: Modals, drawers, and overlay cards MUST visually unfurl along the $Z$-axis from their trigger elements using gentle spring curves (`cubic-bezier(0.16, 1, 0.3, 1)`).
 - **1-Shot Attestation Shimmer**: Cryptographic verification seals and claims play a single $800\text{ ms}$ luster pass upon completion, then permanently rest. Infinite flashing or pulsing badges are strictly prohibited.
 - **Strict Anti-Dark-Pattern Mandate**: Zero fake countdown timers, zero coercive confirmshaming, zero modal traps, and mandatory `prefers-reduced-motion: reduce` instantaneous zero-duration overrides.
+
+## Bioethical Anti-Dark-Pattern & Salutogenic Governance Standard (Automated Sentinel Enforcement)
+- **Anti-Entrainment Monetization Isolation**: Bio-rhythmic parasympathetic pacing ($0.1\text{ Hz}$ Mayer wave pulses, respiratory entrainment animations, and soothing auditory chimes) is strictly quarantined to therapeutic and research viewports. It is AUTOMATICALLY AUDITED via Sentinel Guard (`scripts/sentinel_security_guard.mjs`) and prohibited in billing, pricing, payment checkout, or legal consent views to prevent emotional compliance manipulation.
+- **Epistemic Demarcation & Anxiety Protection**: Speculative or in-silico cellular biophysics models ($V_{\text{mem}}$ polarization, xenobiotic docking, microbial metabolite fluxes) MUST render explicit `[EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC]` badges to prevent somatic panic and hypochondriac anxiety loops.
+- **Zero Commercial Ad-Tech & Surveillance Trackers**: Commercial ad-tech, behavioral session-replay spyware, and pixel trackers (`gtag`, `fbq`, `mixpanel`, `hotjar`, `clarity`, `segment`) are strictly banned from client bundles and verified pre-flight via Sentinel Guard (`npm run sentinel:audit`).
+- **Parasocial Authority Boundary & Crisis Anchoring**: AI consult and conversational interfaces must transparently disclaim primary diagnostic authority and maintain permanent, un-missable one-touch crisis lifelines (988, 111, Lifeline) with zero conversational traps.
 
 ## Skunk Works Medical Aid, Enlightenment & 3-Act Trajectory Standard
 - **The Quiet Workshop Voice**: The platform communicates with deep warmth, quiet craftsmanship, and reassuring clarity. Clinical depth is delivered to make patients and clinicians feel safe, capable, and at ease rather than overwhelmed.

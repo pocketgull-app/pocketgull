@@ -11,7 +11,30 @@ export interface ILanguageSpec {
   region: 'GLOBAL' | 'INDIC' | 'AFRICAN' | 'SOUTHEAST_ASIAN' | 'INDIGENOUS_AMERICAN' | 'EUROPEAN';
   sampleGreeting: string;
   culturalSensitivityNote: string;
+  epistemicGlyph?: string;
+  abacusSystem?: 'latin' | 'eastern_arabic' | 'devanagari' | 'kaktovik' | 'suanpan';
+  fontClass?: string;
 }
+
+export interface IScriptBeacon {
+  id: string;
+  label: string;
+  glyph: string;
+  targetLangCode: string;
+  abacusSystem: 'latin' | 'eastern_arabic' | 'devanagari' | 'kaktovik' | 'suanpan';
+  fontClass: string;
+  culturalContext: string;
+}
+
+export const SCRIPT_GLYPH_BEACONS: IScriptBeacon[] = [
+  { id: 'inuktitut', label: 'Inuktitut Syllabics', glyph: 'ᐃᓄᒃ', targetLangCode: 'iu', abacusSystem: 'kaktovik', fontClass: 'font-pocketgull-indigenous', culturalContext: 'Arctic Circumpolar Rotational Syllabics' },
+  { id: 'cherokee', label: 'Cherokee Syllabary', glyph: 'ᏣᎳᎩ', targetLangCode: 'chr', abacusSystem: 'latin', fontClass: 'font-pocketgull-indigenous', culturalContext: 'Sequoyah 85-Syllable Phonetic Matrix' },
+  { id: 'tcm', label: 'TCM / Meridian', glyph: '氣', targetLangCode: 'zh', abacusSystem: 'suanpan', fontClass: 'font-pocketgull-tcm', culturalContext: 'Organ Meridian & Five Elements' },
+  { id: 'ayurveda', label: 'Ayurveda / Indic', glyph: 'आयु', targetLangCode: 'hi', abacusSystem: 'devanagari', fontClass: 'font-pocketgull-indic', culturalContext: 'Tridosha Vata-Pitta-Kapha Telemetry' },
+  { id: 'arabic', label: 'Unani / Arabic', glyph: 'ع', targetLangCode: 'ar', abacusSystem: 'eastern_arabic', fontClass: 'font-pocketgull-notofu', culturalContext: 'RTL Script & Eastern Arabic Numerals' },
+  { id: 'aac', label: 'Universal AAC', glyph: '♡☤', targetLangCode: 'en', abacusSystem: 'latin', fontClass: 'font-pocketgull-aac', culturalContext: 'Non-Verbal Stroke/Aphasia Fast-Path' },
+  { id: 'latin', label: 'Clinical Metric', glyph: 'Rx', targetLangCode: 'en', abacusSystem: 'latin', fontClass: 'font-pocketgull-sans-clinical', culturalContext: 'Standard Latin Posology & Decimal SI' }
+];
 
 export interface ISocraticTranslationResult {
   sourceText: string;
@@ -28,15 +51,15 @@ export interface ISocraticTranslationResult {
 // 52 Supported Global Languages & Indigenous Dialects
 export const GLOBAL_50_LANGUAGES: ILanguageSpec[] = [
   // ── Global Major ──
-  { code: 'en', name: 'English', nativeName: 'English (Plain)', flagEmoji: '🇺🇸', direction: 'ltr', region: 'GLOBAL', sampleGreeting: 'Hello', culturalSensitivityNote: 'Clear, concise clinical communication at 6th-grade reading level.' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flagEmoji: '🇲🇽', direction: 'ltr', region: 'GLOBAL', sampleGreeting: 'Hola', culturalSensitivityNote: 'Family-centered health communication with respectful formal address (Usted).' },
-  { code: 'zh', name: 'Mandarin Chinese', nativeName: '中文 (简体)', flagEmoji: '🇨🇳', direction: 'ltr', region: 'GLOBAL', sampleGreeting: '你好', culturalSensitivityNote: 'Harmonizes integrative TCM concepts with evidence-based modern therapeutics.' },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flagEmoji: '🇮🇳', direction: 'ltr', region: 'INDIC', sampleGreeting: 'नमस्ते', culturalSensitivityNote: 'Integrates Ayurvedic constitutional balance terms respectfully with allopathy.' },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flagEmoji: '🇸🇦', direction: 'rtl', region: 'GLOBAL', sampleGreeting: 'مرحبا', culturalSensitivityNote: 'Respects religious fasting schedules (Ramadan) regarding oral medication timing.' },
+  { code: 'en', name: 'English', nativeName: 'English (Plain)', flagEmoji: '🇺🇸', direction: 'ltr', region: 'GLOBAL', sampleGreeting: 'Hello', culturalSensitivityNote: 'Clear, concise clinical communication at 6th-grade reading level.', epistemicGlyph: 'Rx', abacusSystem: 'latin', fontClass: 'font-pocketgull-sans-clinical' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español', flagEmoji: '🇲🇽', direction: 'ltr', region: 'GLOBAL', sampleGreeting: 'Hola', culturalSensitivityNote: 'Family-centered health communication with respectful formal address (Usted).', epistemicGlyph: 'Es', abacusSystem: 'latin', fontClass: 'font-pocketgull-sans-clinical' },
+  { code: 'zh', name: 'Mandarin Chinese', nativeName: '中文 (简体)', flagEmoji: '🇨🇳', direction: 'ltr', region: 'GLOBAL', sampleGreeting: '你好', culturalSensitivityNote: 'Harmonizes integrative TCM concepts with evidence-based modern therapeutics.', epistemicGlyph: '氣', abacusSystem: 'suanpan', fontClass: 'font-pocketgull-tcm' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flagEmoji: '🇮🇳', direction: 'ltr', region: 'INDIC', sampleGreeting: 'नमस्ते', culturalSensitivityNote: 'Integrates Ayurvedic constitutional balance terms respectfully with allopathy.', epistemicGlyph: 'आयु', abacusSystem: 'devanagari', fontClass: 'font-pocketgull-indic' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flagEmoji: '🇸🇦', direction: 'rtl', region: 'GLOBAL', sampleGreeting: 'مرحبا', culturalSensitivityNote: 'Respects religious fasting schedules (Ramadan) regarding oral medication timing.', epistemicGlyph: 'ع', abacusSystem: 'eastern_arabic', fontClass: 'font-pocketgull-notofu' },
   { code: 'bn', name: 'Bengali', nativeName: 'বাংলা', flagEmoji: '🇧🇩', direction: 'ltr', region: 'INDIC', sampleGreeting: 'নমস্কার', culturalSensitivityNote: 'Emphasizes community diet adaptation and diabetes prevention.' },
   { code: 'pt', name: 'Portuguese', nativeName: 'Português', flagEmoji: '🇧🇷', direction: 'ltr', region: 'GLOBAL', sampleGreeting: 'Olá', culturalSensitivityNote: 'Warm, empathetic health literacy for community health agents (Agentes Comunitários).' },
   { code: 'ru', name: 'Russian', nativeName: 'Русский', flagEmoji: '🌐', direction: 'ltr', region: 'EUROPEAN', sampleGreeting: 'Здравствуйте', culturalSensitivityNote: 'Direct, factual clinical transparency with clear dosage schedules.' },
-  { code: 'ja', name: 'Japanese', nativeName: '日本語', flagEmoji: '🇯🇵', direction: 'ltr', region: 'GLOBAL', sampleGreeting: 'こんにちは', culturalSensitivityNote: 'Polite Keigo clinical register with precision chronobiology timing.' },
+  { code: 'ja', name: 'Japanese', nativeName: '日本語', flagEmoji: '🇯🇵', direction: 'ltr', region: 'GLOBAL', sampleGreeting: 'こんにちは', culturalSensitivityNote: 'Polite Keigo clinical register with precision chronobiology timing.', epistemicGlyph: '和', abacusSystem: 'latin', fontClass: 'font-pocketgull-tcm' },
   { code: 'de', name: 'German', nativeName: 'Deutsch', flagEmoji: '🇩🇪', direction: 'ltr', region: 'EUROPEAN', sampleGreeting: 'Guten Tag', culturalSensitivityNote: 'High technical rigor with structured biomarker metrics and evidence citations.' },
   { code: 'fr', name: 'French', nativeName: 'Français', flagEmoji: '🇫🇷', direction: 'ltr', region: 'GLOBAL', sampleGreeting: 'Bonjour', culturalSensitivityNote: 'Universal francophone medical ethics with patient sovereignty focus.' },
   { code: 'te', name: 'Telugu', nativeName: 'తెలుగు', flagEmoji: '🇮🇳', direction: 'ltr', region: 'INDIC', sampleGreeting: 'నమస్కారం', culturalSensitivityNote: 'Community-centered terminology for southern Indian rural health outreach.' },
@@ -78,8 +101,8 @@ export const GLOBAL_50_LANGUAGES: ILanguageSpec[] = [
   { code: 'nv', name: 'Navajo', nativeName: 'Diné Bizaad', flagEmoji: '🏜️', direction: 'ltr', region: 'INDIGENOUS_AMERICAN', sampleGreeting: 'Yá’át’ééh', culturalSensitivityNote: 'Hózhǫ́ (Walking in Beauty, harmony, balance, and health) foundational ethos.' },
   { code: 'qu', name: 'Quechua', nativeName: 'Runasimi', flagEmoji: '🏔️', direction: 'ltr', region: 'INDIGENOUS_AMERICAN', sampleGreeting: 'Allianllachu', culturalSensitivityNote: 'Allin Kawsay (Good Living/Well-being) and high-altitude biophysics adaptation.' },
   { code: 'gn', name: 'Guarani', nativeName: 'Avañeʼẽ', flagEmoji: '🌿', direction: 'ltr', region: 'INDIGENOUS_AMERICAN', sampleGreeting: 'Mba’éichapa', culturalSensitivityNote: 'Tekoporã (living well together in health with nature).' },
-  { code: 'iu', name: 'Inuktitut', nativeName: 'ᐃᓄᒃᑎᑐᑦ', flagEmoji: '❄️', direction: 'ltr', region: 'INDIGENOUS_AMERICAN', sampleGreeting: 'Ainngai', culturalSensitivityNote: 'Arctic Circumpolar adaptation, traditional marine nutrition, and Inuuqatigiitsiarniq.' },
-  { code: 'chr', name: 'Cherokee', nativeName: 'ᏣᎳᎩ (Tsalagi)', flagEmoji: '🦅', direction: 'ltr', region: 'INDIGENOUS_AMERICAN', sampleGreeting: 'Osiydan', culturalSensitivityNote: 'Sequoyah syllabary support with To-hi (peace, wellness, natural balance).' },
+  { code: 'iu', name: 'Inuktitut', nativeName: 'ᐃᓄᒃᑎᑐᑦ', flagEmoji: '❄️', direction: 'ltr', region: 'INDIGENOUS_AMERICAN', sampleGreeting: 'Ainngai', culturalSensitivityNote: 'Arctic Circumpolar adaptation, traditional marine nutrition, and Inuuqatigiitsiarniq.', epistemicGlyph: 'ᐃᓄᒃ', abacusSystem: 'kaktovik', fontClass: 'font-pocketgull-indigenous' },
+  { code: 'chr', name: 'Cherokee', nativeName: 'ᏣᎳᎩ (Tsalagi)', flagEmoji: '🦅', direction: 'ltr', region: 'INDIGENOUS_AMERICAN', sampleGreeting: 'Osiydan', culturalSensitivityNote: 'Sequoyah syllabary support with To-hi (peace, wellness, natural balance).', epistemicGlyph: 'ᏣᎳᎩ', abacusSystem: 'latin', fontClass: 'font-pocketgull-indigenous' },
   { code: 'cs', name: 'Czech', nativeName: 'Čeština', flagEmoji: '🇨🇿', direction: 'ltr', region: 'EUROPEAN', sampleGreeting: 'Ahoj', culturalSensitivityNote: 'Preventive screening and occupational medicine focus.' },
   { code: 'hu', name: 'Hungarian', nativeName: 'Magyar', flagEmoji: '🇭🇺', direction: 'ltr', region: 'EUROPEAN', sampleGreeting: 'Szervusz', culturalSensitivityNote: 'Balneotherapy thermal wellness and metabolic health integration.' },
   { code: 'ro', name: 'Romanian', nativeName: 'Română', flagEmoji: '🇷🇴', direction: 'ltr', region: 'EUROPEAN', sampleGreeting: 'Bună ziua', culturalSensitivityNote: 'Community physician (Medicină de Familie) partnership model.' },

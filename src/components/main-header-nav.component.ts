@@ -1,4 +1,4 @@
-import { Component, inject, output, signal, effect } from '@angular/core';
+import { Component, inject, output, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NetworkStateService } from '../services/network-state.service';
 import { PatientStateService } from '../services/patient-state.service';
@@ -15,8 +15,11 @@ import { AmbientFlowSoundscapeService } from '../services/ambient-flow-soundscap
 import { NavigationShellService } from '../services/navigation-shell.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
 import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
-import { SocraticMultilingualTranslatorService } from '../services/socratic-multilingual-translator.service';
+import { SocraticMultilingualTranslatorService, SCRIPT_GLYPH_BEACONS, IScriptBeacon } from '../services/socratic-multilingual-translator.service';
 import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../services/frontline-vernacular-voice.service';
+import { ClinicalAbacusComponent, AbacusScriptSystem } from './shared/clinical-abacus.component';
+import { EarthBiophysicsSomaticHubComponent } from './research-frame/earth-biophysics-somatic-hub.component';
+import { kachinkaAudio } from '../utils/kachinka-audio.service';
 
 @Component({
   selector: 'app-main-header-nav',
@@ -26,7 +29,9 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
     PocketgullIconComponent,
     PocketgullBrandMarkComponent,
     AmbientFlowPlayerComponent,
-    ConsoleIntegrityBadgeComponent
+    ConsoleIntegrityBadgeComponent,
+    ClinicalAbacusComponent,
+    EarthBiophysicsSomaticHubComponent
   ],
   template: `
     <!-- Navbar: Pure utility & theme harmony -->
@@ -764,17 +769,57 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
               <!-- Backdrop click-away -->
               <div class="fixed inset-0 z-40 bg-black/20" (click)="isLangMenuOpen.set(false)"></div>
 
-              <div class="absolute right-0 top-full mt-1.5 w-64 z-50 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-2.5 rounded-xs font-mono text-xs max-h-80 overflow-y-auto">
+              <div class="absolute right-0 top-full mt-1.5 w-80 z-50 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-3 rounded-md font-mono text-xs max-h-96 overflow-y-auto">
                 <div class="flex items-center justify-between pb-2 mb-2 border-b border-zinc-100 dark:border-zinc-800 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
-                  <span>Translate / Idioma</span>
-                  <button type="button" (click)="navShell?.openMultilingualTerminal(); isLangMenuOpen.set(false)" class="text-teal-600 dark:text-teal-400 hover:underline cursor-pointer">50+ Terminal →</button>
+                  <div class="flex items-center gap-1.5">
+                    <span>🌐</span>
+                    <span>Language &amp; Script Beacons</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" (click)="toggleEarthBiophysicsModal(); isLangMenuOpen.set(false)" class="text-emerald-500 hover:text-emerald-400 font-bold cursor-pointer" title="Open Earth Biophysics &amp; Somatic Hub">🌍 Earth</button>
+                    <button type="button" (click)="toggleAbacusModal(); isLangMenuOpen.set(false)" class="text-amber-500 hover:text-amber-400 font-bold cursor-pointer" title="Open Clinical Soroban Abacus">🧮 Abacus</button>
+                    <button type="button" (click)="navShell?.openMultilingualTerminal(); isLangMenuOpen.set(false)" class="text-teal-600 dark:text-teal-400 hover:underline cursor-pointer">50+ →</button>
+                  </div>
                 </div>
+
+                <!-- Epistemic Multi-Script Glyph Beacon Bar -->
+                <div class="mb-3 p-2 bg-zinc-50 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 rounded-md">
+                  <div class="text-[9px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-bold mb-1.5 flex items-center justify-between">
+                    <span>Fast-Path Epistemic Glyphs</span>
+                    <span class="text-[8px] text-teal-600 dark:text-teal-400 font-normal">1-Tap Script Path</span>
+                  </div>
+                  <div class="grid grid-cols-4 gap-1">
+                    @for (beacon of scriptBeacons; track beacon.id) {
+                      <button
+                        type="button"
+                        (click)="selectScriptBeacon(beacon); isLangMenuOpen.set(false)"
+                        [class.bg-teal-500/20]="translator.selectedLanguageCode() === beacon.targetLangCode"
+                        [class.border-teal-500]="translator.selectedLanguageCode() === beacon.targetLangCode"
+                        [class.text-teal-700]="translator.selectedLanguageCode() === beacon.targetLangCode"
+                        [class.dark:text-teal-300]="translator.selectedLanguageCode() === beacon.targetLangCode"
+                        [class.border-zinc-200]="translator.selectedLanguageCode() !== beacon.targetLangCode"
+                        [class.dark:border-zinc-800]="translator.selectedLanguageCode() !== beacon.targetLangCode"
+                        [class.bg-white]="translator.selectedLanguageCode() !== beacon.targetLangCode"
+                        [class.dark:bg-zinc-900/60]="translator.selectedLanguageCode() !== beacon.targetLangCode"
+                        [class.text-zinc-700]="translator.selectedLanguageCode() !== beacon.targetLangCode"
+                        [class.dark:text-zinc-300]="translator.selectedLanguageCode() !== beacon.targetLangCode"
+                        class="p-1.5 border rounded-md text-center transition flex flex-col items-center justify-center cursor-pointer hover:border-amber-500/60 group"
+                        [title]="beacon.label + ': ' + beacon.culturalContext"
+                      >
+                        <span class="text-sm font-black group-hover:scale-110 transition-transform" [ngClass]="beacon.fontClass">{{ beacon.glyph }}</span>
+                        <span class="text-[8px] truncate text-zinc-500 dark:text-zinc-400 mt-0.5 max-w-full">{{ beacon.id }}</span>
+                      </button>
+                    }
+                  </div>
+                </div>
+
+                <!-- Standard Language List -->
                 <div class="space-y-1">
                   @for (lang of primaryLanguages; track lang.code) {
                     <button 
                       type="button"
                       (click)="translator.setLanguage(lang.code); isLangMenuOpen.set(false)"
-                      class="w-full text-left px-2 py-1.5 rounded transition flex items-center justify-between text-xs cursor-pointer"
+                      class="w-full text-left px-2 py-1.5 rounded-md transition flex items-center justify-between text-xs cursor-pointer"
                       [ngClass]="{
                         'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 font-bold border border-teal-300 dark:border-teal-700': translator.selectedLanguageCode() === lang.code,
                         'hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-transparent': translator.selectedLanguageCode() !== lang.code
@@ -782,6 +827,11 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
                       <div class="flex items-center gap-2">
                         <span class="text-sm">{{ lang.flagEmoji }}</span>
                         <span>{{ lang.name }}</span>
+                        @if (lang.glyph) {
+                          <span class="px-1 py-0.2 bg-zinc-200 dark:bg-zinc-800 text-amber-700 dark:text-amber-300 border border-zinc-300 dark:border-zinc-700 rounded-xs text-[9px] font-bold">
+                            {{ lang.glyph }}
+                          </span>
+                        }
                       </div>
                       <span class="text-[10px] text-zinc-400">{{ lang.nativeName }}</span>
                     </button>
@@ -886,6 +936,45 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
         </button>
       </div>
     </nav>
+
+    <!-- Clinical Soroban Abacus Overlay Modal -->
+    @if (showAbacusModal()) {
+      <div class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div class="fixed inset-0" (click)="showAbacusModal.set(false)"></div>
+        <div class="relative w-full max-w-lg bg-zinc-950 border border-zinc-700 rounded-md shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-200">
+          <div class="p-3 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🧮</span>
+              <span class="font-bold text-xs uppercase tracking-wider text-zinc-200">Clinical Soroban Abacus &amp; Dialect Telemetry</span>
+            </div>
+            <button
+              type="button"
+              (click)="showAbacusModal.set(false)"
+              class="w-7 h-7 flex items-center justify-center rounded-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white cursor-pointer font-bold"
+              aria-label="Close Abacus Modal"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="p-4">
+            <app-clinical-abacus
+              [scriptSystem]="currentAbacusScript()"
+              mode="posology_dosing"
+              [label]="'Microbore Syringe Dosing (' + translator.activeLanguage().name + ')'"
+              unit="mL"
+            />
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Earth Biophysics & Somatic Frontiers Hub Modal -->
+    @if (showEarthBiophysicsModal()) {
+      <app-earth-biophysics-somatic-hub
+        [asModal]="true"
+        (closeModal)="showEarthBiophysicsModal.set(false)"
+      />
+    }
 
     <!-- Mobile Drawer Overlay & Slide-out Menu -->
     @if (isMobileMenuOpen()) {
@@ -1236,20 +1325,42 @@ export class MainHeaderNavComponent {
   isAppsHubOpen = signal<boolean>(false);
   showAmbientPlayer = signal<boolean>(false);
   isLangMenuOpen = signal<boolean>(false);
+  showAbacusModal = signal<boolean>(false);
+  showEarthBiophysicsModal = signal<boolean>(false);
+
+  readonly scriptBeacons = SCRIPT_GLYPH_BEACONS;
+  currentAbacusScript = computed<AbacusScriptSystem>(() => this.translator.activeLanguage().abacusSystem ?? 'latin');
+
+  selectScriptBeacon(beacon: IScriptBeacon): void {
+    this.translator.setLanguage(beacon.targetLangCode);
+    kachinkaAudio.playWoodBeadClick(1.2);
+  }
+
+  toggleAbacusModal(): void {
+    this.showAbacusModal.set(!this.showAbacusModal());
+    kachinkaAudio.playKaChink();
+  }
+
+  toggleEarthBiophysicsModal(): void {
+    this.showEarthBiophysicsModal.set(!this.showEarthBiophysicsModal());
+    kachinkaAudio.playWoodBeadClick(1.0);
+  }
 
   readonly primaryLanguages = [
-    { code: 'en', name: 'English', nativeName: 'English (Plain)', flagEmoji: '🇺🇸' },
-    { code: 'es', name: 'Spanish', nativeName: 'Español', flagEmoji: '🇲🇽' },
-    { code: 'zh', name: 'Mandarin', nativeName: '中文 (简体)', flagEmoji: '🇨🇳' },
-    { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flagEmoji: '🇮🇳' },
-    { code: 'ar', name: 'Arabic', nativeName: 'العربية', flagEmoji: '🇸🇦' },
-    { code: 'tl', name: 'Tagalog', nativeName: 'Tagalog', flagEmoji: '🇵🇭' },
-    { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', flagEmoji: '🇻🇳' },
-    { code: 'fr', name: 'French', nativeName: 'Français', flagEmoji: '🇫🇷' },
-    { code: 'pt', name: 'Portuguese', nativeName: 'Português', flagEmoji: '🇧🇷' },
-    { code: 'de', name: 'German', nativeName: 'Deutsch', flagEmoji: '🇩🇪' },
-    { code: 'uk', name: 'Ukrainian', nativeName: 'Українська', flagEmoji: '🇺🇦' },
-    { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili', flagEmoji: '🇰🇪' },
+    { code: 'en', name: 'English', nativeName: 'English (Plain)', flagEmoji: '🇺🇸', glyph: 'Rx' },
+    { code: 'es', name: 'Spanish', nativeName: 'Español', flagEmoji: '🇲🇽', glyph: 'Es' },
+    { code: 'zh', name: 'Mandarin', nativeName: '中文 (简体)', flagEmoji: '🇨🇳', glyph: '氣' },
+    { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flagEmoji: '🇮🇳', glyph: 'आयु' },
+    { code: 'ar', name: 'Arabic', nativeName: 'العربية', flagEmoji: '🇸🇦', glyph: 'ع' },
+    { code: 'iu', name: 'Inuktitut', nativeName: 'ᐃᓄᒃᑎᑐᑦ', flagEmoji: '❄️', glyph: 'ᐃᓄᒃ' },
+    { code: 'chr', name: 'Cherokee', nativeName: 'ᏣᎳᎩ (Tsalagi)', flagEmoji: '🦅', glyph: 'ᏣᎳᎩ' },
+    { code: 'tl', name: 'Tagalog', nativeName: 'Tagalog', flagEmoji: '🇵🇭', glyph: 'Tl' },
+    { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', flagEmoji: '🇻🇳', glyph: 'Vi' },
+    { code: 'fr', name: 'French', nativeName: 'Français', flagEmoji: '🇫🇷', glyph: 'Fr' },
+    { code: 'pt', name: 'Portuguese', nativeName: 'Português', flagEmoji: '🇧🇷', glyph: 'Pt' },
+    { code: 'de', name: 'German', nativeName: 'Deutsch', flagEmoji: '🇩🇪', glyph: 'De' },
+    { code: 'uk', name: 'Ukrainian', nativeName: 'Українська', flagEmoji: '🇺🇦', glyph: 'Uk' },
+    { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili', flagEmoji: '🇰🇪', glyph: 'Sw' },
   ];
 
   openTuringSuite = output<void>();

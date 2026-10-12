@@ -639,6 +639,78 @@ function auditHipaaDeIdentificationEngine() {
 }
 
 /**
+ * Audit Bioethical & Anti-Dark-Pattern Invariants
+ * Enforces:
+ * 1. Zero Commercial Ad-Tech / Surveillance Tracker Invocations
+ * 2. Anti-Entrainment Compliance Isolation (No bio-rhythmic pacing in billing/checkout)
+ * 3. Epistemic Demarcation (Mandatory non-diagnostic badges on exploratory in-silico models)
+ */
+function auditBioethicalAntiDarkPatterns() {
+  const issues = [];
+  const srcDir = path.join(ROOT_DIR, 'src');
+  if (!fs.existsSync(srcDir)) return issues;
+
+  const srcFiles = walkDirectory(srcDir);
+  const trackerPattern = /\b(gtag\(|fbq\(|mixpanel\.(?:init|track)|hotjar\.identify|clarity\(["']|analytics\.load\(|window\._paq)/;
+
+  for (const file of srcFiles) {
+    const ext = path.extname(file).toLowerCase();
+    if (!['.ts', '.js', '.html'].includes(ext)) continue;
+    if (file.includes('.spec.ts')) continue;
+
+    const content = fs.readFileSync(file, 'utf8');
+    const lines = content.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.trim().startsWith('//') || line.trim().startsWith('*')) continue;
+      if (trackerPattern.test(line)) {
+        issues.push({
+          file: path.relative(ROOT_DIR, file).replace(/\\/g, '/'),
+          type: 'COMMERCIAL_SURVEILLANCE_TRACKER_DETECTED',
+          severity: 'HIGH',
+          message: `Commercial surveillance tracker execution pattern detected on line ${i + 1}: ${line.trim().slice(0, 80)}`,
+          line: i + 1,
+        });
+      }
+    }
+  }
+
+  // 2. Anti-Entrainment Compliance Isolation: Ensure bio-rhythmic classes are not used in billing/payment templates
+  for (const file of srcFiles) {
+    const lowerPath = file.toLowerCase();
+    if (lowerPath.includes('billing') || lowerPath.includes('payment') || lowerPath.includes('checkout') || lowerPath.includes('pricing')) {
+      const content = fs.readFileSync(file, 'utf8');
+      if (content.includes('mayer-wave-pulse') || content.includes('vagal-pacing') || content.includes('parasympathetic-pulse')) {
+        issues.push({
+          file: path.relative(ROOT_DIR, file).replace(/\\/g, '/'),
+          type: 'BIOETHICAL_ENTRAINMENT_MANIPULATION',
+          severity: 'HIGH',
+          message: 'Bio-rhythmic parasympathetic pacing (.mayer-wave-pulse) is strictly prohibited in billing/payment/pricing contexts to prevent affective compliance manipulation.',
+          line: 1,
+        });
+      }
+    }
+  }
+
+  // 3. Epistemic Demarcation: Verify Exploratory In Silico Model Non-Diagnostic badge on Earth Biophysics Hub
+  const biophysicsHubPath = path.join(ROOT_DIR, 'src/components/research-frame/earth-biophysics-somatic-hub.component.ts');
+  if (fs.existsSync(biophysicsHubPath)) {
+    const hubContent = fs.readFileSync(biophysicsHubPath, 'utf8');
+    if (!hubContent.includes('Exploratory In Silico Model • Non-Diagnostic')) {
+      issues.push({
+        file: 'src/components/research-frame/earth-biophysics-somatic-hub.component.ts',
+        type: 'EPISTEMIC_DEMARCATION_MISSING',
+        severity: 'HIGH',
+        message: 'EarthBiophysicsSomaticHubComponent must display "Exploratory In Silico Model • Non-Diagnostic" badge to prevent somatic panic and epistemic conflation.',
+        line: 1,
+      });
+    }
+  }
+
+  return issues;
+}
+
+/**
  * Run Sentinel Audit Suite
  */
 function runSentinelGuard() {
@@ -671,6 +743,22 @@ function runSentinelGuard() {
       file: 'src/services/privacy/de-identification-engine.service.ts',
       issues: hipaaIssues,
     });
+  }
+
+  // Bioethical & Anti-Dark-Pattern Invariant Check
+  const darkPatternIssues = auditBioethicalAntiDarkPatterns();
+  if (darkPatternIssues.length > 0) {
+    for (const issue of darkPatternIssues) {
+      const existing = allIssues.find((g) => g.file === issue.file);
+      if (existing) {
+        existing.issues.push(issue);
+      } else {
+        allIssues.push({
+          file: issue.file,
+          issues: [issue],
+        });
+      }
+    }
   }
 
   console.log(`📊 Scanned ${totalFilesScanned} source files for egress and secret security.`);

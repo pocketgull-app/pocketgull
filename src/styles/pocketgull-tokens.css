@@ -82,6 +82,17 @@
   --font-pocketgull-clinical: 'PocketGull', 'PocketGull Bold', sans-serif;
   --font-pocketgull-mono: 'PocketGull Mono', monospace;
   --font-pocketgull-serif: 'PocketGull Serif', 'PocketGull Serif VF', Georgia, serif;
+  --font-pocketgull-math: 'PocketGull Math', 'PocketGull Mono', 'Cambria Math', monospace;
+  --font-pocketgull-chem: 'PocketGull Chem', 'PocketGull Math', 'PocketGull Mono', monospace;
+  --font-pocketgull-algo: 'PocketGull Algo', 'PocketGull Mono', monospace;
+  --font-pocketgull-music: 'PocketGull Music', 'PocketGull Mono', monospace;
+  --font-pocketgull-genome: 'PocketGull Genome', 'PocketGull Mono', monospace;
+  --font-pocketgull-learn: 'PocketGull Learn', 'PocketGull', sans-serif;
+  --font-pocketgull-lab: 'PocketGull Lab', 'PocketGull', sans-serif;
+  --font-pocketgull-aac: 'PocketGull Bliss AAC', 'PocketGull Sign', monospace;
+  --font-pocketgull-indigenous: 'PocketGull Inuktitut', 'PocketGull Cherokee', sans-serif;
+  --font-pocketgull-tcm: 'PocketGull CJK Fallback', 'PocketGull', sans-serif;
+  --font-pocketgull-indic: 'PocketGull Indic', sans-serif;
 
   /* 🧬 9. Live Bio-Rhythmic Variable Font Kinetics (0.1 Hz Autonomic Vagal Pacing) */
   --pg-live-wght: 400;
