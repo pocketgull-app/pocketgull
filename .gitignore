@@ -246,6 +246,12 @@ server.pid
 tmp/
 .temp/
 scratch/
+research_scratch/
+.research/
+agent_scratch/
+*.research.json
+*.scraped.json
+*.scraped.html
 
 # ------------------------------------------------------------------------------
 # 10. Local Data Dumps, PHI & Health Vault Files

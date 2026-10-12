@@ -182,6 +182,11 @@ To prevent context window degradation, attention drift, and token exhaustion:
 3. **Structured Response Economy**:
    - Keep conversational commentary concise, high-signal, and linked to concrete workspace symbols.
    - Provide clickable file links using GitHub-style markdown: `[file.ts](file:///absolute/path/file.ts)`.
+4. **Research Air-Gapping & Zero-Data-Leak Directives**:
+   - **Research Subagent Isolation**: Subagents assigned to `research` or literature surveying MUST operate strictly read-only and NEVER write raw downloaded files, clinical notes, or API outputs to public repository folders (`public/`, `src/assets/`, `docs/`).
+   - **Zero-Commit Research Data**: All trial data, scraped datasets, model weight caches, experimental outputs, and one-off CSV/JSONL dumps MUST reside in `.gitignore` paths (`scratch/`, `diagnostics/`, `tests/fixtures/`, or `<appDataDir>/brain/<conversation-id>/scratch/`).
+   - **No Secret/Credential Reflection in Research Prompts**: Never paste or echo active API keys, session tokens, or GCP secrets into prompts, commit messages, or subagent tasks. Always reference them indirectly via environment variables (`process.env.GEMINI_API_KEY`) or GCP Secret Manager.
+   - **Zero Raw External Scripts in `public/`**: Never place third-party HTML prototypes, external script tags, or unvetted vendor bundles in `public/` (as occurred with legacy three.js prototypes). All front-end assets must be bundled hermetically via standard build pipelines with Subresource Integrity (SRI) and validated by `Sentinel Security Guard`.
 
 ## Data Science & ML Competition Engineering Standards
 1. **Leak-Free Cross-Validation Anchoring (`GroupKFold`)**: In medical imaging datasets where patients have multiple series/scans, group splits strictly by `patient_id` using `GroupKFold(n_splits=5)` to prevent patient-feature leakage between train and validation splits.
