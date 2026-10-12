@@ -1,4 +1,4 @@
-package com.example.provider_app
+package com.pocketgull.provider_app
 
 import io.flutter.embedding.android.FlutterActivity
 

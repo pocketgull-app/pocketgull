@@ -176,8 +176,8 @@ class _TriageCommandBoardState extends State<TriageCommandBoard> {
         if (_isTriageView)
           Container(
             color: surfaceColor,
-            height: 64,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            height: 72,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
