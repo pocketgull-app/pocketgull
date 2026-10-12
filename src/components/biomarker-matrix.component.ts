@@ -516,7 +516,13 @@ export class BiomarkerMatrixComponent implements OnDestroy {
           const cells = line.split('|').map(c => c.trim()).filter(c => c.length > 0);
           if (cells.length >= 2) {
             const rawName = cells[nameIdx] ? cells[nameIdx].replace(/\*\*/g, '').trim() : '';
-            const rawLevel = cells[levelIdx] ? cells[levelIdx].replace(/<[^>]+>/g, '').replace(/\*\*/g, '').trim() : '';
+            let rawLevelStr = cells[levelIdx] ? cells[levelIdx].replace(/\*\*/g, '').trim() : '';
+            let prevLevel = '';
+            while (rawLevelStr !== prevLevel) {
+              prevLevel = rawLevelStr;
+              rawLevelStr = rawLevelStr.replace(/<[^>]+>/g, '');
+            }
+            const rawLevel = rawLevelStr.trim();
             const rawPathway = pathwayIdx !== -1 && cells[pathwayIdx] ? cells[pathwayIdx].replace(/\*\*/g, '').trim() : 'Metabolic Pathway';
 
             if (rawName && rawLevel) {

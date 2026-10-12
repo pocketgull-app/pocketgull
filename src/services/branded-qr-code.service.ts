@@ -417,9 +417,9 @@ export class BrandedQrCodeService {
       warnings.push('PCI-DSS Violation: Payload contains unmasked 16-digit payment card pattern.');
     }
 
-    // Check for executable script schemes
-    const lower = payload.trim().toLowerCase();
-    if (lower.startsWith('javascript:') || lower.startsWith('vbscript:') || lower.startsWith('data:text/html')) {
+    // Check for executable script schemes (CodeQL alert #3016: Incomplete URL scheme check)
+    const sanitizedScheme = payload.replace(/[\x00-\x20\u200B-\u200D\uFEFF]/g, '').toLowerCase();
+    if (/^(?:javascript|vbscript|data):/i.test(sanitizedScheme)) {
       warnings.push('OWASP LLM/XSS Violation: Payload contains executable script URI scheme.');
     }
 

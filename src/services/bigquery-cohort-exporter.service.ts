@@ -127,7 +127,7 @@ export class BigQueryCohortExporterService {
 PARTITION BY study_day_t
 CLUSTER BY phenotype_code, age_bracket
 OPTIONS(
-  description="${description.replace(/"/g, '\\"')}",
+  description="${description.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}",
   require_partition_filter=TRUE,
   partition_expiration_days=${partitionExpirationDays}
 );`;

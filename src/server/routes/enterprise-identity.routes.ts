@@ -268,17 +268,40 @@ export function createEnterpriseIdentityRouter(): Router {
         return res.status(401).json({ error: 'SAML Authentication rejected by Identity Provider' });
       }
 
-      // Extract Claims
-      const nameIdMatch = rawXml.match(/<(?:saml:|saml2:)?NameID[^>]*>([^<]+)<\/(?:saml:|saml2:)?NameID>/i);
-      const emailMatch = rawXml.match(/<(?:saml:|saml2:)?Attribute[^>]*Name="(?:email|User\.Email|[^"]*emailaddress)"[^>]*>[\s\S]*?<(?:saml:|saml2:)?AttributeValue[^>]*>([^<]+)<\/(?:saml:|saml2:)?AttributeValue>/i);
-      const nameMatch = rawXml.match(/<(?:saml:|saml2:)?Attribute[^>]*Name="(?:displayName|name|cn|[^"]*displayname)"[^>]*>[\s\S]*?<(?:saml:|saml2:)?AttributeValue[^>]*>([^<]+)<\/(?:saml:|saml2:)?AttributeValue>/i);
-      const roleMatch = rawXml.match(/<(?:saml:|saml2:)?Attribute[^>]*Name="[^"]*clinicalRole"[^>]*>[\s\S]*?<(?:saml:|saml2:)?AttributeValue[^>]*>([^<]+)<\/(?:saml:|saml2:)?AttributeValue>/i);
-      const tenantMatch = rawXml.match(/<(?:saml:|saml2:)?Attribute[^>]*Name="[^"]*tenantId"[^>]*>[\s\S]*?<(?:saml:|saml2:)?AttributeValue[^>]*>([^<]+)<\/(?:saml:|saml2:)?AttributeValue>/i);
+      // Extract Claims (CodeQL alerts #3001-#3005: eliminate polynomial backtracking regexes)
+      const extractSamlTag = (xml: string, tagName: string): string | null => {
+        const openIdx = xml.indexOf(`<${tagName}`);
+        const altOpenIdx = openIdx === -1 ? xml.indexOf(`:${tagName}`) : openIdx;
+        const start = altOpenIdx !== -1 ? xml.indexOf('>', altOpenIdx) : -1;
+        if (start === -1) return null;
+        const closeIdx = xml.indexOf(`</`, start);
+        if (closeIdx === -1) return null;
+        return xml.slice(start + 1, closeIdx).trim();
+      };
 
-      const userEmail = emailMatch ? emailMatch[1].trim() : (nameIdMatch ? nameIdMatch[1].trim() : 'clinician@hospital.org');
-      const userName = nameMatch ? nameMatch[1].trim() : 'Attending Clinician';
-      const role = roleMatch ? roleMatch[1].trim() : 'roles/aiplatform.user';
-      const tenantId = tenantMatch ? tenantMatch[1].trim() : 'tenant_hospital_enterprise';
+      const extractSamlAttribute = (xml: string, attrNamePattern: RegExp): string | null => {
+        // Fast linear search over isolated Attribute blocks without greedy multi-character spans
+        const attrBlocks = xml.split(/<\/(?:[a-zA-Z0-9_-]+:)?Attribute>/i);
+        for (const block of attrBlocks) {
+          const openTagMatch = block.match(/<(?:[a-zA-Z0-9_-]+:)?Attribute\s+[^>]*Name="([^"]+)"/i);
+          if (openTagMatch && attrNamePattern.test(openTagMatch[1])) {
+            const valMatch = block.match(/<(?:[a-zA-Z0-9_-]+:)?AttributeValue[^>]*>([^<]+)<\//i);
+            if (valMatch) return valMatch[1].trim();
+          }
+        }
+        return null;
+      };
+
+      const nameIdMatch = rawXml.match(/<(?:[a-zA-Z0-9_-]+:)?NameID[^>]*>([^<]+)<\/(?:[a-zA-Z0-9_-]+:)?NameID>/i);
+      const emailVal = extractSamlAttribute(rawXml, /^(?:email|User\.Email|.*emailaddress)$/i);
+      const nameVal = extractSamlAttribute(rawXml, /^(?:displayName|name|cn|.*displayname)$/i);
+      const roleVal = extractSamlAttribute(rawXml, /clinicalRole$/i);
+      const tenantVal = extractSamlAttribute(rawXml, /tenantId$/i);
+
+      const userEmail = emailVal || (nameIdMatch ? nameIdMatch[1].trim() : 'clinician@hospital.org');
+      const userName = nameVal || 'Attending Clinician';
+      const role = roleVal || 'roles/aiplatform.user';
+      const tenantId = tenantVal || 'tenant_hospital_enterprise';
 
       const validRole = role === 'roles/healthcare.datasetAdmin' ? 'roles/healthcare.datasetAdmin'
         : role === 'roles/bigquery.jobUser' ? 'roles/bigquery.jobUser'

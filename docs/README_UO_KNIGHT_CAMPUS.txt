@@ -34,6 +34,7 @@ PACKAGE CONTENTS:
 ================================================================================
 ONLINE CLOUD RUN ACCESS:
 --------------------------------------------------------------------------------
-The live interactive suite is also hosted and runnable directly online at:
-https://pocketgull.app/uo-knight-portal.html
+The live interactive suite is integrated into PocketGull's sovereign GullRender
+WebGPU direct mathematical curves engine:
+https://pocketgull.app/
 ================================================================================

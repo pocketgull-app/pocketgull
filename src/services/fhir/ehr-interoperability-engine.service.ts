@@ -348,9 +348,17 @@ export class EhrInteroperabilityEngineService {
       throw new Error('Invalid FHIR Bundle: missing resourceType or entry array.');
     }
 
-    // Detect standard
-    const profile = bundle['meta']?.profile?.[0] || '';
-    const standardDetected: EhrStandardProfile = profile.includes('UKCore') || profile.includes('hl7.org.uk')
+    // Detect standard (CodeQL alert #3015: Incomplete URL substring sanitization)
+    const profile = String(bundle['meta']?.profile?.[0] || '');
+    const isUkProfile = profile.includes('UKCore') || (() => {
+      try {
+        const parsed = new URL(profile);
+        return parsed.hostname === 'hl7.org.uk' || parsed.hostname.endsWith('.hl7.org.uk');
+      } catch {
+        return /^https?:\/\/(?:[a-zA-Z0-9-]+\.)*hl7\.org\.uk(?:\/|$)/i.test(profile);
+      }
+    })();
+    const standardDetected: EhrStandardProfile = isUkProfile
       ? 'UK_CORE_NHS'
       : 'US_CORE_V6';
 

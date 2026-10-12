@@ -343,7 +343,13 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
       const selected = matched.length > 0 ? matched.slice(0, 5) : FALLBACK_SEED_ARTICLES.slice(0, 3);
 
       const results = selected.map((article, idx) => {
-        const cleanSnippet = article.excerpt.replace(/<[^>]*>/g, '').trim() || article.title;
+        let cleanSnippet = String(article.excerpt || '');
+        let prev = '';
+        while (cleanSnippet !== prev) {
+          prev = cleanSnippet;
+          cleanSnippet = cleanSnippet.replace(/<[^>]*>/g, '');
+        }
+        cleanSnippet = cleanSnippet.trim() || article.title;
         return {
           document: {
             id: `clinical-doc-${article.id || idx}`,
