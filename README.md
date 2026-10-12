@@ -146,18 +146,19 @@ Without a `GEMINI_API_KEY`, use the built-in demo mode (de-identified sample pat
 ```mermaid
 %%{init: {'theme': 'neutral'}}%%
 graph TB
-    classDef cloud fill:#e2e8f0,stroke:#6366f1,stroke-width:2px,color:#0f172a
-    classDef mobile fill:#c7d2fe,stroke:#818cf8,stroke-width:2px,color:#0f172a
-    classDef ingestion fill:#e0f2fe,stroke:#38bdf8,stroke-width:2px,color:#0f172a
-    classDef hub fill:#f3e8ff,stroke:#a855f7,stroke-width:3px,color:#0f172a
-    classDef lenses fill:#d1fae5,stroke:#10b981,stroke-width:2px,color:#0f172a
-    classDef foundation fill:#fef3c7,stroke:#f59e0b,stroke-width:2px,color:#0f172a
-    classDef security fill:#fee2e2,stroke:#ef4444,stroke-width:2px,color:#0f172a
+    classDef cloud fill:#0f172a,stroke:#6366f1,stroke-width:2px,color:#f8fafc
+    classDef mobile fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
+    classDef ingestion fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
+    classDef hub fill:#18181b,stroke:#a855f7,stroke-width:3px,color:#fafafa
+    classDef lenses fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#f8fafc
+    classDef foundation fill:#0f172a,stroke:#f59e0b,stroke-width:2px,color:#f8fafc
+    classDef security fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2
 
-    subgraph Endpoints ["📱 Endpoints (Mobile, Wearable, Desktop)"]
-        PatientApp["Patient App\n(Recovery / Health Connect)"]
-        ProviderApp["Provider Field Kit\n(Offline Dispensary)"]
-        WearApp["Wear OS Smartwatch\n(0.10 Hz Vagal Reset)"]
+    subgraph Endpoints ["📱 Endpoints & Companion Apps"]
+        PatientApp["Patient App\n(Recovery & Health Connect)"]
+        ProviderApp["Provider Field Kit\n(Backpack Dispensary & Triage)"]
+        WearApp["Wear OS Smartwatch\n(0.10 Hz Vagal Reset & CEDA)"]
+        AvsApp["AVS Photobiomodulation\n(Web Companion PWA)"]
         DesktopHUD["Desktop HUD\n(Tauri v2 / Rust Native)"]
     end
 
@@ -203,6 +204,7 @@ graph TB
     DesktopHUD <-->|Local IPC| SyncEngine
     WearApp -->|BLE Pulse Streams| TelemetryBus
     Body3D -->|Spatial Signals (60fps)| TelemetryBus
+    AvsApp <-->|Photobiomodulation| State
     
     Voice -->|Transcribed Text| ADK
     Intake --> State
@@ -230,7 +232,7 @@ graph TB
     ADK --> PubMed
 
     class CloudRun,FastAPI,Vertex cloud
-    class Endpoints,PatientApp,ProviderApp,WearApp,DesktopHUD mobile
+    class Endpoints,PatientApp,ProviderApp,WearApp,AvsApp,DesktopHUD mobile
     class Body3D,Voice,Intake ingestion
     class Hub,TelemetryBus,SyncEngine,State,Sovereign,ADK,WebMCP,LensRegistry hub
     class Western,TCM,Ayurvedic,Ortho lenses

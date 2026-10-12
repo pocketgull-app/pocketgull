@@ -130,7 +130,6 @@ PocketGull is an open-source clinical intelligence ecosystem designed to bridge 
 ### 2.11 Clinical Lens Registry (Plugin Pattern)
 * **Open-Closed Principle (OCP)**: Replaces hardcoded peer orchestrator routing with an extensible Clinical Lens Registry.
 * **Pluggable Paradigms**: Clinical perspectives (`Conventional/Allopathic`, `TCM`, `Ayurvedic`, `Orthomolecular`) register as discrete clinical lens modules with explicit evidence-grade tagging (Grades A/B/C) and standardized reasoning hooks, allowing new paradigms to be introduced with zero changes to core routing.
-
 ---
 
 ## 🔒 3. Trust Boundaries & Data Flow Invariants
