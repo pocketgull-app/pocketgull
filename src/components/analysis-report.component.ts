@@ -3832,10 +3832,10 @@ export class AnalysisReportComponent implements OnDestroy {
     }
   }
 
-  changeLens(lens: AnalysisLens | 'EMT Handoff' | 'ASSESSMENTS' | 'Maternal & Postpartum') {
+  changeLens(lens: AnalysisLens | 'EMT Handoff' | 'ASSESSMENTS' | 'Maternal & Postpartum' | string) {
     this.audit.logAction('VIEW_LENS', this.patientManager.selectedPatientId(), { lens });
     this.flushAutoSave();
-    this.activeLens.set(lens);
+    this.activeLens.set(lens as any);
     this.collapsedSections.set({});
     this.selectedMobileSectionTab.set('all');
 

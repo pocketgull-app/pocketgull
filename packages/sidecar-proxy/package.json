@@ -1,0 +1,29 @@
+{
+  "name": "@pocketgull/sidecar-proxy",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Zero-dependency pure-Node.js HTTP reverse proxy and micro-sidecar stream bridge for PocketGull and FastAPI services.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "reverse-proxy",
+    "zero-dependency",
+    "sidecar",
+    "fastapi",
+    "streaming"
+  ],
+  "author": "Pocket-Gull Authors",
+  "license": "Apache-2.0"
+}

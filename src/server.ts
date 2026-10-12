@@ -912,7 +912,7 @@ app.post('/api/csp-report', express.json({ type: ['application/json', 'applicati
 import { dicomRouter } from './server/dicom';
 import { healthcareRouter, ensureHealthcareStoresExist } from './server/healthcare';
 import { fitbitRouter } from './server/fitbit';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import { createSidecarProxy } from '@pocketgull/sidecar-proxy';
 import { createAiRouter } from './server/routes/ai.routes';
 import { createPatientsRouter } from './server/routes/patients.routes';
 import { createUtilityRouter } from './server/routes/utility.routes';
@@ -935,15 +935,13 @@ app.use(createCanaryRouter());
 // ── Python Biosignal & Data Bridge Proxy ───────────────────────────────────
 // Routes /api/python/* → FastAPI sidecar on :8001 (dev) or PYTHON_API_URL (prod).
 const pythonApiTarget = process.env['PYTHON_API_URL'] ?? 'http://localhost:8001';
-app.use('/api/python', createProxyMiddleware({
+app.use('/api/python', createSidecarProxy({
   target: pythonApiTarget,
   changeOrigin: true,
   pathRewrite: { '^/api/python': '' },
-  on: {
-    error: (err: Error, req: express.Request, res: express.Response) => {
-      console.warn('[Python Proxy] FastAPI sidecar unavailable:', (err as Error).message);
-      res.status(503).json({ error: 'Python data service unavailable. Is the FastAPI sidecar running?' });
-    }
+  onError: (err: Error, _req, res) => {
+    console.warn('[Python Proxy] FastAPI sidecar unavailable:', err.message);
+    res.status(503).json({ error: 'Python data service unavailable. Is the FastAPI sidecar running?' });
   }
 }));
 

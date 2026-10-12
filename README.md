@@ -31,7 +31,7 @@
 > **Research preview & clinical epistemology.** Pocket Gull is clinical decision support and educational software for licensed clinicians, who remain responsible for every clinical decision. It is designed to meet §520(o)(1)(E) non-device criteria: recommendations are transparent, cite peer-reviewed literature, and require practitioner review. It is not an autonomous diagnostic device. In an emergency, contact local emergency services. See the [regulatory notice](#regulatory--clinical-use-notice).
 
 <p align="center">
-  <img src="docs/images/dashboard.png" alt="Pocket Gull clinical dashboard showing a care plan, 3D anatomy view, and live consult panel" width="800" height="307">
+  <img src="docs/images/gull_squadron_brand_banner.svg" alt="PocketGull Clinical Intelligence & CDS Team Banner" width="800">
 </p>
 
 > *"Medicine is not merely the eradication of pathogen-induced disease (pathogenesis); it is the active generation and reinforcement of coherence, autonomic resilience, and human agency (salutogenesis)."*  
@@ -338,6 +338,14 @@ Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and th
 
 Pocket Gull is open source. You can support development through [GitHub Sponsors](https://github.com/sponsors/philgear). For pilots, integrations, or enterprise support, contact [dpo@pocketgull.app](mailto:dpo@pocketgull.app).
 
+## 🙏 Acknowledgments & Lineage of Gratitude
+
+Pocket Gull is dedicated first and foremost to **Indigenous Peoples, Native American Nations & Tribal Health Sovereignty**—the first stewards of these lands, waters, and forests. 
+
+Our work is grounded in the shoulders of open-source craftsmen, clinicians, engineers, cybersecurity defenders, teachers, and family—including the ASU Graphic Design faculty, Google Developer Groups (Portland & Seattle), Women Techmakers, Women Who Code, Google DeepMind, the Cloud Native Computing Foundation (CNCF), the Academic Integrative Medicine community, Cabrera Lab, Portland Type Tuesday, NedSpace, our lifelong mentors, and family.
+
+See the complete, living roll of honor in **[ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md)**.
+
 ## Citation
 
 If you use Pocket Gull in research, please cite it (see also [CITATION.cff](CITATION.cff)):
@@ -349,7 +357,7 @@ If you use Pocket Gull in research, please cite it (see also [CITATION.cff](CITA
   month     = sep,
   year      = 2026,
   publisher = {Zenodo},
-  version   = {v1.38.0},
+  version   = {v1.41.0},
   doi       = {10.5281/zenodo.20647514},
   url       = {https://doi.org/10.5281/zenodo.20647514}
 }

@@ -231,7 +231,7 @@ Return this exact JSON schema (all fields required):
         body: JSON.stringify({
           patientData: userPrompt,
           systemInstruction,
-          model: 'gemini-2.5-flash',
+          model: this.state.selectedAiModel() || 'gemini-3.8-flash',
           temperature: 0.1, // Low temperature for consistent, safe JSON
         }),
       });

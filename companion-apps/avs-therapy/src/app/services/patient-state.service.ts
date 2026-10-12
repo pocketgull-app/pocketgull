@@ -25,6 +25,7 @@ export class PatientStateService {
   readonly avsBrainwaveFrequencyHz = signal<number>(6.0);
   readonly avsProtocol = signal<IAvsProtocol | null>(null);
   readonly isGeneratingAvsProtocol = signal<boolean>(false);
+  readonly selectedAiModel = signal<string>('gemini-3.8-flash');
 
   readonly occupation = signal<string>('First Responder');
   readonly reasonForVisit = signal<string>('Stress management and sleep optimization');

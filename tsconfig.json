@@ -46,6 +46,9 @@
       ],
       "@pocketgull/open-scribe": [
         "./packages/open-scribe/src/index.ts"
+      ],
+      "@pocketgull/sidecar-proxy": [
+        "./packages/sidecar-proxy/src/index.ts"
       ]
     }
   },
