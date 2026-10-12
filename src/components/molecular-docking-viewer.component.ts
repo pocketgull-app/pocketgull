@@ -23,7 +23,7 @@ import { MolecularDockingService, IProteinTarget, ILigandMolecule } from '../ser
               <h2 class="text-sm font-semibold text-zinc-100 tracking-wide uppercase font-mono">
                 3D AlphaFold Molecular Dynamics &amp; Drug Docking
               </h2>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                 WebGL Ribbon &amp; PBR Ligand
               </span>
             </div>
@@ -53,9 +53,9 @@ import { MolecularDockingService, IProteinTarget, ILigandMolecule } from '../ser
           <!-- Floating Thermodynamic Overlay HUD -->
           <div class="absolute top-3 left-3 pointer-events-none flex flex-col gap-1.5 text-xs font-mono bg-zinc-950/85 backdrop-blur-md p-3 rounded-xl border border-zinc-800 text-zinc-300 shadow-xl">
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="w-2 h-2 rounded-full status-dot bg-emerald-400 animate-pulse"></span>
               <span class="text-zinc-100 font-bold">Binding Affinity (ΔG):</span>
-              <span class="text-emerald-300 font-bold tabular-nums text-sm">
+              <span class="text-emerald-300 font-bold tabular-nums text-sm font-math">
                 {{ dockingService.dockingResult().deltaGKcalPerMol }} kcal/mol
               </span>
             </div>
@@ -76,7 +76,7 @@ import { MolecularDockingService, IProteinTarget, ILigandMolecule } from '../ser
                 <span>Electrostatic Energy Minimization...</span>
                 <span>{{ dockingService.simulationProgress() }}%</span>
               </div>
-              <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden">
+              <div class="w-full bg-zinc-800 h-2 rounded-xs overflow-hidden">
                 <div class="bg-gradient-to-r from-cyan-500 to-teal-400 h-full transition-all duration-100" [style.width.%]="dockingService.simulationProgress()"></div>
               </div>
             </div>
@@ -117,7 +117,11 @@ import { MolecularDockingService, IProteinTarget, ILigandMolecule } from '../ser
                   class="p-2 rounded-lg bg-zinc-950 border border-zinc-800 hover:border-teal-500/50 transition text-left min-h-[38px] touch-manipulation">
                   <div class="flex justify-between items-center">
                     <span class="font-bold text-zinc-200 truncate">{{ ligand.name }}</span>
-                    <span class="text-[10px] text-teal-400">{{ ligand.baseBindingAffinityKcal }} kcal</span>
+                    <span class="text-[10px] text-teal-400 font-mono">{{ ligand.baseBindingAffinityKcal }} kcal</span>
+                  </div>
+                  <div class="flex justify-between items-center mt-0.5">
+                    <span class="text-[10px] text-amber-300 font-chem tracking-wide">{{ ligand.chemicalFormula }}</span>
+                    <span class="text-[9px] text-zinc-400 font-mono">{{ ligand.molecularWeight }} g/mol</span>
                   </div>
                 </button>
               }

@@ -38,6 +38,12 @@
   --font-caslon: var(--font-pocketgull-serif);
   --font-mono: 'PocketGull Mono', monospace;
   --font-rounded: 'PocketGull', 'PocketGull Bold', sans-serif;
+  --font-math: var(--font-pocketgull-math);
+  --font-chem: var(--font-pocketgull-chem);
+  --font-algo: var(--font-pocketgull-algo);
+  --font-music: var(--font-pocketgull-music);
+  --font-genome: var(--font-pocketgull-genome);
+  --font-aac: var(--font-pocketgull-aac);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -68,9 +74,71 @@ body, html {
 /* Bio-Adaptive Sloan 5:1 Optotype Aperture Primitives */
 .bio-adaptive-sloan {
   letter-spacing: var(--sloan-letter-spacing, 0em);
-  font-feature-settings: "zero" 1, "cv08" 1, "cv05" 1, "ss02" 1, "tnum" 1;
-  font-variant-numeric: slashed-zero tabular-nums;
   transition: letter-spacing 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   Sovereign PocketShoal Specialized Scientific & Multi-Script Typography
+   ========================================================================== */
+.font-math, .font-pocketgull-math {
+  font-family: var(--font-pocketgull-math, 'PocketGull Math', 'PocketGull Mono', 'Cambria Math', monospace) !important;
+  font-feature-settings: "tnum" 1, "zero" 1, "cv08" 1 !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.font-chem, .font-pocketgull-chem {
+  font-family: var(--font-pocketgull-chem, 'PocketGull Chem', 'PocketGull Math', 'PocketGull Mono', monospace) !important;
+  font-feature-settings: "sinf" 1, "subs" 1, "calt" 1, "tnum" 1 !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.font-music, .font-pocketgull-music {
+  font-family: var(--font-pocketgull-music, 'PocketGull Music', 'PocketGull Mono', monospace) !important;
+  font-feature-settings: "calt" 1, "liga" 1;
+}
+
+.font-genome, .font-pocketgull-genome {
+  font-family: var(--font-pocketgull-genome, 'PocketGull Genome', 'PocketGull Mono', monospace) !important;
+  font-feature-settings: "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+.font-aac, .font-pocketgull-aac {
+  font-family: var(--font-pocketgull-aac, 'PocketGull Bliss AAC', 'PocketGull Sign', monospace) !important;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ==========================================================================
+   PocketShoal DirectCurves Chips & Tactile Nodes (Zero-Pill Geometry)
+   ========================================================================== */
+.shoal-chip, .shoal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--shoal-fillet-md, 0.375rem);
+  font-family: var(--font-pocketgull-mono, 'PocketGull Mono', monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shoal-glyph-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--shoal-fillet-md, 0.375rem);
+  touch-action: manipulation;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* 203 DPI Calibrated Bedside Thermal Print Media Styles for Patient Chart */

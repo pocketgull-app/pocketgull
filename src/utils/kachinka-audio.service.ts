@@ -94,6 +94,59 @@ export class KachinkaAudioEngine {
     osc.start(now);
     osc.stop(now + 0.025);
   }
+
+  /**
+   * Play satisfying acoustic wood bead click for Soroban abacus rods
+   * Models the dry, resonant birch/boxwood transient of abacus beads striking the beam
+   */
+  public playWoodBeadClick(pitchMultiplier: number = 1.0): void {
+    this.initContext();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+
+    // 1. High-frequency wood-impact transient (filtered noise tap)
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.018); // 18ms
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.2));
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(3400 * pitchMultiplier, now);
+    filter.Q.setValueAtTime(5.0, now);
+
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.28, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(this.ctx.destination);
+    noise.start(now);
+
+    // 2. Resonant woodblock body resonance (boxwood grain)
+    const osc = this.ctx.createOscillator();
+    const oscGain = this.ctx.createGain();
+
+    osc.type = 'triangle';
+    const baseFreq = 720 * pitchMultiplier;
+    osc.frequency.setValueAtTime(baseFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.75, now + 0.035);
+
+    oscGain.gain.setValueAtTime(0.35, now);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+    osc.connect(oscGain);
+    oscGain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.04);
+  }
 }
 
 export const kachinkaAudio = new KachinkaAudioEngine();

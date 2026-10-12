@@ -31,18 +31,18 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
         <!-- CRISPR R-Loop Readout Badge -->
         <div class="pointer-events-auto px-3 py-1.5 bg-zinc-950/85 backdrop-blur-md rounded-xl border border-teal-500/40 text-xs font-mono shadow-lg flex items-center gap-3">
           <div class="flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full"
+            <span class="w-2 h-2 rounded-full status-dot"
                   [class.bg-emerald-400]="isProofreadingPassed()"
                   [class.bg-rose-400]="!isProofreadingPassed()"
                   [class.animate-pulse]="isProofreadingPassed()"></span>
             <span class="text-teal-300 font-bold">3D Cas9 R-Loop Engine</span>
           </div>
           <div class="hidden sm:flex items-center gap-2 text-[11px] text-zinc-300">
-            <span>Net ΔG: <strong class="text-teal-200">{{ netDeltaG() }} kcal/mol</strong></span>
+            <span>Net ΔG: <strong class="text-teal-200 font-math">{{ netDeltaG() }} kcal/mol</strong></span>
             <span>•</span>
             <span>Seed: <strong [class.text-emerald-300]="isSeedMatched()" [class.text-rose-400]="!isSeedMatched()">{{ isSeedMatched() ? 'MATCHED (1-8)' : 'MISMATCH' }}</strong></span>
             <span>•</span>
-            <span>Cleavage: <strong [class.text-emerald-300]="cleavageProbabilityPct() >= 80" [class.text-amber-300]="cleavageProbabilityPct() < 80">{{ cleavageProbabilityPct() }}%</strong></span>
+            <span>Cleavage: <strong [class.text-emerald-300]="cleavageProbabilityPct() >= 80" [class.text-amber-300]="cleavageProbabilityPct() < 80" class="font-math">{{ cleavageProbabilityPct() }}%</strong></span>
             <span>•</span>
             <span>State: <strong [class.text-emerald-300]="isProofreadingPassed()" [class.text-rose-400]="!isProofreadingPassed()">{{ isProofreadingPassed() ? 'CATALYTICALLY ACTIVE' : 'INCOMPLETE R-LOOP' }}</strong></span>
           </div>
@@ -74,25 +74,25 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
       <div class="absolute bottom-3 inset-x-3 z-30 pointer-events-none flex flex-wrap items-center justify-between gap-2">
         <div class="pointer-events-auto px-3 py-1.5 bg-zinc-950/85 backdrop-blur-md rounded-xl border border-zinc-800 text-[11px] font-mono text-zinc-400 flex items-center gap-3">
           <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
-            <span>Guide RNA (gRNA)</span>
+            <span class="w-2.5 h-2.5 rounded-full status-dot bg-cyan-400"></span>
+            <span>gRNA: <strong class="font-genome text-cyan-300 font-bold tracking-wider">{{ guideRna() }}</strong></span>
           </div>
           <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-            <span>Target DNA Strand</span>
+            <span class="w-2.5 h-2.5 rounded-full status-dot bg-amber-400"></span>
+            <span>DNA: <strong class="font-genome text-amber-300 font-bold tracking-wider">{{ targetDna() }}</strong></span>
           </div>
           <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
-            <span>Displaced Non-Target Loop</span>
+            <span class="w-2.5 h-2.5 rounded-full status-dot bg-rose-400"></span>
+            <span>Non-Target Loop</span>
           </div>
           <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span>
-            <span>Cas9 Bilobed RNP</span>
+            <span class="w-2.5 h-2.5 rounded-full status-dot bg-teal-400"></span>
+            <span>Cas9 RNP</span>
           </div>
         </div>
         
         <div class="pointer-events-auto px-2.5 py-1 bg-zinc-950/85 backdrop-blur-md rounded-xl border border-zinc-800 text-[10px] font-mono text-zinc-500">
-          <span>HNH / RuvC Catalysis • Seed Superhelical Torque σ = {{ superhelicalSigma() }}</span>
+          <span>HNH / RuvC Catalysis • Seed Superhelical Torque <span class="font-math">σ = {{ superhelicalSigma() }}</span></span>
         </div>
       </div>
 

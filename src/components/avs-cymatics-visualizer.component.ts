@@ -35,18 +35,18 @@ interface ICymaticParticle {
                 Cymatics &amp; Chladni Sacred Geometry Visualizer
               </h3>
               @if (avsEngine?.isPlaying()) {
-                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse">
+                  <span class="w-1.5 h-1.5 rounded-full status-dot bg-emerald-400"></span>
                   LIVE RESONANCE
                 </span>
               } @else {
-                <span class="px-2 py-0.5 rounded-full text-[9px] font-mono text-zinc-400 bg-zinc-800 border border-zinc-700">
+                <span class="px-2 py-0.5 rounded-md text-[9px] font-mono text-zinc-400 bg-zinc-800 border border-zinc-700">
                   STANDBY
                 </span>
               }
             </div>
             <p class="text-[11px] text-zinc-400">
-              Chladni Plate Harmonics • {{ activeCarrierHz() }}Hz Carrier • {{ activeBeatHz() }}Hz Beat
+              Chladni Plate Harmonics • <span class="font-music font-bold text-amber-300">{{ activeCarrierHz() }}Hz</span> Carrier • <span class="font-music font-bold text-teal-300">{{ activeBeatHz() }}Hz</span> Beat
             </p>
           </div>
         </div>
@@ -112,8 +112,8 @@ interface ICymaticParticle {
       <!-- Footer Quick Status -->
       <div class="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2 border-t border-zinc-900 text-[11px] text-zinc-400">
         <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-teal-400"></span>
-          <span>Frequency Harmonic: <strong class="text-teal-300 font-mono">{{ activeCarrierHz() }} Hz</strong> ({{ activeToneName() }})</span>
+          <span class="w-2 h-2 rounded-full status-dot bg-teal-400"></span>
+          <span>Frequency Harmonic: <strong class="text-teal-300 font-music font-bold">{{ activeCarrierHz() }} Hz</strong> ({{ activeToneName() }})</span>
         </div>
         <div class="flex items-center gap-2 font-mono text-[10px]">
           <span class="text-zinc-500">Binaural L/R:</span>

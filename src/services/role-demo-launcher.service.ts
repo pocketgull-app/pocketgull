@@ -50,7 +50,7 @@ export class RoleDemoLauncherService {
       patientId: 'p002',
       patientName: 'Homo Sapiens (Female, Dysautonomia & Long COVID, 34y)',
       chiefComplaint: 'Post-exertional malaise, orthostatic tachycardia (HR 74 → 128 bpm), and ACGME competency evaluation.',
-      highlightedModules: ['Residency OSCE Simulator', 'Grand Rounds 7-Slide Deck', 'Keju Board Arena', 'Socratic DxRadar'],
+      highlightedModules: ['Residency OSCE Simulator', 'Earth Biophysics Hub', 'Clinical Soroban Abacus', 'Socratic DxRadar'],
       initialActiveTab: 'osce',
       clinicalNarrative: 'Experience residency training: run an interactive OSCE clinical simulation, earn ACGME milestone credits, and export a 7-slide Grand Rounds presentation deck.'
     },
@@ -89,7 +89,7 @@ export class RoleDemoLauncherService {
       patientId: 'p007',
       patientName: 'Homo Sapiens (Female, Maternal Postpartum, 28y)',
       chiefComplaint: 'Postpartum blood pressure logging and 8th-grade health literacy guidance without downloading apps.',
-      highlightedModules: ['SMS Compass Bridge', 'Plain-Language Analogies', 'Spanish Translations', 'Joy & Play Matrix'],
+      highlightedModules: ['SMS Compass Bridge', 'Earth Biophysics Pacer', 'Multi-Script Beacons', 'Joy & Play Matrix'],
       initialActiveTab: 'sms',
       clinicalNarrative: 'Experience healthcare through the patient’s eyes: communicate with clinicians via everyday SMS text messages, and read medical concepts explained in plain English and Spanish.'
     },

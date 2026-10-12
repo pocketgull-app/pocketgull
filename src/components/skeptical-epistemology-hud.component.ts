@@ -33,7 +33,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
           <div>
             <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
               Skeptical Epistemology & Clinical Evidence HUD
-              <span class="inline-flex items-center rounded-full bg-indigo-100 dark:bg-indigo-950/80 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+              <span class="inline-flex items-center rounded-md bg-indigo-100 dark:bg-indigo-950/80 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                 Popperian Falsifiability
               </span>
             </h3>
@@ -45,7 +45,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
 
         <div class="flex items-center gap-2">
           <span
-            class="px-3 py-1 text-xs font-semibold rounded-full border transition-all"
+            class="px-3 py-1 text-xs font-semibold rounded-md border transition-all"
             [ngClass]="{
               'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30': report()?.evidenceLevel === 'Level A (RCTs)',
               'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30': report()?.evidenceLevel === 'Level B (Cohort)',
@@ -171,7 +171,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
                 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:border-teal-300': activeBiohackId() !== bio.id
               }"
             >
-              <span class="w-2 h-2 rounded-full" [ngClass]="bio.falsifiability.isFalsified ? 'bg-emerald-500' : 'bg-amber-500'"></span>
+              <span class="w-2 h-2 rounded-full status-dot" [ngClass]="bio.falsifiability.isFalsified ? 'bg-emerald-500' : 'bg-amber-500'"></span>
               <span>{{ bio.name }}</span>
             </button>
           }
@@ -200,7 +200,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
                   </span>
                 }
                 <span
-                  class="px-2.5 py-0.5 rounded-full text-xs font-semibold border"
+                  class="px-2.5 py-0.5 rounded-md text-xs font-semibold border"
                   [ngClass]="{
                     'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30': b.evidenceTier.startsWith('Level A'),
                     'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30': b.evidenceTier.startsWith('Level B'),
@@ -308,7 +308,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
           <div class="rounded-xl bg-zinc-950/80 p-4 border border-zinc-800 space-y-3 font-sans">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <h5 class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+                <span class="w-2 h-2 rounded-full status-dot bg-teal-400"></span>
                 {{ protac.name }}
               </h5>
               <span class="text-xs font-mono font-bold px-2 py-0.5 rounded"
@@ -331,7 +331,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
               </div>
               <div class="p-2 rounded bg-black/40 border border-zinc-800">
                 <span class="text-[10px] text-zinc-500 block">H₀ p-value:</span>
-                <span class="font-bold text-indigo-400">p = {{ protac.falsifiability.pValue }}</span>
+                <span class="font-bold text-indigo-400 font-math">p = {{ protac.falsifiability.pValue }}</span>
               </div>
             </div>
             @if (protac.falsifiability.skepticalWarningNotice) {
@@ -351,7 +351,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
           <div class="rounded-xl bg-zinc-950/80 p-4 border border-zinc-800 space-y-3 font-sans">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <h5 class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                <span class="w-2 h-2 rounded-full status-dot bg-cyan-400"></span>
                 LLPS Cahn-Hilliard Phase Boundary Falsifier ({{ llps.moleculeName }})
               </h5>
               <span class="text-xs font-mono font-bold px-2 py-0.5 rounded"
@@ -394,7 +394,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
           <div class="rounded-xl bg-zinc-950/80 p-4 border border-zinc-800 space-y-3 font-sans">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <h5 class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                <span class="w-2 h-2 rounded-full status-dot bg-rose-400"></span>
                 Quantum Thermal Dissipation Falsifier ({{ q.deviceOrClaimName }})
               </h5>
               <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800">
@@ -404,19 +404,19 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
               <div class="p-2 rounded bg-black/40 border border-zinc-800">
                 <span class="text-[10px] text-zinc-500 block">Thermal Noise Floor (37°C):</span>
-                <span class="font-bold text-amber-300">k_B T = {{ q.thermalNoiseKbTJoule }} J</span>
+                <span class="font-bold text-amber-300 font-math">k_B T = {{ q.thermalNoiseKbTJoule }} J</span>
               </div>
               <div class="p-2 rounded bg-black/40 border border-zinc-800">
                 <span class="text-[10px] text-zinc-500 block">Zeeman Energy:</span>
-                <span class="font-bold text-rose-400">{{ q.zeemanEnergyJoule }} J</span>
+                <span class="font-bold text-rose-400 font-math">{{ q.zeemanEnergyJoule }} J</span>
               </div>
               <div class="p-2 rounded bg-black/40 border border-zinc-800">
                 <span class="text-[10px] text-zinc-500 block">Photon Energy (hν):</span>
-                <span class="font-bold text-rose-400">{{ q.photonEnergyJoule }} J</span>
+                <span class="font-bold text-rose-400 font-math">{{ q.photonEnergyJoule }} J</span>
               </div>
               <div class="p-2 rounded bg-black/40 border border-zinc-800">
                 <span class="text-[10px] text-zinc-500 block">Null H₀ p-value:</span>
-                <span class="font-bold text-indigo-400">p = {{ q.falsifiability.pValue }} (Fail)</span>
+                <span class="font-bold text-indigo-400 font-math">p = {{ q.falsifiability.pValue }} (Fail)</span>
               </div>
             </div>
             @if (q.falsifiability.skepticalWarningNotice) {
@@ -436,8 +436,8 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
           <div class="rounded-xl bg-zinc-950/80 p-4 border border-zinc-800 space-y-3 font-sans">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <h5 class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
-                Zeeman-Steered Evidence Superposition (|Ψ⟩ = α|S⟩ + β|T⟩)
+                <span class="w-2 h-2 rounded-full status-dot bg-sky-400 animate-pulse"></span>
+                Zeeman-Steered Evidence Superposition (<span class="font-math">|Ψ⟩ = α|S⟩ + β|T⟩</span>)
               </h5>
               <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
                 {{ ds.dominantBranch }}
@@ -449,7 +449,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
                   <span>|S⟩ Conservative Yield:</span>
                   <span>{{ (ds.singletYieldPhiS * 100) | number:'1.0-0' }}%</span>
                 </div>
-                <div class="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+                <div class="w-full h-2 rounded-xs bg-zinc-800 overflow-hidden">
                   <div class="h-full bg-teal-500" [style.width.%]="ds.singletYieldPhiS * 100"></div>
                 </div>
                 <p class="text-[10px] text-zinc-400 mt-1.5">{{ ds.conservativeStandardOfCare }}</p>
@@ -460,7 +460,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
                   <span>|T⟩ Integrative Yield:</span>
                   <span>{{ (ds.tripletYieldPhiT * 100) | number:'1.0-0' }}%</span>
                 </div>
-                <div class="w-full h-2 rounded-full bg-zinc-800 overflow-hidden">
+                <div class="w-full h-2 rounded-xs bg-zinc-800 overflow-hidden">
                   <div class="h-full bg-rose-500" [style.width.%]="ds.tripletYieldPhiT * 100"></div>
                 </div>
                 <p class="text-[10px] text-zinc-400 mt-1.5">{{ ds.integrativeTherapy }}</p>
@@ -469,7 +469,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
               <div class="p-2.5 rounded bg-black/40 border border-zinc-800 flex flex-col justify-between">
                 <div>
                   <span class="text-[10px] text-zinc-500 block">Zeeman Tilt Angle:</span>
-                  <span class="font-bold text-sky-300">θ = {{ ds.zeemanAngleThetaRadians }} rad</span>
+                  <span class="font-bold text-sky-300 font-math">θ = {{ ds.zeemanAngleThetaRadians }} rad</span>
                 </div>
                 <div class="mt-2 text-[11px] text-zinc-300">
                   <span>Patient Acuity: <strong class="text-amber-300">{{ ds.patientAcuityScore }}</strong></span>
@@ -488,7 +488,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
           <div class="rounded-xl bg-zinc-950/80 p-4 border border-zinc-800 space-y-3 font-sans">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <h5 class="text-sm font-semibold text-zinc-100 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span class="w-2 h-2 rounded-full status-dot bg-amber-400"></span>
                 Reticular Pore Sieving &amp; Chelation Selectivity Guard ({{ ret.binderName }})
               </h5>
               <span class="text-xs font-mono font-bold px-2 py-0.5 rounded"
@@ -541,12 +541,12 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
             <span>🛡️</span> Anti-Confirmation Bias & Falsification Envelope
           </h4>
           <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold flex items-center gap-1"
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold flex items-center gap-1"
                   [ngClass]="groundedAssertion().pValueNullRejection < 0.05 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30'">
               <span aria-hidden="true">{{ groundedAssertion().pValueNullRejection < 0.05 ? '✓' : '▲' }}</span>
-              <span>H₀ Status: p = {{ groundedAssertion().pValueNullRejection }}</span>
+              <span>H₀ Status: <span class="font-math">p = {{ groundedAssertion().pValueNullRejection }}</span></span>
             </span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold flex items-center gap-1 border border-zinc-800"
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold flex items-center gap-1 border border-zinc-800"
                   [ngClass]="getBiasColorClass(groundedAssertion().cochraneRiskOfBias)">
               <span aria-hidden="true">{{ groundedAssertion().cochraneRiskOfBias === 'Low Risk of Bias' ? '✓' : groundedAssertion().cochraneRiskOfBias === 'Some Concerns' ? '▲' : '⛔' }}</span>
               <span>{{ groundedAssertion().cochraneRiskOfBias }}</span>
@@ -578,7 +578,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
             <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
               @for (ch of groundedAssertion().counterHypotheses; track $index) {
                 <div class="p-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 flex items-start gap-2">
-                  <span class="w-5 h-5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] font-mono font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span class="w-5 h-5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] font-mono font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                     ▲{{ $index + 1 }}
                   </span>
                   <span class="leading-snug">{{ ch }}</span>
@@ -670,7 +670,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
             <div>
               <h4 class="text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-2">
                 Clinical Logical Fallacy &amp; Cognitive Bias Auditor
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
                   {{ allFallacies().length }} Canonical Fallacies Encoded
                 </span>
               </h4>
@@ -762,7 +762,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
                       </p>
                     </div>
                   </div>
-                  <span class="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full border"
+                  <span class="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-md border"
                         [ngClass]="res.hasDetectedFallacy ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border-amber-300' : 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300'">
                     Fallacy Count: {{ res.findings.length }}
                   </span>
@@ -901,7 +901,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
           </span>
         </div>
         <div class="flex items-center gap-1.5 text-[10.5px] font-mono text-zinc-500">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+          <span class="w-2 h-2 rounded-full status-dot bg-emerald-500 inline-block"></span>
           <span>OpenAlex Registry Grounded</span>
         </div>
       </div>
