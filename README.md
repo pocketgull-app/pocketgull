@@ -18,8 +18,10 @@
 </p>
 
 <p align="center">
-  <a href="https://pocketgull.app"><strong>Live app</strong></a> ·
-  <a href="https://pocketgull.com/case-studies"><strong>Case Studies Journal</strong></a> ·
+  <a href="https://pocketgull.app"><strong>Live app (pocketgull.app)</strong></a> ·
+  <a href="https://pocketgull.com"><strong>Enterprise &amp; Commons (pocketgull.com)</strong></a> ·
+  <a href="https://journal.pocketgull.com"><strong>Journal (journal.pocketgull.com)</strong></a> ·
+  <a href="https://font.pocketgull.app"><strong>Typefoundry (font.pocketgull.app)</strong></a> ·
   <a href="docs/FEATURES.md"><strong>Features</strong></a> ·
   <a href="docs/BENCHMARKS.md"><strong>Benchmarks</strong></a> ·
   <a href="https://huggingface.co/philgear"><strong>Models</strong></a> ·
@@ -54,9 +56,9 @@ The complete module catalogue (clinical tools, assessment instruments, agent per
 
 ---
 
-## 📖 The Salutogenic Research Commons & Case Studies
+## 📖 The Salutogenic Research Commons & Journal
 
-Rather than treating health records as static retrospective charts or billing encounters, Pocket Gull documents living, non-linear recovery trajectories in an open, reproducible commons at [`https://pocketgull.com/case-studies`](https://pocketgull.com/case-studies). Grounded in neuroscientist David Eagleman & composer Anthony Brandt's **3B Innovation Architecture** (*Breaking, Bending, Blending*):
+Rather than treating health records as static retrospective charts or billing encounters, Pocket Gull documents living, non-linear recovery trajectories across [`https://pocketgull.com/case-studies`](https://pocketgull.com/case-studies) and publishes formal IMRaD monographs with Popperian $H_0/H_1/BF_{10}$ falsifiability cards in the *PocketGull Journal of Salutogenic Medicine & Systems Biology* at [`https://journal.pocketgull.com`](https://journal.pocketgull.com). Grounded in neuroscientist David Eagleman & composer Anthony Brandt's **3B Innovation Architecture** (*Breaking, Bending, Blending*):
 
 | Case Study & Archetype | The 3B Salutogenic Operation | Biophysical Focus & Recovery Trajectory |
 | :--- | :--- | :--- |
@@ -66,7 +68,7 @@ Rather than treating health records as static retrospective charts or billing en
 | **Case #05: Charles Darwin & The Vagal Enigma** | 🌀 *Bending* a 40-year historical symptom journal across 5 decades | Retrospective HRV spectral power analysis, autonomic dysautonomia & restorative pacing |
 
 Each case study includes an interactive Canvas biophysical radar visualizer and 1-click export to a syntactically valid **HL7® FHIR® R4 Research Bundle**.  
-👉 **[Explore the Live Case Studies](https://pocketgull.com/case-studies)** · **[Read the Commons Methodology](docs/CLINICAL_CASE_STUDIES_COMMONS.md)**
+👉 **[Explore the Live Case Studies (`pocketgull.com`)](https://pocketgull.com/case-studies)** · **[Read the Journal (`journal.pocketgull.com`)](https://journal.pocketgull.com)** · **[Read the Commons Methodology](docs/CLINICAL_CASE_STUDIES_COMMONS.md)**
 
 ---
 
@@ -103,9 +105,9 @@ Every diagnostic insight, risk disclosure, and ambient consultation strictly enf
 
 | Audience | Start here |
 | :--- | :--- |
-| **Clinicians** | [Live app](https://pocketgull.app) · [User walkthrough](docs/WALKTHROUGH.md) |
-| **Researchers** | [Case Studies Commons](https://pocketgull.com/case-studies) · [Commons methodology](docs/CLINICAL_CASE_STUDIES_COMMONS.md) · [Citation](#citation) |
-| **Developers** | [Quickstart](#quickstart) · [Architecture](ARCHITECTURE.md) · [Contributing](CONTRIBUTING.md) |
+| **Clinicians** | [Live app (`pocketgull.app`)](https://pocketgull.app) · [Enterprise portal (`pocketgull.com`)](https://pocketgull.com) · [User walkthrough](docs/WALKTHROUGH.md) |
+| **Researchers** | [Journal (`journal.pocketgull.com`)](https://journal.pocketgull.com) · [Case Studies Commons](https://pocketgull.com/case-studies) · [Commons methodology](docs/CLINICAL_CASE_STUDIES_COMMONS.md) · [Citation](#citation) |
+| **Developers & Designers** | [Quickstart](#quickstart) · [Architecture](ARCHITECTURE.md) · [Typefoundry (`font.pocketgull.app`)](https://font.pocketgull.app) · [Contributing](CONTRIBUTING.md) |
 | **Health systems** | [EHR sidecar integration](docs/ENTERPRISE_EHR_SIDECAR.md) · [Privacy & HIPAA](docs/SIGSAC_HIPAA_ZERO_TRUST_PRIVACY.md) · [Contact](mailto:dpo@pocketgull.app) |
 
 ---
