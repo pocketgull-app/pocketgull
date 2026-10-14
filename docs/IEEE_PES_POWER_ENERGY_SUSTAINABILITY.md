@@ -39,7 +39,7 @@ graph TD
   $$P_{\text{dynamic}} = \alpha C V^2 f$$
   Unchecked 3D graphics rendering on battery power induces thermal throttling and rapidly exhausts mobile battery life.
 * **Pocket-Gull Application**:
-  - Reads `navigator.getBattery()` telemetry in [body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/body-3d-viewer.component.ts). When operating on low battery ($<20\%$), frame rate caps automatically downscale to 30 FPS and post-processing passes disable, extending device battery life by **3.8x**.
+  - Reads `navigator.getBattery()` telemetry in [body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/anatomy-3d/body-3d-viewer.component.ts). When operating on low battery ($<20\%$), frame rate caps automatically downscale to 30 FPS and post-processing passes disable, extending device battery life by **3.8x**.
 
 ---
 
@@ -78,5 +78,5 @@ graph TD
 ## Technical Reference Links
 
 - **GCP Lifecycle Script**: [scripts/apply-gcp-lifecycle-policies.mjs](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/apply-gcp-lifecycle-policies.mjs)
-- **3D Spatial Viewer**: [src/components/body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/body-3d-viewer.component.ts)
+- **3D Spatial Viewer**: [src/components/body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/anatomy-3d/body-3d-viewer.component.ts)
 - **Patient State Central**: [src/services/patient-state.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts)

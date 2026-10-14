@@ -52,8 +52,12 @@ Pocket Gull addresses this systemic failure mode through the **4-Pillar Epistemi
   - `counter-hypotheses`: Delimited string of exactly 3 orthogonal differential conditions.
   - `disconfirming-physical-exams`: Physical exams specifically designed to disconfirm the hypothesis.
   - `statutory-attestation`: Legal attestation compliance string (`FDA-21-CFR-PART-11; ONC-HTI-1`).
-- **Cryptographic Provenance**:
-  - Generates a FHIR `Provenance` resource containing an immutable SHA-256 digital signature digest (`sigFormat: application/jose`) covering the patient ID, bundle timestamp, hypothesis, and target count.
+- **Cryptographic Provenance (`IFhirProvenancePart11`)**:
+  - Generates a FHIR `Provenance` resource containing an immutable SHA-256 digital signature digest (`sigFormat: application/jose`) covering the patient ID, bundle timestamp, hypothesis, and target count (`src/models/fhir-skeptical-extensions.model.ts`).
+- **NSF Open Knowledge Network (OKN) & WHO ICD-11 ICTM TM1 Grounding (`bce6fc2`)**:
+  - Grounds the `P001–P010` clinical cohort across multi-agency NSF OKN knowledge graphs (SPOKE, BioBricks ICE, Monarch Initiative, PrimeKG) and enforces WHO ICD-11 Chapter 26 (TM1) dual-coding alongside Western ICD-10/SNOMED-CT assertions.
+- **IEEE P2933™ TIPPSS 6-Pillar Wearable Trust**:
+  - Enforces 4-way schema parity (`TypeScript` ↔ `Dart` ↔ `Python` ↔ `BigQuery` via `npm run tippss:audit`) across Hardware Root of Trust, patient cryptographic binding, micro-consents, RSSI $\ge -85\text{ dBm}$, SQI bounds, and SHA-256 telemetry digests.
 
 ---
 

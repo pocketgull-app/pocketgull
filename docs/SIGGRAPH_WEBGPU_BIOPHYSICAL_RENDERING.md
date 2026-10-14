@@ -28,7 +28,7 @@ graph TD
 ### 1. WebGPU Compute & Fragment Shader Acceleration
 * **SIGGRAPH Principle**: Real-time 3D interactive graphics should offload procedural geometry instantiation, mesh deformation, and biophysical lighting pass computations directly to GPU unified memory via fragment and compute shaders.
 * **Pocket-Gull Application**:
-  - Implemented custom fragment shaders in [body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/body-3d-viewer.component.ts) for live anatomical pulse glow, tri-paradigm spatial lens highlights, and thermal gradient overlays.
+  - Implemented custom fragment shaders in [body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/anatomy-3d/body-3d-viewer.component.ts) and `GullRenderEngine` (`vesalian-woodcut.shader.ts`) for live anatomical pulse glow, mediastinum-anchored cardiac scaling, tri-paradigm spatial lens highlights, and thermal gradient overlays.
 
 ---
 
@@ -37,14 +37,14 @@ graph TD
 * **Cook-Torrance Specular BRDF**:
   $$f_r = \frac{D(\mathbf{h}) F(\mathbf{v}, \mathbf{h}) G(\mathbf{l}, \mathbf{v}, \mathbf{h})}{4 (\mathbf{n} \cdot \mathbf{l}) (\mathbf{n} \cdot \mathbf{v})}$$
 * **Pocket-Gull Application**:
-  - Encodes biophysical substrate parameters derived from Edwin Smith III's empirical codex directly into Three.js MeshPhysicalMaterial uniforms.
+  - Encodes biophysical substrate parameters derived from Edwin Smith III's empirical codex directly into `GullRenderEngine` PBR shader uniforms.
 
 ---
 
 ### 3. Volumetric Raymarching & DICOM Slice Projection
 * **SIGGRAPH Principle**: Direct Volume Rendering (DVR) enables non-destructive visualization of 3D CT/MRI volumetric scans by marching rays through 3D density textures.
 * **Pocket-Gull Application**:
-  - Spatial 3D lenses in Three.js perform single-pass volumetric raymarching to render inner skeletal layers dynamically beneath dermatological surface models.
+  - Spatial 3D lenses in `GullRenderEngine` perform single-pass volumetric raymarching to render inner skeletal layers dynamically beneath dermatological surface models.
 
 ---
 
@@ -58,7 +58,7 @@ graph TD
 ### 5. Adaptive Frame Pacing & System Accessibility
 * **SIGGRAPH Principle**: Interactive graphics engines must dynamically throttle frame rates on idle canvas states and instantly honor accessibility reduced-motion system preferences.
 * **Pocket-Gull Application**:
-  - Pauses render loops when the canvas is stationary, freezing bloom post-processing passes (`UnrealBloomPass`) and snapping camera transitions instantly when `@media (prefers-reduced-motion: reduce)` is active.
+  - Pauses render loops when the canvas is stationary, freezing bloom post-processing passes and snapping camera transitions instantly when `@media (prefers-reduced-motion: reduce)` is active.
 
 ---
 
@@ -74,5 +74,5 @@ graph TD
 
 ## Technical Reference Links
 
-- **3D Spatial View Component**: [src/components/body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/body-3d-viewer.component.ts)
-- **Three.js Anatomy Skill**: [.agents/skills/threejs_anatomy/SKILL.md](file:///c:/Users/philg/Pocketgull/pocketgull/.agents/skills/threejs_anatomy/SKILL.md)
+- **3D Spatial View Component**: [src/components/anatomy-3d/body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/anatomy-3d/body-3d-viewer.component.ts)
+- **3D Anatomy Skill**: [.agents/skills/threejs_anatomy/SKILL.md](file:///c:/Users/philg/Pocketgull/pocketgull/.agents/skills/threejs_anatomy/SKILL.md)

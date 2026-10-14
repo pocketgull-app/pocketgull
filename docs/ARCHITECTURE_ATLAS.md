@@ -1,8 +1,8 @@
 # 🏛️ Pocket-Gull Architectural Atlas & Visual Topology
 
-> *"From 3D WebGL biophysics and Turing-complete state machines to tri-paradigm clinical reasoning and allometric posology."*
+> *"From zero-dependency `GullRenderEngine` WebGL2/WebGPU biophysics and Turing-complete state machines to tri-paradigm clinical reasoning and allometric posology."*
 
-## 📊 Executive System Metrics
+## 📊 Executive System Metrics (`v1.41.2`)
 
 | Metric | Total |
 | :--- | :--- |
@@ -11,6 +11,8 @@
 | **Total Component Lines of Code** | `153,619 LOC` |
 | **Total Unit Test Lines** | `14,118 LOC` |
 | **Component Test Ratio** | `48.4% (191/395 components tested)` |
+| **3D Rendering Engine** | `GullRenderEngine` (Zero-dependency WebGL2/WebGPU + GLSL Shaders; 0 legacy Three.js deps) |
+| **Semantic Taxonomy Grounding** | `11 Clinical Lenses` via Hybrid RRF (`Dense Int8 + BM25`, LOINC / SNOMED-CT / RxNorm) |
 
 ---
 
@@ -18,8 +20,8 @@
 
 ```mermaid
 graph TD
-    Atlas["Pocket-Gull Clinical Architecture Atlas"]
-    Atlas --> S_biophysical_3d["🥽 Biophysical & 3D WebGL<br/>(38 components, 23246 LOC)"]
+    Atlas["Pocket-Gull Clinical Architecture Atlas (v1.41.2)"]
+    Atlas --> S_biophysical_3d["🥽 Biophysical & GullRenderEngine 3D WebGL<br/>(38 components, 23246 LOC)"]
     Atlas --> S_turing_computation["🧮 Turing-Complete Computation<br/>(5 components, 2885 LOC)"]
     Atlas --> S_tri_paradigm_synthesis["🏛️ Tri-Paradigm Clinical Synthesis<br/>(33 components, 15576 LOC)"]
     Atlas --> S_epistemic_invariants["⚖️ Epistemic Invariants & Falsification<br/>(8 components, 3318 LOC)"]
@@ -27,7 +29,8 @@ graph TD
     Atlas --> S_sovereign_interop["🌐 Sovereign Interoperability & Thin-Client<br/>(300 components, 101696 LOC)"]
 ```
 
-### 🥽 Biophysical & 3D WebGL
+### 🥽 Biophysical & `GullRenderEngine` 3D WebGL
+- **Engine**: Zero-dependency `GullRenderEngine` (`src/services/gull-render-engine.service.ts`, `vesalian-woodcut.shader.ts`) with mediastinum-anchored cardiac scaling (`1dac638`)
 - **Components**: `38`
 - **Lines of Code**: `23246 LOC`
 - **Test Coverage**: `26/38` components with explicit `.spec.ts`

@@ -93,5 +93,22 @@ describe('VertexAgentBuilderService', () => {
     expect(service.summary()).toBe('');
     expect(service.citationCount()).toBe(0);
     expect(service.isLoading()).toBe(false);
+    expect(service.taxonomyGrounding()).toBeNull();
+  });
+
+  it('should enrich live and fallback responses with Hybrid RRF LOINC/SNOMED grounding and Part 11 SHA-256 seals', () => {
+    service.queryGroundedLiterature('Heart rate variability vagal tone').subscribe((res) => {
+      expect(res.taxonomyGrounding).toBeDefined();
+      expect(res.taxonomyGrounding?.loinc.code).toBeTruthy();
+      expect(res.taxonomyGrounding?.snomed.id).toBeTruthy();
+      expect(res.sha256Digest).toMatch(/^sha256_part11_/);
+      expect(res.pValue).toBeLessThan(0.05);
+      expect(service.isNullFalsified()).toBe(true);
+      expect(res.citations[0].sha256Digest).toMatch(/^sha256_part11_/);
+      expect(res.citations[0].loincCode).toBe(res.taxonomyGrounding?.loinc.code);
+    });
+
+    const req = httpMock.expectOne('/api/v1/agent-builder/search');
+    req.error(new ProgressEvent('Offline test'));
   });
 });

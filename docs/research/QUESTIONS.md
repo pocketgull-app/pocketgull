@@ -53,9 +53,9 @@
 
 ---
 
-### Q5. `body-3d-viewer.component.ts` Three.js Complexity `caveat`
+### Q5. `body-3d-viewer.component.ts` GullRenderEngine WebGL Complexity `caveat`
 
-**File**: [body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/body-3d-viewer.component.ts) (2,484 LOC)
+**File**: [body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/anatomy-3d/body-3d-viewer.component.ts) (4,151 LOC)
 **Observation**: Three.js procedural skeletal model with 9 `:any` usages. WebGL geometry and material setup is inherently verbose.
 **Question**: Is the Three.js scene graph setup logic extractable into a dedicated `BodyMeshFactory` service, or does the component need direct access to the rendering loop for performance?
 

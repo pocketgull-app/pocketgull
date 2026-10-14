@@ -53,4 +53,13 @@ describe('GroundedEvidenceBadgeComponent', () => {
 
     expect(component.evidenceTierBadgeClass()).toContain('emerald');
   });
+
+  it('should expose truncated FDA 21 CFR Part 11 digest and Popperian H0 falsification status', () => {
+    agentService.sha256Digest.set('sha256_part11_abcdef0123456789abcdef0123456789');
+    agentService.pValue.set(0.004);
+    fixture.detectChanges();
+
+    expect(component.shortDigest()).toContain('sha256_part11_');
+    expect(agentService.isNullFalsified()).toBe(true);
+  });
 });
