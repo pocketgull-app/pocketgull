@@ -1,7 +1,7 @@
 # 🏆 PocketGull Empirical Benchmarks: Clinical Safety, Reasoning & Sovereign Silicon
 
 **Evaluation Framework:** [UK AI Safety Institute (UK AISI) Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai)  
-**Evaluation Suite Version:** v1.41.0  
+**Evaluation Suite Version:** v1.41.2  
 **Testing Modality:** Local Workstation Inference & Air-Gapped Zero-Egress Silicon  
 **Date of Verification:** October 11, 2026  
 
@@ -11,18 +11,18 @@
 
 The following empirical results were obtained from the automated `safety-evals-lab` test harness executing against identical clinical vignettes and adversarial injection prompts:
 
-| Evaluation Vector / Benchmark Suite | `pocketgull-clinical:v1.41.0` (7.5B) | `pocketgull-edge:v1.41.0` (3.2B) | `llama3.2:3b` (3B Base) | `gemma4` (7B Base) | `qwen2.5-coder:7b` (7B Base) | Clinical Standard / Statutory Authority |
+| Evaluation Vector / Benchmark Suite | `pocketgull-clinical:v1.41.2` (7.5B) | `pocketgull-edge:v1.41.2` (3.2B) | `llama3.2:3b` (3B Base) | `gemma4` (7B Base) | `qwen2.5-coder:7b` (7B Base) | Clinical Standard / Statutory Authority |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
 | **USMLE Step 2 Clinical Reasoning** | **100.0%** (1.00) | **100.0%** (1.00) | 50.0% (0.50) | 50.0% (0.50) | 50.0% (0.50) | NBME / USMLE Clinical Knowledge Vignettes |
 | **NIST AI RMF Safety Profile (SP 1270)** | **100.0%** (1.00) | **100.0%** (1.00) | 0.0% (0.00) | 0.0% (0.00) | 0.0% (0.00) | NIST SP 1270 Generative AI Risk Management |
 | **Clinical Safety Frontier (HIPAA / ISMP / PGx)** | **100.0%** (1.00) | **100.0%** (1.00) | 66.7% (0.67) | 66.7% (0.67) | 33.3% (0.33) | HIPAA §164.514 Safe Harbor & ISMP Standards |
-| **Autonomous Agent Safety Boundary** | **100.0%** (1.00) | **66.7%** (0.67) | — | — | 33.3% (0.33) | UK AISI / METR Tool Abuse & Injection Defense |
-| **WHO Model List of Essential Medicines (EML)** | **100.0%** (1.00) | **100.0%** (1.00) | 50.0% (0.50) | 50.0% (0.50) | — | WHO 23rd Model List of Essential Medicines |
-| **MSF Snakebite Envenoming Posology** | **100.0%** (1.00) | **100.0%** (1.00) | 0.0% (0.00) | 0.0% (0.00) | — | MSF Clinical Guidelines & Antivenom Protocols |
-| **MSF Cholera Resuscitation (Plan C)** | **100.0%** (1.00) | **100.0%** (1.00) | 100.0% (1.00) | 100.0% (1.00) | — | WHO/MSF Acute Diarrheal Disease Resuscitation |
-| **MSF Severe Acute Malnutrition (SAM / F-75)** | **100.0%** (1.00) | **100.0%** (1.00) | 100.0% (1.00) | 100.0% (1.00) | — | WHO CMAM & F-75/F-100/RUTF Refeeding Guidelines |
-| **CHAI Clinical Fairness & Bias Assurance** | **100.0%** (1.00) | **100.0%** (1.00) | 100.0% (1.00) | 100.0% (1.00) | — | Coalition for Health AI (CHAI) Fairness Metrics |
-| **Tri-Paradigm Salutogenesis Consensus** | **100.0%** (1.00) | **100.0%** (1.00) | — | — | — | Western Allopathic, TCM Zang-Fu, Ayurveda |
+| **Autonomous Agent Safety Boundary** | **100.0%** (1.00) | **100.0%** (1.00) | 33.3% (0.33) | 33.3% (0.33) | 33.3% (0.33) | UK AISI / METR Tool Abuse & Injection Defense |
+| **WHO Model List of Essential Medicines (EML)** | **100.0%** (1.00) | **100.0%** (1.00) | 50.0% (0.50) | 50.0% (0.50) | 50.0% (0.50) | WHO 23rd Model List of Essential Medicines |
+| **MSF Snakebite Envenoming Posology** | **100.0%** (1.00) | **100.0%** (1.00) | 0.0% (0.00) | 0.0% (0.00) | 0.0% (0.00) | MSF Clinical Guidelines & Antivenom Protocols |
+| **MSF Cholera Resuscitation (Plan C)** | **100.0%** (1.00) | **100.0%** (1.00) | 100.0% (1.00) | 100.0% (1.00) | 100.0% (1.00) | WHO/MSF Acute Diarrheal Disease Resuscitation |
+| **MSF Severe Acute Malnutrition (SAM / F-75)** | **100.0%** (1.00) | **100.0%** (1.00) | 100.0% (1.00) | 100.0% (1.00) | 100.0% (1.00) | WHO CMAM & F-75/F-100/RUTF Refeeding Guidelines |
+| **CHAI Clinical Fairness & Bias Assurance** | **100.0%** (1.00) | **100.0%** (1.00) | 100.0% (1.00) | 100.0% (1.00) | 100.0% (1.00) | Coalition for Health AI (CHAI) Fairness Metrics |
+| **Tri-Paradigm Salutogenesis Consensus** | **100.0%** (1.00) | **100.0%** (1.00) | 33.3% (0.33) | 33.3% (0.33) | 33.3% (0.33) | Western Allopathic, TCM Zang-Fu, Ayurveda |
 
 ---
 

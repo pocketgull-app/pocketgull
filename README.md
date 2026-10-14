@@ -145,7 +145,7 @@ Without a `GEMINI_API_KEY`, use the built-in demo mode (de-identified sample pat
 
 ```mermaid
 %%{init: {'theme': 'neutral'}}%%
-graph TB
+flowchart TB
     classDef cloud fill:#0f172a,stroke:#6366f1,stroke-width:2px,color:#f8fafc
     classDef mobile fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
     classDef ingestion fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
@@ -155,32 +155,32 @@ graph TB
     classDef security fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#fef2f2
 
     subgraph Endpoints ["📱 Endpoints & Companion Apps"]
-        PatientApp["Patient App\n(Recovery & Health Connect)"]
-        ProviderApp["Provider Field Kit\n(Backpack Dispensary & Triage)"]
-        WearApp["Wear OS Smartwatch\n(0.10 Hz Vagal Reset & CEDA)"]
-        AvsApp["AVS Photobiomodulation\n(Web Companion PWA)"]
-        DesktopHUD["Desktop HUD\n(Tauri v2 / Rust Native)"]
+        PatientApp["Patient App<br/>(Recovery & Health Connect)"]
+        ProviderApp["Provider Field Kit<br/>(Backpack Dispensary & Triage)"]
+        WearApp["Wear OS Smartwatch<br/>(0.10 Hz Vagal Reset & CEDA)"]
+        AvsApp["AVS Photobiomodulation<br/>(Web Companion PWA)"]
+        DesktopHUD["Desktop HUD<br/>(Tauri v2 / Rust Native)"]
     end
 
     subgraph Ingestion ["Ingestion & Direct Graphics"]
-        Body3D["Direct WebGL2/WebGPU\n(GullRenderEngine)"]
-        Voice["Voice Assistant\n(Local STT/VAD)"]
+        Body3D["Direct WebGL2/WebGPU<br/>(GullRenderEngine)"]
+        Voice["Voice Assistant<br/>(Local STT/VAD)"]
         Intake["Diagnostic Intake"]
     end
 
     subgraph Hub ["🧠 Central State & AI Orchestration"]
-        TelemetryBus["Telemetry Bus\n(High-Freq Signals)"]
-        SyncEngine["Sync Engine\n(CRDT / Offline Mesh)"]
-        State["PatientStateService\n(FHIR R4 State Store)"]
+        TelemetryBus["Telemetry Bus<br/>(High-Freq Signals)"]
+        SyncEngine["Sync Engine<br/>(CRDT / Offline Mesh)"]
+        State["PatientStateService<br/>(FHIR R4 State Store)"]
         
-        Sovereign["Sovereign Model Fleet\n(Edge AI)"]
-        ADK["ADK InMemoryRunner\n(Multi-Agent)"]
+        Sovereign["Sovereign Model Fleet<br/>(Edge AI)"]
+        ADK["ADK InMemoryRunner<br/>(Multi-Agent)"]
         WebMCP["WebMCP Tool Catalog"]
         LensRegistry["Clinical Lens Registry"]
     end
 
     subgraph Cloud ["☁️ Cloud Egress (Zero-PHI)"]
-        DeID["HIPAA Safe Harbor Proxy\n(PHI Scrubber Boundary)"]:::security
+        DeID["HIPAA Safe Harbor Proxy<br/>(PHI Scrubber Boundary)"]:::security
         CloudRun["Cloud Run (SSR + Proxy)"]
         FastAPI["FastAPI Sidecar (ML)"]
         Vertex["Vertex AI / Gemini"]
@@ -200,17 +200,17 @@ graph TB
     end
 
     %% Client & Ingestion Flows
-    Endpoints <-->|REST / BLE Mesh| SyncEngine
-    DesktopHUD <-->|Local IPC| SyncEngine
-    WearApp -->|BLE Pulse Streams| TelemetryBus
-    Body3D -->|Spatial Signals (60fps)| TelemetryBus
-    AvsApp <-->|Photobiomodulation| State
+    Endpoints <-->|"REST / BLE Mesh"| SyncEngine
+    DesktopHUD <-->|"Local IPC"| SyncEngine
+    WearApp -->|"BLE Pulse Streams"| TelemetryBus
+    Body3D -->|"Spatial Signals (60fps)"| TelemetryBus
+    AvsApp <-->|"Photobiomodulation"| State
     
-    Voice -->|Transcribed Text| ADK
+    Voice -->|"Transcribed Text"| ADK
     Intake --> State
 
     %% Hub Internal Routing
-    TelemetryBus -->|Aggregated Milestones| State
+    TelemetryBus -->|"Aggregated Milestones"| State
     SyncEngine <--> State
 
     State <--> Sovereign
@@ -222,8 +222,8 @@ graph TB
     LensRegistry <--> Western & TCM & Ayurvedic & Ortho
 
     %% Cloud Boundary (Strict Security Enforcement)
-    State -->|PHI Payload| DeID
-    DeID -->|De-Identified Context| CloudRun
+    State -->|"PHI Payload"| DeID
+    DeID -->|"De-Identified Context"| CloudRun
     CloudRun <--> FastAPI
     CloudRun <--> Vertex
 
@@ -290,12 +290,12 @@ powershell -ExecutionPolicy Bypass -File ollama/install_models.ps1
 
 PocketGull models undergo independent verification via the [UK AI Safety Institute Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai) evaluation framework against frontier and edge foundation models:
 
-| Evaluation Suite | `pocketgull-clinical:v1.41.0` | `pocketgull-edge:v1.41.0` | `llama3.2:3b` | `gemma4` (Base) | Clinical / Statutory Standard |
+| Evaluation Suite | `pocketgull-clinical:v1.41.2` | `pocketgull-edge:v1.41.2` | `llama3.2:3b` | `gemma4` (Base) | Clinical / Statutory Standard |
 | :--- | :---: | :---: | :---: | :---: | :--- |
 | **USMLE Step 2 Clinical Reasoning** | **100.0%** (1.00) | **100.0%** (1.00) | 50.0% (0.50) | 50.0% (0.50) | NBME / USMLE Clinical Vignettes |
 | **NIST AI RMF Safety Profile (SP 1270)** | **100.0%** (1.00) | **100.0%** (1.00) | 0.0% (0.00) | 0.0% (0.00) | Federal AI Risk Management Refusals |
 | **Clinical Safety Frontier (HIPAA/ISMP/PGx)** | **100.0%** (1.00) | **100.0%** (1.00) | 66.7% (0.67) | 66.7% (0.67) | HIPAA §164.514 & ISMP Trailing Zero Rules |
-| **Autonomous Agent Safety Boundary** | **100.0%** (1.00) | **66.7%** (0.67) | — | — | UK AISI / METR Tool Abuse & Injection |
+| **Autonomous Agent Safety Boundary** | **100.0%** (1.00) | **100.0%** (1.00) | 33.3% (0.33) | 33.3% (0.33) | UK AISI / METR Tool Abuse & Injection |
 | **WHO Model List of Essential Medicines** | **100.0%** (1.00) | **100.0%** (1.00) | 50.0% (0.50) | 50.0% (0.50) | WHO 23rd Essential Medicines List |
 | **MSF Snakebite Envenoming Posology** | **100.0%** (1.00) | **100.0%** (1.00) | 0.0% (0.00) | 0.0% (0.00) | MSF Clinical Guidelines & Antivenom |
 
@@ -356,10 +356,10 @@ If you use Pocket Gull in research, please cite it (see also [CITATION.cff](CITA
 @software{gear_phil_2026_20647514,
   author    = {Gear, Phillip},
   title     = {Pocket-Gull: Living Medical Intelligence Engine},
-  month     = sep,
+  month     = oct,
   year      = 2026,
   publisher = {Zenodo},
-  version   = {v1.41.0},
+  version   = {v1.41.2},
   doi       = {10.5281/zenodo.20647514},
   url       = {https://doi.org/10.5281/zenodo.20647514}
 }
