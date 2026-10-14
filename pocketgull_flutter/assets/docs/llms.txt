@@ -7,6 +7,9 @@ Pocket Gull is an Angular v21.1 progressive web application deployed on Google C
 This application was built for the Gemini Live Agent Challenge hackathon (Category: Live Agents — Real-time Voice & Visual UI).
 
 - Live URL: https://pocketgull.app
+- Enterprise & Case Studies Commons: https://pocketgull.com
+- Journal of Salutogenic Medicine & Systems Biology: https://journal.pocketgull.com
+- Typefoundry: https://font.pocketgull.app
 - Repository: https://github.com/pocketgull-app/pocketgull
 - Developer: https://developers.google.com/profile/philgear
 
