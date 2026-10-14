@@ -11,11 +11,18 @@
   "keywords": [
     "ai",
     "healthcare",
-    "gemini",
+    "healthcare-ai",
+    "clinical-decision-support",
+    "google-gemini",
+    "gemma-4",
     "angular",
+    "fhir-r4",
     "care-plan",
     "voice-assistant",
-    "medical-intake"
+    "medical-intake",
+    "hipaa-safe-harbor",
+    "ismp-medication-safety",
+    "threejs"
   ],
   "license": "Apache-2.0",
   "private": true,

@@ -38,7 +38,7 @@ import { GlyphForgeStudioComponent } from './glyph-forge-studio.component';
 
           <div class="flex items-center gap-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             <span class="hidden sm:inline">Dieter Rams Minimal Grid</span>
-            <a href="https://github.com/philgear/pocketgull" target="_blank" class="px-3 py-1.5 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:opacity-90 transition-opacity">
+            <a href="https://github.com/pocketgull-app/pocketgull" target="_blank" class="px-3 py-1.5 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:opacity-90 transition-opacity">
               GitHub OFL
             </a>
           </div>
