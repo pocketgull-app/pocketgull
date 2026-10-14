@@ -37,7 +37,7 @@ graph TD
     subgraph Stream 4 ["Biophysical & Audio Telemetry"]
         P1[Edwin Smith Codex PBR Textures]
         P2[Audio Respiratory Spectral DSP]
-        P3[3D WebGL Anatomical Raycasts]
+        P3[GullRenderEngine 3D WebGL Raycasts]
     end
 
     subgraph Synthesis Engine ["InfiniteClinicalSynthesisService & Pathways MoE Router"]
@@ -60,6 +60,7 @@ graph TD
 > *"Consilience is the interlocking of fact and theory into a coherent, holistic view of knowledge."* — William Whewell / E. O. Wilson
 
 - **Multidisciplinary Alignment**: When Western allopathic biomarkers (e.g. elevated hs-CRP, HbA1c), TCM Zang-Fu disharmonies (e.g. Kidney/Liver Yin deficiency), and Ayurvedic Tridosha imbalances (e.g. Pitta-Vata aggravation) independently point toward systemic inflammation, Pocket-Gull's `Consilience Engine` converges these disparate signals into a unified high-confidence strategy.
+- **WHO ICD-11 ICTM TM1 Dual-Coding & NSF OKN Provenance**: Every integrative assertion in `src/models/fhir-skeptical-extensions.model.ts` pairs Western ICD-10/SNOMED-CT codes with WHO ICD-11 Traditional Medicine Chapter 26 (`TM1`) pattern codes, Sowa-Rigpa 3D Living Tree root/trunk/branch mappings, Chou-Talalay botanical synergy indices ($CI < 1.0$), and NSF Open Knowledge Network (`OKN`) cross-graph identifiers.
 
 ---
 
@@ -78,6 +79,7 @@ graph TD
 ## Technical Implementations
 
 - **Service**: [src/services/infinite-clinical-synthesis.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/infinite-clinical-synthesis.service.ts)
+- **FHIR R4 TM1 & OKN Extensions**: [src/models/fhir-skeptical-extensions.model.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/models/fhir-skeptical-extensions.model.ts)
 - **MoE Router Integration**: [src/services/clinical-moe-router.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/clinical-moe-router.service.ts)
 - **UI Telemetry HUD**: [src/components/shared/pathways-moe-badge.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/shared/pathways-moe-badge.component.ts)
 - **Unit Suite**: [src/services/infinite-clinical-synthesis.service.spec.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/infinite-clinical-synthesis.service.spec.ts)

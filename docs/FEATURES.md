@@ -11,16 +11,17 @@
 
 ### 🌐 4 Interactive Hugging Face Spaces
 * ⚡ [**PocketGull WebGPU Zero-Egress Sovereign AI**](https://huggingface.co/spaces/philgear/pocketgull-webgpu-edge): 100% in-browser WebGPU hardware-accelerated clinical inference (HIPAA air-gapped).
-* 🫀 [**PocketGull 3D WebGL Anatomy & Tri-Paradigm Triage**](https://huggingface.co/spaces/philgear/pocketgull-3d-anatomy): Three.js interactive 3D anatomy viewer with clickable organ nodes (Heart, Brain, Lungs, Liver, Spine).
+* 🫀 [**PocketGull 3D WebGL Anatomy & Tri-Paradigm Triage**](https://huggingface.co/spaces/philgear/pocketgull-3d-anatomy): Zero-dependency `GullRenderEngine` WebGL2/WebGPU interactive 3D anatomy viewer with mediastinum-anchored organ nodes (Heart, Brain, Lungs, Liver, Spine).
 * 💊 [**PocketGull ISMP Decimal Safety & CYP450 RxGuard**](https://huggingface.co/spaces/philgear/pocketgull-ismp-rxguard): Instant prescription order safety auditor detecting 10-fold decimal errors and botanical interactions.
 * 🕊️ [**PocketGull Clinical Intelligence Suite**](https://huggingface.co/spaces/philgear/pocketgull-clinical-consult): Stepped-care triage acuity classifier and 3-Act Trajectory narrative generator.
 
-### 🕊️ The Avian Navigator Tier Models
+### 🕊️ The Sovereign Fleet (`v1.41.2`) & Avian Navigator Tier Models
+* 🏛️ **`pocketgull-clinical`** & **`pocketgull-edge`**: Flagship `v1.41.2` Sovereign Fleet weights fine-tuned for non-alarming salutogenic care plans, Popperian $H_0$ falsification, and 100% UK AISI Inspect AI verification.
 * 🕊️ [**pocketgull-compass-2b**](https://huggingface.co/philgear/pocketgull-compass-2b): NIH/WHO Stepped-Care Triage, Socratic Health Literacy, and 3-Act Trajectories.
 * 🕊️ [**pocketgull-sentinel-peft**](https://huggingface.co/philgear/pocketgull-sentinel-peft): Zero-Tolerance Emergency Red-Flag Interceptor & ISMP Decimal Safety Guard.
 * 🕊️ [**pocketgull-scribe-soap**](https://huggingface.co/philgear/pocketgull-scribe-soap): Zero-Egress Ambient Doctor-Patient SOAP & SBAR Encounter Encoder.
 * 🕊️ [**pocketgull-tern-edge**](https://huggingface.co/philgear/pocketgull-tern-edge): Sub-45ms Ultra-Lightweight On-Device WebGPU / Mobile Edge Engine.
-* 🕊️ [**pocketgull-albatross-multimodal**](https://huggingface.co/philgear/pocketgull-albatross-multimodal): High-Capacity Tri-Paradigm Diagnostic & 3D WebGL Anatomy Integrator.
+* 🕊️ [**pocketgull-albatross-multimodal**](https://huggingface.co/philgear/pocketgull-albatross-multimodal): High-Capacity Tri-Paradigm Diagnostic & `GullRenderEngine` 3D WebGL Anatomy Integrator.
 * 🕊️ [**pocketgull-rxguard-pgx**](https://huggingface.co/philgear/pocketgull-rxguard-pgx): Pharmacogenomics & Botanical Supplement Interaction Screener.
 
 ### 🦙 1-Click Local Execution with Ollama
@@ -50,7 +51,7 @@ Pocket Gull hosts an open, peer-reviewable repository of de-identified clinical 
 | [**Case #01: Nantucket Long COVID**](https://pocketgull.com/case-studies/nantucket-long-covid) | Microvascular Endothelitis & Dysautonomia | **Breaking** chronic fatigue into amyloid microclots; **Bending** recovery from 14 days to a 90-day arc; **Blending** anticoagulation with *Nattokinase*. | Real-time biophysical radar, LOINC microclot grading, FHIR R4 care plan. |
 | [**Case #02: MS Neuro-Sanctuary**](https://pocketgull.com/case-studies/neuro-sanctuary) | Multiple Sclerosis & Neuro-Axonal Remodeling | **Breaking** demyelination into mitochondrial bioenergetics; **Bending** Uhthoff thermal thresholds; **Blending** S1P modulators with 0.1 Hz vagal pacing. | Glial-axonal survival curve, thermal tolerance sliders, S1P receptor safety. |
 | [**Case #03: Cardiometabolic Radar**](https://pocketgull.com/case-studies/cardiometabolic-radar) | Resistant Hypertension & Glycemic Dynamics | **Breaking** metabolic syndrome into glycemic phase space; **Bending** HbA1c to continuous postprandial AUC; **Blending** SGLT2i with *Berberine*. | Non-linear phase portrait attractor, nocturnal dip index, AB generic parity. |
-| [**Case #05: Charles Darwin & Vagal Enigma**](https://pocketgull.com/case-studies/darwin-vagal-enigma) | Longitudinal Consilience & Historical Diagnostics | **Breaking** 40-year illness into Chagas vs. Dysautonomia; **Bending** 5-decade journal records; **Blending** Victorian water cures with modern HRV telemetry. | Baroreflex sensitivity simulation, blind diagnostic scoring, FHIR export. |
+| [**Case #05: Charles Darwin & Vagal Enigma**](https://pocketgull.app/case-studies/darwin-vagal-enigma) | Longitudinal Consilience & Historical Diagnostics | **Breaking** 40-year illness into Chagas vs. Dysautonomia; **Bending** 5-decade journal records; **Blending** Victorian water cures with modern HRV telemetry. | Baroreflex sensitivity simulation, blind diagnostic scoring, FHIR export. |
 
 > **1-Click FHIR R4 Master Bundle**: Researchers can download the entire multi-case cohort as a standardized, HIPAA § 164.514 Safe Harbor de-identified HL7 FHIR R4 JSON bundle directly from the [Case Studies Commons Hub](https://pocketgull.com/case-studies).
 
@@ -60,7 +61,7 @@ Pocket Gull hosts an open, peer-reviewable repository of de-identified clinical 
 
 ### The Fast-Loop Edge to Slow-Loop Cloud Paradigm
 Pocket Gull is engineered around an asymmetric **Fast-Loop (On-Device Edge) / Slow-Loop (Cloud Hyperscaler)** symbiotic architecture:
-1. **The Fast Loop (Local Workstation / Mobile NPU)**: Sub-45ms real-time telemetry, 0.1 Hz vagal breathing visualizers, 3D WebGL biophysics, and voice interaction execute 100% on the clinician's workstation or patient's phone with zero cloud network egress.
+1. **The Fast Loop (Local Workstation / Mobile NPU)**: Sub-45ms real-time telemetry, 0.1 Hz vagal breathing visualizers, `GullRenderEngine` 3D WebGL biophysics, and voice interaction execute 100% on the clinician's workstation or patient's phone with zero cloud network egress.
 2. **The Slow Loop (Enterprise Cloud / Hyperscaler)**: Longitudinal population epidemiology, complex genomic variant re-annotation, and federated model retraining scale cleanly into cloud infrastructures.
 
 ```
@@ -68,9 +69,9 @@ Pocket Gull is engineered around an asymmetric **Fast-Loop (On-Device Edge) / Sl
 │                   FAST-LOOP / SLOW-LOOP COLLABORATION                  │
 ├────────────────────────────────────────────────────────────────────────┤
 │  ⚡ FAST-LOOP EDGE (0–45ms, $0 Egress, HIPAA Sovereign)                 │
-│     • Chrome Built-in AI (Prompt API / Gemma 4)                        │
+│     • Chrome Built-in AI (Prompt API / Gemma 4) & Sovereign Fleet      │
 │     • Windows Copilot+ DirectML / ONNX Runtime Web                     │
-│     • Three.js Procedural Anatomy & Canvas Biophysical Radars          │
+│     • GullRenderEngine Procedural Anatomy & Canvas Biophysical Radars  │
 ├────────────────────────────────────────────────────────────────────────┤
 │  ☁️ SLOW-LOOP ENTERPRISE CLOUD (Longitudinal, Deep Analytics)          │
 │     • Google Cloud Healthcare API & BigQuery Data Exchange             │
@@ -98,8 +99,19 @@ Instead of attempting to replace established EHR platforms, Pocket Gull acts as 
 | **Dynamic Expert Routing** | Pathways-inspired MoE router activating specialized sub-networks (`gulliver-core`, `acoustic-sidecar`, `sibi-bridge`, `dicom-spatial-shader`) |
 | **Voice Consult** | Full-duplex audio streaming via Web Speech API + Express WebSocket proxy with client-side barge-in cancellation |
 | **Semantic Chunking & NLP** | Prosodic respiratory pacing, token boundary preservation for clinical units (`120/80 mmHg`, `CYP2D6*4`), and defensive SSE stream reassembly |
-| **Evidence Grounding** | Real-time PubMed E-utilities and Google Programmable Search for literature-anchored recommendations |
-| **Edge Inference** | WebGPU on-device MedGemma / PubGemma routing for offline and latency-sensitive workloads |
+| **Evidence Grounding** | Real-time PubMed E-utilities, Vertex AI Discovery Engine, and 11-lens Hybrid RRF ([`OnDeviceEmbedderService`](../src/services/ai/on-device-embedder.service.ts)) with LOINC/SNOMED/RxNorm taxonomy grounding |
+| **Edge Inference** | WebGPU on-device Sovereign Fleet (`pocketgull-clinical`, `pocketgull-edge`) & Gemma 4 routing for offline and latency-sensitive workloads |
+
+### 🛡️ Multi-Tier Clinical Grounding & Epistemic Verification Architecture
+
+Pocket-Gull enforces a 4-layer deterministic + probabilistic grounding pipeline across client edge, server Genkit flows, UI provenance badges, and CI documentation verification:
+
+| Grounding Layer | Primary Service / Module | Verification & Epistemic Output |
+| :--- | :--- | :--- |
+| **1. Hybrid RRF & Taxonomy Grounding** | [`OnDeviceEmbedderService`](../src/services/ai/on-device-embedder.service.ts) $\leftrightarrow$ [`VertexAgentBuilderService`](../src/services/ai/vertex-agent-builder.service.ts) | Combines 256-d SIMD cosine similarity + BM25 lexical signals via **Reciprocal Rank Fusion (`k = 60`)** across 11 clinical lenses, enriching every citation via `groundToClinicalTaxonomiesSync()` with **LOINC**, **SNOMED-CT**, **RxNorm**, Popperian $H_0$ / $p$-values, **Cochrane RoB 2**, and **FDA 21 CFR Part 11** SHA-256 seals (`sha256_part11_...`). |
+| **2. Server-Side Genkit Epistemic Gate** | [`auditGenkitClinicalGrounding()`](../src/server/genkit.ts) in `synthesizeKnowledgeFlow` | Audits every LLM knowledge synthesis output against Popperian $H_0$ falsifiability, strips ungrounded absolute efficacy claims (`100% cure`, `guaranteed`), injects Gigerenzer natural frequency framing (`out of 10,000 patients`), and stamps `[EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC]` when $p \ge 0.05$. |
+| **3. UI Provenance & Falsifiability Pill** | [`GroundedEvidenceBadgeComponent`](../src/components/grounded-evidence-badge.component.ts) | Renders interactive hover/focus provenance pills displaying **Popperian $H_0$ status** (`✓ H₀ Falsified` vs. `⚠️ H₀ Retained`), **Cochrane RoB 2** tier, **LOINC / SNOMED-CT** ontology chips, and cryptographic **FDA 21 CFR Part 11** SHA-256 digests. |
+| **4. Pre-Flight FACTS Documentation Guard** | [`scripts/verify_docs_grounding.mjs`](../scripts/verify_docs_grounding.mjs) (`npm run docs:audit`) | Automated CI/pre-flight scanner verifying 100% of `file:///` and relative code citations across `150` Markdown docs (`340+` verified symbol paths) and blocking legacy `Three.js` or `Gemini 1.5` architectural drift. |
 
 ### 🗣️ Natural Language & Semantic Chunking Engine
 
@@ -110,9 +122,9 @@ Pocket-Gull enforces human-first, clinical natural language chunking across text
 - **Defensive SSE Stream Reassembly**: The streaming parser (`GeminiProvider`) dynamically reconstructs Server-Sent Events across packet boundaries, guaranteeing zero dropped tokens during network jitter while streaming clinical reports.
 - **Adaptive Cognitive Chunking**: Automatically fragments dense medical consults into digestible, scan-friendly visual blocks (bulleted pearls, glassmorphic metric cards, and collapsible accordions) mapped to 5 health literacy personas.
 
-### 📐 3D Spatial Anatomy
+### 📐 3D Spatial Anatomy (`GullRenderEngine`)
 
-- **Procedural skeletal & organ viewer** — Three.js geometry with severity-mapped particle systems
+- **Zero-dependency procedural skeletal & organ viewer** — Custom WebGL2/WebGPU `GullRenderEngine` (`vesalian-woodcut.shader.ts`, `oregonator` reaction-diffusion) with mediastinum-anchored cardiac scaling (`1dac638`) and zero legacy Three.js attack surface (`91a8c8c`)
 - **Anatomical search with camera tracking** — Fuzzy search bar that smoothly interpolates WebGL camera to targeted organs
 - **Raycast tooltips & data cards** — Hover for paradigm badges and pain scores; click for slider input overlays
 - **Method of Loci memory palace** — Anchors clinical consult nodes to 3D spatial coordinates for visual recall
@@ -233,10 +245,10 @@ Pocket Gull is architected as an empirical, peer-reviewed clinical intelligence 
 
 | Domain & Society | Standard / Framework | Implementation in Pocket Gull |
 | :--- | :--- | :--- |
-| **IEEE Biomedical Engineering** | IEEE 11073-10101, IEEE 2621, IEEE P7003 | • 1D Dilated CNN ECG/PPG Waveform Arrhythmia Classifier (`pocketgull_api/waveform_1d_cnn.py`)<br>• Real-time WebGPU Biosignal Shaders (`src/services/webgpu-bio-signal.service.ts`)<br>• Biometric Sensor Fusion & CGM Time-in-Range ($70-180\text{ mg/dL}$) Telemetry |
+| **IEEE Biomedical Engineering** | IEEE 11073-10101, IEEE 2621, IEEE P2933™ TIPPSS | • 1D Dilated CNN ECG/PPG Waveform Arrhythmia Classifier (`pocketgull_api/waveform_1d_cnn.py`)<br>• Real-time WebGPU Biosignal Shaders (`src/services/webgpu-bio-signal.service.ts`)<br>• 6-Pillar IEEE P2933™ TIPPSS Wearable Trust & CGM Time-in-Range ($70-180\text{ mg/dL}$) Telemetry |
 | **ACM Computing & Ethics** | ACM Code of Ethics §1.2 & §1.4, ACM HEALTH | • AST Global Taint-Tracking Engine (`scripts/taint-analysis-guard.mjs`)<br>• Stanford HCI Calibrated Confidence HUD (`src/components/ai-confidence-hud.component.ts`)<br>• Socratic "Don't Miss" Differential Radar with Bayesian Nomograms ($LR^+, LR^-$) |
-| **AIGA Design & Typography** | Evidence-Based Clinical Communication | • Bionic Reading Saccadic Fixation (`src/components/shared/bionic-focus-benchmark.component.ts`)<br>• Custom *PocketGull Marker* & Caslon Medical Typography<br>• 3D Longitudinal Trajectory Comparison Slider (WebGL Three.js) |
-| **ASU & NIH/NSF Translational** | NIH CTSA, NSF SBIR, SDOH Equity | • Automated SBIR Phase I Grant Binder Generator (`npm run grants:sbir`)<br>• PRAPARE SDOH & Population Health Equity Engine (`src/services/population-health-equity.service.ts`)<br>• Tribal Health Sovereignty & Cryptographically Sealed Patient Consent Logs |
+| **AIGA Design & Typography** | Evidence-Based Clinical Communication | • Bionic Reading Saccadic Fixation (`src/components/shared/bionic-focus-benchmark.component.ts`)<br>• Scoped `directcurves` Bézier Engine, Louise Sloan 5:1 Optotypes & Caslon Medical Typography<br>• 3D Longitudinal Trajectory Comparison Slider (`GullRenderEngine` WebGL2/WebGPU) |
+| **ASU & NIH/NSF Translational** | NIH CTSA, NSF OKN, WHO ICD-11 TM1 | • NSF Open Knowledge Network (OKN) & WHO ICD-11 ICTM TM1 Dual-Coding (`P001–P010` Cohort)<br>• PRAPARE SDOH & Population Health Equity Engine (`src/services/population-health-equity.service.ts`)<br>• Tribal Health Sovereignty & Cryptographically Sealed Patient Consent Logs |
 
 ---
 
@@ -289,6 +301,10 @@ Pocket-Gull provides a complete suite of production binaries, CLI tools, on-devi
 | [Enterprise EHR Sidecar](ENTERPRISE_EHR_SIDECAR.md) | Epic, Cerner & MEDITECH sidecar, 45 CFR Part 171 Safe Harbor & RPM billing |
 | [Porter's Five Forces](PORTERS_FIVE_FORCES.md) | Industry structural analysis, defensible moat & competitive dynamics |
 | [Architecture](SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md) | System design, data flow & reactive state |
+| [Architecture Atlas](ARCHITECTURE_ATLAS.md) | Visual Mermaid blueprints, `GullRenderEngine` & 11-lens Hybrid RRF |
+| [Diátaxis Documentation Map](DIATAXIS_MAP.md) | Complete index of Tutorials, How-To Guides, Reference & Explanations |
+| [SIGGRAPH WebGPU Rendering](SIGGRAPH_WEBGPU_BIOPHYSICAL_RENDERING.md) | `GullRenderEngine` WebGL2/WebGPU shaders, Oregonator & SDF raymarching |
+| [IEEE PES Power & GreenOps](IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md) | Carbon-aware scale-to-zero Cloud Run, WOFF2 CDN & sub-microsecond hashing |
 | [Changelog](../CHANGELOG.md) | Complete release history |
 | [Clinical Paradigms](TRI_PARADIGM_SYNTHESIS_INTEGRATION.md) | Western, TCM, Ayurvedic & Orthomolecular frameworks |
 | [Federal USWDS Demarcation](FEDERAL_DESIGN_SYSTEM_DEMARCATION.md) | USWDS 3.0, VA Community Care & 18 U.S.C. § 701 Safe Harbor |

@@ -56,11 +56,11 @@ _Objective descriptions of system machinery (API schemas, config flags)._
 |---|---|---|
 | OpenAPI Specification | [docs/openapi.json](file:///c:/Users/philg/Pocketgull/pocketgull/docs/openapi.json) | Complete |
 | CHANGELOG | [CHANGELOG.md](file:///c:/Users/philg/Pocketgull/pocketgull/CHANGELOG.md) | Complete |
-| Dependency Register | [DEPENDENCIES.md](file:///c:/Users/philg/Pocketgull/pocketgull/DEPENDENCIES.md) | Complete |
+| Dependency Register | [package.json](file:///c:/Users/philg/Pocketgull/pocketgull/package.json) | Complete |
 | SBOM (SPDX) | [sbom.spdx.json](file:///c:/Users/philg/Pocketgull/pocketgull/sbom.spdx.json) | Partial |
-| Feature Parity Matrix | [parity_matrix.md](file:///c:/Users/philg/Pocketgull/pocketgull/parity_matrix.md) | Complete |
+| Feature Parity Matrix | [docs/research/parity_matrix.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/research/parity_matrix.md) | Complete |
 | COCOMO II Report | [cocomo2_report.md](file:///c:/Users/philg/Pocketgull/pocketgull/cocomo2_report.md) | Complete |
-| Audit Report | [AUDIT_REPORT.md](file:///c:/Users/philg/Pocketgull/pocketgull/AUDIT_REPORT.md) | Complete (new) |
+| Audit Report | [docs/compliance/AUDIT_REPORT.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/compliance/AUDIT_REPORT.md) | Complete (new) |
 | Env Vars & CLI Reference | [docs/reference-env-vars.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/reference-env-vars.md) | Complete (new) |
 | Epistemic Falsification Suite | [docs/EPISTEMIC_FALSIFICATION_SUITE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/EPISTEMIC_FALSIFICATION_SUITE.md) | Complete (new) |
 
@@ -72,7 +72,7 @@ _Broader context and conceptual justifications._
 
 | Document | Path | Status |
 |---|---|---|
-| Design System | [DESIGN.md](file:///c:/Users/philg/Pocketgull/pocketgull/DESIGN.md) | Complete |
+| Design System | [docs/design/DESIGN.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/design/DESIGN.md) | Complete |
 | Security Policy | [SECURITY.md](file:///c:/Users/philg/Pocketgull/pocketgull/SECURITY.md) | Complete |
 | Case Study | [docs/case_study.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/case_study.md) | Complete |
 | Valuation and Positioning | [docs/valuation_and_positioning.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/valuation_and_positioning.md) | Complete |
@@ -88,7 +88,7 @@ _Broader context and conceptual justifications._
 | Energetics & Green Computing (IEEE PES) | [docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md) | Complete (new) |
 | Sustainability, Performance & TCO Audit | [docs/EVALUATION_SUSTAINABILITY_AND_PERFORMANCE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/EVALUATION_SUSTAINABILITY_AND_PERFORMANCE.md) | Complete (new) |
 | Epistemic Falsification Architecture | [docs/EPISTEMIC_FALSIFICATION_SUITE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/EPISTEMIC_FALSIFICATION_SUITE.md) | Complete (new) |
-| Discovery Backlog | [QUESTIONS.md](file:///c:/Users/philg/Pocketgull/pocketgull/QUESTIONS.md) | Complete (new) |
+| Discovery Backlog | [docs/research/QUESTIONS.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/research/QUESTIONS.md) | Complete (new) |
 
 ---
 

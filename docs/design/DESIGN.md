@@ -116,16 +116,18 @@ Extracted directly from the social preview paper artwork:
 
 ---
 
-## 4. Typography
+## 4. Typography & Optotype Engineering (`PocketShoal` & `DirectCurves`)
 
-| Role | Font | Weight | Size | Tracking |
+| Role | Font Master | Weight | Size | OpenType / Optical Features |
 |:---|:---|:---|:---|:---|
-| **System Labels** | System sans-serif | 700 (Bold) | `9px–10px` | `0.15em–0.3em` (UPPERCASE) |
-| **Body Content** | System sans-serif | 400–500 | `text-sm` / `text-xs` | Normal |
-| **Monospace Data** | `font-mono` | 400–700 | `text-xs` | `0.03em` |
-| **AI Report Prose** | `.rams-typography` | 400–700 | `0.875rem–1.125rem` | Normal |
+| **Brand Wordmark & Imprint** | `PocketGull-Chiseltip` | 900 (Black) | Display | Parametric $45^\circ$ chisel nib simulation (1000 UPM; restricted to wordmark & legal footer) |
+| **Clinical Alerts & Optotypes** | `PocketGull-Bold` | 700 (Bold) | `9px–14px` | Louise Sloan 5:1 aspect ratio (LogMAR 0.0) with cured tooth-gap geometry (`7a99d07`) |
+| **Body & Diagnostic Prose** | `PocketGull-Fineliner` / `.rams-typography` | 400 (Regular) / 385 (Night) | `0.875rem–1.125rem` | Deep inktraps, curved `l` (`cv05`), serifed `I` (`ss02`), Helmholtz $-3.75\%$ scotopic weight |
+| **Monospace Biometrics & Dosages** | `PocketGullMono-Regular` | 400–700 | `text-xs` | Fixed 600 UPM pitch, ISMP slashed zero (`cv08`), tabular numerals (`tnum`), `<bdi dir="ltr">` |
 
-The `.rams-typography` class governs all AI-generated markdown rendering — headings, lists, tables, blockquotes — with carefully tuned line-heights, `#689F38` accent borders, and hover-highlighted table rows.
+- **Scoped `DirectCurves` Procedural Bézier Engine (`4ef61a6`)**: Renders 1000 UPM integer-coordinate glyph contours and `PocketShoal` optotypes with zero Canvas2D/DOM sub-pixel jitter and zero composite glyph references.
+- **GreenOps CDN Font Offloading (`cef61a7`)**: Heavy desktop `.ttf` binaries ($\approx 121\text{ MB}$) are excluded from production web containers; ultra-compact `.woff2` subsets are served via `https://font.pocketgull.app` with offline Base64 WOFF2 fallbacks for air-gapped environments.
+- **AI Report Prose (`.rams-typography`)**: Governs all AI-generated markdown rendering — headings, lists, tables, blockquotes — with carefully tuned line-heights, `#689F38` accent borders, and hover-highlighted table rows.
 
 ---
 

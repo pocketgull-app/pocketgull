@@ -32,11 +32,11 @@
 
 ## 2. In Science: The High-Throughput Literature & Hypothesis Filter
 
-- **Zero-Latency Semantic RAG**: Rather than sending queries to expensive remote vector databases, Gemma 4 (via `OnDeviceEmbedderService`) creates 256-dimensional semantic projections on-the-fly, ranking thousands of PubMed, ClinVar, ChEMBL, and bioRxiv literature abstracts right in the browser.
-- **Hierarchical Subagent Triage**:
-  - **Level 1 (Gemma 4 at the Edge)**: Scans 500+ papers or genetic variants in milliseconds, filtering out low-quality studies and high risk-of-bias publications.
-  - **Level 2 (Gemini 1.5 Pro in the Cloud)**: Receives only the top 5 highest-signal candidate papers for deep multi-document synthesis and cross-disciplinary hypothesis generation.
-- **Hermetic Code & Data Science Verification**: Gemma 4 validates Kaggle pipelines, GroupKFold leak-free cross-validation setups, and FHIR R4 schema invariants before code is executed.
+- **Zero-Latency Hybrid Semantic RAG (`OnDeviceEmbedderService`)**: Rather than sending queries to expensive remote vector databases, Gemma 4 creates 256-dimensional Int8-quantized projections on-the-fly and fuses them with BM25 lexical scores via Reciprocal Rank Fusion (`hybridRrfScore`), mapping queries across 11 canonical clinical lenses (`LOINC`, `SNOMED-CT`, `RxNorm`) with SHA-256 integrity digests.
+- **Hierarchical Subagent Triage & Sovereign Fleet (`v1.41.2`)**:
+  - **Level 1 (Gemma 4 Built-in AI & Sovereign Fleet at the Edge)**: Executes via Chrome's `#gemma4-for-built-in-ai` Prompt API alongside our fine-tuned `v1.41.2` Sovereign Fleet (`pocketgull-clinical`, `pocketgull-edge`, `pocketgull-compass-2b`, `pocketgull-sentinel-peft`, `pocketgull-scribe-soap`, `pocketgull-tern-edge`, `pocketgull-albatross-multimodal`, `pocketgull-rxguard-pgx`), scanning 500+ papers or genetic variants in milliseconds and filtering out high risk-of-bias publications.
+  - **Level 2 (Gemini 2.5 Pro / Flash in the Cloud)**: Receives only the top 5 highest-signal candidate papers for deep multi-document synthesis, Vertex AI Discovery Engine grounding, and cross-disciplinary hypothesis generation.
+- **Hermetic Code & Data Science Verification**: Gemma 4 validates Kaggle pipelines, `GroupKFold` leak-free cross-validation setups, and FHIR R4 schema invariants before code is executed.
 
 ---
 
@@ -52,9 +52,9 @@
 
 | Layer | Model / Engine | Latency | Primary Responsibilities |
 | :--- | :--- | :--- | :--- |
-| **Fast Reflex Loop** | **Gemma 4 (On-Device)** | **10–50 ms** | • Real-time UI micro-interactions & WebMCP tool routing.<br>• Input sanitization & prompt injection scrubbing.<br>• Local vector cosine similarity ranking.<br>• ISMP dosage & syntax proofreading. |
-| **Deep Reasoning Loop** | **Gemini 1.5 Pro / Flash** | **300–1200 ms** | • Complex multi-step differential diagnosis.<br>• Multi-turn full-duplex live voice streaming.<br>• Heavy literature cross-correlation across millions of tokens. |
-| **Deterministic Fallback** | **TypeScript Algorithms** | **< 1 ms** | • Guarantees 0 crashes in enterprise browsers without flags.<br>• Static regex ISMP rules, hash projections, and state machines. |
+| **Fast Reflex Loop** | **Gemma 4 (Built-in AI) & Sovereign Fleet (`v1.41.2`)** | **10–50 ms** | • Real-time UI micro-interactions & WebMCP tool routing.<br>• Input sanitization & prompt injection scrubbing.<br>• Hybrid RRF (`Dense Int8 + BM25`) 11-lens taxonomy grounding.<br>• ISMP dosage & syntax proofreading. |
+| **Deep Reasoning Loop** | **Gemini 2.5 Pro / Flash** | **300–1200 ms** | • Complex multi-step differential diagnosis.<br>• Multi-turn full-duplex live voice streaming.<br>• Heavy literature cross-correlation across millions of tokens. |
+| **Deterministic Fallback** | **TypeScript Algorithms (`OfflineEdgeAiService`)** | **< 1 ms** | • Guarantees 0 crashes in enterprise browsers without flags.<br>• Static regex ISMP rules, hash projections, and state machines. |
 
 ---
 

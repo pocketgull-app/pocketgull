@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VertexAgentBuilderService, IVertexCitation } from '../services/ai/vertex-agent-builder.service';
+import { VertexAgentBuilderService } from '../services/ai/vertex-agent-builder.service';
 
 @Component({
   selector: 'app-grounded-evidence-badge',
@@ -22,7 +23,7 @@ import { VertexAgentBuilderService, IVertexCitation } from '../services/ai/verte
             ></span>
           </span>
           <span class="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-zinc-400">
-            Vertex AI Grounding
+            Vertex AI + Hybrid RRF Grounding
           </span>
         </div>
 
@@ -38,6 +39,27 @@ import { VertexAgentBuilderService, IVertexCitation } from '../services/ai/verte
             {{ displayScore() }}%
           </span>
         </div>
+      </div>
+
+      <!-- Popperian H0 & FDA 21 CFR Part 11 Provenance Strip -->
+      <div class="flex flex-wrap items-center gap-1.5 text-[10px] font-mono text-slate-600 dark:text-zinc-400">
+        <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 border border-slate-200/70 dark:border-zinc-700">
+          p = {{ agentService.pValue() }} ({{ agentService.isNullFalsified() ? 'H0 Rejected' : 'H0 Retained' }})
+        </span>
+        <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 border border-slate-200/70 dark:border-zinc-700">
+          RoB 2: {{ agentService.cochraneRob2() }}
+        </span>
+        @if (agentService.taxonomyGrounding(); as tax) {
+          <span class="px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200/70 dark:border-teal-800">
+            LOINC {{ tax.loinc.code }} • SNOMED {{ tax.snomed.id }}
+          </span>
+        }
+        <span
+          class="px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/70 dark:border-indigo-800 truncate max-w-[180px]"
+          [title]="'FDA 21 CFR Part 11 Seal: ' + agentService.sha256Digest()"
+        >
+          Part 11: {{ shortDigest() }}
+        </span>
       </div>
 
       <!-- Quick Action Summary & Citation Drawer Trigger -->
@@ -84,6 +106,24 @@ import { VertexAgentBuilderService, IVertexCitation } from '../services/ai/verte
               <p class="text-slate-600 dark:text-zinc-400 text-[11px] mt-1 line-clamp-2 italic">
                 "{{ citation.snippet }}"
               </p>
+              @if (citation.loincCode || citation.sha256Digest) {
+                <div class="mt-1.5 flex flex-wrap items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-zinc-400">
+                  @if (citation.loincCode) {
+                    <span>LOINC: {{ citation.loincCode }}</span>
+                  }
+                  @if (citation.snomedId) {
+                    <span>• SNOMED: {{ citation.snomedId }}</span>
+                  }
+                  @if (citation.cochraneRob2) {
+                    <span>• RoB 2: {{ citation.cochraneRob2 }}</span>
+                  }
+                  @if (citation.sha256Digest) {
+                    <span class="truncate max-w-[140px]" [title]="citation.sha256Digest">
+                      • {{ citation.sha256Digest }}
+                    </span>
+                  }
+                </div>
+              }
             </div>
           }
         </div>
@@ -106,6 +146,11 @@ export class GroundedEvidenceBadgeComponent {
 
   readonly displayScore = computed(() => {
     return (this.agentService.groundingScore() * 100).toFixed(0);
+  });
+
+  readonly shortDigest = computed(() => {
+    const full = this.agentService.sha256Digest() || '';
+    return full.length > 22 ? `${full.slice(0, 22)}…` : full;
   });
 
   readonly groundingColorClass = computed(() => {
