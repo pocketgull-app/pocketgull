@@ -29,6 +29,7 @@ import { MdcpDomainService } from '../services/mdcp/mdcp-domain.service';
 import { NavigationShellService } from '../services/navigation-shell.service';
 import { SocraticVoiceDemystifierService, IVoicePersonaProfile } from '../services/socratic-voice-demystifier.service';
 import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../services/frontline-vernacular-voice.service';
+import { ClinicalDriftCalibratorService } from '../services/interpretability/clinical-drift-calibrator.service';
 
 
 export interface IChatEntry {
@@ -1456,6 +1457,7 @@ export class VoiceAssistantComponent implements OnDestroy {
     // --- Dictation State ---
     dictationText = signal('');
     isDictating = signal(false);
+    readonly driftCalibrator = inject(ClinicalDriftCalibratorService, { optional: true });
 
     constructor() {
         effect(() => {
@@ -2017,6 +2019,10 @@ Only include a rich-media block when the user explicitly requests visual or rese
         }
 
         this._appendUser(message, userDisplayHtml);
+
+        if (message) {
+            this.driftCalibrator?.evaluateCustomUtterance(message).catch(() => {});
+        }
 
         try {
             if (this.state.isDemoMode()) {
