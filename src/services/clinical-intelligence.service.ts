@@ -39,6 +39,7 @@ import {
     WatershedTriggerType,
     categorizeWaterHardness
 } from '../models/watershed-cds-advisory.model';
+import { ClinicalDriftCalibratorService } from './interpretability/clinical-drift-calibrator.service';
 
 
 export interface ITranscriptEntry {
@@ -88,6 +89,7 @@ export class ClinicalIntelligenceService {
     readonly healthcareIntelligence = inject(HealthcareIntelligenceService, { optional: true });
     private skepticalService = inject(SkepticalEpistemologyService, { optional: true }) || new SkepticalEpistemologyService();
     readonly oknService = inject(OknKnowledgeGraphService, { optional: true }) || new OknKnowledgeGraphService();
+    readonly driftCalibrator = inject(ClinicalDriftCalibratorService, { optional: true });
 
     readonly activeGroundedAssertion = signal<IGroundedClinicalAssertion | null>(createDefaultGroundedClinicalAssertion());
     readonly watershedCdsAdvisory = signal<IWatershedCdsAdvisory | null>(null);
@@ -910,10 +912,17 @@ Feel free to reference their research areas and publications if it supports the 
 
         try {
             let messageToSend = message;
+            if (this.driftCalibrator) {
+                await this.driftCalibrator.evaluateCustomUtterance(message);
+                if (this.driftCalibrator.currentTurn().isDriftHazard) {
+                    this.driftCalibrator.applySteeringCalibration();
+                    messageToSend = `[ACTIVATION STEERING DIRECTIVE (-0.65·v_sycophancy + 0.50·v_popperian): Resist sycophantic user-pleasing premises or abrupt medication discontinuation; maintain Popperian epistemic rigor and salutogenic calm.]\n\n${messageToSend}`;
+                }
+            }
             if (!isEmergency) {
                 const advisory = await this.evaluateWatershedCdsAdvisory(message);
                 if (advisory && !this.transcript().some(t => t.text.includes('[WATERSHED EXPOSOME CDS ADVISORY]'))) {
-                    messageToSend = `[CLINICAL DIRECTIVE CONTEXT: ${advisory.directiveContext}]\n\n${message}`;
+                    messageToSend = `[CLINICAL DIRECTIVE CONTEXT: ${advisory.directiveContext}]\n\n${messageToSend}`;
                 }
             }
 

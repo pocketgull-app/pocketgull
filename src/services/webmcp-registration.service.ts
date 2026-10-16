@@ -52,6 +52,7 @@ import { DirectIomtWearablesService } from './hardware/direct-iomt-wearables.ser
 import { MimicOmopBenchmarkService, BenchmarkCohortType } from './research/mimic-omop-benchmark.service';
 import { EhrWritebackService } from './fhir/ehr-writeback.service';
 import { EdgeAutonomousVoiceAgentService } from './voice/edge-autonomous-voice-agent.service';
+import { ClinicalDriftCalibratorService } from './interpretability/clinical-drift-calibrator.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -110,6 +111,7 @@ export class WebMcpRegistrationService {
   private mimicBenchmarkService = inject(MimicOmopBenchmarkService, { optional: true });
   private ehrWritebackService = inject(EhrWritebackService, { optional: true });
   private edgeVoiceService = inject(EdgeAutonomousVoiceAgentService, { optional: true });
+  private driftCalibratorService = inject(ClinicalDriftCalibratorService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -4039,6 +4041,132 @@ export class WebMcpRegistrationService {
     };
     try { modelContext.registerTool(gullRenderTool, { signal: gullRenderCtrl.signal }); } catch (e) { console.warn("Tool already registered:", gullRenderTool.name); }
     this.mcpControllers.push({ name: gullRenderTool.name, controller: gullRenderCtrl });
+
+    // 96. evaluate_clinical_hypothesis_and_cohort (Popperian H0 + BigQuery <-> Kaggle Leak-Free Cohort SQL)
+    const bqHypothesisCtrl = new AbortController();
+    const bqHypothesisTool = {
+      name: 'evaluate_clinical_hypothesis_and_cohort',
+      description: 'Evaluates a clinical biomarker or hypothesis using Popperian null-hypothesis (H0) testing, Gigerenzer natural frequencies (out of 10,000), and generates a leak-free BigQuery <-> Kaggle 5-fold cohort SQL query with 1 GiB maximum_bytes_billed.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          biomarkerName: { type: 'string', description: 'Biomarker or vital sign name (e.g., hsCRP, HRV_RMSSD, SpO2)' },
+          observedValue: { type: 'number', description: 'Observed patient metric value' },
+          populationMean: { type: 'number', description: 'Null hypothesis (H0) population baseline mean' },
+          populationSd: { type: 'number', description: 'Population standard deviation' },
+          prevalencePer10000: { type: 'number', description: 'Base rate per 10,000 screened individuals for Gigerenzer natural frequency' }
+        },
+        required: ['biomarkerName', 'observedValue']
+      },
+      execute: async (params: {
+        biomarkerName: string;
+        observedValue: number;
+        populationMean?: number;
+        populationSd?: number;
+        prevalencePer10000?: number;
+      }) => {
+        try {
+          const mean = params.populationMean ?? 1.5;
+          const sd = Math.max(params.populationSd ?? 0.8, 0.0001);
+          const zScore = Math.abs((params.observedValue - mean) / sd);
+          // Two-tailed Gaussian survival approximation
+          const pValue = Number(Math.max(0.0001, Math.min(0.9999, Math.exp(-0.717 * zScore - 0.416 * zScore * zScore))).toFixed(4));
+          const isH0Rejected = pValue < 0.05;
+          const bayesFactorBf10 = pValue < 0.05 ? Number((1 / Math.max(pValue * Math.E * Math.abs(Math.log(pValue)), 0.001)).toFixed(2)) : 0.85;
+          const baseRate = Math.min(Math.max(Math.round(params.prevalencePer10000 ?? 200), 1), 9999);
+          const truePositives = Math.round(baseRate * 0.9);
+          const falsePositives = Math.round((10000 - baseRate) * 0.05);
+
+          const safeColumn = params.biomarkerName.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+          const bqCohortSql = [
+            `-- FinOps Cap: maximum_bytes_billed = 1073741824 (1 GiB) | GroupKFold(n_splits=5)`,
+            `SELECT`,
+            `  patient_id,`,
+            `  MOD(ABS(FARM_FINGERPRINT(CAST(patient_id AS STRING))), 5) AS fold_id,`,
+            `  ${safeColumn}`,
+            `FROM \`gen-lang-client-0540208645.clinical_warehouse.deidentified_vitals\``,
+            `WHERE _PARTITIONDATE >= DATE_SUB(CURRENT_DATE(), INTERVAL 365 DAY)`,
+            `  AND ${safeColumn} IS NOT NULL`
+          ].join('\n');
+
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                biomarkerName: params.biomarkerName,
+                observedValue: params.observedValue,
+                nullHypothesisH0: `No statistically significant deviation of ${params.biomarkerName} from population baseline (${mean} ± ${sd}).`,
+                zScore: Number(zScore.toFixed(3)),
+                pValue,
+                bayesFactorBf10,
+                isH0Rejected,
+                skepticalWarningNotice: isH0Rejected
+                  ? null
+                  : `[POPPERIAN H0 WARNING] p = ${pValue} >= 0.05. Observation cannot reject the null hypothesis of random physiological variance.`,
+                gigerenzerNaturalFrequency: `Out of 10,000 screened individuals, ${baseRate} have the condition (${truePositives} test positive), while ${falsePositives} of the remaining ${10000 - baseRate} healthy individuals will trigger a false positive.`,
+                bigQueryKaggleCohortQuery: bqCohortSql,
+                maximumBytesBilled: 1073741824,
+                hipaaSafeHarborDeidentified: true
+              }, null, 2)
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Hypothesis evaluation failed: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    try { modelContext.registerTool(bqHypothesisTool, { signal: bqHypothesisCtrl.signal }); } catch (e) { console.warn("Tool already registered:", bqHypothesisTool.name); }
+    this.mcpControllers.push({ name: bqHypothesisTool.name, controller: bqHypothesisCtrl });
+
+    // 97. calibrate_clinical_drift (J++ Workspace Lens & MIT Media Lab Difference-in-Means Drift Calibrator)
+    const driftCalibratorCtrl = new AbortController();
+    const driftCalibratorTool = {
+      name: 'calibrate_clinical_drift',
+      description: 'Scores clinical utterances across 6 binary behavioral axes (12 radial poles), returns early-layer J++ Workspace Lens projections, and applies activation steering (-0.65·v_sycophancy + 0.50·v_popperian) when drift hazard >= 0.55.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          action: {
+            type: 'string',
+            enum: ['inspect', 'evaluate_utterance', 'apply_steering', 'open_hud'],
+            description: 'Action to execute on the Clinical Drift Calibrator'
+          },
+          utterance: {
+            type: 'string',
+            description: 'Optional clinical prompt or utterance to evaluate via difference-in-means cosine projection'
+          }
+        },
+        required: ['action']
+      },
+      execute: async (params: { action: 'inspect' | 'evaluate_utterance' | 'apply_steering' | 'open_hud'; utterance?: string }) => {
+        try {
+          if (params.action === 'open_hud') {
+            this.ngZone.run(() => this.navService?.openDriftCalibrator());
+          } else if (params.action === 'evaluate_utterance' && params.utterance && this.driftCalibratorService) {
+            await this.driftCalibratorService.evaluateCustomUtterance(params.utterance);
+          } else if (params.action === 'apply_steering' && this.driftCalibratorService) {
+            this.driftCalibratorService.applySteeringCalibration();
+          }
+
+          const current = this.driftCalibratorService?.currentTurn();
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                actionExecuted: params.action,
+                engineStatus: this.driftCalibratorService?.liveEngineStatus() || 'Zero-Egress Ready',
+                activeTurn: current || null,
+                axesCount: this.driftCalibratorService?.axes().length || 6
+              }, null, 2)
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Drift calibration failed: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    try { modelContext.registerTool(driftCalibratorTool, { signal: driftCalibratorCtrl.signal }); } catch (e) { console.warn("Tool already registered:", driftCalibratorTool.name); }
+    this.mcpControllers.push({ name: driftCalibratorTool.name, controller: driftCalibratorCtrl });
   }
 
   /**

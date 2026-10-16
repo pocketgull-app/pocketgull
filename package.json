@@ -106,6 +106,7 @@
     "msa:audit": "node --no-deprecation scripts/msa_governance_guard.mjs",
     "taint:scan": "node --no-deprecation scripts/taint-analysis-guard.mjs",
     "evals:clinical": "node --no-deprecation scripts/run-clinical-evals.mjs",
+    "drift:predeploy": "node --no-deprecation scripts/preflight_drift_self_heal_gate.mjs",
     "doctor:wsl": "node --no-deprecation scripts/wsl_ai_doctor.mjs",
     "clamav:scan": "node --no-deprecation scripts/daily-clamav-scan.mjs",
     "tabletop:drill": "node --no-deprecation scripts/simulate_clinical_cyber_tabletop.mjs",
