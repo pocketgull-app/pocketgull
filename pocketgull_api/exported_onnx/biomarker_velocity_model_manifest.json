@@ -1,0 +1,11 @@
+{
+  "model_name": "biomarker_velocity_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "868b6394b3021c61f15ab3f2254d12ea3cb7f215677bdde04e40c0fe7b0c8805",
+  "size_bytes": 2783123
+}

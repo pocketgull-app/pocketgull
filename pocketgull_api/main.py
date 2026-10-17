@@ -47,7 +47,10 @@ from services.onnx_engine import onnx_engine
 from services.asymmetric_loss_engine import (
     ClinicalBiomarkerFeatures,
     MultiLabelClinicalRiskOutput,
+    WearableTriModalTelemetryInput,
+    TriModalAsymmetricGainOutput,
     predict_asymmetric_multilabel_risk,
+    evaluate_wearable_asymmetric_gain,
 )
 from inference.engine import JAXInferenceEngine
 from engines.falsification_engine import (
@@ -170,12 +173,38 @@ class JAXMLState:
 jax_ml_state = JAXMLState()
 
 
+import hmac
+
+
+def _verify_model_sha256(model_path: Path, registry: dict[str, Any]) -> bool:
+    """Verifies model file SHA-256 digest against the hermetic model integrity registry."""
+    base_name = model_path.stem
+    entry = registry.get(base_name)
+    if not entry or "sha256" not in entry:
+        return True
+    h = hashlib.sha256()
+    with model_path.open("rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return hmac.compare_digest(h.hexdigest(), str(entry["sha256"]))
+
+
 async def _load_ml_model() -> None:
     global _risk_model, _safety_threshold, _contest_models, _clinical_models
+    registry_path = Path(__file__).parent / "exported_onnx" / "model_integrity_registry.json"
+    integrity_registry: dict[str, Any] = {}
+    if registry_path.exists():
+        try:
+            with registry_path.open("r", encoding="utf-8") as rf:
+                integrity_registry = json.load(rf)
+        except Exception as reg_exc:
+            print(f"[ML] Warning: could not read model integrity registry ({reg_exc}).")
+
     if _MODEL_PATH.exists():
         try:
             import joblib
-            import json
+            if not _verify_model_sha256(_MODEL_PATH, integrity_registry):
+                raise ValueError(f"SHA-256 digest mismatch for {_MODEL_PATH.name}")
             _risk_model = joblib.load(_MODEL_PATH)
             print(f"[ML] Loaded clinical risk model from {_MODEL_PATH}")
             if _METADATA_PATH.exists():
@@ -199,32 +228,53 @@ async def _load_ml_model() -> None:
         if model_file.exists():
             try:
                 import joblib
+                if not _verify_model_sha256(model_file, integrity_registry):
+                    raise ValueError(f"SHA-256 digest mismatch for {model_file.name}")
                 _contest_models[contest_key] = joblib.load(model_file)
                 print(f"[ML] Loaded contest model {contest_key} from {model_file}")
             except Exception as e:
                 print(f"[ML] Warning: could not load contest model {contest_key} ({e})")
 
-    # Load Specialty Clinical Platinum Models
+    # Load all 31 Specialty Clinical Platinum Models
     for model_key in [
-        "knee_recovery_risk_model",
-        "biological_age_acceleration_model",
-        "periodontal_systemic_risk_model",
-        "ms_progression_risk_model",
-        "who_hearts_cvd_risk_model",
-        "dysautonomia_pem_risk_model",
-        "oncology_cachexia_risk_model",
+        "african_pharmacogenomic_risk_model",
+        "anticholinergic_delirium_model",
         "ayurvedic_dosha_agni_model",
+        "biological_age_acceleration_model",
+        "biomarker_velocity_model",
+        "causal_treatment_optimizer",
+        "cgm_glycemic_excursion_model",
+        "cvsq_asthenopia_model",
+        "cyp_phenoconversion_model",
+        "drug_nutrient_synergy_model",
+        "dysautonomia_pem_risk_model",
+        "endotoxin_sibi_spike_model",
+        "icu_mortality_model",
+        "knee_recovery_risk_model",
+        "mbi_burnout_model",
+        "monk_skintone_ppg_debiasing_model",
+        "ms_pira_velocity_model",
+        "ms_progression_risk_model",
+        "neurocognitive_moca_model",
+        "oncology_cachexia_risk_model",
+        "outbreak_risk_model",
+        "periodontal_systemic_risk_model",
+        "readmission_risk_model",
+        "sarcopenia_frailty_model",
+        "seven_generations_protocol_model",
+        "survival_ckd_decompensation_model",
         "tcm_zangfu_disharmony_model",
         "tri_paradigm_synergy_model",
-        "cyp_phenoconversion_model",
-        "anticholinergic_delirium_model",
-        "ms_pira_velocity_model",
-        "endotoxin_sibi_spike_model",
+        "vagal_coherence_model",
+        "who_hearts_cvd_risk_model",
+        "who_sdg_cardiometabolic_model",
     ]:
         model_file = models_dir / f"{model_key}.joblib"
         if model_file.exists():
             try:
                 import joblib
+                if not _verify_model_sha256(model_file, integrity_registry):
+                    raise ValueError(f"SHA-256 digest mismatch for {model_file.name}")
                 _clinical_models[model_key] = joblib.load(model_file)
                 print(f"[ML] Loaded clinical model {model_key} from {model_file}")
             except Exception as e:
@@ -308,11 +358,11 @@ async def security_middleware(request: Request, call_next):
             content={"error": "Payload Too Large", "message": "Request body exceeds 10MB limit"}
         )
 
-    # 2. Optional Internal API Key Header Verification
+    # 2. Optional Internal API Key Header Verification (Constant-Time HMAC Guard)
     internal_key = os.getenv("INTERNAL_SIDECAR_API_KEY")
     if internal_key and request.url.path not in ["/health", "/docs", "/openapi.json"]:
         client_key = request.headers.get("X-Internal-API-Key")
-        if not client_key or client_key != internal_key:
+        if not client_key or not hmac.compare_digest(client_key.encode("utf-8"), internal_key.encode("utf-8")):
             return JSONResponse(
                 status_code=401,
                 content={"error": "Unauthorized", "message": "Invalid or missing X-Internal-API-Key"}
@@ -538,8 +588,15 @@ async def predict_readmission_sepsis_route(payload: ReadmissionSepsisInput):
 @app.post("/api/ml/asymmetric-risk-score", response_model=MultiLabelClinicalRiskOutput, tags=["ML"])
 @app.post("/ml/asymmetric-risk-score", response_model=MultiLabelClinicalRiskOutput, tags=["ML"])
 async def calculate_asymmetric_multilabel_risk(payload: ClinicalBiomarkerFeatures) -> MultiLabelClinicalRiskOutput:
-    """Calibrated 12-target Multi-Label Clinical Risk Scoring grounded by Asymmetric Loss Optimization."""
+    """Calibrated 12-target Multi-Label Clinical Risk & Asymmetric Clinical Gain Scoring."""
     return predict_asymmetric_multilabel_risk(payload)
+
+
+@app.post("/api/ml/wearable-asymmetric-gain", response_model=TriModalAsymmetricGainOutput, tags=["ML"])
+@app.post("/ml/wearable-asymmetric-gain", response_model=TriModalAsymmetricGainOutput, tags=["ML"])
+async def calculate_wearable_asymmetric_gain(payload: WearableTriModalTelemetryInput) -> TriModalAsymmetricGainOutput:
+    """Evaluates Apple Watch (HealthKit) & Android Wear OS (Health Connect) Tri-Modal Asymmetric Gain (Doing, Feeling, Not Doing)."""
+    return evaluate_wearable_asymmetric_gain(payload)
 
 
 @app.post("/api/ml/somatic-coherence-score", response_model=SomaticCoherenceResponse, tags=["ML"])

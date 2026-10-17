@@ -62,6 +62,14 @@ describe('GlycemicMinimalModelService', () => {
 
     const kinetics = service.bergmanKinetics();
     expect(kinetics.betaCellCompensationTier).toBe('Severe Beta-Cell Failure');
+
+    // Verify 70-89 mg/dL non-hypoglycemic nadir with morning surge >= 140 mg/dL classifies as Dawn Phenomenon
+    service.cgmInputs.update(curr => ({
+      ...curr,
+      nocturnalNadir0300MgDl: 78,
+      fastingMorning0700MgDl: 165
+    }));
+    expect(service.nocturnalReport().phenotype).toBe('Dawn Phenomenon');
   });
 
   it('should model compensated insulin resistance in metabolic syndrome', () => {

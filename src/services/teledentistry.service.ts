@@ -96,7 +96,7 @@ export class TeledentistryService {
     const bupFactor = this.buprenorphineTherapyActive() ? 8 : 0;
 
     const raw = (deepPockets * 6) + (bop * 0.8) + (crp * 12) + bupFactor;
-    return Math.min(100, Math.round(raw));
+    return Math.max(0, Math.min(100, Math.round(raw)));
   });
 
   /**

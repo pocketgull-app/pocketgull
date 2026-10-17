@@ -1,8 +1,17 @@
 {
-  "preCommit": [
-    {
-      "command": "node",
-      "args": ["c:/Users/philg/Pocketgull/pocketgull/node_modules/typescript/lib/tsc.js", "-p", "c:/Users/philg/Pocketgull/pocketgull/tsconfig.json", "--noEmit"]
-    }
-  ]
+  "pocketgull-finops-and-git-guard": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "call_mcp_tool|run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node C:/Users/philg/Pocketgull/pocketgull/scripts/agy_pre_tool_guard.mjs",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
 }

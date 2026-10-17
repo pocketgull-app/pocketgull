@@ -1,0 +1,11 @@
+{
+  "model_name": "who_hearts_cvd_risk_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "af3a664abb063bff8b784cd62675ad1dbf1770a135df5695e7451d6290b07387",
+  "size_bytes": 2763166
+}

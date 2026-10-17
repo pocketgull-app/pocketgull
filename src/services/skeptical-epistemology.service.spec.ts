@@ -11,12 +11,21 @@ describe('SkepticalEpistemologyService', () => {
     expect(evalResult.isFalsified).toBe(true);
     expect(evalResult.epistemicConfidencePercent).toBeGreaterThan(90);
     expect(evalResult.skepticalWarningNotice).toBeNull();
+
+    // Exact boundary verification: z = 0 (observed == baseline) MUST yield p = 1.0000, and z = 1.96 MUST yield p = 0.0500
+    const exactNull = service.evaluateFalsifiability('Exact Null Match', 72.0, 72.0, 25);
+    expect(exactNull.pValue).toBe(1);
+    expect(exactNull.isFalsified).toBe(false);
+
+    // For sampleCount = 25, SE = 10 / 5 = 2.0; diff = 3.92 => z = 1.96 => two-tailed p = 0.0500
+    const criticalBoundary = service.evaluateFalsifiability('Critical Z=1.96', 75.92, 72.0, 25);
+    expect(criticalBoundary.pValue).toBeCloseTo(0.05, 3);
   });
 
   it('2. Flags high p-value observations with explicit Skeptical Guardrail notices', () => {
     const evalResult = service.evaluateFalsifiability('Quantum Coherence Frequency', 72.1, 72.0, 5);
 
-    expect(evalResult.pValue).toBeGreaterThan(0.05);
+    expect(evalResult.pValue).toBeGreaterThan(0.95);
     expect(evalResult.isFalsified).toBe(false);
     expect(evalResult.skepticalWarningNotice).toContain('Null hypothesis H0 cannot be rejected');
   });

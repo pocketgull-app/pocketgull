@@ -27,8 +27,10 @@ export class IsmpClinicalGuard {
     if (!text) return '';
     let result = text;
 
-    // 1. Strip trailing zeros: 5.0 mg -> 5 mg, 10.00 mL -> 10 mL
-    result = result.replace(/(\b\d+)\.0+\s*(mg|mcg|g|mL|units?|mEq|IU)\b/gi, '$1 $2');
+    // 1. Strip trailing zeros in O(N) linear time: 5.0 mg -> 5 mg, 10.00 mL -> 10 mL, 5.50 mg -> 5.5 mg
+    result = result.replace(/(\b\d+\.\d+)\s*(mg|mcg|g|mL|units?|mEq|IU)\b/gi, (full, numStr: string, unit: string) => {
+      return numStr.endsWith('0') ? `${numStr.replace(/\.?0+$/, '')} ${unit}` : full;
+    });
 
     // 2. Prepend leading zero to naked decimals: .5 mg -> 0.5 mg
     result = result.replace(/(^|[^\d.])\.(\d+)\s*(mg|mcg|g|mL|units?|mEq|IU)\b/gi, '$10.$2 $3');
@@ -99,17 +101,20 @@ export class IsmpClinicalGuard {
     const violations: IIsmpViolation[] = [];
     const tallManApplied: string[] = [];
 
-    // Check Trailing Zeros: 5.0 mg, 10.00 mL
-    const trailingZeroRegex = /(\b\d+)\.0+\s*(mg|mcg|g|mL|units?|mEq|IU)\b/gi;
+    // Check Trailing Zeros in O(N) linear time: 5.0 mg, 10.00 mL, 5.50 mg, 0.250 mL
+    const trailingZeroRegex = /(\b\d+\.\d+)\s*(mg|mcg|g|mL|units?|mEq|IU)\b/gi;
     let match: RegExpExecArray | null;
     while ((match = trailingZeroRegex.exec(originalText)) !== null) {
-      violations.push({
-        type: 'TRAILING_ZERO',
-        original: match[0],
-        corrected: `${match[1]} ${match[2]}`,
-        rule: 'ISMP Rule: Trailing zeros prohibited (e.g., 5.0 mg mistaken as 50 mg)',
-        severity: 'CRITICAL_SAFETY_DEFECT'
-      });
+      if (match[1].endsWith('0')) {
+        const cleanedNum = match[1].replace(/\.?0+$/, '');
+        violations.push({
+          type: 'TRAILING_ZERO',
+          original: match[0],
+          corrected: `${cleanedNum} ${match[2]}`,
+          rule: 'ISMP Rule: Trailing zeros prohibited (e.g., 5.0 mg mistaken as 50 mg)',
+          severity: 'CRITICAL_SAFETY_DEFECT'
+        });
+      }
     }
 
     // Check Naked Decimals: .5 mg -> 0.5 mg

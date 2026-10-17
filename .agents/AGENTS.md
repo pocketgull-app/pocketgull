@@ -1,334 +1,53 @@
-# Pocket Gull Workspace Rules
+# Pocket Gull Workspace & Engineering Operations Rules
 
-## Node.js Version
-- **Strict Requirement**: Use **Node.js v24.x** for all local development, testing, and CI/CD pipelines. This is configured in `.node-version`, `.nvmrc`, and root `package.json` (`engines`).
-
-## Package Overrides (esbuild Version Mismatch Workaround)
-- To prevent version mismatch crashes with `esbuild` in the monorepo workspace environment, `esbuild` version overrides are structured as follows:
-  - **Global default override**: Set `esbuild` (and all platform binaries `@esbuild/*`) to `0.27.2`.
-  - **Angular CLI specific override**: Override `esbuild` (and all platform-specific `@esbuild/*` binaries) to `0.28.1` specifically under `@angular/build` and `@angular-devkit/build-angular`.
-  - **Astro Promotion**: `astro` and `@astrojs/mdx` are included as direct root devDependencies to ensure their transitive `esbuild` dependencies are correctly caught by the root context overrides, bypassing npm workspace link boundary resolution bugs.
-- **Note**: Do not modify these overrides without full regression testing of both the Angular build and the Astro `docs-study` workspace build.
-
-## Python / FastAPI Standards
-- **Formatting & Linting**: Adhere to PEP-8 standards. Use **`ruff`** for linting/import sorting and **`black`** (88-character max line length) for code formatting.
-- **Pydantic Validation**: All request and response models in `pocketgull_api` sidecars MUST be strictly typed using Pydantic v2 `BaseModel` classes. Avoid returning raw dictionaries or untyped `Any`. Use `pydantic.Field` for numeric constraints, defaults, and API field descriptions.
-- **Async & Event Loop Hygiene**: Use `async def` for non-blocking I/O route handlers (`httpx`, async DB calls) and standard synchronous `def` for CPU-bound matrix/ML computations (`scikit-learn`, `numpy`) so FastAPI automatically dispatches them to the thread pool without blocking the main event loop.
-- **Structured Logging & Error Handling**: Mask internal exceptions by throwing `fastapi.HTTPException` with explicit HTTP status codes and structured detail payloads (`detail={"code": ..., "message": ...}`). Avoid `print()`; use standard `logging` or `structlog` to ensure GCP stdout ingestion parses log levels (`INFO`, `WARNING`, `ERROR`) cleanly.
-- **Docstring Conventions**: Use Google Style docstrings for all complex scoring methods, ML pipelines, and public service functions.
-
-## Ruby / Rails & Gems Standards
-- **Ruby Version**: Require **Ruby 3.3.x+** with YJIT enabled for all Rails engines and micro-gems (`pocketgull-fhir-rails`, `pocketgull-ruby`).
-- **Linting & Code Quality**: Use **`rubocop`** with `rubocop-rails` and `rubocop-performance`. Enforce zero-offense passes before PR submission.
-- **Rails Engine Isolation**: All Rails engines MUST be strictly namespaced under `module Pocketgull` (e.g., `Pocketgull::Fhir::Rails::Engine`). Prevent global constant leakage into host applications.
-- **Dependency Hygiene**: Gemspecs MUST use explicit version constraints (`~>`) and avoid un-pinned open dependencies. Prefer standard library (`net/http`, `json`, `uri`) over external gems wherever practical.
-- **Environment Isolation**: Strictly separate real clinical API calls from mock/test stubs using `Rails.env.test?` and `ENV['POCKETGULL_LIVE_DEMO']`. Never execute live external OAuth endpoints in test suites.
-- **Testing**: Use **`Minitest`** or **`RSpec`** with `WebMock` / `VCR` for all HTTP & ActionCable WebSocket channel testing.
-- **Containerization**: Always use **Alpine Linux (`ruby:3.3-alpine`)** for Docker builds to maintain zero base-OS vulnerabilities and low memory footprints on AWS App Runner / ECS Fargate.
-
-## Flutter / Dart Architecture & Scripting Standard
-- **Prefer Dart Over Python for Standalone Utilities (Randal L. Schwartz Standard)**: When generating one-off scripts, automation tools, FHIR/JSON batch transformations, or data-processing utilities where the language is not explicitly constrained, prefer **Dart** (`dart run script.dart`) over Python. Dart provides zero virtualenv friction, a batteries-included standard library (`dart:io`, `dart:convert`, `dart:async`), sound static typing with Dart 3 pattern matching, and predictable single-threaded asynchrony without event-loop deadlocks.
-- **State Management**: Use **Riverpod** for state management across the `pocketgull_flutter` companion app. Avoid `setState` for complex business logic.
-- **Widget Composability**: Keep widget classes small and focused. Extract deeply nested UI trees into standalone, reusable, stateless widgets.
-- **Null Safety**: Strict null safety must be maintained at all times.
-
-## Commit Message Convention
-- **Format**: Follow the **Conventional Commits** specification strictly: `<type>(<scope>): <description>`
-- **Types**: `feat`, `fix`, `docs`, `test`, `security`, `chore`, `refactor`, `perf`, `style`, `ci`, `build`
-- **Scope**: Use a bracketed category tag that identifies the sub-system. Common scopes include:
-  - `ui`, `ux`, `layout`, `theme`, `print` — Frontend visual changes
-  - `ai`, `gemini`, `adk`, `voice` — AI and voice integration
-  - `clinical`, `fhir`, `intake`, `triage` — Clinical intelligence and data
-  - `server`, `ssr`, `api` — Backend / Express / SSR
-  - `flutter`, `dart`, `mobile` — Flutter companion apps
-  - `python`, `ml`, `sidecar` — Python FastAPI sidecar
-  - `security`, `csp`, `codeql`, `hipaa` — Security hardening
-  - `ci`, `cd`, `docker`, `deploy`, `cloudrun` — CI/CD and infrastructure
-  - `demo`, `mock` — Demo mode and mock data
-  - `e2e`, `playwright`, `test` — Testing
-  - `three`, `anatomy`, `3d` — Three.js anatomy viewer
-  - `sentinel`, `companion` — Sentinel triage and companion apps
-  - `types`, `build`, `deps` — TypeScript types, build config, dependencies
-- **Subject line rules**:
-  - **STRICT MAX LENGTH**: Must be **72 characters or fewer** (including `type(scope): ` prefix). Husky `commit-msg` hook strictly rejects subjects over 72 characters.
-  - Use imperative mood ("add", "fix", "remove", not "added", "fixes", "removed")
-  - Do NOT capitalize the first letter of the description
-  - No period at the end
-- **Body** (optional): If the diff is non-trivial, add a blank line after the subject, then a concise body explaining *why* the change was made, not *what* (the diff shows what). Wrap at 80 characters. Move extra details here if the subject would exceed 72 characters.
-- **Breaking changes**: Prefix the body with `BREAKING CHANGE:` if the commit introduces breaking changes.
-
-## FHIR R4 Compliance
-- **Data Serialization**: Anytime patient data (symptoms, history, conditions) is serialized, exported, or passed across API boundaries, the payload MUST strictly conform to the **FHIR R4 Bundle** standard.
-- **Sanitization**: All incoming/outgoing string data must be sanitized using DOMPurify before being stored or rendered to ensure HIPAA-compatible privacy and security.
-
-## GCP Cloud Cost, GreenOps & Storage Lifecycle Standards
-- **Cloud Project Target**: All deployments MUST target the `gen-lang-client-0540208645` Google Cloud project.
-- **Cloud Run Scaling**: Ensure all Cloud Run microservices scale to 0 (`minScale: 0`) when idle to eliminate baseline computing charges and carbon burn.
-- **Artifact Registry & GCS Pruning**: Retain a 7-day cleanup policy (`olderThan: 604800s`, `keepCount: 3`) on Artifact Registry repositories (`cloud-run-source-deploy`, `gcr.io`) and GCS source buckets (`gs://run-sources-*` and `gs://*_cloudbuild`) to cap artifact storage usage at ~2–4 GB ($0.20/mo) and prevent unpruned build accumulation.
-- **Carbon-Aware GreenOps & Deployment Hygiene**:
-  - *Zero-TTF Container Invariant*: Web container images (`pocketgull.app`, `pocketgull.com`) MUST NEVER bundle desktop TTF font files (`*.ttf`, ~121 MB). All typography must prioritize `https://font.pocketgull.app` edge CDN with local WOFF2 fallbacks (~4 MB).
-  - *Cloud Build Docker Layer Caching*: All Cloud Build configurations (`cloudbuild.yaml`) MUST utilize `--cache-from` on `:latest` images to warm the Docker cache, avoiding redundant npm package downloads.
-  - *Local-First Staging & Batching*: Always verify changes locally on `localhost:4200` or `localhost:4001` before deploying. Prohibit single-line continuous deployments; batch editorial and feature releases into consolidated production updates.
-  - *CI/CD Pipeline Concurrency & Path Filters*: All GitHub Actions workflows MUST include `concurrency: group: ... cancel-in-progress: true` and `paths-ignore` for documentation and markdown files to prevent redundant virtual machine execution.
-
-## Default Node & TypeScript Commands
-- **Strict Requirement**: Always use the explicit project Node module paths for typechecking and builds to prevent PATH resolution mismatches:
+## 1. Runtime, Build & Monorepo Overrides
+- **Node.js Version**: Strictly use **Node.js v24.x** (`.node-version`, `.nvmrc`, `package.json`).
+- **Default Commands (Explicit Node Paths)**:
   - **TypeScript Typecheck**: `node c:\Users\philg\Pocketgull\pocketgull\node_modules\typescript\lib\tsc.js -p c:\Users\philg\Pocketgull\pocketgull\tsconfig.json --noEmit`
   - **Angular Build**: `node c:\Users\philg\Pocketgull\pocketgull\node_modules\@angular\cli\bin\ng.js build`
+  - **Unit Tests**: `npm test -- --run`
+  - **GCP Security Audit**: `npm run gcp:audit`
+- **esbuild Overrides**: Global `esbuild` is pinned to `0.27.2`; `@angular/build` & `@angular-devkit/build-angular` override `esbuild` to `0.28.1`; `astro` & `@astrojs/mdx` live in root `devDependencies`. Keep sub-workspace `overrides` (`companion-apps/avs-therapy`, `pocketgull_api`) synced with root `package.json`.
 
-## AI Coding Hygiene & Continuous Cleanup
-- **End-of-Session Pruning**: Before wrapping up features or releases, proactively purge unused imports, delete unreferenced dead code, merge duplicate helper functions, and remove commented-out blocks.
-- **Secret & Egress Boundaries**: Never commit API keys or credentials. Ensure `.env*` is strictly matched in `.gitignore`, and verify all external domains with `Sentinel Security Guard`.
+## 2. Language & Companion Standards
+- **Python / FastAPI (`pocketgull_api`)**: Format with `ruff` and `black` (88 chars). Strictly type all models with Pydantic v2 `BaseModel` & `Field` (zero raw dicts/`Any`). Use `async def` for I/O and sync `def` for CPU/ML matrix work. Raise `fastapi.HTTPException` with structured detail payloads, log via `logging`/`structlog` (never `print()`), and write Google Style docstrings.
+- **Flutter / Dart (`pocketgull_flutter`)**: Prefer **Dart** (`dart run script.dart`) over Python for standalone scripts/FHIR tools (Randal L. Schwartz Standard). Use **Riverpod** for state management, small stateless widgets, and strict null safety.
+- **Ruby / Rails (`pocketgull-fhir-rails`)**: Ruby 3.3.x+ with YJIT on `ruby:3.3-alpine`, namespaced under `module Pocketgull`, zero `rubocop` offenses, `~>` gemspec pins, and `WebMock`/`VCR` test isolation.
 
-## Gemini Safety Filter Policy (Clinical CDS)
-- **Canonical Reference**: `SECURITY.md §2` documents the full policy. All Genkit flows in `src/server/genkit.ts` reference this section.
-- **DANGEROUS_CONTENT = `OFF`**: Clinical text routinely discusses drug dosages, toxic exposures, overdose management, suicidal ideation screening (PHQ-9/C-SSRS), and trauma. Any threshold above `OFF` produces false-positive blocking on standard-of-care care plans.
-- **Imaging & OCR Flows = All `OFF`**: Medical imaging (X-rays, dermatology, wound assessment) and clinical document OCR require fully permissive safety settings across all categories.
-- **HARASSMENT & HATE_SPEECH = `BLOCK_ONLY_HIGH`**: Retained as baseline protection; rarely triggered by clinical text.
-- **SEXUALLY_EXPLICIT = `BLOCK_ONLY_HIGH`** (text flows) / **`OFF`** (imaging flows): Permits OB/GYN, STI, and reproductive health content.
-- **Do NOT revert to `BLOCK_LOW_AND_ABOVE` or `BLOCK_MEDIUM_AND_ABOVE`**: These thresholds silently block legitimate medical content and were the root cause of the Cognitive Localization translation failure.
+## 3. Conventional Commits & OpenSSF Git Hygiene
+- **Format**: `<type>(<scope>): <description>` — **STRICT MAX 72 CHARS** on subject line, imperative mood, lowercase description start, no trailing period. Sign off with DCO (`git commit -s`).
+- **Types**: `feat`, `fix`, `docs`, `test`, `security`, `chore`, `refactor`, `perf`, `style`, `ci`, `build`.
+- **Scopes**: `ui`, `ux`, `layout`, `theme`, `print`, `ai`, `gemini`, `adk`, `voice`, `clinical`, `fhir`, `intake`, `triage`, `server`, `ssr`, `api`, `flutter`, `dart`, `mobile`, `python`, `ml`, `sidecar`, `security`, `csp`, `codeql`, `hipaa`, `ci`, `cd`, `docker`, `deploy`, `cloudrun`, `demo`, `mock`, `e2e`, `playwright`, `test`, `three`, `anatomy`, `3d`, `sentinel`, `companion`, `types`, `build`, `deps`.
+- **SPDX Headers**: Include `// SPDX-License-Identifier: Apache-2.0` on all new source files.
 
-## NN/g (Nielsen Norman Group) Usability & Accessibility Standards
-- **Form Accessibility**: All input components MUST include explicit `[attr.aria-describedby]` error/hint linking, `[attr.aria-invalid]`, and 44px+ touch target hitboxes (Fitts's Law).
-- **System Status Visibility**: Telemetry badges and connection state indicators MUST provide instant visual feedback without layout shifts.
-- **User Freedom & Exit Vectors**: Read-only or historical review states MUST display prominent, un-missable exit banners (e.g., `"Return to Current State"`).
+## 4. Gemini Safety Filter Policy (`src/server/genkit.ts` / `SECURITY.md §2`)
+- **DANGEROUS_CONTENT = `OFF`**: Required so drug dosages, toxicology, overdose care, and PHQ-9/C-SSRS suicide screening are never false-positive blocked.
+- **Imaging & OCR Flows = All `OFF`**: Medical imaging and clinical OCR require permissive settings across all categories.
+- **HARASSMENT & HATE_SPEECH = `BLOCK_ONLY_HIGH`**, **SEXUALLY_EXPLICIT = `BLOCK_ONLY_HIGH`** (text) / **`OFF`** (imaging). Never revert to `BLOCK_LOW_AND_ABOVE` or `BLOCK_MEDIUM_AND_ABOVE`.
 
-## RSNA Neuro-Ergonomics, Eye Care & Melanopic EDI Standard
-- **CIE S 026:2018 Melanopic EDI Standard ($\text{mEDI} < 10\text{ lx}$)**: Radiologists, ICU clinicians, and night-shift operators reading in dark environments with $\text{mEDI} < 10\text{ lx}$ achieve up to $42\%$ less subjective eye strain and zero circadian phase delay during 12-hour shifts (Brown et al., *Trends in Neurosciences*). Night and Scotopic modes MUST enforce $>80\%$ sub-$480\text{ nm}$ blue emission suppression with Melanopic Daylight Efficacy Ratio $\text{m-DER} \le 0.25$ (Scotopic 650nm: $\text{m-DER} \approx 0.02$).
-- **Automated mEDI Telemetry Meter**: GullRender HUD continuously computes corneal melanopic illuminance:
-  $$\text{mEDI} = (E_{v, \text{display}} + E_{v, \text{ambient}} \times 0.08) \times \text{m-DER}$$
-  telemetrically interfaced to the W3C Generic Sensor API (`AmbientLightSensor`) with calibrated optical model fallbacks for non-flagged browsers.
-- **Helmholtz Retinal Irradiation Invariant (1867)**: Light emitting elements on dark substrates produce perceptual retinal irradiation (blooming). To maintain identical apparent stroke weight between light and dark modes, text on obsidian/peat substrates MUST dial back optical stroke weight by $-3.75\%$ (`font-weight: 385 !important;`) using warm bone cream glyphs (`#ede3d2` / `#f5efe6`) on peat obsidian (`#0d0906` / `#09090b`).
-- **Louise Sloan 5:1 Optotype Distance Scaling (ISO 8596 / NAS-NRC)**: All critical diagnostic letterforms and 3D telemetry glyphs conform to a $5 \times 5$ unit grid with $1/5$ stroke proportion, calibrated to subtend exactly $5\text{ arcmin}$ of visual angle at Snellen 20/20. The GullRender HUD provides 3 dynamic viewing distance presets: `20/20 Std` ($70\text{ cm}$), `📱 55cm` ($55\text{ cm}$ handheld), and `🌙 Mesopic` ($100\text{ cm}$ dim ambient).
-- **0.1 Hz Mayer Wave Parasympathetic Modulation**: Restorative 10-second respiratory cycle ($6\text{ breaths/min}$, $0.1\text{ Hz}$) dynamically synchronizes edge luminescence and bio-rhythmic HUD pulses to promote vagal tone, alleviate ciliary muscle spasm, and counteract "screen apnea."
-- **3D Typographic Anatomy Catalog**: Procedural 1000 UPM font glyph extrusion (`[heart]`, `[lungs]`, `[brain]`, `[liver]`, `[kidney]`, `[spine]`, `[knee]`, `[ecg_lead_ii]`, `[chakra_anahata]`, `[acupoint_gv20]`) provides instant multi-script 3D spatial orientation with $0\text{ B}$ extra 3D model asset overhead.
+## 5. CI/CD, CodeQL Taint Breaking & Playwright E2E
+- **CodeQL Taint Breaking (Zero `lgtm[]` comments)**:
+  - *System Prompt Injection*: Keep `systemInstruction` static (`BASE_CLINICAL_PROMPT`); pass sanitized user directives prefixed with `[CLINICAL DIRECTIVE CONTEXT]` in user content.
+  - *Binary Writes*: Validate magic bytes (e.g., `0x00 0x01 0x00 0x00` for TTF) and copy into `Buffer.alloc()` before disk writes.
+  - *Log Injection & URL Matching*: Destructure primitive fields before logging; use exact string equality (`svc == _GCS_SERVICE_NAME`) instead of substring containment.
+- **Playwright E2E**: Call `await enterDemoMode(page)` after `setupE2ePage(page)` in `beforeEach` and use case-insensitive regex locators (`text=/.../i`).
+- **Harden Runner & Docker**: Set `disable-sudo: false` when `apt-get` installing C-extension deps (`libhdf5-dev`). Copy all workspace `package*.json` files in root `Dockerfile` and gate `release.yml` jobs with `if: github.event_name != 'pull_request'`. Use portable relative script paths.
 
-## HIPAA Safe Harbor Patient De-Identification Policy
-- **Demographic Archetypes**: Mock and test patient profiles MUST be de-identified using HIPAA §164.514 Safe Harbor standards (e.g., `Homo Sapiens (Female, Neurological, 34y)` or `Pongo Pygmaeus (Orangutan Comparative Model)`).
-- **Historical Legacies**: Preserve named historical/scientific luminaries who dedicated their lives to science (Curie, Darwin, Kahlo, Ramanujan, Smith, Pauling, Gear).
+## 6. Subagent Delegation Matrix
 
-## Biophysical PBR Substrates & Unbiased Cryptography
-- **Edwin Smith Surgical Codex**: Describe 3D WebGL PBR texture maps using Edwin Smith III's empirical surgical codex biophysical descriptions.
-- **Unbiased Cryptographic Floats**: When generating random floats from cryptographic entropy, use the 53-bit IEEE-754 mantissa formula `(high * 4294967296.0 + low) / 9007199254740992.0` to eliminate modulo bias.
-
-## CI/CD Pipeline & GitHub Security Guardrails
-- **System Dependencies & Harden Runner**: Any workflow job installing Python packages with C extensions (e.g. `h5py` requiring `libhdf5-dev`) MUST set `disable-sudo: false` in `step-security/harden-runner` and include `sudo apt-get update && sudo apt-get install -y libhdf5-dev`.
-- **CodeQL Taint Chain Patterning**: Never rely on legacy `lgtm[]` comments. Break taint chains structurally:
-  - *System Prompt Injection*: Keep `systemInstruction` strictly static (`BASE_CLINICAL_PROMPT`). Pass sanitized user directives as a `[CLINICAL DIRECTIVE CONTEXT]` prefix in the user content array.
-  - *Network Data Writes*: Validate binary header magic bytes (e.g., `0x00 0x01 0x00 0x00` for TTF) and copy to a new `Buffer.alloc()` before writing to disk.
-  - *Log Injection*: Destructure explicit primitive fields into a new typed object and stringify instead of logging raw `req.body` objects directly.
-- **Playwright E2E Test Setup**: All E2E test suites MUST call `await enterDemoMode(page)` in `beforeEach` after `setupE2ePage(page)` to ensure the app navigates away from `about:blank`, unlocks the splash screen, and renders DOM elements before querying attributes or clicking buttons. Use case-insensitive locators (`text=/.../i`) for text matching.
-- **Monorepo Docker Context**: The root `Dockerfile` MUST copy all package manifests across all workspaces (`COPY docs/study/package*.json ./docs/study/`, `COPY companion-apps/avs-therapy/package*.json ./companion-apps/avs-therapy/`, `COPY pocketgull_api/package*.json ./pocketgull_api/`) and run `npm install --legacy-peer-deps --workspaces`.
-- **PR vs. Release Isolation**: Production release workflows (`release.yml`) MUST enforce `if: github.event_name != 'pull_request'` at the job level so GHCR package pushes and SLSA attestations trigger only on `main` branch pushes or release tags (`v*`).
-- **Portable Script Paths**: All scripts in `package.json` and `scripts/` MUST use relative paths (`./run-playwright.cjs`, `process.cwd()`) — never hardcoded local machine paths (`c:/Users/philg/...`).
-
-## Subagent Delegation & Escalation Protocol
-Agents MUST delegate specialized and compute/context-heavy tasks according to the following matrix:
-
-| Subagent Role | Type / Name | Trigger Conditions & Responsibilities | Boundary & Anti-Pattern |
-| :--- | :--- | :--- | :--- |
-| **Broad Research & Log Surveys** | `research` | • Scanning or grepping >5 files.<br>• Reading multi-hundred line log/transcript files.<br>• Investigating 3rd-party library internals or external docs. | **Read-Only**: Must NEVER attempt file writes or execution. Must return structured syntheses to the primary agent in a single turn. |
-| **Experimental & Invasive Changes** | `self` (branch) | • High-risk architectural refactors.<br>• Multi-file migrations where rollback may be necessary.<br>• Testing breaking dependency updates. | Use `Workspace: "branch"`. Isolate changes until hermetic build verification passes. |
-| **Clinical, FHIR & Epistemology Audit** | `clinical-auditor` | • Any modification to patient state signals, PHQ/GAD/C-SSRS clinical scoring, or FHIR R4 schema serialization.<br>• Ensuring HIPAA §164.514 Safe Harbor de-identification.<br>• Cochrane Risk of Bias & $H_0$ p-value verification.<br>• 12 Canonical Clinical Fallacies & Bayesian Natural Frequency compliance.<br>• Respectful pricing terminology ("Standard Retail Benchmark" & "Estimated Out-of-Pocket Total"). | Must be invoked before merging or completing PRs with clinical CDS touchpoints. |
-| **SWE Architecture & Code Review** | `swe-code-reviewer` | • New Angular 22 standalone component additions.<br>• Angular Signal reactive graph design reviews.<br>• Hyrum's Law & Google SWE Book conformance audits. | Verifies single-directional reactive data flow and zero memory leaks. |
-| **Accessibility & Mobile Review** | `flutter_a11y_agent` | • Touch target size validation (<44px hitboxes strictly flagged).<br>• WCAG AAA contrast audits against dark obsidian backgrounds.<br>• ARIA state binding (`[attr.aria-describedby]`, `[attr.aria-invalid]`). | Required for all public-facing UI and mobile screen components. |
-| **K8s & Cloud FinOps Guard** | `k8s-infra-guard` | • Any modification to `k8s/` manifests, `charts/pocketgull/` Helm values, or Agones fleet scaling.<br>• Enforcing `minReplicas: 0` scale-to-zero.<br>• Hardened non-root security contexts and CNCF compliance. | Must run `.agents/skills/gke-finops-optimizer/scripts/audit_k8s_finops.py` to ensure 100% compliance. |
-| **Typefoundry & Vector Engineering** | `typefoundry-engineer` | • OpenType font binary inspection, UPM grid calibration, and TrueType bytecode verification.<br>• Generating 300 DPI master print specimen plates (Triad).<br>• Running OTS / Google Fonts preflight tests. | Must enforce 1000 UPM grid, 0 duplicate nodes, and zero composite glyphs. |
-| **Multi-Script & Sovereign Linguistics** | `multi-script-linguist` | • Authoring phonological matrices and glyph mapping specs.<br>• Verifying rotational symmetry and diacritic elevation clearance (UCAS / Duployan).<br>• Enforcing UAX #9 BiDi numeric dosage isolation. | Prohibits un-grounded phonetic distortion or cultural appropriation. |
-| **NVIDIA CUDA & GPU Architect** | `nvidia-cuda-architect` | • Hardware-specific GPU optimization (Tesla T4, A100, H100).<br>• Enforcing Automatic Mixed Precision (`autocast` FP16/BF16), FlashAttention-2 / SDPA, and MONAI SmartCache in-memory pipelines.<br>• Empirical latency and Tensor Core profiling (`torch.profiler`). | Prohibits un-gated FP32 compute on Tensor Core hardware and repetitive disk DICOM decoding. |
-| **Mozilla Observatory 125 Guard** | `observatory-125-guard` | • Any modification to Express/SSR server, CSP headers, HSTS, routing, or deployment scripts.<br>• Enforcing 125/100 Grade A+ rating.<br>• Preventing route short-circuiting and unsafe-inline drift. | Prohibits bypassing pre-commit Check 12 or deploying without live synthetic verification. |
-| **GCP Security & IAM Guard** | `gcp-iam-guard` | • Any modification to Cloud Run service accounts, `cloudbuild.yaml`, IAM bindings, Secret Manager, or API keys.<br>• Enforcing 100/100 Grade A+ posture.<br>• Prohibiting user-managed JSON keys and un-scoped API keys.<br>• Verifying `pocketgull-run` least-privilege binding. | Must run `npm run gcp:audit` to verify 100% compliance. Prohibits deploying under default compute SA. |
-
-### Subagent Escalation Invariants:
-1. **Single-Turn Synthesis**: Subagents must return actionable conclusions, verified diffs, or structured findings in a single response. Prohibit multi-turn ping-pong loops between subagents.
-2. **Context Isolation**: Never pass raw multi-megabyte log files directly to parent context. Have the subagent extract only the exact failing lines and stack traces.
-
-## Hermetic Verification & Proof-of-Work Invariants
-Never declare a task resolved, a bug fixed, or a refactor complete based solely on code edits. Every change requires empirical proof:
-
-### 1. Mandatory Terminal Proof Chain
-Before concluding any implementation turn, execute the explicit workspace commands:
-- **TypeScript Typecheck**:
-  ```powershell
-  node c:\Users\philg\Pocketgull\pocketgull\node_modules\typescript\lib\tsc.js -p c:\Users\philg\Pocketgull\pocketgull\tsconfig.json --noEmit
-  ```
-- **Angular Production Build**:
-  ```powershell
-  node c:\Users\philg\Pocketgull\pocketgull\node_modules\@angular\cli\bin\ng.js build
-  ```
-- **Unit Test Suite**:
-  ```powershell
-  npm test -- --run
-  ```
-- **GCP Security & IAM Posture Audit**:
-  ```powershell
-  npm run gcp:audit
-  ```
-
-### 2. Self-Healing Protocol
-- If a build or typecheck fails, inspect the un-truncated compiler diagnostic.
-- Fix root causes directly at the type and interface definitions; do not cast to `any` or suppress errors with `@ts-ignore` unless explicitly authorized.
-- Never bypass git pre-commit hooks using `--no-verify`.
-- Maintain peer dependency traceability: When updating root overrides, verify peer dependencies using `npm view <package> dependencies`.
-
-## Context & Token Hygiene Protocols
-To prevent context window degradation, attention drift, and token exhaustion:
-1. **Search-First Paradigm**:
-   - NEVER call `view_file` on large (>300 line) files without prior targeted search.
-   - Use `grep_search` to pinpoint exact line numbers, then view bounded line ranges (max 100–150 lines per chunk).
-2. **Ephemeral File Hygiene**:
-   - Place scratch data, temporary JSON transformations, and one-off debug scripts strictly inside `<appDataDir>\brain\<conversation-id>/scratch/`.
-   - Proactively delete or prune intermediate artifacts before session completion.
-3. **Structured Response Economy**:
-   - Keep conversational commentary concise, high-signal, and linked to concrete workspace symbols.
-   - Provide clickable file links using GitHub-style markdown: `[file.ts](file:///absolute/path/file.ts)`.
-
-## Data Science & ML Competition Engineering Standards
-1. **Leak-Free Cross-Validation Anchoring (`GroupKFold`)**: In medical imaging datasets where patients have multiple series/scans, group splits strictly by `patient_id` using `GroupKFold(n_splits=5)` to prevent patient-feature leakage between train and validation splits.
-2. **Empirical Pipeline Verification (Numerical Proof First)**: Never claim an architecture edit or post-processing pipeline works based on intuition alone. Record Out-of-Fold (OOF) metric progression at every stage.
-3. **Experiment Tracking & Model Hashing (`MLflow` / `W&B` / `git` SHA)**: Log seed, git commit SHA, exact hyperparameters, and OOF target scores for every run. Save weights named by OOF score (e.g. `convnext_large_fold0_auc0.942.pt`).
-4. **Asymmetric Loss (ASL) for Specificity & Class Imbalance**: Use Asymmetric Loss with $\gamma_- = 4.0, \gamma_+ = 1.0, \text{clip} = 0.05$ for sparse multi-label targets to focus gradient updates on hard positive abnormalities.
-5. **Anatomical Co-Occurrence Prior Calibration**: Build an empirical target co-occurrence matrix $M_{ij} = \mathbb{P}(\text{Target}_j \mid \text{Target}_i)$ and calibrate predicted probabilities using Bayesian prior smoothing.
-6. **Diversity Ensembling & 2nd-Level Meta-Stacking**: Train 2nd-level Gradient Boosted Trees (LightGBM/XGBoost) on Out-of-Fold predictions from diverse backbones (ConvNeXt + Swin + mDeBERTa).
-7. **Nelder-Mead Target-Specific Threshold Optimization**: Use Nelder-Mead optimization to tune target decision thresholds $\tau_1, \tau_2, \dots, \tau_K$ on OOF predictions rather than using default $0.50$.
-8. **Sub-Second Efficiency Latency Optimization**: For competition efficiency tracks, sample 8 central key slices, export PyTorch models to ONNX Runtime with FP16, and use multi-threaded asynchronous DICOM I/O pools.
-9. **Semantic Versioning (`SemVer v1.0.0`) & Clean Identifiers**: Protect competitive edge by using clean, standardized public version tags without exposing internal proprietary recipe names on public leaderboards.
-10. **Continuous Automated Verification (`vitest` / `pytest`)**: Write automated unit tests covering preprocessors, matrix math formulas, and DICOM tensor transformations across edge cases (empty text reports, missing headers, NaNs).
-11. **Kaggle Code Competition Submission Protocol & Zero-Crash Rules**:
-    - **Hardware & Accelerator Conformance**: Use `enable_gpu: false` (CPU mode) or explicit T4 GPU settings (`gpu_t4`). NEVER use un-gated GPU settings that default to P100 GPUs, which are prohibited by competition submission rules.
-    - **Immediate Baseline Disk Output**: Always write a baseline `submission.csv` to disk at the very beginning of the submission cell *before* starting any ML inference loop.
-    - **Defensive Symbol & Engine Guards**: Wrap imports in `try-except` blocks and check `if 'engine' in globals() and engine is not None:` before calling inference methods to prevent unhandled `NameError` crashes.
-    - **ASCII Terminal Hygiene**: Use plain text status tags (`[OK]`, `[WARN]`) instead of non-ASCII emojis (`✅`, `⚠️`) in notebook `print()` calls to prevent Papermill `UnicodeEncodeError` failures.
-    - **In-Place Schema Preservation**: Load candidate `sample_submission.csv` directly, modify target columns in-place, format floats with `float_format='%.6f'`, and preserve exact row index order.
-    - **Memory Hygiene**: Call `gc.collect()` and `torch.cuda.empty_cache()` every 100 studies to prevent RAM/CUDA OOM during hidden test evaluation.
-12. **Kaggle Tagging & Platform Asset Governance (March 2026 Guidelines Compliance)**:
-    - **Synthetic Dataset Tagging Mandatory**: Per Kaggle's Synthetic Dataset Etiquette, any dataset containing partially or fully synthetic clinical consult vectors or LLM-generated weak labels MUST include the `synthetic` tag.
-    - **Standardized Tag Taxonomy**: All published Kaggle models, datasets, utility scripts, and notebooks MUST import and utilize `get_standard_tags()` from `scripts/kaggle_tags.py` to enforce unified metadata tags (`CLINICAL_TAGS`, `AI_ML_TAGS`, `PROJECT_TAGS`).
-    - **Usability 10 Checklist**: Every published Model Hub entry or Dataset MUST generate complete `model-metadata.json` / `dataset-metadata.json` containing explicit data dictionaries, open source licenses (`Apache 2.0` / `CC-BY-4.0`), and HIPAA §164.514(b)(2) Safe Harbor verification to maintain a perfect 10/10 usability rating.
-    - **Zero Spam & Self-Promotion**: Strictly prohibit upvote begging, off-topic self-promotion, plagiarism, or attaching unrelated datasets/models to notebooks. All shared work must provide genuine educational, research, or competition modeling value.
-13. **NVIDIA GPU Acceleration & CUDA Battle-Testing Protocol**:
-    - **Automatic Mixed Precision (AMP FP16)**: All neural network training and inference on NVIDIA GPUs (Tesla T4, A100, V100) MUST wrap forward passes in `torch.cuda.amp.autocast(dtype=torch.float16)` and scale gradients via `torch.cuda.amp.GradScaler()` to fully engage hardware Tensor Cores.
-    - **MONAI SmartCache In-Memory Pattern**: In multi-epoch or multi-phase training, preprocessed volumetric 2.5D slabs MUST be cached in pinned host RAM (`pin_memory=True`, DMA over PCIe) rather than re-reading raw DICOM files from disk across epochs.
-    - **FlashAttention-2 / SDPA Invariant**: Transformer self-attention blocks MUST use `torch.nn.functional.scaled_dot_product_attention` to tile attention in GPU SRAM rather than materializing $O(N^2)$ attention matrices in global VRAM.
-    - **Memory Bandwidth Hygiene**: Use `optimizer.zero_grad(set_to_none=True)` to deallocate gradient memory buffers instead of zero-filling them.
-    - **cuDNN Auto-Tuning**: Enable `torch.backends.cudnn.benchmark = True` on fixed-shape inputs.
-14. **CASMI 2026 Lineage of Gratitude & Tri-Paradigm Explainability Standard**:
-    - **The Lineage of Gratitude Invariant**: Every CASMI 2026 submission notebook, commit, and generated artifact MUST preserve and prominently display the Lineage of Gratitude dedicating our work to open-source pioneers: Hengck23 (DreaMS foundation model & safe-tail matching), Eveliaveldrine (Python 3.13 RDKit wheels), Enveda Biosciences & CASMI organizers, ICEBERG & GLACIER forward simulation architects, LOTUS & COCONUT open natural product curators, and Countess Ada Lovelace & Hermann von Helmholtz.
-    - **Tri-Paradigm Adaptive Representation**: All visualizations, specimen plates, and architectural narratives MUST support the 3 cognitive lenses:
-      1. *6th-Grade Explorer*: Wind-tunnel ion mobility and Lego-brick snapping.
-      2. *Advanced Biochemist*: 4D timsTOF coordinate space, in-silico RDA transition states, and Wasserstein-1 geodesics.
-      3. *Clinical Research*: Gut microbial aglycone biotransformation, CYP3A4 metabolic boundaries, and FHIR R4 interoperability.
-    - **100% Self-Contained Offline Artifacts**: All exported visualizers must execute natively in HTML5 Canvas/SVG without external CDNs, maintaining RSNA neuro-ergonomics and melanopic EDI < 10 lx.
-15. **Kaggle Semantic Versioning (SemVer 2.0.0) & Progressive Disclosure Protocol**:
-    - **SemVer Source of Truth**: All competition inference kernels must maintain a root `VERSION` file (e.g. `1.3.1`) and `CHANGELOG.md` following *Keep a Changelog* standards, with `__version__` stamped into execution logs and submission metadata.
-    - **Beyoncé Rule Pre-Flight Gate**: Submissions MUST run automated pre-flight assertions (verifying non-empty outputs, row count alignment, and zero NaNs) prior to writing `submission.csv`.
-    - **Progressive Disclosure UX**: Visualizations and notebooks MUST present a clean, welcoming hero card above the fold, followed by the interactive 3D laboratory, and allow readers to scroll down naturally to discover the deep story and open-source lineage.
-
-## Anti-Surveillance & Ephemeral Data Sovereignty Standards
-- **Default to Edge Computation**: All real-time telemetry calculations, biophysical equations, and clinical symptom classifications MUST run locally on the client device via WebAssembly (WASM), WebGPU, or client-side Web Workers (`OfflineEdgeAiService`). External API calls are reserved for explicit, user-initiated AI consults.
-- **Prohibition of Third-Party Trackers**: Zero third-party analytics pixels, fingerprinting scripts, or passive telemetry pingers (Google Analytics, Segment, Mixpanel, Meta Pixel) are permitted.
-- **Explicit Opt-In Telemetry**: All network operations require deliberate, user-initiated actions. Passive background harvesting of location, mic audio, or user keystrokes is strictly prohibited.
-- **1-Click Ephemeral State Purging**: All active clinical state MUST be stored in ephemeral Angular Signals and transient local storage, with 1-click state purging capabilities (`purgeTransientPatientState`).
-
-## Skeptical Epistemology & Falsifiability Standards
-- **Popperian Null-Hypothesis ($H_0$) Testing**: Every clinical or biophysical metric evaluation MUST compute $p$-values against population baseline means (`SkepticalEpistemologyService`). Any observation where $p \ge 0.05$ MUST trigger an explicit `skepticalWarningNotice` disclosing that the finding cannot reject the null hypothesis.
-- **Cochrane Risk of Bias (RoB 2)**: All literature references and clinical citations MUST incorporate explicit Cochrane Risk of Bias assessments across randomization, intervention deviation, missing data, and measurement bias.
-- **Evidence Hierarchy Demarcation**: Clinical recommendations MUST be explicitly tagged with evidence tiers (`Level A (RCTs)`, `Level B (Cohort)`, or `Level C (Expert Consensus / Plausibility)`) to prevent uncritical acceptance or science-washing.
-- **Socratic Evidence Literacy**: Analysis reports MUST embed interactive Socratic challenges to test user critical reasoning, correlation vs. causation discernment, and publication bias awareness.
-
-## WebMCP Tool & Browser Agent Governance
-- **Explicit Tool Contracts**: Every browser tool exposed to AI model contexts MUST be registered via `WebMcpRegistrationService`, declare strict JSON Schema inputs, and provide an explicit `AbortController` cancellation signal.
-- **Mandatory Spec Coverage**: Any addition or modification to registered WebMCP tools MUST include corresponding unit tests in `webmcp-registration.service.spec.ts` verifying registration, execution, and error handling.
-
-## Chrome Built-in AI & Gemma 4 Dev Trial Architecture Standards
-- **Gemma 4 Prompt API (`#gemma4-for-built-in-ai`)**: Prefer Chrome Built-in AI Prompt API for low-latency client-side clinical summarization and consults with speculative decoding (`samplingMode: 'most-predictable'`).
-- **Multimodal Visual Input (`#prompt-api-multimodal-input`)**: Pass canvas/image captures as Blob objects into `ai.languageModel` prompt input arrays for zero cloud transit visual analysis.
-- **ISMP Safety Proofreader (`#proofreader-api`)**: Integrate `window.ai.proofreader` / `ai.rewriter` with automated detection for high-risk trailing zeroes (`5.0 mg`) and naked decimals (`.5 mg`).
-- **Triage Acuity Classifier (`#classifier-api`)**: Categorize clinical notes with confidence scores into `STAT_EMERGENCY`, `URGENT`, or `ROUTINE`.
-- **Zero-Latency Vector Embeddings (`OnDeviceEmbedderService`)**: Use `window.ai.semanticEmbedder` to generate 256-dimensional embeddings with cosine similarity matching for PubMed literature ranking and clinical archetype retrieval.
-- **Enterprise Zero-Flag Invariant**: Ensure 100% functionality and zero uncaught exceptions in enterprise environments without experimental flags by providing deterministic local TypeScript fallbacks across all features.
-
-## Institutional Security Triad Governance Standard
-- **NIST SP 800-90A CSPRNG Invariant**: All session tokens, OAuth PKCE code verifiers, digital consent signatures, and entity identifiers MUST use CSPRNG OS kernel hardware entropy (`globalThis.crypto.getRandomValues()` / Node.js `node:crypto` `randomBytes`, `randomInt`). `Math.random()` is strictly prohibited in all security, authentication, and ID generation contexts.
-- **FDA 21 CFR Part 11 Electronic Records Integrity**: All state modifications, research dividend transactions, and clinical audits MUST generate immutable timestamped SHA-256 digital attestation seals to guarantee full provenance and non-repudiation.
-- **HIPAA § 164.312(c)(1) ePHI Data Integrity**: All ePHI payloads, FHIR R4 bundles, and clinical state trees MUST incorporate cryptographic integrity verification to corroborate that clinical data has not been altered or destroyed in an unauthorized manner.
-
-## Microsoft Services Agreement (MSA) & AI Governance Compliance Standard (Effective Sept 30, 2026)
-- **Zero Base Model Distillation & Cross-Training (Sec 14.s.iv)**: Under no circumstances may AI service outputs, responses, or metadata from Microsoft-hosted AI endpoints (Copilot, Bing AI, Azure OpenAI) be utilized to train, fine-tune, distill, evaluate, or improve foundation models or competing AI technologies.
-- **Prohibition of Emotion Inferencing & Biometric Profiling (Sec 14.s.ix.6, Sec 14.s.ix.9)**: Code, agents, and pipelines MUST NEVER attempt to infer emotional states (e.g., anger, fear, sadness, happiness) or deduce protected demographic/biometric categories from voice pitch, facial geometry, keystroke dynamics, or video streams. Spoken audio is strictly a communication channel, not an affective classifier.
-- **Mandatory Human-in-the-Loop for High-Impact CDS (Sec 14.s.ix.1)**: Autonomous, un-gated decision-making that affects legal status, healthcare treatment plans, life opportunities, or financial standing is strictly prohibited. All AI-generated Clinical Decision Support (CDS) outputs MUST mandate affirmative clinician review and digital cryptographic attestation before order commitment.
-- **Content Credentials & C2PA Provenance Preservation (Sec 14.s.vii)**: Generated media, diagrams, or clinical exports containing C2PA provenance manifests, digital watermarks, or cryptographic content credentials MUST NOT have these signals stripped, obscured, or manipulated.
-- **Clear Health Bot & Medical Device Demarcation (Sec 14.i & Medical Notice)**: Health bot insights, action plans, and wellness summaries MUST be clearly labeled as non-device wellness tools and include the mandatory clinical disclaimer directing users to qualified healthcare providers without replacing professional clinical judgment.
-
-## Library of Congress ISSN / ISSR Serials Governance Standard
-All medical investigations, translational systems biology articles, and peer-reviewed clinical cases published under the PocketGull serials imprint MUST comply with the **U.S. ISSN Center (Library of Congress)** and **ISSN International Centre** statutory serial requirements before publication or deployment:
-1. **Masthead & Key Title Invariance**: The masthead MUST state `PocketGull Journal of Salutogenic Medicine & Systems Biology` with `ISSN: Pending (U.S. Library of Congress)` (or assigned ISSN). Brand typography (`font-brand`) is strictly restricted to the `PocketGull` wordmark.
-2. **Bibliographic Chronology & Sequential Enumeration**: Every article record in `JOURNAL_MAP` MUST include a complete metadata tuple: `volume`, `issue`, structured `articleNumber` (`PG-YYYY-####`), Zenodo/Crossref `doi`, and the complete 4-stage chronological chain (`received` $\to$ `revised` $\to$ `accepted` $\to$ `publishedOnline`).
-3. **IMRaD & ICMJE Epistemic Integrity**: Original clinical investigations MUST provide 4-part Structured Abstracts (`Background`, `Methods`, `Results`, `Conclusions`), $\ge 3$ MeSH terms, formal Popperian hypothesis cards ($H_0$, $H_1$, test statistics, $p$-values, Bayes Factors $BF_{10}$), and 100% mathematical consistency between Abstract and Table 1 endpoints. Active pharmacological agents with FDA Boxed Warnings (e.g. montelukast) MUST detail prospective behavioral surveillance (PSC-17, SDSC) and cessation criteria.
-4. **Publisher Impressum & Author Provenance**: Publisher must state `PocketGull LLC, Portland, OR, USA`. Corresponding authors MUST provide verified ORCID (`0009-0008-1372-5381`), `dpo@pocketgull.app` email, IRB approval statement, and HIPAA §164.514 Safe Harbor de-identification.
-5. **Separation of Scholarly Literature from Design Labs**: The academic reading sequence ($\text{Abstract} \to \text{Hypothesis} \to \text{IMRaD} \to \text{Tables} \to \text{References} \to \text{Disclosures} \to \text{Peer Review}$) MUST proceed without interruption. Interactive glyph loupes, heart pacers, or typography inspection widgets belong strictly in the **Scriptorium** or design annex.
-6. **Automated Pre-Flight Verification**: Every deployment of `pocketgull.com` MUST execute `npm run issn:verify` (`scripts/verify-issn-standards.mjs`) during Step 0 pre-flight checks, asserting that all unique articles pass all 6 ISSN invariants.
-
-## Fair Play, Radical Transparency & Feature Shipping Invariants
-Every new feature, component, API endpoint, or clinical model shipped in Pocket-Gull MUST satisfy the 5-pillar verification checklist before being marked complete:
-
-| Principle | Statutory & Engineering Invariant | Verification Mechanism |
+| Subagent Role | Type / Name | Trigger Conditions & Responsibilities |
 | :--- | :--- | :--- |
-| **Accessibility (Local Equity)** | Feature MUST function on low-end hardware, Chromebooks, and constrained networks without requiring a paid cloud API key. | `OfflineEdgeAiService` & deterministic local TypeScript fallbacks (`isAvailable` signal check). |
-| **Honesty (Telemetry Disclosure)** | The UI MUST disclose model identity, inference latency (ms), token thinking budget, and certainty score rather than obscuring provenance. | `ClinicalReasoningStreamComponent` & Telemetry Badges (`[⚙️ Local Edge]` vs `[☁️ Gemini 3.7]`). |
-| **Falsifiability (Skeptical CDS)** | The system MUST warn clinicians when empirical evidence is weak ($p \ge 0.05$) or risk of bias is high rather than hallucinating false certainty. | `SkepticalEpistemologyService` & `SkepticalEpistemologyHud` ($H_0$ rejection tests). |
-| **Interoperability (Zero Lock-In)** | Patient data and clinical plans MUST be exportable in open, standard formats that any competitor, hospital, or open-source EHR can parse. | Universal **HL7 FHIR R4 Bundle** export (`fhir.serializer.ts`) & WebMCP OpenAPI schemas. |
-| **Safety Boundary (Human-in-the-Loop)** | High-impact actions, prescriptions, and financial transactions $\ge \$500$ MUST require affirmative clinician review and digital attestation. | FDA CDSR Notice & `MandiantClinicalDefenseService` Dual-Custody M-of-N signatures. |
+| **Broad Research** | `research` | Scanning >5 files, reading long logs, external docs (Read-Only, single-turn synthesis). |
+| **Invasive Refactors** | `self` (`branch`) | High-risk multi-file refactors or dependency upgrades isolated in branched workspace. |
+| **Clinical & FHIR Audit** | `clinical-auditor` | Patient state signals, PHQ/GAD/C-SSRS scoring, FHIR R4 serialization, HIPAA Safe Harbor, Popperian $H_0$ & 12 fallacies. |
+| **SWE Code Review** | `swe-code-reviewer` | Angular 22 standalone components, Signal graph architecture, Hyrum's Law & SWE Book compliance. |
+| **CUDA & GPU Architect** | `nvidia-cuda-architect` | Tesla T4/A100/H100 AMP FP16/BF16, FlashAttention-2/SDPA, MONAI SmartCache, Tensor Core profiling. |
+| **Observatory 125 Guard** | `observatory-125-guard` | Express/SSR headers, CSP nonces, HSTS, routing, live synthetic 125/100 verification. |
+| **WebMCP Tester** | `webmcp-tester` | `WebMcpRegistrationService` JSON schema contracts, `AbortController` signals, unit spec coverage. |
 
-## Typefoundry Procedural Engineering & Font Tooling Hygiene Standard (Randal L. Schwartz Standard)
-- **Directory-Pinned Environment Execution (`uv` Isolation)**: Root and host workspaces do not contain font compiler binaries (`fonttools`, `ots`). All font engineering, binary inspection, and validation commands MUST explicitly specify the typeface directory environment:
-  ```powershell
-  uv --directory ../pocketgull-typeface run python sources/validate_fonts.py
-  ```
-- **Dart Raw String Template Invariant**: When generating vector specimens, SVG layouts, or XML documents via Dart scripts (`dart run tool/...`), ALWAYS declare multiline strings using raw template delimiters (`r'''...'''`) or escape every literal dollar sign (`\$`). Unescaped `$` inside standard Dart strings triggers compile-time interpolation crashes.
-- **Headless Vector Rasterization (Inkscape CLI)**:
-  - Never include SVG `<filter>` tags with `<feDropShadow>` in SVGs intended for headless CLI rasterization (`inkscape --export-filename=...`); headless CLI render engines drop these elements or crash. Use geometric SVG shadow rect primitives.
-  - Rely exclusively on fontconfig system font families or explicit path declarations in SVG `@style` blocks.
-
-## Typographic SemVer 2.0.0 & 5-Phase Zero-Tofu Release Protocol
-- **SemVer 2.0.0 for Typefoundry Software**:
-  - **Major (`X.0.0`)**: Any breaking metric shift altering baseline, UPM (1000), ascenders/descenders (`hhea`, `OS/2`), or advance widths of existing characters causing reflow in existing documents. Also denotes major script tier milestones (e.g. Tier 1 complete).
-  - **Minor (`x.Y.0`)**: Purely additive language additions (e.g., Inuktitut `v2.1.0`, Chinuk Pipa `v2.2.0`), new script coverage, or new OpenType features (`ss03`, `dlig`).
-  - **Patch (`x.y.Z`)**: Optical vector smoothing, inktrap depth calibrations, kerning pair adjustments, and validator rule updates.
-- **The 5-Phase Zero-Tofu Release Gate**:
-  1. *Phonological Matrix Definition*: Codify the complete orthography, phoneme mappings, and Unicode block range into `fonts/<lang>_matrix.json`.
-  2. *Procedural Vector Synthesis*: Generate TTF contours via parametric physical equations adhering to 1000 UPM grid, 0 duplicate nodes, and integer coordinates.
-  3. *34/34 Pre-Flight Verification*: Run `sources/validate_fonts.py` ensuring 100% pass rate across OpenType tables, cmap coverage, and OTS memory safety.
-  4. *300 DPI Landmark Architectural Triad*: Produce high-resolution master print plates:
-     - Plate 1: *Type Engineering Specimen* (UPM grid, bezier vectors, inktrap optics)
-     - Plate 2: *Telemetry Type Specimen* (Dark HUD, biometric telemetry, ISMP disambiguation)
-     - Plate 3: *Pedagogical Typeface Plate* (Washi parchment, cultural sovereignty, phonological matrix)
-  5. *CERN Zenodo Immutable Archival*: Tag release commit, generate GitHub release asset bundle, and mint/update persistent DOI (`10.5281/zenodo.18882512`).
-
-## OpenSSF Baseline 3 & Gold Security Governance Standard
-- **Developer Certificate of Origin (DCO) Mandate (`OSPS-LE-01.01`)**: All commits created by agents or contributors MUST assert legal provenance using standard DCO sign-offs (`Signed-off-by: Full Name <email>` or `git commit -s`).
-- **Two-Person Review Standard (`OSPS-QA-07.01`, `two_person_review`)**: Direct pushes to `main` are prohibited. All features and refactors MUST be submitted via scoped topic branches and Pull Requests with mandatory CI pre-flight checks and non-author human review before merging.
-- **SPDX License Headers (`OSPS-LE-03.02`, `license_per_file`)**: All newly created source code files (`.ts`, `.py`, `.dart`, `.go`) MUST include standard SPDX machine-readable license headers (`// SPDX-License-Identifier: Apache-2.0`).
-- **Deterministic Clinical Precedence Over Stochastic LLMs (`OSPS-SA-01.01`)**: Emergency physiological red flags (BE-FAST acute stroke, ACS chest pain, SpO2 < 90%, C-SSRS suicidal crisis) MUST deterministically intercept execution ahead of any stochastic Gemini API call.
-- **Zero PHI Egress & Edge Hybridization (`OSPS-BR-07.01`)**: Clinical scribing and triage acuity inference leverage on-device models (Chrome Built-in AI / Gemma 4 Dev Trial) with mathematical zero network egress to protect HIPAA §164.514 Safe Harbor guarantees. Upstream Gemini API payloads are ephemeral, non-PHI, and strictly enterprise opt-out.
-- **SLSA Provenance & Immutable Digest Deployment (`OSPS-BR-06.01`)**: Production container deployments to Google Cloud Run in `gen-lang-client-0540208645` MUST deploy by immutable SHA-256 digest (`gcr.io/...@sha256:...`) with CycloneDX 1.6 SBOM verification (`npm run sbom`).
-- **FinOps Scale-to-Zero & Lifecycle Pruning**: Cloud Run services MUST configure `minScale: 0`. Storage lifecycle policies enforce 7-day auto-deletion (`olderThan: "604800s"`, `keepCount: 3`) on Artifact Registry Docker repositories and GCS source buckets (`npm run gcp:prune-storage`).
-
-## Mozilla HTTP Observatory 125 & Zero-Drift Security Header Standard
-- **125 / 100 Grade A+ Invariant**: All web entrypoints (Express, Angular SSR, FastAPI sidecars, and custom domain routers) MUST maintain a score of 125 / 100 on Mozilla HTTP Observatory (`scripts/observatory_headers_guard.mjs`).
-- **Middleware #1 Top-of-Stack Rule**: Security headers MUST execute as the very first middleware before any route, domain dispatcher (`isBusinessSite`), or static asset handler to eliminate route short-circuiting.
-- **Zero 'unsafe-inline' / 'unsafe-eval'**: Production CSP MUST enforce per-request nonces + `'strict-dynamic'` and `default-src 'none'`. Never insert `'unsafe-inline'` into production script-src.
-- **Mandatory Bonus Suite (+25 pts)**: Always configure `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload` (+10), `Cross-Origin-Opener-Policy: same-origin` (+5), `Cross-Origin-Resource-Policy: same-origin` (+5), and `Referrer-Policy: strict-origin-when-cross-origin` (+5).
-- **Shift-Left Commit & Deploy Gate**: `scripts/pre-commit-check.cjs` (Check 12) and `scripts/deploy-production.mjs` (Step 5b) enforce automated static and live synthetic verification before and after deployments.
-
-## Bioethical Anti-Dark-Pattern & Salutogenic Governance Standard
-- **Anti-Entrainment Monetization Isolation**: Bio-rhythmic parasympathetic pacing ($0.1\text{ Hz}$ Mayer wave pulses, respiratory entrainment animations, and soothing auditory chimes) is strictly quarantined to therapeutic and research viewports. It is AUTOMATICALLY AUDITED via Sentinel Guard (`scripts/sentinel_security_guard.mjs`) and prohibited in billing, pricing, payment checkout, or legal consent views to prevent emotional compliance manipulation.
-- **Epistemic Demarcation & Anxiety Protection**: Speculative or in-silico cellular biophysics models ($V_{\text{mem}}$ polarization, xenobiotic docking, microbial metabolite fluxes) MUST render explicit `[EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC]` badges to prevent somatic panic and hypochondriac anxiety loops.
-- **Zero Commercial Ad-Tech & Surveillance Trackers**: Commercial ad-tech, behavioral session-replay spyware, and pixel trackers (`gtag`, `fbq`, `mixpanel`, `hotjar`, `clarity`, `segment`) are strictly banned from client bundles and verified pre-flight via Sentinel Guard (`npm run sentinel:audit`).
-- **Parasocial Authority Boundary & Crisis Anchoring**: AI consult and conversational interfaces must transparently disclaim primary diagnostic authority and maintain permanent, un-missable one-touch crisis lifelines (988, 111, Lifeline) with zero conversational traps.
-
-## Clinical, Typographic & Security Canonical Reference
-- For core clinical & ophthalmological standards (LogMAR 0.0, ISMP/FDA dosage disambiguation, WCAG AAA 7:1), Marker font brand boundary, Amazon affiliate egress limits, anti-whaling dual-custody protocols, Tailwind CSS tokens, Five Eyes regulatory mapping, institutional thin-client resilience, and "Tell, Don't Ask" domain encapsulation, refer to the canonical root [GEMINI.md](file:///c:/Users/philg/Pocketgull/pocketgull/GEMINI.md).
-- For the cross-disciplinary Gemma 4 On-Device architecture spanning Medicine, Science, Education, and Fast/Slow-Loop agentic engineering, refer to [GEMMA4_EDGE_ARCHITECTURE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/GEMMA4_EDGE_ARCHITECTURE.md).
-
-
+## 7. Context Hygiene & Proof-of-Work
+- **Search-First**: Use `grep_search` before `view_file` on files $>300$ lines; view bounded chunks ($\le 150$ lines). Store scratch files in `<appDataDir>\brain\<conversation-id>/scratch/`.
+- **Self-Healing Proof**: Fix type errors at root interfaces (no `any` or `@ts-ignore`, no `--no-verify`) and run the terminal proof chain before concluding implementation turns.
+- **Domain Rules**:
+  - BigQuery $\leftrightarrow$ Kaggle & Data Science: [.agents/rules/bigquery-kaggle-ml.md](file:///c:/Users/philg/Pocketgull/pocketgull/.agents/rules/bigquery-kaggle-ml.md)
+  - Typefoundry & Cross-Repo Parity: [.agents/rules/typefoundry-and-repos.md](file:///c:/Users/philg/Pocketgull/pocketgull/.agents/rules/typefoundry-and-repos.md)

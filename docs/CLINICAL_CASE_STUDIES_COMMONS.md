@@ -14,8 +14,19 @@ The **Clinical Case Studies & Research Commons** serves as Pocket Gull's open em
 Rather than presenting static, retrospective clinical vignettes or synthetic toys, every case study in the Commons:
 1. **Model Non-Linear Physiological Dynamics**: Simulates organ system interdependencies, feedback delays, autonomic tone, and metabolic phases using interactive biophysical radars.
 2. **De-Identifies via Strict HIPAA Safe Harbor**: All 18 direct identifiers are stripped; patient timelines are anchored to generalized physiological archetypes or historical public-domain luminaries.
-3. **Exports via 1-Click HL7® FHIR® R4**: Every case study provides an exportable, syntactically valid FHIR R4 Bundle containing discrete `Patient`, `Condition`, `Observation`, `DiagnosticReport`, and `CarePlan` resources with standardized LOINC and SNOMED CT encodings.
+3. **Exports via 1-Click HL7® FHIR® R4**: Every case study provides an exportable, syntactically valid FHIR R4 Bundle containing discrete `Patient`, `Observation`, `Condition`, `DiagnosticReport`, and `CarePlan` resources with standardized LOINC and SNOMED CT encodings.
 4. **Demonstrates the 3B Innovation Framework**: Grounds diagnosis and intervention in cognitive innovation strategies—**Breaking** siloed dogmas, **Bending** physiological parameters, and **Blending** disparate medical paradigms.
+
+### 1.5. 60-Second "Before vs. After" Clinical Transformation
+
+To help clinicians, hospital executives, and patients grasp the immediate ergonomic value of Pocket Gull, every case study illustrates the shift from **Generative EHR Note Bloat** to a **4-Slot Salutogenic Care Plan**:
+
+| Dimension | ❌ Legacy / Unchecked Generative EHR Note | ✅ Pocket Gull 3-Act Salutogenic Care Plan |
+| :--- | :--- | :--- |
+| **Cognitive Load** | 1,500-word unbroken wall of copy-pasted text causing ocular strain | **Strict 4-Slot Working Memory Ceiling** (`WM_SLOT_MAX = 4`) with 3-step micro-chunks |
+| **Clinical Trajectory** | Static snapshot of isolated symptoms and billing codes | **Three Acts Trajectory**: *Act I (Days 0–30 Bridge)* $\rightarrow$ *Act II (Weeks 2–12 Pacing)* $\rightarrow$ *Act III (Months 6+ Resilience)* |
+| **Epistemic Safety** | Ungrounded LLM prose susceptible to confident hallucinations | **Popperian $H_0$ Falsifiability**, Cochrane RoB 2 tiering (`Level A/B/C`), and Gigerenzer natural frequencies (`out of 10,000`) |
+| **Interoperability & Cost** | Locked inside proprietary EHR text blobs; opaque retail drug costs | **1-Click HL7® FHIR® R4 Bundle** + Respectful **\$4–\$10 Generic Retail Benchmarks** with FTC disclosure |
 
 ---
 
@@ -48,6 +59,15 @@ Developed by neuroscientist David Eagleman and composer Anthony Brandt (*The Run
 | **Case #02** | **Multiple Sclerosis Neuro-Axonal Sanctuary** | Deconstructs autoimmune demyelination into mitochondrial bioenergetics, glial scar stiffness, and thermal Uhthoff sensitivity. | Bends neuroplastic pacing curves to maintain core temperature within a tight $0.5^\circ\text{C}$ autonomic buffer. | Blends S1P receptor modulators with Ayurvedic *Rasayana* neuro-protectants (*Bacopa monnieri*) and 0.1 Hz vagal resonant pacing. |
 | **Case #03** | **Cardiometabolic & Non-Linear Glycemic Radar** | Breaks "metabolic syndrome" into hepatic gluconeogenesis velocity ($dG/dt \ge +1.5\text{ mg/dL/min}$), glycemic phase-space attractors, and endothelial nitric oxide quenching. | Bends continuous glucose metrics from static HbA1c into dynamic postprandial area-under-the-curve ($\Delta\text{AUC}_{120}$) phase portraits with Savitzky-Golay noise filtering. | Synthesizes generic Metformin ER 500mg (\$4/mo benchmark) with non-insulin GLUT4 soleus pacing, diurnal BMAL1 daylight feeding, and screened orthomolecular adjuncts (Mg Glycinate + Berberine). |
 | **Case #05** | **Charles Darwin & The Vagal Enigma** | Breaks historical retrospective diagnostics into chronic *Trypanosoma cruzi* (Chagas) parasitemia vs. post-infectious autonomic dysautonomia. | Bends a 40-year historical symptom journal across 5 decades of ship voyages, down house isolation, and stress flares. | Integrates 19th-century Victorian hydrotherapy and rest cures with 21st-century heart rate variability (HRV) spectral power analysis. |
+
+### 2.5. Plain-Language Epistemic Trust Card: Why Pocket Gull Never Hallucinates Unchecked
+
+To educate medical directors, clinicians, and patients on how Pocket Gull prevents unchecked AI hallucinations, every recommendation passes through 4 deterministic verification gates:
+
+1. **Popperian Null-Hypothesis ($H_0$) Gate**: Rather than trying to "prove" a hunch, Pocket Gull actively tests whether an intervention beats chance ($p < 0.05$). If $p \ge 0.05$, it automatically stamps `[EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC]`.
+2. **Gigerenzer Natural Frequencies (`out of 10,000 patients`)**: Instead of confusing relative risk percentages (e.g., *"30% risk reduction"*), risks and benefits are translated into clear absolute counts out of `10,000` patients.
+3. **ISMP Medication Decimal &CYP450 Safety Guard**: Automatically blocks dangerous trailing zeros (`5.0 mg` $\rightarrow$ `5 mg`) and naked decimals (`.5 mg` $\rightarrow$ `0.5 mg`) while screening botanical-drug interactions before a clinician signs off.
+4. **FDA 21 CFR Part 11 Cryptographic Provenance**: Every grounded citation is linked to its primary **LOINC / SNOMED-CT** code, **Cochrane Risk of Bias (RoB 2)** tier, and an immutable SHA-256 integrity seal (`sha256_part11_...`).
 
 ---
 

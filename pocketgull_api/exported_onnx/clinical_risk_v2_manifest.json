@@ -1,0 +1,11 @@
+{
+  "model_name": "clinical_risk_v2",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 12,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "4cd9c4ad48c7decf7d7d01d880774a8f8f5bbac13dd6a22937bfd5918069c690",
+  "size_bytes": 587981
+}

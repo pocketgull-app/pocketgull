@@ -370,8 +370,9 @@ export class ComplexAdaptiveSystemsService {
       }
     }
     const correlationFraction = pairCount > 0 ? (smallDistCount / pairCount) : 0.5;
+    // In Grassberger-Procaccia C(r) ~ r^D2: for rThreshold = 0.5 * avgRadius, higher D2 means FEWER pairs fall inside small r ((0.5)^D2 is smaller)
     const d2 = avgRadius > 0.1
-      ? Math.max(1.0, Math.min(3.0, Math.round((1.2 + correlationFraction * 1.6) * 100) / 100))
+      ? Math.max(1.0, Math.min(3.0, Math.round((2.6 - correlationFraction * 1.4) * 100) / 100))
       : 0.0;
 
     // Check for periodic recurrence (limit cycle detection via loop closure)

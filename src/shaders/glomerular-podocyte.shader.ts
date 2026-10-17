@@ -43,7 +43,6 @@ uniform float uEffacementRatio;
 void main() {
     vUv = uv;
     vNormal = normalize(normalMatrix * normal);
-    vPosition = position;
 
     // Intraglomerular capillary pressure pulsation (Starling hydrostatic distention)
     float pressureNorm = clamp((uIntraglomerularPressure - 30.0) / 40.0, 0.0, 1.0);
@@ -56,7 +55,9 @@ void main() {
     vec3 displaced = position + normal * (pulse + pedicelRidge);
 
     vPulsation = pulse;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(displaced, 1.0);
+    vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
+    vPosition = mvPosition.xyz;
+    gl_Position = projectionMatrix * mvPosition;
 }
 `;
 

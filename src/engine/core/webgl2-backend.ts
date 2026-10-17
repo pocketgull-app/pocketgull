@@ -33,8 +33,9 @@ export class WebGl2Backend implements IRendererBackend {
   private nextMeshId = 1;
   private lastCircadianTone = 0.0;
 
-  // Offscreen Framebuffer for Picking
+  // Offscreen Framebuffer for Picking (MRT: attachment 0 = RGBA8 color, attachment 1 = RGBA32UI pickId)
   private pickFbo: WebGLFramebuffer | null = null;
+  private pickColorRbo: WebGLRenderbuffer | null = null;
   private pickTexture: WebGLTexture | null = null;
   private pickDepthRbo: WebGLRenderbuffer | null = null;
 
@@ -226,11 +227,12 @@ export class WebGl2Backend implements IRendererBackend {
       gl.drawElements(gl.TRIANGLES, mesh.indexCount, gl.UNSIGNED_SHORT, 0);
     }
 
-    // 2. Render to Offscreen Picking Framebuffer
+    // 2. Render to Offscreen Picking Framebuffer (MRT: location 0 = float color, location 1 = uint pickId)
     if (this.pickFbo) {
       gl.bindFramebuffer(gl.FRAMEBUFFER, this.pickFbo);
-      gl.clearBufferuiv(gl.COLOR, 0, new Uint32Array([0, 0, 0, 0]));
-      gl.clear(gl.DEPTH_BUFFER_BIT);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      gl.clearBufferuiv(gl.COLOR, 1, new Uint32Array([0, 0, 0, 0]));
 
       for (const mesh of this.meshes.values()) {
         if (this.uniformLocations['uMeshPartId']) {
@@ -248,7 +250,7 @@ export class WebGl2Backend implements IRendererBackend {
     const gl = this.gl;
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.pickFbo);
-    gl.readBuffer(gl.COLOR_ATTACHMENT0);
+    gl.readBuffer(gl.COLOR_ATTACHMENT1);
 
     const pixelBuf = new Uint32Array(4);
     // WebGL coordinate space starts from bottom-left
@@ -264,16 +266,28 @@ export class WebGl2Backend implements IRendererBackend {
   private setupPickFramebuffer(width: number, height: number): void {
     const gl = this.gl;
     if (this.pickFbo) gl.deleteFramebuffer(this.pickFbo);
+    if (this.pickColorRbo) gl.deleteRenderbuffer(this.pickColorRbo);
     if (this.pickTexture) gl.deleteTexture(this.pickTexture);
     if (this.pickDepthRbo) gl.deleteRenderbuffer(this.pickDepthRbo);
 
     this.pickFbo = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.pickFbo);
 
+    // Location 0: float fragColor attachment (prevents GL_INVALID_OPERATION on MRT draw)
+    this.pickColorRbo = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, this.pickColorRbo);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.RGBA8, width, height);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, this.pickColorRbo);
+
+    // Location 1: uint pickId attachment (RGBA32UI)
     this.pickTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, this.pickTexture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32UI, width, height, 0, gl.RGBA_INTEGER, gl.UNSIGNED_INT, null);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.pickTexture, 0);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, this.pickTexture, 0);
+
+    if (typeof gl.drawBuffers === 'function') {
+      gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+    }
 
     this.pickDepthRbo = gl.createRenderbuffer();
     gl.bindRenderbuffer(gl.RENDERBUFFER, this.pickDepthRbo);

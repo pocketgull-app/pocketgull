@@ -423,3 +423,9 @@ scripts/output/
 
 # Root IDE workspace file
 /melos_pocketgull_workspace.iml
+
+# Scratch & Numba caches
+numba_cache/
+work/
+eng/
+

@@ -41,7 +41,6 @@ uniform float uIsTurbulent;
 void main() {
     vUv = uv;
     vNormal = normalize(normalMatrix * normal);
-    vPosition = position;
 
     // Small pulsatile wall distention with cardiac cycle
     float pulse = sin(uTime * 3.0 + position.z * 2.0) * 0.015 * (1.0 - uIsTurbulent * 0.5);
@@ -49,7 +48,9 @@ void main() {
 
     vShearStress = uShearStress;
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(displaced, 1.0);
+    vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
+    vPosition = mvPosition.xyz;
+    gl_Position = projectionMatrix * mvPosition;
 }
 `;
 

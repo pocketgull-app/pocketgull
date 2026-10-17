@@ -1,0 +1,11 @@
+{
+  "model_name": "vagal_coherence_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 6,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "3284794efe6e158edaa1a242e496b1abaedd99f9fa0e42d59e1e2d3d05abd6ce",
+  "size_bytes": 644805
+}

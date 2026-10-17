@@ -1,4 +1,4 @@
-import { createCanaryRouter, recordCanaryHit, getCanaryThreatLedger, clearCanaryThreatLedger, classifyThreatActor } from './canary.routes';
+import { createCanaryRouter, recordCanaryHit, getCanaryThreatLedger, clearCanaryThreatLedger, classifyThreatActor, maskIpForPublicFeed } from './canary.routes';
 import { Request } from 'express';
 
 describe('Canary Honeypot Router Suite', () => {
@@ -38,5 +38,10 @@ describe('Canary Honeypot Router Suite', () => {
     const router = createCanaryRouter();
     expect(router).toBeDefined();
     expect(router.stack.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('4. Masks visitor IP octets in public threat feed helper', () => {
+    expect(maskIpForPublicFeed('198.51.100.42')).toBe('198.51.100.xxx');
+    expect(maskIpForPublicFeed('2001:db8:85a3::8a2e:370:7334')).toBe('2001:db8:85a3:xxxx');
   });
 });

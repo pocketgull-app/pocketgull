@@ -1,0 +1,11 @@
+{
+  "model_name": "physionet_2024_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "919bbb6fb66bf86fc9d7f54de469ae538f7ceb319cee3df4b1c2ea8b0b2fb0a1",
+  "size_bytes": 1949625
+}

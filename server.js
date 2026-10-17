@@ -16,9 +16,25 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
+const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test');
+const isProd = (process.env['NODE_ENV'] === 'production' || Boolean(process.env['K_SERVICE'])) && !isTestingEnv;
+const isDev = !isProd;
+
+const ALLOWED_ORIGINS_REGEX = isProd
+  ? /^https:\/\/(?:[a-z0-9-]+\.)?pocketgull\.(?:app|com)$/i
+  : /^(?:https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?|https:\/\/(?:[a-z0-9-]+\.)?pocketgull\.(?:app|com))$/i;
+
+const corsOriginValidator = (origin, callback) => {
+  if (!origin || ALLOWED_ORIGINS_REGEX.test(origin)) {
+    callback(null, true);
+  } else {
+    callback(new Error('Not allowed by CORS'));
+  }
+};
+
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: '*',
+    origin: corsOriginValidator,
     methods: ['GET', 'POST']
   }
 });
@@ -51,10 +67,6 @@ io.on('connection', (socket) => {
   });
 });
 app.use(compression());
-
-const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test');
-const isProd = (process.env['NODE_ENV'] === 'production' || Boolean(process.env['K_SERVICE'])) && !isTestingEnv;
-const isDev = !isProd;
 
 // Helper to inject cryptographic nonce into all inline <script> tags before sending HTML
 function sendHtmlResponse(res, html) {
@@ -109,26 +121,28 @@ app.use((req, res, next) => {
     'humanitarian/medical-cds; urn:icrc:digital-emblem:v1; status=protected-civilian; authority=Geneva-Conventions-1949-AP1; entity="PocketGull LLC."'
   );
 
-  // 10. Content Security Policy (Strict CSP3 with Nonce & Strict-Dynamic)
+  // 10. Content Security Policy (Strict CSP3 with Nonce & Strict-Dynamic — Zero 'unsafe-inline' in script-src*)
   const scriptSrc = isProd
     ? `'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval' https://apis.google.com https://cloud.google.com https://pay.google.com`
     : `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cloud.google.com https://pay.google.com`;
 
+  const scriptSrcAttr = isProd ? `'none'` : `'unsafe-inline'`;
+
   const connectSrc = isProd
-    ? `'self' https: wss: https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`
+    ? `'self' https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app https://*.pocketgull.app wss://*.pocketgull.app https://pocketgull.com`
     : `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`;
 
   const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com https://font.pocketgull.app data:`;
   const fontSrc = `'self' data: https://fonts.gstatic.com https://font.pocketgull.app`;
   const imgSrc = `'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org https://images.unsplash.com https://pocketgull.app https://*.pocketgull.app`;
-  const mediaSrc = `'self' blob: data: mediastream: https:`;
+  const mediaSrc = `'self' blob: data: mediastream: https://*.pocketgull.app`;
   const frameSrc = `'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app https://pay.google.com`;
 
   const cspDirectives = [
     "default-src 'none'",
     `script-src ${scriptSrc}`,
     `script-src-elem ${scriptSrc}`,
-    "script-src-attr 'unsafe-inline'",
+    `script-src-attr ${scriptSrcAttr}`,
     `style-src ${styleSrc}`,
     `style-src-elem ${styleSrc}`,
     "style-src-attr 'unsafe-inline'",
@@ -156,7 +170,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api', cors()); // Enable CORS for API routes so Flutter apps can sync data
+app.use('/api', cors({ origin: corsOriginValidator, methods: ['GET', 'POST', 'OPTIONS'] })); // Restricted CORS allowlist for API routes
 
 const apiLimiter = rateLimit({
   windowMs: 60_000,
@@ -181,7 +195,7 @@ function sanitizeLogInput(val) {
 app.set('trust proxy', 1);
 
 // =========================================================================
-// 🛡️ Zero-Cost IP Blocklist & Automated Threat Banlist Engine ($0.00 Cost)
+// 🛡️ Zero-Cost IP Blocklist & Scanner Short-Circuit Engine ($0.00 Cost)
 // =========================================================================
 // Pre-seeded static blocklist of known abusive scanner IPs (e.g. AS48090 proxy scanners)
 const STATIC_BLOCKED_IPS = new Set([
@@ -189,53 +203,27 @@ const STATIC_BLOCKED_IPS = new Set([
   ...(process.env['BLOCKED_IPS'] ? process.env['BLOCKED_IPS'].split(',').map(s => s.trim()).filter(Boolean) : [])
 ]);
 
-// Dynamic in-memory auto-ban cache with TTL (24-hour ban for exploit scanners)
-const DYNAMIC_BANNED_IPS = new Map();
-const AUTO_BAN_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
-
 function extractClientIp(req) {
-  const xff = req.headers['x-forwarded-for'];
-  const raw = xff ? String(xff).split(',')[0].trim() : (req.socket?.remoteAddress || req.ip || '');
-  return raw.replace(/^::ffff:/, '').trim();
+  // Prefer Express's trust-proxy validated req.ip so leftmost X-Forwarded-For cannot be spoofed
+  const raw = req.ip || req.socket?.remoteAddress || '';
+  return String(raw).replace(/^::ffff:/, '').trim();
 }
 
-// 1. IP Blocklist Gatekeeper: rejects blocked or banned IPs instantly with 403 Forbidden
+// 1. IP Blocklist Gatekeeper: rejects statically blocked IPs instantly with 403 Forbidden
 app.use((req, res, next) => {
   const clientIp = extractClientIp(req);
-  if (!clientIp) return next();
-
-  // Check static permanent blocklist
-  if (STATIC_BLOCKED_IPS.has(clientIp)) {
+  if (clientIp && STATIC_BLOCKED_IPS.has(clientIp)) {
     return res.status(403).json({ error: 'Access denied: IP blocked' });
   }
-
-  // Check dynamic temporary auto-ban
-  const dynamicBan = DYNAMIC_BANNED_IPS.get(clientIp);
-  if (dynamicBan) {
-    if (Date.now() < dynamicBan.expiresAt) {
-      return res.status(403).json({ error: 'Access denied: IP temporarily banned' });
-    } else {
-      DYNAMIC_BANNED_IPS.delete(clientIp); // Expired ban cleanup
-    }
-  }
-
   next();
 });
 
-// 2. High-efficiency zero-allocation short-circuit & auto-ban trigger for vulnerability probes
+// 2. High-efficiency zero-allocation short-circuit for vulnerability probes
+// Returns an instant 404 without banning the IP for 24h (prevents shared hospital NAT / XFF spoofing DoS)
 const MALICIOUS_PROBE_REGEX = /^\/(?:(?:wp-(?:admin|content|includes|login|config|cron|load)|phpmyadmin|pma|actuator|xmlrpc\.php|cgi-bin|\.aws|\.ssh)(?:[./]|$)|(?:[^\/]+\/)*\.(?:git|env|ds_store|bak|swp|sql|tar|zip)(?:[./]|$))/i;
 
 app.use((req, res, next) => {
   if (MALICIOUS_PROBE_REGEX.test(req.path)) {
-    const clientIp = extractClientIp(req);
-    if (clientIp && !DYNAMIC_BANNED_IPS.has(clientIp)) {
-      DYNAMIC_BANNED_IPS.set(clientIp, {
-        bannedAt: Date.now(),
-        expiresAt: Date.now() + AUTO_BAN_DURATION_MS,
-        path: req.path
-      });
-      console.warn(`[SECURITY AUTO-BAN] IP ${clientIp} attempted scanner exploit "${sanitizeLogInput(req.path)}". Auto-banned for 24h.`);
-    }
     return res.status(404).send('Not Found');
   }
   next();

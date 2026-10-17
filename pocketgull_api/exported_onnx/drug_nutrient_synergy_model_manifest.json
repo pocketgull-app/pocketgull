@@ -1,0 +1,11 @@
+{
+  "model_name": "drug_nutrient_synergy_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 6,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "e7ad7aa3599a887ed8e2390372b91b32df6484aa5b3146a2bd0d6b157b22968b",
+  "size_bytes": 1177405
+}

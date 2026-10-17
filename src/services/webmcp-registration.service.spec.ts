@@ -376,10 +376,11 @@ mathematicalModel: Softmax T=0.85`;
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 95 WebMCP agentic tools on modelContext', () => {
+  it('should register all 97 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(95);
+    expect(registeredTools.size).toBe(97);
+    expect(registeredTools.has('evaluate_clinical_hypothesis_and_cohort')).toBe(true);
     expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
     expect(registeredTools.has('synthesize_edge_offline_sbar')).toBe(true);
@@ -890,10 +891,11 @@ mathematicalModel: Softmax T=0.85`;
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 95 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 97 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(95);
+    expect(registeredTools.size).toBe(97);
+    expect(registeredTools.has('evaluate_clinical_hypothesis_and_cohort')).toBe(true);
     expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
     expect(registeredTools.has('run_sepsis_benchmark_evaluation')).toBe(true);
@@ -1132,7 +1134,7 @@ mathematicalModel: Softmax T=0.85`;
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(95);
+    expect((service as any).mcpControllers.length).toBe(97);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
@@ -1726,6 +1728,41 @@ mathematicalModel: Softmax T=0.85`;
       const parsedFlush = JSON.parse(flushRes.content[0].text);
       expect(parsedFlush.pendingCount).toBe(0);
       expect(parsedFlush.flushResult.syncedCount).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('BigQuery <-> Kaggle & Popperian Hypothesis Tool (96)', () => {
+    it('should execute evaluate_clinical_hypothesis_and_cohort with Popperian H0 test and 5-fold SQL', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('evaluate_clinical_hypothesis_and_cohort');
+      expect(tool).toBeDefined();
+
+      // Case 1: Non-significant deviation (p >= 0.05) triggers skepticalWarningNotice
+      const resNonSig = await tool.execute({
+        biomarkerName: 'hsCRP',
+        observedValue: 1.8,
+        populationMean: 1.5,
+        populationSd: 0.8,
+        prevalencePer10000: 250
+      });
+      expect(resNonSig.isError).toBeFalsy();
+      const parsedNonSig = JSON.parse(resNonSig.content[0].text);
+      expect(parsedNonSig.isH0Rejected).toBe(false);
+      expect(parsedNonSig.skepticalWarningNotice).toContain('POPPERIAN H0 WARNING');
+      expect(parsedNonSig.gigerenzerNaturalFrequency).toContain('Out of 10,000 screened individuals');
+      expect(parsedNonSig.bigQueryKaggleCohortQuery).toContain('FARM_FINGERPRINT');
+      expect(parsedNonSig.maximumBytesBilled).toBe(1073741824);
+
+      // Case 2: Significant deviation (p < 0.05) rejects H0
+      const resSig = await tool.execute({
+        biomarkerName: 'hsCRP',
+        observedValue: 5.2,
+        populationMean: 1.5,
+        populationSd: 0.8
+      });
+      const parsedSig = JSON.parse(resSig.content[0].text);
+      expect(parsedSig.isH0Rejected).toBe(true);
+      expect(parsedSig.skepticalWarningNotice).toBeNull();
     });
   });
 });

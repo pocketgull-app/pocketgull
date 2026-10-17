@@ -1,0 +1,11 @@
+{
+  "model_name": "neurocognitive_moca_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "9327be67e817e0628fa0d3af91000abab546d4487b72c8261c5155520bd7f9fe",
+  "size_bytes": 1315237
+}

@@ -85,4 +85,18 @@ describe('EnvironmentalHeatPosologyService Suite', () => {
     expect(obs.ambientTempF).toBe(114.0);
     expect(obs.isDirectSun).toBe(true);
   });
+
+  it('7. Applies Holliday-Segar 4-2-1 maintenance with heat multiplier for pediatric patients (<12 yrs)', () => {
+    // 8yo child, 25 kg -> Holliday-Segar base = 40 + 20 + 5 = 65 mL/hr
+    // At 114°F direct sun (WBGT >= 90°F), 1.5x heat multiplier => round(65 * 1.5) = 98 mL/hr
+    const ped = service.evaluateHeatPosology({
+      ambientTempF: 114,
+      relativeHumidityPct: 20,
+      isDirectSun: true,
+      patientAge: 8,
+      patientWeightKg: 25,
+      activeMedications: []
+    });
+    expect(ped.hourlyHydrationRequirementMl).toBe(98);
+  });
 });

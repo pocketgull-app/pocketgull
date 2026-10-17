@@ -1,0 +1,11 @@
+{
+  "model_name": "oncology_cachexia_risk_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 5,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "c522b2f1a08fba55ca7ec4cc46f7e79ce5897b90ba0c07b67b1ecd54d9a3996c",
+  "size_bytes": 1554937
+}

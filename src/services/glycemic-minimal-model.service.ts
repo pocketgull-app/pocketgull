@@ -238,7 +238,7 @@ export class GlycemicMinimalModelService {
       };
     }
 
-    if (nadir >= 90 && morning >= 140 && deltaDawn >= 30) {
+    if (nadir >= 70 && morning >= 140 && deltaDawn >= 30) {
       return {
         phenotype: 'Dawn Phenomenon',
         nadir0300MgDl: nadir,

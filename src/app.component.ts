@@ -133,6 +133,7 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
 import { FluidResuscitationTonicityCardComponent } from './components/clinical/fluid-resuscitation-tonicity-card.component';
 import { GlymphaticBrain3dLensComponent } from './components/anatomy-3d/glymphatic-brain-3d-lens.component';
 import { Nutrigenomics3dLensComponent } from './components/anatomy-3d/nutrigenomics-3d-lens.component';
+import { ClinicalDriftCalibratorHudComponent } from './components/clinical/clinical-drift-calibrator-hud.component';
 
 @Component({
   selector: 'app-root',
@@ -241,7 +242,8 @@ import { Nutrigenomics3dLensComponent } from './components/anatomy-3d/nutrigenom
     MonkSkinToneEquityCardComponent,
     FluidResuscitationTonicityCardComponent,
     GlymphaticBrain3dLensComponent,
-    Nutrigenomics3dLensComponent
+    Nutrigenomics3dLensComponent,
+    ClinicalDriftCalibratorHudComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -1939,6 +1941,11 @@ import { Nutrigenomics3dLensComponent } from './components/anatomy-3d/nutrigenom
           <app-research-data-dividend />
         </div>
       </div>
+    }
+
+    <!-- J++ Workspace Lens & Clinical Behavioral Drift Calibrator HUD -->
+    @if (navShell.showDriftCalibratorModal()) {
+      <app-clinical-drift-calibrator-hud />
     }
 
     <!-- Real-Time Clinician Collaboration Dock -->

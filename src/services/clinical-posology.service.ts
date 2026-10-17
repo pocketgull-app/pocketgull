@@ -204,14 +204,15 @@ export class ClinicalPosologyService {
    */
   calculateFriedRule(ageMonths: number, adultDoseMg: number, concentrationMgPerMl = 10): IFriedRuleResult {
     const validMonths = Math.max(0.1, Math.min(12, ageMonths));
+    const safeConcentration = concentrationMgPerMl > 0 ? concentrationMgPerMl : 10;
     const calculatedDoseMg = Math.round(((validMonths / 150) * adultDoseMg) * 100) / 100;
     
     // Syringe volume in mL rounded to microbore 0.01 mL resolution with mandatory leading zero
-    const volumeMl = Math.round((calculatedDoseMg / concentrationMgPerMl) * 100) / 100;
+    const volumeMl = Math.round((calculatedDoseMg / safeConcentration) * 100) / 100;
 
     // Standard microdrip infusion: 60 gtt/mL
-    // Assume 1 hour delivery: (volumeMl * 60) / 60 min = volumeMl gtt/min
-    const microdripGttMin = Math.round(volumeMl * 60);
+    // Assume 1 hour delivery: (volumeMl * 60 gtt/mL) / 60 min = volumeMl gtt/min
+    const microdripGttMin = volumeMl > 0 ? Math.max(1, Math.round(volumeMl)) : 0;
 
     return {
       ageMonths: validMonths,
@@ -885,9 +886,11 @@ export class ClinicalPosologyService {
     const isSevereMuac = typeof muacMm === 'number' && muacMm < 115;
     const isModerateMuac = typeof muacMm === 'number' && muacMm >= 115 && muacMm < 125;
 
-    // Estimate Weight-for-Height Z-Score approximation for 65–110 cm
+    // Estimate Weight-for-Height Z-Score approximation for 65–110 cm (with neonate floor for <50 cm)
     // Expected median weight for 80 cm is ~10 kg, -3 SD is ~7.5 kg
-    const expectedWeight = (heightCm - 50) * 0.35 + 3.5;
+    const expectedWeight = heightCm < 50
+      ? Math.max(1.8, 3.5 - (50 - heightCm) * 0.08)
+      : (heightCm - 50) * 0.35 + 3.5;
     const isSevereWeightForHeight = weightKg < expectedWeight * 0.75;
 
     const isSam = hasBilateralEdema || isSevereMuac || isSevereWeightForHeight;

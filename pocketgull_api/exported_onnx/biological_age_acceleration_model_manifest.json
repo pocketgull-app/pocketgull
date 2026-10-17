@@ -1,0 +1,11 @@
+{
+  "model_name": "biological_age_acceleration_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 10,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "79eac0998c9ce07e066efc4340627a41ace8eeddff889cdc16cbd8ea169b72cd",
+  "size_bytes": 2486734
+}

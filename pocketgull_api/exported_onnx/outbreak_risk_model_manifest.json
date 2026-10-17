@@ -1,0 +1,11 @@
+{
+  "model_name": "outbreak_risk_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 5,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "01a781e2044634b55f8ec385a016f6d3bc949ca552bdb5aa8448ec728ac878ad",
+  "size_bytes": 2729762
+}

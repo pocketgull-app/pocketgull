@@ -55,7 +55,10 @@ const PART_NAMES: Record<string, string> = {
   'respiratory_airway': 'Micro-Acoustic Wheeze & Stridor Spectrum Lens',
   'chakra_manipura': 'Manipura (Solar Plexus Agni Fire City)',
   'chakra_svadhisthana': 'Svadhisthana (Sacral Water Dwell Chakra)',
-  'chakra_muladhara': 'Muladhara (Root Earth Base Support Chakra)'
+  'chakra_muladhara': 'Muladhara (Root Earth Base Support Chakra)',
+  'orthopedic_femur_fixation': 'Right Femur Titanium DCP Plate & Cortical Screws',
+  'orthopedic_lumbar_hardware': 'L4-L5 Bilateral Titanium Pedicle Screws & Rods',
+  'silica_bone_scaffold': 'Porous Bioactive Silica Osteoconductive Scaffold (45S5)'
 };
 
 @Injectable({
@@ -100,6 +103,7 @@ export class RaycastSelectionService {
         let systemLabel = '🩺 Allopathic System';
         if (hitPartId.startsWith('acupoint_')) systemLabel = '🌿 TCM Jing-Luo Acupoint';
         else if (hitPartId.startsWith('chakra_')) systemLabel = '🧘 Sushumna Chakra Node';
+        else if (hitPartId.startsWith('orthopedic_') || hitPartId === 'silica_bone_scaffold') systemLabel = '🔩 Orthopedic & Biomaterial Implant';
 
         return {
           hitPartId,

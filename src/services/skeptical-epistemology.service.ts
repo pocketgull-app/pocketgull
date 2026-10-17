@@ -1223,10 +1223,13 @@ export class SkepticalEpistemologyService {
     baselineMean: number,
     sampleCount: number = 10
   ): ISkepticalMetricEvaluation {
-    // Standard error calculation for null hypothesis p-value estimate
+    // Standard error calculation for two-tailed null hypothesis p-value: p = erfc(|z| / sqrt(2))
     const diff = Math.abs(observedValue - baselineMean);
     const zScore = diff / (10 / Math.sqrt(Math.max(1, sampleCount)));
-    const pValue = parseFloat((Math.exp(-0.5 * zScore * zScore) / Math.sqrt(2 * Math.PI)).toFixed(4));
+    const x = zScore / Math.SQRT2;
+    const t = 1.0 / (1.0 + 0.3275911 * x);
+    const erfcVal = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-x * x);
+    const pValue = parseFloat(Math.min(1.0, Math.max(0.0, erfcVal)).toFixed(4));
     
     const isStatisticallySignificant = pValue < 0.05;
     const epistemicConfidencePercent = Math.min(99, Math.max(15, Math.round((1 - pValue) * 100)));
@@ -2062,7 +2065,7 @@ ${flags.map(f => `• ATYPICAL CHECK (${f.demographicOrPhenotype}): Could this p
 
     const isSuperior = modelNb > Math.max(treatAllNb, treatNoneNb);
     const avoidedPer100 = isSuperior && weight > 0
-      ? Math.max(0, Math.round(((modelNb - Math.max(treatAllNb, 0)) / weight) * 1000) / 10)
+      ? Math.max(0, Math.round(((modelNb - treatAllNb) / weight) * 1000) / 10)
       : 0;
 
     let verdict = '';

@@ -1,0 +1,403 @@
+{
+  "african_pharmacogenomic_risk_model": {
+    "model_name": "african_pharmacogenomic_risk_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "fa485576649037d3695be8f76e38094e5dd2908ae3e1816ba2e0d5ef363d5e5b",
+    "size_bytes": 2723491
+  },
+  "anticholinergic_delirium_model": {
+    "model_name": "anticholinergic_delirium_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "6c0931004f97fb1d541e5dc37e459616fa92863475f2323044fa8f851e24d6c8",
+    "size_bytes": 2744165
+  },
+  "ayurvedic_dosha_agni_model": {
+    "model_name": "ayurvedic_dosha_agni_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "6b9c6b03a9684718f933fe8a9d2347899bffa9b6f0afac465a820a5320395e7c",
+    "size_bytes": 2783330
+  },
+  "biological_age_acceleration_model": {
+    "model_name": "biological_age_acceleration_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 10,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "79eac0998c9ce07e066efc4340627a41ace8eeddff889cdc16cbd8ea169b72cd",
+    "size_bytes": 2486734
+  },
+  "biomarker_velocity_model": {
+    "model_name": "biomarker_velocity_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "868b6394b3021c61f15ab3f2254d12ea3cb7f215677bdde04e40c0fe7b0c8805",
+    "size_bytes": 2783123
+  },
+  "causal_treatment_optimizer": {
+    "model_name": "causal_treatment_optimizer",
+    "type": "XLearnerCausalEstimator",
+    "n_features_in": 0,
+    "classes": null,
+    "sha256": "6ec76b36a9db87e1a3a6c820f9d30ac55ca51110532f8f51425421f560d746ad",
+    "size_bytes": 2746330
+  },
+  "cgm_glycemic_excursion_model": {
+    "model_name": "cgm_glycemic_excursion_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "54ae3ad54a8c3dd22f5ba7f2958f96d7a1996583ac7a051a6e95ab3bf92a72d8",
+    "size_bytes": 2783427
+  },
+  "clinical_risk_v2": {
+    "model_name": "clinical_risk_v2",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 12,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "4cd9c4ad48c7decf7d7d01d880774a8f8f5bbac13dd6a22937bfd5918069c690",
+    "size_bytes": 587981
+  },
+  "cvsq_asthenopia_model": {
+    "model_name": "cvsq_asthenopia_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 6,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "99e0655dbbf64a419232e57bdd31cfbc4290a1712c59c8087784a01a332d79b1",
+    "size_bytes": 2743553
+  },
+  "cyp_phenoconversion_model": {
+    "model_name": "cyp_phenoconversion_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "7a42b4ab8f34375df75663d408966bcdb8e4c7a99b70d0d4758c4f9883a38009",
+    "size_bytes": 2743645
+  },
+  "drug_nutrient_synergy_model": {
+    "model_name": "drug_nutrient_synergy_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 6,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "e7ad7aa3599a887ed8e2390372b91b32df6484aa5b3146a2bd0d6b157b22968b",
+    "size_bytes": 1177405
+  },
+  "dysautonomia_pem_risk_model": {
+    "model_name": "dysautonomia_pem_risk_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 6,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "a81f501ff77ea2f76d949dfcfc78a70814bb9fc312e3157f76d8db1a45639a94",
+    "size_bytes": 2773038
+  },
+  "endotoxin_sibi_spike_model": {
+    "model_name": "endotoxin_sibi_spike_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "87e72b6b6e041bbf51e9065040a867fed3ebad6a78b81f303f805a33f954e4cb",
+    "size_bytes": 1832510
+  },
+  "icu_mortality_model": {
+    "model_name": "icu_mortality_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "c9d103d7762025e30c8f71f88982216497cf3c260a9db36873c85ad4a74d4a47",
+    "size_bytes": 2634122
+  },
+  "knee_recovery_risk_model": {
+    "model_name": "knee_recovery_risk_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "b2049d97d9e5794cefe60507e4d874acd8124fa2d9fa066820eed685e4387c0c",
+    "size_bytes": 2773597
+  },
+  "mbi_burnout_model": {
+    "model_name": "mbi_burnout_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 6,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "9b5bcf4c12a2074adac49a3bb7ac0db99384fb59dd8c726d3993a44bb532f5e1",
+    "size_bytes": 2763826
+  },
+  "monk_skintone_ppg_debiasing_model": {
+    "model_name": "monk_skintone_ppg_debiasing_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 5,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "cd8337e63a75681f6c595b469e107bbe49af41f97191737ed96f8e12e165a736",
+    "size_bytes": 2749639
+  },
+  "ms_pira_velocity_model": {
+    "model_name": "ms_pira_velocity_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 9,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "03820dcdc432e6a733793627a980e1f4b9f0197f69e23cdc19a0fd949501a75c",
+    "size_bytes": 2774544
+  },
+  "ms_progression_risk_model": {
+    "model_name": "ms_progression_risk_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "4d61f56fb18235c59dae08d9c56365f71c3d24761f100501111a06b2e575daac",
+    "size_bytes": 2783036
+  },
+  "neurocognitive_moca_model": {
+    "model_name": "neurocognitive_moca_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "9327be67e817e0628fa0d3af91000abab546d4487b72c8261c5155520bd7f9fe",
+    "size_bytes": 1315237
+  },
+  "oncology_cachexia_risk_model": {
+    "model_name": "oncology_cachexia_risk_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 5,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "c522b2f1a08fba55ca7ec4cc46f7e79ce5897b90ba0c07b67b1ecd54d9a3996c",
+    "size_bytes": 1554937
+  },
+  "outbreak_risk_model": {
+    "model_name": "outbreak_risk_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 5,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "01a781e2044634b55f8ec385a016f6d3bc949ca552bdb5aa8448ec728ac878ad",
+    "size_bytes": 2729762
+  },
+  "periodontal_systemic_risk_model": {
+    "model_name": "periodontal_systemic_risk_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 6,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "e8ea6aeb07d0ae2e634a40b2a3c1b8262ce6dc9a5f8c40bd6c8d791b89059fbb",
+    "size_bytes": 715023
+  },
+  "physionet_2022_model": {
+    "model_name": "physionet_2022_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 8,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "8351d312c106962643622730004fe64504ecba1660a033843a646b22da0e9837",
+    "size_bytes": 1511927
+  },
+  "physionet_2023_model": {
+    "model_name": "physionet_2023_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "baa2fa2f4bb7d5fb4523a38736107dad995444992f4dd815308d9aa381e86b45",
+    "size_bytes": 2107936
+  },
+  "physionet_2024_model": {
+    "model_name": "physionet_2024_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "919bbb6fb66bf86fc9d7f54de469ae538f7ceb319cee3df4b1c2ea8b0b2fb0a1",
+    "size_bytes": 1949625
+  },
+  "physionet_2025_model": {
+    "model_name": "physionet_2025_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 9,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "db9ae4fe1149b84b52d45e402d59efefaca2b0e2e1fffa941b6a2a73d0a16630",
+    "size_bytes": 1999632
+  },
+  "physionet_2026_model": {
+    "model_name": "physionet_2026_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 14,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "9695d553d607330405aa7accf4037c733363e4030297fd1b90239da2daae3a00",
+    "size_bytes": 2235468
+  },
+  "readmission_risk_model": {
+    "model_name": "readmission_risk_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 5,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "bbefc246c18e234a08726fa15ae70d652be8bda65bee75409a9bc5300e91b854",
+    "size_bytes": 2352810
+  },
+  "sarcopenia_frailty_model": {
+    "model_name": "sarcopenia_frailty_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 6,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "8c57a2a22e362ffcefd1337c68a6e8730cda8453b56c7b072c62f4c05a8a1fdc",
+    "size_bytes": 2753386
+  },
+  "seven_generations_protocol_model": {
+    "model_name": "seven_generations_protocol_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 12,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "2fcd1276f5b458c5facc22723c7ae00cb1947ab9059b27b7200786d08980de4b",
+    "size_bytes": 3371061
+  },
+  "survival_ckd_decompensation_model": {
+    "model_name": "survival_ckd_decompensation_model",
+    "type": "CoxSurvivalEstimator",
+    "n_features_in": 0,
+    "classes": null,
+    "sha256": "1d63deef13995cf4d75a9dd4492053298fca7944fd9cba4412b217842b0fecf7",
+    "size_bytes": 60659
+  },
+  "tcm_zangfu_disharmony_model": {
+    "model_name": "tcm_zangfu_disharmony_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "3b2b4b062c33136be9d3f5bfa76659381f77be8575bb4639aff2758080a29e3b",
+    "size_bytes": 2783596
+  },
+  "tri_paradigm_synergy_model": {
+    "model_name": "tri_paradigm_synergy_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "a166cdec8028b280bfe1b5b57832c9709885e4f85239a36b8bc3b122daa80691",
+    "size_bytes": 2764002
+  },
+  "vagal_coherence_model": {
+    "model_name": "vagal_coherence_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 6,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "3284794efe6e158edaa1a242e496b1abaedd99f9fa0e42d59e1e2d3d05abd6ce",
+    "size_bytes": 644805
+  },
+  "who_hearts_cvd_risk_model": {
+    "model_name": "who_hearts_cvd_risk_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 7,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "af3a664abb063bff8b784cd62675ad1dbf1770a135df5695e7451d6290b07387",
+    "size_bytes": 2763166
+  },
+  "who_sdg_cardiometabolic_model": {
+    "model_name": "who_sdg_cardiometabolic_model",
+    "type": "CalibratedClassifierCV",
+    "n_features_in": 6,
+    "classes": [
+      0,
+      1
+    ],
+    "sha256": "dd8b27491bca739faa90f1e08f3faf20b00aeb16590f74764c25f47e6a9c1b58",
+    "size_bytes": 2772674
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "model_name": "who_sdg_cardiometabolic_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 6,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "dd8b27491bca739faa90f1e08f3faf20b00aeb16590f74764c25f47e6a9c1b58",
+  "size_bytes": 2772674
+}

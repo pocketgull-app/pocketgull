@@ -114,10 +114,12 @@ export class Canvas2dBackend implements IRendererBackend {
     const cy = h / 2;
     const dx = x - cx;
     const dy = y - cy;
-    const dist = Math.hypot(dx, dy);
 
-    // Hit test inside the ventricular silhouette radius
-    if (dist < Math.min(w, h) * 0.28) {
+    // Hit test inside the ventricular silhouette ellipse (semi-axes rx = baseRadius * 0.85, ry = baseRadius * 1.25)
+    const baseRadius = Math.min(w, h) * 0.22;
+    const rx = Math.max(1e-6, baseRadius * 0.85);
+    const ry = Math.max(1e-6, baseRadius * 1.25);
+    if ((dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1.0) {
       return 101; // Ventricle part ID
     }
     return 0;

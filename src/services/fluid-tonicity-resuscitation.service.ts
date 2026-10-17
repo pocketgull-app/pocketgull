@@ -358,17 +358,16 @@ export class FluidTonicityResuscitationService {
       finalIntracellularL: Number((intracellularL + deltaIntracellularMl / 1000).toFixed(2))
     };
 
-    // 4. Adrogué-Madias Formula for Predicted Change in Serum Sodium:
-    // Δ[Na+] = ( [Na+]_infusate + [K+]_infusate - [Na+]_serum ) / ( TBW + 1 )
+    // 4. Adrogué-Madias Formula for Predicted Change in Serum Sodium (generalized to V = volL liters):
+    // Δ[Na+] = ( ([Na+]_infusate + [K+]_infusate - [Na+]_serum) * V ) / ( TBW + V )
     const infusateCations = fluidDef.sodiumMEq + fluidDef.potassiumMEq;
-    const adrogueDeltaPerLiter = (infusateCations - inp.baselineSerumSodiumMEq) / (totalBodyWaterL + 1);
-    const deltaSodiumMEq = Number((adrogueDeltaPerLiter * volL).toFixed(1));
+    const effectiveDenomL = Math.max(1, totalBodyWaterL + volL);
+    const deltaSodiumMEq = Number((((infusateCations - inp.baselineSerumSodiumMEq) * volL) / effectiveDenomL).toFixed(1));
     const predictedSodiumMEq = Number((inp.baselineSerumSodiumMEq + deltaSodiumMEq).toFixed(1));
 
     // 5. Predicted Serum Chloride & Strong Ion Difference (SID)
     const infusateChloride = fluidDef.chlorideMEq;
-    const deltaChloridePerLiter = (infusateChloride - inp.baselineSerumChlorideMEq) / (totalBodyWaterL + 1);
-    const deltaChlorideMEq = Number((deltaChloridePerLiter * volL).toFixed(1));
+    const deltaChlorideMEq = Number((((infusateChloride - inp.baselineSerumChlorideMEq) * volL) / effectiveDenomL).toFixed(1));
     const predictedChlorideMEq = Number((inp.baselineSerumChlorideMEq + deltaChlorideMEq).toFixed(1));
     const predictedSidMEq = Number((predictedSodiumMEq - predictedChlorideMEq).toFixed(1));
 

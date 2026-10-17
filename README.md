@@ -101,14 +101,14 @@ Every diagnostic insight, risk disclosure, and ambient consultation strictly enf
 
 ---
 
-## Who it's for
+## Who it's for (Problem-First Entry Funnels)
 
-| Audience | Start here |
-| :--- | :--- |
-| **Clinicians** | [Live app (`pocketgull.app`)](https://pocketgull.app) · [Enterprise portal (`pocketgull.com`)](https://pocketgull.com) · [User walkthrough](docs/WALKTHROUGH.md) |
-| **Researchers** | [Journal (`journal.pocketgull.com`)](https://journal.pocketgull.com) · [Case Studies Commons](https://pocketgull.com/case-studies) · [Commons methodology](docs/CLINICAL_CASE_STUDIES_COMMONS.md) · [Citation](#citation) |
-| **Developers & Designers** | [Quickstart](#quickstart) · [Architecture](ARCHITECTURE.md) · [Typefoundry (`font.pocketgull.app`)](https://font.pocketgull.app) · [Contributing](CONTRIBUTING.md) |
-| **Health systems** | [EHR sidecar integration](docs/ENTERPRISE_EHR_SIDECAR.md) · [Privacy & HIPAA](docs/SIGSAC_HIPAA_ZERO_TRUST_PRIVACY.md) · [Contact](mailto:dpo@pocketgull.app) |
+| Audience | Core Problem Solved | Measurable Outcome & Value | Start here |
+| :--- | :--- | :--- | :--- |
+| **🩺 Clinicians & Care Teams** | 2+ hours/night of EHR "pajama time" & 1,500-word bloated progress notes | **Saves ~4 mins/encounter** via zero-egress SOAP scribing, discrete LOINC/SNOMED coding & 3-Act Care Plans | [Live app (`pocketgull.app`)](https://pocketgull.app) · [Enterprise portal (`pocketgull.com`)](https://pocketgull.com) · [90-Second Quick Walkthrough](docs/WALKTHROUGH.md) |
+| **🏛️ Health Systems & CISOs** | Cloud AI GPU hosting costs, PHI egress risk, and unverified LLM hallucinations | **\$0.00 hospital GPU server burden** (100% browser WebGPU edge), HIPAA §164.514 Safe Harbor & CPT 99453/99454 readiness | [EHR sidecar integration](docs/ENTERPRISE_EHR_SIDECAR.md) · [Privacy & HIPAA](docs/SIGSAC_HIPAA_ZERO_TRUST_PRIVACY.md) · [Contact](mailto:dpo@pocketgull.app) |
+| **🔬 Clinical Researchers** | Static retrospective charts lacking falsifiable statistical grounding | **Popperian $H_0$ falsifiability**, Gigerenzer natural frequencies (`out of 10,000`), and 1-click FHIR R4 cohort bundles | [Journal (`journal.pocketgull.com`)](https://journal.pocketgull.com) · [Case Studies Commons](https://pocketgull.com/case-studies) · [Commons methodology](docs/CLINICAL_CASE_STUDIES_COMMONS.md) |
+| **🧑‍🤝‍🧑 Patients, Families & Builders** | Medical jargon overload, opaque drug pricing, and fragmented care instructions | **Quiet Workshop plain language**, 3-Act recovery milestones, and respectful \$4–\$10 generic retail benchmarks | [Quickstart](#quickstart) · [Architecture](ARCHITECTURE.md) · [Typefoundry (`font.pocketgull.app`)](https://font.pocketgull.app) · [Contributing](CONTRIBUTING.md) |
 
 ---
 

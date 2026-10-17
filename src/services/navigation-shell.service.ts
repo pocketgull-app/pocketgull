@@ -43,6 +43,7 @@ export class NavigationShellService {
   readonly showCowsModal = signal<boolean>(false);
   readonly showRecoveryModal = signal<boolean>(false);
   readonly showDisasterMeshModal = signal<boolean>(false);
+  readonly showDriftCalibratorModal = signal<boolean>(false);
   readonly activeGameId = signal<string>('luminaries');
 
   /** Developer Mode: Gates investor pitch portals, experimental showcases, and auxiliary demos. Defaults to false. */
@@ -198,6 +199,7 @@ export class NavigationShellService {
     this.showCowsModal.set(false);
     this.showRecoveryModal.set(false);
     this.showDisasterMeshModal.set(false);
+    this.showDriftCalibratorModal.set(false);
   }
 
   public openAmbientScribeDrawer(): void { this.showAmbientScribeDrawer.set(true); }
@@ -243,5 +245,9 @@ export class NavigationShellService {
   public openDisasterMeshModal(): void { this.showDisasterMeshModal.set(true); }
   public closeDisasterMeshModal(): void { this.showDisasterMeshModal.set(false); }
   public toggleDisasterMeshModal(): void { this.showDisasterMeshModal.update(v => !v); }
+
+  public openDriftCalibrator(): void { this.showDriftCalibratorModal.set(true); }
+  public closeDriftCalibrator(): void { this.showDriftCalibratorModal.set(false); }
+  public toggleDriftCalibrator(): void { this.showDriftCalibratorModal.update(v => !v); }
 }
 

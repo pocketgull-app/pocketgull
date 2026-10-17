@@ -86,14 +86,23 @@ export class ActiveDefenseTarpitService {
 
   /**
    * Streams a delayed slowloris tarpit to a rogue scraper socket
-   * (wasting adversary compute & bandwidth while feeding poisoned decoy markers)
+   * (On serverless Cloud Run / K_SERVICE, flushes immediately to prevent FinOps billing exhaustion)
    */
   static streamSlowlorisTarpit(res: Response, traceId: string, delayMs: number = 300, maxChunks: number = 20): void {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
-    res.setHeader('Transfer-Encoding', 'chunked');
     res.setHeader('X-Content-Type-Options', 'nosniff');
 
     const decoy = this.generateSyntheticDecoyPayload(traceId);
+
+    // FinOps Serverless Guard: Never hold billable Cloud Run sockets open for bots
+    if (process.env['K_SERVICE'] || delayMs <= 0) {
+      if (!res.writableEnded) {
+        res.end(decoy);
+      }
+      return;
+    }
+
+    res.setHeader('Transfer-Encoding', 'chunked');
     const chunks = decoy.match(/.{1,16}/g) || [decoy];
     let chunkIndex = 0;
 

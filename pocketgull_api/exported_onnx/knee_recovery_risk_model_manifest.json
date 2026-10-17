@@ -1,0 +1,11 @@
+{
+  "model_name": "knee_recovery_risk_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "b2049d97d9e5794cefe60507e4d874acd8124fa2d9fa066820eed685e4387c0c",
+  "size_bytes": 2773597
+}

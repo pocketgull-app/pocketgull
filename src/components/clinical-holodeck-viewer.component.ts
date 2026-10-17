@@ -239,9 +239,18 @@ export class ClinicalHolodeckViewerComponent implements AfterViewInit, OnDestroy
 
   private skinMesh!: THREE.Mesh;
   private muscleMesh!: THREE.Mesh;
+  private muscleMaterials: THREE.MeshStandardMaterial[] = [];
   private boneMeshGroup!: THREE.Group;
   private particleCloud!: THREE.Points;
   private laserBeam!: THREE.Line;
+
+  private nextCsprngFloat(): number {
+    const buf = new Uint32Array(2);
+    globalThis.crypto.getRandomValues(buf);
+    const high = buf[0] >>> 11;
+    const low = buf[1];
+    return (high * 4294967296.0 + low) / 9007199254740992.0;
+  }
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -254,6 +263,25 @@ export class ClinicalHolodeckViewerComponent implements AfterViewInit, OnDestroy
   ngOnDestroy(): void {
     if (this.animFrameId !== null) {
       cancelAnimationFrame(this.animFrameId);
+    }
+    if (this.controls) {
+      this.controls.dispose();
+    }
+    if (this.scene) {
+      this.scene.traverse((obj) => {
+        if (obj instanceof THREE.Mesh || obj instanceof THREE.Points || obj instanceof THREE.Line) {
+          if (obj.geometry) {
+            obj.geometry.dispose();
+          }
+          if (obj.material) {
+            if (Array.isArray(obj.material)) {
+              obj.material.forEach((m) => m.dispose());
+            } else {
+              obj.material.dispose();
+            }
+          }
+        }
+      });
     }
     if (this.renderer) {
       this.renderer.dispose();
@@ -342,36 +370,135 @@ export class ClinicalHolodeckViewerComponent implements AfterViewInit, OnDestroy
 
   private buildHolodeckLayers(): void {
     this.boneMeshGroup = new THREE.Group();
+    this.muscleMaterials = [];
 
-    // 1. Bones (Femur & Tibia)
-    const boneMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.3 });
-    const femur = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 1.4, 16), boneMat);
-    femur.position.y = 0.8;
+    // 1. Osteology (Femur, Condyles, Patella, Tibia, Tuberosity, & Lateral Fibula)
+    const boneMat = new THREE.MeshStandardMaterial({ color: 0xe8dec8, roughness: 0.35 });
+    const femur = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.38, 1.3, 18), boneMat);
+    femur.position.y = 0.85;
     this.boneMeshGroup.add(femur);
 
-    const tibia = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.35, 1.4, 16), boneMat);
-    tibia.position.y = -0.8;
+    const medCondyle = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 16), boneMat);
+    medCondyle.position.set(-0.34, 0.32, 0);
+    medCondyle.scale.set(1.0, 1.2, 1.45);
+    this.boneMeshGroup.add(medCondyle);
+
+    const latCondyle = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 16), boneMat);
+    latCondyle.position.set(0.34, 0.32, 0);
+    latCondyle.scale.set(1.0, 1.2, 1.45);
+    this.boneMeshGroup.add(latCondyle);
+
+    const patella = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 16), boneMat);
+    patella.position.set(0, 0.38, 0.45);
+    patella.scale.set(1.1, 1.25, 0.58);
+    this.boneMeshGroup.add(patella);
+
+    const tibialPlateau = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.44, 0.25, 18), boneMat);
+    tibialPlateau.position.y = -0.15;
+    this.boneMeshGroup.add(tibialPlateau);
+
+    const tibia = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.25, 1.3, 18), boneMat);
+    tibia.position.y = -0.85;
     this.boneMeshGroup.add(tibia);
 
-    // Ligaments & Meniscus
-    const ligamentMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.2 });
-    const acl = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.7, 8), ligamentMat);
-    acl.rotation.z = 0.4;
+    // Lateral Fibular Head & Shaft
+    const fibularHead = new THREE.Mesh(new THREE.SphereGeometry(0.14, 14, 14), boneMat);
+    fibularHead.position.set(0.52, -0.28, -0.10);
+    this.boneMeshGroup.add(fibularHead);
+
+    const fibulaShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.065, 1.15, 12), boneMat);
+    fibulaShaft.position.set(0.50, -0.88, -0.10);
+    this.boneMeshGroup.add(fibulaShaft);
+
+    // 2. Menisci (Medial & Lateral Fibrocartilage Crescents)
+    const cartilageMat = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      roughness: 0.15,
+      transparent: true,
+      opacity: 0.85
+    });
+    const medMeniscus = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.06, 8, 16, Math.PI * 1.35), cartilageMat);
+    medMeniscus.rotation.x = Math.PI / 2;
+    medMeniscus.position.set(-0.25, -0.02, 0);
+    this.boneMeshGroup.add(medMeniscus);
+
+    const latMeniscus = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.06, 8, 16, Math.PI * 1.35), cartilageMat);
+    latMeniscus.rotation.x = Math.PI / 2;
+    latMeniscus.rotation.z = Math.PI;
+    latMeniscus.position.set(0.25, -0.02, 0);
+    this.boneMeshGroup.add(latMeniscus);
+
+    // 3. 4-Ligament Complex (ACL, PCL, MCL, LCL)
+    const ligamentMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.25 });
+    const acl = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.65, 8), ligamentMat);
+    acl.position.set(0.06, 0.1, 0.04);
+    acl.rotation.z = 0.35;
+    acl.rotation.x = -0.45;
     this.boneMeshGroup.add(acl);
+
+    const pcl = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.62, 8), ligamentMat);
+    pcl.position.set(-0.06, 0.1, -0.08);
+    pcl.rotation.z = -0.32;
+    pcl.rotation.x = 0.44;
+    this.boneMeshGroup.add(pcl);
+
+    const collateralMat = new THREE.MeshStandardMaterial({ color: 0xc4b5fd, roughness: 0.3 });
+    const mcl = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.92, 8), collateralMat);
+    mcl.position.set(-0.55, 0.08, 0);
+    this.boneMeshGroup.add(mcl);
+
+    const lcl = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.76, 8), collateralMat);
+    lcl.position.set(0.53, 0.06, -0.08);
+    this.boneMeshGroup.add(lcl);
+
+    // 4. Sculpted Quadriceps, Hamstrings & Patellar Tendon Sheath (Peeling Myotendinous Layer)
+    const tendonSheathMat = new THREE.MeshStandardMaterial({
+      color: 0xa78bfa,
+      transparent: true,
+      opacity: 0.42,
+      roughness: 0.3,
+      depthWrite: false
+    });
+    this.muscleMaterials.push(tendonSheathMat);
+
+    const patellarTendon = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.12, 0.85, 14), tendonSheathMat);
+    patellarTendon.position.set(0, 0.22, 0.42);
+    patellarTendon.scale.set(1.1, 1.0, 0.35);
+    this.boneMeshGroup.add(patellarTendon);
+
+    const belliesMat = new THREE.MeshStandardMaterial({
+      color: 0xdc2626,
+      transparent: true,
+      opacity: 0.45,
+      roughness: 0.5,
+      depthWrite: false
+    });
+    this.muscleMaterials.push(belliesMat);
+
+    const quadBelly = new THREE.Mesh(new THREE.CapsuleGeometry(0.24, 0.65, 8, 14), belliesMat);
+    quadBelly.position.set(0, 0.95, 0.25);
+    quadBelly.scale.set(1.3, 1.0, 0.65);
+    this.boneMeshGroup.add(quadBelly);
+
+    const hamstringBelly = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.68, 8, 14), belliesMat);
+    hamstringBelly.position.set(0.12, 0.82, -0.32);
+    hamstringBelly.scale.set(1.2, 1.0, 0.65);
+    this.boneMeshGroup.add(hamstringBelly);
 
     this.scene.add(this.boneMeshGroup);
 
-    // 2. Muscle & Tendon Sheath Envelope
+    // 5. Outer Synovial & Myofascial Dissection Envelope
     const muscleMat = new THREE.MeshStandardMaterial({
       color: 0x881337,
       transparent: true,
       opacity: 0.15,
       roughness: 0.5
     });
-    this.muscleMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 2.2, 16), muscleMat);
+    this.muscleMaterials.push(muscleMat);
+    this.muscleMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.55, 2.2, 16), muscleMat);
     this.scene.add(this.muscleMesh);
 
-    // 3. Skin Envelope (Glassmorphic Outer Hologram)
+    // 6. Skin Envelope (Glassmorphic Outer Hologram)
     const skinMat = new THREE.MeshStandardMaterial({
       color: 0x06b6d4,
       transparent: true,
@@ -379,20 +506,20 @@ export class ClinicalHolodeckViewerComponent implements AfterViewInit, OnDestroy
       roughness: 0.1,
       wireframe: true
     });
-    this.skinMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 2.6, 16), skinMat);
+    this.skinMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.68, 2.6, 16), skinMat);
     this.scene.add(this.skinMesh);
   }
 
   private buildCytokineParticles(): void {
-    // 200 Floating Cytokine (IL-1b / TNF-a) Particles in Joint Cavity
+    // 250 Floating Cytokine (IL-1b / TNF-a) Particles in Joint Cavity (NIST SP 800-90A CSPRNG)
     const count = 250;
     const geo = new THREE.BufferGeometry();
     const positions = new Float32Array(count * 3);
 
     for (let i = 0; i < count * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 1.2;
-      positions[i + 1] = (Math.random() - 0.5) * 0.8;
-      positions[i + 2] = (Math.random() - 0.5) * 1.2;
+      positions[i] = (this.nextCsprngFloat() - 0.5) * 1.2;
+      positions[i + 1] = (this.nextCsprngFloat() - 0.5) * 0.8;
+      positions[i + 2] = (this.nextCsprngFloat() - 0.5) * 1.2;
     }
 
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -410,7 +537,10 @@ export class ClinicalHolodeckViewerComponent implements AfterViewInit, OnDestroy
   private updateLayerOpacities(depth: number): void {
     if (this.skinMesh && this.muscleMesh) {
       (this.skinMesh.material as THREE.MeshStandardMaterial).opacity = Math.max(0.02, (100 - depth) / 400);
-      (this.muscleMesh.material as THREE.MeshStandardMaterial).opacity = depth > 70 ? 0.05 : Math.max(0.1, (100 - depth) / 200);
+      const muscleOpacity = depth > 70 ? 0.05 : Math.max(0.1, (100 - depth) / 180);
+      for (const mat of this.muscleMaterials) {
+        mat.opacity = muscleOpacity;
+      }
     }
   }
 
@@ -442,3 +572,4 @@ export class ClinicalHolodeckViewerComponent implements AfterViewInit, OnDestroy
     }
   };
 }
+

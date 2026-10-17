@@ -2889,10 +2889,10 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             rBox(0.52, 0.47, 0.32), molecularMaterial, { y: 1.3 }
         );
 
-        // Heart Organ Group
+        // Heart Organ Group (Levocardia: positioned in left mediastinum at +X, matching leftLung at +0.14 and stomach at +0.10)
         const heartGroup = new THREE.Group();
         // Move the pivot point (the group position) to the anatomical center of the heart
-        heartGroup.position.set(-0.06, 1.34, 0.00);
+        heartGroup.position.set(0.05, 1.34, 0.00);
         
         const cardiacMesh = new THREE.Mesh(rSphere(0.09), heartMaterial.clone());
         cardiacMesh.scale.set(1, 1.2, 1);
@@ -2904,8 +2904,8 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
         // Ascending Aorta Trunk
         const aortaMesh = new THREE.Mesh(rBone(0.2, 0.025), vascularMaterial.clone());
-        aortaMesh.position.set(0.02, 0.08, -0.02); // Local to the group
-        aortaMesh.rotation.z = -0.2;
+        aortaMesh.position.set(-0.02, 0.08, -0.02); // Local to the group
+        aortaMesh.rotation.z = 0.2;
         aortaMesh.userData['layer'] = 'organ';
         aortaMesh.userData['organ'] = 'heart';
         aortaMesh.userData['id'] = 'heart';

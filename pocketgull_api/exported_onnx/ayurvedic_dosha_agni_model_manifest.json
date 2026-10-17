@@ -1,0 +1,11 @@
+{
+  "model_name": "ayurvedic_dosha_agni_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "6b9c6b03a9684718f933fe8a9d2347899bffa9b6f0afac465a820a5320395e7c",
+  "size_bytes": 2783330
+}

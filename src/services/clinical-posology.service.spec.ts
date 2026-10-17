@@ -16,7 +16,7 @@ describe('ClinicalPosologyService', () => {
       expect(res.calculatedDoseMg).toBe(20);
       expect(res.microboreSyringeVolumeMl).toBe(2);
       expect(res.formulaString).toContain('(6 mo / 150) × 500 mg = 20.00 mg');
-      expect(res.microdripGttMin).toBe(120);
+      expect(res.microdripGttMin).toBe(2);
     });
 
     it('handles a 2-month-old infant with small dose requiring microbore precision', () => {

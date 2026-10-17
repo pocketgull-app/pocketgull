@@ -1,0 +1,8 @@
+{
+  "model_name": "causal_treatment_optimizer",
+  "type": "XLearnerCausalEstimator",
+  "n_features_in": 0,
+  "classes": null,
+  "sha256": "6ec76b36a9db87e1a3a6c820f9d30ac55ca51110532f8f51425421f560d746ad",
+  "size_bytes": 2746330
+}

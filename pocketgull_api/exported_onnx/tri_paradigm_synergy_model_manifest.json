@@ -1,0 +1,11 @@
+{
+  "model_name": "tri_paradigm_synergy_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "a166cdec8028b280bfe1b5b57832c9709885e4f85239a36b8bc3b122daa80691",
+  "size_bytes": 2764002
+}

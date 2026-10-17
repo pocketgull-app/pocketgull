@@ -299,8 +299,15 @@ def simulate_gaht_pk_model(data: GahtPkInput) -> GahtPkOutput:
     step = 0.5
     current_day = 0.0
 
-    while current_day <= float(data.interval_days):
-        val = (data.dose_mg * ka / (ka - ke)) * (math.exp(-ke * current_day) - math.exp(-ka * current_day))
+    # Steady-state repeated-dose accumulation factors R = 1 / (1 - exp(-k * tau))
+    interval_tau = max(1.0, float(data.interval_days))
+    acc_e = 1.0 / (1.0 - math.exp(-ke * interval_tau))
+    acc_a = 1.0 / (1.0 - math.exp(-ka * interval_tau))
+
+    while current_day <= interval_tau:
+        val = (data.dose_mg * ka / (ka - ke)) * (
+            math.exp(-ke * current_day) * acc_e - math.exp(-ka * current_day) * acc_a
+        )
         c = max(0.0, round(val * multiplier, 1))
         curve.append(PkCurveStep(day=current_day, concentration=c))
         if c > max_c:
@@ -346,10 +353,13 @@ class ErythrocytosisOutput(BaseModel):
 
 
 def forecast_erythrocytosis_model(data: ErythrocytosisInput) -> ErythrocytosisOutput:
-    monthly_rise = (data.current_hematocrit - data.baseline_hematocrit) / max(1, data.months_on_testosterone)
-    projected = data.current_hematocrit + (monthly_rise * 6.0)
+    # Erythropoietic response dampens asymptotically toward plateau over 6-12 months
+    effective_months = max(3.0, float(data.months_on_testosterone))
+    saturation_dampening = math.exp(-0.08 * (data.months_on_testosterone - 1))
+    monthly_rise = ((data.current_hematocrit - data.baseline_hematocrit) / effective_months) * saturation_dampening
+    projected = min(62.0, data.current_hematocrit + (monthly_rise * 6.0))
     if data.nocturnal_snoring_or_apnea:
-        projected += 1.5
+        projected = min(64.0, projected + 1.5)
 
     projected = round(projected, 1)
     urgent = data.current_hematocrit >= 54.0 or projected >= 54.0

@@ -135,11 +135,17 @@ function getAngularApp(): AngularNodeAppEngine | null {
 }
 
 app.use(compression());
-  app.use((req, res, next) => { console.log('[Incoming]', req.method, req.url); next(); });
 
 const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test');
 const isProd = (process.env['NODE_ENV'] === 'production' || !!process.env['K_SERVICE']) && !isTestingEnv;
 const isDev = !isProd;
+
+if (isDev) {
+  app.use((req, _res, next) => {
+    console.log('[Incoming]', sanitizeLogInput(req.method), sanitizeLogInput(req.url));
+    next();
+  });
+}
 
 // Helper to inject cryptographic nonce into all inline <script> tags before sending HTML
 function sendHtmlResponse(res: express.Response, html: string): express.Response {
@@ -194,26 +200,28 @@ app.use((req, res, next) => {
     'humanitarian/medical-cds; urn:icrc:digital-emblem:v1; status=protected-civilian; authority=Geneva-Conventions-1949-AP1; entity="PocketGull LLC."'
   );
 
-  // 10. Content Security Policy (Strict CSP3 with Nonce & Strict-Dynamic)
+  // 10. Content Security Policy (Strict CSP3 with Nonce & Strict-Dynamic — Zero 'unsafe-inline' in script-src*)
   const scriptSrc = isProd
     ? `'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval' https://apis.google.com https://cloud.google.com https://pay.google.com`
     : `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cloud.google.com https://pay.google.com`;
 
+  const scriptSrcAttr = isProd ? `'none'` : `'unsafe-inline'`;
+
   const connectSrc = isProd
-    ? `'self' https: wss: https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`
+    ? `'self' https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app https://*.pocketgull.app wss://*.pocketgull.app https://pocketgull.com`
     : `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`;
 
   const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com https://font.pocketgull.app data:`;
   const fontSrc = `'self' data: https://fonts.gstatic.com https://font.pocketgull.app`;
   const imgSrc = `'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org https://images.unsplash.com https://pocketgull.app https://*.pocketgull.app`;
-  const mediaSrc = `'self' blob: data: mediastream: https:`;
+  const mediaSrc = `'self' blob: data: mediastream: https://*.pocketgull.app`;
   const frameSrc = `'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app https://pay.google.com`;
 
   const cspDirectives = [
     "default-src 'none'",
     `script-src ${scriptSrc}`,
     `script-src-elem ${scriptSrc}`,
-    "script-src-attr 'unsafe-inline'",
+    `script-src-attr ${scriptSrcAttr}`,
     `style-src ${styleSrc}`,
     `style-src-elem ${styleSrc}`,
     "style-src-attr 'unsafe-inline'",
@@ -490,7 +498,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// US Regional Access Enforcement Guard & Territorial Sovereignty
+// US & Five Eyes (FVEY) Regional Jurisdiction Tagging & OFAC Compliance Guard
 const ALLOWED_US_JURISDICTIONS = new Set(['US', 'PR', 'VI', 'GU', 'AS', 'MP', 'UM', 'ZZ']);
 
 app.get('/api/geo/jurisdiction', (req, res) => {
@@ -504,15 +512,17 @@ app.get('/api/geo/jurisdiction', (req, res) => {
 });
 
 app.use((req, res, next) => {
+  if (req.path === '/health') {
+    return next();
+  }
   const country = req.headers['x-appengine-country'] || req.headers['cf-ipcountry'] || req.headers['x-client-geo-location'];
   if (country && typeof country === 'string') {
     const normCountry = country.toUpperCase().trim();
-    if (!ALLOWED_US_JURISDICTIONS.has(normCountry)) {
-      return res.status(403).json({
-        error: 'Access Restricted',
-        message: 'Pocket-Gull Clinical Intelligence Service is currently restricted to the United States region.'
-      });
+    if (OFAC_SANCTIONED_COUNTRIES.has(normCountry)) {
+      return sendHtmlResponse(res.status(451), renderOfacRestrictedHtml());
     }
+    const isUs = ALLOWED_US_JURISDICTIONS.has(normCountry);
+    res.setHeader('X-Clinical-Jurisdiction', isUs ? 'US_FEDERAL_HIPAA_SSA_CMS' : 'INTERNATIONAL_WHO_GDPR');
   }
   next();
 });
