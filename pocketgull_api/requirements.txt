@@ -2,10 +2,10 @@
 # Install: pip install -r requirements.txt
 
 # Core — required
-fastapi==0.143.0
+fastapi==0.143.2
 uvicorn==0.54.0
-pydantic==2.14.0
-numpy==2.5.3
+pydantic==2.14.1
+numpy==2.5.4
 
 # JAX & Deep Learning Stack
 jax==0.11.2
