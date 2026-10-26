@@ -2,23 +2,23 @@
 # Install: pip install -r requirements.txt
 
 # Core — required
-fastapi==0.143.2
+fastapi==0.161.1
 uvicorn==0.54.0
 pydantic==2.14.1
 numpy==2.5.4
 
 # JAX & Deep Learning Stack
-jax==0.11.2
-jaxlib==0.11.2
+jax==0.12.0.1
+jaxlib==0.12.0.1
 flax==0.12.10
 optax==0.2.8
-orbax-checkpoint==0.12.7
+orbax-checkpoint==0.12.8
 
 # Export & Math Utilities
 onnx>=1.23.2
 
 # DataFrame ingestion (P1)
-pandas==3.0.6
+pandas==3.1.0
 
 # FHIR Bundle validation gateway (P1)
 fhir.resources==8.3.0
