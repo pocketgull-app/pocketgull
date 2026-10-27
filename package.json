@@ -252,7 +252,7 @@
     "swagger-ui-express": "^5.0.1",
     "three": "^0.185.0",
     "ws": "^8.21.0",
-    "zod": "^4.3.6"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@axe-core/puppeteer": "^4.11.1",
