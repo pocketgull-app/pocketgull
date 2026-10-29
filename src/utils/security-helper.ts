@@ -71,9 +71,10 @@ export function isSafeRedirectUrl(url: string, allowedDomains: string[] = []): b
 export const isValidRedirectUrl = isSafeRedirectUrl;
 
 /**
- * OFAC Comprehensive Sanctioned Jurisdictions (Cuba, Iran, North Korea, Syria).
+ * OFAC Comprehensive Sanctioned Jurisdictions (Cuba, Iran, North Korea).
+ * Note: Syria ('SY') comprehensive sanctions lifted under E.O. 14312 / PAARSSR (Issue #432).
  */
-export const OFAC_SANCTIONED_COUNTRIES = new Set(['CU', 'IR', 'KP', 'SY']);
+export const OFAC_SANCTIONED_COUNTRIES = new Set(['CU', 'IR', 'KP']);
 
 /**
  * Renders statutory 451 Unavailable For Legal Reasons notification for OFAC-restricted jurisdictions.
