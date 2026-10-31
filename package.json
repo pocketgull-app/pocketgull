@@ -382,15 +382,15 @@
       },
       "brace-expansion": "^2.1.7",
       "engine.io": "^6.6.11",
-      "fast-uri": "^4.2.1",
+      "fast-uri": "^4.2.3",
       "js-yaml": "^5.4.2",
       "webpack-dev-middleware": "^8.3.0",
-      "minimatch": "^10.0.3",
+      "minimatch": "^11.0.3",
       "rimraf": "^6.0.1",
       "postcss": "^8.5.26"
     },
     "rimraf": "^6.0.1",
-    "glob": "^11.0.0",
+    "glob": "^14.0.3",
     "inflight": "npm:lru-cache@^10.0.0",
     "node-domexception": "npm:domexception@^4.0.0",
     "@google-cloud/opentelemetry-cloud-trace-exporter": "^3.1.0",
@@ -399,7 +399,8 @@
     "@vitest/mocker": "4.1.12",
     "body-parser": "^2.4.0",
     "zod": "^4.6.7",
-    "re2js": ">=2.9.1"
+    "re2js": ">=2.9.1",
+    "minimatch": ">=11.0.3"
   },
   "lint-staged": {
     "*.ts": "npm run lint",
