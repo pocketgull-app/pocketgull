@@ -11,19 +11,19 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^22.2.3",
-    "@angular/compiler": "^22.2.3",
-    "@angular/core": "^22.2.3",
-    "@angular/forms": "^22.2.3",
-    "@angular/platform-browser": "^22.2.3",
-    "@angular/router": "^22.2.1",
+    "@angular/common": "^22.2.4",
+    "@angular/compiler": "^22.2.4",
+    "@angular/core": "^22.2.4",
+    "@angular/forms": "^22.2.4",
+    "@angular/platform-browser": "^22.2.4",
+    "@angular/router": "^22.2.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@angular/build": "^22.2.4",
-    "@angular/cli": "^22.2.4",
-    "@angular/compiler-cli": "^22.2.3",
+    "@angular/build": "^22.2.5",
+    "@angular/cli": "^22.2.5",
+    "@angular/compiler-cli": "^22.2.4",
     "typescript": "^7.0.2"
   },
   "overrides": {
@@ -80,7 +80,7 @@
     "js-yaml": ">=4.3.1",
     "hono": ">=4.13.8",
     "@hono/node-server": ">=2.1.0",
-    "@angular/common": "^22.2.3",
+    "@angular/common": "^22.2.4",
     "browserslist": ">=4.28.7",
     "@modelcontextprotocol/sdk": ">=1.31.0",
     "source-map-js": ">=1.2.2",
