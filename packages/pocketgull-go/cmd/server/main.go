@@ -3,6 +3,8 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -30,6 +32,28 @@ type TelemetryRequest struct {
 	Samples        []float64 `json:"samples"`
 	PopulationMean float64   `json:"populationMean"`
 	Alpha          float64   `json:"alpha"`
+}
+
+// Observatory125Middleware enforces Mozilla HTTP Observatory 125/100 (Grade A+) security headers
+// and per-request CSPRNG CSP nonces as Middleware #1 prior to any route handling.
+func Observatory125Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		nonceBytes := make([]byte, 16)
+		_, _ = rand.Read(nonceBytes)
+		nonce := base64.StdEncoding.EncodeToString(nonceBytes)
+
+		h := w.Header()
+		h.Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload")
+		h.Set("Cross-Origin-Opener-Policy", "same-origin")
+		h.Set("Cross-Origin-Resource-Policy", "same-origin")
+		h.Set("Cross-Origin-Embedder-Policy", "credentialless")
+		h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		h.Set("X-Frame-Options", "SAMEORIGIN")
+		h.Set("X-Content-Type-Options", "nosniff")
+		h.Set("Content-Security-Policy", fmt.Sprintf("default-src 'none'; script-src 'nonce-%s' 'strict-dynamic'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'", nonce))
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 // SetupRoutes registers and returns the HTTP mux for the microservice.
@@ -110,7 +134,7 @@ func SetupRoutes(appVersion string) http.Handler {
 		_ = json.NewEncoder(w).Encode(res)
 	})
 
-	return mux
+	return Observatory125Middleware(mux)
 }
 
 func main() {

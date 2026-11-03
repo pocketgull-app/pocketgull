@@ -50,6 +50,9 @@ venv/
 tools/
 scripts/
 packages/
+adapters/
+**/target/
+**/.build/
 companion-apps/
 tests/
 e2e/

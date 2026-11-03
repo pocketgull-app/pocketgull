@@ -134,6 +134,7 @@ import { FluidResuscitationTonicityCardComponent } from './components/clinical/f
 import { GlymphaticBrain3dLensComponent } from './components/anatomy-3d/glymphatic-brain-3d-lens.component';
 import { Nutrigenomics3dLensComponent } from './components/anatomy-3d/nutrigenomics-3d-lens.component';
 import { ClinicalDriftCalibratorHudComponent } from './components/clinical/clinical-drift-calibrator-hud.component';
+import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.component';
 
 @Component({
   selector: 'app-root',
@@ -243,7 +244,8 @@ import { ClinicalDriftCalibratorHudComponent } from './components/clinical/clini
     FluidResuscitationTonicityCardComponent,
     GlymphaticBrain3dLensComponent,
     Nutrigenomics3dLensComponent,
-    ClinicalDriftCalibratorHudComponent
+    ClinicalDriftCalibratorHudComponent,
+    UiSelfRepairHudComponent
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -1885,42 +1887,78 @@ import { ClinicalDriftCalibratorHudComponent } from './components/clinical/clini
                 </div>
               </div>
               @if (cardiacEngineMode() === 'webgpu') {
-                <app-cardiac-webgpu-lens />
+                @defer (on immediate) {
+                  <app-cardiac-webgpu-lens />
+                }
               } @else {
-                <app-cardiac-electrophysiology-3d-lens />
+                @defer (on immediate) {
+                  <app-cardiac-electrophysiology-3d-lens />
+                }
               }
             } @else if (activeBiophysicalLensTab() === 'alveolar') {
-              <app-alveolar-capillary-3d-lens />
+              @defer (on immediate) {
+                <app-alveolar-capillary-3d-lens />
+              }
             } @else if (activeBiophysicalLensTab() === 'hepatic') {
-              <app-hepatic-sinusoid-3d-lens />
+              @defer (on immediate) {
+                <app-hepatic-sinusoid-3d-lens />
+              }
             } @else if (activeBiophysicalLensTab() === 'renal_3d') {
-              <app-glomerular-filtration-3d-lens />
+              @defer (on immediate) {
+                <app-glomerular-filtration-3d-lens />
+              }
             } @else if (activeBiophysicalLensTab() === 'islet') {
-              <app-pancreatic-islet-3d-lens />
+              @defer (on immediate) {
+                <app-pancreatic-islet-3d-lens />
+              }
             } @else if (activeBiophysicalLensTab() === 'cyp_heme') {
-              <app-cyp3a4-heme-3d-lens />
+              @defer (on immediate) {
+                <app-cyp3a4-heme-3d-lens />
+              }
             } @else if (activeBiophysicalLensTab() === 'bioprinting_scaffold') {
-              <app-bioprinting-scaffold-3d-lens />
+              @defer (on immediate) {
+                <app-bioprinting-scaffold-3d-lens />
+              }
             } @else if (activeBiophysicalLensTab() === 'kdigo_aki') {
-              <app-kdigo-aki-phenotyper-card />
+              @defer (on immediate) {
+                <app-kdigo-aki-phenotyper-card />
+              }
             } @else if (activeBiophysicalLensTab() === 'baroreflex') {
-              <app-autonomic-baroreflex-card />
+              @defer (on immediate) {
+                <app-autonomic-baroreflex-card />
+              }
             } @else if (activeBiophysicalLensTab() === 'sepsis') {
-              <app-sepsis-shock-sofa-card />
+              @defer (on immediate) {
+                <app-sepsis-shock-sofa-card />
+              }
             } @else if (activeBiophysicalLensTab() === 'glycemic') {
-              <app-glycemic-minimal-model-card />
+              @defer (on immediate) {
+                <app-glycemic-minimal-model-card />
+              }
             } @else if (activeBiophysicalLensTab() === 'cyp450_ddi') {
-              <app-cyp450-ddi-matrix-card />
+              @defer (on immediate) {
+                <app-cyp450-ddi-matrix-card />
+              }
             } @else if (activeBiophysicalLensTab() === 'swan_ganz') {
-              <app-stewart-hamilton-pac-card />
+              @defer (on immediate) {
+                <app-stewart-hamilton-pac-card />
+              }
             } @else if (activeBiophysicalLensTab() === 'monk_equity') {
-              <app-monk-skin-tone-equity-card />
+              @defer (on immediate) {
+                <app-monk-skin-tone-equity-card />
+              }
             } @else if (activeBiophysicalLensTab() === 'fluid_tonicity') {
-              <app-fluid-resuscitation-tonicity-card />
+              @defer (on immediate) {
+                <app-fluid-resuscitation-tonicity-card />
+              }
             } @else if (activeBiophysicalLensTab() === 'glymphatic_brain') {
-              <app-glymphatic-brain-3d-lens />
+              @defer (on immediate) {
+                <app-glymphatic-brain-3d-lens />
+              }
             } @else if (activeBiophysicalLensTab() === 'nutrigenomics') {
-              <app-nutrigenomics-3d-lens />
+              @defer (on immediate) {
+                <app-nutrigenomics-3d-lens />
+              }
             }
           </div>
         </div>
@@ -1951,10 +1989,25 @@ import { ClinicalDriftCalibratorHudComponent } from './components/clinical/clini
     <!-- Real-Time Clinician Collaboration Dock -->
     @if (!showSplash()) {
       <app-collaboration-dock />
+      @defer (on idle) {
+        <app-ui-self-repair-hud />
+      }
     }
 
     <app-clinical-cds-disclaimer-banner></app-clinical-cds-disclaimer-banner>
     <app-zamecznik-canvas></app-zamecznik-canvas>
+
+    @if (swUpdateReady()) {
+      <div class="fixed bottom-4 left-4 z-[9999] bg-zinc-900 text-zinc-100 border border-teal-500/40 rounded-2xl shadow-2xl px-4 py-3 flex items-center gap-3 animate-in slide-in-from-bottom-4 duration-200 no-print" role="status" aria-live="polite">
+        <span class="text-xs font-mono">🔄 A new version of Pocket-Gull is ready.</span>
+        <button type="button" (click)="reloadForSwUpdate()" class="min-h-[36px] px-3 py-1 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-xs font-bold cursor-pointer transition touch-manipulation">
+          Reload Now
+        </button>
+        <button type="button" (click)="swUpdateReady.set(false)" class="min-h-[36px] px-2 py-1 text-zinc-400 hover:text-white text-xs cursor-pointer" aria-label="Dismiss update notification">
+          ✕
+        </button>
+      </div>
+    }
   `,
   styles: [`
     :host { display: block; min-height: 100%; }
@@ -2767,6 +2820,13 @@ export class AppComponent implements OnDestroy {
   });
 
   isDragging = computed(() => this.isDraggingColumn());
+  swUpdateReady = signal(false);
+
+  reloadForSwUpdate(): void {
+    if (typeof window !== 'undefined') {
+      window.location.reload();
+    }
+  }
 
   private boundDoColumnDrag = this.doColumnDrag.bind(this);
   private boundStopColumnDrag = this.stopColumnDrag.bind(this);
@@ -2841,9 +2901,7 @@ export class AppComponent implements OnDestroy {
     if (swUpdate && swUpdate.isEnabled) {
       swUpdate.versionUpdates.subscribe((evt: VersionEvent) => {
         if (evt.type === 'VERSION_READY') {
-          if (confirm('A new version of Pocket-Gull is available! Would you like to reload now to apply the update?')) {
-            window.location.reload();
-          }
+          this.swUpdateReady.set(true);
         }
       });
     }

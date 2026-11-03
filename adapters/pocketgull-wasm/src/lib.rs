@@ -1,5 +1,5 @@
 use wasm_bindgen::prelude::*;
-use pocketgull_core::{dsp, sibi::{self, SibiInput}, fhir::{self, FhirExportParams}};
+use pocketgull_core::{dsp, glyph_3d::{self, ExtrusionOptions}, sibi::{self, SibiInput}, fhir::{self, FhirExportParams}};
 
 #[wasm_bindgen]
 pub fn calculate_sibi_wasm(
@@ -42,4 +42,18 @@ pub fn export_fhir_wasm(
         sibi_risk_tier: sibi_risk_tier.to_string(),
     };
     fhir::export_fhir_bundle_json(&params)
+}
+
+#[wasm_bindgen]
+pub fn compile_glyph_3d_wasm(symbol_token: &str, depth: f32, curve_segments: usize) -> String {
+    let opts = ExtrusionOptions {
+        depth: if depth > 0.0 { depth } else { 0.2 },
+        curve_segments: if curve_segments > 0 { curve_segments } else { 12 },
+        scale: 0.01,
+        part_id: 0,
+    };
+    match glyph_3d::compile_glyph_symbol_to_3d_mesh(symbol_token, Some(opts)) {
+        Some(mesh) => serde_json::to_string(&mesh).unwrap_or_else(|_| "{}".to_string()),
+        None => "{}".to_string(),
+    }
 }

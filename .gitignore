@@ -428,4 +428,7 @@ scripts/output/
 numba_cache/
 work/
 eng/
+casmi_output/
+/docs/DUAL_TRACK_ACQUISITION_PACKET.md
+
 

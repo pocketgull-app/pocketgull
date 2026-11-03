@@ -298,6 +298,67 @@ export class GlyphVectorRenderer {
   }
 
   /**
+   * Concave-safe 2D polygon ear-clipping triangulation for glyph endcaps.
+   */
+  static triangulateEarClip(contour: IPoint2D[]): [number, number, number][] {
+    const n = contour.length;
+    if (n < 3) return [];
+
+    const polyIndices: number[] = Array.from({ length: n }, (_, i) => i);
+    const triangles: [number, number, number][] = [];
+
+    let area = 0;
+    for (let i = 0; i < n; i++) {
+      const p1 = contour[i];
+      const p2 = contour[(i + 1) % n];
+      area += p1.x * p2.y - p2.x * p1.y;
+    }
+    const sign = area >= 0 ? 1 : -1;
+
+    let guard = n * 3;
+    let idx = 0;
+    while (polyIndices.length > 3 && guard > 0) {
+      guard--;
+      const m = polyIndices.length;
+      const i0 = polyIndices[(idx + m - 1) % m];
+      const i1 = polyIndices[idx % m];
+      const i2 = polyIndices[(idx + 1) % m];
+
+      const a = contour[i0];
+      const b = contour[i1];
+      const c = contour[i2];
+
+      const cross = ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) * sign;
+      if (cross > 1e-6) {
+        let isEar = true;
+        for (const other of polyIndices) {
+          if (other === i0 || other === i1 || other === i2) continue;
+          const p = contour[other];
+          const c1 = ((b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x)) * sign;
+          const c2 = ((c.x - b.x) * (p.y - b.y) - (c.y - b.y) * (p.x - b.x)) * sign;
+          const c3 = ((a.x - c.x) * (p.y - c.y) - (a.y - c.y) * (p.x - c.x)) * sign;
+          if (c1 >= 0 && c2 >= 0 && c3 >= 0) {
+            isEar = false;
+            break;
+          }
+        }
+        if (isEar) {
+          triangles.push([i0, i1, i2]);
+          polyIndices.splice(idx % m, 1);
+          idx = 0;
+          continue;
+        }
+      }
+      idx++;
+    }
+
+    if (polyIndices.length === 3) {
+      triangles.push([polyIndices[0], polyIndices[1], polyIndices[2]]);
+    }
+    return triangles;
+  }
+
+  /**
    * Helper that compiles an OpenType ligature symbol directly into an extruded 3D mesh.
    */
   static compileGlyphSymbolTo3DMesh(
