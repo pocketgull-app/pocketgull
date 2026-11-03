@@ -33,6 +33,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
 import { FovealReticleRsvpComponent } from './shared/foveal-reticle-rsvp.component';
 import { DecisionCurveViewerComponent } from './analytics/decision-curve-viewer.component';
 import { SmoeDecisionFlowExplorerComponent } from './smoe-decision-flow-explorer.component';
+import { getSecureRandomId } from '../utils/security-helper';
 import * as DOMPurify from 'dompurify';
 
 export interface IPubMedSearchResult {
@@ -1512,7 +1513,7 @@ export class ResearchFrameComponent implements OnDestroy {
     
     this.patientState.clinicalNotes.update(notes => [
       {
-        id: 'note_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        id: 'note_' + Date.now() + '_' + getSecureRandomId().substring(0, 6),
         text,
         date: new Date().toISOString(),
         sourceLens: 'RESEARCH_FRAME'
@@ -1530,7 +1531,7 @@ export class ResearchFrameComponent implements OnDestroy {
     this.patientState.checklist.update(items => [
       ...items,
       {
-        id: 'task_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        id: 'task_' + Date.now() + '_' + getSecureRandomId().substring(0, 6),
         text,
         completed: false
       }

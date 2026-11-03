@@ -307,9 +307,18 @@ export interface IChatEntry {
                         type="button"
                         (click)="confirmClearSession()"
                         [disabled]="chatHistory().length === 0"
-                        class="min-w-[44px] min-h-[44px] text-zinc-600 dark:text-zinc-400 hover:text-red-500 flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 border border-gray-200 dark:border-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
-                        title="Clear Chat History & Start New Consult">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        [class.bg-red-500]="pendingClearConfirm()"
+                        [class.text-white]="pendingClearConfirm()"
+                        [class.border-red-600]="pendingClearConfirm()"
+                        [class.text-zinc-600]="!pendingClearConfirm()"
+                        [class.dark:text-zinc-400]="!pendingClearConfirm()"
+                        class="min-w-[44px] min-h-[44px] hover:text-red-500 flex items-center justify-center gap-1 transition-colors px-2.5 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 border border-gray-200 dark:border-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none text-xs font-mono font-bold"
+                        [title]="pendingClearConfirm() ? 'Click again to confirm clearing consultation history' : 'Clear Chat History & Start New Consult'">
+                        @if (pendingClearConfirm()) {
+                            <span>Clear?</span>
+                        } @else {
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        }
                     </button>
 
                     <!-- Discord Dispatch -->
@@ -1130,13 +1139,22 @@ export class VoiceAssistantComponent implements OnDestroy {
       this.sendMessage();
     }
 
+    pendingClearConfirm = signal(false);
+    private clearConfirmTimer: ReturnType<typeof setTimeout> | null = null;
+
     confirmClearSession(): void {
       if (this.chatHistory().length === 0) return;
-      if (typeof window !== 'undefined' && window.confirm('Clear all consultation history and start a fresh live session?')) {
-        this.chatHistory.set([]);
-        this.storage.saveChatHistory('current_patient', []);
-        this.messageText.set('');
+      if (!this.pendingClearConfirm()) {
+        this.pendingClearConfirm.set(true);
+        if (this.clearConfirmTimer) clearTimeout(this.clearConfirmTimer);
+        this.clearConfirmTimer = setTimeout(() => this.pendingClearConfirm.set(false), 3500);
+        return;
       }
+      if (this.clearConfirmTimer) clearTimeout(this.clearConfirmTimer);
+      this.pendingClearConfirm.set(false);
+      this.chatHistory.set([]);
+      this.storage.saveChatHistory('current_patient', []);
+      this.messageText.set('');
     }
 
     async exportTranscript(): Promise<void> {
@@ -1517,15 +1535,7 @@ export class VoiceAssistantComponent implements OnDestroy {
         // Only init if in browser
         if (typeof window !== 'undefined') {
             // Listen to voice mode changes
-            window.addEventListener('voice-mode-change', (e: any) => {
-                if (e.detail === 'ybocs') {
-                    this.activateYbocsInterview();
-                } else if (e.detail === 'chrono') {
-                    this.activateChronoVoiceConsultation();
-                } else if (e.detail === 'avs') {
-                    this.activateAvsVoiceCoRegulation();
-                }
-            });
+            window.addEventListener('voice-mode-change', this.boundVoiceModeChange);
 
 
             // 1. Hydrate Chat History
@@ -1613,8 +1623,24 @@ export class VoiceAssistantComponent implements OnDestroy {
     }
 
     private recognition: any;
+    private readonly boundVoiceModeChange = (e: Event) => {
+        const detail = (e as CustomEvent).detail;
+        if (detail === 'ybocs') {
+            this.activateYbocsInterview();
+        } else if (detail === 'chrono') {
+            this.activateChronoVoiceConsultation();
+        } else if (detail === 'avs') {
+            this.activateAvsVoiceCoRegulation();
+        }
+    };
 
     ngOnDestroy() {
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('voice-mode-change', this.boundVoiceModeChange);
+        }
+        if (this.clearConfirmTimer) {
+            clearTimeout(this.clearConfirmTimer);
+        }
         this.stopDictation();
         this.live.disconnect();
         if (this.recognition) this.recognition.stop();
@@ -2403,12 +2429,30 @@ To enable full interactive consultations, custom question answering, and live vo
         this.speakClientSide(introText);
     }
 
+    private sanitizeSafeHarborText(input: string, rawPatientName: string): string {
+        if (!input) return '';
+        let sanitized = input;
+        if (rawPatientName && rawPatientName.trim().length > 2) {
+            const escapedName = rawPatientName.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            sanitized = sanitized.replace(new RegExp(escapedName, 'gi'), '[REDACTED_PATIENT]');
+        }
+        sanitized = sanitized
+            .replace(/\b\d{3}-\d{2}-\d{4}\b/g, '[REDACTED_SSN]')
+            .replace(/\b(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g, '[REDACTED_PHONE]')
+            .replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, '[REDACTED_EMAIL]')
+            .replace(/\b(?:MRN|ID)[:\s#-]*[A-Z0-9-]{4,}\b/gi, '[REDACTED_MRN]');
+        return sanitized;
+    }
+
     async dispatchDiscordTranscript() {
         const history = this.chatHistory();
         if (history.length === 0) return;
 
-        const transcriptSummary = history.map(h => `**${h.role === 'user' ? 'Clinician' : 'Gemini AI'}**: ${h.text}`).join('\n\n');
-        const patientName = this.state.patientName() || 'Anonymous Patient';
+        const rawName = this.state.patientName() || '';
+        const safeCohortId = `SYNTH-COHORT-${(this.state.patientId() || 'ANON').slice(-4).toUpperCase()}`;
+        const transcriptSummary = history
+            .map(h => `**${h.role === 'user' ? 'Clinician' : 'Gemini AI'}**: ${this.sanitizeSafeHarborText(h.text, rawName)}`)
+            .join('\n\n');
         const vitals = this.state.vitals();
         const symptomsList = Object.keys(this.state.issues()).join(', ') || 'None specified';
 
@@ -2417,16 +2461,16 @@ To enable full interactive consultations, custom question answering, and live vo
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    embedTitle: `🎙️ Pocket Gull Live Session Transcript — [${patientName}]`,
+                    embedTitle: `🎙️ Pocket Gull De-Identified Consult — [${safeCohortId}] (HIPAA §164.514 Safe Harbor)`,
                     embedDescription: transcriptSummary.slice(0, 2000),
                     fields: [
-                        { name: 'Patient Vitals', value: `HR: ${vitals.hr || '--'} bpm | BP: ${vitals.bp || '--'} | SpO2: ${vitals.spO2 || '--'}%`, inline: true },
-                        { name: 'Primary Symptoms', value: symptomsList, inline: true },
+                        { name: 'Physiological Telemetry', value: `HR: ${vitals.hr || '--'} bpm | BP: ${vitals.bp || '--'} | SpO2: ${vitals.spO2 || '--'}%`, inline: true },
+                        { name: 'Systemic Domains', value: this.sanitizeSafeHarborText(symptomsList, rawName), inline: true },
                     ],
                     color: 0x416B1F
                 })
             });
-            console.log('[Discord Dispatch] Live transcript posted to Discord channel.');
+            console.log('[Discord Dispatch] Safe Harbor de-identified transcript posted to Discord channel.');
         } catch (e) {
             console.error('[Discord Dispatch] Failed to post transcript:', e);
         }

@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConsentService } from '../../services/consent.service';
 
@@ -119,5 +119,10 @@ import { ConsentService } from '../../services/consent.service';
 })
 export class ConsentModalComponent {
     consent = inject(ConsentService);
+
+    @HostListener('document:keydown.escape')
+    onEscapeKey(): void {
+      this.consent.acceptConsent();
+    }
 }
 

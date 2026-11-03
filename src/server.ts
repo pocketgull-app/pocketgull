@@ -318,7 +318,7 @@ app.use(globalLimiter, (req, res, next) => {
       if (ext === '.js') {
         res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
         res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-        return res.status(200).send('/* Hashed JS bundle fallback */');
+        return res.status(404).send('/* Missing JS bundle */');
       }
     }
   }
@@ -334,9 +334,10 @@ app.use(express.static(join(browserDistFolder, '..', 'public'), { maxAge: '1d', 
 // Defensive Security Headers Middleware (NIST / OWASP Hardening)
 // Bypass Angular Service Worker on localhost dev/audit server to prevent stale hash prefetching
 app.use((req, res, next) => {
-  if (req.path === '/ngsw-worker.js' || req.path === '/ngsw.json') {
+  const isDevServer = process.env['NODE_ENV'] !== 'production' && !process.env['K_SERVICE'];
+  if (isDevServer && (req.path === '/ngsw-worker.js' || req.path === '/ngsw.json')) {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    return res.status(404).send('Service Worker Disabled');
+    return res.status(404).send('Service Worker Disabled in Dev');
   }
   next();
 });

@@ -138,16 +138,28 @@
           "configurations": {
             "production": {
               "outputHashing": "all",
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2.5mb",
+                  "maximumError": "4mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "16kb",
+                  "maximumError": "32kb"
+                }
+              ],
               "sourceMap": {
                 "scripts": true,
                 "styles": true,
-                "hidden": false
+                "hidden": true
               },
               "optimization": {
                 "scripts": true,
                 "styles": {
                   "minify": true,
-                  "inlineCritical": false
+                  "inlineCritical": true
                 },
                 "fonts": true
               },

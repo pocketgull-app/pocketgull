@@ -149,7 +149,7 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.dark:bg-zinc-800]="bioTypography.phoropterMode() !== 'STANDARD_20_20'"
             [class.text-zinc-600]="bioTypography.phoropterMode() !== 'STANDARD_20_20'"
             [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'STANDARD_20_20'"
-            class="px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500">
+            class="min-h-[44px] px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500 touch-manipulation inline-flex items-center justify-center">
             20/20 Std
           </button>
 
@@ -161,7 +161,7 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.dark:bg-zinc-800]="bioTypography.phoropterMode() !== 'AUTO_DISTANCE'"
             [class.text-zinc-600]="bioTypography.phoropterMode() !== 'AUTO_DISTANCE'"
             [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'AUTO_DISTANCE'"
-            class="px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500">
+            class="min-h-[44px] px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500 touch-manipulation inline-flex items-center justify-center">
             📱 Distance ({{ bioTypography.distanceCm() }}cm)
           </button>
 
@@ -173,7 +173,7 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.dark:bg-zinc-800]="bioTypography.phoropterMode() !== 'MESOPIC_ICU'"
             [class.text-zinc-600]="bioTypography.phoropterMode() !== 'MESOPIC_ICU'"
             [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'MESOPIC_ICU'"
-            class="px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500">
+            class="min-h-[44px] px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500 touch-manipulation inline-flex items-center justify-center">
             🌙 ICU Mesopic
           </button>
 
@@ -185,7 +185,7 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.dark:bg-zinc-800]="bioTypography.phoropterMode() !== 'STAT_TRAUMA'"
             [class.text-zinc-600]="bioTypography.phoropterMode() !== 'STAT_TRAUMA'"
             [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'STAT_TRAUMA'"
-            class="px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-red-500">
+            class="min-h-[44px] px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-red-500 touch-manipulation inline-flex items-center justify-center">
             ⚡ STAT Trauma
           </button>
 
@@ -197,7 +197,7 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.dark:bg-zinc-800]="bioTypography.phoropterMode() !== 'LOW_VISION'"
             [class.text-zinc-600]="bioTypography.phoropterMode() !== 'LOW_VISION'"
             [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'LOW_VISION'"
-            class="px-2 py-1 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-amber-500">
+            class="min-h-[44px] px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-amber-500 touch-manipulation inline-flex items-center justify-center">
             👓 Low Vision
           </button>
         </div>
