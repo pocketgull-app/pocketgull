@@ -28,8 +28,8 @@ export const STATIC_BLOCKED_IPS = new Set<string>([
 export const DYNAMIC_BANNED_IPS = new Map<string, IBanRecord>();
 export const DEFAULT_BAN_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-// Regex matching common web vulnerability scanners and automated exploit probes
-export const MALICIOUS_PROBE_REGEX = /^\/(?:(?:wp-(?:admin|content|includes|login|config|cron|load)|phpmyadmin|pma|actuator|xmlrpc\.php|cgi-bin|\.aws|\.ssh)(?:[./]|$)|(?:[^\/]+\/)*\.(?:git|env|ds_store|bak|swp|sql|tar|zip)(?:[./]|$))/i;
+// Regex matching common web vulnerability scanners and automated exploit probes (linear-time, zero nested quantifiers)
+export const MALICIOUS_PROBE_REGEX = /(?:^\/(?:wp-(?:admin|content|includes|login|config|cron|load)|phpmyadmin|pma|actuator|xmlrpc\.php|cgi-bin|\.aws|\.ssh)(?:[./]|$))|(?:\/(?:\.git|\.env|\.ds_store|\.bak|\.swp|\.sql|\.tar|\.zip)(?:[./]|$))/i;
 
 export class IpBlocklistService {
   /**

@@ -1103,7 +1103,7 @@ app.use(globalLimiter, (req, res, next) => {
     }
     if (ext === '.js') {
       res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-      return res.status(200).send('/* Stub JS asset */');
+      return res.status(404).send('/* Missing JS asset */');
     }
     if (ext === '.css') {
       const candidateDirs = [browserDistFolder, join(browserDistFolder, 'browser'), process.cwd(), join(process.cwd(), 'src')];
@@ -1290,12 +1290,29 @@ if (isMainModule(import.meta.url)) {
     // Auto-provision Cloud Healthcare API datasets and stores
     ensureHealthcareStoresExist().catch(console.error);
 
-    // Setup secure WebSocket proxy for Vertex AI Multimodal Live API
-    const wss = new WebSocketServer({ noServer: true });
+    // Setup secure WebSocket proxy for Vertex AI Multimodal Live API (2 MB maxPayload + CSWSH origin guard)
+    const wss = new WebSocketServer({ noServer: true, maxPayload: 2 * 1024 * 1024 });
+    const wsAllowedOrigins = new Set([
+      'https://pocketgull.app',
+      'https://www.pocketgull.app',
+      'https://pocketgull.com',
+      'https://www.pocketgull.com',
+      'https://preview.pocketgull.app',
+      'http://localhost:4200',
+      'http://localhost:4000',
+      'http://127.0.0.1:4200',
+      'http://127.0.0.1:4000',
+    ]);
     
     _serverInstance.on('upgrade', (request: IncomingMessage, socket: Socket, head: Buffer) => {
       const { pathname } = new URL(request.url || '', `http://${request.headers.host || 'localhost'}`);
       if (pathname === '/ws/gemini-live') {
+        const origin = request.headers.origin;
+        if (process.env['NODE_ENV'] === 'production' && origin && !wsAllowedOrigins.has(origin)) {
+          socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
+          socket.destroy();
+          return;
+        }
         wss.handleUpgrade(request, socket, head, (ws) => {
           wss.emit('connection', ws, request);
         });
@@ -1520,32 +1537,39 @@ if (isMainModule(import.meta.url)) {
       }
     });
 
+    const isValidPatientRoomId = (id: unknown): id is string =>
+      typeof id === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(id);
+
     io.on('connection', (socket) => {
-      console.log('[Socket.IO] Clinician connected:', socket.id);
+      console.log('[Socket.IO] Clinician connected:', sanitizeLogInput(socket.id));
 
       // Join a specific patient's collaboration room
-      socket.on('join_patient_room', (patientId: string) => {
+      socket.on('join_patient_room', (patientId: unknown) => {
+        if (!isValidPatientRoomId(patientId)) return;
         socket.join(patientId);
-        console.log(`[Socket.IO] ${socket.id} joined patient room: ${patientId}`);
+        console.log(`[Socket.IO] ${sanitizeLogInput(socket.id)} joined patient room: ${sanitizeLogInput(patientId)}`);
       });
 
       // Real-time IVitals Sync
-      socket.on('sync_vitals', (data: { patientId: string, vitals: Record<string, unknown> }) => {
+      socket.on('sync_vitals', (data: { patientId?: unknown, vitals?: Record<string, unknown> }) => {
+        if (!data || !isValidPatientRoomId(data.patientId) || !data.vitals || typeof data.vitals !== 'object') return;
         socket.to(data.patientId).emit('vitals_updated', data.vitals);
       });
 
       // Colleague Chat & Intelligence Notes
-      socket.on('send_note', (data: { patientId: string, note: Record<string, unknown> }) => {
+      socket.on('send_note', (data: { patientId?: unknown, note?: Record<string, unknown> }) => {
+        if (!data || !isValidPatientRoomId(data.patientId) || !data.note || typeof data.note !== 'object') return;
         socket.to(data.patientId).emit('note_received', data.note);
       });
 
       // Colleague Presence (e.g. "Dr. Smith is viewing this chart")
-      socket.on('presence_update', (data: { patientId: string, clinician: Record<string, unknown> }) => {
+      socket.on('presence_update', (data: { patientId?: unknown, clinician?: Record<string, unknown> }) => {
+        if (!data || !isValidPatientRoomId(data.patientId) || !data.clinician || typeof data.clinician !== 'object') return;
         socket.to(data.patientId).emit('presence_updated', data.clinician);
       });
 
       socket.on('disconnect', () => {
-        console.log('[Socket.IO] Clinician disconnected:', socket.id);
+        console.log('[Socket.IO] Clinician disconnected:', sanitizeLogInput(socket.id));
       });
     });
   }

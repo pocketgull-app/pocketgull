@@ -14,7 +14,6 @@
     var msg = Array.prototype.slice.call(arguments).join(' ');
     if (isAllowedGoogleApisHost(msg) || msg.indexOf('u[v]') !== -1) return;
     if (msg.indexOf('@firebase/data-connect') !== -1 && msg.indexOf('NOT_FOUND') !== -1) return;
-    if (msg.indexOf('Content Security Policy') !== -1 && msg.indexOf('frame-src') !== -1) return;
     origError.apply(console, arguments);
   };
   window.addEventListener('error', function (e) {
