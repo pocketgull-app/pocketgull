@@ -93,8 +93,8 @@ class _EmergencySupplyFinderWidgetState extends State<EmergencySupplyFinderWidge
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Text('🚑', style: TextStyle(fontSize: 18)),
                   SizedBox(width: 8),
                   Text(

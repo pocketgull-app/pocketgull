@@ -225,7 +225,7 @@ class _PocketGullInputWidgetState extends State<PocketGullInputWidget> with Sing
         ? (isDark ? const Color(0xFF71717A) : const Color(0xFF9CA3AF))
         : (isDark ? const Color(0xFFFAFAFA) : const Color(0xFF111827));
 
-    Widget inputField = TextField(
+    final Widget inputField = TextField(
       controller: _controller,
       focusNode: _focusNode,
       obscureText: widget.isPassword,

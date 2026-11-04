@@ -70,117 +70,117 @@ enum RuleContext { dyslexiaMode, pediatricMode, casualMode }
 // ---------------------------------------------------------------------------
 
 final List<Rule> _rules = [
-  Rule(
+  const Rule(
     id: 'privacy_guard',
     description: 'Prevent the agent from disclosing user-provided personal data.',
     priority: 200,
-    regexCondition: const RegexCondition(r'(my\s+phone|my\s+address|my\s+email|social\s+security)'),
-    action: const RuleAction(
+    regexCondition: RegexCondition(r'(my\s+phone|my\s+address|my\s+email|social\s+security)'),
+    action: RuleAction(
       reply: "I'm sorry, but I can't share personal information. If you need help with something else, just let me know!",
     ),
   ),
-  Rule(
+  const Rule(
     id: 'phi_privacy_guard',
     description: 'Enforce Privacy by Design — prevent explicit PHI processing.',
     priority: 195,
-    regexCondition: const RegexCondition(r'(patient\s+name\s+is|ssn|social\s+security\s+number|date\s+of\s+birth\s+is)'),
-    action: const RuleAction(
+    regexCondition: RegexCondition(r'(patient\s+name\s+is|ssn|social\s+security\s+number|date\s+of\s+birth\s+is)'),
+    action: RuleAction(
       reply: 'Please ensure all data is anonymized. I cannot process explicit Protected Health Information (PHI) such as patient names or SSNs.',
     ),
   ),
-  Rule(
+  const Rule(
     id: 'human_in_the_loop_guard',
     description: 'Remind the user that the AI is a co-pilot, not an autonomous medical decision maker.',
     priority: 190,
-    regexCondition: const RegexCondition(r'(decide\s+for\s+me|prescribe\s+this|make\s+the\s+final\s+call|what\s+should\s+i\s+do)'),
-    action: const RuleAction(
+    regexCondition: RegexCondition(r'(decide\s+for\s+me|prescribe\s+this|make\s+the\s+final\s+call|what\s+should\s+i\s+do)'),
+    action: RuleAction(
       reply: 'As an AI co-pilot, I can synthesize clinical data, but I cannot make autonomous medical decisions. Please rely on your professional clinical judgment to make the final call.',
     ),
   ),
-  Rule(
+  const Rule(
     id: 'clinical_limitation_disclaimer',
     description: 'Append a clinical disclaimer to diagnostic syntheses and care plans.',
     priority: 150,
-    regexCondition: const RegexCondition(r'(care\s+plan|diagnosis|synthesis)'),
-    action: const RuleAction(
+    regexCondition: RegexCondition(r'(care\s+plan|diagnosis|synthesis)'),
+    action: RuleAction(
       modifyResponse: ModifyResponse(
         append: '\n\n*Disclaimer: Pocket Gull is a productivity tool, not a medical device. This synthesis is for review and should not replace professional clinical judgment.*',
       ),
     ),
   ),
-  Rule(
+  const Rule(
     id: 'kaizen_feedback_routing',
     description: 'Guide the practitioner to use Interactive Task Bracketing.',
     priority: 120,
-    regexCondition: const RegexCondition(r"(this\s+is\s+wrong|makes\s+no\s+sense|bad\s+output|incorrect)"),
-    action: const RuleAction(
+    regexCondition: RegexCondition(r"(this\s+is\s+wrong|makes\s+no\s+sense|bad\s+output|incorrect)"),
+    action: RuleAction(
       reply: "I apologize if the synthesis is inaccurate. To maintain the Kaizen feedback loop, please double-click the incorrect report node to mark it as 'Removed' via Interactive Task Bracketing.",
     ),
   ),
-  Rule(
+  const Rule(
     id: 'casual_tone',
     description: 'Add a friendly sign-off when the user has opted-in to casual mode.',
     priority: 100,
-    compoundCondition: const CompoundCondition(and: [
+    compoundCondition: CompoundCondition(and: [
       CompoundClause(intent: 'general_chat'),
       CompoundClause(context: 'casual_mode'),
     ]),
-    action: const RuleAction(
+    action: RuleAction(
       modifyResponse: ModifyResponse(append: "\n\n🙂 Hope that helps! Anything else you'd like to chat about?"),
     ),
   ),
-  Rule(
+  const Rule(
     id: 'pediatric_mode',
     description: 'Use simple, child-friendly language when pediatric mode is engaged.',
     priority: 100,
-    compoundCondition: const CompoundCondition(and: [
+    compoundCondition: CompoundCondition(and: [
       CompoundClause(intent: 'general_chat'),
       CompoundClause(context: 'pediatric_mode'),
     ]),
-    action: const RuleAction(
+    action: RuleAction(
       modifyResponse: ModifyResponse(prepend: '[Pediatric Mode Active. Synthesizing in simple, child-friendly terms:]\n\n'),
     ),
   ),
-  Rule(
+  const Rule(
     id: 'dyslexia_mode',
     description: 'Format output for high readability when dyslexia mode is engaged.',
     priority: 100,
-    compoundCondition: const CompoundCondition(and: [
+    compoundCondition: CompoundCondition(and: [
       CompoundClause(intent: 'general_chat'),
       CompoundClause(context: 'dyslexia_mode'),
     ]),
-    action: const RuleAction(
+    action: RuleAction(
       modifyResponse: ModifyResponse(prepend: '[Dyslexia Mode Active. Using short sentences and clear bullet points:]\n\n'),
     ),
   ),
-  Rule(
+  const Rule(
     id: 'audit_trail_reminder',
     description: 'Remind the practitioner to export FHIR bundle before ending session.',
     priority: 90,
-    regexCondition: const RegexCondition(r'(patient\s+is\s+leaving|visit\s+complete|discharge|wrap\s+up)'),
-    action: const RuleAction(
+    regexCondition: RegexCondition(r'(patient\s+is\s+leaving|visit\s+complete|discharge|wrap\s+up)'),
+    action: RuleAction(
       modifyResponse: ModifyResponse(
         append: '\n\n*Reminder: Before closing the session, please export the patient data as a FHIR Bundle to secure the clinical audit trail.*',
       ),
     ),
   ),
-  Rule(
+  const Rule(
     id: 'mindfulness_prompt',
     description: 'Remind the practitioner to use Box Breathing when stress is detected.',
     priority: 80,
-    regexCondition: const RegexCondition(r"(long\s+day|stressed|overwhelmed|tired|need\s+a\s+break)"),
-    action: const RuleAction(
+    regexCondition: RegexCondition(r"(long\s+day|stressed|overwhelmed|tired|need\s+a\s+break)"),
+    action: RuleAction(
       modifyResponse: ModifyResponse(
         append: "\n\n*Note: If you're feeling overwhelmed, tap the Box Breathing visualizer in the intake panel to take a structured 16-second mindful pause.*",
       ),
     ),
   ),
-  Rule(
+  const Rule(
     id: 'empty_response_fallback',
     description: 'Provide a default reply if the LLM returns nothing.',
     priority: 0,
-    regexCondition: const RegexCondition(r'^\s*$'),
-    action: const RuleAction(
+    regexCondition: RegexCondition(r'^\s*$'),
+    action: RuleAction(
       reply: "I'm not sure how to answer that. Could you re-phrase your question?",
     ),
   ),

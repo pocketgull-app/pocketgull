@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 /// Riverpod State Management for Patient Research Consent & Data Dividends.
 library;
 
@@ -55,50 +56,47 @@ class ResearchConsentState {
   }
 }
 
-class ResearchConsentNotifier extends StateNotifier<ResearchConsentState> {
-  ResearchConsentNotifier() : super(const ResearchConsentState()) {
-    _loadInitialCohorts();
-  }
+const List<ResearchCohort> _initialCohorts = [
+  ResearchCohort(
+    id: 'cohort_diabetes_cgm',
+    title: 'Type 2 Diabetes & Glucose Dynamics',
+    category: 'Metabolic',
+    description: 'Longitudinal continuous glucose monitoring (CGM) & HbA1c trajectory.',
+    compensationPerQueryUsd: 25.00,
+    participantCount: 1420,
+    kAnonymityScore: 12,
+    ethicalPrecedent: 'nih_all_of_us',
+    isEnrolled: true,
+  ),
+  ResearchCohort(
+    id: 'cohort_oncology_biomarkers',
+    title: 'Oncology Epigenetic Biomarkers',
+    category: 'Genomics',
+    description: 'De-identified genomic variant crosswalks & longevity trajectories.',
+    compensationPerQueryUsd: 50.00,
+    participantCount: 680,
+    kAnonymityScore: 8,
+    ethicalPrecedent: 'ciitizen_rare_disease',
+    isEnrolled: true,
+  ),
+  ResearchCohort(
+    id: 'cohort_long_covid_autonomic',
+    title: 'Long-COVID & Autonomic HRV',
+    category: 'Autonomic',
+    description: 'Post-viral dysautonomia & orthostatic heart rate variability telemetry.',
+    compensationPerQueryUsd: 30.00,
+    participantCount: 950,
+    kAnonymityScore: 15,
+    ethicalPrecedent: 'luna_dna_public_benefit',
+    isEnrolled: false,
+  ),
+];
 
-  void _loadInitialCohorts() {
-    final initialCohorts = [
-      const ResearchCohort(
-        id: 'cohort_diabetes_cgm',
-        title: 'Type 2 Diabetes & Glucose Dynamics',
-        category: 'Metabolic',
-        description: 'Longitudinal continuous glucose monitoring (CGM) & HbA1c trajectory.',
-        compensationPerQueryUsd: 25.00,
-        participantCount: 1420,
-        kAnonymityScore: 12,
-        ethicalPrecedent: 'nih_all_of_us',
-        isEnrolled: true,
-      ),
-      const ResearchCohort(
-        id: 'cohort_oncology_biomarkers',
-        title: 'Oncology Epigenetic Biomarkers',
-        category: 'Genomics',
-        description: 'De-identified genomic variant crosswalks & longevity trajectories.',
-        compensationPerQueryUsd: 50.00,
-        participantCount: 680,
-        kAnonymityScore: 8,
-        ethicalPrecedent: 'ciitizen_rare_disease',
-        isEnrolled: true,
-      ),
-      const ResearchCohort(
-        id: 'cohort_long_covid_autonomic',
-        title: 'Long-COVID & Autonomic HRV',
-        category: 'Autonomic',
-        description: 'Post-viral dysautonomia & orthostatic heart rate variability telemetry.',
-        compensationPerQueryUsd: 30.00,
-        participantCount: 950,
-        kAnonymityScore: 15,
-        ethicalPrecedent: 'luna_dna_public_benefit',
-        isEnrolled: false,
-      ),
-    ];
-
-    state = state.copyWith(
-      cohorts: initialCohorts,
+class ResearchConsentNotifier extends Notifier<ResearchConsentState> {
+  @override
+  ResearchConsentState build() {
+    return ResearchConsentState(
+      cohorts: _initialCohorts,
       streamedPackets: defaultSentinelPackets(),
       socialVectors: SocialGravitationService.defaultSocialVectors,
       syncedVectorsCount: SocialGravitationService.defaultSocialVectors.length,
@@ -152,6 +150,6 @@ class ResearchConsentNotifier extends StateNotifier<ResearchConsentState> {
 }
 
 final researchConsentProvider =
-    StateNotifierProvider<ResearchConsentNotifier, ResearchConsentState>((ref) {
-  return ResearchConsentNotifier();
-});
+    NotifierProvider<ResearchConsentNotifier, ResearchConsentState>(
+  ResearchConsentNotifier.new,
+);

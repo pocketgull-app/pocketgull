@@ -12,7 +12,6 @@ const SCREENSHOT_DIR = path.join(__dirname, '..', 'test-results', 'screenshots')
 
 /** Helper to enter demo mode and select Homo Sapiens default patient */
 async function enterDemoModeWithDefaultPatient(page: import('@playwright/test').Page) {
-  await enterDemoMode(page);
   await selectPatientByName(page, 'Homo Sapiens');
   await page.waitForTimeout(1000);
 }
@@ -35,10 +34,6 @@ test.describe('Homo Sapiens — Default Patient & Full Lens Verification', () =>
     // The analysis report component should be present (loaded for Homo Sapiens)
     await expect(page.locator('app-analysis-container, app-analysis-report').first()).toBeVisible({ timeout: 20000 });
 
-    // await page.screenshot({
-    //   path: path.join(SCREENSHOT_DIR, 'homo_sapiens_default_patient.png'),
-    //   fullPage: false,
-    // });
     console.log('[PASS] Homo Sapiens loaded as default patient.');
   });
 
@@ -65,6 +60,13 @@ test.describe('Homo Sapiens — Default Patient & Full Lens Verification', () =>
     if (await generateBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await generateBtn.click();
       await page.waitForTimeout(4000);
+    }
+
+    // Switch from SMoE Top-2 Sparse mode to full 8-lens [DENSE] mode so all 8 tabs are visible in the bar
+    const denseBtn = page.locator('button[title="Switch to full 8-lens dense view"], button:has-text("[DENSE]")').first();
+    if (await denseBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await denseBtn.click();
+      await page.waitForTimeout(500);
     }
 
     // Verify all active lenses are present
@@ -108,7 +110,7 @@ test.describe('Homo Sapiens — Default Patient & Full Lens Verification', () =>
     await page.waitForTimeout(500);
     console.log('[PASS] Monitoring & Follow-up tab populated.');
 
-    // Take a full-page screenshot at the end
+    // Return to overview tab
     await overviewTab.click({ force: true });
     await page.waitForTimeout(500);
     console.log('[PASS] All lenses verified for Homo Sapiens.');
@@ -136,14 +138,11 @@ test.describe('Homo Sapiens — Default Patient & Full Lens Verification', () =>
     await expect(generateBtn).toBeVisible({ timeout: 15000 });
     await generateBtn.click();
     await page.waitForTimeout(6000);
-    
+
     const orthoTab = page.getByTestId('tab-functional-protocols');
     await orthoTab.click();
     await page.waitForTimeout(1000);
     await expect(page.locator('text=/Magnesium/i').first()).toBeVisible({ timeout: 10000 });
-    // await page.screenshot({
-    //   path: path.join(SCREENSHOT_DIR, 'homo_sapiens_ortho_western.png'),
-    // });
     console.log('[PASS] Western Orthomolecular Profiling verified.');
 
     // Eastern paradigm
@@ -152,9 +151,6 @@ test.describe('Homo Sapiens — Default Patient & Full Lens Verification', () =>
     await orthoTab.click();
     await page.waitForTimeout(1000);
     await expect(page.locator('text=/Magnesium|Biomarker|Nutrient/i').first()).toBeVisible({ timeout: 10000 });
-    // await page.screenshot({
-    //   path: path.join(SCREENSHOT_DIR, 'homo_sapiens_ortho_eastern.png'),
-    // });
     console.log('[PASS] Eastern Orthomolecular Profiling verified.');
 
     // Ayurvedic paradigm
@@ -163,9 +159,6 @@ test.describe('Homo Sapiens — Default Patient & Full Lens Verification', () =>
     await orthoTab.click();
     await page.waitForTimeout(1000);
     await expect(page.locator('text=/Magnesium|Biomarker|Nutrient|dryness/i').first()).toBeVisible({ timeout: 10000 });
-    // await page.screenshot({
-    //   path: path.join(SCREENSHOT_DIR, 'homo_sapiens_ortho_ayurvedic.png'),
-    // });
     console.log('[PASS] Ayurvedic Orthomolecular Profiling verified.');
 
     console.log('[COMPLETE] All 3 paradigms verified for Homo Sapiens Orthomolecular Profiling.');

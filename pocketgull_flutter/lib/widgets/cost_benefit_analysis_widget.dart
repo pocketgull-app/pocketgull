@@ -182,7 +182,7 @@ class _CostBenefitAnalysisWidgetState extends ConsumerState<CostBenefitAnalysisW
         const SizedBox(height: 2),
         Text(
           _activeMode == 'treatment' ? 'Multi-Lens Paradigm Comparison' : 'Long-Term Proactive Health Strategy',
-          style: TextStyle(fontSize: 11, letterSpacing: 1.2, color: Colors.grey),
+          style: const TextStyle(fontSize: 11, letterSpacing: 1.2, color: Colors.grey),
         ),
         const SizedBox(height: 12),
         Row(
@@ -205,7 +205,7 @@ class _CostBenefitAnalysisWidgetState extends ConsumerState<CostBenefitAnalysisW
         decoration: BoxDecoration(
           color: isActive ? (isDark ? Colors.white12 : Colors.white) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: isActive ? [BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
+          boxShadow: isActive ? [const BoxShadow(color: Colors.black12, blurRadius: 4)] : null,
         ),
         child: Text(label, style: TextStyle(
           fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.0,
@@ -234,7 +234,7 @@ class _CostBenefitAnalysisWidgetState extends ConsumerState<CostBenefitAnalysisW
         decoration: BoxDecoration(
           color: active ? (isDark ? activeColor.withValues(alpha: 0.15) : Colors.white) : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
-          boxShadow: active ? [BoxShadow(color: Colors.black12, blurRadius: 2)] : null,
+          boxShadow: active ? [const BoxShadow(color: Colors.black12, blurRadius: 2)] : null,
         ),
         child: Text(label, style: TextStyle(
           fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.8,
@@ -290,7 +290,7 @@ class _CostBenefitAnalysisWidgetState extends ConsumerState<CostBenefitAnalysisW
           Text(opt.name, style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w700,
               color: isDark ? Colors.white : Colors.grey.shade900)),
-          Text(opt.holisticLabel, style: TextStyle(
+          Text(opt.holisticLabel, style: const TextStyle(
               fontSize: 10, letterSpacing: 1.2, color: Colors.grey)),
           const SizedBox(height: 12),
           // Cost meter
@@ -307,7 +307,7 @@ class _CostBenefitAnalysisWidgetState extends ConsumerState<CostBenefitAnalysisW
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Clinical Response', style: TextStyle(fontSize: 10, color: Colors.grey, letterSpacing: 1.0)),
+              const Text('Clinical Response', style: TextStyle(fontSize: 10, color: Colors.grey, letterSpacing: 1.0)),
               Text(opt.efficacy, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
                   color: isDark ? Colors.white : Colors.grey.shade800)),
             ],
@@ -322,7 +322,7 @@ class _CostBenefitAnalysisWidgetState extends ConsumerState<CostBenefitAnalysisW
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
+          Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700,
               letterSpacing: 0.8, color: Colors.grey)),
           Text(valueLabel, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600,
               color: isDark ? Colors.white70 : Colors.grey.shade800)),

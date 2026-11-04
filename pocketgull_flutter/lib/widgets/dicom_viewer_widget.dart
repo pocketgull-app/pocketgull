@@ -438,7 +438,7 @@ class DicomSlicePainter extends CustomPainter {
     Color boneMarrowColor = const Color(0xFF64748B);
     Color discColor = const Color(0xFF94A3B8);
     Color csfColor = const Color(0xFFF8FAFC); // High T2 signal
-    Color thecalBorderColor = const Color(0xFF475569);
+    final Color thecalBorderColor = const Color(0xFF475569);
 
     if (windowPreset == 'BONE') {
       boneCortexColor = Colors.white;

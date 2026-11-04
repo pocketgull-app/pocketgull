@@ -203,7 +203,7 @@ class _PocketGullButtonWidgetState extends State<PocketGullButtonWidget> {
         break;
     }
 
-    Widget content = Row(
+    final Widget content = Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,

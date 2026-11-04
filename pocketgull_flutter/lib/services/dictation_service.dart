@@ -55,7 +55,7 @@ class DictationService {
 
     // 1. "New Note" command
     if (lower == 'new note' || (lower.startsWith('new note ') && !lower.startsWith('new note for '))) {
-      String remaining = text.substring(lower.startsWith('new note ') ? 9 : 8).trim();
+      final String remaining = text.substring(lower.startsWith('new note ') ? 9 : 8).trim();
       return VoiceCommand(action: CommandAction.newNote, remaining: remaining);
     }
 

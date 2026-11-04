@@ -62,8 +62,12 @@ class ThemeNotifier extends Notifier<ThemeState> {
 
   Future<void> _loadSavedTheme() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!ref.mounted) return;
     final saved = prefs.getString(_themeKey);
     final reduceMotion = prefs.getBool(_motionKey) ?? false;
+
+    // If theme was already explicitly changed before prefs finished loading, do not overwrite it
+    if (saved == null && state.currentTheme != AppTheme.light) return;
 
     AppTheme theme = AppTheme.light;
     if (saved != null && saved != 'spark') {
@@ -109,9 +113,12 @@ class ThemeNotifier extends Notifier<ThemeState> {
       };
 
   Future<void> _persist() async {
+    final currentThemeName = state.currentTheme.name;
+    final currentReduceMotion = state.reduceMotion;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeKey, state.currentTheme.name);
-    await prefs.setBool(_motionKey, state.reduceMotion);
+    if (!ref.mounted) return;
+    await prefs.setString(_themeKey, currentThemeName);
+    await prefs.setBool(_motionKey, currentReduceMotion);
   }
 }
 

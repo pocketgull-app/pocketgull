@@ -230,7 +230,7 @@ class _IntakeFormWidgetState extends ConsumerState<IntakeFormWidget> {
                   const SizedBox(height: 4),
                   Text(
                     note.deltaSummary!,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 13,
                       color: Colors.black87,
                       height: 1.3,

@@ -31,8 +31,8 @@ class _MedicalSummaryWidgetState extends ConsumerState<MedicalSummaryWidget> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Row(
-            children: const [
+          title: const Row(
+            children: [
               Icon(Icons.code_rounded, color: Color(0xFF416B1F)),
               SizedBox(width: 8),
               Text('FHIR R4 BUNDLE EXPORT', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.2)),

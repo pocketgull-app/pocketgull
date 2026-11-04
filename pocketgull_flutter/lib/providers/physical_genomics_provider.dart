@@ -47,21 +47,30 @@ class PhysicalGenomicsUiState extends Equatable {
   ];
 }
 
-class PhysicalGenomicsNotifier extends StateNotifier<PhysicalGenomicsUiState> {
-  final PhysicalGenomicsMobileService _service;
+class PhysicalGenomicsNotifier extends Notifier<PhysicalGenomicsUiState> {
+  late PhysicalGenomicsMobileService _service;
+  bool _disposed = false;
 
-  PhysicalGenomicsNotifier(this._service) : super(const PhysicalGenomicsUiState()) {
-    evaluatePrediction();
+  @override
+  PhysicalGenomicsUiState build() {
+    _service = ref.watch(physicalGenomicsServiceProvider);
+    _disposed = false;
+    ref.onDispose(() {
+      _disposed = true;
+    });
+    Future.microtask(evaluatePrediction);
+    return const PhysicalGenomicsUiState();
   }
 
   Future<void> evaluatePrediction() async {
+    if (_disposed) return;
     state = state.copyWith(prediction: const AsyncValue.loading());
     try {
       final result = await _service.evaluatePhysicalGenomics(state.request);
-      if (!mounted) return;
+      if (_disposed) return;
       state = state.copyWith(prediction: AsyncValue.data(result));
     } catch (e, st) {
-      if (!mounted) return;
+      if (_disposed) return;
       state = state.copyWith(prediction: AsyncValue.error(e, st));
     }
   }
@@ -119,7 +128,6 @@ final physicalGenomicsServiceProvider = Provider<PhysicalGenomicsMobileService>(
 });
 
 final physicalGenomicsProvider =
-    StateNotifierProvider<PhysicalGenomicsNotifier, PhysicalGenomicsUiState>((ref) {
-  final service = ref.watch(physicalGenomicsServiceProvider);
-  return PhysicalGenomicsNotifier(service);
-});
+    NotifierProvider<PhysicalGenomicsNotifier, PhysicalGenomicsUiState>(
+  PhysicalGenomicsNotifier.new,
+);

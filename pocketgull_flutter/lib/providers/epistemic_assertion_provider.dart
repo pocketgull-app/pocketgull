@@ -42,10 +42,14 @@ class EpistemicAssertionState {
   }
 }
 
-/// StateNotifier controlling interactive bedside falsification and Part 11 digital seals.
-class EpistemicAssertionNotifier extends StateNotifier<EpistemicAssertionState> {
-  EpistemicAssertionNotifier()
-      : super(EpistemicAssertionState(assertion: GroundedClinicalAssertion.defaultForPatient1()));
+/// Notifier controlling interactive bedside falsification and Part 11 digital seals.
+class EpistemicAssertionNotifier extends Notifier<EpistemicAssertionState> {
+  @override
+  EpistemicAssertionState build() {
+    return EpistemicAssertionState(
+      assertion: GroundedClinicalAssertion.defaultForPatient1(),
+    );
+  }
 
   /// Toggles completion status of a specific disconfirming bedside physical exam.
   void toggleExam(String exam) {
@@ -85,6 +89,6 @@ class EpistemicAssertionNotifier extends StateNotifier<EpistemicAssertionState> 
 
 /// Global provider for EpistemicAssertionNotifier.
 final epistemicAssertionProvider =
-    StateNotifierProvider<EpistemicAssertionNotifier, EpistemicAssertionState>((ref) {
-  return EpistemicAssertionNotifier();
-});
+    NotifierProvider<EpistemicAssertionNotifier, EpistemicAssertionState>(
+  EpistemicAssertionNotifier.new,
+);

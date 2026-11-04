@@ -77,11 +77,11 @@ class _TaskFlowWidgetState extends ConsumerState<TaskFlowWidget> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    const Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'ACTIVE TASK',
                             style: TextStyle(
                               fontSize: 10,
@@ -90,8 +90,8 @@ class _TaskFlowWidgetState extends ConsumerState<TaskFlowWidget> {
                               letterSpacing: 2.0,
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          const Text(
+                          SizedBox(height: 4),
+                          Text(
                             'Clinical Tasks & Notes',
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -154,8 +154,8 @@ class _TaskFlowWidgetState extends ConsumerState<TaskFlowWidget> {
                 color: const Color(0xFFF9FAFB),
                 padding: const EdgeInsets.all(24),
                 child: notes.isEmpty && tasks.isEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 48),
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 48),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [

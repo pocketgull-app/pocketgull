@@ -47,7 +47,7 @@ class ExportService {
                       ),
                       pw.Text(
                         mode == ExportMode.child ? 'Summary for Parents' : 'Clinical Intelligence Platform', 
-                        style: pw.TextStyle(fontSize: 10, color: PdfColors.grey)
+                        style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey)
                       ),
                     ],
                   ),

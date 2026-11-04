@@ -54,7 +54,7 @@ class HardwareTelemetry {
   });
 
   factory HardwareTelemetry.fromJson(Map<String, dynamic> json) {
-    var gpusList = (json['gpus'] as List<dynamic>?)
+    final gpusList = (json['gpus'] as List<dynamic>?)
             ?.map((e) => GpuTelemetry.fromJson(e as Map<String, dynamic>))
             .toList() ??
         [];

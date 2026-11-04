@@ -233,7 +233,7 @@ Strategy synthesized for $patientName based on active clinical parameters.''';
       _chatSession = null;
       return;
     }
-    String context = 'You are a collaborative care plan co-pilot named "Cerebella". You are assisting a doctor in refining a strategy for their patient.\n\n'
+    final String context = 'You are a collaborative care plan co-pilot named "Cerebella". You are assisting a doctor in refining a strategy for their patient.\n\n'
         'PATIENT DATA CONTEXT:\n$patientData\n';
         
     _chatSession = _model.startChat(history: [

@@ -251,7 +251,7 @@ class _DocConsciousnessState extends ConsumerState<DocConsciousnessWidget> {
         width: double.infinity,
         child: OutlinedButton(
           onPressed: () => ref.read(docProtocolProvider.notifier).generate(
-            DocProfile(gcsScore: 8, docLevel: DocLevel.vsUws, daysPostOnset: 14),
+            const DocProfile(gcsScore: 8, docLevel: DocLevel.vsUws, daysPostOnset: 14),
           ),
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 12),

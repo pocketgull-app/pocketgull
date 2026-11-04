@@ -70,25 +70,25 @@ class PatientManagementService {
 
   List<Patient> _getDefaultPatients() {
     return [
-      Patient(
+      const Patient(
         id: 'p_charles_darwin',
         name: 'Charles Darwin',
         age: 73,
         gender: 'Male',
         lastVisit: '2024.11.20',
-        preexistingConditions: const ['Chagas Disease (Suspected)', 'Episodic Palpitations'],
+        preexistingConditions: ['Chagas Disease (Suspected)', 'Episodic Palpitations'],
         patientGoals: 'Resolve debilitating chronic fatigue, severe episodic vomiting, flatulence, and chest palpitations.',
-        vitals: const PatientVitals(bp: '120/80', hr: '72', temp: '98.6F', weight: '154 lbs', spO2: '98', height: '5\'11"'),
-        issues: const {},
-        history: const [],
-        bookmarks: const [],
-        scans: const [],
+        vitals: PatientVitals(bp: '120/80', hr: '72', temp: '98.6F', weight: '154 lbs', spO2: '98', height: '5\'11"'),
+        issues: {},
+        history: [],
+        bookmarks: [],
+        scans: [],
         triageScore: 2,
         kaizenColor: 'green',
         activeTimerSeconds: null,
-        recommendedGuidelines: const [],
+        recommendedGuidelines: [],
       ),
-      Patient(
+      const Patient(
         id: 'p_frida_kahlo',
         name: 'Frida Kahlo',
         age: 47,
@@ -96,17 +96,17 @@ class PatientManagementService {
         lastVisit: '2024.11.20',
         preexistingConditions: ['Spinal Trauma (Post-Bus Incident)', 'Polio Sequelae', 'Right Leg Amputation'],
         patientGoals: 'Manage chronic, intractable neuropathic pain, support spinal stability, and address severe right leg/foot phantom pain.',
-        vitals: const PatientVitals(bp: '118/76', hr: '78', temp: '98.2F', weight: '110 lbs', spO2: '97', height: '5\'3"'),
-        issues: const {},
-        history: const [],
-        bookmarks: const [],
-        scans: const [],
+        vitals: PatientVitals(bp: '118/76', hr: '78', temp: '98.2F', weight: '110 lbs', spO2: '97', height: '5\'3"'),
+        issues: {},
+        history: [],
+        bookmarks: [],
+        scans: [],
         triageScore: 4,
         kaizenColor: 'blue',
         activeTimerSeconds: null,
-        recommendedGuidelines: const [],
+        recommendedGuidelines: [],
       ),
-      Patient(
+      const Patient(
         id: 'p_phil_gear',
         name: 'Phil Gear',
         age: 38,
@@ -114,11 +114,11 @@ class PatientManagementService {
         lastVisit: '2024.11.20',
         preexistingConditions: ['None'],
         patientGoals: 'Optimize metabolic health, synchronize all personal biometrics from Google Health Connect, and reduce sleep latency.',
-        vitals: const PatientVitals(bp: '120/80', hr: '72', temp: '98.6F', weight: '175 lbs', spO2: '98', height: '6\'0"'),
-        issues: const {},
-        history: const [],
-        bookmarks: const [],
-        scans: const [
+        vitals: PatientVitals(bp: '120/80', hr: '72', temp: '98.6F', weight: '175 lbs', spO2: '98', height: '6\'0"'),
+        issues: {},
+        history: [],
+        bookmarks: [],
+        scans: [
           DiagnosticScan(
             id: 'scan_lumbar_mri_01',
             type: 'MRI',
@@ -132,54 +132,54 @@ class PatientManagementService {
         triageScore: 0,
         kaizenColor: 'green',
         activeTimerSeconds: null,
-        recommendedGuidelines: const [],
+        recommendedGuidelines: [],
       ),
-      Patient(
+      const Patient(
         id: 'p002',
         name: 'Sarah Jenkins',
         age: 42,
         gender: 'Female',
         lastVisit: '2024.11.20',
-        preexistingConditions: const ['Asthma', 'Heart Failure'],
+        preexistingConditions: ['Asthma', 'Heart Failure'],
         patientGoals: 'Manage recent shortness of breath.',
-        vitals: const PatientVitals(bp: '95/60', hr: '145', temp: '101.2F', weight: '165 lbs', spO2: '89', height: '5\'4"'),
-        issues: const {
+        vitals: PatientVitals(bp: '95/60', hr: '145', temp: '101.2F', weight: '165 lbs', spO2: '89', height: '5\'4"'),
+        issues: {
           'chest': [
             BodyPartIssue(id: 'chest', noteId: 'n1', name: 'Severe Angina', description: 'Crushing chest pain', painLevel: 9, recommendation: 'Immediate ECG', date: '2024.11.20', symptoms: []),
           ]
         },
-        history: const [],
-        bookmarks: const [],
-        scans: const [],
+        history: [],
+        bookmarks: [],
+        scans: [],
         triageScore: 12,
         kaizenColor: 'red',
         activeTimerSeconds: 3600,
-        recommendedGuidelines: const [
+        recommendedGuidelines: [
           {'id': '18893435', 'title': 'The heart in bronchial asthma.'},
           {'id': '20241492', 'title': 'Cardiac complications and deaths in asthmatic patients.'}
         ],
       ),
-      Patient(
+      const Patient(
         id: 'p003',
         name: 'John Doe (Sentinel Threat)',
         age: 34,
         gender: 'Male',
         lastVisit: '2024.11.20',
-        preexistingConditions: const ['None'],
+        preexistingConditions: ['None'],
         patientGoals: 'Survive severe respiratory distress and shock.',
-        vitals: const PatientVitals(bp: '85/50', hr: '130', temp: '103.1F', weight: '180 lbs', spO2: '82', height: '6\'0"'),
-        issues: const {
+        vitals: PatientVitals(bp: '85/50', hr: '130', temp: '103.1F', weight: '180 lbs', spO2: '82', height: '6\'0"'),
+        issues: {
           'chest': [
             BodyPartIssue(id: 'chest', noteId: 'n1', name: 'Pulmonary Edema', description: 'Severe fluid buildup', painLevel: 9, symptoms: []),
           ],
         },
-        history: const [],
-        bookmarks: const [],
-        scans: const [],
+        history: [],
+        bookmarks: [],
+        scans: [],
         triageScore: 15,
         kaizenColor: 'red',
         activeTimerSeconds: 1800,
-        recommendedGuidelines: const [
+        recommendedGuidelines: [
           {'id': '98765432', 'title': 'Hantavirus Pulmonary Syndrome: Clinical Management'},
           {'id': '11223344', 'title': 'Extracorporeal Membrane Oxygenation in Severe HPS'}
         ],

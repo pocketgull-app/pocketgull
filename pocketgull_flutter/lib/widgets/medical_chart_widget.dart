@@ -101,10 +101,10 @@ class _MedicalChartWidgetState extends ConsumerState<MedicalChartWidget> {
                       bionicNotifier.loadText(summaryText);
                       showDialog(
                         context: context,
-                        builder: (context) => Dialog(
+                        builder: (context) => const Dialog(
                           backgroundColor: Colors.transparent,
-                          insetPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
-                          child: const SingleChildScrollView(child: OrpFovealReticleWidget()),
+                          insetPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 24),
+                          child: SingleChildScrollView(child: OrpFovealReticleWidget()),
                         ),
                       );
                     },
@@ -167,7 +167,7 @@ class _MedicalChartWidgetState extends ConsumerState<MedicalChartWidget> {
           key: 'history',
           title: 'RETROSPECTIVE HISTORY',
           icon: Icons.history,
-          child: PatientHistoryTimelineWidget(history: const []), // Use state history
+          child: const PatientHistoryTimelineWidget(history: []), // Use state history
         ),
       ],
     );

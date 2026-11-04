@@ -32,7 +32,7 @@ class VerificationResult {
   VerificationResult({required this.status, required this.issues});
 
   factory VerificationResult.fromJson(Map<String, dynamic> json) {
-    var issuesList = json['issues'] as List? ?? [];
+    final issuesList = json['issues'] as List? ?? [];
     return VerificationResult(
       status: json['status'] ?? 'warning',
       issues: issuesList.map((i) => VerificationIssue.fromJson(i)).toList(),

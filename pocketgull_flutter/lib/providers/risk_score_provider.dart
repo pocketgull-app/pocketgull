@@ -4,16 +4,24 @@ import '../models/patient_types.dart';
 import '../services/clinical_risk_calculator.dart';
 import '../services/python_bridge_service.dart';
 
-class RiskScoreNotifier extends StateNotifier<RiskScoreResult> {
-  RiskScoreNotifier(PatientState initialPatientState)
-      : super(_calculateLocal(initialPatientState)) {
-    _fetchMlScore(initialPatientState);
+class RiskScoreNotifier extends Notifier<RiskScoreResult> {
+  bool _disposed = false;
+
+  @override
+  RiskScoreResult build() {
+    _disposed = false;
+    ref.onDispose(() {
+      _disposed = true;
+    });
+    final patientState = ref.watch(patientProvider);
+    Future.microtask(() => _fetchMlScore(patientState));
+    return _calculateLocal(patientState);
   }
 
   void updateFromPatient(PatientState patientState) {
     // 1. Instantly update with local calculation
     state = _calculateLocal(patientState);
-    
+
     // 2. Fetch ML score from Python backend in background
     _fetchMlScore(patientState);
   }
@@ -43,6 +51,7 @@ class RiskScoreNotifier extends StateNotifier<RiskScoreResult> {
   }
 
   Future<void> _fetchMlScore(PatientState patientState) async {
+    if (_disposed) return;
     int age = 0;
     final List<String> conditions = [];
 
@@ -74,25 +83,13 @@ class RiskScoreNotifier extends StateNotifier<RiskScoreResult> {
       conditions: conditions,
     );
 
-    if (mlResult != null) {
+    if (!_disposed && mlResult != null) {
       // Only update state if it successfully returned
       state = mlResult;
     }
   }
 }
 
-final riskScoreProvider = StateNotifierProvider<RiskScoreNotifier, RiskScoreResult>((ref) {
-  final patientState = ref.watch(patientProvider);
-  
-  // Create the notifier with the initial state
-  final notifier = RiskScoreNotifier(patientState);
-  
-  // Listen for future changes to patientProvider to trigger updates
-  ref.listen<PatientState>(patientProvider, (previous, next) {
-    if (next != previous) {
-      notifier.updateFromPatient(next);
-    }
-  });
-  
-  return notifier;
-});
+final riskScoreProvider = NotifierProvider<RiskScoreNotifier, RiskScoreResult>(
+  RiskScoreNotifier.new,
+);

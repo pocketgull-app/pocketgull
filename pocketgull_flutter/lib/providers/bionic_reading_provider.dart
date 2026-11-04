@@ -49,12 +49,22 @@ class BionicReadingState {
   }
 }
 
-/// Riverpod StateNotifier controlling Bionic Reading and the ORP RSVP stream.
-class BionicReadingNotifier extends StateNotifier<BionicReadingState> {
-  final BionicReadingService _service;
+/// Riverpod Notifier controlling Bionic Reading and the ORP RSVP stream.
+class BionicReadingNotifier extends Notifier<BionicReadingState> {
+  late BionicReadingService _service;
   Timer? _rsvpTimer;
+  bool _disposed = false;
 
-  BionicReadingNotifier(this._service) : super(const BionicReadingState());
+  @override
+  BionicReadingState build() {
+    _service = ref.watch(bionicReadingServiceProvider);
+    _disposed = false;
+    ref.onDispose(() {
+      _disposed = true;
+      _rsvpTimer?.cancel();
+    });
+    return const BionicReadingState();
+  }
 
   /// Toggles Bionic text fixation mode across the UI.
   void toggleBionicMode() {
@@ -130,7 +140,7 @@ class BionicReadingNotifier extends StateNotifier<BionicReadingState> {
     final intervalMs = (baseIntervalMs * holdMultiplier).round().clamp(20, 3000);
 
     _rsvpTimer = Timer(Duration(milliseconds: intervalMs), () {
-      if (!mounted || !state.isPlayingRsvp) return;
+      if (_disposed || !state.isPlayingRsvp) return;
 
       final nextIdx = state.currentRsvpIndex + 1;
       if (nextIdx >= state.tokens.length) {
@@ -148,12 +158,6 @@ class BionicReadingNotifier extends StateNotifier<BionicReadingState> {
       _scheduleNextTick();
     }
   }
-
-  @override
-  void dispose() {
-    _rsvpTimer?.cancel();
-    super.dispose();
-  }
 }
 
 /// Global provider for BionicReadingService.
@@ -161,8 +165,7 @@ final bionicReadingServiceProvider = Provider<BionicReadingService>((ref) {
   return BionicReadingService();
 });
 
-/// Global StateNotifierProvider for Bionic Reading & RSVP stream.
-final bionicReadingProvider = StateNotifierProvider<BionicReadingNotifier, BionicReadingState>((ref) {
-  final service = ref.watch(bionicReadingServiceProvider);
-  return BionicReadingNotifier(service);
-});
+/// Global NotifierProvider for Bionic Reading & RSVP stream.
+final bionicReadingProvider = NotifierProvider<BionicReadingNotifier, BionicReadingState>(
+  BionicReadingNotifier.new,
+);
