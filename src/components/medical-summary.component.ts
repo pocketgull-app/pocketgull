@@ -182,7 +182,7 @@ import { DocDrillService } from '../services/doc-drill.service';
 
                   @if (isBiometricsExpanded()) {
                     <div class="mt-4 pt-4 border-t border-gray-100 dark:border-zinc-800 grid grid-cols-2 md:grid-cols-4 gap-4 animate-in">
-                    <div class="cursor-pointer transition hover:scale-[1.02]" (click)="docDrill.openDrill('Mean Arterial Pressure (MAP)', { category: 'VITALS' })" title="Click to drill down on Blood Pressure with Doc Drill">
+                    <div role="button" tabindex="0" aria-label="Drill down on Blood Pressure with Doc Drill" (keydown.enter)="docDrill.openDrill('Mean Arterial Pressure (MAP)', { category: 'VITALS' })" (keydown.space)="$event.preventDefault(); docDrill.openDrill('Mean Arterial Pressure (MAP)', { category: 'VITALS' })" class="cursor-pointer transition hover:scale-[1.02] rounded-xl focus-visible:ring-2 focus-visible:ring-sky-500" (click)="docDrill.openDrill('Mean Arterial Pressure (MAP)', { category: 'VITALS' })" title="Click to drill down on Blood Pressure with Doc Drill">
                       <app-metric-card
                         title="Blood Pressure"
                         [value]="state.vitals().bp || '--'"
@@ -192,7 +192,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                       ></app-metric-card>
                     </div>
                     
-                    <div class="cursor-pointer transition hover:scale-[1.02]" (click)="docDrill.openDrill('Heart Rate Variability (rMSSD & SDNN)', { category: 'AUTONOMIC TONE' })" title="Click to drill down on Heart Rate & HRV with Doc Drill">
+                    <div role="button" tabindex="0" aria-label="Drill down on Heart Rate and HRV with Doc Drill" (keydown.enter)="docDrill.openDrill('Heart Rate Variability (rMSSD & SDNN)', { category: 'AUTONOMIC TONE' })" (keydown.space)="$event.preventDefault(); docDrill.openDrill('Heart Rate Variability (rMSSD & SDNN)', { category: 'AUTONOMIC TONE' })" class="cursor-pointer transition hover:scale-[1.02] rounded-xl focus-visible:ring-2 focus-visible:ring-sky-500" (click)="docDrill.openDrill('Heart Rate Variability (rMSSD & SDNN)', { category: 'AUTONOMIC TONE' })" title="Click to drill down on Heart Rate & HRV with Doc Drill">
                       <app-metric-card
                         title="Heart Rate"
                         [value]="state.vitals().hr || '--'"
@@ -203,7 +203,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                       ></app-metric-card>
                     </div>
                     
-                    <div class="cursor-pointer transition hover:scale-[1.02]" (click)="docDrill.openDrill('SpO2', { category: 'PULMONOLOGY' })" title="Click to drill down on SpO2 with Doc Drill">
+                    <div role="button" tabindex="0" aria-label="Drill down on SpO2 with Doc Drill" (keydown.enter)="docDrill.openDrill('SpO2', { category: 'PULMONOLOGY' })" (keydown.space)="$event.preventDefault(); docDrill.openDrill('SpO2', { category: 'PULMONOLOGY' })" class="cursor-pointer transition hover:scale-[1.02] rounded-xl focus-visible:ring-2 focus-visible:ring-sky-500" (click)="docDrill.openDrill('SpO2', { category: 'PULMONOLOGY' })" title="Click to drill down on SpO2 with Doc Drill">
                       <app-metric-card
                         title="SpO2"
                         [value]="state.vitals().spO2 || '--'"
@@ -213,7 +213,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                       ></app-metric-card>
                     </div>
                     
-                    <div class="cursor-pointer transition hover:scale-[1.02]" (click)="docDrill.openDrill('Body Temperature Homeostasis', { category: 'HOMEOSTASIS' })" title="Click to drill down on Temperature with Doc Drill">
+                    <div role="button" tabindex="0" aria-label="Drill down on Body Temperature Homeostasis with Doc Drill" (keydown.enter)="docDrill.openDrill('Body Temperature Homeostasis', { category: 'HOMEOSTASIS' })" (keydown.space)="$event.preventDefault(); docDrill.openDrill('Body Temperature Homeostasis', { category: 'HOMEOSTASIS' })" class="cursor-pointer transition hover:scale-[1.02] rounded-xl focus-visible:ring-2 focus-visible:ring-sky-500" (click)="docDrill.openDrill('Body Temperature Homeostasis', { category: 'HOMEOSTASIS' })" title="Click to drill down on Temperature with Doc Drill">
                       <app-metric-card
                         title="Temperature"
                         [value]="state.vitals().temp || '--'"

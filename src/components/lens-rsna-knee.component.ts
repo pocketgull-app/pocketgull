@@ -298,7 +298,7 @@ export interface IFhirR4DiagnosticReport {
                 <!-- Triad Target Micro-Cards -->
                 <div class="space-y-2">
                   @for (t of triad.targets; track t.key) {
-                    <div (click)="focusTargetIn3D(t)"
+                    <div role="button" tabindex="0" (keydown.enter)="focusTargetIn3D(t)" (keydown.space)="$event.preventDefault(); focusTargetIn3D(t)" (click)="focusTargetIn3D(t)"
                          class="p-2 rounded-lg bg-zinc-900/70 border border-zinc-800 hover:border-cyan-500 cursor-pointer transition-colors flex items-center justify-between text-xs">
                       <div class="flex items-center gap-2">
                         <span class="text-[10px] font-mono text-zinc-400 uppercase">[{{ t.primaryPlane[0] }}]</span>

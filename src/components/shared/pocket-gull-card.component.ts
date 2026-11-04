@@ -44,10 +44,11 @@ import { DomSanitizer } from '@angular/platform-browser';
             
             <div class="flex items-center gap-2">
               @if (flippable()) {
-                <span (click)="toggleFlip(); $event.stopPropagation()"
-                      class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition cursor-pointer select-none">
+                <button type="button" (click)="toggleFlip(); $event.stopPropagation()"
+                        aria-label="Flip card to view clinical provenance and methodology"
+                        class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition cursor-pointer select-none">
                   dblclick 🔄 flip
-                </span>
+                </button>
               }
               <ng-content select="[right-action]"></ng-content>
             </div>

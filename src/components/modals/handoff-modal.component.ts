@@ -127,7 +127,7 @@ export const SPECIALTY_PROFILES: ISpecialtyProfile[] = [
                 @for (spec of specialtyProfiles; track spec.id) {
                   @let isFlipped = isSpecialtyFlipped(spec.id);
 
-                  <div (click)="selectSpecialty(spec)"
+                  <div role="button" tabindex="0" (keydown.enter)="selectSpecialty(spec)" (keydown.space)="$event.preventDefault(); selectSpecialty(spec)" (click)="selectSpecialty(spec)"
                        (dblclick)="toggleSpecialtyFlip(spec.id); $event.stopPropagation()"
                        class="relative perspective-1000 group cursor-pointer h-44">
                     

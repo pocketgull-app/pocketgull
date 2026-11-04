@@ -223,7 +223,7 @@ import { ElectroacupunctureService, TElectroWaveform, IElectroacupunctureProtoco
 
             <div class="space-y-2">
               @for (proto of ea.protocols; track proto.id) {
-                <div (click)="ea.selectProtocol(proto)"
+                <div role="button" tabindex="0" (keydown.enter)="ea.selectProtocol(proto)" (keydown.space)="$event.preventDefault(); ea.selectProtocol(proto)" (click)="ea.selectProtocol(proto)"
                      class="p-3 rounded-xl border transition cursor-pointer font-mono"
                      [class.border-cyan-500]="ea.activeProtocol().id === proto.id"
                      [class.bg-cyan-500/10]="ea.activeProtocol().id === proto.id"

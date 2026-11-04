@@ -60,6 +60,7 @@ import { UiSelfRepairService } from '../services/ui-self-repair.service';
       <div 
         class="fixed inset-y-0 right-0 w-full sm:w-[480px] z-50 bg-[#0c0c10] border-l border-[#272732] shadow-2xl p-5 flex flex-col font-sans text-[#f4f4f5] animate-slide-left backdrop-blur-xl"
         role="dialog"
+        aria-modal="true"
         aria-label="UI Self-Repair Telemetry HUD"
       >
         <!-- Header -->

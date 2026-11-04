@@ -52,7 +52,7 @@ export interface IPedigreeMember {
               <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Generation 1 — Grandparents (Senior Caretaking)</span>
               <div class="grid grid-cols-2 gap-4">
                 @for (member of getMembersByGen('grandparents'); track member.id) {
-                  <div (click)="selectMember(member)"
+                  <div role="button" tabindex="0" (keydown.enter)="selectMember(member)" (keydown.space)="$event.preventDefault(); selectMember(member)" (click)="selectMember(member)"
                     [class]="selectedMember()?.id === member.id
                       ? 'p-4 rounded-2xl bg-zinc-900 border-2 border-orange-500 shadow-md cursor-pointer flex items-center justify-between'
                       : 'p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700 transition cursor-pointer flex items-center justify-between'">
@@ -79,7 +79,7 @@ export interface IPedigreeMember {
               <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Generation 2 — Parents (Pre-Conception & Mid-Life)</span>
               <div class="grid grid-cols-2 gap-4">
                 @for (member of getMembersByGen('parents'); track member.id) {
-                  <div (click)="selectMember(member)"
+                  <div role="button" tabindex="0" (keydown.enter)="selectMember(member)" (keydown.space)="$event.preventDefault(); selectMember(member)" (click)="selectMember(member)"
                     [class]="selectedMember()?.id === member.id
                       ? 'p-4 rounded-2xl bg-zinc-900 border-2 border-orange-500 shadow-md cursor-pointer flex items-center justify-between'
                       : 'p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700 transition cursor-pointer flex items-center justify-between'">
@@ -106,7 +106,7 @@ export interface IPedigreeMember {
               <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Generation 3 — Offspring (Protected Healthspan)</span>
               <div class="grid grid-cols-1 gap-4">
                 @for (member of getMembersByGen('offspring'); track member.id) {
-                  <div (click)="selectMember(member)"
+                  <div role="button" tabindex="0" (keydown.enter)="selectMember(member)" (keydown.space)="$event.preventDefault(); selectMember(member)" (click)="selectMember(member)"
                     [class]="selectedMember()?.id === member.id
                       ? 'p-4 rounded-2xl bg-zinc-900 border-2 border-orange-500 shadow-md cursor-pointer flex items-center justify-between'
                       : 'p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700 transition cursor-pointer flex items-center justify-between'">

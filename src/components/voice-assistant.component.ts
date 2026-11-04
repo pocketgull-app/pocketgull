@@ -253,7 +253,7 @@ export interface IChatEntry {
                         </button>
 
                         @if (isVernacularVoiceMenuOpen()) {
-                            <div class="fixed inset-0 z-40 bg-black/20" (click)="isVernacularVoiceMenuOpen.set(false)"></div>
+                            <div class="fixed inset-0 z-40 bg-black/20" role="presentation" aria-hidden="true" (click)="isVernacularVoiceMenuOpen.set(false)"></div>
                             <div class="absolute right-0 mt-1 w-52 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-100 font-sans text-xs">
                                 <div class="px-2 py-1 text-[10px] font-mono font-bold uppercase text-zinc-500 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center mb-1">
                                     <span>Frontline Voice Prompts</span>

@@ -258,7 +258,7 @@ import { PositivePsychologyService, IAbcdeReframe, IThreeGoodThingsEntry, IPerma
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               @for (strength of posPsych.viaStrengthsCatalog(); track strength.id) {
-                <div (click)="posPsych.toggleSignatureStrength(strength.id)"
+                <div role="button" tabindex="0" (keydown.enter)="posPsych.toggleSignatureStrength(strength.id)" (keydown.space)="$event.preventDefault(); posPsych.toggleSignatureStrength(strength.id)" (click)="posPsych.toggleSignatureStrength(strength.id)"
                   [class.border-amber-400]="posPsych.selectedSignatureStrengthIds().includes(strength.id)"
                   [class.bg-amber-950/30]="posPsych.selectedSignatureStrengthIds().includes(strength.id)"
                   [class.border-zinc-800]="!posPsych.selectedSignatureStrengthIds().includes(strength.id)"

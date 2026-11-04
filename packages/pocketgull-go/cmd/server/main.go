@@ -349,21 +349,37 @@ func SetupRoutes(appVersion string) http.Handler {
 	// 9. Static Angular SPA & Dynamic CSP Nonce Injection Fallback
 	staticDir := os.Getenv("POCKETGULL_STATIC_DIR")
 	if staticDir == "" {
-		staticDir = filepath.Join("..", "..", "dist", "app", "browser")
+		candidates := []string{
+			filepath.Join("..", "..", "dist", "app", "browser"),
+			filepath.Join("..", "..", "dist", "browser"),
+			filepath.Join("..", "..", "dist"),
+			filepath.Join("dist", "app", "browser"),
+			filepath.Join("dist", "browser"),
+			"dist",
+		}
+		staticDir = candidates[0]
+		for _, c := range candidates {
+			if info, err := os.Stat(filepath.Join(c, "index.html")); err == nil && !info.IsDir() {
+				staticDir = c
+				break
+			}
+		}
 	}
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		ext := strings.ToLower(filepath.Ext(r.URL.Path))
-		if ext == ".js" || ext == ".css" || ext == ".woff2" || ext == ".svg" || ext == ".png" || ext == ".ico" || ext == ".webmanifest" {
+		if ext == ".js" || ext == ".css" || ext == ".woff2" || ext == ".svg" || ext == ".png" || ext == ".ico" || ext == ".webmanifest" || ext == ".json" {
 			cleanRel := filepath.Clean(strings.TrimPrefix(r.URL.Path, "/"))
 			if strings.Contains(cleanRel, "..") {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			target := filepath.Join(staticDir, cleanRel)
-			if info, err := os.Stat(target); err == nil && !info.IsDir() {
-				http.ServeFile(w, r, target)
-				return
+			for _, base := range []string{staticDir, filepath.Join("..", "..", "public"), "public"} {
+				target := filepath.Join(base, cleanRel)
+				if info, err := os.Stat(target); err == nil && !info.IsDir() {
+					http.ServeFile(w, r, target)
+					return
+				}
 			}
 			w.WriteHeader(http.StatusNotFound)
 			return

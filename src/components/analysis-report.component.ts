@@ -457,7 +457,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
     }
 
     <!--Content Area-->
-    <div #contentArea (click)="handleContentAreaClick($event)" class="flex-1 mx-2 sm:mx-8 mb-6 mt-2 overflow-y-auto max-md:overflow-y-auto max-md:h-full max-md:min-h-[450px] overflow-x-hidden bg-white dark:bg-obsidian rounded-xl shadow-sm border border-slate-200 dark:border-zinc-800 min-h-0 relative">
+    <div #contentArea role="region" aria-label="Clinical Analysis Report Content" (click)="handleContentAreaClick($event)" class="flex-1 mx-2 sm:mx-8 mb-6 mt-2 overflow-y-auto max-md:overflow-y-auto max-md:h-full max-md:min-h-[450px] overflow-x-hidden bg-white dark:bg-obsidian rounded-xl shadow-sm border border-slate-200 dark:border-zinc-800 min-h-0 relative">
       <!-- Dieter Rams Industrial Precision Ventilation Grill -->
       <div class="h-1 flex gap-[1.5px] opacity-25 px-4 pt-1.5 no-print">
         <div class="flex-1 bg-slate-400 dark:bg-zinc-600 rounded-full h-0.5"></div>

@@ -131,7 +131,7 @@ import { RenalClearanceService, IRenalDosingGuideline } from '../../services/ren
           </p>
           <div class="text-[11px] text-red-300 font-sans pt-1 border-t border-red-500/30 flex items-center justify-between">
             <span>Action: Immediate nephrology review; hold nephrotoxic agents (NSAIDs, ACEi/ARBs, Aminoglycosides).</span>
-            <span class="font-bold underline cursor-pointer" (click)="resetBaseline()">Acknowledge &amp; Reset</span>
+            <button type="button" class="font-bold underline cursor-pointer text-red-300 hover:text-red-100" (click)="resetBaseline()">Acknowledge &amp; Reset</button>
           </div>
         </div>
       }

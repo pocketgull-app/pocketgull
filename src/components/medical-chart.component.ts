@@ -254,9 +254,9 @@ import { PatientScansComponent } from './patient-scans.component';
           [icon]="viewerIcon"
           [noPadding]="true">
           
-          <div right-action (click)="isViewerExpanded.set(!isViewerExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+          <button type="button" right-action (click)="isViewerExpanded.set(!isViewerExpanded())" [attr.aria-expanded]="isViewerExpanded()" aria-label="Toggle 3D Body Viewer section" class="cursor-pointer hover:bg-black/5 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isViewerExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-          </div>
+          </button>
 
           @if(isViewerExpanded()) {
             <div class="body-viewer-container min-h-[500px] sm:min-h-[540px] xl:min-h-[580px] overflow-hidden bg-white dark:bg-black/20 shrink-0 flex flex-col">
@@ -274,9 +274,9 @@ import { PatientScansComponent } from './patient-scans.component';
           [icon]="summaryIcon"
           [noPadding]="true">
           
-          <div right-action (click)="isSummaryExpanded.set(!isSummaryExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+          <button type="button" right-action (click)="isSummaryExpanded.set(!isSummaryExpanded())" [attr.aria-expanded]="isSummaryExpanded()" aria-label="Toggle Medical Summary section" class="cursor-pointer hover:bg-black/5 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isSummaryExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-          </div>
+          </button>
 
           @if(isSummaryExpanded()) {
             <div class="bg-white dark:bg-zinc-900 shrink-0 min-h-0 min-w-0 border-b border-gray-100 dark:border-zinc-800 last:border-0 p-0">
@@ -300,9 +300,9 @@ import { PatientScansComponent } from './patient-scans.component';
           [icon]="sparklineIcon"
           [noPadding]="false">
           
-          <div right-action (click)="isSparklinesExpanded.set(!isSparklinesExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+          <button type="button" right-action (click)="isSparklinesExpanded.set(!isSparklinesExpanded())" [attr.aria-expanded]="isSparklinesExpanded()" aria-label="Toggle Multi-Paradigm Longitudinal Vitals section" class="cursor-pointer hover:bg-black/5 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isSparklinesExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-          </div>
+          </button>
 
           @if(isSparklinesExpanded()) {
             <div class="space-y-4 pt-1">
@@ -408,9 +408,9 @@ import { PatientScansComponent } from './patient-scans.component';
           [icon]="biometricIcon"
           [noPadding]="true">
           
-          <div right-action (click)="isBiometricExpanded.set(!isBiometricExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+          <button type="button" right-action (click)="isBiometricExpanded.set(!isBiometricExpanded())" [attr.aria-expanded]="isBiometricExpanded()" aria-label="Toggle Biometric Trends section" class="cursor-pointer hover:bg-black/5 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isBiometricExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-          </div>
+          </button>
 
           @if(isBiometricExpanded()) {
             <div class="h-[250px] overflow-hidden bg-white dark:bg-black/20 shrink-0 p-4">
@@ -428,9 +428,9 @@ import { PatientScansComponent } from './patient-scans.component';
           [icon]="scansIcon"
           [noPadding]="true">
           
-          <div right-action (click)="isScansExpanded.set(!isScansExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+          <button type="button" right-action (click)="isScansExpanded.set(!isScansExpanded())" [attr.aria-expanded]="isScansExpanded()" aria-label="Toggle DICOM Viewer section" class="cursor-pointer hover:bg-black/5 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isScansExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-          </div>
+          </button>
 
           @if(isScansExpanded()) {
             <div class="p-6 bg-[#F9FAFB]/50 dark:bg-zinc-900/50 min-h-0 space-y-6">
@@ -449,9 +449,9 @@ import { PatientScansComponent } from './patient-scans.component';
           [icon]="toxicologyIcon"
           [noPadding]="false">
           
-          <div right-action (click)="isToxicologyExpanded.set(!isToxicologyExpanded())" class="cursor-pointer hover:bg-black/5 p-1 rounded-md transition-colors">
+          <button type="button" right-action (click)="isToxicologyExpanded.set(!isToxicologyExpanded())" [attr.aria-expanded]="isToxicologyExpanded()" aria-label="Toggle Environmental Exposomics & Acute Toxicology section" class="cursor-pointer hover:bg-black/5 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isToxicologyExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-          </div>
+          </button>
 
           @if(isToxicologyExpanded()) {
             <div class="pt-2">
@@ -498,9 +498,9 @@ import { PatientScansComponent } from './patient-scans.component';
                         }
                     </div>
                 }
-                <div (click)="isHistoryExpanded.set(!isHistoryExpanded())" class="cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 p-1 rounded-md transition-colors">
+                <button type="button" (click)="isHistoryExpanded.set(!isHistoryExpanded())" [attr.aria-expanded]="isHistoryExpanded()" aria-label="Toggle Patient History section" class="cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 p-2 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500 transition-transform duration-200" [class.rotate-180]="!isHistoryExpanded()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                </div>
+                </button>
           </div>
           
           @if(isHistoryExpanded()) {

@@ -31,7 +31,7 @@ export type OnboardingTier = 'practitioner' | 'clinic' | 'academic' | 'resident'
         <!-- Tiers Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <!-- Tier 1: Independent Practitioner -->
-          <div (click)="selectedTier.set('practitioner')"
+          <div role="button" tabindex="0" (click)="selectedTier.set('practitioner')" (keydown.enter)="selectedTier.set('practitioner')" (keydown.space)="$event.preventDefault(); selectedTier.set('practitioner')"
                [class.border-emerald-500]="selectedTier() === 'practitioner'"
                [class.ring-2]="selectedTier() === 'practitioner'"
                [class.ring-emerald-500\/30]="selectedTier() === 'practitioner'"
@@ -62,7 +62,7 @@ export type OnboardingTier = 'practitioner' | 'clinic' | 'academic' | 'resident'
           </div>
 
           <!-- Tier 2: Group Practice -->
-          <div (click)="selectedTier.set('clinic')"
+          <div role="button" tabindex="0" (click)="selectedTier.set('clinic')" (keydown.enter)="selectedTier.set('clinic')" (keydown.space)="$event.preventDefault(); selectedTier.set('clinic')"
                [class.border-emerald-500]="selectedTier() === 'clinic'"
                [class.ring-2]="selectedTier() === 'clinic'"
                [class.ring-emerald-500\/30]="selectedTier() === 'clinic'"
@@ -93,7 +93,7 @@ export type OnboardingTier = 'practitioner' | 'clinic' | 'academic' | 'resident'
           </div>
 
           <!-- Tier 3: Teaching Hospital & Medical School -->
-          <div (click)="selectedTier.set('academic')"
+          <div role="button" tabindex="0" (click)="selectedTier.set('academic')" (keydown.enter)="selectedTier.set('academic')" (keydown.space)="$event.preventDefault(); selectedTier.set('academic')"
                [class.border-emerald-500]="selectedTier() === 'academic'"
                [class.ring-2]="selectedTier() === 'academic'"
                [class.ring-emerald-500\/30]="selectedTier() === 'academic'"
@@ -124,7 +124,7 @@ export type OnboardingTier = 'practitioner' | 'clinic' | 'academic' | 'resident'
           </div>
 
           <!-- Tier 4: Resident / Student Scholar (Sponsored Grant) -->
-          <div (click)="selectedTier.set('resident')"
+          <div role="button" tabindex="0" (click)="selectedTier.set('resident')" (keydown.enter)="selectedTier.set('resident')" (keydown.space)="$event.preventDefault(); selectedTier.set('resident')"
                [class.border-emerald-500]="selectedTier() === 'resident'"
                [class.ring-2]="selectedTier() === 'resident'"
                [class.ring-emerald-500\/30]="selectedTier() === 'resident'"

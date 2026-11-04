@@ -489,7 +489,7 @@ import { ClinicalMoERouterService, IPatientTriageEvaluation } from '../services/
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               @for (patient of filteredPatients(); track patient.id) {
-                <div (click)="selectChart(patient.id, false)"
+                <div role="button" tabindex="0" (keydown.enter)="selectChart(patient.id, false)" (keydown.space)="$event.preventDefault(); selectChart(patient.id, false)" [attr.aria-label]="'Open clinical chart for ' + patient.name" (click)="selectChart(patient.id, false)"
                      class="group relative bg-white dark:bg-[#1C1C1C] rounded-2xl p-6 border shadow-xs hover:shadow-md cursor-pointer transition-all active:scale-[0.98]"
                      [class.border-amber-300]="isSentinelCase(patient)"
                      [class.dark:border-amber-900]="isSentinelCase(patient)"
