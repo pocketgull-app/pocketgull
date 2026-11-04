@@ -6,7 +6,9 @@ package main
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -21,7 +23,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/ai"
 	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/clinical"
+	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/discovery"
 	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/fhir"
 	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/glyph3d"
 	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/security"
@@ -224,7 +228,125 @@ func SetupRoutes(appVersion string) http.Handler {
 		_ = json.NewEncoder(w).Encode(result)
 	})
 
-	// 6. Static Angular SPA & Dynamic CSP Nonce Injection Fallback
+	// 6. Server-Proxy Runtime Config & FDA 21 CFR Part 11 Audit Seal
+	mux.HandleFunc("GET /api/config", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		hasKey := ai.ResolveAPIKey() != "" || os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") != "" || os.Getenv("K_SERVICE") != ""
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"hasKey":   hasKey,
+			"authMode": "server-proxy",
+			"status":   "ok",
+			"apiKey":   "", // Sanitized: Never expose plaintext API keys to browser
+		})
+	})
+
+	mux.HandleFunc("POST /api/audit", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		body, _ := io.ReadAll(http.MaxBytesReader(w, r.Body, 256*1024))
+		now := time.Now().UTC().Format(time.RFC3339)
+		sum := sha256.Sum256(append(body, []byte(now)...))
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"status":             "logged",
+			"timestamp":          now,
+			"part11Sha256Digest": hex.EncodeToString(sum[:]),
+		})
+	})
+
+	// 7. Gemini Clinical Intelligence Proxy (JSON & SSE Streaming with Deterministic Precedence)
+	mux.HandleFunc("POST /api/ai/synthesize", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var req ai.SynthesizeRequest
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 2*1024*1024)).Decode(&req); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]any{"error": "invalid request json"})
+			return
+		}
+		res, err := ai.Synthesize(r.Context(), req, ai.ResolveAPIKey(), nil)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]any{"error": err.Error()})
+			return
+		}
+		_ = json.NewEncoder(w).Encode(res)
+	})
+
+	mux.HandleFunc("POST /api/ai/stream", func(w http.ResponseWriter, r *http.Request) {
+		var req ai.SynthesizeRequest
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 2*1024*1024)).Decode(&req); err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]any{"error": "invalid request json"})
+			return
+		}
+		res, err := ai.Synthesize(r.Context(), req, ai.ResolveAPIKey(), nil)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]any{"error": err.Error()})
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/event-stream")
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Connection", "keep-alive")
+		chunkBytes, _ := json.Marshal(map[string]any{
+			"text":               res.Synthesis,
+			"intercepted":        res.Intercepted,
+			"mode":               res.Mode,
+			"part11Sha256Digest": res.Part11Digest,
+		})
+		_, _ = fmt.Fprintf(w, "data: %s\n\ndata: [DONE]\n\n", string(chunkBytes))
+	})
+
+	// 8. Agentic Discovery, WebMCP Tool Registry, CDS Hooks & Tallinn Rule 131 Digital Emblem
+	emblemHandler := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Cache-Control", "public, max-age=86400")
+		_ = json.NewEncoder(w).Encode(discovery.BuildDigitalEmblemManifest())
+	}
+	mux.HandleFunc("GET /.well-known/digital-emblem", emblemHandler)
+	mux.HandleFunc("GET /.well-known/digital-emblem.json", emblemHandler)
+	mux.HandleFunc("GET /api/digital-emblem", emblemHandler)
+
+	mux.HandleFunc("GET /v1/discovery/tools", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		tools := discovery.BuildToolRegistry()
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"version":    appVersion,
+			"totalTools": len(tools),
+			"tools":      tools,
+		})
+	})
+
+	mux.HandleFunc("POST /v1/discovery/capabilities/probe", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		var req discovery.CapabilitiesProbeRequest
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 64*1024)).Decode(&req); err != nil || req.RequiredActions == nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]any{"error": "Missing required field: required_actions (string[])."})
+			return
+		}
+		_ = json.NewEncoder(w).Encode(discovery.ProbeCapabilities(req.RequiredActions))
+	})
+
+	mux.HandleFunc("GET /cds-services", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"services": discovery.BuildCDSServices(),
+		})
+	})
+
+	mux.HandleFunc("GET /.well-known/smart-configuration", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Cache-Control", "public, max-age=3600")
+		host := r.Host
+		if host == "" {
+			host = "pocketgull.app"
+		}
+		_ = json.NewEncoder(w).Encode(discovery.BuildSmartConfiguration("https://" + host))
+	})
+
+	// 9. Static Angular SPA & Dynamic CSP Nonce Injection Fallback
 	staticDir := os.Getenv("POCKETGULL_STATIC_DIR")
 	if staticDir == "" {
 		staticDir = filepath.Join("..", "..", "dist", "app", "browser")

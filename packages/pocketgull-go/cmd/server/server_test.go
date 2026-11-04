@@ -186,3 +186,56 @@ func TestGlyph3DAndClinicalTriageEndpoints(t *testing.T) {
 		}
 	})
 }
+
+func TestAiProxyAndDiscoveryEndpoints(t *testing.T) {
+	handler := main.SetupRoutes("v1.0.0-test")
+
+	t.Run("GET /api/config returns sanitized server-proxy config", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/api/config", nil)
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+		if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), `"authMode":"server-proxy"`) {
+			t.Fatalf("expected 200 server-proxy config, got %d: %s", rec.Code, rec.Body.String())
+		}
+	})
+
+	t.Run("POST /api/ai/synthesize intercepts acute red flags deterministically", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/api/ai/synthesize", bytes.NewBufferString(`{"patientId":"p1","text":"crushing chest pain radiating to left arm","jurisdiction":"US"}`))
+		req.Header.Set("Content-Type", "application/json")
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+		if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), `"intercepted":true`) {
+			t.Fatalf("expected deterministic ACS interception, got %d: %s", rec.Code, rec.Body.String())
+		}
+	})
+
+	t.Run("POST /api/ai/stream emits SSE synthesis and [DONE]", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/api/ai/stream", bytes.NewBufferString(`{"patientData":"Routine autonomic pacing check"}`))
+		req.Header.Set("Content-Type", "application/json")
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+		if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), "data: [DONE]") {
+			t.Fatalf("expected SSE [DONE] stream, got %d: %s", rec.Code, rec.Body.String())
+		}
+	})
+
+	t.Run("GET /cds-services, /.well-known/digital-emblem, and /v1/discovery/tools", func(t *testing.T) {
+		for _, path := range []string{"/cds-services", "/.well-known/digital-emblem", "/v1/discovery/tools", "/.well-known/smart-configuration"} {
+			req := httptest.NewRequest(http.MethodGet, path, nil)
+			rec := httptest.NewRecorder()
+			handler.ServeHTTP(rec, req)
+			if rec.Code != http.StatusOK {
+				t.Errorf("expected 200 OK for %s, got %d", path, rec.Code)
+			}
+		}
+
+		reqProbe := httptest.NewRequest(http.MethodPost, "/v1/discovery/capabilities/probe", bytes.NewBufferString(`{"required_actions":["generate_medical_summary","compile_glyph_3d"]}`))
+		reqProbe.Header.Set("Content-Type", "application/json")
+		recProbe := httptest.NewRecorder()
+		handler.ServeHTTP(recProbe, reqProbe)
+		if recProbe.Code != http.StatusOK || !strings.Contains(recProbe.Body.String(), `"supported":true`) {
+			t.Errorf("expected capability probe supported:true, got %d: %s", recProbe.Code, recProbe.Body.String())
+		}
+	})
+}
+
