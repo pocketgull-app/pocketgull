@@ -19,10 +19,10 @@ class OrcidWork {
       };
 
   factory OrcidWork.fromJson(Map<String, dynamic> json) => OrcidWork(
-        title: json['title'] ?? 'Untitled Work',
-        url: json['url'],
-        type: json['type'],
-        year: json['year'],
+        title: json['title'] as String? ?? 'Untitled Work',
+        url: json['url'] as String?,
+        type: json['type'] as String?,
+        year: json['year'] as String?,
       );
 }
 
@@ -41,8 +41,8 @@ class OrcidUrl {
       };
 
   factory OrcidUrl.fromJson(Map<String, dynamic> json) => OrcidUrl(
-        name: json['name'] ?? 'Website',
-        url: json['url'] ?? '',
+        name: json['name'] as String? ?? 'Website',
+        url: json['url'] as String? ?? '',
       );
 }
 
@@ -71,20 +71,24 @@ class OrcidProfile {
 
   factory OrcidProfile.fromJson(Map<String, dynamic> json) {
     final keywordsList = json['keywords'] != null
-        ? List<String>.from(json['keywords'])
+        ? List<String>.from(json['keywords'] as Iterable<dynamic>)
         : <String>[];
-    
+
     final worksList = json['works'] != null
-        ? (json['works'] as List).map((w) => OrcidWork.fromJson(w)).toList()
+        ? (json['works'] as List<dynamic>)
+            .map((w) => OrcidWork.fromJson(w as Map<String, dynamic>))
+            .toList()
         : <OrcidWork>[];
 
     final urlsList = json['urls'] != null
-        ? (json['urls'] as List).map((u) => OrcidUrl.fromJson(u)).toList()
+        ? (json['urls'] as List<dynamic>)
+            .map((u) => OrcidUrl.fromJson(u as Map<String, dynamic>))
+            .toList()
         : <OrcidUrl>[];
 
     return OrcidProfile(
-      orcidId: json['orcidId'] ?? '',
-      name: json['name'] ?? 'Unknown Researcher',
+      orcidId: json['orcidId'] as String? ?? '',
+      name: json['name'] as String? ?? 'Unknown Researcher',
       keywords: keywordsList,
       works: worksList,
       urls: urlsList,

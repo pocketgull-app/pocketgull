@@ -168,7 +168,7 @@ class PatientScansWidget extends StatelessWidget {
   }
 
   void _openDicomViewer(BuildContext context) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,

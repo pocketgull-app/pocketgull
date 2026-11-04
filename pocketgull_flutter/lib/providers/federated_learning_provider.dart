@@ -132,7 +132,7 @@ class FederatedLearningNotifier extends Notifier<FederatedLearningState> {
     if (state.isTraining || state.privacyBudgetRemaining <= 0) return;
 
     state = state.copyWith(isTraining: true);
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future<void>.delayed(const Duration(milliseconds: 600));
 
     final nextRound = state.currentRound + 1;
     final nextSpent = min(state.privacyBudgetMax, state.totalEpsilonSpent + 0.040);

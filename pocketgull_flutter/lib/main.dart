@@ -47,7 +47,7 @@ void main() async {
     
     // Initialize Hive local offline database
     await Hive.initFlutter();
-    await Hive.openBox('pocket_gull_db');
+    await Hive.openBox<dynamic>('pocket_gull_db');
 
     final localAI = LocalIntelligenceService();
     try {

@@ -27,7 +27,7 @@ class MobileOfflineEdgeAiService {
     BleVitalsData? vitals,
   }) async {
     final startTime = DateTime.now();
-    await Future.delayed(const Duration(milliseconds: 250)); // Simulated local tokenization
+    await Future<void>.delayed(const Duration(milliseconds: 250)); // Simulated local tokenization
 
     final activeVitals = vitals ?? bleService.currentVitals;
     final hr = activeVitals.heartRateBpm ?? 72;

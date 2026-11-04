@@ -29,7 +29,7 @@ void main() {
 
       expect(bundle['resourceType'], equals('Bundle'));
       expect(bundle['type'], equals('collection'));
-      expect(bundle['entry'], isA<List>());
+      expect(bundle['entry'], isA<List<dynamic>>());
 
       final entries = bundle['entry'] as List;
       expect(entries.isNotEmpty, isTrue);

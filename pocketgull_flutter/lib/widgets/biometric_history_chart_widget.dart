@@ -270,12 +270,12 @@ class _ChartPainter extends CustomPainter {
     final values = <double>[];
     for (final p in points) {
       if (metricType == 'bp') {
-        final parts = p.value.split('/');
+        final parts = p.value.toString().split('/');
         if (parts.length == 2) {
           values.add(double.tryParse(parts[0]) ?? 0);
         }
       } else {
-        values.add(double.tryParse(p.value) ?? 0);
+        values.add(double.tryParse(p.value.toString()) ?? 0);
       }
     }
 

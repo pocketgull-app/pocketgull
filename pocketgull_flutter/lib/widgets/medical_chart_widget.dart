@@ -99,7 +99,7 @@ class _MedicalChartWidgetState extends ConsumerState<MedicalChartWidget> {
                           'Active Telemetry: Lumbar spine MRI demonstrates L4-L5 posterior disc protrusion. '
                           'Clinical Recommendation: Conservative physical genomics biomechanics, gentle core neuromuscular stabilization, and Health Connect circadian cadence synchronization.';
                       bionicNotifier.loadText(summaryText);
-                      showDialog(
+                      showDialog<void>(
                         context: context,
                         builder: (context) => const Dialog(
                           backgroundColor: Colors.transparent,

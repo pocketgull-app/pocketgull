@@ -75,7 +75,7 @@ class KnowledgeSynthesisNotifier extends Notifier<KnowledgeSynthesisState> {
 
     try {
       // Simulated AI synthesis — in production this calls ClinicalIntelligenceService.
-      await Future.delayed(const Duration(milliseconds: 1200));
+      await Future<void>.delayed(const Duration(milliseconds: 1200));
 
       final insights = _mockSynthesize(inputText);
       state = state.copyWith(

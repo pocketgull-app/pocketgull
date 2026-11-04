@@ -169,7 +169,7 @@ class OpenEvidenceCommonsNotifier extends Notifier<EvidenceCommonsState> {
 
   Future<void> issueBlockAttestation() async {
     state = state.copyWith(isAttesting: true);
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
     state = state.copyWith(
       blockHeight: state.blockHeight + 1,
       isAttesting: false,

@@ -12,13 +12,13 @@ class PatientManagementService {
     if (!Hive.isBoxOpen('pocket_gull_db')) {
       return _getDefaultPatients();
     }
-    final box = Hive.box('pocket_gull_db');
+    final box = Hive.box<dynamic>('pocket_gull_db');
     
     // Check if Hive has patients
     if (box.containsKey('patients')) {
       try {
-        final List<dynamic> decodedList = jsonDecode(box.get('patients') as String);
-        final list = decodedList.map((json) => _patientFromJson(json)).toList();
+        final List<dynamic> decodedList = jsonDecode(box.get('patients') as String) as List<dynamic>;
+        final list = decodedList.map((json) => _patientFromJson(json as Map<String, dynamic>)).toList();
         if (list.any((p) => p.id == 'p_charles_darwin')) {
           return list;
         }
@@ -39,8 +39,8 @@ class PatientManagementService {
       debugPrint('[Hive Migration] Migrating existing patients from SharedPreferences to Hive...');
       await box.put('patients', jsonString);
       try {
-        final List<dynamic> decodedList = jsonDecode(jsonString);
-        return decodedList.map((json) => _patientFromJson(json)).toList();
+        final List<dynamic> decodedList = jsonDecode(jsonString) as List<dynamic>;
+        return decodedList.map((json) => _patientFromJson(json as Map<String, dynamic>)).toList();
       } catch (e) {
         debugPrint('Failed to parse migrated patients: $e');
         return _getDefaultPatients();
@@ -188,7 +188,7 @@ class PatientManagementService {
   }
 
   Future<void> savePatients(List<Patient> patients) async {
-    final box = Hive.box('pocket_gull_db');
+    final box = Hive.box<dynamic>('pocket_gull_db');
     final jsonList = patients.map((p) => _patientToJson(p)).toList();
     await box.put('patients', jsonEncode(jsonList));
   }
@@ -316,37 +316,38 @@ class PatientManagementService {
   }
 
   Patient _patientFromJson(Map<String, dynamic> json) {
+    final vitalsJson = json['vitals'] as Map<String, dynamic>?;
     return Patient(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      age: json['age'] ?? 0,
-      gender: json['gender'] ?? '',
-      lastVisit: json['lastVisit'] ?? '',
-      preexistingConditions: List<String>.from(json['preexistingConditions'] ?? []),
-      patientGoals: json['patientGoals'] ?? '',
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      age: json['age'] as int? ?? 0,
+      gender: json['gender'] as String? ?? '',
+      lastVisit: json['lastVisit'] as String? ?? '',
+      preexistingConditions: List<String>.from((json['preexistingConditions'] as Iterable<dynamic>?) ?? const <dynamic>[]),
+      patientGoals: json['patientGoals'] as String? ?? '',
       vitals: PatientVitals(
-        bp: json['vitals']?['bp'] ?? '',
-        hr: json['vitals']?['hr'] ?? '',
-        temp: json['vitals']?['temp'] ?? '',
-        spO2: json['vitals']?['spO2'] ?? '',
-        weight: json['vitals']?['weight'] ?? '',
-        height: json['vitals']?['height'] ?? '',
+        bp: vitalsJson?['bp'] as String? ?? '',
+        hr: vitalsJson?['hr'] as String? ?? '',
+        temp: vitalsJson?['temp'] as String? ?? '',
+        spO2: vitalsJson?['spO2'] as String? ?? '',
+        weight: vitalsJson?['weight'] as String? ?? '',
+        height: vitalsJson?['height'] as String? ?? '',
       ),
       issues: const {}, // Ignoring complex nested mapping for now in this skeleton
-      history: (json['history'] as List?)?.map((j) => HistoryEntry.fromJson(j)).toList() ?? [],
-      bookmarks: (json['bookmarks'] as List?)?.map((j) => Bookmark.fromJson(j)).toList() ?? [],
-      scans: json['scans'] ?? [],
-      triageScore: json['triageScore'] ?? 0,
-      kaizenColor: json['kaizenColor'] ?? 'green',
-      genomicVariants: (json['genomicVariants'] as List?)?.map((v) => GeneticVariant.fromJson(v)).toList(),
-      biochemicalPathways: (json['biochemicalPathways'] as List?)?.map((path) => BiochemicalPathway.fromJson(path)).toList(),
-      pkInteractions: (json['pkInteractions'] as List?)?.map((pk) => PharmacokineticInteraction.fromJson(pk)).toList(),
-      ewarsAlerts: (json['ewarsAlerts'] as List?)?.map((e) => EwarsOutbreakAlert.fromJson(e)).toList(),
-      travelProfile: json['travelProfile'] != null ? TravelMedicineProfile.fromJson(json['travelProfile']) : null,
-      awareStewardship: (json['awareStewardship'] as List?)?.map((a) => WhoAwareClassification.fromJson(a)).toList(),
-      environmentalIndex: json['environmentalIndex'] != null ? EnvironmentalHealthIndex.fromJson(json['environmentalIndex']) : null,
-      activeTimerSeconds: json['activeTimerSeconds'],
-      recommendedGuidelines: (json['recommendedGuidelines'] as List?)?.map((g) => Map<String, String>.from(g)).toList() ?? [],
+      history: (json['history'] as List<dynamic>?)?.map((j) => HistoryEntry.fromJson(j as Map<String, dynamic>)).toList() ?? <HistoryEntry>[],
+      bookmarks: (json['bookmarks'] as List<dynamic>?)?.map((j) => Bookmark.fromJson(j as Map<String, dynamic>)).toList() ?? <Bookmark>[],
+      scans: (json['scans'] as List<DiagnosticScan>?) ?? const <DiagnosticScan>[],
+      triageScore: json['triageScore'] as int? ?? 0,
+      kaizenColor: json['kaizenColor'] as String? ?? 'green',
+      genomicVariants: (json['genomicVariants'] as List<dynamic>?)?.map((v) => GeneticVariant.fromJson(v as Map<String, dynamic>)).toList(),
+      biochemicalPathways: (json['biochemicalPathways'] as List<dynamic>?)?.map((path) => BiochemicalPathway.fromJson(path as Map<String, dynamic>)).toList(),
+      pkInteractions: (json['pkInteractions'] as List<dynamic>?)?.map((pk) => PharmacokineticInteraction.fromJson(pk as Map<String, dynamic>)).toList(),
+      ewarsAlerts: (json['ewarsAlerts'] as List<dynamic>?)?.map((e) => EwarsOutbreakAlert.fromJson(e as Map<String, dynamic>)).toList(),
+      travelProfile: json['travelProfile'] != null ? TravelMedicineProfile.fromJson(json['travelProfile'] as Map<String, dynamic>) : null,
+      awareStewardship: (json['awareStewardship'] as List<dynamic>?)?.map((a) => WhoAwareClassification.fromJson(a as Map<String, dynamic>)).toList(),
+      environmentalIndex: json['environmentalIndex'] != null ? EnvironmentalHealthIndex.fromJson(json['environmentalIndex'] as Map<String, dynamic>) : null,
+      activeTimerSeconds: json['activeTimerSeconds'] as int?,
+      recommendedGuidelines: (json['recommendedGuidelines'] as List<dynamic>?)?.map((g) => Map<String, String>.from(g as Map<dynamic, dynamic>)).toList() ?? <Map<String, String>>[],
     );
   }
 }

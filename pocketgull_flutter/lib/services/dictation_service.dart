@@ -25,7 +25,7 @@ class DictationService {
     return _isAvailable;
   }
 
-  void startListening(Function(String, bool) onResult) {
+  void startListening(void Function(String, bool) onResult) {
     if (!_isAvailable || _isListening) return;
 
     _speech.listen(

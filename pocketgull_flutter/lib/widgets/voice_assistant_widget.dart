@@ -163,7 +163,7 @@ class _VoiceAssistantWidgetState extends ConsumerState<VoiceAssistantWidget> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const DocumentationScreen(initialDoc: 'ai_policy.md')),
+                MaterialPageRoute<void>(builder: (context) => const DocumentationScreen(initialDoc: 'ai_policy.md')),
               );
             },
             child: Text(

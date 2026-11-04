@@ -858,14 +858,14 @@ class Bookmark extends Equatable {
 
   factory Bookmark.fromJson(Map<String, dynamic> json) {
     return Bookmark(
-      title: json['title'] ?? '',
-      url: json['url'] ?? '',
-      authors: json['authors'],
-      doi: json['doi'],
-      publicationDate: json['publicationDate'],
-      publisher: json['publisher'],
-      isPeerReviewed: json['isPeerReviewed'],
-      cited: json['cited'],
+      title: json['title'] as String? ?? '',
+      url: json['url'] as String? ?? '',
+      authors: json['authors'] as String?,
+      doi: json['doi'] as String?,
+      publicationDate: json['publicationDate'] as String?,
+      publisher: json['publisher'] as String?,
+      isPeerReviewed: json['isPeerReviewed'] as bool?,
+      cited: json['cited'] as bool?,
       paradigms: (json['paradigms'] as List<dynamic>?)?.cast<String>(),
       tcmMeridians: (json['tcmMeridians'] as List<dynamic>?)?.cast<String>(),
       ayurvedicDoshas: (json['ayurvedicDoshas'] as List<dynamic>?)?.cast<String>(),
@@ -911,35 +911,35 @@ sealed class HistoryEntry extends Equatable {
     switch (type) {
       case 'BookmarkAdded':
         return BookmarkAddedHistoryEntry(
-          date: json['date'] ?? '',
-          summary: json['summary'] ?? '',
-          bookmark: Bookmark.fromJson(json['bookmark'] ?? {}),
+          date: json['date'] as String? ?? '',
+          summary: json['summary'] as String? ?? '',
+          bookmark: Bookmark.fromJson((json['bookmark'] as Map<String, dynamic>?) ?? const <String, dynamic>{}),
         );
       case 'NoteCreated':
         return NoteCreatedHistoryEntry(
-          date: json['date'] ?? '',
-          summary: json['summary'] ?? '',
-          partId: json['partId'] ?? '',
-          noteId: json['noteId'] ?? '',
+          date: json['date'] as String? ?? '',
+          summary: json['summary'] as String? ?? '',
+          partId: json['partId'] as String? ?? '',
+          noteId: json['noteId'] as String? ?? '',
         );
       case 'NoteDeleted':
         return NoteDeletedHistoryEntry(
-          date: json['date'] ?? '',
-          summary: json['summary'] ?? '',
-          partId: json['partId'] ?? '',
-          noteId: json['noteId'] ?? '',
+          date: json['date'] as String? ?? '',
+          summary: json['summary'] as String? ?? '',
+          partId: json['partId'] as String? ?? '',
+          noteId: json['noteId'] as String? ?? '',
         );
       case 'Y-BOCsAssessment':
         return YbocsAssessmentHistoryEntry(
-          date: json['date'] ?? '',
-          summary: json['summary'] ?? '',
+          date: json['date'] as String? ?? '',
+          summary: json['summary'] as String? ?? '',
           assessment: json['assessment'],
         );
       default:
         return _GenericHistoryEntry(
           type: type,
-          date: json['date'] ?? '',
-          summary: json['summary'] ?? '',
+          date: json['date'] as String? ?? '',
+          summary: json['summary'] as String? ?? '',
         );
     }
   }
@@ -1165,13 +1165,13 @@ class GeneticVariant extends Equatable {
 
   factory GeneticVariant.fromJson(Map<String, dynamic> json) {
     return GeneticVariant(
-      rsId: json['rsId'] ?? '',
-      gene: json['gene'] ?? '',
-      chromosome: json['chromosome'] ?? '',
-      position: json['position'] ?? '',
-      genotype: json['genotype'] ?? '',
-      clinicalSignificance: json['clinicalSignificance'] ?? '',
-      pathogenicity: json['pathogenicity'] ?? 'VUS',
+      rsId: json['rsId'] as String? ?? '',
+      gene: json['gene'] as String? ?? '',
+      chromosome: json['chromosome'] as String? ?? '',
+      position: json['position'] as String? ?? '',
+      genotype: json['genotype'] as String? ?? '',
+      clinicalSignificance: json['clinicalSignificance'] as String? ?? '',
+      pathogenicity: json['pathogenicity'] as String? ?? 'VUS',
     );
   }
 
@@ -1208,11 +1208,11 @@ class BiochemicalPathway extends Equatable {
 
   factory BiochemicalPathway.fromJson(Map<String, dynamic> json) {
     return BiochemicalPathway(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      status: json['status'] ?? 'Sub-optimal',
-      activeEnzymes: List<String>.from(json['activeEnzymes'] ?? []),
-      blocks: List<String>.from(json['blocks'] ?? []),
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      status: json['status'] as String? ?? 'Sub-optimal',
+      activeEnzymes: List<String>.from((json['activeEnzymes'] as Iterable<dynamic>?) ?? const <dynamic>[]),
+      blocks: List<String>.from((json['blocks'] as Iterable<dynamic>?) ?? const <dynamic>[]),
     );
   }
 
@@ -1247,11 +1247,11 @@ class PharmacokineticInteraction extends Equatable {
 
   factory PharmacokineticInteraction.fromJson(Map<String, dynamic> json) {
     return PharmacokineticInteraction(
-      agent: json['agent'] ?? '',
-      target: json['target'] ?? '',
-      affinity: json['affinity'] ?? '',
-      effect: json['effect'] ?? '',
-      riskLevel: json['riskLevel'] ?? 'Low',
+      agent: json['agent'] as String? ?? '',
+      target: json['target'] as String? ?? '',
+      affinity: json['affinity'] as String? ?? '',
+      effect: json['effect'] as String? ?? '',
+      riskLevel: json['riskLevel'] as String? ?? 'Low',
     );
   }
 
@@ -1288,12 +1288,12 @@ class EwarsOutbreakAlert extends Equatable {
 
   factory EwarsOutbreakAlert.fromJson(Map<String, dynamic> json) {
     return EwarsOutbreakAlert(
-      id: json['id'] ?? '',
-      pathogen: json['pathogen'] ?? '',
-      viralCopyCount: json['viralCopyCount'] ?? '',
-      surgeStatus: json['surgeStatus'] ?? 'Baseline',
-      whoBulletin: json['whoBulletin'] ?? '',
-      riskToPatient: json['riskToPatient'] ?? 'Low',
+      id: json['id'] as String? ?? '',
+      pathogen: json['pathogen'] as String? ?? '',
+      viralCopyCount: json['viralCopyCount'] as String? ?? '',
+      surgeStatus: json['surgeStatus'] as String? ?? 'Baseline',
+      whoBulletin: json['whoBulletin'] as String? ?? '',
+      riskToPatient: json['riskToPatient'] as String? ?? 'Low',
     );
   }
 
@@ -1331,12 +1331,12 @@ class TravelMedicineProfile extends Equatable {
 
   factory TravelMedicineProfile.fromJson(Map<String, dynamic> json) {
     return TravelMedicineProfile(
-      destination: json['destination'] ?? '',
-      departureDate: json['departureDate'] ?? '',
-      cdcNoticeLevel: json['cdcNoticeLevel'] ?? 'Level 1 - Watch',
-      requiredVaccines: List<String>.from(json['requiredVaccines'] ?? []),
-      vectorRisks: List<String>.from(json['vectorRisks'] ?? []),
-      prophylacticProtocol: List<String>.from(json['prophylacticProtocol'] ?? []),
+      destination: json['destination'] as String? ?? '',
+      departureDate: json['departureDate'] as String? ?? '',
+      cdcNoticeLevel: json['cdcNoticeLevel'] as String? ?? 'Level 1 - Watch',
+      requiredVaccines: List<String>.from((json['requiredVaccines'] as Iterable<dynamic>?) ?? const <dynamic>[]),
+      vectorRisks: List<String>.from((json['vectorRisks'] as Iterable<dynamic>?) ?? const <dynamic>[]),
+      prophylacticProtocol: List<String>.from((json['prophylacticProtocol'] as Iterable<dynamic>?) ?? const <dynamic>[]),
     );
   }
 
@@ -1370,10 +1370,10 @@ class WhoAwareClassification extends Equatable {
 
   factory WhoAwareClassification.fromJson(Map<String, dynamic> json) {
     return WhoAwareClassification(
-      medication: json['medication'] ?? '',
-      category: json['category'] ?? 'Access',
-      resistanceRisk: json['resistanceRisk'] ?? 'Low',
-      stewardshipNote: json['stewardshipNote'] ?? '',
+      medication: json['medication'] as String? ?? '',
+      category: json['category'] as String? ?? 'Access',
+      resistanceRisk: json['resistanceRisk'] as String? ?? 'Low',
+      stewardshipNote: json['stewardshipNote'] as String? ?? '',
     );
   }
 
@@ -1409,12 +1409,12 @@ class EnvironmentalHealthIndex extends Equatable {
 
   factory EnvironmentalHealthIndex.fromJson(Map<String, dynamic> json) {
     return EnvironmentalHealthIndex(
-      aqi: json['aqi'] ?? 0,
-      pm25: json['pm25'] ?? '',
-      ozone: json['ozone'] ?? '',
-      pollenDensity: json['pollenDensity'] ?? 'Low',
-      heatIndex: json['heatIndex'] ?? '',
-      vulnerabilityWarning: json['vulnerabilityWarning'] ?? '',
+      aqi: json['aqi'] as int? ?? 0,
+      pm25: json['pm25'] as String? ?? '',
+      ozone: json['ozone'] as String? ?? '',
+      pollenDensity: json['pollenDensity'] as String? ?? 'Low',
+      heatIndex: json['heatIndex'] as String? ?? '',
+      vulnerabilityWarning: json['vulnerabilityWarning'] as String? ?? '',
     );
   }
 

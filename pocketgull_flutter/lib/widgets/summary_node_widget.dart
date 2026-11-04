@@ -1,5 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import '../models/chat_message.dart';
 import 'inline_agent_chat_widget.dart';
 
@@ -12,7 +13,7 @@ class SummaryNodeWidget extends StatelessWidget {
   final bool showChat;
   final List<ChatMessage> chatMessages;
   final bool isChatLoading;
-  final Function(String) onSendMessage;
+  final void Function(String) onSendMessage;
   final VoidCallback? onAskAgent;
   final VoidCallback onClearChat;
   final VoidCallback? onExportFhir;
@@ -103,8 +104,8 @@ class SummaryNodeWidget extends StatelessWidget {
                       TextButton.icon(
                         onPressed: onAskAgent,
                         icon: Icon(
-                          showChat ? Icons.close : Icons.psychology_outlined, 
-                          size: 14
+                          showChat ? Icons.close : Icons.psychology_outlined,
+                          size: 14,
                         ),
                         label: Text(
                           showChat ? 'CLOSE' : 'AGENT',

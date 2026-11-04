@@ -37,10 +37,10 @@ class RegisteredClinician {
 
   factory RegisteredClinician.fromJson(Map<String, dynamic> json) {
     return RegisteredClinician(
-      name: json['name'] ?? '',
-      email: json['email'] ?? '',
-      clinic: json['clinic'] ?? '',
-      pin: json['pin'] ?? '',
+      name: json['name'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      clinic: json['clinic'] as String? ?? '',
+      pin: json['pin'] as String? ?? '',
     );
   }
 }
@@ -96,7 +96,7 @@ class FirestoreSyncNotifier extends Notifier<FirestoreSyncState> {
       final prefs = await SharedPreferences.getInstance();
       final stored = prefs.getString(_cliniciansKey);
       if (stored != null && stored.isNotEmpty) {
-        final List<dynamic> decoded = jsonDecode(stored);
+        final List<dynamic> decoded = jsonDecode(stored) as List<dynamic>;
         return decoded
             .map((j) => RegisteredClinician.fromJson(j as Map<String, dynamic>))
             .toList();

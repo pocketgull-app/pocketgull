@@ -385,7 +385,7 @@ class ClinicalMoeRouterNotifier extends Notifier<ClinicalMoeState> {
       for (final issue in issueList) {
         descriptions.add(issue.description.toLowerCase());
         descriptions.add(issue.name.toLowerCase());
-        descriptions.addAll(issue.symptoms.map((s) => s.toLowerCase()));
+        descriptions.addAll(issue.symptoms.map((s) => s.toString().toLowerCase()));
       }
     });
     final combinedIssueText = descriptions.join(' ');

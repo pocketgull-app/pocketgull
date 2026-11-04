@@ -106,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   void _unlockAndNavigate() {
     Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
+      PageRouteBuilder<void>(
         pageBuilder: (_, _, _) => const DashboardScreen(),
         transitionsBuilder: (_, a, _, c) => FadeTransition(opacity: a, child: c),
         transitionDuration: const Duration(milliseconds: 800),

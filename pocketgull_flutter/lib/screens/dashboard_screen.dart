@@ -70,7 +70,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     ref.read(patientProvider.notifier).loadPatient(patient);
 
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute<void>(builder: (context) => const HomeScreen()),
     );
   }
 

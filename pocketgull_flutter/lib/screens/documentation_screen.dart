@@ -1,5 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import '../services/documentation_service.dart';
 
 class DocumentationScreen extends StatefulWidget {

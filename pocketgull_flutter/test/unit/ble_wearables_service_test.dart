@@ -25,7 +25,7 @@ void main() {
 
       bleService.startScan();
 
-      await Future.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
       expect(states, contains(BleConnectionState.scanning));
       expect(bleService.state, equals(BleConnectionState.scanning));
 
@@ -47,7 +47,7 @@ void main() {
       expect(bleService.activeDevice, equals(mockDevice));
 
       // Allow simulated delay in connectDevice to fire
-      await Future.delayed(const Duration(milliseconds: 700));
+      await Future<void>.delayed(const Duration(milliseconds: 700));
 
       expect(states, containsAllInOrder([BleConnectionState.connecting, BleConnectionState.connected]));
       expect(bleService.state, equals(BleConnectionState.connected));
@@ -68,7 +68,7 @@ void main() {
       expect(bleService.isSimulationActive, isTrue);
 
       // Wait for synthetic timer ticks (20ms interval)
-      await Future.delayed(const Duration(milliseconds: 150));
+      await Future<void>.delayed(const Duration(milliseconds: 150));
 
       expect(ppgTraces.isNotEmpty, isTrue);
       expect(ecgTraces.isNotEmpty, isTrue);

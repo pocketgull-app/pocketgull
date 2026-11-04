@@ -10,9 +10,9 @@ class LeanMedicalIdTab extends ConsumerWidget {
   const LeanMedicalIdTab({super.key});
 
   String _generateFhirR4EmergencyBundle(dynamic state) {
-    final patientName = (state.name != null && state.name.isNotEmpty) ? state.name : 'Unknown Patient';
-    final hr = state.vitals.hr.isNotEmpty ? state.vitals.hr : '72';
-    final bp = state.vitals.bp.isNotEmpty ? state.vitals.bp : '118/76';
+    final String patientName = (state.name is String && (state.name as String).isNotEmpty) ? state.name as String : 'Unknown Patient';
+    final String hr = (state.vitals.hr as String).isNotEmpty ? state.vitals.hr as String : '72';
+    final String bp = (state.vitals.bp as String).isNotEmpty ? state.vitals.bp as String : '118/76';
 
     final fhirBundle = {
       'resourceType': 'Bundle',

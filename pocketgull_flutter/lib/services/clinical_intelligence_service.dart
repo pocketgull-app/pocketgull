@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: Apache-2.0
 import 'dart:convert';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:http/http.dart' as http;
 import '../models/orcid_profile.dart';
+import '../models/patient_types.dart';
 
 enum AnalysisLens {
   summaryOverview('Summary Overview'),
@@ -19,7 +21,7 @@ class ClinicalMetrics {
   final int stability;
   final int certainty;
 
-  ClinicalMetrics({
+  const ClinicalMetrics({
     required this.complexity,
     required this.stability,
     required this.certainty,
@@ -27,25 +29,22 @@ class ClinicalMetrics {
 }
 
 class ClinicalIntelligenceService {
-  final GenerativeModel _model;
   final String apiKey;
   final String modelName;
-  ChatSession? _chatSession;
+  final http.Client _httpClient;
+  final List<Map<String, Object?>> _chatHistory = [];
+  bool _chatInitialized = false;
 
   void resetAIState() {
-    _chatSession = null;
+    _chatHistory.clear();
+    _chatInitialized = false;
   }
 
   ClinicalIntelligenceService({
     required this.apiKey,
     this.modelName = 'gemini-3.8-flash',
-  }) : _model = GenerativeModel(
-          model: modelName,
-          apiKey: apiKey.isNotEmpty ? apiKey : 'placeholder_key',
-          generationConfig: GenerationConfig(
-            temperature: 0.2,
-          ),
-        );
+    http.Client? httpClient,
+  }) : _httpClient = httpClient ?? http.Client();
 
   final String _formattingRules = '''
 FORMATTING RULES (you MUST follow these exactly):
@@ -101,16 +100,56 @@ $_formattingRules''';
     }
   }
 
-  bool get _isMockMode => apiKey.isEmpty || apiKey == 'placeholder_key';
+  bool get _isMockMode =>
+      apiKey.isEmpty || apiKey == 'placeholder_key' || apiKey == 'YOUR_API_KEY_HERE';
 
-  Stream<String> generateReportStream(String patientData, AnalysisLens lens, {OrcidProfile? orcidProfile}) async* {
+  Future<String?> _generateGeminiText(String prompt, {double temperature = 0.2}) async {
+    final uri = Uri.parse(
+      'https://generativelanguage.googleapis.com/v1beta/models/$modelName:generateContent?key=$apiKey',
+    );
+    final response = await _httpClient.post(
+      uri,
+      headers: const {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'contents': [
+          {
+            'role': 'user',
+            'parts': [
+              {'text': prompt},
+            ],
+          },
+        ],
+        'generationConfig': {
+          'temperature': temperature,
+        },
+      }),
+    );
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Gemini HTTP ${response.statusCode}');
+    }
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final candidates = decoded['candidates'] as List<dynamic>?;
+    if (candidates == null || candidates.isEmpty) return null;
+    final first = candidates.first as Map<String, dynamic>;
+    final content = first['content'] as Map<String, dynamic>?;
+    final parts = content?['parts'] as List<dynamic>?;
+    if (parts == null || parts.isEmpty) return null;
+    final firstPart = parts.first as Map<String, dynamic>;
+    return firstPart['text'] as String?;
+  }
+
+  Stream<String> generateReportStream(
+    String patientData,
+    AnalysisLens lens, {
+    OrcidProfile? orcidProfile,
+  }) async* {
     if (_isMockMode) {
-      await Future.delayed(const Duration(milliseconds: 300));
-      
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
       final String dynamicReport = _generateDynamicFallbackReport(patientData, lens);
       final List<String> chunks = dynamicReport.split('\n');
       for (final chunk in chunks) {
-        await Future.delayed(const Duration(milliseconds: 30));
+        await Future<void>.delayed(const Duration(milliseconds: 30));
         yield '$chunk\n';
       }
       return;
@@ -131,21 +170,15 @@ $_formattingRules''';
           '$worksList';
     }
 
-    final prompt = [
-      Content.text('SYSTEM INSTRUCTIONS:\n$sysInst\n\nPATIENT DATA:\n$patientData')
-    ];
-    
-    final responseStream = _model.generateContentStream(prompt);
-    
-    await for (final chunk in responseStream) {
-      if (chunk.text != null) {
-        yield chunk.text!;
-      }
+    final text = await _generateGeminiText(
+      'SYSTEM INSTRUCTIONS:\n$sysInst\n\n[CLINICAL DIRECTIVE CONTEXT]\nPATIENT DATA:\n$patientData',
+    );
+    if (text != null && text.isNotEmpty) {
+      yield text;
     }
   }
 
   String _generateDynamicFallbackReport(String patientData, AnalysisLens lens) {
-    // Extract patient name or key parameters if present
     String patientName = 'Patient';
     if (patientData.contains('Charles Darwin')) {
       patientName = 'Charles Darwin';
@@ -229,43 +262,49 @@ Strategy synthesized for $patientName based on active clinical parameters.''';
   }
 
   Future<void> startChatSession(String patientData, {OrcidProfile? orcidProfile}) async {
+    _chatHistory.clear();
     if (_isMockMode) {
-      _chatSession = null;
+      _chatInitialized = false;
       return;
     }
-    final String context = 'You are a collaborative care plan co-pilot named "Cerebella". You are assisting a doctor in refining a strategy for their patient.\n\n'
+    final String context =
+        'You are a collaborative care plan co-pilot named "Cerebella". You are assisting a doctor in refining a strategy for their patient.\n\n'
         'PATIENT DATA CONTEXT:\n$patientData\n';
-        
-    _chatSession = _model.startChat(history: [
-      Content.model([TextPart('Understood. I am ready to assist.')])
-    ]);
-    
-    await _chatSession!.sendMessage(Content.text('SYSTEM CONTEXT: $context'));
+
+    _chatHistory.add({
+      'role': 'user',
+      'parts': [
+        {'text': 'SYSTEM CONTEXT: $context'},
+      ],
+    });
+    _chatInitialized = true;
   }
 
   Future<String> sendChatMessage(String message) async {
     if (_isMockMode) {
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future<void>.delayed(const Duration(milliseconds: 500));
       return 'I have analyzed the current patient data. Strategy updated for: "$message". All vital indicators and functional protocols remain aligned with clinical guidelines.';
     }
-    if (_chatSession == null) {
+    if (!_chatInitialized) {
       throw Exception('Chat session not initialized. Call startChatSession first.');
     }
-    
-    final response = await _chatSession!.sendMessage(Content.text(message));
-    return response.text ?? 'No response generated.';
+
+    final response = await _generateGeminiText(message);
+    return response ?? 'No response generated.';
   }
 
   Future<String> queryClinicalAssistant({
     required String prompt,
-    dynamic patientState,
+    PatientState? patientState,
   }) async {
     if (_isMockMode) {
-      await Future.delayed(const Duration(milliseconds: 350));
+      await Future<void>.delayed(const Duration(milliseconds: 350));
       return 'Clinical Insight: Based on current physiological metrics and active trajectory, your vitals remain within target parameters. Continue with scheduled hydration, morning box breathing, and regular post-prandial movement. Consult your physician for any acute concerns.';
     }
-    if (_chatSession == null) {
-      final contextStr = patientState != null ? 'Patient: ${patientState.name}, Goals: ${patientState.patientGoals}' : 'General patient context';
+    if (!_chatInitialized) {
+      final contextStr = patientState != null
+          ? 'Patient: ${patientState.name}, Goals: ${patientState.patientGoals}'
+          : 'General patient context';
       await startChatSession(contextStr);
     }
     return sendChatMessage(prompt);
@@ -275,26 +314,29 @@ Strategy synthesized for $patientName based on active clinical parameters.''';
     if (_isMockMode) {
       return 'Hello Doctor, I have reviewed the patient file and am ready to assist with care plan strategies.';
     }
-    if (_chatSession == null) {
-       throw Exception('Chat session not initialized.');
+    if (!_chatInitialized) {
+      throw Exception('Chat session not initialized.');
     }
-    final response = await _chatSession!.sendMessage(
-      Content.text("Start the conversation with a friendly and professional tone. Greet the doctor and confirm you have reviewed the patient's file and are ready for questions.")
+    return sendChatMessage(
+      "Start the conversation with a friendly and professional tone. Greet the doctor and confirm you have reviewed the patient's file and are ready for questions.",
     );
-    return response.text ?? 'Hello Doctor, I have reviewed the patient file and am ready to assist.';
   }
 
   Future<String> translateReadingLevel(String text, String level) async {
     if (_isMockMode) {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
       return text;
     }
     final prompt = 'REWRITE RULES:\nRewrite text for level: $level\n\nTEXT:\n$text';
-    final response = await _model.generateContent([Content.text(prompt)]);
-    return response.text ?? text;
+    final response = await _generateGeminiText(prompt);
+    return response ?? text;
   }
 
-  Future<ClinicalIntelligenceResult> analyzeDictation(String transcription, String partId, {String historicalContext = ""}) async {
+  Future<ClinicalIntelligenceResult> analyzeDictation(
+    String transcription,
+    String partId, {
+    String historicalContext = '',
+  }) async {
     final prompt = '''
 You are a medical intake triage assistant. Analyze the patient's dictated symptoms.
 Body part: $partId
@@ -313,28 +355,30 @@ Return ONLY valid JSON. Do not include markdown code block formatting.
 ''';
 
     try {
-      final response = await _model.generateContent([Content.text(prompt)]);
-      final text = response.text?.trim() ?? '{}';
-      
-      // Clean up markdown block if model ignored the instruction
+      if (_isMockMode) {
+        throw Exception('Mock mode active');
+      }
+      final rawText = await _generateGeminiText(prompt);
+      final text = rawText?.trim() ?? '{}';
       final jsonString = text.replaceAll('```json', '').replaceAll('```', '').trim();
-      
       final data = jsonDecode(jsonString) as Map<String, dynamic>;
-      
+
       return ClinicalIntelligenceResult(
         painLevel: data['painLevel'] as int?,
         symptoms: data['symptoms'] as String? ?? transcription,
         clarificationQuestion: data['clarificationQuestion'] as String?,
+        recommendations: data['recommendations'] as String?,
         trajectory: data['trajectory'] as String?,
-        requiresEscalation: data['requiresEscalation'] as bool? ?? false,
+        deltaSummary: data['deltaSummary'] as String?,
+        requiresEscalation: (data['requiresEscalation'] as bool?) ?? (data['escalationFlag'] as bool?) ?? false,
+        escalationFlag: (data['escalationFlag'] as bool?) ?? (data['requiresEscalation'] as bool?),
       );
     } catch (e) {
-      // Fallback logic if AI fails or returns invalid JSON
       int? mockPain;
       String? mockQuestion;
       String? mockTrajectory;
       bool mockEscalation = false;
-      
+
       if (transcription.toLowerCase().contains('pain') && !transcription.contains(RegExp(r'\d'))) {
         mockQuestion = 'What is the pain severity on a scale of 1-10?';
       } else if (transcription.contains(RegExp(r'\d'))) {
@@ -342,9 +386,10 @@ Return ONLY valid JSON. Do not include markdown code block formatting.
         if (match != null) mockPain = int.parse(match.group(0)!);
       }
 
-      if (transcription.toLowerCase().contains('worse') || transcription.toLowerCase().contains('escalating')) {
-         mockTrajectory = 'rapidly_escalating';
-         mockEscalation = true;
+      if (transcription.toLowerCase().contains('worse') ||
+          transcription.toLowerCase().contains('escalating')) {
+        mockTrajectory = 'rapidly_escalating';
+        mockEscalation = true;
       }
 
       return ClinicalIntelligenceResult(
@@ -362,14 +407,20 @@ class ClinicalIntelligenceResult {
   final int? painLevel;
   final String symptoms;
   final String? clarificationQuestion;
+  final String? recommendations;
   final String? trajectory;
+  final String? deltaSummary;
   final bool requiresEscalation;
+  final bool? escalationFlag;
 
-  ClinicalIntelligenceResult({
+  const ClinicalIntelligenceResult({
     this.painLevel,
     required this.symptoms,
     this.clarificationQuestion,
+    this.recommendations,
     this.trajectory,
+    this.deltaSummary,
     this.requiresEscalation = false,
+    this.escalationFlag,
   });
 }

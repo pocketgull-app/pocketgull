@@ -9,7 +9,7 @@ import '../providers/patient_management_provider.dart';
 /// Displays a searchable, sortable list of patients with triage color coding.
 
 class PatientDirectoryWidget extends ConsumerStatefulWidget {
-  final Function(Patient patient)? onPatientSelected;
+  final void Function(Patient patient)? onPatientSelected;
 
   const PatientDirectoryWidget({super.key, this.onPatientSelected});
 

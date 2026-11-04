@@ -5,6 +5,7 @@ import 'box_breathing_wrapper.dart';
 import 'history_timeline_widget.dart';
 import '../models/patient_types.dart';
 import '../services/dictation_service.dart';
+import '../services/clinical_intelligence_service.dart';
 import 'dictation_modal_widget.dart';
 import 'anti_confirmation_bias_widget.dart';
 
@@ -43,7 +44,7 @@ class _IntakeFormWidgetState extends ConsumerState<IntakeFormWidget> {
       }).join("\n");
     }
 
-    showDialog(
+    showDialog<void>(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.1),
       builder: (context) {
@@ -85,7 +86,7 @@ class _IntakeFormWidgetState extends ConsumerState<IntakeFormWidget> {
     });
   }
 
-  void _handleDictationResult(String text, dynamic aiResult, TextEditingController controller, String partId, BodyPartIssue note) {
+  void _handleDictationResult(String text, ClinicalIntelligenceResult? aiResult, TextEditingController controller, String partId, BodyPartIssue note) {
     final command = _dictationService.parseCommand(text);
     
     if (command != null) {
@@ -103,7 +104,7 @@ class _IntakeFormWidgetState extends ConsumerState<IntakeFormWidget> {
                 id: note.id,
                 noteId: note.noteId,
                 name: note.name,
-                painLevel: command.value,
+                painLevel: command.value as int,
                 description: note.description,
                 symptoms: note.symptoms,
                 recommendation: note.recommendation,
@@ -122,7 +123,7 @@ class _IntakeFormWidgetState extends ConsumerState<IntakeFormWidget> {
                 backgroundColor: Color(0xFF0F172A),
               ),
             );
-            showModalBottomSheet(
+            showModalBottomSheet<void>(
               context: context,
               backgroundColor: Colors.transparent,
               isScrollControlled: true,
@@ -152,14 +153,14 @@ class _IntakeFormWidgetState extends ConsumerState<IntakeFormWidget> {
     bool resolvedEscalationFlag = note.escalationFlag;
     
     if (aiResult != null) {
-      if (aiResult.painLevel != null) resolvedPainLevel = aiResult.painLevel;
+      if (aiResult.painLevel != null) resolvedPainLevel = aiResult.painLevel!;
       if (aiResult.recommendations != null) {
-        resolvedRecs = (resolvedRecs.isEmpty) ? aiResult.recommendations : '$resolvedRecs ${aiResult.recommendations}';
+        resolvedRecs = (resolvedRecs.isEmpty) ? aiResult.recommendations! : '$resolvedRecs ${aiResult.recommendations}';
         _recController.text = resolvedRecs;
       }
       if (aiResult.trajectory != null) resolvedTrajectory = aiResult.trajectory;
       if (aiResult.deltaSummary != null) resolvedDeltaSummary = aiResult.deltaSummary;
-      if (aiResult.escalationFlag != null) resolvedEscalationFlag = aiResult.escalationFlag;
+      if (aiResult.escalationFlag != null) resolvedEscalationFlag = aiResult.escalationFlag!;
     }
 
     // Trigger bloc update

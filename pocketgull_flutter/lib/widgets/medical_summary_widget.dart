@@ -27,7 +27,7 @@ class _MedicalSummaryWidgetState extends ConsumerState<MedicalSummaryWidget> {
     final fhirService = ref.read(fhirServiceProvider);
     final fhirJson = fhirService.exportPatientToFhirJson(patientState);
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) {
         return AlertDialog(

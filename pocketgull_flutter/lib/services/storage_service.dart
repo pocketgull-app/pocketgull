@@ -53,7 +53,7 @@ class StorageService {
   Future<void> saveState(String id, Map<String, dynamic> state) async {
     try {
       final existing = _loadRaw(id);
-      final data = existing ?? {'state': null, 'chatHistory': []};
+      final data = existing ?? <String, dynamic>{'state': null, 'chatHistory': <dynamic>[]};
       data['state'] = state;
       _box?.put(id, _encrypt(data));
     } catch (e) {
@@ -65,7 +65,7 @@ class StorageService {
   Future<void> saveChatHistory(String id, List<dynamic> chatHistory) async {
     try {
       final existing = _loadRaw(id);
-      final data = existing ?? {'state': null, 'chatHistory': []};
+      final data = existing ?? <String, dynamic>{'state': null, 'chatHistory': <dynamic>[]};
       data['chatHistory'] = chatHistory;
       _box?.put(id, _encrypt(data));
     } catch (e) {

@@ -46,7 +46,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     if (!context.mounted) return;
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
@@ -223,7 +223,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             tooltip: 'Ethical Research Data Dividend',
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ResearchDataDividendScreen()),
+                MaterialPageRoute<void>(builder: (_) => const ResearchDataDividendScreen()),
               );
             },
           ),
