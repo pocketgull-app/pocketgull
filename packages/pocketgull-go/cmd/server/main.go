@@ -1,4 +1,6 @@
-// Package main is the entrypoint for the Pocket-Gull Go high-performance telemetry & FHIR microservice.
+// SPDX-License-Identifier: Apache-2.0
+// Package main is the entrypoint for the Pocket-Gull Go high-performance
+// Web Edge, Clinical Triage, 3D Glyph Extrusion, Telemetry & FHIR server.
 package main
 
 import (
@@ -14,10 +16,15 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
+	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/clinical"
 	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/fhir"
+	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/glyph3d"
+	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/security"
 	"github.com/pocketgull-app/pocketgull/packages/pocketgull-go/internal/telemetry"
 )
 
@@ -27,6 +34,10 @@ var (
 	date    = "unknown"
 )
 
+type contextKey string
+
+const cspNonceKey contextKey = "csp_nonce"
+
 // TelemetryRequest models incoming biophysical samples and baseline parameters.
 type TelemetryRequest struct {
 	Samples        []float64 `json:"samples"`
@@ -34,9 +45,19 @@ type TelemetryRequest struct {
 	Alpha          float64   `json:"alpha"`
 }
 
-// Observatory125Middleware enforces Mozilla HTTP Observatory 125/100 (Grade A+) security headers
-// and per-request CSPRNG CSP nonces as Middleware #1 prior to any route handling.
-func Observatory125Middleware(next http.Handler) http.Handler {
+// GlyphCompileRequest models a 1000 UPM medical ligature 3D compilation request.
+type GlyphCompileRequest struct {
+	Symbol        string  `json:"symbol"`
+	Depth         float32 `json:"depth,omitempty"`
+	CurveSegments int     `json:"curveSegments,omitempty"`
+	Scale         float32 `json:"scale,omitempty"`
+	PartID        uint32  `json:"partId,omitempty"`
+}
+
+// Observatory125Middleware enforces Mozilla HTTP Observatory 125/100 (Grade A+) security headers,
+// per-request CSPRNG CSP nonces, OFAC HTTP 451 geo-compliance, and scanner IP blocklisting
+// as Middleware #1 prior to any route handling.
+func Observatory125Middleware(blocklist *security.Blocklist, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		nonceBytes := make([]byte, 16)
 		_, _ = rand.Read(nonceBytes)
@@ -50,27 +71,55 @@ func Observatory125Middleware(next http.Handler) http.Handler {
 		h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		h.Set("X-Frame-Options", "SAMEORIGIN")
 		h.Set("X-Content-Type-Options", "nosniff")
-		h.Set("Content-Security-Policy", fmt.Sprintf("default-src 'none'; script-src 'nonce-%s' 'strict-dynamic'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'", nonce))
+		h.Set("X-Digital-Emblem", "Red Crystal (Tallinn Manual Rule 131 Medical Sanctuary)")
+		h.Set("Content-Security-Policy", fmt.Sprintf("default-src 'none'; script-src 'nonce-%s' 'strict-dynamic'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://font.pocketgull.app; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'", nonce))
 
-		next.ServeHTTP(w, r)
+		// 1. OFAC Statutory Sanctions Gate (HTTP 451 Unavailable For Legal Reasons)
+		if sanctioned, country := security.IsOFACSanctioned(r); sanctioned {
+			h.Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnavailableForLegalReasons)
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"status":    451,
+				"error":     "Unavailable For Legal Reasons (OFAC Comprehensive Sanctions)",
+				"territory": country,
+			})
+			return
+		}
+
+		// 2. Zero-Cost Threat Scanner Blocklist & Auto-Ban
+		clientIP := security.ExtractClientIP(r)
+		if blocklist.IsBlocked(clientIP) {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+		if security.IsMaliciousProbe(r.URL.Path) {
+			blocklist.Ban(clientIP)
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), cspNonceKey, nonce)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-// SetupRoutes registers and returns the HTTP mux for the microservice.
+// SetupRoutes registers and returns the HTTP mux for the Go server.
 func SetupRoutes(appVersion string) http.Handler {
 	mux := http.NewServeMux()
+	blocklist := security.NewBlocklist(24 * time.Hour)
 
-	// Health check endpoint
+	// 1. Health check endpoint
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]any{
 			"status":    "healthy",
+			"engine":    "pocketgull-go",
 			"version":   appVersion,
 			"timestamp": time.Now().UTC().Format(time.RFC3339),
 		})
 	})
 
-	// FHIR R4 Bundle validation endpoint
+	// 2. FHIR R4 Bundle validation & HIPAA Safe Harbor endpoint
 	mux.HandleFunc("POST /api/v1/fhir/validate", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -107,12 +156,12 @@ func SetupRoutes(appVersion string) http.Handler {
 		})
 	})
 
-	// Biophysical telemetry stats & Popperian null-hypothesis test endpoint
+	// 3. Biophysical telemetry stats & Popperian null-hypothesis test endpoint
 	mux.HandleFunc("POST /api/v1/telemetry/evaluate", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		var req TelemetryRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 2*1024*1024)).Decode(&req); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_ = json.NewEncoder(w).Encode(map[string]any{"error": "invalid request json"})
 			return
@@ -134,7 +183,88 @@ func SetupRoutes(appVersion string) http.Handler {
 		_ = json.NewEncoder(w).Encode(res)
 	})
 
-	return Observatory125Middleware(mux)
+	// 4. 1000 UPM Direct-Curves 3D Medical Glyph Extrusion endpoint
+	mux.HandleFunc("POST /api/v1/glyph3d/compile", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		var req GlyphCompileRequest
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 64*1024)).Decode(&req); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]any{"error": "invalid request json"})
+			return
+		}
+
+		mesh, err := glyph3d.CompileSymbol(req.Symbol, &glyph3d.ExtrusionOptions{
+			Depth:         req.Depth,
+			CurveSegments: req.CurveSegments,
+			Scale:         req.Scale,
+			PartID:        req.PartID,
+		})
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]any{"error": err.Error()})
+			return
+		}
+
+		_ = json.NewEncoder(w).Encode(mesh)
+	})
+
+	// 5. Deterministic Clinical Red-Flag & Five Eyes (FVEY) Triage Gate
+	mux.HandleFunc("POST /api/v1/clinical/triage", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		var req clinical.TriageRequest
+		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 256*1024)).Decode(&req); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(map[string]any{"error": "invalid request json"})
+			return
+		}
+
+		result := clinical.EvaluateRedFlags(req)
+		_ = json.NewEncoder(w).Encode(result)
+	})
+
+	// 6. Static Angular SPA & Dynamic CSP Nonce Injection Fallback
+	staticDir := os.Getenv("POCKETGULL_STATIC_DIR")
+	if staticDir == "" {
+		staticDir = filepath.Join("..", "..", "dist", "app", "browser")
+	}
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		ext := strings.ToLower(filepath.Ext(r.URL.Path))
+		if ext == ".js" || ext == ".css" || ext == ".woff2" || ext == ".svg" || ext == ".png" || ext == ".ico" || ext == ".webmanifest" {
+			cleanRel := filepath.Clean(strings.TrimPrefix(r.URL.Path, "/"))
+			if strings.Contains(cleanRel, "..") {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			target := filepath.Join(staticDir, cleanRel)
+			if info, err := os.Stat(target); err == nil && !info.IsDir() {
+				http.ServeFile(w, r, target)
+				return
+			}
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		indexPath := filepath.Join(staticDir, "index.html")
+		rawHTML, err := os.ReadFile(indexPath)
+		if err != nil {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			nonce, _ := r.Context().Value(cspNonceKey).(string)
+			fallback := security.InjectCSPNonce(`<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>PocketGull Go Edge</title></head><body><app-root></app-root><script>window.__PG_EDGE="go";</script></body></html>`, nonce)
+			_, _ = w.Write([]byte(fallback))
+			return
+		}
+
+		nonce, _ := r.Context().Value(cspNonceKey).(string)
+		injected := security.InjectCSPNonce(string(rawHTML), nonce)
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Cache-Control", "no-cache, must-revalidate")
+		_, _ = w.Write([]byte(injected))
+	})
+
+	return Observatory125Middleware(blocklist, mux)
 }
 
 func main() {
@@ -146,7 +276,7 @@ func main() {
 	}))
 	slog.SetDefault(logger)
 
-	slog.Info("starting pocketgull-go sidecar",
+	slog.Info("starting pocketgull-go edge & clinical server",
 		"version", version,
 		"commit", commit,
 		"built", date,
@@ -163,7 +293,6 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	// Graceful shutdown channel
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
