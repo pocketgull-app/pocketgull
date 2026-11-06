@@ -155,7 +155,7 @@ class MainActivity : FlutterActivity() {
                         hapticEventSink?.success(bandCode)
                     }
                 }
-                if (responseNeeded) {
+                if (responseNeeded && device != null) {
                     bluetoothGattServer?.sendResponse(device, requestId, android.bluetooth.BluetoothGatt.GATT_SUCCESS, offset, value)
                 }
             }

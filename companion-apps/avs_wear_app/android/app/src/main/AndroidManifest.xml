@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-feature android:name="android.hardware.type.watch" />
+    <uses-feature android:name="android.hardware.type.watch" android:required="false" />
 
     <!-- Haptic & Sensor Permissions -->
     <uses-permission android:name="android.permission.VIBRATE" />
