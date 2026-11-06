@@ -78,12 +78,24 @@ interface IAiChatStartRequest {
   systemInstruction: string;
   model?: string;
   temperature?: number;
+  cachedContentName?: string;
 }
 
 /** POST /api/ai/chat/message */
 interface IAiChatMessageRequest {
   sessionId: string;
   message: string;
+  cachedContentName?: string;
+}
+
+/** POST /api/ai/context-cache/create */
+interface IAiContextCacheCreateRequest {
+  fhirBundleHash: string;
+  contentsText: string;
+  systemInstruction?: string;
+  model?: string;
+  ttlSeconds?: number;
+  displayName?: string;
 }
 
 /** Chat session shape (replaces `Map<string, any>` anti-pattern) */
@@ -92,6 +104,9 @@ interface IChatSession {
   systemInstruction: string;
   model: string;
   temperature: number;
+  cachedContentName?: string;
+  lastPromptTokens?: number;
+  lastCachedTokens?: number;
 }
 
 // ── Shared helpers (injected from server.ts via factory) ────────────────
@@ -670,7 +685,8 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         history: [],
         systemInstruction: body.systemInstruction,
         model: validatedModel,
-        temperature: body.temperature ?? 0.1
+        temperature: body.temperature ?? 0.1,
+        cachedContentName: typeof body.cachedContentName === 'string' ? body.cachedContentName : undefined
       });
 
       if (chatSessions.size > MAX_CHAT_SESSIONS) {
@@ -678,6 +694,90 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         if (oldestKey) chatSessions.delete(oldestKey);
       }
       res.json({ ok: true });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unknown error';
+      res.status(500).json({ error: message });
+    }
+  });
+
+  // POST /api/ai/context-cache/create — Explicit Context Cache Pinning (cachedContents.create)
+  router.post('/context-cache/create', async (req: Request, res: Response) => {
+    try {
+      const body = req.body as IAiContextCacheCreateRequest;
+      if (!body || typeof body.contentsText !== 'string' || !body.contentsText.trim()) {
+        res.status(400).json({ error: 'contentsText is required for Explicit Context Caching' });
+        return;
+      }
+
+      let rawModel: string;
+      try {
+        rawModel = normalizeAndValidateModel(body.model || 'gemini-3.8-flash');
+      } catch {
+        rawModel = 'gemini-3.8-flash';
+      }
+
+      const ttlSeconds = Math.max(60, Math.min(86400, Number(body.ttlSeconds ?? 300)));
+      const fhirHash = String(body.fhirBundleHash || 'default').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32);
+      const displayName = String(body.displayName || `pg-fhir-${fhirHash.slice(0, 8)}`).slice(0, 64);
+      const safeSysInst = sanitizeSystemInstruction(body.systemInstruction || BASE_CLINICAL_PROMPT);
+
+      const token = await getGcpAccessToken();
+      const key = token ? '' : await getApiKey(req);
+
+      if (token || key) {
+        try {
+          const { GoogleGenAI } = await import('@google/genai');
+          const ai = token
+            ? new GoogleGenAI({
+                vertexai: true,
+                project: (process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645').replace(/[^a-zA-Z0-9-_]/g, ''),
+                location: (process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1').replace(/[^a-zA-Z0-9-]/g, '')
+              })
+            : new GoogleGenAI({ apiKey: key });
+
+          const created = await ai.caches.create({
+            model: rawModel,
+            config: {
+              displayName,
+              ttl: `${ttlSeconds}s`,
+              systemInstruction: safeSysInst,
+              contents: [{ role: 'user', parts: [{ text: String(body.contentsText).slice(0, 200000) }] }]
+            }
+          });
+
+          if (created && created.name) {
+            const now = new Date();
+            const expires = new Date(now.getTime() + ttlSeconds * 1000);
+            res.json({
+              cacheName: created.name,
+              displayName,
+              model: rawModel,
+              tokenCount: created.usageMetadata?.totalTokenCount || Math.max(1024, Math.round(body.contentsText.length / 4)),
+              createdAt: created.createTime || now.toISOString(),
+              expiresAt: created.expireTime || expires.toISOString(),
+              fhirBundleHash: fhirHash,
+              isRemotePinned: true
+            });
+            return;
+          }
+        } catch (cacheErr: unknown) {
+          console.warn('[Explicit Context Cache] Remote caches.create fallback (sub-minimum tokens or offline):', (cacheErr as Error)?.message);
+        }
+      }
+
+      // Deterministic fallback resource when below minimum token threshold or offline
+      const now = new Date();
+      const expires = new Date(now.getTime() + ttlSeconds * 1000);
+      res.json({
+        cacheName: `cachedContents/pg-cache-${fhirHash.slice(0, 12)}`,
+        displayName,
+        model: rawModel,
+        tokenCount: Math.max(1024, Math.round(body.contentsText.length / 4)),
+        createdAt: now.toISOString(),
+        expiresAt: expires.toISOString(),
+        fhirBundleHash: fhirHash,
+        isRemotePinned: false
+      });
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Unknown error';
       res.status(500).json({ error: message });
@@ -707,6 +807,9 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
       }
       let response: globalThis.Response;
 
+      const activeCacheName = (req.headers['x-gemini-cached-content'] as string | undefined) || body.cachedContentName || session.cachedContentName;
+      const isRealRemoteCache = typeof activeCacheName === 'string' && activeCacheName.startsWith('projects/') || (typeof activeCacheName === 'string' && activeCacheName.startsWith('cachedContents/') && !activeCacheName.startsWith('cachedContents/pg-cache-'));
+
       if (token) {
         const projectId = (process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645').replace(/[^a-zA-Z0-9-_]/g, '');
         const location = (process.env['GOOGLE_CLOUD_REGION'] || process.env['GCLOUD_REGION'] || 'us-west1').replace(/[^a-zA-Z0-9-]/g, '');
@@ -716,23 +819,31 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         const safeContents = sanitizeApiPayload(session.history);
         const safeSystemInstruction = typeof session.systemInstruction === 'string' ? session.systemInstruction : '';
 
+        const vertexPayload: Record<string, unknown> = {
+          contents: safeContents,
+          generationConfig: { temperature: session.temperature },
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+          ]
+        };
+
+        // When using an Explicit Context Cache resource, Vertex/Gemini pins systemInstruction inside cachedContent
+        if (isRealRemoteCache && activeCacheName) {
+          vertexPayload['cachedContent'] = activeCacheName;
+        } else {
+          vertexPayload['systemInstruction'] = { parts: [{ text: safeSystemInstruction }] };
+        }
+
         response = await fetch(vertexUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({
-            contents: safeContents,
-            systemInstruction: { parts: [{ text: safeSystemInstruction }] },
-            generationConfig: { temperature: session.temperature },
-            safetySettings: [
-              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
-              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
-              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
-              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
-            ]
-          })
+          body: JSON.stringify(vertexPayload)
         });
       } else {
         console.log(`[Gemini Developer API] Chat message model: ${rawModel}`);
@@ -740,23 +851,30 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         const safeSystemInstruction = typeof session.systemInstruction === 'string' ? session.systemInstruction : '';
         const safeModel = ALLOWED_DEV_MODELS.includes(rawModel) ? rawModel : 'gemini-3.8-flash';
 
+        const devPayload: Record<string, unknown> = {
+          contents: safeContents,
+          generationConfig: { temperature: session.temperature },
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+          ]
+        };
+
+        if (isRealRemoteCache && activeCacheName) {
+          devPayload['cachedContent'] = activeCacheName;
+        } else {
+          devPayload['systemInstruction'] = { parts: [{ text: safeSystemInstruction }] };
+        }
+
         response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${safeModel}:generateContent?key=${key}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Referer': 'https://pocketgull.app/'
           },
-          body: JSON.stringify({
-            contents: safeContents,
-            systemInstruction: { parts: [{ text: safeSystemInstruction }] },
-            generationConfig: { temperature: session.temperature },
-            safetySettings: [
-              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
-              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
-              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
-              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
-            ]
-          })
+          body: JSON.stringify(devPayload)
         });
       }
 
@@ -769,8 +887,40 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
       const candidates = data['candidates'] as Array<{ content?: { parts?: Array<{ text?: string }> } }> | undefined;
       const responseText = candidates?.[0]?.content?.parts?.[0]?.text || '';
 
+      // Extract KV Cache telemetry and detect mid-session prefix truncations or zero drops
+      const usage = data['usageMetadata'] as Record<string, number | undefined> | undefined;
+      const promptTokens = usage?.['promptTokenCount'] || 0;
+      const cachedTokens = usage?.['cachedContentTokenCount'] || 0;
+      const candidateTokens = usage?.['candidatesTokenCount'] || 0;
+      const prevCached = session.lastCachedTokens || 0;
+
+      let cacheDropDetected = false;
+      let cacheDropType: 'NONE' | 'ZERO_DROP' | 'SYSTEM_BOUNDARY_TRUNCATION' = 'NONE';
+      if (prevCached > 4096 && promptTokens > 4096) {
+        if (cachedTokens === 0) {
+          cacheDropDetected = true;
+          cacheDropType = 'ZERO_DROP';
+        } else if (cachedTokens < prevCached * 0.7) {
+          cacheDropDetected = true;
+          cacheDropType = 'SYSTEM_BOUNDARY_TRUNCATION';
+        }
+      }
+
+      session.lastPromptTokens = promptTokens;
+      session.lastCachedTokens = cachedTokens;
       session.history.push({ role: 'model', parts: [{ text: responseText }] });
-      res.json({ text: responseText });
+
+      res.json({
+        text: responseText,
+        telemetry: {
+          promptTokens,
+          cachedTokens,
+          candidateTokens,
+          cacheDropDetected,
+          cacheDropType,
+          previousCachedTokens: prevCached
+        }
+      });
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Unknown error';
       res.status(500).json({ error: message });

@@ -33,12 +33,28 @@ class ClinicalIntelligenceService {
   final String modelName;
   final http.Client _httpClient;
   final List<Map<String, Object?>> _chatHistory = [];
+  String? _chatSystemInstruction;
+  String? _activeCachedContentName;
+  int lastPromptTokens = 0;
+  int lastCachedTokens = 0;
+  bool lastTurnCacheDropped = false;
   bool _chatInitialized = false;
 
   void resetAIState() {
     _chatHistory.clear();
+    _chatSystemInstruction = null;
+    _activeCachedContentName = null;
+    lastPromptTokens = 0;
+    lastCachedTokens = 0;
+    lastTurnCacheDropped = false;
     _chatInitialized = false;
   }
+
+  void setExplicitCachedContent(String? cachedContentName) {
+    _activeCachedContentName = cachedContentName;
+  }
+
+  List<Map<String, Object?>> get chatHistory => List.unmodifiable(_chatHistory);
 
   ClinicalIntelligenceService({
     required this.apiKey,
@@ -103,31 +119,61 @@ $_formattingRules''';
   bool get _isMockMode =>
       apiKey.isEmpty || apiKey == 'placeholder_key' || apiKey == 'YOUR_API_KEY_HERE';
 
-  Future<String?> _generateGeminiText(String prompt, {double temperature = 0.2}) async {
+  Future<String?> _generateGeminiText(
+    String prompt, {
+    String? systemInstruction,
+    List<Map<String, Object?>>? contentsOverride,
+    double temperature = 0.2,
+  }) async {
     final uri = Uri.parse(
       'https://generativelanguage.googleapis.com/v1beta/models/$modelName:generateContent?key=$apiKey',
     );
+    final payload = <String, Object?>{
+      'contents': contentsOverride ??
+          [
+            {
+              'role': 'user',
+              'parts': [
+                {'text': prompt},
+              ],
+            },
+          ],
+      'generationConfig': {
+        'temperature': temperature,
+      },
+    };
+
+    if (_activeCachedContentName != null && _activeCachedContentName!.isNotEmpty) {
+      payload['cachedContent'] = _activeCachedContentName;
+    } else if (systemInstruction != null && systemInstruction.isNotEmpty) {
+      payload['systemInstruction'] = {
+        'parts': [
+          {'text': systemInstruction},
+        ],
+      };
+    }
+
     final response = await _httpClient.post(
       uri,
       headers: const {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'contents': [
-          {
-            'role': 'user',
-            'parts': [
-              {'text': prompt},
-            ],
-          },
-        ],
-        'generationConfig': {
-          'temperature': temperature,
-        },
-      }),
+      body: jsonEncode(payload),
     );
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Gemini HTTP ${response.statusCode}');
     }
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final usage = decoded['usageMetadata'] as Map<String, dynamic>?;
+    if (usage != null) {
+      final promptTok = (usage['promptTokenCount'] as int?) ?? 0;
+      final cachedTok = (usage['cachedContentTokenCount'] as int?) ?? 0;
+      if (lastCachedTokens > 4096 && promptTok > 4096 && cachedTok < lastCachedTokens * 0.7) {
+        lastTurnCacheDropped = true;
+      } else {
+        lastTurnCacheDropped = false;
+      }
+      lastPromptTokens = promptTok;
+      lastCachedTokens = cachedTok;
+    }
     final candidates = decoded['candidates'] as List<dynamic>?;
     if (candidates == null || candidates.isEmpty) return null;
     final first = candidates.first as Map<String, dynamic>;
@@ -171,7 +217,8 @@ $_formattingRules''';
     }
 
     final text = await _generateGeminiText(
-      'SYSTEM INSTRUCTIONS:\n$sysInst\n\n[CLINICAL DIRECTIVE CONTEXT]\nPATIENT DATA:\n$patientData',
+      '[CLINICAL DIRECTIVE CONTEXT]\nPATIENT DATA:\n$patientData',
+      systemInstruction: sysInst,
     );
     if (text != null && text.isNotEmpty) {
       yield text;
@@ -267,16 +314,9 @@ Strategy synthesized for $patientName based on active clinical parameters.''';
       _chatInitialized = false;
       return;
     }
-    final String context =
+    _chatSystemInstruction =
         'You are a collaborative care plan co-pilot named "Cerebella". You are assisting a doctor in refining a strategy for their patient.\n\n'
         'PATIENT DATA CONTEXT:\n$patientData\n';
-
-    _chatHistory.add({
-      'role': 'user',
-      'parts': [
-        {'text': 'SYSTEM CONTEXT: $context'},
-      ],
-    });
     _chatInitialized = true;
   }
 
@@ -289,8 +329,26 @@ Strategy synthesized for $patientName based on active clinical parameters.''';
       throw Exception('Chat session not initialized. Call startChatSession first.');
     }
 
-    final response = await _generateGeminiText(message);
-    return response ?? 'No response generated.';
+    _chatHistory.add({
+      'role': 'user',
+      'parts': [
+        {'text': message},
+      ],
+    });
+
+    final response = await _generateGeminiText(
+      message,
+      systemInstruction: _chatSystemInstruction,
+      contentsOverride: _chatHistory,
+    );
+    final reply = response ?? 'No response generated.';
+    _chatHistory.add({
+      'role': 'model',
+      'parts': [
+        {'text': reply},
+      ],
+    });
+    return reply;
   }
 
   Future<String> queryClinicalAssistant({
