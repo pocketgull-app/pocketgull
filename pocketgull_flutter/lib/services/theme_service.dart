@@ -157,21 +157,19 @@ class PocketGullTheme {
   static const Color lightCardBackground = Color(0xFFFFFFFF);
 
   static ThemeData buildTheme(AppTheme theme, Brightness brightness) {
-    switch (theme) {
-      case AppTheme.spark:
-        return _buildSparkTheme();
-      case AppTheme.calm:
-        return _buildCalmTheme();
-      case AppTheme.washi:
-        return _buildWashiTheme();
-      case AppTheme.dark:
-        return _buildDarkTheme();
-      case AppTheme.light:
-      case AppTheme.system:
-        return brightness == Brightness.dark
-            ? _buildDarkTheme()
-            : _buildLightTheme();
-    }
+    final base = switch (theme) {
+      AppTheme.spark => _buildSparkTheme(),
+      AppTheme.calm => _buildCalmTheme(),
+      AppTheme.washi => _buildWashiTheme(),
+      AppTheme.dark => _buildDarkTheme(),
+      AppTheme.light || AppTheme.system => brightness == Brightness.dark
+          ? _buildDarkTheme()
+          : _buildLightTheme(),
+    };
+    return base.copyWith(
+      textTheme: base.textTheme.apply(fontFamily: 'PocketGull'),
+      primaryTextTheme: base.primaryTextTheme.apply(fontFamily: 'PocketGull'),
+    );
   }
 
   static ThemeData _buildWashiTheme() {

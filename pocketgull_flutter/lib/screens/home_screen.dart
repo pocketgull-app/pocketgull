@@ -165,9 +165,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   'PocketGull',
                   style: TextStyle(
                     fontFamily: 'PocketGullBrand',
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.2,
                     color: Color(0xFF111827),
                   ),
                 ),

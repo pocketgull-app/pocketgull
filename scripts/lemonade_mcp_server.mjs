@@ -14,7 +14,7 @@ import { execSync } from 'child_process';
 const SERVER_NAME = 'lemonade-mcp-server';
 const SERVER_VERSION = '1.0.0';
 const PROTOCOL_VERSION = '2024-11-05';
-const OLLAMA_BASE_URL = 'http://localhost:11434';
+const OLLAMA_BASE_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 const LEMONADE_BASE_URL = 'http://localhost:13305';
 
 // Define tools
@@ -408,3 +408,4 @@ rl.on('line', async (line) => {
 
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
+

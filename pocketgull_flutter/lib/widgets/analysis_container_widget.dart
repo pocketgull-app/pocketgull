@@ -106,7 +106,7 @@ class _AnalysisContainerWidgetState
                         child: Text(
                           '🌐 SYNOPTIC CANVAS',
                           style: TextStyle(
-                            fontFamily: 'monospace',
+                            fontFamily: 'PocketGullMono',
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
                             color: _showSmoeCanvas ? Colors.black : const Color(0xFF34D399),

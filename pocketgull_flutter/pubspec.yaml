@@ -63,18 +63,20 @@ flutter:
     - assets/docs/
     - assets/docs/images/
     - assets/images/
-    - assets/fonts/
 
   fonts:
     - family: PocketGullBrand
       fonts:
-        - asset: assets/fonts/PocketGull-Fineliner.ttf
-        - asset: assets/fonts/PocketGull-Bold.ttf
+        - asset: assets/fonts/PocketGull-Chiseltip.ttf
+        - asset: assets/fonts/PocketGull-Chiseltip.ttf
           weight: 700
+        - asset: assets/fonts/PocketGull-Chiseltip.ttf
+          weight: 900
     - family: PocketGullMono
       fonts:
         - asset: assets/fonts/PocketGullMono-Regular.ttf
-        - asset: assets/fonts/PocketGull-Numerics.ttf
+        - asset: assets/fonts/PocketGullMono-Bold.ttf
+          weight: 700
     - family: PocketGull
       fonts:
         - asset: assets/fonts/PocketGull-Regular.ttf

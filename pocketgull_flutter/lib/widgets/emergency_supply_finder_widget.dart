@@ -125,7 +125,7 @@ class _EmergencySupplyFinderWidgetState extends State<EmergencySupplyFinderWidge
           const SizedBox(height: 4),
           Text(
             'GPS Coordinates: $gpsLocation',
-            style: TextStyle(fontSize: 10, fontFamily: 'monospace', color: Colors.grey[400]),
+            style: TextStyle(fontSize: 10, fontFamily: 'PocketGullMono', color: Colors.grey[400]),
           ),
           const SizedBox(height: 12),
 

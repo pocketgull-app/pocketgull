@@ -224,7 +224,7 @@ class FederatedLearningCardWidget extends ConsumerWidget {
               color: valueColor,
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              fontFamily: 'monospace',
+              fontFamily: 'PocketGullMono',
             ),
           ),
           Text(

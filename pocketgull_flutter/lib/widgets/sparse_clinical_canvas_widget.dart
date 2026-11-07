@@ -115,7 +115,7 @@ class _SparseClinicalCanvasWidgetState
                         Text(
                           'SYNOPTIC CLINICAL CANVAS',
                           style: TextStyle(
-                            fontFamily: 'monospace',
+                            fontFamily: 'PocketGullMono',
                             fontWeight: FontWeight.bold,
                             fontSize: 13,
                             color: isDark ? Colors.white : Colors.black87,
@@ -133,7 +133,7 @@ class _SparseClinicalCanvasWidgetState
                           child: Text(
                             'Top-${state.kValue} Gating',
                             style: const TextStyle(
-                              fontFamily: 'monospace',
+                              fontFamily: 'PocketGullMono',
                               fontWeight: FontWeight.bold,
                               fontSize: 10,
                               color: _emeraldAccent,
@@ -199,7 +199,7 @@ class _SparseClinicalCanvasWidgetState
                         child: Text(
                           '$k',
                           style: TextStyle(
-                            fontFamily: 'monospace',
+                            fontFamily: 'PocketGullMono',
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
                             color: isSelected ? Colors.black : (isDark ? Colors.white70 : Colors.black87),
@@ -351,7 +351,7 @@ class _SparseClinicalCanvasWidgetState
                       child: const Text(
                         'SYNAPSE BRIDGE',
                         style: TextStyle(
-                          fontFamily: 'monospace',
+                          fontFamily: 'PocketGullMono',
                           fontWeight: FontWeight.bold,
                           fontSize: 9,
                           color: _emeraldAccent,
@@ -363,7 +363,7 @@ class _SparseClinicalCanvasWidgetState
                       child: Text(
                         bridge.title,
                         style: TextStyle(
-                          fontFamily: 'monospace',
+                          fontFamily: 'PocketGullMono',
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                           color: isDark ? Colors.white : Colors.black87,
@@ -397,7 +397,7 @@ class _SparseClinicalCanvasWidgetState
             child: Text(
               bridge.benchmarkMetric,
               style: const TextStyle(
-                fontFamily: 'monospace',
+                fontFamily: 'PocketGullMono',
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
                 color: _emeraldAccent,
@@ -548,7 +548,7 @@ class _SparseClinicalCanvasWidgetState
                             child: Text(
                               score.expert.name,
                               style: TextStyle(
-                                fontFamily: 'monospace',
+                                fontFamily: 'PocketGullMono',
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                                 color: isDark ? Colors.white : Colors.black87,
@@ -568,7 +568,7 @@ class _SparseClinicalCanvasWidgetState
                             child: Text(
                               '${(score.weight * 100).round()}%',
                               style: TextStyle(
-                                fontFamily: 'monospace',
+                                fontFamily: 'PocketGullMono',
                                 fontWeight: FontWeight.bold,
                                 fontSize: 10,
                                 color: isPrimary ? _emeraldAccent : Colors.tealAccent,
@@ -665,7 +665,7 @@ class _SparseClinicalCanvasWidgetState
               Text(
                 'LATENT EXPERTS SHELF (DORMANT — 0 FLOP / 0 GPU MEMORY)',
                 style: TextStyle(
-                  fontFamily: 'monospace',
+                  fontFamily: 'PocketGullMono',
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
                   color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
@@ -681,7 +681,7 @@ class _SparseClinicalCanvasWidgetState
                   child: const Text(
                     'Reset Pins ✕',
                     style: TextStyle(
-                      fontFamily: 'monospace',
+                      fontFamily: 'PocketGullMono',
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: Colors.amberAccent,
@@ -722,7 +722,7 @@ class _SparseClinicalCanvasWidgetState
                         Text(
                           latent.expert.shortLabel,
                           style: TextStyle(
-                            fontFamily: 'monospace',
+                            fontFamily: 'PocketGullMono',
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: isDark ? Colors.white70 : Colors.black87,
@@ -738,7 +738,7 @@ class _SparseClinicalCanvasWidgetState
                           child: Text(
                             '${(latent.weight * 100).round()}%',
                             style: TextStyle(
-                              fontFamily: 'monospace',
+                              fontFamily: 'PocketGullMono',
                               fontSize: 9,
                               color: isDark ? Colors.grey.shade400 : Colors.grey.shade800,
                             ),
@@ -776,7 +776,7 @@ class _SparseClinicalCanvasWidgetState
             '$label: ',
             style: TextStyle(
               fontSize: 10,
-              fontFamily: 'monospace',
+              fontFamily: 'PocketGullMono',
               color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
             ),
           ),
@@ -784,7 +784,7 @@ class _SparseClinicalCanvasWidgetState
             value,
             style: TextStyle(
               fontSize: 11,
-              fontFamily: 'monospace',
+              fontFamily: 'PocketGullMono',
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -816,7 +816,7 @@ class _SparseClinicalCanvasWidgetState
         child: Text(
           label,
           style: TextStyle(
-            fontFamily: 'monospace',
+            fontFamily: 'PocketGullMono',
             fontSize: 11,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             color: isSelected ? _emeraldAccent : Colors.white70,

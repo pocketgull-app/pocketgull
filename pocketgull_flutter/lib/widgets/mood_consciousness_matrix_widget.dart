@@ -199,7 +199,7 @@ class _MoodConsciousnessMatrixWidgetState extends ConsumerState<MoodConsciousnes
                   Text(
                     'MOOD & CONSCIOUSNESS MATRIX',
                     style: TextStyle(
-                      fontFamily: 'monospace',
+                      fontFamily: 'PocketGullMono',
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                       letterSpacing: 1.5,
@@ -220,7 +220,7 @@ class _MoodConsciousnessMatrixWidgetState extends ConsumerState<MoodConsciousnes
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'monospace',
+                    fontFamily: 'PocketGullMono',
                     color: active.themeColor,
                   ),
                 ),
@@ -274,7 +274,7 @@ class _MoodConsciousnessMatrixWidgetState extends ConsumerState<MoodConsciousnes
                               st.targetEEG,
                               style: TextStyle(
                                 fontSize: 8,
-                                fontFamily: 'monospace',
+                                fontFamily: 'PocketGullMono',
                                 color: st.themeColor,
                               ),
                             ),
@@ -314,7 +314,7 @@ class _MoodConsciousnessMatrixWidgetState extends ConsumerState<MoodConsciousnes
                             style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'monospace',
+                              fontFamily: 'PocketGullMono',
                               color: active.themeColor,
                             ),
                           ),
@@ -359,7 +359,7 @@ class _MoodConsciousnessMatrixWidgetState extends ConsumerState<MoodConsciousnes
                             style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'monospace',
+                              fontFamily: 'PocketGullMono',
                               color: Color(0xFF10B981),
                             ),
                           ),
@@ -369,7 +369,7 @@ class _MoodConsciousnessMatrixWidgetState extends ConsumerState<MoodConsciousnes
                           ),
                           Text(
                             active.prescribedMeal['compounds']!,
-                            style: TextStyle(fontSize: 9, fontFamily: 'monospace', color: Colors.grey.shade400),
+                            style: TextStyle(fontSize: 9, fontFamily: 'PocketGullMono', color: Colors.grey.shade400),
                           ),
                         ],
                       ),
@@ -413,11 +413,11 @@ class _MoodConsciousnessMatrixWidgetState extends ConsumerState<MoodConsciousnes
                   children: [
                     Text(
                       'Target Neurotransmitters: ${active.targetNeurotransmitters.join(', ')}',
-                      style: TextStyle(fontSize: 10, fontFamily: 'monospace', fontWeight: FontWeight.bold, color: active.themeColor),
+                      style: TextStyle(fontSize: 10, fontFamily: 'PocketGullMono', fontWeight: FontWeight.bold, color: active.themeColor),
                     ),
                     Text(
                       active.ayurvedicGuna,
-                      style: TextStyle(fontSize: 9, fontFamily: 'monospace', color: Colors.grey.shade400),
+                      style: TextStyle(fontSize: 9, fontFamily: 'PocketGullMono', color: Colors.grey.shade400),
                     ),
                   ],
                 ),

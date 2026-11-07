@@ -77,7 +77,7 @@ class EvidenceAttestationBadgeWidget extends ConsumerWidget {
                         ? const Color(0xFF34D399)
                         : const Color(0xFFA1A1AA),
                     fontSize: 10,
-                    fontFamily: 'monospace',
+                    fontFamily: 'PocketGullMono',
                   ),
                 ),
               ],

@@ -79,7 +79,7 @@ class InsightCardWidget extends StatelessWidget {
                 'Confidence: ${insight.confidence}%',
                 style: TextStyle(
                   fontSize: 11,
-                  fontFamily: 'monospace',
+                  fontFamily: 'PocketGullMono',
                   fontWeight: FontWeight.w500,
                   color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
                 ),

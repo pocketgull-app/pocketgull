@@ -221,7 +221,7 @@ class _WatershedExposomeCardWidgetState extends ConsumerState<WatershedExposomeC
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF5EEAD4), // Teal 300
-                            fontFamily: 'monospace',
+                            fontFamily: 'PocketGullMono',
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -238,7 +238,7 @@ class _WatershedExposomeCardWidgetState extends ConsumerState<WatershedExposomeC
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF5EEAD4),
-                              fontFamily: 'monospace',
+                              fontFamily: 'PocketGullMono',
                             ),
                           ),
                         ),
@@ -260,7 +260,7 @@ class _WatershedExposomeCardWidgetState extends ConsumerState<WatershedExposomeC
                 ),
                 child: const Text(
                   'AUC 0.857',
-                  style: TextStyle(fontSize: 10, fontFamily: 'monospace', color: Color(0xFF10B981), fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 10, fontFamily: 'PocketGullMono', color: Color(0xFF10B981), fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -393,7 +393,7 @@ class _WatershedExposomeCardWidgetState extends ConsumerState<WatershedExposomeC
                   children: [
                     const Text('Point-of-Use Restorative Remedy:', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF5EEAD4))),
                     Text(basin.remedy, style: const TextStyle(fontSize: 11, color: Colors.white)),
-                    Text('Est. Out-of-Pocket: ${basin.estCost}', style: const TextStyle(fontSize: 10, fontFamily: 'monospace', color: Color(0xFF2DD4BF))),
+                    Text('Est. Out-of-Pocket: ${basin.estCost}', style: const TextStyle(fontSize: 10, fontFamily: 'PocketGullMono', color: Color(0xFF2DD4BF))),
                   ],
                 ),
               ),
@@ -422,7 +422,7 @@ class _WatershedExposomeCardWidgetState extends ConsumerState<WatershedExposomeC
                   children: [
                     Text('Maternal mtDNA Heteroplasmy', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF34D399))),
                     SizedBox(height: 4),
-                    Text('3.8%', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.white)),
+                    Text('3.8%', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'PocketGullMono', color: Colors.white)),
                     Text('Target < 5.0% (Safe Harbor)', style: TextStyle(fontSize: 9, color: Color(0xFF10B981))),
                   ],
                 ),
@@ -442,7 +442,7 @@ class _WatershedExposomeCardWidgetState extends ConsumerState<WatershedExposomeC
                   children: [
                     Text('Paternal 74-Day tsRNA', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF5EEAD4))),
                     SizedBox(height: 4),
-                    Text('Day 48 / 74', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'monospace', color: Colors.white)),
+                    Text('Day 48 / 74', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'PocketGullMono', color: Colors.white)),
                     Text('tsRNA Stress: 24/100', style: TextStyle(fontSize: 9, color: Color(0xFFA1A1AA))),
                   ],
                 ),
@@ -467,7 +467,7 @@ class _WatershedExposomeCardWidgetState extends ConsumerState<WatershedExposomeC
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('Clinical Decision Threshold (tau):', style: TextStyle(fontSize: 11, color: Color(0xFFA1A1AA))),
-            Text('tau = ${_decisionThresholdTau.toStringAsFixed(2)}', style: const TextStyle(fontSize: 11, fontFamily: 'monospace', fontWeight: FontWeight.bold, color: Color(0xFF5EEAD4))),
+            Text('tau = ${_decisionThresholdTau.toStringAsFixed(2)}', style: const TextStyle(fontSize: 11, fontFamily: 'PocketGullMono', fontWeight: FontWeight.bold, color: Color(0xFF5EEAD4))),
           ],
         ),
         SliderTheme(
@@ -541,7 +541,7 @@ class _WatershedExposomeCardWidgetState extends ConsumerState<WatershedExposomeC
                 ],
               ),
             ),
-            Text(price, style: const TextStyle(fontSize: 9, fontFamily: 'monospace', color: Color(0xFF5EEAD4))),
+            Text(price, style: const TextStyle(fontSize: 9, fontFamily: 'PocketGullMono', color: Color(0xFF5EEAD4))),
           ],
         ),
       ),
@@ -559,14 +559,14 @@ class _WatershedExposomeCardWidgetState extends ConsumerState<WatershedExposomeC
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 9, color: Color(0xFFA1A1AA), fontFamily: 'monospace')),
+          Text(label, style: const TextStyle(fontSize: 9, color: Color(0xFFA1A1AA), fontFamily: 'PocketGullMono')),
           const SizedBox(height: 2),
           Text(
             value,
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.bold,
-              fontFamily: 'monospace',
+              fontFamily: 'PocketGullMono',
               color: valueColor ?? Colors.white,
             ),
           ),

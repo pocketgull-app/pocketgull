@@ -44,7 +44,7 @@ class _MedicalSummaryWidgetState extends ConsumerState<MedicalSummaryWidget> {
             child: SingleChildScrollView(
               child: SelectableText(
                 fhirJson,
-                style: const TextStyle(fontFamily: 'monospace', fontSize: 11, color: Color(0xFF1E293B)),
+                style: const TextStyle(fontFamily: 'PocketGullMono', fontSize: 11, color: Color(0xFF1E293B)),
               ),
             ),
           ),

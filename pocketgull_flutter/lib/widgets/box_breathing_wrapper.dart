@@ -119,7 +119,7 @@ class _BoxBreathingWrapperState extends State<BoxBreathingWrapper>
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1.2,
                       color: Color(0xFF416B1F),
-                      fontFamily: 'monospace',
+                      fontFamily: 'PocketGullMono',
                     ),
                   ),
                   const Text(

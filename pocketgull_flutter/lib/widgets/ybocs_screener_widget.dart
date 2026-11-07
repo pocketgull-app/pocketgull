@@ -105,7 +105,7 @@ class _YbocsScreenerWidgetState extends ConsumerState<YbocsScreenerWidget> {
           child: Column(children: [
             RichText(text: TextSpan(children: [
               TextSpan(text: '${yState.totalScore}', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900,
-                  fontFamily: 'monospace', color: isDark ? Colors.white : Colors.grey.shade900)),
+                  fontFamily: 'PocketGullMono', color: isDark ? Colors.white : Colors.grey.shade900)),
               TextSpan(text: '/40', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
             ])),
             const SizedBox(height: 8),
@@ -123,9 +123,9 @@ class _YbocsScreenerWidgetState extends ConsumerState<YbocsScreenerWidget> {
             const SizedBox(height: 8),
             Wrap(alignment: WrapAlignment.center, spacing: 6, children: [
               Text('OBS: ${yState.obsessionSubtotal}/20', style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold,
-                  fontFamily: 'monospace', color: isDark ? Colors.grey.shade300 : Colors.grey.shade700)),
+                  fontFamily: 'PocketGullMono', color: isDark ? Colors.grey.shade300 : Colors.grey.shade700)),
               Text('COMP: ${yState.compulsiveSubtotal}/20', style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold,
-                  fontFamily: 'monospace', color: isDark ? Colors.grey.shade300 : Colors.grey.shade700)),
+                  fontFamily: 'PocketGullMono', color: isDark ? Colors.grey.shade300 : Colors.grey.shade700)),
             ]),
           ]),
         ),
@@ -333,7 +333,7 @@ class _YbocsScreenerWidgetState extends ConsumerState<YbocsScreenerWidget> {
                       Text(opt.label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold,
                           color: isDark ? Colors.grey.shade200 : Colors.grey.shade800)),
                       Text('Score: ${opt.score}', style: TextStyle(fontSize: 9,
-                          fontFamily: 'monospace', color: Colors.grey.shade500)),
+                          fontFamily: 'PocketGullMono', color: Colors.grey.shade500)),
                     ]),
                     const SizedBox(height: 2),
                     Text(opt.desc, style: TextStyle(fontSize: 9, color: Colors.grey.shade500)),

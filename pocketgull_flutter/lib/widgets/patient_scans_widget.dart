@@ -80,7 +80,7 @@ class PatientScansWidget extends StatelessWidget {
                                   color: Colors.white,
                                   fontSize: 8,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: 'monospace',
+                                  fontFamily: 'PocketGullMono',
                                 ),
                               ),
                             ),

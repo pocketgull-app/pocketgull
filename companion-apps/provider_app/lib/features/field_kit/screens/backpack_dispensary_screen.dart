@@ -288,7 +288,7 @@ class _BackpackDispensaryScreenState extends State<BackpackDispensaryScreen> wit
                 title: const Text('Bilateral Pitting Edema (++ / +++)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                 subtitle: Text('Presence of fluid retention in feet/ankles automatically indicates SAM', style: TextStyle(fontSize: 10, color: subColor)),
                 value: _edemaPresent,
-                activeColor: Colors.red,
+                activeThumbColor: Colors.red,
                 onChanged: (val) => setState(() => _edemaPresent = val),
               ),
               SwitchListTile(
@@ -296,7 +296,7 @@ class _BackpackDispensaryScreenState extends State<BackpackDispensaryScreen> wit
                 title: const Text('Passed Appetite Test with RUTF', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                 subtitle: Text('Child eats at least 1/4 sachet of Plumpy\'Nut within 30 min', style: TextStyle(fontSize: 10, color: subColor)),
                 value: _passedAppetiteTest,
-                activeColor: const Color(0xFF059669),
+                activeThumbColor: const Color(0xFF059669),
                 onChanged: (val) => setState(() => _passedAppetiteTest = val),
               ),
               const SizedBox(height: 20),

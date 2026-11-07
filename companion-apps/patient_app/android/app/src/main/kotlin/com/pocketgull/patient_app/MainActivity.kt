@@ -1,4 +1,4 @@
-package com.example.patient_app
+package com.pocketgull.patient_app
 
 import android.media.AudioAttributes
 import android.media.AudioFormat

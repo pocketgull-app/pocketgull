@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 /// Centralized theme configuration for PocketGull
@@ -8,6 +7,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      fontFamily: 'PocketGull',
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         onPrimary: Colors.white,
@@ -19,7 +19,8 @@ class AppTheme {
         onSurface: AppColors.gray900,
       ),
       scaffoldBackgroundColor: AppColors.backgroundLight,
-      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme).apply(
+      textTheme: ThemeData.light().textTheme.apply(
+        fontFamily: 'PocketGull',
         bodyColor: AppColors.gray900,
         displayColor: AppColors.gray900,
       ),
@@ -49,6 +50,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      fontFamily: 'PocketGull',
       colorScheme: const ColorScheme.dark(
         primary: AppColors.primary,
         onPrimary: Colors.white,
@@ -60,7 +62,8 @@ class AppTheme {
         onSurface: AppColors.gray50,
       ),
       scaffoldBackgroundColor: AppColors.backgroundDark,
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).apply(
+      textTheme: ThemeData.dark().textTheme.apply(
+        fontFamily: 'PocketGull',
         bodyColor: AppColors.gray50,
         displayColor: AppColors.gray50,
       ),

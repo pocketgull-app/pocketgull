@@ -99,7 +99,7 @@ class AntiConfirmationBiasWidget extends ConsumerWidget {
                       'H₀ p = ${assertion.pValueNullRejection.toStringAsFixed(3)}',
                       style: TextStyle(
                         fontSize: 10,
-                        fontFamily: 'monospace',
+                        fontFamily: 'PocketGullMono',
                         fontWeight: FontWeight.bold,
                         color: assertion.isStatisticallySignificant
                             ? const Color(0xFF34D399)
@@ -131,7 +131,7 @@ class AntiConfirmationBiasWidget extends ConsumerWidget {
                       'PRIMARY CLINICAL FORMULATION',
                       style: TextStyle(
                         fontSize: 9,
-                        fontFamily: 'monospace',
+                        fontFamily: 'PocketGullMono',
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.1,
                         color: Color(0xFF64748B),
@@ -149,7 +149,7 @@ class AntiConfirmationBiasWidget extends ConsumerWidget {
                             'ICD-10: ${assertion.icd10Code}',
                             style: const TextStyle(
                               fontSize: 9,
-                              fontFamily: 'monospace',
+                              fontFamily: 'PocketGullMono',
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF2DD4BF), // Teal
                             ),
@@ -166,7 +166,7 @@ class AntiConfirmationBiasWidget extends ConsumerWidget {
                             'SNOMED: ${assertion.snomedCtId}',
                             style: const TextStyle(
                               fontSize: 9,
-                              fontFamily: 'monospace',
+                              fontFamily: 'PocketGullMono',
                               fontWeight: FontWeight.bold,
                               color: Color(0xFFFBBF24), // Amber
                             ),
@@ -209,7 +209,7 @@ class AntiConfirmationBiasWidget extends ConsumerWidget {
                           assertion.nullHypothesisH0,
                           style: const TextStyle(
                             fontSize: 10,
-                            fontFamily: 'monospace',
+                            fontFamily: 'PocketGullMono',
                             color: Color(0xFF94A3B8),
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -265,7 +265,7 @@ class AntiConfirmationBiasWidget extends ConsumerWidget {
                       '▲${idx + 1}',
                       style: const TextStyle(
                         fontSize: 9,
-                        fontFamily: 'monospace',
+                        fontFamily: 'PocketGullMono',
                         fontWeight: FontWeight.bold,
                         color: Color(0xFFFB7185),
                       ),
@@ -310,7 +310,7 @@ class AntiConfirmationBiasWidget extends ConsumerWidget {
                 '${state.completedExams.length} / ${assertion.disconfirmingPhysicalExams.length} Verified',
                 style: const TextStyle(
                   fontSize: 10,
-                  fontFamily: 'monospace',
+                  fontFamily: 'PocketGullMono',
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF64748B),
                 ),
@@ -417,7 +417,7 @@ class AntiConfirmationBiasWidget extends ConsumerWidget {
                       'DIGEST SHA-256: #${state.attestationDigest}',
                       style: const TextStyle(
                         fontSize: 10,
-                        fontFamily: 'monospace',
+                        fontFamily: 'PocketGullMono',
                         color: Color(0xFFE2E8F0),
                         fontWeight: FontWeight.bold,
                       ),
