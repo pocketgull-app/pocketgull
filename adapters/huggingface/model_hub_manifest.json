@@ -6,6 +6,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-ambient-soap-scribe"
   },
   {
@@ -15,6 +23,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-biomarker-velocity"
   },
   {
@@ -24,6 +40,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "CPIC CYP450 / SLCO1B1 & Botanical Contraindication Interception",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 90.6,
+      "popperian_h0_pct": 97.1
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-clinical-rxguard"
   },
   {
@@ -33,6 +57,14 @@
     "base_model": "google/gemma-3-12b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 91.2,
+      "popperian_h0_pct": 96.5
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-grand-rounds-care-presenter"
   },
   {
@@ -42,6 +74,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": true,
+    "benchmarks": {
+      "domain_task": "HIPAA §164.514 18-Identifier Scrub & Injection Quarantine",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 90.1,
+      "popperian_h0_pct": 98.2
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-hipaa-tamper-sentinel"
   },
   {
@@ -51,6 +91,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-mandiant-defense-auditor"
   },
   {
@@ -60,6 +108,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-nof1-trial-designer"
   },
   {
@@ -69,6 +125,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-ophthalmology-retina-cds"
   },
   {
@@ -78,6 +142,14 @@
     "base_model": "google/gemma-3-12b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 91.2,
+      "popperian_h0_pct": 96.5
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-osteopathic-rounds-director"
   },
   {
@@ -87,6 +159,14 @@
     "base_model": "google/gemma-3-12b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 91.2,
+      "popperian_h0_pct": 96.5
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-phenopackets-genomics"
   },
   {
@@ -96,6 +176,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": true,
+    "benchmarks": {
+      "domain_task": "CMS-0057-F 72h Expedited SLA & HL7 FHIR Da Vinci PAS Validity",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 89.5,
+      "popperian_h0_pct": 95.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-prior-auth-cms0057"
   },
   {
@@ -105,6 +193,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": true,
+    "benchmarks": {
+      "domain_task": "WHO/CDC 5-Domain SDoH & Crumpler 6th-Grade Literacy Equity",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 89.8,
+      "popperian_h0_pct": 96
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-sdoh-equity-compass"
   },
   {
@@ -114,6 +210,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": true,
+    "benchmarks": {
+      "domain_task": "RSNA mEDI < 10 lx Scotopic & 0.1 Hz Mayer Wave Co-Regulation",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 89.2,
+      "popperian_h0_pct": 95.4
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-sensory-ambient"
   },
   {
@@ -123,6 +227,14 @@
     "base_model": "google/gemma-3-12b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": true,
+    "benchmarks": {
+      "domain_task": "WHO ICD-11 Chapter 26 TM1 Dual-Coding & Chou-Talalay Synergy",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 91.4,
+      "popperian_h0_pct": 96.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-tri-paradigm-radar"
   },
   {
@@ -132,6 +244,14 @@
     "base_model": "google/gemma-3-12b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 91.2,
+      "popperian_h0_pct": 96.5
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-albatross-multimodal"
   },
   {
@@ -141,6 +261,14 @@
     "base_model": "google/gemma-3-1b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-allometric-sfi-1b"
   },
   {
@@ -150,6 +278,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-causal-posology-4b"
   },
   {
@@ -159,6 +295,14 @@
     "base_model": "google/gemma-3-1b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-circular-posology-1b"
   },
   {
@@ -168,6 +312,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-compass-2b"
   },
   {
@@ -177,6 +329,14 @@
     "base_model": "pocketgull/edge-mlp-32f",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-edge-onnx-recovery"
   },
   {
@@ -186,6 +346,14 @@
     "base_model": "pocketgull/edge-densitometry-vision",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-lateral-flow-edge"
   },
   {
@@ -195,6 +363,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-rxguard-pgx"
   },
   {
@@ -204,6 +380,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-scribe-soap"
   },
   {
@@ -213,6 +397,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-sentinel-peft"
   },
   {
@@ -222,6 +414,14 @@
     "base_model": "google/gemma-3-4b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-skeptic-cds-4b"
   },
   {
@@ -231,6 +431,14 @@
     "base_model": "pocketgull/steeep-eval-v1",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-steeep-quality"
   },
   {
@@ -240,6 +448,14 @@
     "base_model": "google/gemma-3-1b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-tern-edge"
   },
   {
@@ -249,6 +465,14 @@
     "base_model": "google/gemma-3-1b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-thermal-posology-1b"
   },
   {
@@ -258,6 +482,14 @@
     "base_model": "google/gemma-3-1b-it",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-veteran-nexus-2b"
   },
   {
@@ -267,6 +499,14 @@
     "base_model": "pocketgull/waveform-dilated-cnn-1d",
     "peft_type": "LORA",
     "task_type": "CAUSAL_LM",
+    "featured": false,
+    "benchmarks": {
+      "domain_task": "DORA Clinical Guideline Concordance & Contraindication Guard",
+      "domain_score_pct": 100,
+      "ismp_safety_pct": 100,
+      "medqa_retention_pct": 88.6,
+      "popperian_h0_pct": 94.8
+    },
     "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-waveform-qrs-1d"
   }
 ]
