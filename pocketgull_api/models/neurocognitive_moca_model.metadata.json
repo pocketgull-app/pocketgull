@@ -1,0 +1,31 @@
+{
+  "model_name": "neurocognitive_moca_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Montreal Cognitive Assessment (MoCA) Domain Decline Classifier",
+  "features": [
+    "moca_visuospatial",
+    "moca_executive",
+    "moca_memory_delay",
+    "moca_attention",
+    "age",
+    "phq9_depression",
+    "isi_sleep"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9994,
+    "oof_brier_score": 0.0029,
+    "expected_calibration_error_ece": 0.0035,
+    "brier_skill_score_bss": 0.8466
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

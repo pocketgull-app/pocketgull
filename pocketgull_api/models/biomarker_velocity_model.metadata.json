@@ -1,0 +1,31 @@
+{
+  "model_name": "biomarker_velocity_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Biomarker Velocity & Longitudinal Organ Decay Model (Gompertz-Makeham trajectory)",
+  "features": [
+    "egfr_current",
+    "egfr_annual_slope",
+    "hba1c_current",
+    "hba1c_annual_slope",
+    "hscrp_current",
+    "sbp_current",
+    "age"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9934,
+    "oof_brier_score": 0.0193,
+    "expected_calibration_error_ece": 0.0134,
+    "brier_skill_score_bss": 0.785
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

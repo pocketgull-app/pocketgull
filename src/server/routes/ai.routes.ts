@@ -719,7 +719,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
       const ttlSeconds = Math.max(60, Math.min(86400, Number(body.ttlSeconds ?? 300)));
       const fhirHash = String(body.fhirBundleHash || 'default').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32);
       const displayName = String(body.displayName || `pg-fhir-${fhirHash.slice(0, 8)}`).slice(0, 64);
-      const safeSysInst = sanitizeSystemInstruction(body.systemInstruction || BASE_CLINICAL_PROMPT);
+      const safeSysInst = BASE_CLINICAL_PROMPT;
 
       const token = await getGcpAccessToken();
       const key = token ? '' : await getApiKey(req);
@@ -740,7 +740,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
             config: {
               displayName,
               ttl: `${ttlSeconds}s`,
-              systemInstruction: safeSysInst,
+              systemInstruction: BASE_CLINICAL_PROMPT,
               contents: [{ role: 'user', parts: [{ text: String(body.contentsText).slice(0, 200000) }] }]
             }
           });

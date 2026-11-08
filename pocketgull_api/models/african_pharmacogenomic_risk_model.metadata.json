@@ -1,0 +1,31 @@
+{
+  "model_name": "african_pharmacogenomic_risk_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "African Multi-Ancestry Pharmacogenomic Diversity & APOL1/G6PD/CYP2B6 Adverse Response Model",
+  "features": [
+    "apol1_high_risk_genotype",
+    "g6pd_deficiency_present",
+    "cyp2b6_star6_slow_metabolizer",
+    "estimated_gfr_ml_min",
+    "active_prescriptions_count",
+    "prescribed_antiretroviral_or_antimalarial",
+    "hypertension_stage_2"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9971,
+    "oof_brier_score": 0.0207,
+    "expected_calibration_error_ece": 0.0153,
+    "brier_skill_score_bss": 0.9172
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

@@ -1,0 +1,29 @@
+{
+  "model_name": "monk_skintone_ppg_debiasing_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Monk Skin Tone (MST 1-10) Optical PPG Melanin Calibration & Occult Hypoxemia Interceptor",
+  "features": [
+    "monk_skin_tone_scale",
+    "raw_spo2_optical_ratio_r",
+    "perfusion_index_pi",
+    "ambient_lux_leakage",
+    "motion_sqi_score"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9958,
+    "oof_brier_score": 0.0175,
+    "expected_calibration_error_ece": 0.0104,
+    "brier_skill_score_bss": 0.8502
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

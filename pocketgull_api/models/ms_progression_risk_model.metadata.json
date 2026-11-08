@@ -1,0 +1,31 @@
+{
+  "model_name": "ms_progression_risk_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "NMSS Multiple Sclerosis 12-Month Neuro-Axonal Disability Progression & sNfL Risk Predictor",
+  "features": [
+    "serum_nfl_pg_ml",
+    "baseline_edss",
+    "timed_25ft_walk_sec",
+    "nine_hole_peg_test_sec",
+    "serum_vitamin_d_ng_ml",
+    "serum_homocysteine_umol_l",
+    "modified_fatigue_impact_score"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9937,
+    "oof_brier_score": 0.0191,
+    "expected_calibration_error_ece": 0.0143,
+    "brier_skill_score_bss": 0.779
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

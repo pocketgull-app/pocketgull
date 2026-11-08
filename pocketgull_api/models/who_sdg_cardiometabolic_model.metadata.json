@@ -1,0 +1,30 @@
+{
+  "model_name": "who_sdg_cardiometabolic_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "WHO SDG 3.4 & NHANES Multicenter Empirical Cardiometabolic Risk Predictor",
+  "features": [
+    "age",
+    "systolic_bp",
+    "diastolic_bp",
+    "fasting_glucose_mg_dl",
+    "heart_rate_bpm",
+    "hrv_rmssd_ms"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9948,
+    "oof_brier_score": 0.0248,
+    "expected_calibration_error_ece": 0.0159,
+    "brier_skill_score_bss": 0.8635
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

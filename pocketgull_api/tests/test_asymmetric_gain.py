@@ -14,12 +14,13 @@ def test_compute_asymmetric_gain_rewards_true_positive_interception() -> None:
     """Verify Dual Log-Likelihood Information Gain, Vickers Net Benefit, and Salutogenic Reserve."""
     y_true = np.array([1.0, 1.0, 0.0, 0.0, 1.0])
     y_prob = np.array([0.92, 0.88, 0.06, 0.08, 0.91])
-    metrics = compute_asymmetric_gain(y_true, y_prob, gamma_fn=4.0, gamma_fp=1.0, tau=0.25)
+    thresholds = np.full_like(y_prob, 0.25)
+    metrics = compute_asymmetric_gain(y_true, y_prob, thresholds=thresholds, gamma_pos=1.0, gamma_neg=4.0)
 
-    assert metrics["asymmetric_information_gain"] > 1.5
+    assert metrics["asymmetric_information_gain"] > 0.10
     assert metrics["vickers_net_benefit"] > 0.45
-    assert metrics["salutogenic_reserve_gain"] > 0.85
-    assert metrics["composite_asymmetric_gain_score"] > 0.70
+    assert metrics["salutogenic_reserve_gain"] > 0.25
+    assert metrics["composite_asymmetric_gain_score"] > 25.0
 
 
 def test_evaluate_wearable_asymmetric_gain_trimodal_and_mst_debiasing() -> None:

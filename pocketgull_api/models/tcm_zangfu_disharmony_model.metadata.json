@@ -1,0 +1,31 @@
+{
+  "model_name": "tcm_zangfu_disharmony_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "TCM Zang-Fu Organ Network Disharmony & Ba Gang Energetic Polarity Classifier",
+  "features": [
+    "orthostatic_drop_bpm",
+    "glycemic_variability_sd",
+    "ferritin_level",
+    "core_extremity_temp_delta",
+    "pain_character_score",
+    "pulse_wave_velocity_ms",
+    "vital_capacity_ratio"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9926,
+    "oof_brier_score": 0.0338,
+    "expected_calibration_error_ece": 0.0235,
+    "brier_skill_score_bss": 0.8523
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

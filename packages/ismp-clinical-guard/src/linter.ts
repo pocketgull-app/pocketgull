@@ -106,7 +106,13 @@ export class IsmpClinicalGuard {
     let match: RegExpExecArray | null;
     while ((match = trailingZeroRegex.exec(originalText)) !== null) {
       if (match[1].endsWith('0')) {
-        const cleanedNum = match[1].replace(/\.?0+$/, '');
+        let cleanedNum = match[1];
+        while (cleanedNum.endsWith('0')) {
+          cleanedNum = cleanedNum.slice(0, -1);
+        }
+        if (cleanedNum.endsWith('.')) {
+          cleanedNum = cleanedNum.slice(0, -1);
+        }
         violations.push({
           type: 'TRAILING_ZERO',
           original: match[0],

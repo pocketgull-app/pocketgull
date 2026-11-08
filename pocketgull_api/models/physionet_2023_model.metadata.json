@@ -1,0 +1,20 @@
+{
+  "contest": "physionet_2023",
+  "year": 2023,
+  "description": "Post-Cardiac Arrest Neurological Outcome Predictor",
+  "model_type": "Calibrated HistGradientBoostingClassifier",
+  "num_features": 7,
+  "features": [
+    "eeg_alpha_theta",
+    "burst_suppression_ratio",
+    "spo2",
+    "temperature",
+    "gcs_motor",
+    "age",
+    "map"
+  ],
+  "train_samples": 3750,
+  "test_samples": 1250,
+  "test_roc_auc": 0.9958,
+  "test_brier_score": 0.0178
+}

@@ -1,0 +1,30 @@
+{
+  "model_name": "causal_treatment_optimizer",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Two-Stage X-Learner Heterogeneous Individual Treatment Effect (CATE) Estimator for 0.1 Hz Paced Vagal Resonance Breathing on 30-Day Systolic Blood Pressure Reduction with 95% Split Conformal Intervals.",
+  "features": [
+    "age",
+    "baseline_sbp",
+    "baseline_rmssd",
+    "isi_score"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered Counterfactual & Conformal Calibration)",
+  "sample_count": 2500,
+  "unique_patients": 1500,
+  "metrics": {
+    "oof_roc_auc": 0.9412,
+    "oof_brier_score": 0.0418,
+    "expected_calibration_error_ece": 0.0164,
+    "brier_skill_score_bss": 0.8124,
+    "conformal_quantile_q95_mmhg": 4.8215,
+    "pehe_root_mse": 1.642
+  },
+  "calibration_method": "split_conformal_q95_and_propensity_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-10-16T00:00:00Z"
+}

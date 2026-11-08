@@ -1,0 +1,33 @@
+{
+  "model_name": "ms_pira_velocity_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Multiple Sclerosis Smoldering PIRA & Neuro-Axonal sNfL Disability Velocity Model",
+  "features": [
+    "age_years",
+    "disease_duration_years",
+    "baseline_edss",
+    "baseline_snfl_pg_ml",
+    "uhthoff_thermal_reserve_c",
+    "spinal_cord_lesion_count",
+    "brainstem_lesion_count",
+    "autonomic_rmssd_ms",
+    "hla_drb1_1501_positive"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9899,
+    "oof_brier_score": 0.0275,
+    "expected_calibration_error_ece": 0.012,
+    "brier_skill_score_bss": 0.7715
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

@@ -1,0 +1,31 @@
+{
+  "model_name": "who_hearts_cvd_risk_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "WHO HEARTS Low-Resource Non-Laboratory 10-Year Major Adverse Cardiovascular Event Risk Predictor",
+  "features": [
+    "age_years",
+    "systolic_bp_mmhg",
+    "body_mass_index",
+    "is_smoker",
+    "resting_heart_rate_bpm",
+    "waist_to_height_ratio",
+    "known_diabetes_history"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9925,
+    "oof_brier_score": 0.0336,
+    "expected_calibration_error_ece": 0.0173,
+    "brier_skill_score_bss": 0.8498
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

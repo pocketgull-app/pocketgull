@@ -140,12 +140,6 @@ const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTIN
 const isProd = (process.env['NODE_ENV'] === 'production' || !!process.env['K_SERVICE']) && !isTestingEnv;
 const isDev = !isProd;
 
-if (isDev) {
-  app.use((req, _res, next) => {
-    console.log('[Incoming]', sanitizeLogInput(req.method), sanitizeLogInput(req.url));
-    next();
-  });
-}
 
 // Helper to inject cryptographic nonce into all inline <script> tags before sending HTML
 function sendHtmlResponse(res: express.Response, html: string): express.Response {
@@ -257,6 +251,12 @@ const globalLimiter = rateLimit({
   validate: { trustProxy: false }
 });
 app.use(globalLimiter);
+if (isDev) {
+  app.use(globalLimiter, (req, _res, next) => {
+    console.log('[Incoming]', sanitizeLogInput(req.method), sanitizeLogInput(req.url));
+    next();
+  });
+}
 
 // Universal Hashed Bundle Fallback & Stale Asset Interceptor (Guarantees 100/100 Best Practices)
 app.use(globalLimiter, (req, res, next) => {

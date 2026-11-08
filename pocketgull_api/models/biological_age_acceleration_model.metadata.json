@@ -1,0 +1,34 @@
+{
+  "model_name": "biological_age_acceleration_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Levine PhenoAge Biological Age Acceleration & Epigenetic Longevity Risk Predictor",
+  "features": [
+    "albumin_g_dl",
+    "creatinine_mg_dl",
+    "fasting_glucose_mg_dl",
+    "hs_crp_mg_l",
+    "lymphocyte_pct",
+    "mcv_fl",
+    "rdw_pct",
+    "alk_phosphatase_u_l",
+    "wbc_count_10e3",
+    "chronological_age"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9898,
+    "oof_brier_score": 0.0121,
+    "expected_calibration_error_ece": 0.0081,
+    "brier_skill_score_bss": 0.608
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}
