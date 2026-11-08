@@ -64,7 +64,7 @@ interface IDriftPointRender {
             <div>
               <div class="flex flex-wrap items-center gap-2">
                 <h2 id="drift-calibrator-title" class="text-base md:text-lg font-bold tracking-tight text-zinc-100">
-                  J++ Workspace Lens &amp; Clinical Behavioral Drift Calibrator
+                  12-Pole Clinical Behavioral Drift Linter &amp; Anti-Sycophancy HUD
                 </h2>
                 <span class="px-2 py-0.5 text-xs font-mono rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800/60 flex items-center gap-1.5">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
@@ -72,7 +72,7 @@ interface IDriftPointRender {
                 </span>
               </div>
               <p class="text-xs text-zinc-400 mt-0.5">
-                Mechanistic fMRI Readout: Difference-in-Means Cosine Activation Vectors • Early-Layer Jacobian++ Projections • 0.1 Hz Parasympathetic Cues
+                Text-Embedding Cosine Projection (nomic-embed-text) • Illustrative Layer Simulation • 0.1 Hz Parasympathetic Cues
               </p>
             </div>
           </div>
@@ -313,11 +313,11 @@ interface IDriftPointRender {
             <div class="lg:col-span-3 bg-zinc-900/50 border border-zinc-800/80 rounded-xl p-4 flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between mb-1">
-                  <h3 class="text-sm font-bold text-zinc-100">3. J++ Layer Readout</h3>
+                  <h3 class="text-sm font-bold text-zinc-100">3. Layer Simulation (Illustrative)</h3>
                   <span class="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 text-emerald-300">L4 → L15</span>
                 </div>
                 <p class="text-xs text-zinc-400 mb-3">
-                  Contrasts noisy standard J-Lens against J++ faithful clinical latent concepts.
+                  Illustrative conceptual simulation of early-to-late layer clinical representations.
                 </p>
 
                 <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800 mb-3">
@@ -363,7 +363,7 @@ interface IDriftPointRender {
           <!-- Footer Status -->
           <div class="flex items-center justify-between text-xs font-mono text-zinc-400 pt-1">
             <span>Engine: {{ calibrator.liveEngineStatus() }}</span>
-            <span>MIT Media Lab Drift Calibrator + Ayonrinde &amp; Lindsey J++ Lens</span>
+            <span>Hudon &amp; Stip (2025, PMC12712562) + Zou et al. (2023) Contrastive Linter</span>
           </div>
 
         </div>
