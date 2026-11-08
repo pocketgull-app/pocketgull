@@ -26,14 +26,14 @@ class GpuTelemetry {
 
   factory GpuTelemetry.fromJson(Map<String, dynamic> json) {
     return GpuTelemetry(
-      vendor: json['vendor'] ?? 'unknown',
-      name: json['name'] ?? 'Hardware Accelerated GPU',
-      driverVersion: json['driverVersion'] ?? '1.0',
-      memoryTotalMiB: json['memoryTotalMiB'] ?? 8192,
-      memoryUsedMiB: json['memoryUsedMiB'] ?? 1024,
-      memoryFreeMiB: json['memoryFreeMiB'] ?? 7168,
+      vendor: json['vendor'] as String? ?? 'unknown',
+      name: json['name'] as String? ?? 'Hardware Accelerated GPU',
+      driverVersion: json['driverVersion'] as String? ?? '1.0',
+      memoryTotalMiB: json['memoryTotalMiB'] as int? ?? 8192,
+      memoryUsedMiB: json['memoryUsedMiB'] as int? ?? 1024,
+      memoryFreeMiB: json['memoryFreeMiB'] as int? ?? 7168,
       utilizationPercent: (json['utilizationPercent'] as num?)?.toDouble() ?? 10.0,
-      temperatureC: json['temperatureC'] ?? 40,
+      temperatureC: json['temperatureC'] as int? ?? 40,
     );
   }
 }
@@ -54,13 +54,13 @@ class HardwareTelemetry {
   });
 
   factory HardwareTelemetry.fromJson(Map<String, dynamic> json) {
-    var gpusList = (json['gpus'] as List<dynamic>?)
+    final gpusList = (json['gpus'] as List<dynamic>?)
             ?.map((e) => GpuTelemetry.fromJson(e as Map<String, dynamic>))
             .toList() ??
         [];
     return HardwareTelemetry(
       gpus: gpusList,
-      cpuName: json['cpuName'] ?? 'Multi-Core Mobile Processor',
+      cpuName: json['cpuName'] as String? ?? 'Multi-Core Mobile Processor',
       cpuLoadPercent: (json['cpuLoadPercent'] as num?)?.toDouble() ?? 12.0,
       systemMemoryTotalGb: (json['systemMemoryTotalGb'] as num?)?.toDouble() ?? 16.0,
       systemMemoryUsedGb: (json['systemMemoryUsedGb'] as num?)?.toDouble() ?? 6.0,
@@ -128,7 +128,7 @@ class HardwareTelemetryService extends ChangeNotifier {
           .get(Uri.parse('$baseUrl/api/hardware/telemetry'))
           .timeout(const Duration(seconds: 4));
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
+        final Map<String, dynamic> data = json.decode(response.body) as Map<String, dynamic>;
         _telemetry = HardwareTelemetry.fromJson(data);
       } else {
         _telemetry = HardwareTelemetry.fallback();

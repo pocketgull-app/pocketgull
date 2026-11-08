@@ -1,6 +1,11 @@
-import '@angular/compiler';
+﻿import '@angular/compiler';
 import { Injector, runInInjectionContext, NgZone, signal } from '@angular/core';
-import { WebMcpRegistrationService, normalizeToolInputSchema } from './webmcp-registration.service';
+import {
+  WebMcpRegistrationService,
+  normalizeToolInputSchema,
+  normalizeToolOutputSchema,
+  validateToolOutputAgainstSchema
+} from './webmcp-registration.service';
 import { PatientStateService } from './patient-state.service';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';
 import { ExportService } from './export.service';
@@ -376,10 +381,11 @@ mathematicalModel: Softmax T=0.85`;
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 95 WebMCP agentic tools on modelContext', () => {
+  it('should register all 97 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(95);
+    expect(registeredTools.size).toBe(97);
+    expect(registeredTools.has('evaluate_clinical_hypothesis_and_cohort')).toBe(true);
     expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
     expect(registeredTools.has('synthesize_edge_offline_sbar')).toBe(true);
@@ -890,10 +896,11 @@ mathematicalModel: Softmax T=0.85`;
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 95 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 97 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(95);
+    expect(registeredTools.size).toBe(97);
+    expect(registeredTools.has('evaluate_clinical_hypothesis_and_cohort')).toBe(true);
     expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
     expect(registeredTools.has('run_sepsis_benchmark_evaluation')).toBe(true);
@@ -1132,7 +1139,7 @@ mathematicalModel: Softmax T=0.85`;
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(95);
+    expect((service as any).mcpControllers.length).toBe(97);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
@@ -1726,6 +1733,132 @@ mathematicalModel: Softmax T=0.85`;
       const parsedFlush = JSON.parse(flushRes.content[0].text);
       expect(parsedFlush.pendingCount).toBe(0);
       expect(parsedFlush.flushResult.syncedCount).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe('BigQuery <-> Kaggle & Popperian Hypothesis Tool (96)', () => {
+    it('should execute evaluate_clinical_hypothesis_and_cohort with Popperian H0 test and 5-fold SQL', async () => {
+      service.registerTools({});
+      const tool = registeredTools.get('evaluate_clinical_hypothesis_and_cohort');
+      expect(tool).toBeDefined();
+
+      // Case 1: Non-significant deviation (p >= 0.05) triggers skepticalWarningNotice
+      const resNonSig = await tool.execute({
+        biomarkerName: 'hsCRP',
+        observedValue: 1.8,
+        populationMean: 1.5,
+        populationSd: 0.8,
+        prevalencePer10000: 250
+      });
+      expect(resNonSig.isError).toBeFalsy();
+      const parsedNonSig = JSON.parse(resNonSig.content[0].text);
+      expect(parsedNonSig.isH0Rejected).toBe(false);
+      expect(parsedNonSig.skepticalWarningNotice).toContain('POPPERIAN H0 WARNING');
+      expect(parsedNonSig.gigerenzerNaturalFrequency).toContain('Out of 10,000 screened individuals');
+      expect(parsedNonSig.bigQueryKaggleCohortQuery).toContain('FARM_FINGERPRINT');
+      expect(parsedNonSig.maximumBytesBilled).toBe(1073741824);
+
+      // Case 2: Significant deviation (p < 0.05) rejects H0
+      const resSig = await tool.execute({
+        biomarkerName: 'hsCRP',
+        observedValue: 5.2,
+        populationMean: 1.5,
+        populationSd: 0.8
+      });
+      const parsedSig = JSON.parse(resSig.content[0].text);
+      expect(parsedSig.isH0Rejected).toBe(true);
+      expect(parsedSig.skepticalWarningNotice).toBeNull();
+    });
+  });
+
+  describe('Chrome 159.0.8140.0 outputSchema & Harness Validation (PR #254 / Issue #92)', () => {
+    it('should register outputSchema and standardized inputSchema on clinical & EHR tools', () => {
+      service.registerTools({});
+
+      const toolsWithOutputSchema = [
+        'getInternalState',
+        'control_gullrender_spatial_substrate',
+        'execute_ehr_bi_directional_writeback',
+        'get_ehr_writeback_status',
+        'trigger_fhir_subscription_adt_event',
+        'start_edge_autonomous_voice_session',
+        'synthesize_edge_offline_sbar',
+        'get_edge_offline_queue_status',
+        'evaluate_clinical_hypothesis_and_cohort',
+        'calibrate_clinical_drift'
+      ];
+
+      for (const name of toolsWithOutputSchema) {
+        const tool = registeredTools.get(name);
+        expect(tool).toBeDefined();
+        expect(tool.inputSchema).toBeDefined();
+        expect(tool.inputSchema.type).toBe('object');
+        expect((tool as any).parameters).toBeUndefined();
+        expect(tool.outputSchema).toBeDefined();
+        expect(tool.outputSchema.type).toBe('object');
+        expect(Array.isArray(tool.outputSchema.required)).toBe(true);
+      }
+
+      const webmcpState = service.getInternalState('webmcp');
+      expect(webmcpState.webmcp.pr254OutputSchemaSupported).toBe(true);
+      expect(webmcpState.webmcp.runtime).toBe('native-chrome-159');
+    });
+
+    it('should normalize stringified and object outputSchema in getRegisteredTools()', async () => {
+      mockModelContext.getTools = vi.fn().mockResolvedValue([
+        {
+          name: 'tool_with_string_output_schema',
+          description: 'Tool with DOMString outputSchema',
+          inputSchema: '{"type":"object","properties":{"city":{"type":"string"}}}',
+          outputSchema: '{"type":"object","properties":{"temperature":{"type":"number"}},"required":["temperature"]}'
+        }
+      ]);
+
+      const tools = await service.getRegisteredTools();
+      expect(tools.length).toBe(1);
+      expect(typeof tools[0].outputSchema).toBe('object');
+      expect(tools[0].outputSchema.properties.temperature.type).toBe('number');
+      expect(normalizeToolOutputSchema(undefined)).toBeUndefined();
+    });
+
+    it('should validate tool execution outputs against outputSchema and flag malformed payloads', async () => {
+      service.registerTools({});
+      const writebackTool = registeredTools.get('execute_ehr_bi_directional_writeback');
+      const res = await writebackTool.execute({
+        vendor: 'EPIC',
+        patientMrn: 'MRN-TEST-12345',
+        practitionerId: 'PRAC-7788'
+      });
+
+      // Valid execution output passes schema check
+      const validCheck = validateToolOutputAgainstSchema(res, writebackTool.outputSchema);
+      expect(validCheck.valid).toBe(true);
+      expect(validCheck.parsedPayload.status).toBe('WRITEBACK_EXECUTED');
+
+      // Missing required field triggers OUTPUT_SCHEMA_MISMATCH
+      const missingFieldCheck = validateToolOutputAgainstSchema(
+        { content: [{ type: 'text', text: JSON.stringify({ status: 'WRITEBACK_EXECUTED' }) }] },
+        writebackTool.outputSchema
+      );
+      expect(missingFieldCheck.valid).toBe(false);
+      expect(missingFieldCheck.code).toBe('OUTPUT_SCHEMA_MISMATCH');
+      expect(missingFieldCheck.retryable).toBe(false);
+      expect(missingFieldCheck.error).toContain("missing required property 'batchId'");
+
+      // Wrong property type triggers OUTPUT_SCHEMA_MISMATCH
+      const wrongTypeCheck = validateToolOutputAgainstSchema(
+        {
+          status: 'WRITEBACK_EXECUTED',
+          batchId: 'BATCH-1',
+          ehrVendor: 'EPIC',
+          overallStatus: 'SUCCESS_FILED_TO_EHR',
+          receipts: 'not-an-array' // expected array
+        },
+        writebackTool.outputSchema
+      );
+      expect(wrongTypeCheck.valid).toBe(false);
+      expect(wrongTypeCheck.code).toBe('OUTPUT_SCHEMA_MISMATCH');
+      expect(wrongTypeCheck.error).toContain("property 'receipts' expected 'array', got 'string'");
     });
   });
 });

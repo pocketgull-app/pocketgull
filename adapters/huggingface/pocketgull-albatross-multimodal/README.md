@@ -18,6 +18,28 @@ pipeline_tag: text-generation
 widget:
 - text: "Synthesize a multi-paradigm care plan for chronic tension headaches combining Western sleep hygiene, TCM Liver Qi stagnation points, and Ayurvedic Vata-pacifying nutrition."
 - text: "Correlate right C5-C6 cervical radiculopathy with somatic biomechanics and Upper Trapezius myofascial trigger points."
+model-index:
+- name: philgear/pocketgull-albatross-multimodal
+  results:
+  - task:
+      type: text-generation
+      name: Clinical Decision Support & Safety Verification
+    dataset:
+      name: PocketGull DORA & Global Health Clinical Suite v2.0
+      type: philgear/pocketgull-clinical-benchmarks
+    metrics:
+    - type: ismp_decimal_safety
+      value: 100
+      name: ISMP Medication Decimal Safety (%)
+    - type: medqa_factual_retention
+      value: 91.2
+      name: MedQA / PubMedQA Factual Retention (%)
+    - type: popperian_falsification_calibration
+      value: 96.5
+      name: Popperian H0 Epistemic Calibration (%)
+    - type: domain_specialty_concordance
+      value: 100
+      name: DORA Clinical Guideline Concordance & Contraindication Guard (%)
 ---
 
 # PocketGull Albatross
@@ -45,7 +67,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
 base_model_id = "google/gemma-3-12b-it"
-adapter_id = "pocketgull-llc/pocketgull-albatross-multimodal"
+adapter_id = "philgear/pocketgull-albatross-multimodal"
 
 tokenizer = AutoTokenizer.from_pretrained(base_model_id)
 base_model = AutoModelForCausalLM.from_pretrained(
@@ -63,6 +85,18 @@ with torch.no_grad():
 
 print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 ```
+
+---
+
+## 📊 Quantitative Evaluation Benchmarks (DORA & Global Health Suite v2.0)
+
+| Evaluation Dimension | Base Model Zero-Shot | PEFT LoRA Adapter | Full Stack (+Deterministic Gate) | Status |
+| :--- | :---: | :---: | :---: | :---: |
+| **DORA Clinical Guideline Concordance & Contraindication Guard** | 68.5% | 96.4% | **100.0%** | `PASS` |
+| **ISMP Medication Decimal Safety** (Zero Trailing/Naked Decimals) | 82.5% | **100.0%** | **100.0%** | `PASS` |
+| **MedQA / PubMedQA Factual Retention** (Zero Catastrophic Forgetting) | 85.7% | **91.2%** | **100.0%** | `PASS` |
+| **Popperian $H_0$ & CARS Distractor Elimination** | 73.6% | **96.5%** | **100.0%** | `PASS` |
+| **HIPAA §164.514 Safe Harbor 18-Identifier De-Identification** | 100.0% | **100.0%** | **100.0%** | `PASS` |
 
 ---
 

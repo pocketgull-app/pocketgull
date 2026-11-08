@@ -79,6 +79,13 @@ node node_modules/@angular/cli/bin/ng.js build
 
 Designed for MDs, DOs, Nurse Practitioners, and clinical teams conducting in-person or telehealth consults.
 
+### ⚡ 3-Step First-Run Activation ("Aha! in 90 Seconds")
+To respect the **4-Slot Working Memory Ceiling** (`WM_SLOT_MAX = 4`), first-time users begin with 3 high-impact micro-steps before exploring the full 11-step workbench:
+1. **Step 1 — Pick Your Persona (`tour-patient-dropdown`)**: Select a sample patient archetype (or role pathway) to load pre-calibrated vitals and LOINC baselines in 1 click.
+2. **Step 2 — Tap a 3D Anatomy Locus (`tour-body-chart`)**: Click any organ or dermatome on the `GullRenderEngine` 3D body map to focus clinical context with zero typing.
+3. **Step 3 — Generate & Share a 3-Act Care Plan (`tour-generate-btn` $\rightarrow$ `tour-finalize-btn`)**: Synthesize an evidence-grounded 3-Act Care Plan and export a 1-click **FHIR R4 Bundle**, **Executive ROI Brief**, or **Fridge-Ready Patient Card**.
+
+### Full 11-Step Clinical Workbench Reference
 1. **Step 1: Patient Chart & Sentinel Triage Selection (`tour-patient-dropdown`)**
    - Select patient demographic archetype.
    - Inspect epidemiological Sentinel tags and demographic twin baselines.

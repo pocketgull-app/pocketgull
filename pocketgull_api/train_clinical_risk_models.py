@@ -23,6 +23,14 @@ import joblib
 MODELS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'models'))
 os.makedirs(MODELS_DIR, exist_ok=True)
 
+def normalize_temperature_fahrenheit(temp: float) -> float:
+    """Convert Celsius clinical temperature inputs (< 50 C) to Fahrenheit."""
+    val = float(temp)
+    if val < 50.0:
+        return round(val * 9.0 / 5.0 + 32.0, 4)
+    return val
+
+
 def train_and_save_platinum_model(
     model_name: str,
     feature_df: pd.DataFrame,

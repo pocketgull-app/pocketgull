@@ -254,7 +254,12 @@ export class EnvironmentalHeatPosologyService {
     if (wbgtF >= 88) hourlyMl = 850;
     if (wbgtF >= 90) hourlyMl = 1000;
     if (input.patientWeightKg > 90) hourlyMl = Math.round(hourlyMl * 1.15);
-    if (input.patientAge < 12) hourlyMl = Math.round(input.patientWeightKg * 10); // pediatric Holliday-Segar adaptation
+    if (input.patientAge < 12) {
+      const w = Math.max(1, input.patientWeightKg);
+      const baseHourly = w <= 10 ? w * 4 : w <= 20 ? 40 + (w - 10) * 2 : 60 + (w - 20) * 1;
+      const heatMultiplier = wbgtF >= 90 ? 1.5 : wbgtF >= 88 ? 1.4 : wbgtF >= 85 ? 1.25 : 1.0;
+      hourlyMl = Math.round(baseHourly * heatMultiplier); // pediatric Holliday-Segar adaptation
+    }
 
     const electrolyteRx = wbgtF >= 85
       ? 'Oral Rehydration Salts (ORS) or Balanced Electrolyte Solution (Sodium 45 mEq/L, Potassium 20 mEq/L). Avoid plain hypotonic water alone to prevent hyponatremic encephalopathy.'

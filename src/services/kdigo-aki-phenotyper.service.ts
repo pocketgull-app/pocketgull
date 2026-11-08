@@ -185,9 +185,9 @@ export class KdigoAkiPhenotyperService {
       crStage = 1;
     }
 
-    // Urine Output Staging
+    // Urine Output Staging (KDIGO 2012: Stage 3 includes UO < 0.3 for >= 24h OR anuria for >= 12h)
     let uoStage = 0;
-    if (uo < 0.3 && oliguriaHrs >= 24) {
+    if ((uo < 0.3 && oliguriaHrs >= 24) || (uo <= 0.05 && oliguriaHrs >= 12)) {
       uoStage = 3;
     } else if (uo < 0.5 && oliguriaHrs >= 12) {
       uoStage = 2;

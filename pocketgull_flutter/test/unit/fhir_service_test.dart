@@ -12,10 +12,10 @@ void main() {
     });
 
     test('exports valid FHIR R4 collection bundle with patient, vitals, and conditions', () {
-      final state = PatientState(
+      final state = const PatientState(
         name: 'Jane Curie',
         patientGoals: 'Improve stress resilience and sleep quality',
-        vitals: const PatientVitals(
+        vitals: PatientVitals(
           bp: '120/80',
           hr: '72',
           spO2: '98%',
@@ -25,7 +25,7 @@ void main() {
         ),
         issues: {
           'head': [
-            const BodyPartIssue(
+            BodyPartIssue(
               id: 'issue-1',
               noteId: 'note-1',
               name: 'Tension Headache',
@@ -63,13 +63,13 @@ void main() {
     });
 
     test('sanitizes malicious script tags and redacts ORCID from string inputs', () {
-      final state = PatientState(
+      final state = const PatientState(
         name: '<script>alert("xss")</script>Marie Curie',
         patientGoals: 'Maintain metabolic health',
-        vitals: const PatientVitals(bp: '', hr: '70', spO2: '', temp: '', weight: '', height: ''),
+        vitals: PatientVitals(bp: '', hr: '70', spO2: '', temp: '', weight: '', height: ''),
         issues: {
           'chest': [
-            const BodyPartIssue(
+            BodyPartIssue(
               id: 'issue-2',
               noteId: 'note-2',
               name: 'Chest tightness 0000-0002-1825-0097',
@@ -95,10 +95,10 @@ void main() {
     });
 
     test('exports grounded epistemic assertion and FDA Part 11 provenance seal', () {
-      final state = PatientState(
+      final state = const PatientState(
         name: 'Phil Gear',
         patientGoals: 'Spinal rehabilitation and disc decompression',
-        vitals: const PatientVitals(bp: '120/80', hr: '68', spO2: '99', temp: '98.6', weight: '74', height: '180'),
+        vitals: PatientVitals(bp: '120/80', hr: '68', spO2: '99', temp: '98.6', weight: '74', height: '180'),
         issues: {},
       );
 

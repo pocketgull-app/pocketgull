@@ -44,6 +44,9 @@ function run(cmd, options = {}) {
 console.log('\n🧪 Step 0/5: Running mandatory pre-flight test & security verification chain...');
 run(`node "${join(rootDir, 'scripts/pre-commit-check.cjs')}"`);
 
+console.log('• J++ Lens & Clinical Drift Self-Healing Gate...');
+run(`node "${join(rootDir, 'scripts/preflight_drift_self_heal_gate.mjs')}"`);
+
 console.log('• CycloneDX 1.6 SBOM Verification...');
 run(`node "${join(rootDir, 'scripts/generate_cyclonedx_sbom.mjs')}"`);
 

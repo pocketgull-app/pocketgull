@@ -67,7 +67,7 @@ export interface IFloatingIsland {
       <!-- Floating City Islands / Archipelagos -->
       <div class="absolute inset-0 z-20 pointer-events-none">
         @for (island of islands; track island.id) {
-          <div (click)="selectIsland(island)"
+          <div role="button" tabindex="0" (keydown.enter)="selectIsland(island)" (keydown.space)="$event.preventDefault(); selectIsland(island)" (click)="selectIsland(island)"
             class="absolute pointer-events-auto transition-transform duration-500 hover:scale-110 cursor-pointer -translate-x-1/2 -translate-y-1/2 group"
             [style.left.%]="island.x" [style.top.%]="island.y">
             
@@ -91,7 +91,7 @@ export interface IFloatingIsland {
       <!-- Buoyant Floating Interactive Words -->
       <div class="absolute inset-0 z-30 pointer-events-none">
         @for (word of floatingWords(); track word.id) {
-          <div (click)="onWordClick(word)"
+          <div role="button" tabindex="0" (keydown.enter)="onWordClick(word)" (keydown.space)="$event.preventDefault(); onWordClick(word)" (click)="onWordClick(word)"
             class="absolute pointer-events-auto -translate-x-1/2 -translate-y-1/2 transition-all duration-300 cursor-pointer group"
             [style.left.%]="word.x" [style.top.%]="word.y"
             [style.transform]="'translate(-50%, -50%) translateY(' + (Math.sin(word.phase) * 6) + 'px)'">

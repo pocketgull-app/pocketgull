@@ -36,6 +36,9 @@ e2e/
 tools/
 scripts/
 packages/
+adapters/
+**/target/
+**/.build/
 companion-apps/
 case-studies/
 docs/study/

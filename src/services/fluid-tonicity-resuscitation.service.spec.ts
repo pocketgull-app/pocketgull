@@ -99,4 +99,16 @@ describe('FluidTonicityResuscitationService (Clinical Model P14)', () => {
     expect(FLUID_CATALOG.albumin_25.colloidOncoticPressureMmHg).toBe(100);
     expect(FLUID_CATALOG.normal_saline_09.strongIonDifference).toBe(0);
   });
+
+  it('10. Conserves multi-liter cation mass balance in Adrogué-Madias equation (TBW + V denominator)', () => {
+    // 70 kg male (TBW = 42 L), baseline Na+ = 120 mEq/L, 4 L of 0.9% Normal Saline (Na+ = 154 mEq/L)
+    // Exact mass conservation: ((154 - 120) * 4) / (42 + 4) = 136 / 46 = +3.0 mEq/L (predicted 123.0 mEq/L)
+    service.updateInput('baselineSerumSodiumMEq', 120);
+    service.updateInput('fluidType', 'normal_saline_09');
+    service.updateInput('infusionVolumeMl', 4000);
+
+    const sim = service.simulation();
+    expect(sim.deltaSodiumMEq).toBe(3.0);
+    expect(sim.predictedSodiumMEq).toBe(123.0);
+  });
 });

@@ -80,7 +80,7 @@ class PatientScansWidget extends StatelessWidget {
                                   color: Colors.white,
                                   fontSize: 8,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: 'monospace',
+                                  fontFamily: 'PocketGullMono',
                                 ),
                               ),
                             ),
@@ -168,7 +168,7 @@ class PatientScansWidget extends StatelessWidget {
   }
 
   void _openDicomViewer(BuildContext context) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,

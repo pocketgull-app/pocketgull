@@ -650,13 +650,13 @@ export class BodyMeshFactoryService {
     stomachGroup.add(stomachMesh);
     addPart('stomach', stomachGroup);
 
-    // Bilateral Kidneys
+    // Bilateral Kidneys (Right kidney anatomically displaced inferiorly by right hepatic lobe)
     const kidneysGroup = new THREE.Group();
     const rKidney = createMesh(
       new THREE.SphereGeometry(0.045, 16, 16),
       kidneyMaterial,
       'organ',
-      [0.10, 0.86 * torsoScaleY, -0.07],
+      [0.10, 0.835 * torsoScaleY, -0.07],
       [0, 0, 0],
       [0.8, 1.2, 0.7]
     );
@@ -825,7 +825,8 @@ export class BodyMeshFactoryService {
     // ==========================================
     const hipX = pelvicRadius * 0.72;
 
-    // Right Thigh (with Q-Angle, Quadriceps, Femoral Vessels)
+    // Right Thigh (with Q-Angle, Distal Femoral Condyles, Quadriceps, Hamstrings, Femoral Vessels)
+    const kneeX = hipX - Math.sin(qAngle) * 0.21 * limbScaleY;
     const rThighGroup = new THREE.Group();
     rThighGroup.add(createMesh(
       new THREE.CylinderGeometry(0.026, 0.030, 0.42 * limbScaleY, 12),
@@ -834,12 +835,34 @@ export class BodyMeshFactoryService {
       [hipX, 0.38 * limbScaleY, 0.02],
       [0, 0, -qAngle]
     ));
+    // Distal Femoral Condyles (Medial & Lateral)
     rThighGroup.add(createMesh(
-      new THREE.CapsuleGeometry(0.070, 0.36 * limbScaleY, 4, 18),
+      new THREE.SphereGeometry(0.028, 12, 12),
+      boneMaterial,
+      'bone',
+      [kneeX - 0.018, 0.18 * limbScaleY, 0.015]
+    ));
+    rThighGroup.add(createMesh(
+      new THREE.SphereGeometry(0.028, 12, 12),
+      boneMaterial,
+      'bone',
+      [kneeX + 0.018, 0.18 * limbScaleY, 0.015]
+    ));
+    // Anterior Quadriceps Femoris
+    rThighGroup.add(createMesh(
+      new THREE.CapsuleGeometry(0.068, 0.36 * limbScaleY, 4, 18),
       muscleMaterial,
       'muscle',
-      [hipX, 0.38 * limbScaleY, 0.03],
+      [hipX, 0.38 * limbScaleY, 0.032],
       [-0.04, 0, -qAngle]
+    ));
+    // Posterior Hamstrings (Biceps Femoris & Semitendinosus)
+    rThighGroup.add(createMesh(
+      new THREE.CapsuleGeometry(0.056, 0.34 * limbScaleY, 4, 16),
+      muscleMaterial,
+      'muscle',
+      [hipX + 0.008, 0.37 * limbScaleY, -0.024],
+      [0.04, 0, -qAngle]
     ));
     rThighGroup.add(createMesh(
       new THREE.CylinderGeometry(0.006, 0.006, 0.40 * limbScaleY, 8),
@@ -864,7 +887,7 @@ export class BodyMeshFactoryService {
     ));
     addPart('r_thigh', rThighGroup);
 
-    // Left Thigh
+    // Left Thigh (with Q-Angle, Distal Femoral Condyles, Quadriceps, Hamstrings, Femoral Vessels)
     const lThighGroup = new THREE.Group();
     lThighGroup.add(createMesh(
       new THREE.CylinderGeometry(0.026, 0.030, 0.42 * limbScaleY, 12),
@@ -873,12 +896,34 @@ export class BodyMeshFactoryService {
       [-hipX, 0.38 * limbScaleY, 0.02],
       [0, 0, qAngle]
     ));
+    // Distal Femoral Condyles (Medial & Lateral)
     lThighGroup.add(createMesh(
-      new THREE.CapsuleGeometry(0.070, 0.36 * limbScaleY, 4, 18),
+      new THREE.SphereGeometry(0.028, 12, 12),
+      boneMaterial,
+      'bone',
+      [-kneeX + 0.018, 0.18 * limbScaleY, 0.015]
+    ));
+    lThighGroup.add(createMesh(
+      new THREE.SphereGeometry(0.028, 12, 12),
+      boneMaterial,
+      'bone',
+      [-kneeX - 0.018, 0.18 * limbScaleY, 0.015]
+    ));
+    // Anterior Quadriceps Femoris
+    lThighGroup.add(createMesh(
+      new THREE.CapsuleGeometry(0.068, 0.36 * limbScaleY, 4, 18),
       muscleMaterial,
       'muscle',
-      [-hipX, 0.38 * limbScaleY, 0.03],
+      [-hipX, 0.38 * limbScaleY, 0.032],
       [0.04, 0, qAngle]
+    ));
+    // Posterior Hamstrings (Biceps Femoris & Semitendinosus)
+    lThighGroup.add(createMesh(
+      new THREE.CapsuleGeometry(0.056, 0.34 * limbScaleY, 4, 16),
+      muscleMaterial,
+      'muscle',
+      [-hipX - 0.008, 0.37 * limbScaleY, -0.024],
+      [-0.04, 0, qAngle]
     ));
     lThighGroup.add(createMesh(
       new THREE.CylinderGeometry(0.006, 0.006, 0.40 * limbScaleY, 8),
@@ -903,20 +948,31 @@ export class BodyMeshFactoryService {
     ));
     addPart('l_thigh', lThighGroup);
 
-    // Right Shin (Patella, Tibia, Gastrocnemius diamond calf)
-    const kneeX = hipX + Math.sin(qAngle) * 0.22 * limbScaleY;
+    // Right Shin (Patella, Patellar Tendon, Meniscus, Collateral Ligaments, Tibia, Lateral Fibula & Head, Gastrocnemius)
     const rShinGroup = new THREE.Group();
-    rShinGroup.add(createMesh(new THREE.SphereGeometry(0.044, 16, 16), jointMaterial, 'bone', [kneeX, 0.16 * limbScaleY, 0.05])); // Patella
-    rShinGroup.add(createMesh(new THREE.CylinderGeometry(0.020, 0.024, 0.42 * limbScaleY, 12), boneMaterial, 'bone', [kneeX, -0.06 * limbScaleY, 0.01]));
-    rShinGroup.add(createMesh(new THREE.CapsuleGeometry(0.054, 0.28 * limbScaleY, 4, 18), muscleMaterial, 'muscle', [kneeX, -0.02 * limbScaleY, -0.025])); // Calf
+    rShinGroup.add(createMesh(new THREE.SphereGeometry(0.040, 16, 16), jointMaterial, 'bone', [kneeX, 0.16 * limbScaleY, 0.052])); // Patella (Kneecap)
+    rShinGroup.add(createMesh(new THREE.CylinderGeometry(0.016, 0.012, 0.09 * limbScaleY, 10), jointMaterial, 'bone', [kneeX, 0.12 * limbScaleY, 0.048], [-0.12, 0, 0])); // Patellar Tendon
+    rShinGroup.add(createMesh(new THREE.CylinderGeometry(0.034, 0.034, 0.010, 14), jointMaterial, 'bone', [kneeX, 0.15 * limbScaleY, 0.012])); // Meniscal Cartilage Disc
+    rShinGroup.add(createMesh(new THREE.CylinderGeometry(0.020, 0.024, 0.42 * limbScaleY, 12), boneMaterial, 'bone', [kneeX, -0.06 * limbScaleY, 0.01])); // Tibia
+    rShinGroup.add(createMesh(new THREE.SphereGeometry(0.014, 12, 12), boneMaterial, 'bone', [kneeX + 0.030, 0.12 * limbScaleY, -0.005])); // Lateral Fibular Head
+    rShinGroup.add(createMesh(new THREE.CylinderGeometry(0.009, 0.007, 0.38 * limbScaleY, 10), boneMaterial, 'bone', [kneeX + 0.028, -0.07 * limbScaleY, -0.005])); // Lateral Fibula Shaft
+    rShinGroup.add(createMesh(new THREE.CylinderGeometry(0.005, 0.005, 0.08 * limbScaleY, 8), jointMaterial, 'bone', [kneeX + 0.034, 0.15 * limbScaleY, 0.0])); // LCL
+    rShinGroup.add(createMesh(new THREE.CylinderGeometry(0.005, 0.005, 0.08 * limbScaleY, 8), jointMaterial, 'bone', [kneeX - 0.032, 0.15 * limbScaleY, 0.0])); // MCL
+    rShinGroup.add(createMesh(new THREE.CapsuleGeometry(0.054, 0.28 * limbScaleY, 4, 18), muscleMaterial, 'muscle', [kneeX, -0.02 * limbScaleY, -0.025])); // Gastrocnemius Calf
     rShinGroup.add(createMesh(new THREE.CapsuleGeometry(0.092, 0.48 * limbScaleY, 16, 24), skinMaterial.clone(), 'skin', [kneeX, -0.06 * limbScaleY, 0.0]));
     addPart('r_shin', rShinGroup);
 
-    // Left Shin
+    // Left Shin (Patella, Patellar Tendon, Meniscus, Collateral Ligaments, Tibia, Lateral Fibula & Head, Gastrocnemius)
     const lShinGroup = new THREE.Group();
-    lShinGroup.add(createMesh(new THREE.SphereGeometry(0.044, 16, 16), jointMaterial, 'bone', [-kneeX, 0.16 * limbScaleY, 0.05])); // Patella
-    lShinGroup.add(createMesh(new THREE.CylinderGeometry(0.020, 0.024, 0.42 * limbScaleY, 12), boneMaterial, 'bone', [-kneeX, -0.06 * limbScaleY, 0.01]));
-    lShinGroup.add(createMesh(new THREE.CapsuleGeometry(0.054, 0.28 * limbScaleY, 4, 18), muscleMaterial, 'muscle', [-kneeX, -0.02 * limbScaleY, -0.025])); // Calf
+    lShinGroup.add(createMesh(new THREE.SphereGeometry(0.040, 16, 16), jointMaterial, 'bone', [-kneeX, 0.16 * limbScaleY, 0.052])); // Patella (Kneecap)
+    lShinGroup.add(createMesh(new THREE.CylinderGeometry(0.016, 0.012, 0.09 * limbScaleY, 10), jointMaterial, 'bone', [-kneeX, 0.12 * limbScaleY, 0.048], [-0.12, 0, 0])); // Patellar Tendon
+    lShinGroup.add(createMesh(new THREE.CylinderGeometry(0.034, 0.034, 0.010, 14), jointMaterial, 'bone', [-kneeX, 0.15 * limbScaleY, 0.012])); // Meniscal Cartilage Disc
+    lShinGroup.add(createMesh(new THREE.CylinderGeometry(0.020, 0.024, 0.42 * limbScaleY, 12), boneMaterial, 'bone', [-kneeX, -0.06 * limbScaleY, 0.01])); // Tibia
+    lShinGroup.add(createMesh(new THREE.SphereGeometry(0.014, 12, 12), boneMaterial, 'bone', [-kneeX - 0.030, 0.12 * limbScaleY, -0.005])); // Lateral Fibular Head
+    lShinGroup.add(createMesh(new THREE.CylinderGeometry(0.009, 0.007, 0.38 * limbScaleY, 10), boneMaterial, 'bone', [-kneeX - 0.028, -0.07 * limbScaleY, -0.005])); // Lateral Fibula Shaft
+    lShinGroup.add(createMesh(new THREE.CylinderGeometry(0.005, 0.005, 0.08 * limbScaleY, 8), jointMaterial, 'bone', [-kneeX - 0.034, 0.15 * limbScaleY, 0.0])); // LCL
+    lShinGroup.add(createMesh(new THREE.CylinderGeometry(0.005, 0.005, 0.08 * limbScaleY, 8), jointMaterial, 'bone', [-kneeX + 0.032, 0.15 * limbScaleY, 0.0])); // MCL
+    lShinGroup.add(createMesh(new THREE.CapsuleGeometry(0.054, 0.28 * limbScaleY, 4, 18), muscleMaterial, 'muscle', [-kneeX, -0.02 * limbScaleY, -0.025])); // Gastrocnemius Calf
     lShinGroup.add(createMesh(new THREE.CapsuleGeometry(0.092, 0.48 * limbScaleY, 16, 24), skinMaterial.clone(), 'skin', [-kneeX, -0.06 * limbScaleY, 0.0]));
     addPart('l_shin', lShinGroup);
 
@@ -1042,19 +1098,19 @@ export class BodyMeshFactoryService {
     );
     femurHardwareGroup.add(dcpMesh);
 
-    // 4 Cortical Bone Screws penetrating through plate and lateral femur cortex
+    // 4 Cortical Bone Screws penetrating medially (-X) through lateral DCP plate into femur cortex
     const screwSpacing = dcpPlateLength / 4;
     for (let s = 0; s < 4; s++) {
       const screwLocalY = -dcpPlateLength / 2 + (s + 0.5) * screwSpacing;
       const screwRaw = createOrthopedicBoneScrew(0.0035, 0.006, 0.038, 0.004, 12, 20, 311 + s);
       const screwGeom = rawGpuMeshToBufferGeometry(screwRaw);
-      // Screw inserted horizontally through plate into bone
+      // Screw inserted horizontally (-X) through tilted plate into bone
       const screwMesh = createMesh(
         screwGeom,
         titaniumHardwareMaterial,
         'implant',
-        [hipX + 0.034, 0.38 * limbScaleY + screwLocalY * Math.cos(qAngle), 0.02 - screwLocalY * Math.sin(qAngle)],
-        [0, 0, Math.PI / 2 - qAngle]
+        [hipX + 0.034 + screwLocalY * Math.sin(qAngle), 0.38 * limbScaleY + screwLocalY * Math.cos(qAngle), 0.02],
+        [0, 0, -Math.PI / 2 - qAngle]
       );
       femurHardwareGroup.add(screwMesh);
     }
@@ -1067,23 +1123,23 @@ export class BodyMeshFactoryService {
     const pedicleZOffset = -0.048;
 
     pedicleYLevels.forEach((py, idx) => {
-      // Right pedicle screw
+      // Right pedicle screw (converging medially toward vertebral body midline)
       const rScrewRaw = createOrthopedicBoneScrew(0.004, 0.007, 0.045, 0.0045, 12, 20, 320 + idx * 2);
       const rScrewMesh = createMesh(
         rawGpuMeshToBufferGeometry(rScrewRaw),
         titaniumHardwareMaterial,
         'implant',
         [pedicleXOffset, py, pedicleZOffset],
-        [-Math.PI / 2, 0, 0.12]
+        [-Math.PI / 2, 0, -0.12]
       );
-      // Left pedicle screw
+      // Left pedicle screw (converging medially toward vertebral body midline)
       const lScrewRaw = createOrthopedicBoneScrew(0.004, 0.007, 0.045, 0.0045, 12, 20, 321 + idx * 2);
       const lScrewMesh = createMesh(
         rawGpuMeshToBufferGeometry(lScrewRaw),
         titaniumHardwareMaterial,
         'implant',
         [-pedicleXOffset, py, pedicleZOffset],
-        [-Math.PI / 2, 0, -0.12]
+        [-Math.PI / 2, 0, 0.12]
       );
       lumbarHardwareGroup.add(rScrewMesh);
       lumbarHardwareGroup.add(lScrewMesh);
@@ -1115,7 +1171,7 @@ export class BodyMeshFactoryService {
       scaffoldGeom,
       bioactiveSilicaMaterial,
       'silica',
-      [hipX + 0.018, 0.22 * limbScaleY, 0.032],
+      [kneeX + 0.018, 0.22 * limbScaleY, 0.032],
       [0.1, 0.2, -qAngle]
     );
     silicaScaffoldGroup.add(scaffoldMesh);
@@ -1132,7 +1188,7 @@ export class BodyMeshFactoryService {
         new THREE.SphereGeometry(0.006, 10, 10),
         bioactiveSilicaMaterial,
         'silica',
-        [hipX + 0.018 + gx, 0.22 * limbScaleY + gy, 0.032 + gz]
+        [kneeX + 0.018 + gx, 0.22 * limbScaleY + gy, 0.032 + gz]
       );
       silicaScaffoldGroup.add(gMesh);
     });

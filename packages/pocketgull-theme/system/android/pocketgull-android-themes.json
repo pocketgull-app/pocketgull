@@ -1,0 +1,515 @@
+[
+  {
+    "id": "pocketgull-washi-rice-paper",
+    "label": "PocketGull Washi Rice Paper",
+    "shortLabel": "Washi Rice Paper",
+    "aliases": [
+      "washi",
+      "daylight",
+      "light",
+      "paper"
+    ],
+    "isDark": false,
+    "isFeatured": true,
+    "monetStyle": "SPRITZ",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "FAF8F0",
+    "surfaceHex": "F4EFE5",
+    "foregroundHex": "18181B",
+    "accentHex": "0F766E",
+    "secondaryHex": "B45309",
+    "borderHex": "E5DFD3"
+  },
+  {
+    "id": "pocketgull-obsidian",
+    "label": "PocketGull Obsidian",
+    "shortLabel": "Obsidian",
+    "aliases": [
+      "obsidian",
+      "dark",
+      "default"
+    ],
+    "isDark": true,
+    "isFeatured": true,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "09090B",
+    "surfaceHex": "0D0D10",
+    "foregroundHex": "E4E4E7",
+    "accentHex": "14B8A6",
+    "secondaryHex": "F59E0B",
+    "borderHex": "27272A"
+  },
+  {
+    "id": "pocketgull-midnight-broadside",
+    "label": "PocketGull Midnight Broadside",
+    "shortLabel": "Midnight Broadside",
+    "aliases": [
+      "broadside",
+      "midnight"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "070B12",
+    "surfaceHex": "0A0F18",
+    "foregroundHex": "F8FAFC",
+    "accentHex": "06B6D4",
+    "secondaryHex": "F59E0B",
+    "borderHex": "1E293B"
+  },
+  {
+    "id": "pocketgull-spot-color-press",
+    "label": "PocketGull Spot-Color Press",
+    "shortLabel": "Spot-Color Press",
+    "aliases": [
+      "spot",
+      "press"
+    ],
+    "isDark": false,
+    "isFeatured": false,
+    "monetStyle": "EXPRESSIVE",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "FDFBF7",
+    "surfaceHex": "F7F2E7",
+    "foregroundHex": "1E3A8A",
+    "accentHex": "EC4899",
+    "secondaryHex": "D97706",
+    "borderHex": "E5DEC9"
+  },
+  {
+    "id": "pocketgull-radiograph-luminescence",
+    "label": "PocketGull Radiograph Luminescence",
+    "shortLabel": "Radiograph Luminescence",
+    "aliases": [
+      "radiograph",
+      "xray"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "01080E",
+    "surfaceHex": "021019",
+    "foregroundHex": "F8FAFC",
+    "accentHex": "22D3EE",
+    "secondaryHex": "38BDF8",
+    "borderHex": "083344"
+  },
+  {
+    "id": "pocketgull-rams-functionalist",
+    "label": "PocketGull Rams Functionalist",
+    "shortLabel": "Rams Functionalist",
+    "aliases": [
+      "rams",
+      "braun"
+    ],
+    "isDark": false,
+    "isFeatured": false,
+    "monetStyle": "SPRITZ",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "F4F4F0",
+    "surfaceHex": "ECECE7",
+    "foregroundHex": "1E1E1E",
+    "accentHex": "EA580C",
+    "secondaryHex": "EA580C",
+    "borderHex": "D4D4CD"
+  },
+  {
+    "id": "pocketgull-curie-luminescence",
+    "label": "PocketGull Curie Luminescence",
+    "shortLabel": "Curie Luminescence",
+    "aliases": [
+      "curie",
+      "radium"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "EXPRESSIVE",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "0F1416",
+    "surfaceHex": "0C1113",
+    "foregroundHex": "E2F8EE",
+    "accentHex": "00FF66",
+    "secondaryHex": "84CC16",
+    "borderHex": "1E2C33"
+  },
+  {
+    "id": "pocketgull-scotopic-650nm-red",
+    "label": "PocketGull Scotopic 650nm Red",
+    "shortLabel": "Scotopic 650nm Red",
+    "aliases": [
+      "scotopic",
+      "670",
+      "650",
+      "night",
+      "red"
+    ],
+    "isDark": true,
+    "isFeatured": true,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": true,
+    "contrastLevel": 1,
+    "substrateHex": "050000",
+    "surfaceHex": "080101",
+    "foregroundHex": "FF6655",
+    "accentHex": "FF2211",
+    "secondaryHex": "FF7766",
+    "borderHex": "3D0A0A"
+  },
+  {
+    "id": "pocketgull-cardstock-kraft",
+    "label": "PocketGull Cardstock Kraft",
+    "shortLabel": "Cardstock Kraft",
+    "aliases": [
+      "cardstock-kraft"
+    ],
+    "isDark": false,
+    "isFeatured": false,
+    "monetStyle": "SPRITZ",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "F9F3D9",
+    "surfaceHex": "F3ECCB",
+    "foregroundHex": "3B2E1E",
+    "accentHex": "B45309",
+    "secondaryHex": "B45309",
+    "borderHex": "E5D6A7"
+  },
+  {
+    "id": "pocketgull-hemp-fiber",
+    "label": "PocketGull Hemp Fiber",
+    "shortLabel": "Hemp Fiber",
+    "aliases": [
+      "hemp",
+      "sepia",
+      "afternoon"
+    ],
+    "isDark": false,
+    "isFeatured": true,
+    "monetStyle": "SPRITZ",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "F2EFE6",
+    "surfaceHex": "EAE5D8",
+    "foregroundHex": "2C3529",
+    "accentHex": "15803D",
+    "secondaryHex": "B45309",
+    "borderHex": "D8D3C3"
+  },
+  {
+    "id": "pocketgull-construction-high-vis",
+    "label": "PocketGull Construction High-Vis",
+    "shortLabel": "Construction High-Vis",
+    "aliases": [
+      "construction-high-vis"
+    ],
+    "isDark": false,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "FDF6E2",
+    "surfaceHex": "F8ECC5",
+    "foregroundHex": "1E1B13",
+    "accentHex": "0369A1",
+    "secondaryHex": "D97706",
+    "borderHex": "F3D27B"
+  },
+  {
+    "id": "pocketgull-triage-electrophoretic",
+    "label": "PocketGull Triage Electrophoretic",
+    "shortLabel": "Triage Electrophoretic",
+    "aliases": [
+      "triage-electrophoretic"
+    ],
+    "isDark": false,
+    "isFeatured": false,
+    "monetStyle": "SPRITZ",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "F5F5F0",
+    "surfaceHex": "EBEBE5",
+    "foregroundHex": "111111",
+    "accentHex": "111111",
+    "secondaryHex": "222222",
+    "borderHex": "D1D1CC"
+  },
+  {
+    "id": "pocketgull-carrara-marble",
+    "label": "PocketGull Carrara Marble",
+    "shortLabel": "Carrara Marble",
+    "aliases": [
+      "carrara-marble"
+    ],
+    "isDark": false,
+    "isFeatured": false,
+    "monetStyle": "SPRITZ",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "FAF9F6",
+    "surfaceHex": "F4F5F8",
+    "foregroundHex": "0F172A",
+    "accentHex": "0EA5E9",
+    "secondaryHex": "D97706",
+    "borderHex": "E2E8F0"
+  },
+  {
+    "id": "pocketgull-nero-marquina",
+    "label": "PocketGull Nero Marquina",
+    "shortLabel": "Nero Marquina",
+    "aliases": [
+      "nero-marquina"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "0D0D11",
+    "surfaceHex": "0A0A0E",
+    "foregroundHex": "F8FAFC",
+    "accentHex": "EAB308",
+    "secondaryHex": "EAB308",
+    "borderHex": "1E1E26"
+  },
+  {
+    "id": "pocketgull-ancient-papyrus",
+    "label": "PocketGull Ancient Papyrus",
+    "shortLabel": "Ancient Papyrus",
+    "aliases": [
+      "ancient-papyrus"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "13100C",
+    "surfaceHex": "0F0C09",
+    "foregroundHex": "F3EAD6",
+    "accentHex": "D97706",
+    "secondaryHex": "F59E0B",
+    "borderHex": "282119"
+  },
+  {
+    "id": "pocketgull-aquatic-pool",
+    "label": "PocketGull Aquatic Pool",
+    "shortLabel": "Aquatic Pool",
+    "aliases": [
+      "aquatic-pool"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "081F3D",
+    "surfaceHex": "061A33",
+    "foregroundHex": "E0F2FE",
+    "accentHex": "38BDF8",
+    "secondaryHex": "F59E0B",
+    "borderHex": "0E3A70"
+  },
+  {
+    "id": "pocketgull-sacred-mandala",
+    "label": "PocketGull Sacred Mandala",
+    "shortLabel": "Sacred Mandala",
+    "aliases": [
+      "sacred-mandala"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "16112D",
+    "surfaceHex": "110D24",
+    "foregroundHex": "F5F3FF",
+    "accentHex": "C084FC",
+    "secondaryHex": "F59E0B",
+    "borderHex": "2A2052"
+  },
+  {
+    "id": "pocketgull-acuity-emergency",
+    "label": "PocketGull Acuity Emergency",
+    "shortLabel": "Acuity Emergency",
+    "aliases": [
+      "acuity-emergency"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "EXPRESSIVE",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "0A0503",
+    "surfaceHex": "0C0604",
+    "foregroundHex": "FFF7ED",
+    "accentHex": "F97316",
+    "secondaryHex": "F59E0B",
+    "borderHex": "2E1208"
+  },
+  {
+    "id": "pocketgull-geararts",
+    "label": "PocketGull GearArts",
+    "shortLabel": "GearArts",
+    "aliases": [
+      "geararts"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "0B0C10",
+    "surfaceHex": "090A0D",
+    "foregroundHex": "F8FAFC",
+    "accentHex": "2DD4BF",
+    "secondaryHex": "F59E0B",
+    "borderHex": "1F2430"
+  },
+  {
+    "id": "pocketgull-hypertext-1991",
+    "label": "PocketGull Hypertext 1991",
+    "shortLabel": "Hypertext 1991",
+    "aliases": [
+      "hypertext",
+      "1991"
+    ],
+    "isDark": false,
+    "isFeatured": false,
+    "monetStyle": "MONOCHROMATIC",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "FFFFFF",
+    "surfaceHex": "F8F8F8",
+    "foregroundHex": "000000",
+    "accentHex": "000080",
+    "secondaryHex": "808000",
+    "borderHex": "CCCCCC"
+  },
+  {
+    "id": "pocketgull-confocal-fluorophore",
+    "label": "PocketGull Confocal Fluorophore",
+    "shortLabel": "Confocal Fluorophore",
+    "aliases": [
+      "confocal-fluorophore"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "EXPRESSIVE",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "05080C",
+    "surfaceHex": "05080C",
+    "foregroundHex": "E2E8F0",
+    "accentHex": "34D399",
+    "secondaryHex": "A78BFA",
+    "borderHex": "1E293B"
+  },
+  {
+    "id": "pocketgull-darkfield-electron",
+    "label": "PocketGull Darkfield Electron",
+    "shortLabel": "Darkfield Electron",
+    "aliases": [
+      "darkfield-electron"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "MONOCHROMATIC",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "0F1115",
+    "surfaceHex": "0F1115",
+    "foregroundHex": "E4E4E7",
+    "accentHex": "FACC15",
+    "secondaryHex": "CBD5E1",
+    "borderHex": "27272A"
+  },
+  {
+    "id": "pocketgull-spectrophotometer-280nm",
+    "label": "PocketGull Spectrophotometer 280nm",
+    "shortLabel": "Spectrophotometer 280nm",
+    "aliases": [
+      "spectrophotometer-280nm"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "0C0A14",
+    "surfaceHex": "0C0A14",
+    "foregroundHex": "EDE9FE",
+    "accentHex": "A855F7",
+    "secondaryHex": "E879F9",
+    "borderHex": "2E1065"
+  },
+  {
+    "id": "pocketgull-okabe-ito-divergent",
+    "label": "PocketGull Okabe-Ito Divergent",
+    "shortLabel": "Okabe-Ito Divergent",
+    "aliases": [
+      "okabe",
+      "colorblind"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "0E1117",
+    "surfaceHex": "0E1117",
+    "foregroundHex": "F0F6FC",
+    "accentHex": "56B4E9",
+    "secondaryHex": "CC79A7",
+    "borderHex": "21262D"
+  },
+  {
+    "id": "pocketgull-viridis-perceptual",
+    "label": "PocketGull Viridis Perceptual",
+    "shortLabel": "Viridis Perceptual",
+    "aliases": [
+      "viridis"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "TONAL_SPOT",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "0D0818",
+    "surfaceHex": "0D0818",
+    "foregroundHex": "F8FAFC",
+    "accentHex": "21918C",
+    "secondaryHex": "79D151",
+    "borderHex": "261B3D"
+  },
+  {
+    "id": "pocketgull-achromatopsia-high-luminance",
+    "label": "PocketGull Achromatopsia High-Luminance",
+    "shortLabel": "Achromatopsia High-Luminance",
+    "aliases": [
+      "achromatopsia",
+      "mono"
+    ],
+    "isDark": true,
+    "isFeatured": false,
+    "monetStyle": "MONOCHROMATIC",
+    "nightLight": false,
+    "contrastLevel": 1,
+    "substrateHex": "000000",
+    "surfaceHex": "000000",
+    "foregroundHex": "E4E4E7",
+    "accentHex": "FFFFFF",
+    "secondaryHex": "FFFFFF",
+    "borderHex": "27272A"
+  }
+]

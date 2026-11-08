@@ -81,7 +81,7 @@ class _BleWaveformOscilloscopeWidgetState extends State<BleWaveformOscilloscopeW
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
-                      fontFamily: 'monospace',
+                      fontFamily: 'PocketGullMono',
                     ),
                   ),
                 ],
@@ -101,7 +101,7 @@ class _BleWaveformOscilloscopeWidgetState extends State<BleWaveformOscilloscopeW
                 ),
                 label: Text(
                   widget.bleService.isSimulationActive ? 'Stop Stream' : 'Synthetic Stream',
-                  style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
+                  style: const TextStyle(fontSize: 11, fontFamily: 'PocketGullMono'),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: widget.bleService.isSimulationActive
@@ -159,12 +159,12 @@ class _BleWaveformOscilloscopeWidgetState extends State<BleWaveformOscilloscopeW
       children: [
         Text(
           label,
-          style: const TextStyle(color: Colors.grey, fontSize: 10, fontFamily: 'monospace'),
+          style: const TextStyle(color: Colors.grey, fontSize: 10, fontFamily: 'PocketGullMono'),
         ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'monospace'),
+          style: TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'PocketGullMono'),
         ),
       ],
     );

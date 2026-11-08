@@ -60,7 +60,7 @@ class OrcidService with ChangeNotifier {
       final response = await http.get(Uri.parse('$baseUrl/api/orcid/$cleanId'));
 
       if (response.statusCode == 200) {
-        final rawJson = json.decode(response.body);
+        final rawJson = json.decode(response.body) as Map<String, dynamic>;
         final parsed = _parseOrcidData(cleanId, rawJson);
 
         _orcidId = cleanId;
@@ -75,9 +75,9 @@ class OrcidService with ChangeNotifier {
       } else {
         String serverError = 'Failed to fetch profile from ORCID.';
         try {
-          final errorJson = json.decode(response.body);
-          if (errorJson['error'] != null) {
-            serverError = errorJson['error'];
+          final errorJson = json.decode(response.body) as Map<String, dynamic>;
+          if (errorJson['error'] is String) {
+            serverError = errorJson['error'] as String;
           }
         } catch (_) {}
         _error = serverError;
@@ -112,7 +112,7 @@ class OrcidService with ChangeNotifier {
       final response = await http.get(Uri.parse('$baseUrl/api/orcid/$id'));
 
       if (response.statusCode == 200) {
-        final rawJson = json.decode(response.body);
+        final rawJson = json.decode(response.body) as Map<String, dynamic>;
         _profile = _parseOrcidData(id, rawJson);
         notifyListeners();
       } else {
@@ -127,56 +127,62 @@ class OrcidService with ChangeNotifier {
   }
 
   OrcidProfile _parseOrcidData(String orcidId, Map<String, dynamic> raw) {
-    final person = raw['person'];
-    final nameMap = person?['name'];
-    final givenNames = nameMap?['given-names']?['value'] ?? '';
-    final familyName = nameMap?['family-name']?['value'] ?? '';
-    final nameList = [givenNames, familyName].where((s) => s.isNotEmpty).toList();
+    final person = raw['person'] as Map<String, dynamic>?;
+    final nameMap = person?['name'] as Map<String, dynamic>?;
+    final givenNames = (nameMap?['given-names'] as Map<String, dynamic>?)?['value'] as String? ?? '';
+    final familyName = (nameMap?['family-name'] as Map<String, dynamic>?)?['value'] as String? ?? '';
+    final nameList = <String>[givenNames, familyName].where((s) => s.isNotEmpty).toList();
     final name = nameList.isEmpty ? 'Unknown Researcher' : nameList.join(' ');
 
     // Keywords
-    final keywordsRaw = person?['keywords']?['keyword'] ?? [];
+    final keywordsRaw = (person?['keywords'] as Map<String, dynamic>?)?['keyword'] ?? <dynamic>[];
     final List<String> keywords = [];
     if (keywordsRaw is List) {
       for (final k in keywordsRaw) {
-        final content = k['content'];
-        if (content != null && content is String) {
-          keywords.add(content);
+        if (k is Map) {
+          final content = k['content'];
+          if (content is String) {
+            keywords.add(content);
+          }
         }
       }
     }
 
     // URLs
-    final urlsRaw = person?['researcher-urls']?['researcher-url'] ?? [];
+    final urlsRaw = (person?['researcher-urls'] as Map<String, dynamic>?)?['researcher-url'] ?? <dynamic>[];
     final List<OrcidUrl> urls = [];
     if (urlsRaw is List) {
       for (final u in urlsRaw) {
-        final uName = u['url-name'] ?? 'Website';
-        final uVal = u['url']?['value'];
-        if (uVal != null && uVal is String && uVal.isNotEmpty) {
-          urls.add(OrcidUrl(name: uName, url: uVal));
+        if (u is Map) {
+          final uName = u['url-name'] as String? ?? 'Website';
+          final uVal = (u['url'] as Map?)?['value'];
+          if (uVal is String && uVal.isNotEmpty) {
+            urls.add(OrcidUrl(name: uName, url: uVal));
+          }
         }
       }
     }
 
     // Works
-    final worksRaw = raw['activities-summary']?['works']?['group'] ?? [];
+    final worksRaw = ((raw['activities-summary'] as Map<String, dynamic>?)?['works'] as Map<String, dynamic>?)?['group'] ?? <dynamic>[];
     final List<OrcidWork> works = [];
     if (worksRaw is List) {
       for (final group in worksRaw) {
-        final summaries = group['work-summary'];
-        if (summaries is List && summaries.isNotEmpty) {
-          final summary = summaries[0];
-          final title = summary['title']?['title']?['value'] ?? 'Untitled Work';
-          final url = summary['url']?['value'];
-          final type = summary['type'];
-          final year = summary['publication-date']?['year']?['value'];
-          works.add(OrcidWork(
-            title: title,
-            url: url,
-            type: type,
-            year: year,
-          ));
+        if (group is Map) {
+          final summaries = group['work-summary'];
+          if (summaries is List && summaries.isNotEmpty) {
+            final summary = summaries[0] as Map<String, dynamic>;
+            final title = ((summary['title'] as Map?)?['title'] as Map?)?['value'] as String? ?? 'Untitled Work';
+            final url = (summary['url'] as Map?)?['value'] as String?;
+            final type = summary['type'] as String?;
+            final year = ((summary['publication-date'] as Map?)?['year'] as Map?)?['value'] as String?;
+            works.add(OrcidWork(
+              title: title,
+              url: url,
+              type: type,
+              year: year,
+            ));
+          }
         }
       }
     }

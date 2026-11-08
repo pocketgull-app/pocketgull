@@ -358,7 +358,7 @@ export interface IPrintPageThumbnail {
         <!-- Carousel Page Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           @for (page of printPages; track page.pageNumber; let idx = $index) {
-            <div (click)="activePageIndex.set(idx)"
+            <div role="button" tabindex="0" (keydown.enter)="activePageIndex.set(idx)" (keydown.space)="$event.preventDefault(); activePageIndex.set(idx)" (click)="activePageIndex.set(idx)"
               [class.ring-2]="activePageIndex() === idx"
               [class.ring-emerald-500]="activePageIndex() === idx"
               class="bg-zinc-50 dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 cursor-pointer transition-all hover:shadow-md flex flex-col justify-between h-64 font-mono relative overflow-hidden group">

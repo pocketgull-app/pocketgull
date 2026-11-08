@@ -2447,8 +2447,8 @@ export class ActuarialLongevityService {
 
     const biologicalAge = Math.max(18, age + bioAgeDelta);
 
-    // QALY calculation based on hazard reduction & occupational risk
-    const qalyGain = parseFloat((Math.abs(bioAgeDelta) * 1.4 + 2.5).toFixed(1));
+    // QALY calculation based on signed biological age delta & therapeutic hazard reduction
+    const qalyGain = parseFloat(Math.max(0.2, 2.5 - bioAgeDelta * 0.35).toFixed(1));
     const baselineLifeExpectancy = 77.5;
     const projectedLifespan = parseFloat((baselineLifeExpectancy - bioAgeDelta * 0.8).toFixed(1));
 

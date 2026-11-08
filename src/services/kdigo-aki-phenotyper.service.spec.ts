@@ -110,4 +110,14 @@ describe('KdigoAkiPhenotyperService (Clinical Model P9)', () => {
     expect(comp.gfr.egfrComposite).toBeGreaterThan(0);
     expect(comp.aki.currentStage).toBeTruthy();
   });
+
+  it('8. Classifies 12-hour anuria (UO = 0 mL/kg/h for >= 12h) as KDIGO Stage 3 per KDIGO 2012 guidelines', () => {
+    service.applyPreset('homeostasis');
+    service.urineOutputMlKgHr.set(0);
+    service.oliguriaDurationHours.set(12);
+
+    const aki = service.akiAssessment();
+    expect(aki.stageNumeric).toBe(3);
+    expect(aki.currentStage).toBe('KDIGO Stage 3 (Severe / RRT Risk)');
+  });
 });

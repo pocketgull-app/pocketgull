@@ -135,7 +135,7 @@ export interface IGlyphSpec {
             </h3>
             <div class="grid grid-cols-6 sm:grid-cols-12 gap-2">
               @for (glyph of glyphCatalog; track glyph.char) {
-                <div class="p-2 bg-white dark:bg-zinc-950 border border-amber-500/20 rounded-xl flex flex-col items-center justify-center gap-1 hover:border-amber-500/60 transition cursor-pointer" (click)="appendChar(glyph.char)">
+                <div role="button" tabindex="0" [attr.aria-label]="'Insert glyph ' + glyph.char" (keydown.enter)="appendChar(glyph.char)" (keydown.space)="$event.preventDefault(); appendChar(glyph.char)" class="p-2 bg-white dark:bg-zinc-950 border border-amber-500/20 rounded-xl flex flex-col items-center justify-center gap-1 hover:border-amber-500/60 transition cursor-pointer" (click)="appendChar(glyph.char)">
                   <svg class="w-6 h-7 text-zinc-900 dark:text-zinc-100" viewBox="0 0 100 120">
                     <path [attr.d]="glyph.svgPath" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
                   </svg>

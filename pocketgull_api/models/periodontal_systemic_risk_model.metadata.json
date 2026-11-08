@@ -1,0 +1,30 @@
+{
+  "model_name": "periodontal_systemic_risk_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Teledentistry Periodontal-Cardiovascular Systemic Vascular Inflammation Predictor",
+  "features": [
+    "deep_pocket_count_ppd_ge_5mm",
+    "bleeding_on_probing_pct",
+    "clinical_attachment_loss_mm",
+    "systemic_hs_crp",
+    "hba1c_pct",
+    "tooth_loss_count"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9897,
+    "oof_brier_score": 0.0019,
+    "expected_calibration_error_ece": 0.0009,
+    "brier_skill_score_bss": 0.158
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

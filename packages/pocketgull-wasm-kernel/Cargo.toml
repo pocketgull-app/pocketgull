@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "pocketgull-wasm-kernel"
+version = "1.41.2"
+edition = "2021"
+authors = ["Phillip Gear <dpo@pocketgull.app>"]
+license = "Apache-2.0"
+description = "Zero-dependency #![no_std] Rust WebAssembly compute kernel for Pocket-Gull Int8 cosine similarity, FDA 21 CFR Part 11 FNV-1a digests, and 1000 UPM chisel-nib glyph extrusion."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

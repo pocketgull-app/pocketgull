@@ -62,8 +62,12 @@ class ThemeNotifier extends Notifier<ThemeState> {
 
   Future<void> _loadSavedTheme() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!ref.mounted) return;
     final saved = prefs.getString(_themeKey);
     final reduceMotion = prefs.getBool(_motionKey) ?? false;
+
+    // If theme was already explicitly changed before prefs finished loading, do not overwrite it
+    if (saved == null && state.currentTheme != AppTheme.light) return;
 
     AppTheme theme = AppTheme.light;
     if (saved != null && saved != 'spark') {
@@ -109,9 +113,12 @@ class ThemeNotifier extends Notifier<ThemeState> {
       };
 
   Future<void> _persist() async {
+    final currentThemeName = state.currentTheme.name;
+    final currentReduceMotion = state.reduceMotion;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_themeKey, state.currentTheme.name);
-    await prefs.setBool(_motionKey, state.reduceMotion);
+    if (!ref.mounted) return;
+    await prefs.setString(_themeKey, currentThemeName);
+    await prefs.setBool(_motionKey, currentReduceMotion);
   }
 }
 
@@ -150,21 +157,19 @@ class PocketGullTheme {
   static const Color lightCardBackground = Color(0xFFFFFFFF);
 
   static ThemeData buildTheme(AppTheme theme, Brightness brightness) {
-    switch (theme) {
-      case AppTheme.spark:
-        return _buildSparkTheme();
-      case AppTheme.calm:
-        return _buildCalmTheme();
-      case AppTheme.washi:
-        return _buildWashiTheme();
-      case AppTheme.dark:
-        return _buildDarkTheme();
-      case AppTheme.light:
-      case AppTheme.system:
-        return brightness == Brightness.dark
-            ? _buildDarkTheme()
-            : _buildLightTheme();
-    }
+    final base = switch (theme) {
+      AppTheme.spark => _buildSparkTheme(),
+      AppTheme.calm => _buildCalmTheme(),
+      AppTheme.washi => _buildWashiTheme(),
+      AppTheme.dark => _buildDarkTheme(),
+      AppTheme.light || AppTheme.system => brightness == Brightness.dark
+          ? _buildDarkTheme()
+          : _buildLightTheme(),
+    };
+    return base.copyWith(
+      textTheme: base.textTheme.apply(fontFamily: 'PocketGull'),
+      primaryTextTheme: base.primaryTextTheme.apply(fontFamily: 'PocketGull'),
+    );
   }
 
   static ThemeData _buildWashiTheme() {

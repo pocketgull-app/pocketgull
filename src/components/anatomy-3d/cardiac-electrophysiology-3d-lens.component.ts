@@ -289,7 +289,14 @@ export class CardiacElectrophysiology3dLensComponent implements AfterViewInit, O
     if (this.controls) {
       this.controls.dispose();
     }
+    if (this.ventricleMesh) {
+      this.ventricleMesh.geometry?.dispose();
+    }
+    if (this.cardiacMaterial) {
+      this.cardiacMaterial.dispose();
+    }
     if (this.renderer) {
+      this.renderer.domElement?.remove();
       this.renderer.dispose();
     }
   }

@@ -1,0 +1,31 @@
+{
+  "model_name": "cyp_phenoconversion_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "In Vivo Drug-Botanical Hepatic Phenoconversion & Functional Clearance Mismatch Predictor",
+  "features": [
+    "cyp2d6_genotype_activity_score",
+    "cyp3a4_genotype_activity_score",
+    "cyp2c19_genotype_activity_score",
+    "potent_inhibitor_count",
+    "moderate_botanical_inhibitor_count",
+    "age_years",
+    "hepatic_ast_alt_ratio"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9986,
+    "oof_brier_score": 0.0156,
+    "expected_calibration_error_ece": 0.0112,
+    "brier_skill_score_bss": 0.9375
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

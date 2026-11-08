@@ -78,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   void _verifyDrawingAndUnlock() {
     if (_strokes.isEmpty && _currentStroke.isEmpty) return;
 
-    int totalPoints = _strokes.fold(0, (sum, s) => sum + s.length) + _currentStroke.length;
+    final int totalPoints = _strokes.fold(0, (sum, s) => sum + s.length) + _currentStroke.length;
     if (totalPoints > 10 || _strokes.isNotEmpty) {
       _unlockAndNavigate();
     } else {
@@ -106,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   void _unlockAndNavigate() {
     Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
+      PageRouteBuilder<void>(
         pageBuilder: (_, _, _) => const DashboardScreen(),
         transitionsBuilder: (_, a, _, c) => FadeTransition(opacity: a, child: c),
         transitionDuration: const Duration(milliseconds: 800),

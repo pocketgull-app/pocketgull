@@ -194,7 +194,7 @@ class _MetricCardWidgetState extends State<MetricCardWidget> with SingleTickerPr
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.5,
-                                fontFamily: 'Courier', // monospace simulation
+                                fontFamily: 'PocketGullMono', // monospace simulation
                               ),
                             ),
                           ),
@@ -283,7 +283,7 @@ class _MetricCardWidgetState extends State<MetricCardWidget> with SingleTickerPr
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 1.0,
                                 color: trendColor,
-                                fontFamily: 'Courier',
+                                fontFamily: 'PocketGullMono',
                               ),
                             ),
                           ],

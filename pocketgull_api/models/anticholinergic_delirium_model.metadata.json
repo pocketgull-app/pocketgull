@@ -1,0 +1,31 @@
+{
+  "model_name": "anticholinergic_delirium_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Anticholinergic Cognitive Burden & 90-Day Geriatric Delirium/Fall Trajectory Risk Model",
+  "features": [
+    "age_years",
+    "anticholinergic_cognitive_burden_acb",
+    "cockcroft_gault_crcl_ml_min",
+    "sedative_hypnotic_count",
+    "baseline_moca_score",
+    "polypharmacy_rx_count",
+    "prior_fall_history"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9929,
+    "oof_brier_score": 0.0331,
+    "expected_calibration_error_ece": 0.0238,
+    "brier_skill_score_bss": 0.848
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

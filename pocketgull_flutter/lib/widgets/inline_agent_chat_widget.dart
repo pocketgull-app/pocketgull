@@ -4,7 +4,7 @@ import '../models/chat_message.dart';
 class InlineAgentChatWidget extends StatefulWidget {
   final List<ChatMessage> messages;
   final bool isLoading;
-  final Function(String) onSendMessage;
+  final void Function(String) onSendMessage;
   final VoidCallback onClear;
 
   const InlineAgentChatWidget({

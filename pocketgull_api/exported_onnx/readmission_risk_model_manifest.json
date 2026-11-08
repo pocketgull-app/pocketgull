@@ -1,0 +1,11 @@
+{
+  "model_name": "readmission_risk_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 5,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "c8382fe1a6f83daddbd092cf369640337d3ce31565d1bcf6d9045f6670f3b8a3",
+  "size_bytes": 2353052
+}

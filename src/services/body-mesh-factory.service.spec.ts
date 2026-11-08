@@ -144,4 +144,28 @@ describe('BodyMeshFactoryService', () => {
 
     expect(proxyCount).toBeGreaterThan(20);
   });
+
+  it('should enforce anatomical Q-angle medial knee convergence, right kidney inferior displacement, and inward screw orientation', () => {
+    const { parts } = service.createMannequinGroup('III', 'homo_sapiens_male');
+
+    // 1. Right kidney sits inferior to left kidney due to right hepatic lobe
+    const kidneysGroup = parts.get('kidneys') as THREE.Group;
+    const kidneyMeshes = kidneysGroup.children.filter(c => c instanceof THREE.Mesh && !c.userData['isTouchProxy']);
+    expect(kidneyMeshes.length).toBe(2);
+    const [rKidney, lKidney] = kidneyMeshes;
+    expect(rKidney.position.y).toBeLessThan(lKidney.position.y);
+
+    // 2. Patella/tibia at kneeX sits medial (< hipX) to proximal femur shaft due to physiological Q-angle
+    const rThigh = parts.get('r_thigh') as THREE.Group;
+    const rShin = parts.get('r_shin') as THREE.Group;
+    const femurMesh = rThigh.children.find(c => c instanceof THREE.Mesh && c.userData['layer'] === 'bone')!;
+    const patellaMesh = rShin.children.find(c => c instanceof THREE.Mesh && c.userData['layer'] === 'bone')!;
+    expect(patellaMesh.position.x).toBeLessThan(femurMesh.position.x);
+
+    // 3. Femoral DCP cortical bone screws rotate by -PI/2 - qAngle so tips point medially (-X) into femur cortex
+    const femurFixation = parts.get('orthopedic_femur_fixation') as THREE.Group;
+    const implantMeshes = femurFixation.children.filter(c => c instanceof THREE.Mesh && !c.userData['isTouchProxy']);
+    // implantMeshes[0] is plate, [1..4] are cortical screws
+    expect(implantMeshes[1].rotation.z).toBeLessThan(-Math.PI / 2);
+  });
 });

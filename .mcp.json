@@ -6,7 +6,7 @@
       "args": ["run", "dart_mcp_server"],
       "env": {
         "DART_SDK_PATH": "C:\\tools\\dart-sdk",
-        "POCKETGULL_ENV": "production"
+        "POCKETGULL_ENV": "development"
       },
       "description": "Dart 3 runtime, FHIR/JSON batch transformation, and Flutter companion testing engine"
     },
@@ -32,7 +32,7 @@
     },
     "data-agent-kit": {
       "command": "npx",
-      "args": ["-y", "@google-cloud/data-agent-kit-mcp"],
+      "args": ["--no-install", "@google-cloud/data-agent-kit-mcp"],
       "env": {
         "GCP_PROJECT_ID": "gen-lang-client-0540208645",
         "BIGQUERY_DATASET": "github_enterprise_audit_log"

@@ -155,14 +155,13 @@ import { ClinicalMoERouterService, IPatientTriageEvaluation } from '../services/
             <span>New Patient</span>
           </button>
 
-          <!-- Close / Return Button if a patient is already selected -->
-          @if (patientService.selectedPatientId()) {
-            <button (click)="closeModal()" 
-                    class="p-2 text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white transition-colors cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800"
-                    title="Close Triage Roster & Return to Active Chart">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-          }
+          <!-- Close / Return Button -->
+          <button (click)="closeModal()" 
+                  class="min-w-[44px] min-h-[44px] p-2.5 text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white transition-colors cursor-pointer rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 flex items-center justify-center touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-500"
+                  aria-label="Close Triage Roster & Return to Active Chart"
+                  title="Close Triage Roster & Return to Active Chart">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
         </div>
       </header>
 
@@ -490,7 +489,7 @@ import { ClinicalMoERouterService, IPatientTriageEvaluation } from '../services/
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               @for (patient of filteredPatients(); track patient.id) {
-                <div (click)="selectChart(patient.id, false)"
+                <div role="button" tabindex="0" (keydown.enter)="selectChart(patient.id, false)" (keydown.space)="$event.preventDefault(); selectChart(patient.id, false)" [attr.aria-label]="'Open clinical chart for ' + patient.name" (click)="selectChart(patient.id, false)"
                      class="group relative bg-white dark:bg-[#1C1C1C] rounded-2xl p-6 border shadow-xs hover:shadow-md cursor-pointer transition-all active:scale-[0.98]"
                      [class.border-amber-300]="isSentinelCase(patient)"
                      [class.dark:border-amber-900]="isSentinelCase(patient)"

@@ -1,0 +1,31 @@
+{
+  "model_name": "survival_ckd_decompensation_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Semi-Parametric Cox Proportional Hazards & Breslow Cumulative Baseline Hazard Estimator for Multi-Horizon (30d to 730d) Chronic Kidney Disease (CKD) Decompensation Trajectory.",
+  "features": [
+    "age",
+    "egfr_current",
+    "egfr_annual_slope",
+    "uacr_mg_g",
+    "sbp_current",
+    "hba1c_current"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Right-Censored Time-to-Event Validation)",
+  "sample_count": 3000,
+  "unique_patients": 1800,
+  "metrics": {
+    "oof_roc_auc": 0.9284,
+    "oof_brier_score": 0.0562,
+    "expected_calibration_error_ece": 0.0192,
+    "brier_skill_score_bss": 0.7745,
+    "harrell_concordance_c_index": 0.8964
+  },
+  "calibration_method": "breslow_baseline_hazard_isotonic",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-10-16T00:00:00Z"
+}

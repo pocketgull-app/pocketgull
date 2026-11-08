@@ -29,7 +29,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
                 <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-850">
                   {{ currentAssessment().badge }}
                 </span>
-                <span (click)="toggleHeaderFlip($event)"
+                <span role="button" tabindex="0" (keydown.enter)="toggleHeaderFlip($event)" (keydown.space)="$event.preventDefault(); toggleHeaderFlip($event)" (click)="toggleHeaderFlip($event)"
                       class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition cursor-pointer select-none">
                   dblclick 🔄 flip OARS
                 </span>

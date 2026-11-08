@@ -190,12 +190,14 @@ export class SepsisShockSofaService {
     else if (data.totalBilirubinMgDl >= 2.0) liver = 2;
     else if (data.totalBilirubinMgDl >= 1.2) liver = 1;
 
-    // 4. Cardiovascular: MAP & Vasopressors
+    // 4. Cardiovascular: MAP & Vasopressors (Vincent et al. 1996 SOFA consensus)
     let cv = 0;
-    if (data.norepinephrineDoseMcgKgMin > 0.1 || data.dobutamineDoseMcgKgMin > 15) {
+    if (data.norepinephrineDoseMcgKgMin > 0.1) {
       cv = 4;
-    } else if (data.norepinephrineDoseMcgKgMin > 0 || data.dobutamineDoseMcgKgMin > 0 || data.vasopressinDoseUnitsMin > 0) {
+    } else if (data.norepinephrineDoseMcgKgMin > 0 || data.vasopressinDoseUnitsMin > 0) {
       cv = 3;
+    } else if (data.dobutamineDoseMcgKgMin > 0) {
+      cv = 2;
     } else if (data.meanArterialPressureMmhg < 70) {
       cv = 1;
     }

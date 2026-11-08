@@ -1,0 +1,31 @@
+{
+  "model_name": "cgm_glycemic_excursion_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Continuous Glucose Monitoring (CGM) Postprandial Excursion & Minimal Model Spike Predictor",
+  "features": [
+    "glycemic_load",
+    "net_carbs_grams",
+    "dietary_fiber_grams",
+    "fat_protein_ratio",
+    "fasting_glucose_mg_dl",
+    "homa_ir_score",
+    "mayer_wave_vagal_tone"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9936,
+    "oof_brier_score": 0.0294,
+    "expected_calibration_error_ece": 0.0227,
+    "brier_skill_score_bss": 0.8552
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

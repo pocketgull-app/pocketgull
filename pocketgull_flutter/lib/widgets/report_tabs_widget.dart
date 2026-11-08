@@ -3,7 +3,7 @@ import '../services/clinical_intelligence_service.dart';
 
 class ReportTabsWidget extends StatelessWidget {
   final AnalysisLens activeLens;
-  final Function(AnalysisLens) onLensChanged;
+  final void Function(AnalysisLens) onLensChanged;
 
   const ReportTabsWidget({
     super.key,

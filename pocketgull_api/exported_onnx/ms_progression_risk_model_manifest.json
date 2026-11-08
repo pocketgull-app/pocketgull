@@ -1,0 +1,11 @@
+{
+  "model_name": "ms_progression_risk_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "bb35186941c0f0c346e39e8f2bd4c5fe9e17b6d6ac9e5c961b7c93c25caeea89",
+  "size_bytes": 2783294
+}

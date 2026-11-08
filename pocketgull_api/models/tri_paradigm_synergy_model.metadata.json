@@ -1,0 +1,31 @@
+{
+  "model_name": "tri_paradigm_synergy_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Tri-Paradigm Herb-Drug CYP450 Pharmacokinetic Competition & Synergy Guard",
+  "features": [
+    "cyp3a4_inhibition_risk",
+    "cyp2d6_inhibition_risk",
+    "pgp_efflux_burden",
+    "allopathic_rx_count",
+    "botanical_extract_count",
+    "egfr_clearance",
+    "bleeding_risk_inr"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9933,
+    "oof_brier_score": 0.0265,
+    "expected_calibration_error_ece": 0.015,
+    "brier_skill_score_bss": 0.8324
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

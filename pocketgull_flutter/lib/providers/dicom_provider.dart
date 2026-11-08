@@ -54,13 +54,25 @@ class DicomState {
   }
 }
 
-/// Riverpod StateNotifier controlling DICOM study selection and cine loop playback.
-class DicomNotifier extends StateNotifier<DicomState> {
+/// Riverpod Notifier controlling DICOM study selection and cine loop playback.
+class DicomNotifier extends Notifier<DicomState> {
   Timer? _cineTimer;
+  bool _disposed = false;
 
-  DicomNotifier() : super(const DicomState()) {
-    // Default to Patient 1 (Phil Gear) study
-    selectStudy(DicomStudy.defaultStudies.first);
+  @override
+  DicomState build() {
+    _disposed = false;
+    ref.onDispose(() {
+      _disposed = true;
+      _cineTimer?.cancel();
+    });
+    final defaultStudy = DicomStudy.defaultStudies.first;
+    return DicomState(
+      selectedStudy: defaultStudy,
+      currentFrameIndex: 0,
+      cineFps: defaultStudy.frameRateFps,
+      isPlayingCine: false,
+    );
   }
 
   /// Selects an active DICOM study.
@@ -151,22 +163,16 @@ class DicomNotifier extends StateNotifier<DicomState> {
     final intervalMs = (1000.0 / state.cineFps).round().clamp(16, 200);
 
     _cineTimer = Timer.periodic(Duration(milliseconds: intervalMs), (_) {
-      if (!mounted || !state.isPlayingCine || state.selectedStudy == null) {
+      if (_disposed || !state.isPlayingCine || state.selectedStudy == null) {
         _cineTimer?.cancel();
         return;
       }
       nextFrame();
     });
   }
-
-  @override
-  void dispose() {
-    _cineTimer?.cancel();
-    super.dispose();
-  }
 }
 
-/// Global StateNotifierProvider for DICOM Tele-Radiology.
-final dicomProvider = StateNotifierProvider<DicomNotifier, DicomState>((ref) {
-  return DicomNotifier();
-});
+/// Global NotifierProvider for DICOM Tele-Radiology.
+final dicomProvider = NotifierProvider<DicomNotifier, DicomState>(
+  DicomNotifier.new,
+);

@@ -63,7 +63,7 @@ export interface IBystanderTask {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           @for (task of tasks(); track task.id) {
-            <div (click)="toggleTask(task.id)"
+            <div role="button" tabindex="0" (keydown.enter)="toggleTask(task.id)" (keydown.space)="$event.preventDefault(); toggleTask(task.id)" (click)="toggleTask(task.id)"
                  class="p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-3.5 min-h-[48px]"
                  [class.bg-emerald-950\/40]="task.completed"
                  [class.border-emerald-500\/50]="task.completed"

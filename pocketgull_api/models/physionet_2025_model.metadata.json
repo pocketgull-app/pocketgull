@@ -1,0 +1,22 @@
+{
+  "contest": "physionet_2025",
+  "year": 2025,
+  "description": "Multimodal Sepsis & Decompensation Predictor",
+  "model_type": "Calibrated HistGradientBoostingClassifier",
+  "num_features": 9,
+  "features": [
+    "wbc",
+    "lactate",
+    "creatinine",
+    "hr",
+    "bp_systolic",
+    "spo2",
+    "temperature",
+    "age",
+    "shock_index"
+  ],
+  "train_samples": 3750,
+  "test_samples": 1250,
+  "test_roc_auc": 0.9917,
+  "test_brier_score": 0.0331
+}

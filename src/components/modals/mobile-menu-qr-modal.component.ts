@@ -70,7 +70,7 @@ import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
               <!-- Mobile Menu Items List -->
               <div class="space-y-2.5 max-h-72 overflow-y-auto pr-1 text-xs">
                 @for (item of menuItems(); track item.id) {
-                  <div (click)="selectedItem.set(item)"
+                  <div role="button" tabindex="0" (keydown.enter)="selectedItem.set(item)" (keydown.space)="$event.preventDefault(); selectedItem.set(item)" (click)="selectedItem.set(item)"
                     [class.border-emerald-500/60]="selectedItem()?.id === item.id"
                     [class.bg-zinc-900]="selectedItem()?.id === item.id"
                     class="p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 transition cursor-pointer flex items-center justify-between gap-2">

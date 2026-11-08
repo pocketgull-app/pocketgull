@@ -143,7 +143,7 @@ import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversio
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             @for (sc of sim.socraticScenarios; track sc.id) {
-              <div (click)="sim.applyScenario(sc)"
+              <div role="button" tabindex="0" (keydown.enter)="sim.applyScenario(sc)" (keydown.space)="$event.preventDefault(); sim.applyScenario(sc)" (click)="sim.applyScenario(sc)"
                 class="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 hover:border-emerald-500/60 transition-all cursor-pointer shadow-sm flex flex-col justify-between gap-2 hover:scale-[1.01]">
                 <div>
                   <div class="flex items-center gap-2 mb-1">
@@ -174,7 +174,7 @@ import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversio
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             @for (pw of sim.goalInversionPathways; track pw.id) {
-              <div (click)="sim.applyPathway(pw)"
+              <div role="button" tabindex="0" (keydown.enter)="sim.applyPathway(pw)" (keydown.space)="$event.preventDefault(); sim.applyPathway(pw)" (click)="sim.applyPathway(pw)"
                 class="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 hover:border-cyan-500/60 transition-all cursor-pointer shadow-sm flex flex-col justify-between gap-3 hover:scale-[1.01]">
                 <div>
                   <div class="flex items-center justify-between mb-1">

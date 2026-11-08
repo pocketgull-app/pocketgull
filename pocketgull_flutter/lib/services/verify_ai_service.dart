@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:http/http.dart' as http;
 
 class VerificationIssue {
   final String severity;
@@ -8,7 +9,7 @@ class VerificationIssue {
   final String? suggestedFix;
   final String? claim;
 
-  VerificationIssue({
+  const VerificationIssue({
     required this.severity,
     required this.message,
     this.suggestedFix,
@@ -17,10 +18,10 @@ class VerificationIssue {
 
   factory VerificationIssue.fromJson(Map<String, dynamic> json) {
     return VerificationIssue(
-      severity: json['severity'] ?? 'low',
-      message: json['message'] ?? '',
-      suggestedFix: json['suggestedFix'],
-      claim: json['claim'],
+      severity: json['severity'] as String? ?? 'low',
+      message: json['message'] as String? ?? '',
+      suggestedFix: json['suggestedFix'] as String?,
+      claim: json['claim'] as String?,
     );
   }
 }
@@ -29,29 +30,26 @@ class VerificationResult {
   final String status;
   final List<VerificationIssue> issues;
 
-  VerificationResult({required this.status, required this.issues});
+  const VerificationResult({required this.status, required this.issues});
 
   factory VerificationResult.fromJson(Map<String, dynamic> json) {
-    var issuesList = json['issues'] as List? ?? [];
+    final issuesList = json['issues'] as List<dynamic>? ?? const <dynamic>[];
     return VerificationResult(
-      status: json['status'] ?? 'warning',
-      issues: issuesList.map((i) => VerificationIssue.fromJson(i)).toList(),
+      status: json['status'] as String? ?? 'warning',
+      issues: issuesList
+          .whereType<Map<String, dynamic>>()
+          .map(VerificationIssue.fromJson)
+          .toList(),
     );
   }
 }
 
 class VerifyAiService {
-  final GenerativeModel _model;
+  final String apiKey;
+  final http.Client _httpClient;
 
-  VerifyAiService({required String apiKey}) 
-      : _model = GenerativeModel(
-          model: 'gemini-3.8-flash',
-          apiKey: apiKey,
-          generationConfig: GenerationConfig(
-            responseMimeType: 'application/json',
-            temperature: 0.1,
-          ),
-        );
+  VerifyAiService({required this.apiKey, http.Client? httpClient})
+      : _httpClient = httpClient ?? http.Client();
 
   Future<VerificationResult> verifyReportSection(
     String sectionTitle,
@@ -96,10 +94,39 @@ Return ONLY the JSON.
 ''';
 
     try {
-      final response = await _model.generateContent([Content.text(prompt)]);
-      if (response.text == null) throw Exception("Empty response");
-      
-      final resultMap = jsonDecode(response.text!) as Map<String, dynamic>;
+      final uri = Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=$apiKey',
+      );
+      final response = await _httpClient.post(
+        uri,
+        headers: const {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'contents': [
+            {
+              'role': 'user',
+              'parts': [
+                {'text': prompt},
+              ],
+            },
+          ],
+          'generationConfig': {
+            'responseMimeType': 'application/json',
+            'temperature': 0.1,
+          },
+        }),
+      );
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception('HTTP ${response.statusCode}');
+      }
+      final bodyMap = jsonDecode(response.body) as Map<String, dynamic>;
+      final candidates = bodyMap['candidates'] as List<dynamic>?;
+      final first = candidates?.firstOrNull as Map<String, dynamic>?;
+      final content = first?['content'] as Map<String, dynamic>?;
+      final parts = content?['parts'] as List<dynamic>?;
+      final text = (parts?.firstOrNull as Map<String, dynamic>?)?['text'] as String?;
+      if (text == null) throw Exception('Empty response');
+
+      final resultMap = jsonDecode(text) as Map<String, dynamic>;
       return VerificationResult.fromJson(resultMap);
     } catch (e) {
       debugPrint('AI Verification failed: $e');
@@ -109,7 +136,7 @@ Return ONLY the JSON.
           VerificationIssue(
             severity: 'low',
             message: 'Verification bridge failed. Please manually check transcript. Error: $e',
-          )
+          ),
         ],
       );
     }

@@ -52,6 +52,7 @@ import { DirectIomtWearablesService } from './hardware/direct-iomt-wearables.ser
 import { MimicOmopBenchmarkService, BenchmarkCohortType } from './research/mimic-omop-benchmark.service';
 import { EhrWritebackService } from './fhir/ehr-writeback.service';
 import { EdgeAutonomousVoiceAgentService } from './voice/edge-autonomous-voice-agent.service';
+import { ClinicalDriftCalibratorService } from './interpretability/clinical-drift-calibrator.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -110,6 +111,7 @@ export class WebMcpRegistrationService {
   private mimicBenchmarkService = inject(MimicOmopBenchmarkService, { optional: true });
   private ehrWritebackService = inject(EhrWritebackService, { optional: true });
   private edgeVoiceService = inject(EdgeAutonomousVoiceAgentService, { optional: true });
+  private driftCalibratorService = inject(ClinicalDriftCalibratorService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -2890,7 +2892,7 @@ export class WebMcpRegistrationService {
     try { modelContext.registerTool(confTool, { signal: confCtrl.signal }); } catch (e) { console.warn("Tool already registered:", confTool.name); }
     this.mcpControllers.push({ name: confTool.name, controller: confCtrl });
 
-    // 82. WebMCP PR #253 (Chrome 156.0.8067.0): Diagnostic & Troubleshooting State Inspection Tool
+    // 82. WebMCP PR #253 (Chrome 156.0.8067.0) & PR #254 (Chrome 159.0.8140.0): Diagnostic & Troubleshooting State Inspection Tool
     const internalStateCtrl = new AbortController();
     const internalStateTool = {
       name: 'getInternalState',
@@ -2904,6 +2906,16 @@ export class WebMcpRegistrationService {
           }
         },
         required: ['componentId']
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          timestamp: { type: 'string', description: 'ISO-8601 diagnostic snapshot timestamp.' },
+          componentId: { type: 'string', description: 'Inspected component identifier.' },
+          framework: { type: 'string', description: 'PocketGull framework identifier.' },
+          version: { type: 'string', description: 'Active semantic version.' }
+        },
+        required: ['timestamp', 'componentId', 'framework', 'version']
       },
       debugging: true, // WebMCP PR #253 (Chrome 156.0.8067.0) inspection tool flag
       execute: async ({ componentId }: { componentId: string }) => {
@@ -3654,7 +3666,7 @@ export class WebMcpRegistrationService {
     const ehrWritebackTool = {
       name: 'execute_ehr_bi_directional_writeback',
       description: 'Executes automated system-to-system writeback to Epic Hyperspace, Cerner PowerChart, Athenahealth, or FHIR Sandbox using RFC 7523 private_key_jwt asymmetric authentication without clinician active clicking. Files USCDI v4 DocumentReference (SBAR note), CarePlan (CYP450 verified pathways), and Observation (LOINC 96766-1 conformal sepsis risk set) stamped with SHA-256 attestation seals.',
-      parameters: {
+      inputSchema: {
         type: 'object',
         properties: {
           vendor: {
@@ -3671,6 +3683,19 @@ export class WebMcpRegistrationService {
             description: 'Optional filing practitioner ID / NPI.'
           }
         }
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          status: { type: 'string', enum: ['WRITEBACK_EXECUTED'] },
+          batchId: { type: 'string' },
+          timestamp: { type: 'string' },
+          ehrVendor: { type: 'string' },
+          overallStatus: { type: 'string' },
+          receipts: { type: 'array' },
+          authProtocol: { type: 'string' }
+        },
+        required: ['status', 'batchId', 'ehrVendor', 'overallStatus', 'receipts']
       },
       execute: async (params: any) => {
         try {
@@ -3721,7 +3746,7 @@ export class WebMcpRegistrationService {
     const getEhrStatusTool = {
       name: 'get_ehr_writeback_status',
       description: 'Returns current EHR writeback configuration, RFC 7523 asymmetric client identity, public JWKS keyring (RFC 7517) for Epic/Cerner developer console registration, active system token scopes, and recent transaction audit trail.',
-      parameters: {
+      inputSchema: {
         type: 'object',
         properties: {
           includeJwks: {
@@ -3729,6 +3754,18 @@ export class WebMcpRegistrationService {
             description: 'Whether to include full public JWKS JSON structure in the response.'
           }
         }
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          activeVendor: { type: 'string' },
+          clientId: { type: 'string' },
+          keyId: { type: 'string' },
+          tokenEndpoint: { type: 'string' },
+          totalWritebacks: { type: 'number' },
+          recentReceipts: { type: 'array' }
+        },
+        required: ['activeVendor', 'clientId', 'keyId', 'tokenEndpoint', 'totalWritebacks']
       },
       execute: async (params: any) => {
         try {
@@ -3775,7 +3812,7 @@ export class WebMcpRegistrationService {
     const triggerAdtTool = {
       name: 'trigger_fhir_subscription_adt_event',
       description: 'Simulates or processes a real-time FHIR R4 Subscription notification (such as ADT admission A01 or discharge A03) at /api/fhir/subscription, dynamically queuing conformal sepsis risk re-evaluation and initializing Tri-Paradigm care baseline.',
-      parameters: {
+      inputSchema: {
         type: 'object',
         properties: {
           eventType: {
@@ -3789,6 +3826,16 @@ export class WebMcpRegistrationService {
           }
         },
         required: ['eventType']
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          status: { type: 'string', enum: ['ADT_EVENT_PROCESSED'] },
+          event: { type: 'object' },
+          subscriptionEndpoint: { type: 'string' },
+          conformalEvaluationQueued: { type: 'boolean' }
+        },
+        required: ['status', 'event', 'subscriptionEndpoint', 'conformalEvaluationQueued']
       },
       execute: async (params: any) => {
         try {
@@ -3831,7 +3878,7 @@ export class WebMcpRegistrationService {
     const edgeVoiceTool = {
       name: 'start_edge_autonomous_voice_session',
       description: 'Initiates a 100% air-gapped, zero-cloud offline clinical voice scribing session using local Gemma 4 / WebGPU SLM with Web Speech API audio telemetry.',
-      parameters: {
+      inputSchema: {
         type: 'object',
         properties: {
           airGappedMode: {
@@ -3843,6 +3890,18 @@ export class WebMcpRegistrationService {
             description: 'BCP-47 language tag (e.g. en-US).'
           }
         }
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          status: { type: 'string', enum: ['EDGE_VOICE_SESSION_ACTIVE'] },
+          isListening: { type: 'boolean' },
+          isAirGapped: { type: 'boolean' },
+          activeEngine: { type: 'string' },
+          cloudEgressPackets: { type: 'number' },
+          regulatoryCompliance: { type: 'string' }
+        },
+        required: ['status', 'isListening', 'isAirGapped', 'activeEngine', 'cloudEgressPackets']
       },
       execute: async (params: any) => {
         try {
@@ -3887,7 +3946,7 @@ export class WebMcpRegistrationService {
     const edgeSbarTool = {
       name: 'synthesize_edge_offline_sbar',
       description: 'Synthesizes raw clinical dialogue into structured SBAR format locally at the edge, executes ISMP medication safety guard intercept (prohibiting trailing zeroes and naked decimals), and stores the result as an offline USCDI v4 FHIR R4 Bundle.',
-      parameters: {
+      inputSchema: {
         type: 'object',
         properties: {
           rawTranscript: {
@@ -3896,6 +3955,20 @@ export class WebMcpRegistrationService {
           }
         },
         required: ['rawTranscript']
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          status: { type: 'string', enum: ['SBAR_SYNTHESIZED_AND_QUEUED'] },
+          engineUsed: { type: 'string' },
+          executionLatencyMs: { type: 'number' },
+          ismpAudit: { type: 'object' },
+          queuedBundleId: { type: 'string' },
+          sha256AttestationSeal: { type: 'string' },
+          fhirBundleResourceType: { type: 'string' },
+          offlineQueueLength: { type: 'number' }
+        },
+        required: ['status', 'engineUsed', 'ismpAudit', 'queuedBundleId', 'sha256AttestationSeal', 'fhirBundleResourceType']
       },
       execute: async (params: any) => {
         try {
@@ -3947,7 +4020,7 @@ export class WebMcpRegistrationService {
     const edgeQueueTool = {
       name: 'get_edge_offline_queue_status',
       description: 'Inspects the offline store-and-forward FHIR R4 bundle queue, returns pending synchronization counts, SHA-256 integrity digests, and provides optional 1-click flush to EHR (Epic Hyperspace / Cerner PowerChart).',
-      parameters: {
+      inputSchema: {
         type: 'object',
         properties: {
           flushToEhr: {
@@ -3955,6 +4028,17 @@ export class WebMcpRegistrationService {
             description: 'If true, immediately flushes and synchronizes all queued offline bundles to EHR.'
           }
         }
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          status: { type: 'string', enum: ['EDGE_QUEUE_STATUS'] },
+          pendingCount: { type: 'number' },
+          totalCachedBundles: { type: 'number' },
+          isAirGapped: { type: 'boolean' },
+          bundles: { type: 'array' }
+        },
+        required: ['status', 'pendingCount', 'totalCachedBundles', 'isAirGapped', 'bundles']
       },
       execute: async (params: any) => {
         try {
@@ -4017,6 +4101,20 @@ export class WebMcpRegistrationService {
         },
         required: ['action']
       },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          engine: { type: 'string' },
+          version: { type: 'string' },
+          activeTier: { type: 'string' },
+          zeroThreeJs: { type: 'boolean' },
+          footprintKb: { type: 'number' },
+          actionExecuted: { type: 'string' },
+          geometrySelected: { type: 'string' },
+          regimeApplied: { type: 'string' }
+        },
+        required: ['engine', 'version', 'activeTier', 'zeroThreeJs', 'footprintKb', 'actionExecuted']
+      },
       execute: async (params: any) => {
         return {
           content: [{
@@ -4039,11 +4137,163 @@ export class WebMcpRegistrationService {
     };
     try { modelContext.registerTool(gullRenderTool, { signal: gullRenderCtrl.signal }); } catch (e) { console.warn("Tool already registered:", gullRenderTool.name); }
     this.mcpControllers.push({ name: gullRenderTool.name, controller: gullRenderCtrl });
+
+    // 96. evaluate_clinical_hypothesis_and_cohort (Popperian H0 + BigQuery <-> Kaggle Leak-Free Cohort SQL)
+    const bqHypothesisCtrl = new AbortController();
+    const bqHypothesisTool = {
+      name: 'evaluate_clinical_hypothesis_and_cohort',
+      description: 'Evaluates a clinical biomarker or hypothesis using Popperian null-hypothesis (H0) testing, Gigerenzer natural frequencies (out of 10,000), and generates a leak-free BigQuery <-> Kaggle 5-fold cohort SQL query with 1 GiB maximum_bytes_billed.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          biomarkerName: { type: 'string', description: 'Biomarker or vital sign name (e.g., hsCRP, HRV_RMSSD, SpO2)' },
+          observedValue: { type: 'number', description: 'Observed patient metric value' },
+          populationMean: { type: 'number', description: 'Null hypothesis (H0) population baseline mean' },
+          populationSd: { type: 'number', description: 'Population standard deviation' },
+          prevalencePer10000: { type: 'number', description: 'Base rate per 10,000 screened individuals for Gigerenzer natural frequency' }
+        },
+        required: ['biomarkerName', 'observedValue']
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          biomarkerName: { type: 'string' },
+          observedValue: { type: 'number' },
+          nullHypothesisH0: { type: 'string' },
+          zScore: { type: 'number' },
+          pValue: { type: 'number' },
+          bayesFactorBf10: { type: 'number' },
+          isH0Rejected: { type: 'boolean' },
+          gigerenzerNaturalFrequency: { type: 'string' },
+          bigQueryKaggleCohortQuery: { type: 'string' },
+          maximumBytesBilled: { type: 'number' },
+          hipaaSafeHarborDeidentified: { type: 'boolean' }
+        },
+        required: ['biomarkerName', 'observedValue', 'pValue', 'bayesFactorBf10', 'isH0Rejected', 'gigerenzerNaturalFrequency', 'bigQueryKaggleCohortQuery', 'maximumBytesBilled']
+      },
+      execute: async (params: {
+        biomarkerName: string;
+        observedValue: number;
+        populationMean?: number;
+        populationSd?: number;
+        prevalencePer10000?: number;
+      }) => {
+        try {
+          const mean = params.populationMean ?? 1.5;
+          const sd = Math.max(params.populationSd ?? 0.8, 0.0001);
+          const zScore = Math.abs((params.observedValue - mean) / sd);
+          // Two-tailed Gaussian survival approximation
+          const pValue = Number(Math.max(0.0001, Math.min(0.9999, Math.exp(-0.717 * zScore - 0.416 * zScore * zScore))).toFixed(4));
+          const isH0Rejected = pValue < 0.05;
+          const bayesFactorBf10 = pValue < 0.05 ? Number((1 / Math.max(pValue * Math.E * Math.abs(Math.log(pValue)), 0.001)).toFixed(2)) : 0.85;
+          const baseRate = Math.min(Math.max(Math.round(params.prevalencePer10000 ?? 200), 1), 9999);
+          const truePositives = Math.round(baseRate * 0.9);
+          const falsePositives = Math.round((10000 - baseRate) * 0.05);
+
+          const safeColumn = params.biomarkerName.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+          const bqCohortSql = [
+            `-- FinOps Cap: maximum_bytes_billed = 1073741824 (1 GiB) | GroupKFold(n_splits=5)`,
+            `SELECT`,
+            `  patient_id,`,
+            `  MOD(ABS(FARM_FINGERPRINT(CAST(patient_id AS STRING))), 5) AS fold_id,`,
+            `  ${safeColumn}`,
+            `FROM \`gen-lang-client-0540208645.clinical_warehouse.deidentified_vitals\``,
+            `WHERE _PARTITIONDATE >= DATE_SUB(CURRENT_DATE(), INTERVAL 365 DAY)`,
+            `  AND ${safeColumn} IS NOT NULL`
+          ].join('\n');
+
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                biomarkerName: params.biomarkerName,
+                observedValue: params.observedValue,
+                nullHypothesisH0: `No statistically significant deviation of ${params.biomarkerName} from population baseline (${mean} ± ${sd}).`,
+                zScore: Number(zScore.toFixed(3)),
+                pValue,
+                bayesFactorBf10,
+                isH0Rejected,
+                skepticalWarningNotice: isH0Rejected
+                  ? null
+                  : `[POPPERIAN H0 WARNING] p = ${pValue} >= 0.05. Observation cannot reject the null hypothesis of random physiological variance.`,
+                gigerenzerNaturalFrequency: `Out of 10,000 screened individuals, ${baseRate} have the condition (${truePositives} test positive), while ${falsePositives} of the remaining ${10000 - baseRate} healthy individuals will trigger a false positive.`,
+                bigQueryKaggleCohortQuery: bqCohortSql,
+                maximumBytesBilled: 1073741824,
+                hipaaSafeHarborDeidentified: true
+              }, null, 2)
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Hypothesis evaluation failed: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    try { modelContext.registerTool(bqHypothesisTool, { signal: bqHypothesisCtrl.signal }); } catch (e) { console.warn("Tool already registered:", bqHypothesisTool.name); }
+    this.mcpControllers.push({ name: bqHypothesisTool.name, controller: bqHypothesisCtrl });
+
+    // 97. calibrate_clinical_drift (J++ Workspace Lens & MIT Media Lab Difference-in-Means Drift Calibrator)
+    const driftCalibratorCtrl = new AbortController();
+    const driftCalibratorTool = {
+      name: 'calibrate_clinical_drift',
+      description: 'Scores clinical utterances across 6 binary behavioral axes (12 radial poles), returns early-layer J++ Workspace Lens projections, and applies activation steering (-0.65·v_sycophancy + 0.50·v_popperian) when drift hazard >= 0.55.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          action: {
+            type: 'string',
+            enum: ['inspect', 'evaluate_utterance', 'apply_steering', 'open_hud'],
+            description: 'Action to execute on the Clinical Drift Calibrator'
+          },
+          utterance: {
+            type: 'string',
+            description: 'Optional clinical prompt or utterance to evaluate via difference-in-means cosine projection'
+          }
+        },
+        required: ['action']
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          actionExecuted: { type: 'string', enum: ['inspect', 'evaluate_utterance', 'apply_steering', 'open_hud'] },
+          engineStatus: { type: 'string' },
+          axesCount: { type: 'number' }
+        },
+        required: ['actionExecuted', 'engineStatus', 'axesCount']
+      },
+      execute: async (params: { action: 'inspect' | 'evaluate_utterance' | 'apply_steering' | 'open_hud'; utterance?: string }) => {
+        try {
+          if (params.action === 'open_hud') {
+            this.ngZone.run(() => this.navService?.openDriftCalibrator());
+          } else if (params.action === 'evaluate_utterance' && params.utterance && this.driftCalibratorService) {
+            await this.driftCalibratorService.evaluateCustomUtterance(params.utterance);
+          } else if (params.action === 'apply_steering' && this.driftCalibratorService) {
+            this.driftCalibratorService.applySteeringCalibration();
+          }
+
+          const current = this.driftCalibratorService?.currentTurn();
+          return {
+            content: [{
+              type: 'text',
+              text: JSON.stringify({
+                actionExecuted: params.action,
+                engineStatus: this.driftCalibratorService?.liveEngineStatus() || 'Zero-Egress Ready',
+                activeTurn: current || null,
+                axesCount: this.driftCalibratorService?.axes().length || 6
+              }, null, 2)
+            }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Drift calibration failed: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    try { modelContext.registerTool(driftCalibratorTool, { signal: driftCalibratorCtrl.signal }); } catch (e) { console.warn("Tool already registered:", driftCalibratorTool.name); }
+    this.mcpControllers.push({ name: driftCalibratorTool.name, controller: driftCalibratorCtrl });
   }
 
   /**
    * Returns internal component and subsystem state for diagnostics and troubleshooting
-   * per WebMCP Chrome 156.0.8067.0 PR #253 specification.
+   * per WebMCP Chrome 156.0.8067.0 PR #253 & Chrome 159.0.8140.0 PR #254 specification.
    */
   public getInternalState(componentId?: string): Record<string, any> {
     const cid = (componentId || 'all').toLowerCase();
@@ -4117,7 +4367,8 @@ export class WebMcpRegistrationService {
       result.webmcp = {
         registeredToolsCount: this.mcpControllers.length,
         pr253DebuggingSupported: true,
-        runtime: typeof window !== 'undefined' && 'modelContext' in navigator ? 'native-chrome-156' : 'polyfilled',
+        pr254OutputSchemaSupported: true,
+        runtime: typeof window !== 'undefined' && 'modelContext' in navigator ? 'native-chrome-159' : 'polyfilled',
       };
     }
 
@@ -4222,8 +4473,9 @@ export class WebMcpRegistrationService {
 
   /**
    * Retrieves all registered WebMCP tools from document.modelContext / navigator.modelContext,
-   * safely normalizing inputSchema to a JavaScript object regardless of browser version (supporting
-   * both legacy DOMString returns and updated native JavaScript object returns).
+   * safely normalizing inputSchema and outputSchema (Chrome 159.0.8140.0+ PR #254) to JavaScript
+   * objects regardless of browser version (supporting both legacy DOMString returns and updated
+   * native JavaScript object returns).
    */
   public async getRegisteredTools(): Promise<any[]> {
     if (typeof window === 'undefined' || typeof document === 'undefined') return [];
@@ -4234,6 +4486,7 @@ export class WebMcpRegistrationService {
       return (tools || []).map((tool: any) => ({
         ...tool,
         inputSchema: normalizeToolInputSchema(tool.inputSchema),
+        ...(tool.outputSchema ? { outputSchema: normalizeToolOutputSchema(tool.outputSchema) } : {}),
       }));
     } catch {
       return [];
@@ -4256,4 +4509,103 @@ export function normalizeToolInputSchema(schema: unknown): Record<string, any> {
   }
   return typeof schema === 'object' ? (schema as Record<string, any>) : { type: 'object', properties: {} };
 }
+
+/**
+ * Helper to normalize WebMCP RegisteredTool outputSchema (Chrome 159.0.8140.0+, W3C WebMCP PR #254).
+ */
+export function normalizeToolOutputSchema(schema: unknown): Record<string, any> | undefined {
+  if (!schema) return undefined;
+  if (typeof schema === 'string') {
+    try {
+      return JSON.parse(schema);
+    } catch {
+      return undefined;
+    }
+  }
+  return typeof schema === 'object' ? (schema as Record<string, any>) : undefined;
+}
+
+/**
+ * Validates a tool's execution output against its declared `outputSchema` per Chrome 159.0.8140.0+
+ * (W3C WebMCP PR #254 / Issue #92 / webmcp-extension PR #98).
+ *
+ * Because the WebMCP spec does not yet mandate whether `executeTool()` throws on output mismatch,
+ * agent harnesses should validate each tool's output against `outputSchema` before returning it to
+ * the model, returning a structured `OUTPUT_SCHEMA_MISMATCH` validation error instead of malformed data.
+ */
+export function validateToolOutputAgainstSchema(
+  rawOutput: unknown,
+  outputSchema?: Record<string, any>
+): { valid: boolean; error?: string; code?: string; retryable?: boolean; parsedPayload?: any } {
+  if (!outputSchema) {
+    return { valid: true, parsedPayload: rawOutput };
+  }
+
+  // Unwrap standard WebMCP `{ content: [{ type: 'text', text: '...' }] }` envelope when present
+  let payload: any = rawOutput;
+  if (
+    rawOutput &&
+    typeof rawOutput === 'object' &&
+    Array.isArray((rawOutput as any).content) &&
+    (rawOutput as any).content[0]?.type === 'text' &&
+    typeof (rawOutput as any).content[0]?.text === 'string'
+  ) {
+    if ((rawOutput as any).isError) {
+      return { valid: true, parsedPayload: rawOutput };
+    }
+    try {
+      payload = JSON.parse((rawOutput as any).content[0].text);
+    } catch {
+      payload = (rawOutput as any).content[0].text;
+    }
+  }
+
+  const expectedType = outputSchema['type'] || 'object';
+  if (expectedType === 'object') {
+    if (payload === null || typeof payload !== 'object' || Array.isArray(payload)) {
+      return {
+        valid: false,
+        code: 'OUTPUT_SCHEMA_MISMATCH',
+        retryable: false,
+        error: `Tool output failed outputSchema validation: expected 'object', received '${Array.isArray(payload) ? 'array' : typeof payload}'.`,
+      };
+    }
+
+    if (Array.isArray(outputSchema['required'])) {
+      for (const reqKey of outputSchema['required']) {
+        if (!(reqKey in payload) || payload[reqKey] === undefined) {
+          return {
+            valid: false,
+            code: 'OUTPUT_SCHEMA_MISMATCH',
+            retryable: false,
+            error: `Tool output failed outputSchema validation: missing required property '${reqKey}'.`,
+          };
+        }
+      }
+    }
+
+    if (outputSchema['properties'] && typeof outputSchema['properties'] === 'object') {
+      for (const [propKey, propSchema] of Object.entries<any>(outputSchema['properties'])) {
+        if (propKey in payload && payload[propKey] !== undefined && payload[propKey] !== null && propSchema?.type) {
+          const val = payload[propKey];
+          const actualType = Array.isArray(val) ? 'array' : typeof val;
+          const propType = propSchema.type;
+          const typeMatches =
+            propType === actualType || (propType === 'integer' && typeof val === 'number' && Number.isInteger(val));
+          if (!typeMatches) {
+            return {
+              valid: false,
+              code: 'OUTPUT_SCHEMA_MISMATCH',
+              retryable: false,
+              error: `Tool output failed outputSchema validation: property '${propKey}' expected '${propType}', got '${actualType}'.`,
+            };
+          }
+        }
+      }
+    }
+  }
+
+  return { valid: true, parsedPayload: payload };
+}
+
 

@@ -364,7 +364,7 @@ export class DictationService {
     this.resultCallback = null;
   }
 
-  registerResultHandler(callback: (text: string, isFinal: boolean) => void) {
+  registerResultHandler(callback: ((text: string, isFinal: boolean) => void) | null) {
     this.resultCallback = callback;
   }
 

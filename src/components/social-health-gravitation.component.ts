@@ -95,7 +95,7 @@ export interface IHobbyVector {
       <!-- Social Gravitation Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 relative z-10 font-sans mb-8">
         @for (vector of filteredVectors(); track vector.id) {
-          <div (click)="selectVector(vector)"
+          <div role="button" tabindex="0" (keydown.enter)="selectVector(vector)" (keydown.space)="$event.preventDefault(); selectVector(vector)" (click)="selectVector(vector)"
             class="p-6 rounded-2xl border bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:border-orange-500/50 transition cursor-pointer flex flex-col justify-between group shadow-md font-mono sub-panel">
             
             <div>

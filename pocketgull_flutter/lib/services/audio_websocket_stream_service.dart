@@ -50,7 +50,7 @@ class AudioWebsocketStreamService {
     });
 
     _socket!.on('gemini_live_transcript', (data) {
-      final text = data is Map ? (data['text'] ?? '') : data.toString();
+      final text = data is Map ? (data['text']?.toString() ?? '') : data.toString();
       _transcriptStreamController.add(text);
     });
 

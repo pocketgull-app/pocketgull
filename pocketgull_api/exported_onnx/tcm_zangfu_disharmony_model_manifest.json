@@ -1,0 +1,11 @@
+{
+  "model_name": "tcm_zangfu_disharmony_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "e3a6ba043ee01138979feddab1c464920722d495de121bc03bb22d1753e9a110",
+  "size_bytes": 2783854
+}

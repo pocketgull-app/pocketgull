@@ -205,7 +205,7 @@ class ResearchTabWidget extends StatelessWidget {
                     hit.evalue,
                     style: TextStyle(
                       fontSize: 12,
-                      fontFamily: 'monospace',
+                      fontFamily: 'PocketGullMono',
                       color: Colors.grey.shade500,
                     ),
                   ),

@@ -1,0 +1,11 @@
+{
+  "model_name": "periodontal_systemic_risk_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 6,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "9be8a9562e5f03ccf1482e810e23867235de7edbc6270bc818aa65b066c7589e",
+  "size_bytes": 715313
+}

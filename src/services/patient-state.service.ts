@@ -61,7 +61,9 @@ export class PatientStateService {
   public readonly patientEcgStrip = computed(() => {
     const id = this.patientId();
     if (!id || !this.modalityGenerator) return null;
-    return this.modalityGenerator.generateEcgStrip(Math.floor(Math.random() * 40) + 60);
+    const hrRaw = Number(this.vitals().hr);
+    const deterministicHr = Number.isFinite(hrRaw) && hrRaw > 30 ? hrRaw : 72;
+    return this.modalityGenerator.generateEcgStrip(deterministicHr);
   });
 
   public readonly patientDicomMetadata = computed(() => {

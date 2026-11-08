@@ -96,8 +96,9 @@ class FalsificationEngine:
             c_arr = np.asarray(control, dtype=np.float64)
             obs_diff = float(np.mean(t_arr) - np.mean(c_arr))
 
-            # Pooled array for exact permutation testing
-            pooled = np.concatenate([t_arr, c_arr])
+            # Shift treatment by null_mean so pooled array is exchangeable under H0: mu_T - mu_C = null_mean
+            t_shifted = t_arr - null_mean
+            pooled = np.concatenate([t_shifted, c_arr])
             n_t = len(t_arr)
             n_total = len(pooled)
 
@@ -108,8 +109,8 @@ class FalsificationEngine:
             perm_ctrl_means = np.mean(shuffled_pooled[:, n_t:], axis=-1)
             perm_diffs = perm_treat_means - perm_ctrl_means
 
-            # Two-tailed empirical p-value
-            p_val = float(np.mean(np.abs(perm_diffs - null_mean) >= np.abs(obs_diff - null_mean)))
+            # Two-tailed empirical p-value against shifted null
+            p_val = float(np.mean(np.abs(perm_diffs) >= np.abs(obs_diff - null_mean)))
 
             # Bootstrap 95% Confidence Interval for difference of means
             boot_t = self.rng.choice(t_arr, size=(1000, len(t_arr)), replace=True).mean(axis=-1)

@@ -301,7 +301,7 @@ import { PatientStateService } from '../services/patient-state.service';
                        class="text-[11px] text-zinc-400 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-zinc-950 hover:file:bg-amber-400 cursor-pointer">
                 @if (selectedPhotoUrl()) {
                   <div class="mt-2 flex items-center gap-3">
-                    <img [src]="selectedPhotoUrl()" class="w-14 h-14 rounded-lg object-cover border border-amber-500/40">
+                    <img [src]="selectedPhotoUrl()" alt="Local encrypted workshop or garden memento preview" class="w-14 h-14 rounded-lg object-cover border border-amber-500/40">
                     <span class="text-[10px] text-emerald-400 font-mono">✅ Photo loaded into Encrypted Local Storage</span>
                   </div>
                 }

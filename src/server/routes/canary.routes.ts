@@ -71,6 +71,18 @@ export function clearCanaryThreatLedger(): void {
   canaryThreatLedger.length = 0;
 }
 
+export function maskIpForPublicFeed(ip: string): string {
+  const trimmed = (ip || '').trim();
+  if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(trimmed)) {
+    return trimmed.replace(/\.\d{1,3}$/, '.xxx');
+  }
+  if (trimmed.includes(':')) {
+    const parts = trimmed.split(':');
+    return `${parts.slice(0, 3).join(':')}:xxxx`;
+  }
+  return 'redacted';
+}
+
 export function createCanaryRouter(): Router {
   const router = Router();
 
@@ -92,7 +104,7 @@ export function createCanaryRouter(): Router {
   router.get('/api/v1/internal-research-telemetry', handleHoneypot('/api/v1/internal-research-telemetry'));
   router.get('/api/internal/patient-cohort-backup.json', handleHoneypot('/api/internal/patient-cohort-backup.json'));
 
-  // 2. Security HUD Telemetry Feed Endpoint
+  // 2. Security HUD Telemetry Feed Endpoint (masks visitor IP octets to prevent IP harvesting)
   router.get('/api/canary/threat-feed', (_req: Request, res: Response) => {
     res.json({
       activeHoneypots: [
@@ -101,7 +113,10 @@ export function createCanaryRouter(): Router {
         '/api/internal/patient-cohort-backup.json',
       ],
       totalAttacksCaptured: canaryThreatLedger.length,
-      recentThreats: canaryThreatLedger.slice(0, 20),
+      recentThreats: canaryThreatLedger.slice(0, 20).map(item => ({
+        ...item,
+        remoteIp: maskIpForPublicFeed(item.remoteIp),
+      })),
     });
   });
 

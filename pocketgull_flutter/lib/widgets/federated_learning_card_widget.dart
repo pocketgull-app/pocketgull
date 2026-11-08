@@ -48,10 +48,10 @@ class FederatedLearningCardWidget extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'Federated ML Swarm',
                       style: TextStyle(
@@ -224,7 +224,7 @@ class FederatedLearningCardWidget extends ConsumerWidget {
               color: valueColor,
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              fontFamily: 'monospace',
+              fontFamily: 'PocketGullMono',
             ),
           ),
           Text(

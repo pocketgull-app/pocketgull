@@ -1,0 +1,30 @@
+{
+  "model_name": "cvsq_asthenopia_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "CVS-Q Asthenopia & Digital Eye Strain Model (TFOS DEWS II features)",
+  "features": [
+    "screen_hours",
+    "cvsq_score",
+    "blink_rate",
+    "humidity_pct",
+    "blue_filter_used",
+    "contact_lens"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.996,
+    "oof_brier_score": 0.0243,
+    "expected_calibration_error_ece": 0.0161,
+    "brier_skill_score_bss": 0.885
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

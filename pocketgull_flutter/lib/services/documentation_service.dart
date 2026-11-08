@@ -4,7 +4,7 @@ class DocumentationService {
   Future<String> loadMarkdown(String filename) async {
     try {
       // Strip redundant 'assets/' or 'docs/' prefixes to prevent asset 404 pathing bugs
-      String cleanName = filename
+      final String cleanName = filename
           .replaceAll('assets/docs/', '')
           .replaceAll('assets/', '')
           .replaceAll('docs/', '');

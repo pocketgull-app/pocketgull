@@ -1,0 +1,11 @@
+{
+  "model_name": "cvsq_asthenopia_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 6,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "ae1cd6c8e01a903f18088a25cae6f2514ce0ca381fb66fad28def9868710e6a8",
+  "size_bytes": 2743827
+}

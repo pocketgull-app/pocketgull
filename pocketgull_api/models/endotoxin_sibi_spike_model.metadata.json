@@ -1,0 +1,31 @@
+{
+  "model_name": "endotoxin_sibi_spike_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Teledentistry FDI-SIBI Periodontal Translocation & 30-Day hs-CRP Vascular Inflammatory Spike Predictor",
+  "features": [
+    "max_periodontal_pocket_depth_mm",
+    "fdi_tooth_mobility_count",
+    "sibi_inflammatory_burden_index",
+    "fasting_glucose_mg_dl",
+    "body_mass_index",
+    "diastolic_blood_pressure",
+    "dietary_processed_endotoxin_score"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9919,
+    "oof_brier_score": 0.0073,
+    "expected_calibration_error_ece": 0.0068,
+    "brier_skill_score_bss": 0.6309
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

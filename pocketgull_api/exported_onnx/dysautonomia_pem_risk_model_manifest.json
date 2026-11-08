@@ -1,0 +1,11 @@
+{
+  "model_name": "dysautonomia_pem_risk_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 6,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "a34e7ec77fbe2a4f84ca9cba67eaaceadd1245393f58de854636c80d8ae63f6c",
+  "size_bytes": 2773280
+}

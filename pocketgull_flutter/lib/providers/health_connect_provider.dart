@@ -47,18 +47,27 @@ class HealthConnectState extends Equatable {
   ];
 }
 
-class HealthConnectNotifier extends StateNotifier<HealthConnectState> {
-  final HealthConnectBridgeService _service;
+class HealthConnectNotifier extends Notifier<HealthConnectState> {
+  late HealthConnectBridgeService _service;
+  bool _disposed = false;
 
-  HealthConnectNotifier(this._service) : super(const HealthConnectState()) {
-    initialize();
+  @override
+  HealthConnectState build() {
+    _service = ref.watch(healthConnectServiceProvider);
+    _disposed = false;
+    ref.onDispose(() {
+      _disposed = true;
+    });
+    Future.microtask(initialize);
+    return const HealthConnectState();
   }
 
   Future<void> initialize() async {
+    if (_disposed) return;
     state = state.copyWith(status: HealthConnectStatus.loading);
     try {
       final available = await _service.isHealthConnectAvailable();
-      if (!mounted) return;
+      if (_disposed) return;
       if (!available) {
         state = state.copyWith(
           status: HealthConnectStatus.error,
@@ -69,10 +78,10 @@ class HealthConnectNotifier extends StateNotifier<HealthConnectState> {
       }
 
       final authorized = await _service.requestPermissions();
-      if (!mounted) return;
+      if (_disposed) return;
       if (authorized) {
         final data = await _service.fetchBiometrics();
-        if (!mounted) return;
+        if (_disposed) return;
         state = state.copyWith(
           status: HealthConnectStatus.synced,
           biometrics: data,
@@ -85,7 +94,7 @@ class HealthConnectNotifier extends StateNotifier<HealthConnectState> {
         );
       }
     } catch (e) {
-      if (!mounted) return;
+      if (_disposed) return;
       state = state.copyWith(
         status: HealthConnectStatus.error,
         errorMessage: e.toString(),
@@ -94,16 +103,17 @@ class HealthConnectNotifier extends StateNotifier<HealthConnectState> {
   }
 
   Future<void> syncBiometrics() async {
+    if (_disposed) return;
     state = state.copyWith(status: HealthConnectStatus.loading);
     try {
       final data = await _service.fetchBiometrics();
-      if (!mounted) return;
+      if (_disposed) return;
       state = state.copyWith(
         status: HealthConnectStatus.synced,
         biometrics: data,
       );
     } catch (e) {
-      if (!mounted) return;
+      if (_disposed) return;
       state = state.copyWith(
         status: HealthConnectStatus.error,
         errorMessage: e.toString(),
@@ -116,7 +126,6 @@ final healthConnectServiceProvider = Provider<HealthConnectBridgeService>((ref) 
   return HealthConnectBridgeService();
 });
 
-final healthConnectProvider = StateNotifierProvider<HealthConnectNotifier, HealthConnectState>((ref) {
-  final service = ref.watch(healthConnectServiceProvider);
-  return HealthConnectNotifier(service);
-});
+final healthConnectProvider = NotifierProvider<HealthConnectNotifier, HealthConnectState>(
+  HealthConnectNotifier.new,
+);

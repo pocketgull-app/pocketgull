@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: Apache-2.0
+# Upstream Agent Substrate ActorTemplate (ateapipb.ActorTemplate) & EgressPolicy
+# Applied via `kubectl ate create actor-template -f k8s/ate-actor-template.yaml`
+# Reference: https://github.com/agent-substrate/substrate
+metadata:
+  atespace: pocketgull-clinical
+  name: pocketgull-visit-actor
+workerSelector:
+  matchLabels:
+    workload: pocketgull-clinical-actor
+snapshotConfig:
+  preferredFidelity: MEMORY
+  bucket: gs://pocketgull-substrate-checkpoints
+containers:
+  - name: clinical-actor
+    image: us-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull-api:1.31.0
+    ports:
+      - containerPort: 8001
+        protocol: TCP
+    env:
+      - name: GEMINI_API_KEY
+        value: "placeholder"
+---
+# Upstream Agent Substrate EgressPolicy with GCP Secret Manager Credential Injection
+# The actor never holds GEMINI_API_KEY or Healthcare tokens in RAM or snapshots.
+metadata:
+  atespace: pocketgull-clinical
+  name: pocketgull-clinical-egress
+rules:
+  - https:
+      hostnames:
+        - "generativelanguage.googleapis.com"
+      effects:
+        replaceHeaders:
+          - header: "x-goog-api-key"
+            prefix: ""
+            credentialUri: "ate-secret://secretmanager.googleapis.com/projects/gen-lang-client-0540208645/secrets/GEMINI_API_KEY/versions/latest"
+  - https:
+      hostnames:
+        - "healthcare.googleapis.com"
+        - "www.ebi.ac.uk"
+        - "api.fda.gov"
+  - http:
+      hostnames:
+        - "otel-collector.default.svc.cluster.local"

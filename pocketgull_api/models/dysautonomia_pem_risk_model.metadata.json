@@ -1,0 +1,30 @@
+{
+  "model_name": "dysautonomia_pem_risk_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "NIH RECOVER Dysautonomia & Post-Exertional Malaise Acute Crash Risk Predictor",
+  "features": [
+    "orthostatic_hr_delta_bpm",
+    "resting_rmssd_ms",
+    "diurnal_pulse_pressure_variance",
+    "prior_day_exertion_load",
+    "sleep_efficiency_pct",
+    "morning_vas_fatigue"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9939,
+    "oof_brier_score": 0.0318,
+    "expected_calibration_error_ece": 0.0219,
+    "brier_skill_score_bss": 0.8686
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

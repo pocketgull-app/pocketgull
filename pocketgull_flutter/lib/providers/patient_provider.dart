@@ -54,8 +54,6 @@ class PatientNotifier extends Notifier<PatientState> {
     addIssue('general', newIssue);
   }
 
-
-
   void selectPart(String? partId) {
     state = state.copyWith(selectedPartId: partId);
   }
@@ -315,40 +313,46 @@ class PatientNotifier extends Notifier<PatientState> {
       final prefs = await SharedPreferences.getInstance();
       final dataStr = prefs.getString(_storageKey);
       if (dataStr != null && state.issues.isEmpty && state.patientGoals.isEmpty && state.vitals.hr.isEmpty) {
-        final data = jsonDecode(dataStr);
-        final vitalsData = data['vitals'];
+        final data = jsonDecode(dataStr) as Map<String, dynamic>;
+        final vitalsData = (data['vitals'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
         
         final loadedState = PatientState(
-          name: data['name'] ?? 'Selected Patient',
-          patientGoals: data['patientGoals'] ?? '',
+          name: data['name'] as String? ?? 'Selected Patient',
+          patientGoals: data['patientGoals'] as String? ?? '',
           vitals: PatientVitals(
-            bp: vitalsData['bp'] ?? '',
-            hr: vitalsData['hr'] ?? '',
-            temp: vitalsData['temp'] ?? '',
-            spO2: vitalsData['spO2'] ?? '',
-            weight: vitalsData['weight'] ?? '',
-            height: vitalsData['height'] ?? '',
+            bp: vitalsData['bp'] as String? ?? '',
+            hr: vitalsData['hr'] as String? ?? '',
+            temp: vitalsData['temp'] as String? ?? '',
+            spO2: vitalsData['spO2'] as String? ?? '',
+            weight: vitalsData['weight'] as String? ?? '',
+            height: vitalsData['height'] as String? ?? '',
           ),
-          issues: (data['issues'] as Map).map((key, value) => MapEntry(
-            key as String,
-            (value as List).map((i) => BodyPartIssue(
-              id: key,
-              noteId: i['noteId'],
-              name: i['name'],
-              description: i['description'],
-              painLevel: i['painLevel'],
-              recommendation: i['recommendation'],
-              date: i['date'],
-              symptoms: const [],
-            )).toList(),
+          issues: (data['issues'] as Map<String, dynamic>).map((key, value) => MapEntry(
+            key,
+            (value as List<dynamic>).map((rawIssue) {
+              final i = rawIssue as Map<String, dynamic>;
+              return BodyPartIssue(
+                id: key,
+                noteId: i['noteId'] as String? ?? '',
+                name: i['name'] as String? ?? '',
+                description: i['description'] as String? ?? '',
+                painLevel: i['painLevel'] as int? ?? 0,
+                recommendation: i['recommendation'] as String?,
+                date: i['date'] as String?,
+                symptoms: const [],
+              );
+            }).toList(),
           )),
-          checklist: (data['checklist'] as List?)?.map((i) => ChecklistItem(
-            id: i['id'],
-            text: i['text'],
-            status: BracketingState.values[i['status'] ?? 0],
-          )).toList() ?? [],
-          spatialLesions: (data['spatialLesions'] as List?)?.map((l) => SpatialLesionModel.fromJson(l as Map<String, dynamic>)).toList() ?? const [],
-          viewMode: AnatomicalViewMode.values[data['viewMode'] ?? 0],
+          checklist: (data['checklist'] as List<dynamic>?)?.map((rawItem) {
+            final i = rawItem as Map<String, dynamic>;
+            return ChecklistItem(
+              id: i['id'] as String? ?? '',
+              text: i['text'] as String? ?? '',
+              status: BracketingState.values[i['status'] as int? ?? 0],
+            );
+          }).toList() ?? <ChecklistItem>[],
+          spatialLesions: (data['spatialLesions'] as List<dynamic>?)?.map((l) => SpatialLesionModel.fromJson(l as Map<String, dynamic>)).toList() ?? const <SpatialLesionModel>[],
+          viewMode: AnatomicalViewMode.values[data['viewMode'] as int? ?? 0],
         );
         state = loadedState;
       }

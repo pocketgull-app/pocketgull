@@ -7,6 +7,8 @@ export interface IGeminiContextCacheConfig {
   model: string;
   /** Human-readable display label for telemetry HUD */
   displayName: string;
+  /** Optional flag to invoke backend /api/ai/context-cache/create for remote Explicit Context Cache pinning */
+  syncRemote?: boolean;
 }
 
 export interface IGeminiCachedResource {
@@ -18,6 +20,18 @@ export interface IGeminiCachedResource {
   createdAt: string;
   expiresAt: string;
   fhirBundleHash: string;
+  /** True when pinned on Vertex AI / Gemini Developer API via cachedContents.create */
+  isRemotePinned?: boolean;
+}
+
+export interface IKvCacheTurnTelemetry {
+  promptTokens: number;
+  cachedTokens: number;
+  candidateTokens: number;
+  cacheDropDetected: boolean;
+  cacheDropType: 'NONE' | 'ZERO_DROP' | 'SYSTEM_BOUNDARY_TRUNCATION';
+  previousCachedTokens: number;
+  excessTokenDelta: number;
 }
 
 @Injectable({
@@ -25,8 +39,13 @@ export interface IGeminiCachedResource {
 })
 export class GeminiContextCacheService {
   private activeCaches = signal<Map<string, IGeminiCachedResource>>(new Map());
+  private turnTelemetryLog = signal<IKvCacheTurnTelemetry[]>([]);
 
   readonly totalActiveCaches = computed<number>(() => this.activeCaches().size);
+  readonly recentTurnTelemetry = computed<IKvCacheTurnTelemetry[]>(() => this.turnTelemetryLog());
+  readonly totalCacheDropsDetected = computed<number>(() =>
+    this.turnTelemetryLog().filter(t => t.cacheDropDetected).length
+  );
 
   /**
    * Calculates total estimated tokens saved across all multi-turn cached consult calls.
@@ -83,6 +102,32 @@ export class GeminiContextCacheService {
     const promptBody = `${systemInstructions || ''}\n${JSON.stringify(fhirBundle)}`;
     const estimatedTokens = Math.max(1024, Math.round(promptBody.length / 4));
 
+    if (options.syncRemote && typeof fetch !== 'undefined') {
+      try {
+        const res = await fetch('/api/ai/context-cache/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fhirBundleHash: fhirHash,
+            contentsText: JSON.stringify(fhirBundle),
+            systemInstruction: systemInstructions,
+            model,
+            ttlSeconds: ttlSec,
+            displayName
+          })
+        });
+        if (res.ok) {
+          const remoteResource = (await res.json()) as IGeminiCachedResource;
+          const currentMap = new Map(this.activeCaches());
+          currentMap.set(fhirHash, remoteResource);
+          this.activeCaches.set(currentMap);
+          return remoteResource;
+        }
+      } catch {
+        // Fall back to local cache descriptor when offline or in unit tests
+      }
+    }
+
     const cacheResource: IGeminiCachedResource = {
       cacheName: `cachedContents/pg-cache-${fhirHash.substring(0, 12)}`,
       displayName,
@@ -90,7 +135,8 @@ export class GeminiContextCacheService {
       tokenCount: estimatedTokens,
       createdAt: now.toISOString(),
       expiresAt: expires.toISOString(),
-      fhirBundleHash: fhirHash
+      fhirBundleHash: fhirHash,
+      isRemotePinned: false
     };
 
     const currentMap = new Map(this.activeCaches());
@@ -99,6 +145,50 @@ export class GeminiContextCacheService {
 
     console.log(`[Gemini Context Cache] Created new cache (${cacheResource.cacheName}) for ${cacheResource.tokenCount} tokens. Expires in ${ttlSec}s.`);
     return cacheResource;
+  }
+
+  /**
+   * Records per-turn KV cache telemetry and detects mid-session zero drops or system-prompt boundary truncations.
+   */
+  recordTurnTelemetry(
+    promptTokens: number,
+    cachedTokens: number,
+    candidateTokens: number = 0,
+    expectedUserTokens: number = 0
+  ): IKvCacheTurnTelemetry {
+    const history = this.turnTelemetryLog();
+    const prev = history.length > 0 ? history[history.length - 1] : null;
+    const prevCached = prev ? prev.cachedTokens : 0;
+    const prevTotal = prev ? prev.promptTokens + prev.candidateTokens : 0;
+
+    let cacheDropDetected = false;
+    let cacheDropType: 'NONE' | 'ZERO_DROP' | 'SYSTEM_BOUNDARY_TRUNCATION' = 'NONE';
+
+    if (prevCached > 4096 && promptTokens > 4096) {
+      if (cachedTokens === 0) {
+        cacheDropDetected = true;
+        cacheDropType = 'ZERO_DROP';
+      } else if (cachedTokens < prevCached * 0.70) {
+        cacheDropDetected = true;
+        cacheDropType = 'SYSTEM_BOUNDARY_TRUNCATION';
+      }
+    }
+
+    const actualGrowth = prevTotal > 0 ? promptTokens - prevTotal : 0;
+    const excessTokenDelta = expectedUserTokens > 0 ? actualGrowth - expectedUserTokens : 0;
+
+    const entry: IKvCacheTurnTelemetry = {
+      promptTokens,
+      cachedTokens,
+      candidateTokens,
+      cacheDropDetected,
+      cacheDropType,
+      previousCachedTokens: prevCached,
+      excessTokenDelta
+    };
+
+    this.turnTelemetryLog.set([...history.slice(-49), entry]);
+    return entry;
   }
 
   /**

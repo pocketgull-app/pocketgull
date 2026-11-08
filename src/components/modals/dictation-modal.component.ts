@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, effect, OnDestroy, untracked } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, effect, OnDestroy, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DictationService } from '../../services/dictation.service';
 import { IEdgeTranscriptionResult } from '../../services/edge-audio-primacy.service';
@@ -175,8 +175,16 @@ export class DictationModalComponent implements OnDestroy {
     });
   }
 
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.dictation.isModalOpen()) {
+      this.cancel();
+    }
+  }
+
   ngOnDestroy() {
     this.dictation.stopRecognition();
+    this.dictation.registerResultHandler(null);
   }
 
   async polishWithEdge(): Promise<void> {

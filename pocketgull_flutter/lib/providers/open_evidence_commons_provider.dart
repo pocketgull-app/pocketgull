@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -135,16 +136,16 @@ final _initialEvidenceNodes = [
   ),
 ];
 
-class OpenEvidenceCommonsNotifier extends StateNotifier<EvidenceCommonsState> {
-  OpenEvidenceCommonsNotifier()
-      : super(
-          EvidenceCommonsState(
-            nodes: _initialEvidenceNodes,
-            merkleRoot: '0x9e8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a',
-            blockHeight: 28491,
-            isAttesting: false,
-          ),
-        );
+class OpenEvidenceCommonsNotifier extends Notifier<EvidenceCommonsState> {
+  @override
+  EvidenceCommonsState build() {
+    return EvidenceCommonsState(
+      nodes: _initialEvidenceNodes,
+      merkleRoot: '0x9e8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a',
+      blockHeight: 28491,
+      isAttesting: false,
+    );
+  }
 
   void castQuadraticVote(String nodeId, [int credits = 25]) {
     final effectiveWeight = sqrt(max(1, credits));
@@ -168,7 +169,7 @@ class OpenEvidenceCommonsNotifier extends StateNotifier<EvidenceCommonsState> {
 
   Future<void> issueBlockAttestation() async {
     state = state.copyWith(isAttesting: true);
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
     state = state.copyWith(
       blockHeight: state.blockHeight + 1,
       isAttesting: false,
@@ -177,6 +178,6 @@ class OpenEvidenceCommonsNotifier extends StateNotifier<EvidenceCommonsState> {
 }
 
 final openEvidenceCommonsProvider =
-    StateNotifierProvider<OpenEvidenceCommonsNotifier, EvidenceCommonsState>(
-  (ref) => OpenEvidenceCommonsNotifier(),
+    NotifierProvider<OpenEvidenceCommonsNotifier, EvidenceCommonsState>(
+  OpenEvidenceCommonsNotifier.new,
 );

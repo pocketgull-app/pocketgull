@@ -224,19 +224,23 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
     expect(sendSpy).toHaveBeenCalled();
   });
 
-  it('5. Clears consultation history with user confirmation', () => {
+  it('5. Clears consultation history with non-blocking two-step confirmation', () => {
     component.chatHistory.set([
       { id: '1', role: 'user', text: 'Initial symptom check', timestamp: Date.now() } as any
     ]);
     expect(component.chatHistory().length).toBe(1);
+    expect(component.pendingClearConfirm()).toBe(false);
 
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    // First click arms the non-blocking inline confirmation
     component.confirmClearSession();
+    expect(component.pendingClearConfirm()).toBe(true);
+    expect(component.chatHistory().length).toBe(1);
 
-    expect(confirmSpy).toHaveBeenCalled();
+    // Second click executes the clear
+    component.confirmClearSession();
+    expect(component.pendingClearConfirm()).toBe(false);
     expect(component.chatHistory().length).toBe(0);
     expect(mockStorage.saveChatHistory).toHaveBeenCalledWith('current_patient', []);
-    confirmSpy.mockRestore();
   });
 
   it('6. Exports consult transcript with FDA 21 CFR Part 11 cryptographic seal', async () => {

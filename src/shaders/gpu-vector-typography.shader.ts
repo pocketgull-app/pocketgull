@@ -71,8 +71,8 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     let tex = textureSample(fontTexture, fontSampler, in.uv);
-    // Extract signed distance from alpha/red channel
-    let dist = tex.a;
+    // Extract signed distance from monochrome red luminance channel (background #000000 = 0.0, glyph #ffffff = 1.0)
+    let dist = tex.r;
     
     // Hardware screen-space derivatives (fwidth) for exact 1-device-pixel antialiasing
     let delta = fwidth(dist) * uniforms.smoothing;
@@ -118,7 +118,7 @@ varying vec2 vUv;
 
 void main() {
   vec4 tex = texture2D(uTexture, vUv);
-  float dist = tex.a;
+  float dist = tex.r;
 
   // Screen-space derivative anti-aliasing
   float delta = fwidth(dist) * uSmoothing;

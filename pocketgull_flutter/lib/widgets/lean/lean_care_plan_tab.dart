@@ -96,9 +96,9 @@ class _LeanCarePlanTabState extends ConsumerState<LeanCarePlanTab> {
   }
 
   Widget _buildPatientBanner(dynamic state) {
-    final patientName = (state.name != null && state.name.isNotEmpty) ? state.name : 'Active Patient';
-    final goals = (state.patientGoals != null && state.patientGoals.isNotEmpty)
-        ? state.patientGoals
+    final String patientName = (state.name is String && (state.name as String).isNotEmpty) ? state.name as String : 'Active Patient';
+    final String goals = (state.patientGoals is String && (state.patientGoals as String).isNotEmpty)
+        ? state.patientGoals as String
         : 'Optimize metabolic resilience, reduce resting pulse, and sustain restorative sleep.';
 
     return Container(

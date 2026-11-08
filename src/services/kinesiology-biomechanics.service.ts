@@ -148,9 +148,10 @@ export class KinesiologyBiomechanicsService {
       x: rightKnee.x + tibiaLen * Math.sin(rLowerLegAngle),
       y: rightKnee.y + tibiaLen * Math.cos(rLowerLegAngle)
     };
+    const rFootAngle = rLowerLegAngle + rAnkleAngle;
     const rightToe: IJointPoint = {
-      x: rightAnkle.x + footLen * Math.cos(rAnkleAngle),
-      y: rightAnkle.y + footLen * Math.sin(rAnkleAngle)
+      x: rightAnkle.x + footLen * Math.cos(rFootAngle),
+      y: rightAnkle.y - footLen * Math.sin(rFootAngle)
     };
 
     // Contralateral (Left) Leg Kinematics (shifted by half-cycle: t + 0.5)
@@ -174,9 +175,10 @@ export class KinesiologyBiomechanicsService {
       x: leftKnee.x + tibiaLen * Math.sin(lLowerLegAngle),
       y: leftKnee.y + tibiaLen * Math.cos(lLowerLegAngle)
     };
+    const lFootAngle = lLowerLegAngle + lAnkleAngle;
     const leftToe: IJointPoint = {
-      x: leftAnkle.x + footLen * Math.cos(lAnkleAngle),
-      y: leftAnkle.y + footLen * Math.sin(lAnkleAngle)
+      x: leftAnkle.x + footLen * Math.cos(lFootAngle),
+      y: leftAnkle.y - footLen * Math.sin(lFootAngle)
     };
 
     // Arm Counter-Swing Kinematics (Opposite to legs for angular momentum balance)

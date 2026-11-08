@@ -355,7 +355,7 @@ export class EhrInteroperabilityEngineService {
         const parsed = new URL(profile);
         return parsed.hostname === 'hl7.org.uk' || parsed.hostname.endsWith('.hl7.org.uk');
       } catch {
-        return /^https?:\/\/(?:[a-zA-Z0-9-]+\.)*hl7\.org\.uk(?:\/|$)/i.test(profile);
+        return false;
       }
     })();
     const standardDetected: EhrStandardProfile = isUkProfile

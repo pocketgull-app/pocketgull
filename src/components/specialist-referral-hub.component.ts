@@ -22,7 +22,7 @@ import { SpecialistReferralDossierService, SpecialistDomain, ISpecialtyReadiness
       [class.w-full]="embedded()"
       [class.h-full]="embedded()"
       role="dialog"
-      [attr.aria-modal]="!embedded() ? 'true' : null"
+      [attr.aria-modal]="!embedded() ? 'true' : 'false'"
       aria-label="Specialist Referral & Co-Management Dossier Hub">
       <div class="relative w-full bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
            [class.max-w-5xl]="!embedded()"

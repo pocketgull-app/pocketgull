@@ -48,8 +48,8 @@ void main() {
     float cycleFreq = uHeartRateBpm / 60.0;
     float cycleTime = fract(uTime * cycleFreq);
 
-    // Conduction wave propagation along longitudinal ventricle axis (Z or Y)
-    float waveDist = position.y * 0.25 + 0.5;
+    // Conduction wave propagation from His-Purkinje ventricular apex (local +y, world bottom) toward base (local -y, world top)
+    float waveDist = (2.0 - position.y) * 0.25;
     float wavePhase = fract(cycleTime - waveDist * (1.0 / max(0.2, uConductionVelocity)));
 
     // Ventricular Action Potential Waveform Curve:
@@ -57,7 +57,8 @@ void main() {
     float upstroke = smoothstep(0.0, 0.04, wavePhase) * (1.0 - smoothstep(0.04, 0.08, wavePhase));
     
     // Phase 2 Plateau: prolonged plateau proportional to QTc
-    float plateauDuration = mix(0.25, 0.45, (uQtcIntervalMs - 380.0) / 220.0);
+    float plateauNorm = clamp((uQtcIntervalMs - 380.0) / 220.0, 0.0, 1.0);
+    float plateauDuration = mix(0.25, 0.45, plateauNorm);
     float plateau = smoothstep(0.04, 0.08, wavePhase) * (1.0 - smoothstep(plateauDuration, plateauDuration + 0.15, wavePhase));
 
     // Early Afterdepolarization (EAD) voltage flutter in Phase 2/3

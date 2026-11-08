@@ -82,4 +82,28 @@ describe('GeminiContextCacheService', () => {
     service.clearAllCaches();
     expect(service.totalActiveCaches()).toBe(0);
   });
+
+  it('8. Detects mid-session ZERO_DROP and SYSTEM_BOUNDARY_TRUNCATION events with excess token deltas', () => {
+    // Turn 1: Healthy cached prefix (118,054 cached tokens)
+    const t1 = service.recordTurnTelemetry(120000, 118054, 300, 50);
+    expect(t1.cacheDropDetected).toBe(false);
+    expect(t1.cacheDropType).toBe('NONE');
+
+    // Turn 2: System-prompt boundary truncation (drops from 118,054 -> 16,284 with +690 excess tokens)
+    const t2 = service.recordTurnTelemetry(121045, 16284, 250, 55);
+    expect(t2.cacheDropDetected).toBe(true);
+    expect(t2.cacheDropType).toBe('SYSTEM_BOUNDARY_TRUNCATION');
+    expect(t2.previousCachedTokens).toBe(118054);
+    expect(t2.excessTokenDelta).toBe(690);
+
+    // Turn 3: Recovery to full cache (121,500 cached tokens)
+    const t3 = service.recordTurnTelemetry(122000, 121500, 200, 40);
+    expect(t3.cacheDropDetected).toBe(false);
+
+    // Turn 4: Complete zero drop (121,500 -> 0)
+    const t4 = service.recordTurnTelemetry(122800, 0, 180, 40);
+    expect(t4.cacheDropDetected).toBe(true);
+    expect(t4.cacheDropType).toBe('ZERO_DROP');
+    expect(service.totalCacheDropsDetected()).toBe(2);
+  });
 });

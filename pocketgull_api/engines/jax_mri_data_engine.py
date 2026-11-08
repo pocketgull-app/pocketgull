@@ -139,8 +139,13 @@ class CounterfactualCohortGenerator:
         # 12 Target binary labels: ACL, MCL, MM, LM, MOA, LOA, PFOA, Eff, Syn, Bak, Cont, Frac
         Y = np.zeros((num_samples, 12), dtype=np.int32)
         
-        # Continuous Feature Matrix: [Sag_Fluid, Cor_Fluid, Ax_Fluid, Sag_Grad, Med_Asym, Popliteal_Fluid, NLP_ACL, NLP_MM, NLP_MOA]
+        # Continuous Feature Matrix (9-D Legacy Contract):
+        # [Sag_Fluid, Cor_Fluid, Ax_Fluid, Sag_Grad, Med_Asym, Popliteal_Fluid, NLP_ACL, NLP_MM, NLP_MOA]
         X = np.zeros((num_samples, 9), dtype=np.float32)
+
+        # 5 Reference-Anatomy Sub-Compartment Landmarks (Anterior Kneecap & Lateral Knee Diagrams):
+        # [Extensor_Patellar_Load, Suprapatellar_Effusion, Blumensaat_Notch_Disruption, Fibular_Laterality_Anchor, Popliteal_Hamstring_Index]
+        L = np.zeros((num_samples, 5), dtype=np.float32)
 
         for i, m in enumerate(mechanisms):
             if m == "PIVOT_SHIFT":
@@ -150,6 +155,7 @@ class CounterfactualCohortGenerator:
                 Y[i, 10] = 1  # Contusion
                 Y[i, 3] = 1 if rng.rand() < 0.65 else 0  # Lateral Meniscus
                 X[i, :] = [0.88, 0.45, 0.75, 0.82, 0.05, 0.25, 0.95, 0.15, 0.10] + rng.normal(0, 0.05, size=9)
+                L[i, :] = [0.35, 0.86, 0.92, -0.25, 0.30] + rng.normal(0, 0.04, size=5)
 
             elif m == "TRIAD":
                 # MCL + ACL + Medial Meniscus
@@ -158,6 +164,7 @@ class CounterfactualCohortGenerator:
                 Y[i, 2] = 1   # Medial Meniscus
                 Y[i, 7] = 1   # Effusion
                 X[i, :] = [0.78, 0.92, 0.60, 0.85, 0.45, 0.30, 0.92, 0.90, 0.12] + rng.normal(0, 0.05, size=9)
+                L[i, :] = [0.30, 0.80, 0.85, 0.40, 0.28] + rng.normal(0, 0.04, size=5)
 
             elif m == "VARUS_OA":
                 # Medial OA + Medial Meniscus + Baker's Cyst
@@ -166,6 +173,7 @@ class CounterfactualCohortGenerator:
                 Y[i, 9] = 1 if rng.rand() < 0.70 else 0  # Baker's
                 Y[i, 8] = 1 if rng.rand() < 0.60 else 0  # Synovitis
                 X[i, :] = [0.45, 0.70, 0.82, 0.35, 0.85, 0.88, 0.05, 0.88, 0.96] + rng.normal(0, 0.05, size=9)
+                L[i, :] = [0.32, 0.55, 0.30, 0.82, 0.86] + rng.normal(0, 0.04, size=5)
 
             elif m == "VALGUS_OA":
                 # Lateral OA + Lateral Meniscus + Synovitis
@@ -173,6 +181,7 @@ class CounterfactualCohortGenerator:
                 Y[i, 3] = 1   # Lateral Meniscus
                 Y[i, 8] = 1 if rng.rand() < 0.60 else 0  # Synovitis
                 X[i, :] = [0.40, 0.75, 0.65, 0.30, -0.80, 0.30, 0.05, 0.10, 0.05] + rng.normal(0, 0.05, size=9)
+                L[i, :] = [0.38, 0.48, 0.28, -0.80, 0.32] + rng.normal(0, 0.04, size=5)
 
             elif m == "PF_OA":
                 # Patellofemoral OA + Synovitis + Moderate Effusion
@@ -180,6 +189,7 @@ class CounterfactualCohortGenerator:
                 Y[i, 8] = 1   # Synovitis
                 Y[i, 7] = 1 if rng.rand() < 0.65 else 0  # Effusion
                 X[i, :] = [0.55, 0.40, 0.90, 0.45, 0.10, 0.40, 0.05, 0.10, 0.10] + rng.normal(0, 0.05, size=9)
+                L[i, :] = [0.92, 0.68, 0.25, 0.08, 0.30] + rng.normal(0, 0.04, size=5)
 
             elif m == "FRACTURE":
                 # Cortical Fracture + High Marrow Contusion + Large Effusion
@@ -187,20 +197,26 @@ class CounterfactualCohortGenerator:
                 Y[i, 10] = 1  # Contusion
                 Y[i, 7] = 1   # Effusion
                 X[i, :] = [0.92, 0.88, 0.80, 0.95, 0.20, 0.40, 0.10, 0.20, 0.15] + rng.normal(0, 0.05, size=9)
+                L[i, :] = [0.50, 0.90, 0.60, 0.25, 0.45] + rng.normal(0, 0.04, size=5)
 
             else:  # NORMAL / UNREMARKABLE
                 # Baseline population priors
                 X[i, :] = [0.20, 0.20, 0.20, 0.15, 0.02, 0.10, 0.05, 0.05, 0.05] + rng.normal(0, 0.04, size=9)
+                L[i, :] = [0.18, 0.18, 0.15, 0.00, 0.12] + rng.normal(0, 0.03, size=5)
 
         X = np.clip(X, 0.001, 0.999)
+        L = np.clip(L, -0.999, 0.999)
+        X_14d = np.hstack([X, L]).astype(np.float32)
         elapsed_ms = round((time.time() - start_time) * 1000.0, 2)
 
         return {
             "num_samples": num_samples,
             "generation_time_ms": elapsed_ms,
             "feature_matrix_shape": list(X.shape),
+            "feature_matrix_14d_shape": list(X_14d.shape),
             "target_matrix_shape": list(Y.shape),
             "feature_matrix": X,
+            "feature_matrix_14d": X_14d,
             "target_matrix": Y,
             "class_prevalences": {TARGET_NAMES[k]: float(np.mean(Y[:, k])) for k in range(12)}
         }

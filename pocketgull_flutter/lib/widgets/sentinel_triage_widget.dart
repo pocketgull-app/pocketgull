@@ -243,7 +243,7 @@ class _SentinelTriageWidgetState extends ConsumerState<SentinelTriageWidget>
                 'Registry v4.12',
                 style: TextStyle(
                   fontSize: 11,
-                  fontFamily: 'monospace',
+                  fontFamily: 'PocketGullMono',
                   color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
                 ),
               ),
@@ -327,7 +327,7 @@ class _SentinelTriageWidgetState extends ConsumerState<SentinelTriageWidget>
                           'Latency: ${_activeLatency}ms',
                           style: const TextStyle(
                             fontSize: 10,
-                            fontFamily: 'monospace',
+                            fontFamily: 'PocketGullMono',
                             color: Color(0xFF6B7280),
                           ),
                         ),
@@ -451,7 +451,7 @@ class _SentinelTriageWidgetState extends ConsumerState<SentinelTriageWidget>
                           : 'CDC-USA-02',
                       style: TextStyle(
                         fontSize: 11,
-                        fontFamily: 'monospace',
+                        fontFamily: 'PocketGullMono',
                         color: isDark
                             ? Colors.grey.shade300
                             : Colors.grey.shade700,
@@ -555,7 +555,7 @@ class _SentinelTriageWidgetState extends ConsumerState<SentinelTriageWidget>
                 _containmentRecommendation,
                 style: TextStyle(
                   fontSize: 12,
-                  fontFamily: 'monospace',
+                  fontFamily: 'PocketGullMono',
                   height: 1.6,
                   color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
                 ),
@@ -581,7 +581,7 @@ class _SentinelTriageWidgetState extends ConsumerState<SentinelTriageWidget>
         text,
         style: TextStyle(
           fontSize: 10,
-          fontFamily: 'monospace',
+          fontFamily: 'PocketGullMono',
           color: textColor,
         ),
       ),

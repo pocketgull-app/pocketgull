@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -112,26 +113,26 @@ final _defaultNodes = [
   ),
 ];
 
-class FederatedLearningNotifier extends StateNotifier<FederatedLearningState> {
-  FederatedLearningNotifier()
-      : super(
-          FederatedLearningState(
-            currentRound: 8,
-            totalEpsilonSpent: 0.320,
-            privacyBudgetMax: 2.000,
-            globalMetricR2: 0.928,
-            globalLoss: 0.246,
-            isTraining: false,
-            latestProofHash: '0x8f2a1b9c7d4e3f6a5b0c8d1e2f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a',
-            activeNodes: _defaultNodes,
-          ),
-        );
+class FederatedLearningNotifier extends Notifier<FederatedLearningState> {
+  @override
+  FederatedLearningState build() {
+    return FederatedLearningState(
+      currentRound: 8,
+      totalEpsilonSpent: 0.320,
+      privacyBudgetMax: 2.000,
+      globalMetricR2: 0.928,
+      globalLoss: 0.246,
+      isTraining: false,
+      latestProofHash: '0x8f2a1b9c7d4e3f6a5b0c8d1e2f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a',
+      activeNodes: _defaultNodes,
+    );
+  }
 
   Future<void> executeSecAggRound() async {
     if (state.isTraining || state.privacyBudgetRemaining <= 0) return;
 
     state = state.copyWith(isTraining: true);
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future<void>.delayed(const Duration(milliseconds: 600));
 
     final nextRound = state.currentRound + 1;
     final nextSpent = min(state.privacyBudgetMax, state.totalEpsilonSpent + 0.040);
@@ -144,7 +145,8 @@ class FederatedLearningNotifier extends StateNotifier<FederatedLearningState> {
       globalMetricR2: nextR2,
       globalLoss: nextLoss,
       isTraining: false,
-      latestProofHash: '0x${Random().nextInt(0xFFFFFFFF).toRadixString(16).padLeft(8, '0')}${'a' * 56}',
+      latestProofHash:
+          '0x${Random.secure().nextInt(0xFFFFFFFF).toRadixString(16).padLeft(8, '0')}${'a' * 56}',
     );
   }
 
@@ -157,6 +159,6 @@ class FederatedLearningNotifier extends StateNotifier<FederatedLearningState> {
 }
 
 final federatedLearningProvider =
-    StateNotifierProvider<FederatedLearningNotifier, FederatedLearningState>(
-  (ref) => FederatedLearningNotifier(),
+    NotifierProvider<FederatedLearningNotifier, FederatedLearningState>(
+  FederatedLearningNotifier.new,
 );

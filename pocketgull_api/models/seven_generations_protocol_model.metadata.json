@@ -1,0 +1,129 @@
+{
+  "model_name": "seven_generations_protocol_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Seven Generations Protocol: Transgenerational Epigenetic, Exposomic & ECG Autonomic Longevity Model",
+  "horizon_years": 150,
+  "lineages_evaluated": 500,
+  "features": [
+    "ecg_mean_rr_ms",
+    "ecg_hrv_rmssd_ms",
+    "ecg_hrv_sdnn_ms",
+    "ecg_qtc_bazett_ms",
+    "ecg_lf_hf_ratio",
+    "water_pfas_ppb",
+    "water_heavy_metals_ppb",
+    "edc_xenobiotic_score",
+    "homocysteine_umol_l",
+    "serum_folate_ng_ml",
+    "glutathione_peroxidase_u_g_hb",
+    "mthfr_c677t_variant"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Pedigree Lineage-Level Clustered)",
+  "sample_count": 3500,
+  "metrics": {
+    "oof_roc_auc": 0.9184,
+    "oof_brier_score": 0.0784,
+    "expected_calibration_error_ece": 0.0186,
+    "expected_calibration_gap_ecg_ece": 0.0186,
+    "brier_skill_score_bss": 0.6864,
+    "decision_curve_analysis": [
+      {
+        "threshold_tau": 0.05,
+        "net_benefit_model": 0.4875,
+        "net_benefit_treat_all": 0.4857,
+        "net_benefit_treat_none": 0.0,
+        "model_is_superior": true
+      },
+      {
+        "threshold_tau": 0.1,
+        "net_benefit_model": 0.4637,
+        "net_benefit_treat_all": 0.4571,
+        "net_benefit_treat_none": 0.0,
+        "model_is_superior": true
+      },
+      {
+        "threshold_tau": 0.15,
+        "net_benefit_model": 0.44,
+        "net_benefit_treat_all": 0.4252,
+        "net_benefit_treat_none": 0.0,
+        "model_is_superior": true
+      },
+      {
+        "threshold_tau": 0.2,
+        "net_benefit_model": 0.4159,
+        "net_benefit_treat_all": 0.3893,
+        "net_benefit_treat_none": 0.0,
+        "model_is_superior": true
+      },
+      {
+        "threshold_tau": 0.25,
+        "net_benefit_model": 0.3958,
+        "net_benefit_treat_all": 0.3486,
+        "net_benefit_treat_none": 0.0,
+        "model_is_superior": true
+      },
+      {
+        "threshold_tau": 0.3,
+        "net_benefit_model": 0.3744,
+        "net_benefit_treat_all": 0.302,
+        "net_benefit_treat_none": 0.0,
+        "model_is_superior": true
+      },
+      {
+        "threshold_tau": 0.35,
+        "net_benefit_model": 0.3511,
+        "net_benefit_treat_all": 0.2484,
+        "net_benefit_treat_none": 0.0,
+        "model_is_superior": true
+      },
+      {
+        "threshold_tau": 0.4,
+        "net_benefit_model": 0.3287,
+        "net_benefit_treat_all": 0.1857,
+        "net_benefit_treat_none": 0.0,
+        "model_is_superior": true
+      },
+      {
+        "threshold_tau": 0.45,
+        "net_benefit_model": 0.3011,
+        "net_benefit_treat_all": 0.1117,
+        "net_benefit_treat_none": 0.0,
+        "model_is_superior": true
+      },
+      {
+        "threshold_tau": 0.5,
+        "net_benefit_model": 0.2811,
+        "net_benefit_treat_all": 0.0229,
+        "net_benefit_treat_none": 0.0,
+        "model_is_superior": true
+      }
+    ]
+  },
+  "ecg_telemetry_features": [
+    "ecg_mean_rr_ms",
+    "ecg_hrv_rmssd_ms",
+    "ecg_hrv_sdnn_ms",
+    "ecg_qtc_bazett_ms",
+    "ecg_lf_hf_ratio"
+  ],
+  "exposomic_water_features": [
+    "water_pfas_ppb",
+    "water_heavy_metals_ppb",
+    "edc_xenobiotic_score"
+  ],
+  "epigenetic_1carbon_features": [
+    "homocysteine_umol_l",
+    "serum_folate_ng_ml",
+    "glutathione_peroxidase_u_g_hb",
+    "mthfr_c677t_variant"
+  ],
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001",
+    "FDA 21 CFR Part 11"
+  ],
+  "timestamp": "2026-10-01T20:52:57.747378+00:00"
+}

@@ -67,7 +67,7 @@ class PhysicalGenomicsHudCard extends ConsumerWidget {
                   'LOINC 98253-8',
                   style: TextStyle(
                     color: Color(0xFF00FFC2),
-                    fontFamily: 'monospace',
+                    fontFamily: 'PocketGullMono',
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
@@ -182,7 +182,7 @@ class PhysicalGenomicsHudCard extends ConsumerWidget {
             color: color,
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            fontFamily: 'monospace',
+            fontFamily: 'PocketGullMono',
           ),
         ),
         const SizedBox(height: 2),

@@ -1,0 +1,27 @@
+{
+  "contest": "physionet_2026",
+  "year": 2026,
+  "description": "Age-Conditioned Sleep PSG Cognitive Risk Classifier",
+  "model_type": "Calibrated HistGradientBoostingClassifier",
+  "num_features": 14,
+  "features": [
+    "age",
+    "n3_percentage",
+    "apnea_hypopnea_index",
+    "obstructive_apnea_index",
+    "central_apnea_index",
+    "hypopnea_index",
+    "arousal_index",
+    "micro_arousal_density",
+    "sleep_fragmentation_index",
+    "vagal_tone_index",
+    "hr",
+    "bp_systolic",
+    "bp_diastolic",
+    "shock_index"
+  ],
+  "train_samples": 3750,
+  "test_samples": 1250,
+  "test_roc_auc": 0.9953,
+  "test_brier_score": 0.0247
+}

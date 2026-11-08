@@ -1,0 +1,11 @@
+{
+  "model_name": "sarcopenia_frailty_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 6,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "cddf1cadd46ccae73c60d86fcd783de2c6668fa403e17c3a9b06d9d054c00971",
+  "size_bytes": 2753612
+}

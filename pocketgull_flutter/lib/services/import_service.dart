@@ -80,14 +80,15 @@ class ImportService {
     // Import scans
     int scansAdded = 0;
     if (p['scans'] is List) {
-      for (final s in p['scans'] as List) {
+      for (final rawScan in p['scans'] as List<dynamic>) {
+        final s = rawScan as Map<String, dynamic>;
         notifier.addScan(DiagnosticScan(
-          id: s['id'] ?? 'imported_${DateTime.now().millisecondsSinceEpoch}',
-          type: s['type'] ?? 'Unknown',
-          title: s['title'] ?? 'Imported Scan',
-          date: s['date'] ?? DateTime.now().toIso8601String().split('T')[0],
-          description: s['description'] ?? '',
-          status: s['status'] ?? 'Pending',
+          id: s['id'] as String? ?? 'imported_${DateTime.now().millisecondsSinceEpoch}',
+          type: s['type'] as String? ?? 'Unknown',
+          title: s['title'] as String? ?? 'Imported Scan',
+          date: s['date'] as String? ?? DateTime.now().toIso8601String().split('T')[0],
+          description: s['description'] as String? ?? '',
+          status: s['status'] as String? ?? 'Pending',
         ));
         scansAdded++;
       }
@@ -107,7 +108,7 @@ class ImportService {
     int conditionsAdded = 0;
     int medsAdded = 0;
 
-    final entries = (bundle['entry'] as List?) ?? [];
+    final entries = (bundle['entry'] as List<dynamic>?) ?? <dynamic>[];
 
     for (final entry in entries) {
       final resource = (entry as Map<String, dynamic>)['resource'] as Map<String, dynamic>?;
@@ -149,10 +150,12 @@ class ImportService {
 
   void _importDiagnosticReport(Map<String, dynamic> r, PatientNotifier notifier) {
     final scanDesc = r['conclusion'] ?? (r['code'] as Map?)?['text'] ?? 'Imported Diagnostic Report';
+    final firstCategory = (r['category'] as List<dynamic>?)?.firstOrNull as Map?;
+    final firstCoding = (firstCategory?['coding'] as List<dynamic>?)?.firstOrNull as Map?;
     notifier.addScan(DiagnosticScan(
-      id: r['id'] ?? 'fhir_scan_${DateTime.now().millisecondsSinceEpoch}',
-      type: ((r['category'] as List?)?.firstOrNull as Map?)?['coding']?[0]?['display'] ?? 'Lab Report',
-      title: (r['code'] as Map?)?['text'] ?? 'Diagnostic Report',
+      id: r['id'] as String? ?? 'fhir_scan_${DateTime.now().millisecondsSinceEpoch}',
+      type: firstCoding?['display'] as String? ?? 'Lab Report',
+      title: (r['code'] as Map?)?['text'] as String? ?? 'Diagnostic Report',
       date: (r['effectiveDateTime'] as String?)?.split('T')[0] ?? DateTime.now().toIso8601String().split('T')[0],
       description: scanDesc.toString(),
       status: 'Pending',
@@ -160,10 +163,10 @@ class ImportService {
   }
 
   void _importDocumentReference(Map<String, dynamic> r, PatientNotifier notifier) {
-    final docTitle = (r['type'] as Map?)?['text'] ?? 'Clinical Document';
+    final docTitle = (r['type'] as Map?)?['text'] as String? ?? 'Clinical Document';
     final docDate = (r['date'] as String?)?.split('T')[0] ?? DateTime.now().toIso8601String().split('T')[0];
     notifier.addScan(DiagnosticScan(
-      id: r['id'] ?? 'fhir_doc_${DateTime.now().millisecondsSinceEpoch}',
+      id: r['id'] as String? ?? 'fhir_doc_${DateTime.now().millisecondsSinceEpoch}',
       type: 'Document',
       title: docTitle,
       date: docDate,
@@ -173,7 +176,7 @@ class ImportService {
   }
 
   void _importCondition(Map<String, dynamic> r, PatientNotifier notifier) {
-    final codings = ((r['code'] as Map?)?['coding'] as List?) ?? [];
+    final codings = ((r['code'] as Map?)?['coding'] as List<dynamic>?) ?? <dynamic>[];
     String westernName = '';
     String tcmPattern = '';
     String ayurvedicImbalance = '';
@@ -191,14 +194,14 @@ class ImportService {
     }
 
     if (westernName.isEmpty) {
-      westernName = (r['code'] as Map?)?['text'] ?? 'Unspecified Condition';
+      westernName = (r['code'] as Map?)?['text'] as String? ?? 'Unspecified Condition';
     }
 
     // Map to body part
     String bodyPartId = 'full_body';
-    final bodySite = (r['bodySite'] as List?)?.firstOrNull as Map?;
-    final bodySiteDisplay = (bodySite?['coding'] as List?)?.firstOrNull is Map
-        ? ((bodySite?['coding'] as List).first as Map)['display']
+    final bodySite = (r['bodySite'] as List<dynamic>?)?.firstOrNull as Map?;
+    final bodySiteDisplay = (bodySite?['coding'] as List<dynamic>?)?.firstOrNull is Map
+        ? ((bodySite?['coding'] as List<dynamic>).first as Map)['display']
         : bodySite?['text'];
     if (bodySiteDisplay != null) {
       bodyPartId = bodyPartMapping[bodySiteDisplay.toString().toLowerCase()] ?? bodyPartId;
@@ -217,18 +220,21 @@ class ImportService {
   }
 
   void _importMedication(Map<String, dynamic> r, PatientNotifier notifier) {
-    final medName = (r['medicationCodeableConcept'] as Map?)?['text'] ??
+    final medConcept = r['medicationCodeableConcept'] as Map?;
+    final medCodings = medConcept?['coding'] as List<dynamic>?;
+    final medName = medConcept?['text'] ??
         (r['medicationReference'] as Map?)?['display'] ??
-        ((r['medicationCodeableConcept'] as Map?)?['coding'] as List?)?.firstOrNull is Map
-            ? ((r['medicationCodeableConcept']?['coding'] as List).first as Map)['display']
-            : null;
+        (medCodings?.firstOrNull is Map
+            ? (medCodings!.first as Map)['display']
+            : null);
     if (medName != null) {
       String dosage = '';
-      if (r['dosageInstruction'] is List && (r['dosageInstruction'] as List).isNotEmpty) {
-        dosage = (r['dosageInstruction'] as List).first['text'] ?? '';
+      if (r['dosageInstruction'] is List && (r['dosageInstruction'] as List<dynamic>).isNotEmpty) {
+        final firstDosage = (r['dosageInstruction'] as List<dynamic>).first as Map?;
+        dosage = firstDosage?['text'] as String? ?? '';
       }
       final state = _ref.read(patientProvider);
-      final meds = List<DynamicMarker>.from(state.medications ?? []);
+      final meds = List<DynamicMarker>.from(state.medications ?? <DynamicMarker>[]);
       meds.add(DynamicMarker(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: medName.toString(),
@@ -239,10 +245,10 @@ class ImportService {
   }
 
   void _importObservation(Map<String, dynamic> obs, PatientNotifier notifier) {
-    final codings = ((obs['code'] as Map?)?['coding'] as List?) ?? [];
-    final loincEntry = codings.cast<Map>().firstWhere(
+    final codings = ((obs['code'] as Map?)?['coding'] as List<dynamic>?) ?? <dynamic>[];
+    final loincEntry = codings.cast<Map<dynamic, dynamic>>().firstWhere(
       (c) => c['system'] == 'http://loinc.org',
-      orElse: () => {},
+      orElse: () => <dynamic, dynamic>{},
     );
     final loincCode = loincEntry['code'];
     final value = (obs['valueQuantity'] as Map?)?['value'];
@@ -267,14 +273,18 @@ class ImportService {
         ));
         break;
       case '85354-9': // Blood Pressure panel
-        final components = (obs['component'] as List?) ?? [];
+        final components = (obs['component'] as List<dynamic>?) ?? <dynamic>[];
         String sys = '', dia = '';
         for (final comp in components) {
-          final compCodings = ((comp as Map)['code']?['coding'] as List?) ?? [];
-          final compLoinc = compCodings.cast<Map>().firstWhere(
-            (c) => c['system'] == 'http://loinc.org', orElse: () => {});
-          if (compLoinc['code'] == '8480-6') sys = (comp['valueQuantity']?['value'] ?? '').toString();
-          if (compLoinc['code'] == '8462-4') dia = (comp['valueQuantity']?['value'] ?? '').toString();
+          final compMap = comp as Map;
+          final compCodings = ((compMap['code'] as Map?)?['coding'] as List<dynamic>?) ?? <dynamic>[];
+          final compLoinc = compCodings.cast<Map<dynamic, dynamic>>().firstWhere(
+            (c) => c['system'] == 'http://loinc.org',
+            orElse: () => <dynamic, dynamic>{},
+          );
+          final valQuantity = compMap['valueQuantity'] as Map?;
+          if (compLoinc['code'] == '8480-6') sys = (valQuantity?['value'] ?? '').toString();
+          if (compLoinc['code'] == '8462-4') dia = (valQuantity?['value'] ?? '').toString();
         }
         if (sys.isNotEmpty && dia.isNotEmpty) {
           notifier.updateVitals(PatientVitals(

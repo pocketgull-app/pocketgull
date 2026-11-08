@@ -27,12 +27,12 @@ class _MedicalSummaryWidgetState extends ConsumerState<MedicalSummaryWidget> {
     final fhirService = ref.read(fhirServiceProvider);
     final fhirJson = fhirService.exportPatientToFhirJson(patientState);
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Row(
-            children: const [
+          title: const Row(
+            children: [
               Icon(Icons.code_rounded, color: Color(0xFF416B1F)),
               SizedBox(width: 8),
               Text('FHIR R4 BUNDLE EXPORT', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
@@ -44,7 +44,7 @@ class _MedicalSummaryWidgetState extends ConsumerState<MedicalSummaryWidget> {
             child: SingleChildScrollView(
               child: SelectableText(
                 fhirJson,
-                style: const TextStyle(fontFamily: 'monospace', fontSize: 11, color: Color(0xFF1E293B)),
+                style: const TextStyle(fontFamily: 'PocketGullMono', fontSize: 11, color: Color(0xFF1E293B)),
               ),
             ),
           ),

@@ -132,7 +132,7 @@ import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-sl
 
           <div class="space-y-2.5 max-h-[700px] overflow-y-auto pr-1 scrollbar-thin">
             @for (post of posts(); track post.slug) {
-              <div (click)="selectArticle(post.slug)"
+              <div role="button" tabindex="0" (keydown.enter)="selectArticle(post.slug)" (keydown.space)="$event.preventDefault(); selectArticle(post.slug)" (click)="selectArticle(post.slug)"
                    [class.bg-zinc-900]="activePost()?.slug === post.slug"
                    [class.border-emerald-500]="activePost()?.slug === post.slug"
                    [class.bg-zinc-950]="activePost()?.slug !== post.slug"

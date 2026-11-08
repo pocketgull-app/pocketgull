@@ -1,0 +1,104 @@
+# SPDX-License-Identifier: Apache-2.0
+# Upstream Agent Substrate (ate.dev/v1alpha1) WorkerPool & Reference Deployment
+# Reference: https://github.com/agent-substrate/substrate
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ate-pocketgull-clinical
+  labels:
+    app.kubernetes.io/part-of: pocketgull
+    compliance.pocketgull.app/fda-21-cfr-part-11: "enforced"
+---
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: gvisor
+handler: runsc
+scheduling:
+  nodeSelector:
+    sandbox.gke.io/runtime: gvisor
+---
+apiVersion: ate.dev/v1alpha1
+kind: WorkerPool
+metadata:
+  name: pocketgull-clinical-workers
+  namespace: ate-pocketgull-clinical
+  labels:
+    workload: pocketgull-clinical-actor
+spec:
+  sandboxClass: gvisor
+  minWorkers: 0
+  maxWorkers: 8
+  snapshotBucket: "gs://pocketgull-substrate-checkpoints"
+---
+# Reference Fallback Workload (Enforces FinOps & Hardened Security Context Gate)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pocketgull-agent-substrate
+  namespace: ate-pocketgull-clinical
+  labels:
+    app: agent-substrate
+    workload: pocketgull-clinical-actor
+  annotations:
+    ate.dev/atespace: "pocketgull-clinical"
+    ate.dev/preferred-fidelity: "MEMORY"
+    ate.dev/egress-credential-uri: "ate-secret://secretmanager.googleapis.com/projects/gen-lang-client-0540208645/secrets/GEMINI_API_KEY/versions/latest"
+    substrate.solo.io/hibernation-enabled: "true"
+    substrate.solo.io/sha256-attestation: "required"
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: agent-substrate
+  template:
+    metadata:
+      labels:
+        app: agent-substrate
+        workload: pocketgull-clinical-actor
+    spec:
+      runtimeClassName: gvisor
+      serviceAccountName: pocketgull-run
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: actor-harness
+          image: us-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull-api:1.31.0
+          ports:
+            - containerPort: 8001
+              name: mcp-http
+          env:
+            # Zero credentials in sandbox: actor sends placeholder; atenet-egress injects secret outside sandbox
+            - name: GEMINI_API_KEY
+              value: "ate-placeholder-injected-by-atenet-egress"
+          envFrom:
+            - configMapRef:
+                name: pocketgull-config
+          resources:
+            requests:
+              cpu: "100m"
+              memory: 256Mi
+            limits:
+              cpu: "1000m"
+              memory: 1Gi
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: actor-scratch
+              mountPath: /tmp
+      volumes:
+        - name: actor-scratch
+          emptyDir:
+            medium: Memory
+            sizeLimit: 128Mi

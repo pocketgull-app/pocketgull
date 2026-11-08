@@ -60,7 +60,7 @@ class DicomViewerWidget extends ConsumerWidget {
                                 color: Colors.white,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'monospace',
+                                fontFamily: 'PocketGullMono',
                               ),
                             ),
                           ),
@@ -84,7 +84,7 @@ class DicomViewerWidget extends ConsumerWidget {
                         style: const TextStyle(
                           color: Color(0xFF94A3B8),
                           fontSize: 10,
-                          fontFamily: 'monospace',
+                          fontFamily: 'PocketGullMono',
                         ),
                       ),
                     ],
@@ -133,15 +133,15 @@ class DicomViewerWidget extends ConsumerWidget {
                       children: [
                         Text(
                           'PATIENT: ${study.patientId}',
-                          style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 10, fontFamily: 'monospace', fontWeight: FontWeight.bold),
+                          style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 10, fontFamily: 'PocketGullMono', fontWeight: FontWeight.bold),
                         ),
                         const Text(
                           'TE: 85 ms • TR: 3200 ms',
-                          style: TextStyle(color: Color(0xFFCBD5E1), fontSize: 9, fontFamily: 'monospace'),
+                          style: TextStyle(color: Color(0xFFCBD5E1), fontSize: 9, fontFamily: 'PocketGullMono'),
                         ),
                         const Text(
                           'FOV: 240 mm • MATRIX: 512x512',
-                          style: TextStyle(color: Color(0xFF94A3B8), fontSize: 9, fontFamily: 'monospace'),
+                          style: TextStyle(color: Color(0xFF94A3B8), fontSize: 9, fontFamily: 'PocketGullMono'),
                         ),
                       ],
                     ),
@@ -164,20 +164,20 @@ class DicomViewerWidget extends ConsumerWidget {
                       children: [
                         Text(
                           'FRAME: ${state.displaySliceNumber} / ${study.frameCount}',
-                          style: const TextStyle(color: Color(0xFFFBBF24), fontSize: 10, fontFamily: 'monospace', fontWeight: FontWeight.bold),
+                          style: const TextStyle(color: Color(0xFFFBBF24), fontSize: 10, fontFamily: 'PocketGullMono', fontWeight: FontWeight.bold),
                         ),
                         Text(
                           'LOC: ${state.sliceLocationMm >= 0 ? '+' : ''}${state.sliceLocationMm.toStringAsFixed(1)} mm',
                           style: TextStyle(
                             color: state.sliceLocationMm.abs() < 2.0 ? const Color(0xFFEF4444) : const Color(0xFFCBD5E1),
                             fontSize: 9,
-                            fontFamily: 'monospace',
+                            fontFamily: 'PocketGullMono',
                             fontWeight: state.sliceLocationMm.abs() < 2.0 ? FontWeight.bold : FontWeight.normal,
                           ),
                         ),
                         Text(
                           'THK: ${study.sliceThicknessMm} mm',
-                          style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 9, fontFamily: 'monospace'),
+                          style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 9, fontFamily: 'PocketGullMono'),
                         ),
                       ],
                     ),
@@ -196,7 +196,7 @@ class DicomViewerWidget extends ConsumerWidget {
                     ),
                     child: Text(
                       'PRESET: ${state.windowPreset}',
-                      style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 9, fontFamily: 'monospace'),
+                      style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 9, fontFamily: 'PocketGullMono'),
                     ),
                   ),
                 ),
@@ -220,7 +220,7 @@ class DicomViewerWidget extends ConsumerWidget {
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.0,
-                          fontFamily: 'monospace',
+                          fontFamily: 'PocketGullMono',
                         ),
                       ),
                     ),
@@ -244,7 +244,7 @@ class DicomViewerWidget extends ConsumerWidget {
                   children: [
                     Text(
                       '1',
-                      style: TextStyle(color: Colors.grey.shade500, fontSize: 10, fontFamily: 'monospace'),
+                      style: TextStyle(color: Colors.grey.shade500, fontSize: 10, fontFamily: 'PocketGullMono'),
                     ),
                     Expanded(
                       child: SliderTheme(
@@ -267,7 +267,7 @@ class DicomViewerWidget extends ConsumerWidget {
                     ),
                     Text(
                       '${study.frameCount}',
-                      style: TextStyle(color: Colors.grey.shade500, fontSize: 10, fontFamily: 'monospace'),
+                      style: TextStyle(color: Colors.grey.shade500, fontSize: 10, fontFamily: 'PocketGullMono'),
                     ),
                   ],
                 ),
@@ -438,7 +438,7 @@ class DicomSlicePainter extends CustomPainter {
     Color boneMarrowColor = const Color(0xFF64748B);
     Color discColor = const Color(0xFF94A3B8);
     Color csfColor = const Color(0xFFF8FAFC); // High T2 signal
-    Color thecalBorderColor = const Color(0xFF475569);
+    final Color thecalBorderColor = const Color(0xFF475569);
 
     if (windowPreset == 'BONE') {
       boneCortexColor = Colors.white;

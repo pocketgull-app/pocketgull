@@ -97,7 +97,7 @@ export interface IMedhaRasayanaHerb {
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
             @for (herb of medhaHerbs; track herb.id) {
-              <div (click)="selectHerb(herb)"
+              <div role="button" tabindex="0" (keydown.enter)="selectHerb(herb)" (keydown.space)="$event.preventDefault(); selectHerb(herb)" (click)="selectHerb(herb)"
                    class="p-2.5 rounded-xl border bg-black/20 border-amber-500/20 flex items-start gap-2.5 cursor-pointer hover:border-amber-400/60 hover:bg-amber-500/10 transition-all duration-200"
                    [ngClass]="selectedHerb()?.id === herb.id ? 'ring-2 ring-amber-400 border-amber-400 bg-amber-500/20' : ''">
                 <span class="text-lg shrink-0 mt-0.5">{{ herb.icon }}</span>

@@ -1,0 +1,8 @@
+{
+  "model_name": "survival_ckd_decompensation_model",
+  "type": "CoxSurvivalEstimator",
+  "n_features_in": 0,
+  "classes": null,
+  "sha256": "e75ee62f3627ea04a32be0c0d32b31df928af82f4afda6f11bf3f27d4f88f9da",
+  "size_bytes": 60659
+}

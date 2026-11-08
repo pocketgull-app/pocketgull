@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('670', 'scotopic', 'night', 'washi', 'daylight', 'hemp', 'status')]
+    [ValidateSet('670', 'scotopic', 'night', 'washi', 'daylight', 'hemp', 'obsidian', 'status')]
     [string]$Preset = '670'
 )
 
@@ -32,6 +32,8 @@ try {
         0x001010E0 # Deep Warm Ruby Red (R=224, G=16, B=16)
     } elseif ($Preset -in 'washi', 'daylight') {
         0x0088940D # Washi Soft Teal (R=13, G=148, B=136)
+    } elseif ($Preset -eq 'obsidian') {
+        0x00A6B814 # Gear Teal (#14B8A6)
     } else {
         0x000953B4 # Warm Hemp Sepia
     }
@@ -49,7 +51,17 @@ try {
     Write-Warning "Razer Chroma sync warning: $($_.Exception.Message)"
 }
 
-# 3. Soft Acoustic Confirmation Chime
+# 3. Sync Connected Pixel 9 Pro Material You + OLED/Paper Substrate Theme
+$pixelThemeScript = Join-Path (Split-Path -Parent $scriptDir) "packages\pocketgull-theme\system\android\apply_pixel_theme.ps1"
+if (Test-Path $pixelThemeScript) {
+    try {
+        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $pixelThemeScript -Theme $Preset
+    } catch {
+        Write-Warning "Pixel theme sync warning: $($_.Exception.Message)"
+    }
+}
+
+# 4. Soft Acoustic Confirmation Chime
 $chime = "C:\Users\philg\AppData\Local\PocketGull\Sounds\pocketgull_ceramic_chime.wav"
 if (Test-Path $chime) {
     try {

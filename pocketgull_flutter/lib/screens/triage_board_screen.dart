@@ -193,7 +193,7 @@ class _TriageBoardScreenState extends ConsumerState<TriageBoardScreen> with Sing
                   ref.read(patientProvider.notifier).loadPatient(patient);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    MaterialPageRoute<void>(builder: (context) => const HomeScreen()),
                   );
                 },
                 child: Container(
@@ -409,7 +409,7 @@ class _TriageBoardScreenState extends ConsumerState<TriageBoardScreen> with Sing
                                   ),
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      showDialog(
+                                      showDialog<void>(
                                         context: context,
                                         builder: (ctx) => AlertDialog(
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

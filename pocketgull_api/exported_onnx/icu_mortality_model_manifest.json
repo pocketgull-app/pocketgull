@@ -1,0 +1,11 @@
+{
+  "model_name": "icu_mortality_model",
+  "type": "CalibratedClassifierCV",
+  "n_features_in": 7,
+  "classes": [
+    0,
+    1
+  ],
+  "sha256": "688bdc0f5089a5e7c82cf6779e1bc911e49bf2e1b173d4bc53d1fedfcce15683",
+  "size_bytes": 2634364
+}

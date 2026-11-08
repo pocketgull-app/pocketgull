@@ -1,0 +1,21 @@
+{
+  "contest": "physionet_2022",
+  "year": 2022,
+  "description": "Heart Murmur & Pathological Cardiac Risk Classifier",
+  "model_type": "Calibrated HistGradientBoostingClassifier",
+  "num_features": 8,
+  "features": [
+    "hr",
+    "bp_systolic",
+    "bp_diastolic",
+    "pcg_spike_freq",
+    "murmur_intensity",
+    "age",
+    "map",
+    "shock_index"
+  ],
+  "train_samples": 3750,
+  "test_samples": 1250,
+  "test_roc_auc": 0.9997,
+  "test_brier_score": 0.0073
+}

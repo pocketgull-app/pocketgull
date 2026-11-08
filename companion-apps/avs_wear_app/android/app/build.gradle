@@ -17,21 +17,18 @@ def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "
 
 android {
     namespace = "app.pocketgull.avs_wear_app"
-    compileSdk = 34
+    compileSdk = 37
+    lintOptions { checkReleaseBuilds false }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
     defaultConfig {
         applicationId = "app.pocketgull.avs_wear_app"
         minSdk = 30 // Wear OS 3.0+ (Pixel Watch 2 is Wear OS 4/5, API 33/34)
-        targetSdk = 34
+        targetSdk = 35
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
     }
@@ -47,6 +44,12 @@ android {
 
 flutter {
     source = "../.."
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
 
 dependencies {

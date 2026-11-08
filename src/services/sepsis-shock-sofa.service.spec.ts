@@ -63,6 +63,10 @@ describe('SepsisShockSofaService (Clinical Model P8)', () => {
     expect(s.renal).toBe(2);
     expect(s.totalSofa).toBe(16);
     expect(s.deltaSofa).toBe(16);
+
+    // Dobutamine alone (any dose) without norepinephrine/vasopressin -> CV score = 2 (Vincent et al. 1996)
+    service.updateInputs({ norepinephrineDoseMcgKgMin: 0, vasopressinDoseUnitsMin: 0, dobutamineDoseMcgKgMin: 5.0 });
+    expect(service.sofa().cardiovascular).toBe(2);
   });
 
   it('4. Assesses ANDROMEDA-SHOCK capillary refill time & lactate clearance velocity', () => {

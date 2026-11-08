@@ -1,0 +1,31 @@
+{
+  "model_name": "knee_recovery_risk_model",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "description": "Knee Osteoarthritis & Post-Op Recovery Decompensation Predictor (KOOS, ROM & Cartilage Loss)",
+  "features": [
+    "koos_pain_score",
+    "koos_adl_score",
+    "knee_flexion_rom_deg",
+    "joint_effusion_grade",
+    "cartilage_thinning_rate_mm_yr",
+    "quad_symmetry_deficit_pct",
+    "days_post_intervention"
+  ],
+  "validation_strategy": "5-Fold GroupKFold (Patient-Level Clustered)",
+  "sample_count": 4000,
+  "unique_patients": 2400,
+  "metrics": {
+    "oof_roc_auc": 0.9923,
+    "oof_brier_score": 0.0356,
+    "expected_calibration_error_ece": 0.0231,
+    "brier_skill_score_bss": 0.8458
+  },
+  "calibration_method": "sigmoid_platt",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "IEEE P7003",
+    "ISO/IEC 42001"
+  ],
+  "timestamp": "2026-08-22T00:00:00Z"
+}

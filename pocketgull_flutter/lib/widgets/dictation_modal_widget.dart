@@ -9,7 +9,7 @@ class DictationModalWidget extends ConsumerStatefulWidget {
   final String partId;
   final String historicalContext;
   final VoidCallback onCancel;
-  final Function(String, ClinicalIntelligenceResult?) onAccept;
+  final void Function(String, ClinicalIntelligenceResult?) onAccept;
 
   const DictationModalWidget({
     super.key,

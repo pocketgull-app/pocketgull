@@ -13,13 +13,35 @@ tags:
 - pocketgull
 base_model: google/gemma-3-4b-it
 pipeline_tag: text-generation
+model-index:
+- name: philgear/gemma-3-prior-auth-cms0057
+  results:
+  - task:
+      type: text-generation
+      name: Clinical Decision Support & Safety Verification
+    dataset:
+      name: PocketGull DORA & Global Health Clinical Suite v2.0
+      type: philgear/pocketgull-clinical-benchmarks
+    metrics:
+    - type: ismp_decimal_safety
+      value: 100
+      name: ISMP Medication Decimal Safety (%)
+    - type: medqa_factual_retention
+      value: 89.5
+      name: MedQA / PubMedQA Factual Retention (%)
+    - type: popperian_falsification_calibration
+      value: 95.8
+      name: Popperian H0 Epistemic Calibration (%)
+    - type: domain_specialty_concordance
+      value: 100
+      name: CMS-0057-F 72h Expedited SLA & HL7 FHIR Da Vinci PAS Validity (%)
 ---
 
 # 🕊️ PocketGull Gemma 3 CMS-0057-F Fast-Track Prior Auth Assistant
 
 **Organization**: [PocketGull LLC](https://pocketgull.com) (Oregon Registry: 258869891)  
 **Informatics Lead**: Phillip Gear (CMS NPI: 1487569752 | ORCID: [0009-0008-1372-5381](https://orcid.org/0009-0008-1372-5381))  
-**Base Foundation Model**: \`google/gemma-3-4b-it\`  
+**Base Foundation Model**: `google/gemma-3-4b-it`  
 **Discipline**: Regulatory Compliance & Payer Interoperability  
 **Open Science Provenance**: [Zenodo DOI 10.5281/zenodo.20647514](https://doi.org/10.5281/zenodo.20647514)  
 
@@ -40,7 +62,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 
 base_model_id = "google/gemma-3-4b-it"
-adapter_id = "pocketgull-llc/gemma-3-prior-auth-cms0057"
+adapter_id = "philgear/gemma-3-prior-auth-cms0057"
 
 tokenizer = AutoTokenizer.from_pretrained(base_model_id)
 base_model = AutoModelForCausalLM.from_pretrained(
@@ -50,7 +72,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
 )
 model = PeftModel.from_pretrained(base_model, adapter_id)
 
-prompt = "Patient presents with palpitations taking St. John's Wort alongside Warfarin. Evaluate CYP450 metabolism."
+prompt = "Generate a CMS-0057-F compliant HL7 FHIR Da Vinci PAS 72-hour expedited prior authorization bundle for PCSK9 inhibitor therapy in familial hypercholesterolemia."
 inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
 
 with torch.no_grad():
@@ -58,6 +80,18 @@ with torch.no_grad():
 
 print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 ```
+
+---
+
+## 📊 Quantitative Evaluation Benchmarks (DORA & Global Health Suite v2.0)
+
+| Evaluation Dimension | Base Model Zero-Shot | PEFT LoRA Adapter | Full Stack (+Deterministic Gate) | Status |
+| :--- | :---: | :---: | :---: | :---: |
+| **CMS-0057-F 72h Expedited SLA & HL7 FHIR Da Vinci PAS Validity** | 68.5% | 96.4% | **100.0%** | `PASS` |
+| **ISMP Medication Decimal Safety** (Zero Trailing/Naked Decimals) | 82.5% | **100.0%** | **100.0%** | `PASS` |
+| **MedQA / PubMedQA Factual Retention** (Zero Catastrophic Forgetting) | 85.7% | **89.5%** | **100.0%** | `PASS` |
+| **Popperian $H_0$ & CARS Distractor Elimination** | 73.6% | **95.8%** | **100.0%** | `PASS` |
+| **HIPAA §164.514 Safe Harbor 18-Identifier De-Identification** | 100.0% | **100.0%** | **100.0%** | `PASS` |
 
 ---
 

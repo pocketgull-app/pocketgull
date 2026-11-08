@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { RustWasmComputeService } from './rust-wasm-compute.service';
 
 // Global declaration for Chrome experimental Built-in AI APIs
 declare global {
@@ -326,6 +327,7 @@ const BIOMEDICAL_ACRONYMS = new Set([
   providedIn: 'root'
 })
 export class OnDeviceEmbedderService {
+  readonly wasmCompute = new RustWasmComputeService();
   private embedderInstance: any = null;
   private indexedCorpus: IIndexedCorpusItem<any>[] = [];
   private indexedDocFreq = new Map<string, number>();
@@ -843,6 +845,9 @@ export class OnDeviceEmbedderService {
    * Computes Cosine Similarity directly in Int8 quantized integer space with zero float decompression.
    */
   quantizedCosineSimilarity(qA: IQuantizedVector, qB: IQuantizedVector): number {
+    if (this.wasmCompute.isWasmActive()) {
+      return this.wasmCompute.quantizedCosineSimilarity(qA, qB);
+    }
     if (!qA || !qB || qA.dim === 0 || qB.dim === 0) return 0;
     const len = Math.min(qA.dim, qB.dim);
     let dot = 0;

@@ -36,7 +36,7 @@ export interface IFhirR4Bundle {
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 sm:p-8 text-zinc-100 max-w-6xl mx-auto shadow-2xl space-y-8 max-h-[90vh] overflow-y-auto custom-scrollbar" role="dialog" aria-labelledby="case-study-title">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 sm:p-8 text-zinc-100 max-w-6xl mx-auto shadow-2xl space-y-8 max-h-[90vh] overflow-y-auto custom-scrollbar" role="dialog" aria-modal="true" aria-labelledby="case-study-title">
       
       <!-- Top Header & Stepped-Care Badges -->
       <div class="border-b border-zinc-800/80 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">

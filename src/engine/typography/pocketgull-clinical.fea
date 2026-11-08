@@ -1,0 +1,115 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 PocketGull LLC & Phillip Gear (DOI: 10.5281/zenodo.18882512)
+#
+# PocketGull OpenType Clinical Safety (`GSUB`) & 1000 UPM Anatomical PUA Feature Specification
+# Compatible with Adobe FDKO (`makeotf` / `fontTools.feaLib`) for:
+# - PocketGull-Fineliner.ttf
+# - PocketGull-Bold.ttf
+# - PocketGullMono-Regular.ttf
+# - PocketGull-VF.ttf (`wght`, `GRAD`, `ZDEP` axes)
+
+languagesystem DFLT dflt;
+languagesystem latn dflt;
+languagesystem arab dflt;
+languagesystem hebr dflt;
+languagesystem deva dflt;
+languagesystem cans dflt;
+languagesystem dupl dflt;
+
+# ─── 1. Glyph Classes ────────────────────────────────────────────────────────
+@DIGIT = [zero one two three four five six seven eight nine];
+@NONZERO_DIGIT = [one two three four five six seven eight nine];
+@UNIT_START = [m g u U I L c];
+
+# ─── 2. ISMP Single-Character Disambiguation (`cv08`, `cv05`, `ss02`) ────────
+feature cv08 {
+    # ISMP Slashed Zero: Disambiguates numeral 0 from uppercase O in dosages (10 mg vs 1O mg)
+    sub zero by zero.slashed;
+} cv08;
+
+feature cv05 {
+    # ISMP Curved Lowercase l: Disambiguates lowercase l from numeral 1 and uppercase I
+    sub l by l.curved;
+} cv05;
+
+feature ss02 {
+    # ISMP Serifed Uppercase I: Distinct top/bottom crossbars
+    sub I by I.serifed;
+} ss02;
+
+# ─── 3. ISMP / Joint Commission "Do Not Use" Contextual Error Traps (`calt`) ─
+feature calt {
+    # Trap A: Naked Decimal Point (.5 mg -> [0.]5 mg)
+    # Prevents 10x overdose when leading zero is omitted before a decimal point.
+    sub space period' @DIGIT by zero_period.ismp_alert;
+
+    # Trap B: Forbidden Trailing Zero (5.0 mg -> 5.[.0!] mg)
+    # Prevents 10x overdose when decimal point in 5.0 is missed and read as 50.
+    sub @NONZERO_DIGIT period zero' space @UNIT_START by zero_trailing.ismp_alert;
+
+    # Trap C: Dangerous Abbreviation "U" or "IU" -> Explicit "[UNIT]" / "[INTL-UNIT]"
+    sub space U' space by U.ismp_spell_unit;
+    sub space I' U' space by IU.ismp_spell_intl_unit;
+} calt;
+
+# ─── 4. 1000 UPM Direct-Curves Anatomical & Triage Ligatures (`rlig` / `dlig`)
+feature rlig {
+    # [heart] -> U+E101 (PartID 101 • SNOMED-CT 80891009 Cardiac Structure)
+    sub bracketleft h e a r t bracketright by uniE101.heart;
+
+    # [lungs] -> U+E102 (PartID 102 • SNOMED-CT 39607008 Pulmonary Structure)
+    sub bracketleft l u n g s bracketright by uniE102.lungs;
+
+    # [brain] -> U+E103 (PartID 103 • SNOMED-CT 12738006 Encephalon Structure)
+    sub bracketleft b r a i n bracketright by uniE103.brain;
+
+    # [acupoint_gv20] -> U+E104 (PartID 104 • Baihui Crown Convergence)
+    sub bracketleft a c u p o i n t underscore g v two zero bracketright by uniE104.acupoint_gv20;
+
+    # [chakra_anahata] -> U+E105 (PartID 105 • Anahata Heart Chakra)
+    sub bracketleft c h a k r a underscore a n a h a t a bracketright by uniE105.chakra_anahata;
+
+    # [ecg_lead_ii] -> U+E106 (PartID 106 • LOINC 8601-7 Lead II ECG Complex)
+    sub bracketleft e c g underscore l e a d underscore i i bracketright by uniE106.ecg_lead_ii;
+
+    # [liver] -> U+E107 (PartID 107 • SNOMED-CT 10200004 Hepatic Structure)
+    sub bracketleft l i v e r bracketright by uniE107.liver;
+
+    # [kidney] -> U+E108 (PartID 108 • SNOMED-CT 64033007 Renal Structure)
+    sub bracketleft k i d n e y bracketright by uniE108.kidney;
+
+    # [spine] -> U+E109 (PartID 109 • SNOMED-CT 421060004 Vertebral Column)
+    sub bracketleft s p i n e bracketright by uniE109.spine;
+
+    # [knee] -> U+E110 (PartID 110 • SNOMED-CT 72696002 Articular Knee Structure)
+    sub bracketleft k n e e bracketright by uniE110.knee;
+} rlig;
+
+# ─── 5. Bouma's Law Peripheral Anti-Crowding Positioning (`GPOS` `kern` / `cpsp`) ─
+# Enforces Herman Bouma's Critical Spacing Law (delta_x >= 0.5 * Eccentricity)
+# around decimal points, colons, and high-confusion clinical alphanumeric pairs
+# so peripheral 3D HUD callouts never suffer V1 cortical feature pooling.
+feature kern {
+    pos @DIGIT period 24;
+    pos period @DIGIT 24;
+    pos @DIGIT colon 20;
+    pos colon @DIGIT 20;
+    pos one zero 18;
+    pos zero one 18;
+} kern;
+
+feature cpsp {
+    # Capital & Numeral Peripheral Spacing (+25 UPM tracking expansion for HUD badges)
+    pos @DIGIT <12 0 24 0>;
+} cpsp;
+
+# ─── 6. OpenType `STAT` & Variable Axis Optical / Circadian Metadata ─────────
+# Variable Axes compiled into `fvar` / `gvar` / `avar` / `PG3D` v1.1:
+# - `wght` (100..900, default 400): Fineliner -> Bold -> Chiseltip
+# - `GRAD` (-100..100, default 0): Helmholtz Scotopic Grade (-3.75% weight 385 eq., zero HVAR reflow)
+# - `ZDEP` (0..1000, default 200): 1000 UPM Inward-Offset 3D Bevel Extrusion Delta
+# - `CIRC` (0..1000, default 1000): Circadian Melanopic & 7mm Scotopic Pupil Spherical Aberration
+#          Excavates acute ink-traps (18 -> 36 UPM) and widens apertures (+22 UPM) at CIRC=0
+#          while preserving horizontal crossbars (`e`, `f`, `t`, `+`, `-`).
+# - `BOUM` (0..100, default 0): Herman Bouma Peripheral Eccentricity Anti-Crowding Axis
+

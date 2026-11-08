@@ -358,6 +358,13 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
                       <div class="text-[10px] text-zinc-400 font-normal">Cellular Automata &amp; Petri Nets</div>
                     </div>
                   </button>
+                  <button type="button" (click)="navShell?.openDriftCalibrator(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer border border-emerald-500/30 bg-emerald-50/40 dark:bg-emerald-950/20">
+                    <span class="text-sm">🔬</span>
+                    <div>
+                      <div>J++ Lens &amp; Drift Calibrator</div>
+                      <div class="text-[10px] text-zinc-400 font-normal">12-Pole Sunburst • Cosine Vectors</div>
+                    </div>
+                  </button>
                   <button type="button" (click)="openSocraticRounds.emit(); isAppsHubOpen.set(false)" class="w-full text-left p-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800">
                     <span class="text-sm">👨‍⚕️</span>
                     <div>

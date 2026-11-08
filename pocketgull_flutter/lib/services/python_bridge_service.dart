@@ -61,7 +61,7 @@ class PythonBridgeService {
           score: (data['score'] as num?)?.toDouble() ?? 0.0,
           confidence: (data['confidence'] as num?)?.toDouble() ?? 0.0,
           contributingFactors: factors,
-          note: data['note'] ?? 'ML Predictive Risk Engine',
+          note: data['note'] as String? ?? 'ML Predictive Risk Engine',
         );
       } else {
         developer.log('[PythonBridgeService] Server error: ${response.statusCode}');

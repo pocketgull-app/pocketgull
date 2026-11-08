@@ -39,7 +39,7 @@ class BiometricImportService {
       if (data is List) {
         items = data;
       } else if (data is Map && data['entries'] is List) {
-        items = data['entries'];
+        items = data['entries'] as List<dynamic>;
       } else {
         throw Exception('Unexpected JSON structure.');
       }
@@ -47,10 +47,10 @@ class BiometricImportService {
       for (final item in items) {
         if (_isValidEntry(item)) {
           entries.add(BiometricEntry(
-            timestamp: item['timestamp'],
-            type: item['type'],
+            timestamp: item['timestamp'] as String,
+            type: item['type'] as String,
             value: '${item['value']}',
-            source: item['source'] ?? 'JSON Upload',
+            source: item['source'] as String? ?? 'JSON Upload',
           ));
         }
       }
