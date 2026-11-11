@@ -115,16 +115,17 @@ function Apply-CircadianPoint {
         Start-SilentPwsh "-NoProfile -ExecutionPolicy Bypass -File `"$peripheralsScript`" -Theme $Theme"
     }
 
-    # Synchronize Browser Themes
+    # Synchronize Browser Themes (Headless Firefox userChrome/userContent sync; zero browser launches)
     $browserScript = Join-Path $repoDir "packages\pocketgull-theme\scripts\install_browser_theme.ps1"
     if (Test-Path $browserScript) {
         $browserThemeSlug = switch ($Theme) {
-            'washi' { 'pocketgull-washi-rice-paper' }
-            'hemp'  { 'pocketgull-hemp-fiber' }
-            default { 'pocketgull-scotopic-650nm-red' }
+            'washi'    { 'pocketgull-washi-rice-paper' }
+            'hemp'     { 'pocketgull-hemp-fiber' }
+            'obsidian' { 'pocketgull-obsidian' }
+            default    { 'pocketgull-scotopic-650nm-red' }
         }
         Write-Host "  * Synchronizing browser theme ($browserThemeSlug)..." -ForegroundColor Cyan
-        Start-SilentPwsh "-NoProfile -ExecutionPolicy Bypass -File `"$browserScript`" -Theme $browserThemeSlug -Browser Firefox"
+        Start-SilentPwsh "-NoProfile -ExecutionPolicy Bypass -File `"$browserScript`" -Theme $browserThemeSlug -Browser Firefox -Silent"
     }
 }
 

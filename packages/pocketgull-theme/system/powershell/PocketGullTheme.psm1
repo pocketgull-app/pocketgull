@@ -1,4 +1,4 @@
-# ─── POCKETGULL THEME ENGINE FOR POWERSHELL ─────────────────────────────
+﻿# ─── POCKETGULL THEME ENGINE FOR POWERSHELL ─────────────────────────────
 # Synchronizes PowerShell 7+ syntax highlighting (PSReadLine) and ANSI styling ($PSStyle)
 # with the PocketGull Clinical, Tactile & Sensory IDE Theme Suite.
 
@@ -314,7 +314,8 @@ function Install-PocketGullBrowserTheme {
         [string]$Theme = "",
         [ValidateSet('All', 'Chrome', 'Canary', 'Edge', 'Firefox', 'Portal')]
         [string]$Browser = "All",
-        [switch]$OpenPortal
+        [switch]$OpenPortal,
+        [switch]$Silent
     )
     $script = "C:\Users\philg\Pocketgull\pocketgull\packages\pocketgull-theme\scripts\install_browser_theme.ps1"
     if (Test-Path $script) {
@@ -322,6 +323,7 @@ function Install-PocketGullBrowserTheme {
         if ($Theme) { $params['Theme'] = $Theme }
         if ($Browser) { $params['Browser'] = $Browser }
         if ($OpenPortal) { $params['OpenPortal'] = $true }
+        if ($Silent) { $params['Silent'] = $true }
         & $script @params
     } else {
         Write-Warning "Browser theme installer script not found at $script"
