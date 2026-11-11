@@ -333,9 +333,16 @@ if ($Browser -in @('All', 'Firefox')) {
         }
     }
 
-    if ($SignedXpi -and (-not $Silent) -and (Test-Path $FirefoxExe) -and (Test-Path $XpiPath)) {
-        Write-Host "🦊 Launching Firefox with AMO-signed extension..." -ForegroundColor Magenta
-        Start-Process $FirefoxExe -ArgumentList "`"$XpiPath`""
+    $signedAutoCandidate = Join-Path $BrowserDir "firefox\dist\pocketgull-circadian-auto-signed.xpi"
+    $targetSignedXpi = if ([string]::IsNullOrWhiteSpace($Theme) -and (Test-Path $signedAutoCandidate)) {
+        $signedAutoCandidate
+    } else {
+        $XpiPath
+    }
+
+    if ($SignedXpi -and (-not $Silent) -and (Test-Path $FirefoxExe) -and (Test-Path $targetSignedXpi)) {
+        Write-Host "🦊 Launching Firefox with AMO-signed extension ($targetSignedXpi)..." -ForegroundColor Magenta
+        Start-Process $FirefoxExe -ArgumentList "`"$targetSignedXpi`""
     }
 }
 

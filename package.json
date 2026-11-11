@@ -156,6 +156,8 @@
     "contracts:generate": "node --no-deprecation ./scripts/generate-api-contracts.mjs",
     "theme:install": "node --no-deprecation packages/pocketgull-theme/scripts/sideload.mjs",
     "theme:package": "cd packages/pocketgull-theme && npx -y @vscode/vsce package --out ../../dist/pocketgull-theme-1.2.0.vsix --no-dependencies",
+    "sign:firefox": "node --no-deprecation packages/pocketgull-theme/scripts/sign_firefox_amo.mjs",
+    "sanctuary:build": "powershell -NoProfile -ExecutionPolicy Bypass -File packages/ataxia-sanctuary/scripts/build.ps1",
     "lint": "node --no-deprecation node_modules/typescript/lib/tsc.js -p tsconfig.json --noEmit",
     "lint:pokayoke": "node --no-deprecation scripts/poka_yoke_type_guard.mjs",
     "porter:audit": "node --no-deprecation scripts/porters_forces_deployment_guard.mjs",
