@@ -6,9 +6,12 @@
  * 2. Business Associate Agreement (BAA) & Third-Party Vendor Egress (HIPAA § 164.502(e) / § 164.504(e))
  * 3. Five Eyes (FVEY) Statutory Sovereignty & Crisis Redirection (US, UK, CA, AU, NZ)
  * 4. FDA 21 CFR Part 11 Electronic Records & NIST SP 800-90A Entropy Governance
- * 5. Microsoft Services Agreement (MSA) AI Governance & Ethical Liability (Sept 30, 2026)
+ * 5. Microsoft Services Agreement (MSA) & Google GenAI ToS AI Governance
  * 6. FTC 16 CFR Part 255 & Commercial Affiliate Egress Governance (Amazon Associates)
  * 7. Cloud FinOps, Scale-to-Zero & Operational Continuity
+ * 8. Risk Management Lifecycle & 4 Risk Treatment Strategies (NIST RMF SP 800-37 & HITRUST CSF)
+ * 9. Threat Landscape & OWASP Top 10 (2021) Critical Web Risks (A04 Insecure Design, A08 Integrity, A09 Logging, A10 SSRF)
+ * 10. Vulnerability Management & CISA KEV / NVD Hygiene (Software Licensing, SBOM, Runtime Isolation)
  */
 
 import fs from 'node:fs';
@@ -338,6 +341,152 @@ recordCheck(
   'Zero-TTF Container Invariant (.dockerignore & .gcloudignore)',
   dockerTtf && gcloudTtf,
   'Desktop TTF fonts are not ignored in .dockerignore or .gcloudignore.'
+);
+
+// ---------------------------------------------------------------------------
+// DOMAIN 8: Risk Management Lifecycle & 4 Risk Treatment Strategies
+// (NIST RMF SP 800-37 Rev. 2 & HITRUST CSF Mapping)
+// ---------------------------------------------------------------------------
+console.log('\n📋 Domain 8: Risk Management Strategies (NIST RMF & HITRUST CSF)');
+
+const securityMdPath = path.join(ROOT_DIR, 'SECURITY.md');
+const offlineEdgePath = path.join(ROOT_DIR, 'src/services/offline-edge-ai.service.ts');
+const billingRoutesPath = path.join(ROOT_DIR, 'src/server/routes/billing.routes.ts');
+const genkitPath = path.join(ROOT_DIR, 'src/server/genkit.ts');
+
+// Strategy 1 — Risk Avoidance: Zero centralized remote PHI database (avoids server-side ePHI breach pool)
+const securityMdText = fs.existsSync(securityMdPath) ? fs.readFileSync(securityMdPath, 'utf8') : '';
+const hasRiskAvoidance = securityMdText.includes('No Remote Database') && securityMdText.includes('Transient Inference');
+recordCheck(
+  'Domain 8: NIST RMF / HITRUST',
+  'Risk Avoidance Strategy (Zero Centralized Remote PHI Database)',
+  hasRiskAvoidance,
+  'Risk avoidance architecture (No Remote Database / Ephemeral Client State) missing in SECURITY.md.'
+);
+
+// Strategy 2 — Risk Mitigation: Rate limiting, DOMPurify XSS scrubbing & deterministic clinical guardrails
+const aiRoutesPath = path.join(ROOT_DIR, 'src/server/routes/ai.routes.ts');
+const aiRoutesText = fs.existsSync(aiRoutesPath) ? fs.readFileSync(aiRoutesPath, 'utf8') : '';
+const hasRiskMitigation = aiRoutesText.includes('aiRateLimiter') && aiRoutesText.includes('sanitizeSystemInstruction');
+recordCheck(
+  'Domain 8: NIST RMF / HITRUST',
+  'Risk Mitigation Strategy (Ingress Rate-Limiting & Prompt Sanitization)',
+  hasRiskMitigation,
+  'Risk mitigation controls (aiRateLimiter / sanitizeSystemInstruction) missing from AI ingress routes.'
+);
+
+// Strategy 3 — Risk Transference: PCI-DSS offloaded to Stripe Checkout & HIPAA Cloud BAA via Vertex AI
+const billingText = fs.existsSync(billingRoutesPath) ? fs.readFileSync(billingRoutesPath, 'utf8') : '';
+const genkitText = fs.existsSync(genkitPath) ? fs.readFileSync(genkitPath, 'utf8') : '';
+const hasRiskTransference = billingText.includes('checkout.sessions') && genkitText.includes('vertexAI(');
+recordCheck(
+  'Domain 8: NIST RMF / HITRUST',
+  'Risk Transference Strategy (Stripe Hosted PCI & Vertex AI BAA Tier)',
+  hasRiskTransference,
+  'Risk transference controls (Stripe hosted checkout or Vertex AI BAA plugin) missing.'
+);
+
+// Strategy 4 — Risk Acceptance (Continuity): Graceful offline edge fallback when cloud/billing is unavailable
+const hasRiskAcceptanceContinuity = fs.existsSync(offlineEdgePath);
+recordCheck(
+  'Domain 8: NIST RMF / HITRUST',
+  'Risk Acceptance & Business Continuity (OfflineEdgeAiService Fallback)',
+  hasRiskAcceptanceContinuity,
+  'OfflineEdgeAiService continuity fallback missing for cloud/network disruption.'
+);
+
+// ---------------------------------------------------------------------------
+// DOMAIN 9: Threat Landscape & OWASP Top 10 (2021) Critical Web Risks
+// (A04 Insecure Design, A08 Software/Data Integrity, A09 Logging, A10 SSRF)
+// ---------------------------------------------------------------------------
+console.log('\n📋 Domain 9: OWASP Top 10 (2021) & Active Threat Actor Defenses');
+
+const healthcareServerPath = path.join(ROOT_DIR, 'src/server/healthcare.ts');
+const vertexAgentPath = path.join(ROOT_DIR, 'src/server/routes/vertex-agent.routes.ts');
+const fitbitServerPath = path.join(ROOT_DIR, 'src/server/fitbit.ts');
+
+const healthcareText = fs.existsSync(healthcareServerPath) ? fs.readFileSync(healthcareServerPath, 'utf8') : '';
+const vertexAgentText = fs.existsSync(vertexAgentPath) ? fs.readFileSync(vertexAgentPath, 'utf8') : '';
+const fitbitText = fs.existsSync(fitbitServerPath) ? fs.readFileSync(fitbitServerPath, 'utf8') : '';
+const deployScriptText = fs.existsSync(deployScriptPath) ? fs.readFileSync(deployScriptPath, 'utf8') : '';
+
+// Check 9.1: OWASP A04:2021 — Insecure Design (Deterministic physiological red-flag precedence & BASE_CLINICAL_PROMPT isolation)
+const hasSecureDesign = aiRoutesText.includes('BASE_CLINICAL_PROMPT') && aiRoutesText.includes('[CLINICAL DIRECTIVE CONTEXT]');
+recordCheck(
+  'Domain 9: OWASP Top 10',
+  'OWASP A04:2021 Insecure Design Defense (Immutable System Prompt Partitioning)',
+  hasSecureDesign,
+  'Static BASE_CLINICAL_PROMPT / [CLINICAL DIRECTIVE CONTEXT] structural isolation missing.'
+);
+
+// Check 9.2: OWASP A08:2021 — Software & Data Integrity Failures (Immutable @sha256 digest deploy + Pub/Sub OIDC verification)
+const hasIntegrityControls = deployScriptText.includes('sha256:') && healthcareText.includes('verifyPubSubOidcToken');
+recordCheck(
+  'Domain 9: OWASP Top 10',
+  'OWASP A08:2021 Software & Data Integrity (SLSA @sha256 Digest + Pub/Sub OIDC)',
+  hasIntegrityControls,
+  'Immutable container SHA-256 digest deployment or Pub/Sub OIDC token verification missing.'
+);
+
+// Check 9.3: OWASP A09:2021 — Security Logging & Monitoring Failures (Tamper-sanitized audit log + BigQuery SIEM sink)
+const hasLoggingControls = fitbitText.includes('health-data-audit.log') && securityMdText.includes('siem_audit_logs');
+recordCheck(
+  'Domain 9: OWASP Top 10',
+  'OWASP A09:2021 Security Logging & Monitoring (Audit Stream & BigQuery SIEM)',
+  hasLoggingControls,
+  'Sanitized health-data-audit.log stream or BigQuery siem_audit_logs documentation missing.'
+);
+
+// Check 9.4: OWASP A10:2021 — Server-Side Request Forgery (SSRF) (Explicit hostname allowlist & static endpoint switch)
+const hasSsrfDefense = healthcareText.includes('SSRF Blocked:') && vertexAgentText.includes('switch (requestedKey)');
+recordCheck(
+  'Domain 9: OWASP Top 10',
+  'OWASP A10:2021 SSRF Defense (Strict Hostname Validation & Static Endpoint Routing)',
+  hasSsrfDefense,
+  'SSRF URL sanitizer in healthcare.ts or static switch table in vertex-agent.routes.ts missing.'
+);
+
+// ---------------------------------------------------------------------------
+// DOMAIN 10: Vulnerability Management, Legacy Isolation & CISA KEV Hygiene
+// (Patch Pinning, License Compliance, Zero Exchange/Log4j/NTLM Surface)
+// ---------------------------------------------------------------------------
+console.log('\n📋 Domain 10: Vulnerability Management, Licensing & CISA KEV Surface');
+
+const pkgJsonPath = path.join(ROOT_DIR, 'package.json');
+const pkgJson = fs.existsSync(pkgJsonPath) ? JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8')) : {};
+
+// Check 10.1: Software Compliance & Licensing Hygiene (Apache-2.0 + Node 24 LTS + Overrides)
+const hasCompliancePins =
+  pkgJson.license === 'Apache-2.0' &&
+  pkgJson.engines?.node === '24.x' &&
+  Boolean(pkgJson.overrides || pkgJson.resolutions);
+recordCheck(
+  'Domain 10: Vuln Management',
+  'Software Compliance, LTS Runtime Pinning (Node 24.x) & Transitive Overrides',
+  hasCompliancePins,
+  'package.json missing Apache-2.0 license, Node 24.x LTS pin, or transitive vulnerability overrides.'
+);
+
+// Check 10.2: Multiparty & Supply Chain Inventory (CycloneDX SBOM generator + IP Sovereignty Guard)
+const hasSupplyChainTools =
+  fs.existsSync(path.join(ROOT_DIR, 'scripts/generate_cyclonedx_sbom.mjs')) &&
+  fs.existsSync(path.join(ROOT_DIR, 'scripts/dart/ip_sovereignty_guard.dart'));
+recordCheck(
+  'Domain 10: Vuln Management',
+  'Multiparty IP & Supply-Chain Vulnerability Inventory (CycloneDX 1.6 + IP Guard)',
+  hasSupplyChainTools,
+  'CycloneDX SBOM generator or IP sovereignty guard missing.'
+);
+
+// Check 10.3: Legacy Protocol & CISA KEV Architectural Immunity (Zero Java JNDI/Log4j, Zero MS Exchange, Zero NTLM)
+const allDeps = { ...(pkgJson.dependencies || {}), ...(pkgJson.devDependencies || {}) };
+const legacyOrKevPackages = ['node-ntlm', 'httpntlm', 'express-ntlm', 'ews-javascript-api', 'log4js-jndi'];
+const foundLegacy = legacyOrKevPackages.filter(dep => dep in allDeps);
+recordCheck(
+  'Domain 10: Vuln Management',
+  'Legacy Protocol & CISA KEV Surface Elimination (Zero NTLM / Exchange / JNDI)',
+  foundLegacy.length === 0,
+  `Legacy/KEV-prone protocol package detected: ${foundLegacy.join(', ')}`
 );
 
 // ---------------------------------------------------------------------------
