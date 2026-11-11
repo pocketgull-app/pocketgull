@@ -162,9 +162,9 @@ if ($OpenPortal -or $Browser -eq 'Portal') {
 
 # Browser paths
 $ChromeExe  = "C:\Program Files\Google\Chrome\Application\chrome.exe"
-$CanaryExe  = "C:\Users\philg\AppData\Local\Google\Chrome SxS\Application\chrome.exe"
+$CanaryExe  = Join-Path $env:LOCALAPPDATA "Google\Chrome SxS\Application\chrome.exe"
 $EdgeExe    = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-$FirefoxExe = "C:\Users\philg\AppData\Local\Microsoft\WindowsApps\firefox.exe"
+$FirefoxExe = Join-Path $env:LOCALAPPDATA "Microsoft\WindowsApps\firefox.exe"
 if (-not (Test-Path $FirefoxExe)) {
     $FirefoxExe = "C:\Program Files\Mozilla Firefox\firefox.exe"
 }

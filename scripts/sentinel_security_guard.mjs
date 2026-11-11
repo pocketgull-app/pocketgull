@@ -31,6 +31,8 @@ const APPROVED_EGRESS_DOMAINS = [
   'github.com',
   'githubusercontent.com',
   'api.github.com',
+  'mozilla.org',
+  'addons.mozilla.org',
   'clamav.net',
   'www.clamav.net',
   'jcgt.org',

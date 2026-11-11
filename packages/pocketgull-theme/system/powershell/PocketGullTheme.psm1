@@ -229,8 +229,7 @@ function Set-PocketGullTheme {
         if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
             $rootLocations = @(
                 "$PSScriptRoot\..\shell-prompts\$($t.OmpFile)",
-                "$PSScriptRoot\..\..\..\public\brand\terminal\$($t.OmpFile)",
-                "C:\Users\philg\Pocketgull\pocketgull\public\brand\terminal\$($t.OmpFile)"
+                "$PSScriptRoot\..\..\..\public\brand\terminal\$($t.OmpFile)"
             )
             foreach ($loc in $rootLocations) {
                 if (Test-Path $loc) {
@@ -271,8 +270,9 @@ function Set-PocketGullTheme {
 
 function Get-PocketGullCircadianTheme {
     # Inspect VS Code settings if active in workspace
-    $wsSettings = "C:\Users\philg\Pocketgull\pocketgull\.vscode\settings.json"
-    if (Test-Path $wsSettings) {
+    $wsRoot = Resolve-Path "$PSScriptRoot\..\..\..\.." -ErrorAction SilentlyContinue
+    $wsSettings = if ($wsRoot) { Join-Path $wsRoot.Path ".vscode\settings.json" } else { "" }
+    if ($wsSettings -and (Test-Path $wsSettings)) {
         try {
             $json = Get-Content $wsSettings -Raw | ConvertFrom-Json
             if ($json.'workbench.colorTheme') {
@@ -317,7 +317,7 @@ function Install-PocketGullBrowserTheme {
         [switch]$OpenPortal,
         [switch]$Silent
     )
-    $script = "C:\Users\philg\Pocketgull\pocketgull\packages\pocketgull-theme\scripts\install_browser_theme.ps1"
+    $script = Join-Path $PSScriptRoot "..\..\scripts\install_browser_theme.ps1"
     if (Test-Path $script) {
         $params = @{}
         if ($Theme) { $params['Theme'] = $Theme }

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>PocketGullSanctuary</AssemblyName>
+    <RootNamespace>PocketGull.Sanctuary</RootNamespace>
+    <UseWindowsForms>true</UseWindowsForms>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>5</LangVersion>
+    <Version>1.0.0</Version>
+    <Authors>PocketGull Assistive Engineering</Authors>
+    <Company>PocketGull LLC.</Company>
+    <Product>PocketGull Ataxia Sanctuary</Product>
+    <Description>Zero-dependency Windows motor-ergonomics shield, 64px ophthalmic/scotopic cursors, and 4-slot circadian control deck.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Extensions" />
+  </ItemGroup>
+</Project>

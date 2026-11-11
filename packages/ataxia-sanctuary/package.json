@@ -1,0 +1,26 @@
+{
+  "name": "@pocketgull/ataxia-sanctuary",
+  "version": "1.0.0",
+  "description": "Standalone zero-dependency Windows motor-ergonomics, 64px ophthalmic/scotopic cursor foundry, and 4-slot circadian control deck for cerebellar ataxia and tremor communities.",
+  "license": "Apache-2.0",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pocketgull-app/pocketgull.git",
+    "directory": "packages/ataxia-sanctuary"
+  },
+  "keywords": [
+    "accessibility",
+    "ataxia",
+    "dysmetria",
+    "tremor",
+    "assistive-technology",
+    "scotopic",
+    "windows",
+    "cursors"
+  ],
+  "scripts": {
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1",
+    "test": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1 -SelfTestOnly"
+  }
+}
