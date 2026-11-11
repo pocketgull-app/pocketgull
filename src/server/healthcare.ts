@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { GoogleAuth } from 'google-auth-library';
+import { GoogleAuth, OAuth2Client } from 'google-auth-library';
 import { rateLimit } from 'express-rate-limit';
 import express from 'express';
 
@@ -768,6 +768,39 @@ healthcareRouter.post('/fhir/export-to-bigquery', express.json(), async (req, re
   }
 });
 
+const pubsubOAuth2Client = new OAuth2Client();
+
+/**
+ * Verifies Google Cloud Pub/Sub OIDC push token when running in production.
+ * Prevents unauthenticated external callers from spoofing FHIR Store webhook events.
+ */
+async function verifyPubSubOidcToken(req: express.Request): Promise<boolean> {
+  const isProd = (process.env['NODE_ENV'] === 'production' || !!process.env['K_SERVICE']) && !isTestingEnv;
+  if (!isProd) {
+    return true;
+  }
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return false;
+  }
+  const idToken = authHeader.slice('Bearer '.length).trim();
+  if (!idToken) {
+    return false;
+  }
+  try {
+    const expectedAudience = process.env['PUBSUB_WEBHOOK_AUDIENCE'];
+    const ticket = await pubsubOAuth2Client.verifyIdToken({
+      idToken,
+      ...(expectedAudience ? { audience: expectedAudience } : {})
+    });
+    const payload = ticket.getPayload();
+    return Boolean(payload && payload.email_verified && payload.email?.endsWith('.gserviceaccount.com'));
+  } catch (err: unknown) {
+    console.warn('[Healthcare Pub/Sub Auth] OIDC token verification failed:', (err as Error)?.message);
+    return false;
+  }
+}
+
 /**
  * POST /api/healthcare/pubsub/webhook
  * Receives Cloud Pub/Sub push notifications for FHIR Store resource mutations
@@ -775,6 +808,11 @@ healthcareRouter.post('/fhir/export-to-bigquery', express.json(), async (req, re
  */
 healthcareRouter.post('/pubsub/webhook', express.json(), async (req, res) => {
   try {
+    const isAuthorized = await verifyPubSubOidcToken(req);
+    if (!isAuthorized) {
+      return res.status(401).json({ error: 'Unauthorized: Missing or invalid Google Cloud Pub/Sub OIDC token.' });
+    }
+
     const pubsubMessage = req.body.message;
     if (!pubsubMessage || !pubsubMessage.data) {
       return res.status(400).json({ error: 'Invalid Pub/Sub payload structure.' });

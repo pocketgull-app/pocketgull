@@ -30,7 +30,7 @@ As a clinical co-pilot, Pocket Gull operates under strict security and data-hand
 ### 1. Transient Data & No PHI Persistence
 - **No Remote Database**: Pocket Gull does **not** persist Protected Health Information (PHI) to any centralized database.
 - **Local Storage**: All patient state is stored locally within the browser (`localStorage` or IndexedDB) and is strictly constrained to the clinician's current device profile.
-- **Transient Inference**: Payloads sent to the Google Gemini API or other external AI inference engines are ephemeral. We strictly rely on enterprise or opt-out tiers to ensure data is **not** used to train foundation models.
+- **Transient Inference**: Payloads sent to external AI inference engines are ephemeral. Production clinical workloads strictly route through **Google Cloud Vertex AI (`aiplatform.googleapis.com`)** via Application Default Credentials / Workload Identity under a GCP HIPAA Business Associate Agreement (BAA) so clinical payloads never traverse consumer AI Studio tiers or train foundation models.
 
 ### 2. Generative AI Safeguards (Google Responsible AI)
 

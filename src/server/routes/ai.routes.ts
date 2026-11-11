@@ -871,8 +871,7 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${safeModel}:generateContent?key=${key}`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Referer': 'https://pocketgull.app/'
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify(devPayload)
         });

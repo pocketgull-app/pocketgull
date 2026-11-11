@@ -19,5 +19,6 @@ declare module '@angular/elements' {
 
 declare module '@genkit-ai/google-genai' {
   export function googleAI(config?: any): any;
+  export function vertexAI(config?: any): any;
 }
 

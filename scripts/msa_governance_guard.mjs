@@ -1,6 +1,8 @@
 /**
- * Sentinel Security Guard - MSA & AI Services Compliance Audit
- * Scans codebase for violations of MSA Section 14.s and Section 14.i
+ * Sentinel Security Guard - Google GenAI ToS & MSA AI Services Compliance Audit
+ * Scans codebase for violations of:
+ * - Google Generative AI Terms of Service (Model distillation & Referer restriction spoofing)
+ * - MSA Section 14.s and Section 14.i (Emotion inference, C2PA, distillation)
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -8,7 +10,8 @@ import { join } from 'node:path';
 const PROHIBITED_PATTERNS = [
   { pattern: /\b(detectEmotion|inferEmotion|voiceAffect|facialEmotion|emotionClassifier)\b/i, rule: 'MSA Sec 14.s.ix.9: Emotion inference prohibition' },
   { pattern: /\b(stripC2PA|removeContentCredentials|stripProvenance)\b/i, rule: 'MSA Sec 14.s.vii: Content credentials preservation' },
-  { pattern: /\b(distillModel|trainCompetitorModel|extractModelWeights)\b/i, rule: 'MSA Sec 14.s.iv: Model extraction & distillation prohibition' },
+  { pattern: /\b(distillModel|trainCompetitorModel|extractModelWeights|distillFromGemini|geminiToLlamaDistill|geminiToMistralDistill)\b/i, rule: 'Google GenAI ToS & MSA Sec 14.s.iv: Competing foundation model distillation prohibition' },
+  { pattern: /['"]Referer['"]\s*:\s*['"]https?:\/\/pocketgull\.(app|com)\/?['"]/i, rule: 'Google Cloud API Security: Server-side Referer header spoofing to bypass API key restrictions' },
 ];
 
 function scanDirectory(dir, issues = []) {
@@ -42,5 +45,5 @@ if (issues.length > 0) {
   issues.forEach(i => console.error(` - ${i.file}: ${i.rule}`));
   process.exit(1);
 } else {
-  console.log('\x1b[32m[MSA GOVERNANCE AUDIT PASSED]\x1b[0m 100% compliant with MSA Section 14.s & 14.i.');
+  console.log('\x1b[32m[AI GOVERNANCE AUDIT PASSED]\x1b[0m 100% compliant with Google GenAI ToS & MSA Section 14.s / 14.i.');
 }

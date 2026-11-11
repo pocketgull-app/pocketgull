@@ -1,45 +1,80 @@
 import { genkit, z } from 'genkit';
-// Google GenAI Plugin (@genkit-ai/google-genai)
-import { googleAI } from '@genkit-ai/google-genai';
+// Google GenAI & Vertex AI Plugin (@genkit-ai/google-genai)
+import { googleAI, vertexAI } from '@genkit-ai/google-genai';
+import { GoogleAuth } from 'google-auth-library';
 
-// Polyfill fetch to append our referer and bypass strict API key restrictions
-const originalFetch = globalThis.fetch;
-globalThis.fetch = async (url: any, options: any = {}) => {
-  const urlString = typeof url === 'string' ? url : (url && url.url ? url.url : url.toString());
-  let isTarget = false;
-  try {
-    const parsed = new URL(urlString);
-    isTarget = parsed.hostname === 'generativelanguage.googleapis.com';
-  } catch (e) {}
+const DEFAULT_VERTEX_PROJECT = (
+  process.env['GOOGLE_CLOUD_PROJECT'] ||
+  process.env['GCLOUD_PROJECT'] ||
+  'gen-lang-client-0540208645'
+).replace(/[^a-zA-Z0-9-_]/g, '');
 
-  if (isTarget) {
-    const newHeaders: Record<string, string> = { 'Referer': 'https://pocketgull.app' };
-    
-    if (options.headers) {
-      if (typeof options.headers.entries === 'function') {
-        for (const [key, value] of options.headers.entries()) {
-          newHeaders[key] = value;
-        }
-      } else {
-        Object.entries(options.headers).forEach(([key, value]) => {
-          newHeaders[key] = value as string;
-        });
-      }
-    }
-    
-    options.headers = newHeaders;
+const DEFAULT_VERTEX_LOCATION = (
+  process.env['GOOGLE_CLOUD_REGION'] ||
+  process.env['GCLOUD_REGION'] ||
+  'us-west1'
+).replace(/[^a-zA-Z0-9-]/g, '');
+
+let _vertexAuth: GoogleAuth | null = null;
+let _vertexAdcAvailable: boolean | null = null;
+let _vertexAdcCheckPromise: Promise<boolean> | null = null;
+
+/**
+ * Checks once whether Google Cloud Application Default Credentials (ADC / Workload Identity)
+ * are available so clinical Genkit flows route over HIPAA-eligible Vertex AI endpoints
+ * (`aiplatform.googleapis.com`) instead of consumer AI Studio API keys.
+ */
+async function hasVertexAdcCredentials(): Promise<boolean> {
+  if (process.env['FORCE_GOOGLE_AI_STUDIO'] === 'true') {
+    return false;
   }
-  return originalFetch(url, options);
-};
+  if (_vertexAdcAvailable !== null) {
+    return _vertexAdcAvailable;
+  }
+  if (!_vertexAdcCheckPromise) {
+    _vertexAdcCheckPromise = (async () => {
+      try {
+        if (!_vertexAuth) {
+          _vertexAuth = new GoogleAuth({
+            scopes: ['https://www.googleapis.com/auth/cloud-platform']
+          });
+        }
+        const client = await _vertexAuth.getClient();
+        const tokenResponse = await client.getAccessToken();
+        _vertexAdcAvailable = Boolean(tokenResponse && tokenResponse.token);
+        return _vertexAdcAvailable;
+      } catch {
+        _vertexAdcAvailable = false;
+        return false;
+      }
+    })();
+  }
+  return _vertexAdcCheckPromise;
+}
 
-// Initialize Genkit with @genkit-ai/googleai
+/**
+ * Resolves the active Genkit model identifier:
+ * - Primary (Production / Cloud Run / ADC): `vertexai/<model>` (BAA-eligible Vertex AI)
+ * - Fallback (Local offline/dev with API key only): `googleai/<model>`
+ */
+async function resolveClinicalGenkitModel(modelName: string = 'gemini-2.5-flash'): Promise<string> {
+  const cleanName = modelName.replace(/^(?:googleai|vertexai)\//, '');
+  const useVertex = await hasVertexAdcCredentials();
+  return useVertex ? `vertexai/${cleanName}` : `googleai/${cleanName}`;
+}
+
+const resolvedDevApiKey = process.env['GEMINI_API_KEY'] || process.env['GOOGLE_GENAI_API_KEY'];
+
+// Initialize Genkit with Vertex AI (primary BAA-eligible) + Google AI (local dev fallback)
 export const ai = genkit({
   plugins: [
-    googleAI({
-      apiKey: process.env['GEMINI_API_KEY'] || process.env['GOOGLE_GENAI_API_KEY']
-    })
+    vertexAI({
+      projectId: DEFAULT_VERTEX_PROJECT,
+      location: DEFAULT_VERTEX_LOCATION
+    }),
+    ...(resolvedDevApiKey ? [googleAI({ apiKey: resolvedDevApiKey })] : [googleAI({ apiKey: false })])
   ],
-  model: 'googleai/gemini-2.5-flash',
+  model: `vertexai/gemini-2.5-flash`,
 });
 
 // 1. Generate Metrics Flow
@@ -66,7 +101,9 @@ export const generateMetricsFlow = ai.defineFlow(
     Return ONLY a JSON object with this exact structure:
     {"complexity": number, "stability": number, "certainty": number}`;
 
+    const activeModel = await resolveClinicalGenkitModel('gemini-2.5-flash');
     const response = await (ai as any).generate({
+      model: activeModel,
       prompt,
       config: {
         temperature: 0,
@@ -107,7 +144,9 @@ export const detectClinicalChangesFlow = ai.defineFlow(
     
     SIGNIFICANT? (TRUE/FALSE):`;
 
+    const activeModel = await resolveClinicalGenkitModel('gemini-2.5-flash');
     const response = await (ai as any).generate({
+      model: activeModel,
       prompt,
       config: {
         temperature: 0,
@@ -203,7 +242,9 @@ CRITICAL RULES:
 
       const prompt = `Please rewrite the following care plan text according to your system instructions:\n\n<clinical_text>\n${text}\n</clinical_text>`;
 
+      const activeModel = await resolveClinicalGenkitModel('gemini-2.5-flash');
       const response = await (ai as any).generate({
+        model: activeModel,
         prompt,
         system: systemInstruction,
         config: {
@@ -260,7 +301,9 @@ ${translated}
 
 CRITIQUE:`;
 
+      const activeModel = await resolveClinicalGenkitModel('gemini-2.5-flash');
       const response = await (ai as any).generate({
+        model: activeModel,
         prompt,
         config: { 
           temperature: 0.2,
@@ -303,8 +346,9 @@ Please provide:
 
 Note: This is an AI preliminary analysis for decision-support, not an official diagnostic read. Respond with clear, structured Markdown.`;
 
+      const activeModel = await resolveClinicalGenkitModel('gemini-3.8-flash');
       const response = await (ai as any).generate({
-        model: 'googleai/gemini-3.8-flash', // Using 3.8-flash for multimodal synthesis
+        model: activeModel, // Vertex AI BAA-eligible multimodal synthesis with local dev fallback
         messages: [
           {
             role: 'user',
@@ -426,7 +470,9 @@ Return ONLY a JSON array of objects with this exact structure:
   { "id": "unique-id", "title": "Short Title", "content": "Detailed explanation", "type": "...", "confidence": 95 }
 ]`;
 
+      const activeModel = await resolveClinicalGenkitModel('gemini-2.5-flash');
       const response = await (ai as any).generate({
+        model: activeModel,
         prompt,
         config: {
           temperature: 0.1,
@@ -518,8 +564,9 @@ Strictly map any extracted clinical issues or symptoms to one of the following e
 
 Return all results structured into the response schema.`;
 
+    const activeModel = await resolveClinicalGenkitModel('gemini-3.8-flash');
     const response = await (ai as any).generate({
-      model: 'googleai/gemini-3.8-flash',
+      model: activeModel,
       messages: [
         {
           role: 'user',
@@ -557,7 +604,14 @@ Return all results structured into the response schema.`;
           })).optional(),
           notes: z.array(z.string()).optional(),
           patientGoals: z.string().optional()
-        })
+        }),
+        // Clinical CDS Imaging & OCR Safety Policy: See SECURITY.md §2 (All categories OFF)
+        safetySettings: [
+          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'OFF' },
+          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'OFF' },
+          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'OFF' },
+          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'OFF' }
+        ]
       }
     });
 
@@ -598,8 +652,9 @@ Perform a systematic visual assessment:
 ${anatomicalSite ? 'Anatomical Site: ' + anatomicalSite : ''}
 ${patientSymptoms ? 'Reported Symptoms: ' + patientSymptoms : ''}`;
 
+    const activeModel = await resolveClinicalGenkitModel('gemini-3.8-flash');
     const response = await (ai as any).generate({
-      model: 'googleai/gemini-3.8-flash',
+      model: activeModel,
       messages: [
         {
           role: 'user',
