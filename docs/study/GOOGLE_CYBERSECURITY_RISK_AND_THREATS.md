@@ -64,3 +64,35 @@ $$\text{Risk} = \text{Likelihood of a Threat} \times \text{Impact on CIA Triad}$
 | **ZeroLogon** (`CVE-2020-1472`) | Windows Netlogon Protocol (`MS-NRPC`) | Cryptographic flaw (`AES-CFB8` all-zero IV) allowing an attacker to spoof Domain Controller authentication with `1 in 256` guesses. | Use OS CSPRNG entropy (**NIST SP 800-90A**) and never use static/zero IVs or `Math.random()`. |
 | **Log4Shell** (`CVE-2021-44228`) | Apache Log4j2 (Java) | Unsanitized user strings logged by Log4j trigger remote **JNDI / LDAP** class loading and full RCE. | Strip control characters before logging (`sanitizeLogInput`), maintain a live **SBOM**, and forbid dynamic code evaluation in loggers. |
 | **PetitPotam** (`CVE-2021-36942`) | Windows LAN Manager (**NTLM** / `MS-EFSRPC`) | Coerces a Windows server/DC into initiating outbound NTLM authentication to an attacker-controlled relay server. | Disable legacy NTLM in favor of **FIDO2 / OIDC / Kerberos**, and block arbitrary outbound server connections. |
+
+---
+
+## 5. Modern 2024–2026 Evolution (Beyond the 2021 Course Baseline)
+
+### 5.1 OWASP Web Top 10: **2021 $\rightarrow$ 2025 Crosswalk** (Domain 9 in `audit:org`)
+* **`A01:2025 – Broken Access Control` *(Absorbed `A10:2021` SSRF)***: SSRF and Broken Object Level Authorization (BOLA) are now unified under `#1`. Pocket Gull enforces strict origin verification, `sanitizeUrl()` (`https://healthcare.googleapis.com`), and static switch routing.
+* **`A02:2025 – Security Misconfiguration` *(Jumped from #5 to #2)***: Reflects cloud IAM and container misconfigurations. Guarded by `npm run gcp:audit` (`100/100`) and `npm run observatory:audit` (`145/100` CSP3 nonces + HSTS preload).
+* **`A03:2025 – Software Supply Chain Failures` *(New #3, replacing `A06:2021`)***: Covers malicious package maintainers, CI/CD workflow tampering, and unsigned artifacts. Enforced via **Google Cloud Binary Authorization**, **Keyless WIF**, and **CycloneDX 1.6 SBOM**.
+* **`A10:2025 – Mishandling of Exceptional Conditions` *(Brand-New #10)***: Targets fail-open error states, unhandled promise crashes, and stack-trace leakage. Guarded by top-level `unhandledRejection`/`uncaughtException` handlers in `src/server.ts` and deterministic client fallbacks.
+
+---
+
+### 5.2 OWASP Top 10 for **LLM (2025)** & **Agentic AI (`ASI01–ASI10`, 2026)** (Domain 11 in `audit:org`)
+
+| 2025–2026 AI Risk ID | Threat Vector | Pocket Gull Control |
+| :--- | :--- | :--- |
+| **`LLM01:2025` & `LLM07:2025`** | **Prompt Injection & System Prompt Leakage** | Static `BASE_CLINICAL_PROMPT` anti-disclosure directive + zero-width Unicode stripping + `[CLINICAL DIRECTIVE CONTEXT]` partitioning. |
+| **`LLM08:2025`** | **Vector & Embedding Weaknesses** | Read-only Discovery Engine data stores (`vertex-agent.routes.ts`) with local curated clinical seed fallback. |
+| **`LLM09:2025`** | **Misinformation / Hallucinations** | Popperian $H_0$ falsifiability (`p < 0.05`), Cochrane RoB 2 tagging, and Gigerenzer natural frequencies (`out of 10,000`) in `auditGenkitClinicalGrounding`. |
+| **`LLM10:2025`** | **Unbounded Consumption ("Denial of Wallet")** | `thinkingBudget` clamped to $\le 2048$ tokens, `MAX_CHAT_SESSIONS = 50`, and `10 req/min` IP rate limiting. |
+| **`ASI01:2026` – `ASI09:2026`** | **Agent Goal Hijack, Tool Misuse & Trust Exploitation** | FDA 21 CFR §520(o) clinician-in-the-loop bracketing, FIDO2 passkey step-up on voice medication edits, and **Mandiant M-of-N Dual Custody** in `WebMcpRegistrationService`. |
+
+---
+
+### 5.3 Modernized Frameworks & Post-2021 Watershed CVEs
+* **NIST CSF 2.0 & Cyber AI Profile (`NIST IR 8596`)**: Added **`GOVERN` (`GV`)** as the 6th core pillar (including `GV.SC` Supply Chain Risk Management) and unified cyber + AI operations under *Secure, Defend, Thwart*.
+* **HITRUST CSF v11.9 & AI Security Certification**: Added certifiable controls for agentic non-human identities, model poisoning, and **NIST FIPS 203/204/205 Post-Quantum Cryptography (ML-KEM / ML-DSA)** readiness.
+* **Watershed 2023–2026 CISA KEV Additions**:
+  * **XZ Utils (`CVE-2024-3094`)**: Multi-year social-engineering maintainer takeover injecting an `sshd` backdoor into build tarballs $\rightarrow$ why `A03:2025` Supply Chain & SLSA provenance exist.
+  * **Polyfill.io Supply-Chain Attack (`2024`)**: Third-party CDN domain ownership transfer serving malicious JS to 100k+ sites $\rightarrow$ why Domain 10 bans external script CDNs (`polyfill.io`) and enforces CSP `strict-dynamic` nonces.
+  * **MOVEit Transfer (`CVE-2023-34362`) & Citrix Bleed (`CVE-2023-4966`)**: Mass SQLi exfiltration & MFA-bypassing session memory bleed $\rightarrow$ why Pocket Gull avoids centralized PHI databases (`Risk Avoidance`) and binds short-lived ephemeral tokens in memory.
