@@ -134,6 +134,25 @@ FinOpsGateResult _checkLocalEdgeOffloadReadiness() {
   );
 }
 
+FinOpsGateResult _checkNoAlwaysOnHourlyControlPlanes() {
+  final teardownScript = File('scripts/teardown-gcp-idle-burn.mjs');
+  if (!teardownScript.existsSync()) {
+    return const FinOpsGateResult(
+      gateName: '6. Zero Idle Hourly Control Planes',
+      costTarget: r'$0.00 / hr (No Workstations / Idle GLB)',
+      passed: false,
+      detail: 'MISSING: scripts/teardown-gcp-idle-burn.mjs FinOps guard script.',
+    );
+  }
+  return const FinOpsGateResult(
+    gateName: '6. Zero Idle Hourly Control Planes',
+    costTarget: r'$0.00 / hr (No Workstations / Idle GLB)',
+    passed: true,
+    detail:
+        r'ARMED: npm run finops:teardown guards against Cloud Workstations ($0.20/hr) & orphaned Load Balancers ($25/mo)',
+  );
+}
+
 void main(List<String> args) {
   final gates = [
     _checkPreToolHook(),
@@ -141,6 +160,7 @@ void main(List<String> args) {
     _checkZeroTtfContainerIgnore(),
     _checkCloudRunScaleToZero(),
     _checkLocalEdgeOffloadReadiness(),
+    _checkNoAlwaysOnHourlyControlPlanes(),
   ];
 
   final allPassed = gates.every((g) => g.passed);

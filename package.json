@@ -138,6 +138,7 @@
     "bq:omics:sync": "dart run scripts/dart/bq_omics_pharmacovigilance_sync.dart",
     "kaggle:release": "dart run scripts/dart/kaggle_release_pipeline.dart",
     "finops:guard": "dart run scripts/dart/finops_competitive_guard.dart",
+    "finops:teardown": "node --no-deprecation scripts/teardown-gcp-idle-burn.mjs",
     "ip:guard": "dart run scripts/dart/ip_sovereignty_guard.dart",
     "font:inspect": "dart run scripts/dart/inspect_font_metrics.dart",
     "dart:submissions": "dart run scripts/dart/package_submissions.dart",
