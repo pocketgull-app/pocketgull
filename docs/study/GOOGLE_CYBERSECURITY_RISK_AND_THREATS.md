@@ -96,3 +96,27 @@ $$\text{Risk} = \text{Likelihood of a Threat} \times \text{Impact on CIA Triad}$
   * **XZ Utils (`CVE-2024-3094`)**: Multi-year social-engineering maintainer takeover injecting an `sshd` backdoor into build tarballs $\rightarrow$ why `A03:2025` Supply Chain & SLSA provenance exist.
   * **Polyfill.io Supply-Chain Attack (`2024`)**: Third-party CDN domain ownership transfer serving malicious JS to 100k+ sites $\rightarrow$ why Domain 10 bans external script CDNs (`polyfill.io`) and enforces CSP `strict-dynamic` nonces.
   * **MOVEit Transfer (`CVE-2023-34362`) & Citrix Bleed (`CVE-2023-4966`)**: Mass SQLi exfiltration & MFA-bypassing session memory bleed $\rightarrow$ why Pocket Gull avoids centralized PHI databases (`Risk Avoidance`) and binds short-lived ephemeral tokens in memory.
+
+---
+
+## 6. NIST SP 2400-102e2026: Adversarial ML & Agentic SI Taxonomy (Domain 12 in `audit:org`)
+
+Published in November 2026 by the **NIST Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)** (*Vassilev, Oprea, Fordyce, Davies, & Hamin*, `DOI: 10.6028/NIST.SP.2400-102e2026.ipd`), **NIST SP 2400-102** elevates **Agentic SI** (*Task Instructions $\rightarrow$ Planning $\rightarrow$ Execution $\rightarrow$ Observation*) alongside **Predictive ML (`PredML`)** and **Generative SI (`GenSI`)** as a first-class threat taxonomy (`NISTAML.061–067`).
+
+### 6.1 Agentic SI & Frontier Attack Taxonomy (`NISTAML.015–067`)
+
+| NIST SP 2400-102 ID | Attack Classification | Core Threat Mechanism | Pocket Gull Architectural Mitigation |
+| :--- | :--- | :--- | :--- |
+| **`NISTAML.015` / `.018`** | **Indirect & Direct Prompt Injection** | Adversarial directives embedded in untrusted clinical documents or user turns hijack instructions. | Static `systemInstruction` isolation + `[CLINICAL DIRECTIVE CONTEXT]` partitioning in `src/server/routes/ai.routes.ts`. |
+| **`NISTAML.031`** | **Model Extraction & Adversarial Distillation** | Coordinated API querying to clone proprietary reasoning traces (Sept 2026 NSA/CISA/FBI Joint Advisory). | Enforced anti-distillation governance in `scripts/msa_governance_guard.mjs` + Vertex AI HIPAA BAA routing. |
+| **`NISTAML.061` & `.067`** | **Agent Hijacking & Decomposition Attacks** | Subverting multi-step planning or splitting harmful objectives into benign-looking subtasks across turns. | Deterministic emergency red-flag precedence (`BE-FAST`, `ACS`, `SpO2 < 90%`, `C-SSRS`) before any LLM call + clinician-in-the-loop CDS gating. |
+| **`NISTAML.062`** | **Memory Poisoning** (*AgentPoison / MemoryGraft*) | Dormant "Trojan Hippo" payloads planted in persistent agent memory that activate in later sessions. | Ephemeral Angular Signal lifecycle, `MAX_CHAT_SESSIONS` cap, and 1-click `purge_transient_patient_state` reset (`SECURITY.md`). |
+| **`NISTAML.063`** | **Malicious Tools & Rogue MCP Servers** | *Tool Poisoning* hidden in tool metadata during Planning, Execution IPI, or post-approval *MCP Rug Pulls*. | Domain 12 Unicode Tag / override scanner on `src/services/webmcp-registration.service.ts` + Mandiant M-of-N Dual-Custody step-up. |
+| **`NISTAML.064`** | **Malicious Skills (`SKILL.md` Bundles)** | Procedural instructions or bundled scripts treated as trusted agent guidance exfiltrating secrets or altering code. | Automated Domain 12 supply-chain integrity scan across all `.agents/skills/**/SKILL.md` bundles in `npm run audit:org`. |
+| **`NISTAML.065` & `.066`** | **Malicious Agents & Resource Exhaustion** | Inter-agent message tampering, prompt worms, stalling tools, or unbounded reasoning token loops. | `AbortController` execution timeouts on WebMCP tools + `thinkingBudget <= 2048` token clamp. |
+
+---
+
+### 6.2 Foundational Theorems & Edge Hardware Takeaways (Sections 4.4, 5.1.1.1 & 5.2.4)
+* **The Gödelian Limits of SI Security (`Sec. 5.1.1.1`, *Vassilev 2026*)**: Proves via Gödel's incompleteness theorem that **no finite set of LLM prompt guardrails or safety training can be universally complete and consistent** against open-ended inputs. Therefore, high-assurance clinical systems must never rely on model refusal alone—they require **system-level information-flow control (`Sec. 4.4`: *CaMeL, ACE, FIDES*)**, deterministic hard-coded physiological red-flag interceptors, and explicit **Gödel Incompleteness Bound** disclosures (`SECURITY.md`).
+* **Quantized Edge Model Integrity (`Sec. 5.2.4` & `NISTAML.051`)**: Compressing models to `4-bit` / `8-bit` weights for local edge execution can amplify decision-boundary drift or trigger *quantization-activated Trojans* invisible in `FP32` audits. Pocket Gull stamps cryptographic `SHA-256` `integrityDigest` seals on quantized clinical edge weights in `scripts/train_clinical_edge_model.py` and pairs edge triage with deterministic TypeScript fallbacks.

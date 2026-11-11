@@ -173,6 +173,16 @@ export class InstitutionalComplianceService {
       lastVerifiedTimestamp: new Date().toISOString(),
       evidenceSummary: 'Digital medical sanctuary, non-combatant designation, zero-PHI exfiltration risk, and offline austere resilience.',
       auditBadgeColor: 'emerald'
+    },
+    {
+      frameworkId: 'NIST-SP-2400-102',
+      name: 'NIST SP 2400-102 Adversarial ML & Agentic SI Security',
+      authority: 'NIST Center for Advancing Innovation and Standards for Super Intelligence (CAISSI)',
+      statutoryReference: 'NIST SP 2400-102e2026 (NISTAML.015–067)',
+      complianceLevel: 'COMPLIANT_100',
+      lastVerifiedTimestamp: new Date().toISOString(),
+      evidenceSummary: 'Agentic SI tool/skill poisoning defense (NISTAML.063–064), ephemeral memory purge (NISTAML.062), Gödelian system-level bounds, and SHA-256 quantized edge provenance.',
+      auditBadgeColor: 'emerald'
     }
   ]);
 

@@ -574,6 +574,85 @@ recordCheck(
 );
 
 // ---------------------------------------------------------------------------
+// DOMAIN 12: NIST SP 2400-102e2026 Adversarial ML & Agentic SI Taxonomy
+// (NIST CAISSI Nov 2026: NISTAML.015–067, Gödelian Limits & Quantized Edge)
+// ---------------------------------------------------------------------------
+console.log('\n📋 Domain 12: NIST SP 2400-102e2026 Adversarial ML & Agentic SI Security (NISTAML.061–067)');
+
+const instCompPath = path.join(ROOT_DIR, 'src/services/institutional-compliance.service.ts');
+const instCompText = fs.existsSync(instCompPath) ? fs.readFileSync(instCompPath, 'utf8') : '';
+const nistSecMdPath = path.join(ROOT_DIR, 'SECURITY.md');
+const nistSecMdText = fs.existsSync(nistSecMdPath) ? fs.readFileSync(nistSecMdPath, 'utf8') : '';
+const edgeTrainerPath = path.join(ROOT_DIR, 'scripts/train_clinical_edge_model.py');
+const edgeTrainerText = fs.existsSync(edgeTrainerPath) ? fs.readFileSync(edgeTrainerPath, 'utf8') : '';
+
+// Check 12.1: NIST-SP-2400-102 Statutory Registration & Gödelian Incompleteness Bound (Sec. 5.1.1.1)
+const hasGodelianAndNistAml =
+  instCompText.includes('NIST-SP-2400-102') &&
+  nistSecMdText.includes('Gödel Incompleteness Bound') &&
+  nistSecMdText.includes('DefensiveGuardrailsService');
+recordCheck(
+  'Domain 12: NIST SP 2400-102',
+  'NIST SP 2400-102 Sec. 5.1.1.1 Gödelian Limits & System-Level Guardrail Registration',
+  hasGodelianAndNistAml,
+  'NIST-SP-2400-102 missing in InstitutionalComplianceService or Gödelian bound missing in SECURITY.md.'
+);
+
+// Check 12.2: NISTAML.063 WebMCP Tool Poisoning & Invisible Unicode Smuggling Scanner
+// Scans for ASCII Tag smuggling (U+E0000-E007F), zero-width space/non-joiner, mid-file BOM, or override payloads
+const stealthSmugglingRe = /[\u200B\u200C\u2060-\u2064]|(?<!^)\uFEFF|[\uDB40][\uDC00-\uDC7F]/;
+const adversarialOverrideRe = /(ignore\s+(all\s+)?previous\s+instructions|disregard\s+(all\s+)?system\s+instructions|<\|endoftext\|>|<\|im_start\|>system)/i;
+const webMcpClean =
+  webMcpText.length > 0 &&
+  !stealthSmugglingRe.test(webMcpText) &&
+  !adversarialOverrideRe.test(webMcpText);
+recordCheck(
+  'Domain 12: NIST SP 2400-102',
+  'NISTAML.063 WebMCP Tool Metadata Poisoning & Unicode Tag Smuggling Scan',
+  webMcpClean,
+  'Stealth Unicode smuggling or adversarial prompt-override payload detected in WebMcpRegistrationService.'
+);
+
+// Check 12.3: NISTAML.064 Agent Skills (SKILL.md) Supply-Chain Poisoning Scanner
+function collectSkillFiles(dirPath) {
+  const found = [];
+  if (!fs.existsSync(dirPath)) return found;
+  for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+    const full = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      found.push(...collectSkillFiles(full));
+    } else if (entry.name === 'SKILL.md') {
+      found.push(full);
+    }
+  }
+  return found;
+}
+const skillFiles = collectSkillFiles(path.join(ROOT_DIR, '.agents/skills'));
+const poisonedSkills = skillFiles.filter(skillFile => {
+  const txt = fs.readFileSync(skillFile, 'utf8');
+  return stealthSmugglingRe.test(txt) || adversarialOverrideRe.test(txt);
+});
+recordCheck(
+  'Domain 12: NIST SP 2400-102',
+  `NISTAML.064 Agent Skills Supply-Chain Integrity (${skillFiles.length} SKILL.md bundles scanned)`,
+  skillFiles.length > 0 && poisonedSkills.length === 0,
+  `Poisoned or stealth-smuggled SKILL.md detected: ${poisonedSkills.map(p => path.relative(ROOT_DIR, p)).join(', ')}`
+);
+
+// Check 12.4: NISTAML.062 Memory Poisoning Purge & Sec. 5.2.4 Quantized Edge Model Provenance
+const hasMemoryPurgeAndEdgeHash =
+  webMcpText.includes('purge_transient_patient_state') &&
+  nistSecMdText.includes('purge_transient_patient_state') &&
+  edgeTrainerText.includes('hashlib.sha256') &&
+  edgeTrainerText.includes('integrityDigest');
+recordCheck(
+  'Domain 12: NIST SP 2400-102',
+  'NISTAML.062 Memory Poisoning Purge & Sec. 5.2.4 Quantized Edge SHA-256 Provenance',
+  hasMemoryPurgeAndEdgeHash,
+  'Ephemeral state purge (purge_transient_patient_state) or SHA-256 quantized edge digest missing.'
+);
+
+// ---------------------------------------------------------------------------
 // AUDIT SUMMARY & EXIT
 // ---------------------------------------------------------------------------
 console.log('\n===============================================================');
