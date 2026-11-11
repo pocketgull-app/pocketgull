@@ -177,14 +177,73 @@ export function createBillingRouter() {
           },
           quantity: 1,
         }];
+      } else if (tier === 'botanica_pro') {
+        mode = 'payment';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Botanica™ v3 — Herbarium Pro Pack (Commercial License)',
+              description: 'Desktop TTF + Web WOFF2 + 6 Standalone Herbarium SVG Vector Plates (U+2766..U+2698) + 3-Workstation Perpetual Commercial EULA. 100% funds free clinical & Indigenous typography.',
+              tax_code: 'txcd_10501000',
+            },
+            unit_amount: 2900,
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'kintsugi_pro') {
+        mode = 'payment';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Kintsugi™ v2 — 24k Gold COLR & Eco-Ink Pro Pack',
+              description: 'Includes OpenType COLR/CPAL 4-Palette 24k Urushi Gold-Seam Color Font (PocketGull-KintsugiGold.ttf) + Kintsugi v2 (-45.8% Eco-Ink LCA Certificate) + 3-Workstation Perpetual Commercial EULA.',
+              tax_code: 'txcd_10501000',
+            },
+            unit_amount: 2900,
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'artisan_duo_patron') {
+        mode = 'payment';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Artisan Duo™ (Botanica + Kintsugi 24k Gold) & Foundry Patron Pass',
+              description: 'Complete Artisan Studio Bundle: Kintsugi 24k Gold COLR/CPAL Color Font + Botanica v3 + 6 Herbarium SVG Plates + 10-Workstation Commercial EULA + Foundry Patron Recognition.',
+              tax_code: 'txcd_10501000',
+            },
+            unit_amount: 4900,
+          },
+          quantity: 1,
+        }];
+      } else if (tier === 'foundry_agency') {
+        mode = 'payment';
+        lineItems = [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'PocketGull Artisan Foundry — Unlimited Agency, Brand & Print License',
+              description: 'Unlimited workstations, unlimited web views, commercial app/game embedding, Kintsugi 24k Gold COLR + Botanica v3 SVG Suite, and full IP Indemnification Certificate.',
+              tax_code: 'txcd_10501000',
+            },
+            unit_amount: 19900,
+          },
+          quantity: 1,
+        }];
       } else {
-        return res.status(400).json({ error: 'A valid priceId or tier (founder_lifetime, clinic_annual, clinic_onboarding, clinic_pro_monthly, academic, enterprise) is required.' });
+        return res.status(400).json({ error: 'A valid priceId or tier (founder_lifetime, clinic_annual, clinic_onboarding, clinic_pro_monthly, academic, enterprise, botanica_pro, kintsugi_pro, artisan_duo_patron, foundry_agency) is required.' });
       }
 
       // Check if Stripe key is configured or in simulated mode
       const stripeKey = process.env['STRIPE_SECRET_KEY'];
       if (!stripeKey || stripeKey === 'sk_test_placeholder') {
-        const fallbackUrl = `https://pocketgull.app/?checkout_tier=${encodeURIComponent(String(tier || 'pro'))}&status=simulated_checkout`;
+        const isAllowedReturnHost = typeof successUrl === 'string' && /^https:\/\/([a-z0-9-]+\.)?pocketgull\.(com|app)(\/|$)/i.test(successUrl);
+        const fallbackUrl = isAllowedReturnHost
+          ? String(successUrl).replace('{CHECKOUT_SESSION_ID}', 'cs_simulated_' + Date.now())
+          : `https://pocketgull.app/?checkout_tier=${encodeURIComponent(String(tier || 'pro'))}&status=simulated_checkout`;
         if (isGet) {
           return res.redirect(303, fallbackUrl);
         }
