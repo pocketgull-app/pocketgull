@@ -11,12 +11,12 @@ describe('IpPatentRegistryService', () => {
     service = TestBed.inject(IpPatentRegistryService);
   });
 
-  it('should initialize with all 20 patent claim clusters', () => {
-    expect(service.totalClusters()).toBe(20);
+  it('should initialize with all 24 patent claim clusters', () => {
+    expect(service.totalClusters()).toBe(24);
   });
 
-  it('should sum exactly 400 total staked patent claims', () => {
-    expect(service.totalClaims()).toBe(400);
+  it('should sum exactly 480 total staked patent claims', () => {
+    expect(service.totalClaims()).toBe(480);
   });
 
   it('should load all 9 core statutory copyright, invention, and open pledge clauses', () => {
@@ -25,13 +25,13 @@ describe('IpPatentRegistryService', () => {
 
   it('should return complete patent summary with charter document link', () => {
     const summary = service.getPatentSummary();
-    expect(summary.totalClaimClusters).toBe(20);
-    expect(summary.totalClaimsCount).toBe(400);
-    expect(summary.lastUpdated).toBe('2026-10-09');
+    expect(summary.totalClaimClusters).toBe(24);
+    expect(summary.totalClaimsCount).toBe(480);
+    expect(summary.lastUpdated).toBe('2026-11-08');
     expect(summary.charterDocumentPath).toBe('docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md');
     expect(summary.clausesDocumentPath).toBe('docs/legal/INVENTION_ASSIGNMENT_AND_COPYRIGHT_CLAUSES.md');
     expect(summary.pledgeDocumentPath).toBe('docs/patents/OPEN_PATENT_PLEDGE_AND_RESEARCH_COVENANT.md');
-    expect(summary.clusters.length).toBe(20);
+    expect(summary.clusters.length).toBe(24);
     expect(summary.statutoryClauses.length).toBe(9);
   });
 
@@ -73,6 +73,38 @@ describe('IpPatentRegistryService', () => {
     expect(cluster?.clusterNumber).toBe(20);
     expect(cluster?.claimRange).toBe('Claims 381 – 400');
     expect(cluster?.title).toContain('Transgenerational Epigenetics');
+  });
+
+  it('should retrieve cluster 21 J++ mechanistic interpretability and drift calibrator', () => {
+    const cluster = service.getClusterById('cluster-21-jpp-drift-calibrator');
+    expect(cluster).toBeDefined();
+    expect(cluster?.clusterNumber).toBe(21);
+    expect(cluster?.claimRange).toBe('Claims 401 – 420');
+    expect(cluster?.title).toContain('J++ Mechanistic Interpretability');
+  });
+
+  it('should retrieve cluster 22 PG3D SFNT and scotopic psychophysics typefoundry', () => {
+    const cluster = service.getClusterById('cluster-22-pg3d-sfnt-scotopic-typefoundry');
+    expect(cluster).toBeDefined();
+    expect(cluster?.clusterNumber).toBe(22);
+    expect(cluster?.claimRange).toBe('Claims 421 – 440');
+    expect(cluster?.title).toContain('PG3D Custom OpenType SFNT');
+  });
+
+  it('should retrieve cluster 23 SMoE UI self-repair and gVisor substrate checkpointing', () => {
+    const cluster = service.getClusterById('cluster-23-smoe-ui-self-repair-substrate');
+    expect(cluster).toBeDefined();
+    expect(cluster?.clusterNumber).toBe(23);
+    expect(cluster?.claimRange).toBe('Claims 441 – 460');
+    expect(cluster?.title).toContain('Sparse Mixture-of-Experts');
+  });
+
+  it('should retrieve cluster 24 NECSI multiscale variety and Rust WASM Int8 kernel', () => {
+    const cluster = service.getClusterById('cluster-24-necsi-multiscale-variety-wasm');
+    expect(cluster).toBeDefined();
+    expect(cluster?.clusterNumber).toBe(24);
+    expect(cluster?.claimRange).toBe('Claims 461 – 480');
+    expect(cluster?.title).toContain('NECSI Multiscale Variety');
   });
 
   it('should retrieve specific cluster by cluster number', () => {
@@ -132,6 +164,6 @@ describe('IpPatentRegistryService', () => {
     expect(pledgeMd).toContain('Defensive Termination Condition');
     expect(pledgeMd).toContain('35 U.S.C. § 102(a)(1)');
     expect(pledgeMd).toContain('Phil Gear');
-    expect(pledgeMd).toContain('all 20 Invention Clusters, Claims 1–400');
+    expect(pledgeMd).toContain('all 24 Invention Clusters, Claims 1–480');
   });
 });

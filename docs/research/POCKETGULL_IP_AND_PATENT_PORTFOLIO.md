@@ -9,12 +9,16 @@ This document outlines the proprietary algorithmic architectures, trade secrets,
 
 ```mermaid
 graph TD
-    PG[PocketGull Core IP Portfolio] --> INV1[Invention 1: Popperian Epistemological AI Verifier]
-    PG --> INV2[Invention 2: Zero-Egress WebGPU Optical Bio-Signals]
-    PG --> INV3[Invention 3: Stackelberg Adherence Incentive Engine]
-    PG --> INV4[Invention 4: Hardware-Bound Biometric Crypto-Ink]
-    PG --> INV5[Invention 5: Tri-Paradigm Swarm Knowledge Arbiter]
-    PG --> INV6[Invention 6: Dual-Custody Anti-Whaling Clinical Guard]
+    PG["PocketGull Core IP Portfolio (24 Clusters / 480 Claims)"] --> INV1["Invention 1: Popperian Epistemological AI Verifier"]
+    PG --> INV2["Invention 2: Zero-Egress WebGPU Optical Bio-Signals"]
+    PG --> INV3["Invention 3: Stackelberg Adherence Incentive Engine"]
+    PG --> INV4["Invention 4: Hardware-Bound Biometric Crypto-Ink"]
+    PG --> INV5["Invention 5: Tri-Paradigm Swarm Knowledge Arbiter"]
+    PG --> INV6["Invention 6: Dual-Custody Anti-Whaling Clinical Guard"]
+    PG --> INV11["Invention 11: J++ Lens & 12-Pole Clinical Drift Calibrator"]
+    PG --> INV12["Invention 12: PG3D SFNT Binary Table & Scotopic Typefoundry"]
+    PG --> INV13["Invention 13: SMoE UI Self-Repair & gVisor Substrate Envelope"]
+    PG --> INV14["Invention 14: NECSI Multiscale Variety, CSD & Rust WASM Int8"]
 ```
 
 ---
@@ -167,6 +171,38 @@ An enterprise Discovery Engine RAG architecture fully decoupled from legacy thir
 
 ---
 
+## 🧭 Invention 11: J++ Mechanistic Interpretability Lens & 12-Pole Clinical Activation Steering Calibrator (Cluster 21, Claims 401–420)
+*Primary Code Artifacts*: [`src/services/interpretability/clinical-drift-calibrator.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/interpretability/clinical-drift-calibrator.service.ts), [`src/components/modals/clinical-drift-calibrator-hud.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/modals/clinical-drift-calibrator-hud.component.ts), [`scripts/preflight_drift_self_heal_gate.mjs`](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/preflight_drift_self_heal_gate.mjs)
+
+### 11.1 Technical Abstract
+A real-time mechanistic interpretability and conversational drift mitigation system that projects multi-turn LLM residual stream representations onto 6 contrastive clinical behavioral axes (12 radial poles: Epistemic Rigor vs. Sycophancy, Hypothesis Exploration vs. Diagnostic Anchoring, Salutogenic Calm vs. Catastrophizing, 4-Slot Chunking vs. Cognitive Overload, Empathetic Kinship vs. Detachment, and Scope Humility vs. Prescription Overreach). Evaluates Jacobian-decoupled J++ layer projections and autonomously applies linear activation steering ($h' = h - \alpha \cdot \hat{v}_{\text{drift}} + \beta \cdot \hat{v}_{\text{healthy}}$) while preserving KV-cache prefix integrity.
+
+---
+
+## 🏛️ Invention 12: `PG3D` Custom OpenType SFNT 3D Binary Table & Scotopic Psychophysics Typefoundry Engine (Cluster 22, Claims 421–440)
+*Primary Code Artifacts*: [`src/engine/typography/pg3d-sfnt-table.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/engine/typography/pg3d-sfnt-table.ts), [`src/engine/typography/pocketgull-clinical.fea`](file:///c:/Users/philg/Pocketgull/pocketgull/src/engine/typography/pocketgull-clinical.fea), [`adapters/pocketgull-core/src/glyph_3d.rs`](file:///c:/Users/philg/Pocketgull/pocketgull/adapters/pocketgull-core/src/glyph_3d.rs), [`packages/pocketgull-go/internal/glyph3d/glyph3d.go`](file:///c:/Users/philg/Pocketgull/pocketgull/packages/pocketgull-go/internal/glyph3d/glyph3d.go), [`adapters/pocketgull-apple/Sources/PocketGullApple/PocketGullGlyph3D.swift`](file:///c:/Users/philg/Pocketgull/pocketgull/adapters/pocketgull-apple/Sources/PocketGullApple/PocketGullGlyph3D.swift)
+
+### 12.1 Technical Abstract
+A font-embedded clinical safety and 3D anatomical glyph architecture packing a custom 4-byte OpenType SFNT binary table (`PG3D`, tag `0x50473344`) containing pre-triangulated 1,000-UPM ear-clipped 3D GPU index buffers, SNOMED-CT/LOINC bindings, and FDA 21 CFR Part 11 SHA-256 digests directly inside the font binary. Pairs `GSUB` ISMP contextual decimal traps (`.5 mg` $\rightarrow$ `0.5 mg`), ACR/NEMA DICOM Part 14 GSDF luminance LUTs, and Helmholtz $-3.75\%$ `GRAD` scotopic irradiation compensation with zero `HVAR` layout reflow across 6 polyglot runtimes (TypeScript, Rust, Go, Python, Dart, Swift).
+
+---
+
+## 🛡️ Invention 13: Autonomous Sparse Mixture-of-Experts (SMoE) UI Self-Repair & Zero-Secret gVisor Substrate Checkpointing (Cluster 23, Claims 441–460)
+*Primary Code Artifacts*: [`src/services/ui-self-repair.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ui-self-repair.service.ts), [`src/server/substrate-checkpoint.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/server/substrate-checkpoint.ts), [`src/components/ui-self-repair-hud.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/ui-self-repair-hud.component.ts)
+
+### 13.1 Technical Abstract
+An autonomous self-healing clinical UI and actor hibernation system utilizing a Top-$k$ ($k=2$) Sparse Mixture-of-Experts (SMoE) fault router to repair WCAG AAA contrast deficits, $44\times 44\text{ px}$ Fitts touch targets, WebGL context losses, and 4-slot working-memory overflows in real time. Couples client self-repair with SPIFFE X.509 / gVisor zero-secret substrate checkpoint envelopes (`zeroCredentialsInSandbox: true`) gated by timing-safe SHA-256 verification and $M$-of-$N$ FIDO2 WebAuthn dual-custody restoration.
+
+---
+
+## 🧬 Invention 14: NECSI Multiscale Variety Matching, Critical Slowing Down Early-Warning & Hermetic Rust WASM Int8 Kernel (Cluster 24, Claims 461–480)
+*Primary Code Artifacts*: [`src/services/necsi-complex-systems.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/necsi-complex-systems.service.ts), [`src/services/ai/rust-wasm-compute.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ai/rust-wasm-compute.service.ts), [`packages/pocketgull-wasm-kernel/src/lib.rs`](file:///c:/Users/philg/Pocketgull/pocketgull/packages/pocketgull-wasm-kernel/src/lib.rs)
+
+### 14.1 Technical Abstract
+A complex-systems clinical resilience engine implementing Yaneer Bar-Yam's generalized Ashby multiscale requisite variety ($V_{\text{care}}(s) \ge V_{\text{acuity}}(s)$), Critical Slowing Down ($\text{CSD}$) lag-1 autocorrelation ($\rho_1$) and recovery rate ($\lambda = -\ln\max(\epsilon, |\rho_1|)$) early-warning detection with Bartlett two-tailed $H_0$ falsification, and comorbidity percolation firebreaks ($p_c = 1/(\langle k \rangle - 1)$). Accelerated by a zero-addon `wasm32-unknown-unknown` Rust WebAssembly kernel executing Int8 symmetric cosine similarity and 32-bit FNV-1a Part 11 integrity digests in sub-millisecond client memory.
+
+---
+
 ## 📋 Comprehensive IP Summary & Recommended Action Plan
 
 | Invention Area | Patent Readiness | Key Differentiator | Recommended Target |
@@ -177,8 +213,12 @@ An enterprise Discovery Engine RAG architecture fully decoupled from legacy thir
 | **Biometric Crypto-Ink Attestation** | **Ready for Provisional Filing** | Hardware stylus 6-axis sensor fusion bound into SHA-256 Merkle living will proofs. | USPTO Utility Patent + Wacom / Carin Alliance Integration |
 | **Tri-Paradigm Swarm Arbiter** | **Trade Secret / Open Core** | Multi-agent metabolic contraindication mapping across Allopathic, TCM, and Ayurvedic paradigms. | Open Core SDK + NIH NCATS Grant Track |
 | **Dual-Custody Anti-Whaling Guard** | **Trade Secret / Defense** | $M$-of-$N$ multi-signature gatekeeper preventing unilateral AI-mediated hospital state changes. | Enterprise Hospital CISO Compliance Spec |
-| **Optotypic Clinical Typefoundry** | **Registered / Protected** | ISMP slashed-zero dosage stroke disambiguation; LogMAR 0.0 optical calibration ($242K COCOMO II). | U.S. Copyright Form VA + USPTO Design Patent |
+| **Optotypic Clinical Typefoundry** | **Registered / Protected** | ISMP slashed-zero dosage stroke disambiguation; LogMAR 0.0 optical calibration (\$242K COCOMO II). | U.S. Copyright Form VA + USPTO Design Patent |
 | **Gemma 4 Fast-Loop Edge Runtime** | **Ready for Provisional Filing** | Sub-50ms on-device Prompt API & ISMP proofreading; 93% gross margin via zero cloud inference toll. | USPTO Utility Patent + Google Built-in AI Partner Showcase |
 | **Volumetric DICOM Abnormality ML** | **Trade Secret / Open Science** | Leak-free `GroupKFold` multi-slice DICOM scoring with Asymmetric Loss and Bayesian prior calibration. | Kaggle Grandmaster Benchmark + RSNA Grant Track |
 | **Decoupled Vertex AI Search RAG** | **Enterprise Commercial** | Native enterprise Discovery Engine RAG with offline CEBM Level 1 consensus and FHIR R4 bridging. | Google Cloud Partner Advantage Program |
+| **J++ Lens & 12-Pole Drift Calibrator** | **Ready for Provisional Filing** | Difference-in-Means 12-pole clinical drift detection and autonomous activation steering ($h' = h - \alpha\hat{v}_{\text{drift}} + \beta\hat{v}_{\text{healthy}}$). | USPTO Utility Patent (`PG-PAT-2026-DRIFT-001`) + FDA CDRH |
+| **`PG3D` SFNT 3D & Scotopic Typefoundry** | **Ready for Provisional Filing** | Custom `0x50473344` SFNT binary table packing 1000-UPM GPU meshes, DICOM GSDF LUTs, and $-3.75\%$ `GRAD` zero-reflow dark mode. | USPTO Utility & Design Patent (`PG-PAT-2026-PG3D-001`) |
+| **SMoE UI Self-Repair & gVisor Substrate** | **Ready for Provisional Filing** | Top-2 Sparse Mixture-of-Experts DOM/WebGL self-healing paired with SPIFFE X.509 zero-secret gVisor actor hibernation. | USPTO Utility Patent (`PG-PAT-2026-SMOE-001`) + NIST |
+| **NECSI Multiscale Variety & Rust WASM** | **Ready for Provisional Filing** | Ashby multiscale variety matching, CSD lag-1 tipping-point alerts, and zero-addon `wasm32` Int8 cosine kernel. | USPTO Utility Patent (`PG-PAT-2026-NECSI-001`) + NIH NIGMS |
 

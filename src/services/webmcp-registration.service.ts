@@ -1843,7 +1843,7 @@ export class WebMcpRegistrationService {
     const ipCtrl = new AbortController();
     const ipTool = {
       name: 'get_staked_patent_claims_summary',
-      description: 'Returns a summary of PocketGull 200 formal staked patent claims across 10 core invention clusters and 7 statutory copyright & invention clauses.',
+      description: 'Returns a summary of PocketGull 480 formal staked patent claims across 24 core invention clusters and 9 statutory copyright & invention clauses.',
       inputSchema: {
         type: 'object',
         properties: {
