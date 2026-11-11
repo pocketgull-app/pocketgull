@@ -1,16 +1,19 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: Apache-2.0
 
 /**
  * PocketGull System Controller
- * Unified Theme, Typography & Cognitive Ergonomics (Philocardia & Bionic Reading) Switcher.
- * Coordinates Antigravity IDE, Windows System Theme, Windows Terminal, and Oh My Posh.
+ * Unified Theme, Typography, Cursor & Cognitive Ergonomics (Philocardia & Bionic Reading) Switcher.
+ * Coordinates Antigravity IDE, Windows System Theme, Taskbars, Peripherals, and Oh My Posh.
  */
 
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { execSync, spawn } from 'child_process';
 
-const WORKSPACE_DIR = process.cwd();
+const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
+const WORKSPACE_DIR = path.resolve(SCRIPT_DIR, '..');
 const SETTINGS_PATH = path.join(WORKSPACE_DIR, '.vscode', 'settings.json');
 const STATE_PATH = path.join(WORKSPACE_DIR, '.pocketgull_a11y.json');
 const LOCALAPPDATA = process.env.LOCALAPPDATA || 'C:\\Users\\philg\\AppData\\Local';
@@ -40,6 +43,9 @@ const THEME_MAP = {
     mode: 'light',
     colorization: '0xC40D9488',
     omp: OMP_WASHI,
+    cursor: 'ophthalmic',
+    huePreset: 'washi',
+    peripheralTheme: 'washi',
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Washi.theme'),
     description: 'Crisp Japanese rice paper aesthetic, optimal for high-ambient daylight reading.'
   },
@@ -48,6 +54,9 @@ const THEME_MAP = {
     mode: 'light',
     colorization: '0xC4B45309',
     omp: OMP_WASHI,
+    cursor: 'ophthalmic',
+    huePreset: 'hemp',
+    peripheralTheme: 'hemp',
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Washi.theme'),
     description: 'Natural organic fiber tone with warm sepia undertones for soft daytime focus.'
   },
@@ -56,6 +65,9 @@ const THEME_MAP = {
     mode: 'dark',
     colorization: '0xC40284C7',
     omp: OMP_OPHTHALMIC,
+    cursor: 'ophthalmic',
+    huePreset: 'hemp',
+    peripheralTheme: 'obsidian',
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Obsidian.theme'),
     description: 'Deep volcanic obsidian surface with WCAG AAA high-contrast cyan/emerald accents.'
   },
@@ -64,6 +76,9 @@ const THEME_MAP = {
     mode: 'dark',
     colorization: '0xC4DC2626',
     omp: OMP_SCOTOPIC,
+    cursor: 'scotopic',
+    huePreset: '670',
+    peripheralTheme: '670',
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Scotopic-650nm.theme'),
     description: 'Narrow-band 650-670nm red wavelength preserving retinal rhodopsin & melatonin.'
   },
@@ -72,6 +87,9 @@ const THEME_MAP = {
     mode: 'dark',
     colorization: '0xC4DC2626',
     omp: OMP_SCOTOPIC,
+    cursor: 'scotopic',
+    huePreset: '670',
+    peripheralTheme: '670',
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Scotopic-650nm.theme'),
     description: 'Narrow-band 650-670nm red wavelength preserving retinal rhodopsin & melatonin.'
   },
@@ -80,6 +98,9 @@ const THEME_MAP = {
     mode: 'dark',
     colorization: '0xC410B981',
     omp: OMP_CURIE,
+    cursor: 'ophthalmic',
+    huePreset: 'hemp',
+    peripheralTheme: 'obsidian',
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Obsidian.theme'),
     description: 'Radiant phosphorescent green on dark field commemorating Marie Curie laboratory notebooks.'
   },
@@ -88,6 +109,9 @@ const THEME_MAP = {
     mode: 'light',
     colorization: '0xC43E5C76',
     omp: OMP_RAMS,
+    cursor: 'ophthalmic',
+    huePreset: 'washi',
+    peripheralTheme: 'washi',
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Washi.theme'),
     description: 'Dieter Rams 10-principles functionalist Braun-inspired slate & warm cream palette.'
   },
@@ -96,6 +120,9 @@ const THEME_MAP = {
     mode: 'light',
     colorization: '0xC4008080',
     omp: OMP_WASHI,
+    cursor: 'ophthalmic',
+    huePreset: 'washi',
+    peripheralTheme: 'washi',
     themeFile: path.join(WIN_THEMES_DIR, 'PocketGull-Washi.theme'),
     description: 'NeXTcube CERN WorldWideWeb 1991 monochromatic hypermedia tribute.'
   }
@@ -111,28 +138,48 @@ const MEDICAL_PREFIXES = [
 ];
 
 function loadState() {
-  try {
-    if (fs.existsSync(STATE_PATH)) {
-      return JSON.parse(fs.readFileSync(STATE_PATH, 'utf8'));
-    }
-  } catch (e) {}
-  return {
+  const defaults = {
     philocardia: false,
     bionic: false,
     theme: 'hemp',
-    circadian: true
+    cursor: 'ophthalmic',
+    circadian: true,
+    ataxiaShield: true,
+    dragThresholdPx: 18
   };
+  try {
+    if (fs.existsSync(STATE_PATH)) {
+      return { ...defaults, ...JSON.parse(fs.readFileSync(STATE_PATH, 'utf8')) };
+    }
+  } catch (e) {}
+  return defaults;
 }
 
-function saveState(state) {
+function saveState(patch) {
   try {
-    fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2), 'utf8');
+    const merged = { ...loadState(), ...patch };
+    fs.writeFileSync(STATE_PATH, JSON.stringify(merged, null, 2), 'utf8');
+    return merged;
+  } catch (e) {
+    return patch;
+  }
+}
+
+function spawnDetachedPwsh(scriptPath, scriptArgs = []) {
+  if (!fs.existsSync(scriptPath)) return;
+  try {
+    spawn('pwsh.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', scriptPath, ...scriptArgs], {
+      cwd: WORKSPACE_DIR,
+      detached: true,
+      windowsHide: true,
+      stdio: 'ignore'
+    }).unref();
   } catch (e) {}
 }
 
 function updateVsCodeSettings(themeName) {
   try {
-    if (!fs.existsSync(SETTINGS_PATH)) return;
+    if (!fs.existsSync(SETTINGS_PATH)) return false;
     const content = fs.readFileSync(SETTINGS_PATH, 'utf8');
     const settings = JSON.parse(content);
     settings['workbench.colorTheme'] = themeName;
@@ -157,9 +204,78 @@ function applyWindowsRegistryTheme(target) {
   }
 }
 
-function applyTheme(key, applyFullWindowsTheme = false) {
-  const state = loadState();
-  const target = THEME_MAP[key.toLowerCase()];
+function applyCursorScheme(rawScheme) {
+  const scheme = (rawScheme || 'ophthalmic').toLowerCase();
+  const normalized = (scheme === '670' || scheme === 'scotopic') ? 'scotopic' : (scheme === 'default' ? 'default' : 'ophthalmic');
+  const cursorDir = path.join(LOCALAPPDATA, 'PocketGull', 'Cursors').replace(/\\/g, '\\\\');
+
+  const psScript = `
+    Add-Type -TypeDefinition @"
+    using System;
+    using System.Runtime.InteropServices;
+    public class WinCursorCtrl {
+        [DllImport(\\"user32.dll\\", SetLastError = true)]
+        public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, IntPtr pvParam, uint fWinIni);
+        public static void Refresh() {
+            SystemParametersInfo(0x0057, 0, IntPtr.Zero, 0x01 | 0x02);
+        }
+    }
+"@ -ErrorAction SilentlyContinue
+    $cursorsKey = "HKCU:\\Control Panel\\Cursors"
+    if ('${normalized}' -eq 'ophthalmic') {
+        Set-ItemProperty -Path $cursorsKey -Name "(default)" -Value "PocketGull Ophthalmic High-Contrast"
+        Set-ItemProperty -Path $cursorsKey -Name "Arrow" -Value "${cursorDir}\\pocketgull_ophthalmic_arrow.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "Hand" -Value "${cursorDir}\\pocketgull_ophthalmic_hand.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "IBeam" -Value "${cursorDir}\\pocketgull_ophthalmic_ibeam.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "Crosshair" -Value "${cursorDir}\\pocketgull_precision_cross.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "Wait" -Value "${cursorDir}\\pocketgull_philocardia_wait.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "AppStarting" -Value "${cursorDir}\\pocketgull_philocardia_wait.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "SizeNS" -Value "${cursorDir}\\pocketgull_ophthalmic_sizens.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "SizeWE" -Value "${cursorDir}\\pocketgull_ophthalmic_sizewe.cur"
+    } elseif ('${normalized}' -eq 'scotopic') {
+        Set-ItemProperty -Path $cursorsKey -Name "(default)" -Value "PocketGull Scotopic 650nm Red"
+        Set-ItemProperty -Path $cursorsKey -Name "Arrow" -Value "${cursorDir}\\pocketgull_scotopic_arrow.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "Hand" -Value "${cursorDir}\\pocketgull_scotopic_hand.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "IBeam" -Value "${cursorDir}\\pocketgull_scotopic_ibeam.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "Crosshair" -Value "${cursorDir}\\pocketgull_scotopic_cross.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "Wait" -Value "${cursorDir}\\pocketgull_philocardia_wait.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "AppStarting" -Value "${cursorDir}\\pocketgull_philocardia_wait.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "SizeNS" -Value "${cursorDir}\\pocketgull_scotopic_sizens.cur"
+        Set-ItemProperty -Path $cursorsKey -Name "SizeWE" -Value "${cursorDir}\\pocketgull_scotopic_sizewe.cur"
+    } else {
+        $eoaArrow = "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\arrow_eoa.cur"
+        if (Test-Path $eoaArrow) {
+            Set-ItemProperty -Path $cursorsKey -Name "(default)" -Value "Windows Black (EoA)"
+            Set-ItemProperty -Path $cursorsKey -Name "Arrow" -Value $eoaArrow
+            Set-ItemProperty -Path $cursorsKey -Name "Hand" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\hand_eoa.cur"
+            Set-ItemProperty -Path $cursorsKey -Name "IBeam" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\ibeam_eoa.cur"
+            Set-ItemProperty -Path $cursorsKey -Name "Crosshair" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\cross_eoa.cur"
+            Set-ItemProperty -Path $cursorsKey -Name "Wait" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\wait_eoa.cur"
+            Set-ItemProperty -Path $cursorsKey -Name "AppStarting" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\busy_eoa.cur"
+            Set-ItemProperty -Path $cursorsKey -Name "SizeNS" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\ns_eoa.cur"
+            Set-ItemProperty -Path $cursorsKey -Name "SizeWE" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\ew_eoa.cur"
+        } else {
+            Set-ItemProperty -Path $cursorsKey -Name "(default)" -Value "Windows Default"
+            foreach ($role in @('Arrow','Hand','IBeam','Crosshair','Wait','AppStarting','SizeNS','SizeWE')) {
+                Set-ItemProperty -Path $cursorsKey -Name $role -Value ""
+            }
+        }
+    }
+    [WinCursorCtrl]::Refresh()
+  `;
+
+  try {
+    execSync(`pwsh.exe -NoProfile -ExecutionPolicy Bypass -Command "${psScript}"`, { stdio: 'ignore' });
+    saveState({ cursor: normalized });
+    return normalized;
+  } catch (e) {
+    return null;
+  }
+}
+
+function applyTheme(key, applyFullScene = false) {
+  const normalizedKey = (key || 'hemp').toLowerCase();
+  const target = THEME_MAP[normalizedKey];
   if (!target) {
     console.log(`\n  ${ROSE}[ERROR]${RESET} Unknown theme '${key}'. Available: ${Object.keys(THEME_MAP).join(', ')}`);
     return;
@@ -167,40 +283,41 @@ function applyTheme(key, applyFullWindowsTheme = false) {
 
   // 1. Update Antigravity IDE
   updateVsCodeSettings(target.name);
-  
+
   // 2. Update Windows System Theme Personalization
   applyWindowsRegistryTheme(target);
 
-  // 3. If requested, apply full Windows .theme file
-  if (applyFullWindowsTheme && fs.existsSync(target.themeFile)) {
-    try {
-      execSync(`rundll32.exe themecpl.dll,OpenThemeAction "${target.themeFile}"`, { stdio: 'ignore' });
-    } catch (e) {}
+  // 3. Synchronize Dual Taskbars via Win32 Broadcast (non-blocking)
+  spawnDetachedPwsh(path.join(SCRIPT_DIR, 'refresh_taskbar_theme.ps1'), ['-Theme', normalizedKey]);
+
+  // 4. If full scene requested, also synchronize Cursor, Philips Hue & Razer/NZXT peripherals
+  if (applyFullScene) {
+    applyCursorScheme(target.cursor);
+    spawnDetachedPwsh(path.join(SCRIPT_DIR, 'sync_peripherals_lighting.ps1'), ['-Theme', target.peripheralTheme]);
+    spawnDetachedPwsh(path.join(SCRIPT_DIR, 'sync_hue_circadian.ps1'), ['-Preset', target.huePreset]);
   }
 
-  state.theme = key;
-  saveState(state);
+  saveState({ theme: normalizedKey === 'scotopic' ? '670' : normalizedKey });
 
   console.log(`\n  ${CYAN}⚕ POCKETGULL SYSTEM & WINDOWS THEME SWITCHER${RESET}`);
   console.log(`  ${DIM}─────────────────────────────────────────────────────────────────${RESET}`);
   console.log(`  Active Theme:    ${BOLD}${WASHI}${target.name}${RESET} [${target.mode.toUpperCase()}]`);
   console.log(`  Windows Surface: Mode=${target.mode.toUpperCase()}, Colorization=${target.colorization}`);
-  console.log(`  Windows Theme:   ${target.themeFile}`);
+  console.log(`  State Anchor:    ${STATE_PATH}`);
   console.log(`  Description:     ${SLATE}${target.description}${RESET}`);
-  console.log(`  Status:          ${GOLD}Synchronized across Antigravity IDE, Windows & Terminal${RESET}\n`);
+  console.log(`  Status:          ${GOLD}Synchronized across Antigravity IDE, Windows & Taskbars${applyFullScene ? ' + Cursors & Room Lighting' : ''}${RESET}\n`);
 }
 
 function togglePhilocardia(explicitState) {
-  const state = loadState();
-  state.philocardia = explicitState !== undefined ? explicitState : !state.philocardia;
-  saveState(state);
+  const current = loadState();
+  const next = explicitState !== undefined ? explicitState : !current.philocardia;
+  saveState({ philocardia: next });
 
   console.log(`\n  ${ROSE}🫀 PHILOCARDIA VAGAL RESONANCE (0.1 Hz)${RESET}`);
   console.log(`  ${DIM}─────────────────────────────────────────────────────────────────${RESET}`);
-  console.log(`  Status:        ${state.philocardia ? `${ROSE}${BOLD}ACTIVE (10s Mayer Wave Cycle Enabled)${RESET}` : `${SLATE}DISABLED (Normal Static)${RESET}`}`);
+  console.log(`  Status:        ${next ? `${ROSE}${BOLD}ACTIVE (10s Mayer Wave Cycle Enabled)${RESET}` : `${SLATE}DISABLED (Normal Static)${RESET}`}`);
   console.log(`  Physiology:    Synchronizes Heart Rate Variability (HRV) with respiratory sinus arrhythmia.`);
-  console.log(`  Pacing Cycle:  4.0s gentle expansion / 6.0s gentle relaxation (eliminates screen apnea).`);
-  console.log(`  Tip:           Run 'gull philocardia pace' for a live terminal breathing pacer.\n`);
+  console.log(`  Pacing Cycle:  4.0s gentle expansion / 6.0s gentle relaxation (eliminates screen apnea).\n`);
 }
 
 function runPhilocardiaPacer() {
@@ -220,12 +337,10 @@ function runPhilocardiaPacer() {
     let color = ROSE;
 
     if (t < inhaleSeconds) {
-      // Inhale: 0 -> 1
       progress = t / inhaleSeconds;
       phase = 'IN-BREATH (Expansion)';
       color = ROSE;
     } else {
-      // Exhale: 1 -> 0
       progress = 1 - ((t - inhaleSeconds) / (cycleSeconds - inhaleSeconds));
       phase = 'OUT-BREATH (Release)  ';
       color = COPPER;
@@ -240,14 +355,14 @@ function runPhilocardiaPacer() {
 }
 
 function toggleBionic(explicitState) {
-  const state = loadState();
-  state.bionic = explicitState !== undefined ? explicitState : !state.bionic;
-  saveState(state);
+  const current = loadState();
+  const next = explicitState !== undefined ? explicitState : !current.bionic;
+  saveState({ bionic: next });
 
   console.log(`\n  ${CYAN}👁️ BIONIC READING & SACCADIC GUIDANCE${RESET}`);
   console.log(`  ${DIM}─────────────────────────────────────────────────────────────────${RESET}`);
-  console.log(`  Status:        ${state.bionic ? `${CYAN}${BOLD}ACTIVE (Saccadic Fixation Anchors On)${RESET}` : `${SLATE}DISABLED${RESET}`}`);
-  console.log(`  Foveal Acuity: Anchors initial 40-50% morphemes; accelerates scanning speed by 30-50%.\n`);
+  console.log(`  Status:        ${next ? `${CYAN}${BOLD}ACTIVE (Saccadic Fixation Anchors On)${RESET}` : `${SLATE}DISABLED${RESET}`}`);
+  console.log(`  Foveal Acuity: Anchors initial 40-50% morphemes; reduces saccadic visual crowding.\n`);
 }
 
 function formatWordToBionic(word) {
@@ -291,11 +406,15 @@ const command = args[0] || 'menu';
 switch (command.toLowerCase()) {
   case 'theme':
     if (args[1]) {
-      const applyFull = args.includes('--system') || args.includes('-s');
+      const applyFull = args.includes('--system') || args.includes('-s') || args.includes('--scene');
       applyTheme(args[1], applyFull);
     } else {
-      console.log(`Usage: gull theme [${Object.keys(THEME_MAP).join('|')}] [--system]`);
+      console.log(`Usage: gull theme [${Object.keys(THEME_MAP).join('|')}] [--scene]`);
     }
+    break;
+
+  case 'scene':
+    applyTheme(args[1] || 'hemp', true);
     break;
 
   case 'philocardia':
@@ -318,121 +437,83 @@ switch (command.toLowerCase()) {
     break;
 
   case 'cursor': {
-    const scheme = (args[1] || 'ophthalmic').toLowerCase();
-    const cursorDir = path.join(LOCALAPPDATA, 'PocketGull', 'Cursors');
-    const psScript = `
-      Add-Type -TypeDefinition @"
-      using System;
-      using System.Runtime.InteropServices;
-      public class WinCursorCtrl {
-          [DllImport(\\"user32.dll\\", SetLastError = true)]
-          public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, IntPtr pvParam, uint fWinIni);
-          public static void Refresh() {
-              SystemParametersInfo(0x0057, 0, IntPtr.Zero, 0x01 | 0x02);
-          }
-      }
-"@
-      $cursorsKey = "HKCU:\\Control Panel\\Cursors"
-      if ('${scheme}' -eq 'ophthalmic') {
-          Set-ItemProperty -Path $cursorsKey -Name "(default)" -Value "PocketGull Ophthalmic High-Contrast"
-          Set-ItemProperty -Path $cursorsKey -Name "Arrow" -Value "${cursorDir.replace(/\\/g, '\\\\')}\\pocketgull_ophthalmic_arrow.cur"
-          Set-ItemProperty -Path $cursorsKey -Name "IBeam" -Value "${cursorDir.replace(/\\/g, '\\\\')}\\pocketgull_ophthalmic_ibeam.cur"
-          Set-ItemProperty -Path $cursorsKey -Name "Crosshair" -Value "${cursorDir.replace(/\\/g, '\\\\')}\\pocketgull_precision_cross.cur"
-          Set-ItemProperty -Path $cursorsKey -Name "Wait" -Value "${cursorDir.replace(/\\/g, '\\\\')}\\pocketgull_philocardia_wait.cur"
-          Set-ItemProperty -Path $cursorsKey -Name "AppStarting" -Value "${cursorDir.replace(/\\/g, '\\\\')}\\pocketgull_philocardia_wait.cur"
-      } elseif ('${scheme}' -eq 'scotopic' -or '${scheme}' -eq '670') {
-          Set-ItemProperty -Path $cursorsKey -Name "(default)" -Value "PocketGull Scotopic 650nm Red"
-          Set-ItemProperty -Path $cursorsKey -Name "Arrow" -Value "${cursorDir.replace(/\\/g, '\\\\')}\\pocketgull_scotopic_arrow.cur"
-          Set-ItemProperty -Path $cursorsKey -Name "IBeam" -Value "${cursorDir.replace(/\\/g, '\\\\')}\\pocketgull_scotopic_ibeam.cur"
-          Set-ItemProperty -Path $cursorsKey -Name "Crosshair" -Value "${cursorDir.replace(/\\/g, '\\\\')}\\pocketgull_precision_cross.cur"
-          Set-ItemProperty -Path $cursorsKey -Name "Wait" -Value "${cursorDir.replace(/\\/g, '\\\\')}\\pocketgull_philocardia_wait.cur"
-          Set-ItemProperty -Path $cursorsKey -Name "AppStarting" -Value "${cursorDir.replace(/\\/g, '\\\\')}\\pocketgull_philocardia_wait.cur"
-      } else {
-          $eoaArrow = "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\arrow_eoa.cur"
-          if (Test-Path $eoaArrow) {
-              Set-ItemProperty -Path $cursorsKey -Name "(default)" -Value "Windows Black (EoA)"
-              Set-ItemProperty -Path $cursorsKey -Name "Arrow" -Value $eoaArrow
-              Set-ItemProperty -Path $cursorsKey -Name "IBeam" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\ibeam_eoa.cur"
-              Set-ItemProperty -Path $cursorsKey -Name "Crosshair" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\cross_eoa.cur"
-              Set-ItemProperty -Path $cursorsKey -Name "Wait" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\wait_eoa.cur"
-              Set-ItemProperty -Path $cursorsKey -Name "AppStarting" -Value "$env:LOCALAPPDATA\\Microsoft\\Windows\\Cursors\\busy_eoa.cur"
-          } else {
-              Set-ItemProperty -Path $cursorsKey -Name "(default)" -Value "Windows Default"
-              Set-ItemProperty -Path $cursorsKey -Name "Arrow" -Value ""
-              Set-ItemProperty -Path $cursorsKey -Name "IBeam" -Value ""
-              Set-ItemProperty -Path $cursorsKey -Name "Crosshair" -Value ""
-              Set-ItemProperty -Path $cursorsKey -Name "Wait" -Value ""
-              Set-ItemProperty -Path $cursorsKey -Name "AppStarting" -Value ""
-          }
-      }
-      [WinCursorCtrl]::Refresh()
-    `;
-    try {
-      execSync(`pwsh.exe -NoProfile -ExecutionPolicy Bypass -Command "${psScript}"`, { stdio: 'ignore' });
+    const applied = applyCursorScheme(args[1] || 'ophthalmic');
+    if (applied) {
       console.log(`\n  ${CYAN}⚕ POCKETGULL CLINICAL CURSOR SCHEME${RESET}`);
       console.log(`  ${DIM}─────────────────────────────────────────────────────────────────${RESET}`);
-      console.log(`  Active Scheme: ${BOLD}${WASHI}${scheme.toUpperCase()}${RESET}`);
-      console.log(`  Target:        ${scheme === 'ophthalmic' ? 'Obsidian Core + 505nm Cyan Halo (WCAG AAA)' : scheme === 'scotopic' || scheme === '670' ? '650nm Monochromatic Deep Red (Melatonin Safe)' : 'Windows Default'}`);
+      console.log(`  Active Scheme: ${BOLD}${WASHI}${applied.toUpperCase()}${RESET}`);
+      console.log(`  Coverage:      Arrow, Hand (Link), I-Beam, Crosshair, Wait, SizeNS, SizeWE (64px ARGB)`);
+      console.log(`  Target:        ${applied === 'ophthalmic' ? 'Obsidian Core + 505nm Cyan Halo (WCAG AAA)' : applied === 'scotopic' ? '650nm Monochromatic Deep Red (Melatonin Safe)' : 'Windows Default'}`);
       console.log(`  Status:        ${GOLD}Updated dynamically in Windows with zero reboot required.${RESET}\n`);
-    } catch (e) {
-      console.error('Failed to apply cursor scheme:', e.message);
+    } else {
+      console.error('Failed to apply cursor scheme.');
     }
     break;
   }
 
+  case 'ergo': {
+    const rawAction = (args[1] || 'status').toLowerCase();
+    const psAction = rawAction === 'apply' || rawAction === 'on' ? 'Apply' : rawAction === 'restore' || rawAction === 'off' ? 'Restore' : 'Status';
+    const ergoScript = path.join(SCRIPT_DIR, 'configure_ataxia_ergonomics.ps1');
+    execSync(`pwsh.exe -NoProfile -ExecutionPolicy Bypass -File "${ergoScript}" -Action ${psAction}`, { stdio: 'inherit' });
+    break;
+  }
+
   case 'tray': {
-    const trayScript = path.join(WORKSPACE_DIR, 'scripts', 'pocketgull_tray.ps1');
+    const trayScript = path.join(SCRIPT_DIR, 'pocketgull_tray.ps1');
     if (args[1] === '--startup' || args[1] === 'startup') {
-      const startupScript = path.join(WORKSPACE_DIR, 'scripts', 'install_pocketgull_desktop.ps1');
+      const startupScript = path.join(SCRIPT_DIR, 'install_pocketgull_desktop.ps1');
       execSync(`pwsh.exe -NoProfile -ExecutionPolicy Bypass -File "${startupScript}"`, { stdio: 'inherit' });
     } else {
-      spawn('pwsh.exe', ['-WindowStyle', 'Hidden', '-ExecutionPolicy', 'Bypass', '-File', trayScript], {
+      spawn('pwsh.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', trayScript], {
+        cwd: WORKSPACE_DIR,
         detached: true,
+        windowsHide: true,
         stdio: 'ignore'
       }).unref();
-      console.log(`\n  ${CYAN}⚕ POCKETGULL SYSTEM TRAY DAEMON LAUNCHED${RESET}`);
-      console.log(`  ${SLATE}The PocketGull icon is now active in your Windows notification area (System Tray).${RESET}`);
-      console.log(`  ${GOLD}Right-click the icon anytime to switch themes, cursors, or cognitive modes.${RESET}\n`);
+      console.log(`\n  ${CYAN}⚕ POCKETGULL SYSTEM TRAY & 4-SLOT CONTROL DECK LAUNCHED${RESET}`);
+      console.log(`  ${SLATE}Left-click the tray icon to open the 4-Slot Control Deck; right-click for menu.${RESET}\n`);
     }
     break;
   }
 
   case 'mode': {
-    const targetMode = args[1] || 'build';
-    const modeScript = path.join(WORKSPACE_DIR, 'scripts', 'pocketgull_mode.ps1');
-    execSync(`powershell.exe -NoProfile -ExecutionPolicy Bypass -File "${modeScript}" -Mode ${targetMode}`, { stdio: 'inherit' });
+    const targetMode = args[1] || 'Build';
+    const modeScript = path.join(SCRIPT_DIR, 'pocketgull_mode.ps1');
+    execSync(`pwsh.exe -NoProfile -ExecutionPolicy Bypass -File "${modeScript}" -Mode ${targetMode}`, { stdio: 'inherit' });
     break;
   }
 
-  case 'status':
+  case 'status': {
     const st = loadState();
     console.log(`\n  ${CYAN}⚕ POCKETGULL SYSTEM & ERGONOMIC STATUS${RESET}`);
     console.log(`  ${DIM}─────────────────────────────────────────────────────────────────${RESET}`);
-    console.log(`  Active Theme:  ${BOLD}${WASHI}${st.theme.toUpperCase()}${RESET} (${THEME_MAP[st.theme]?.name || 'Custom'})`);
+    console.log(`  Active Theme:  ${BOLD}${WASHI}${(st.theme || 'hemp').toUpperCase()}${RESET} (${THEME_MAP[st.theme]?.name || 'Custom'})`);
+    console.log(`  Cursor Suite:  ${CYAN}${(st.cursor || 'ophthalmic').toUpperCase()}${RESET} (13-cut 64px ARGB incl. Hand & Resize)`);
+    console.log(`  Ataxia Shield: ${st.ataxiaShield !== false ? `${GOLD}ENABLED (${st.dragThresholdPx || 18}px Drag-Slip + 750ms Clicks + 65ms Bounce Filter)${RESET}` : `${SLATE}STANDARD${RESET}`}`);
     console.log(`  Philocardia:   ${st.philocardia ? `${ROSE}ENABLED (0.1 Hz Pacer Active)${RESET}` : `${SLATE}DISABLED${RESET}`}`);
     console.log(`  Bionic Mode:   ${st.bionic ? `${CYAN}ENABLED${RESET}` : `${SLATE}DISABLED${RESET}`}`);
-    console.log(`  Circadian:     ${st.circadian ? `${GOLD}ENABLED (Auto Sun Tracking)${RESET}` : `${SLATE}MANUAL${RESET}`}`);
-    console.log(`  Windows Theme: ${CYAN}PocketGull-Washi, PocketGull-Obsidian, PocketGull-Scotopic-650nm in %LOCALAPPDATA%\\Themes${RESET}`);
-    console.log(`  Cursors:       ${CYAN}Ophthalmic High-Contrast & Scotopic 650nm Red in %LOCALAPPDATA%\\PocketGull\\Cursors${RESET}`);
-    console.log(`  Fonts:         ${CYAN}38 Superfamily TTF Cuts Registered in Windows${RESET}\n`);
+    console.log(`  Circadian:     ${st.circadian ? `${GOLD}ENABLED (Auto Sun Tracking)${RESET}` : `${SLATE}MANUAL${RESET}`}\n`);
     break;
+  }
 
   case 'menu':
   default:
     console.log(`\n  ${CYAN}⚕ POCKETGULL ERGONOMIC & COGNITIVE CONTROLLER${RESET}`);
     console.log(`  ${DIM}─────────────────────────────────────────────────────────────────${RESET}`);
     console.log(`  ${BOLD}Commands:${RESET}`);
-    console.log(`    gull theme <name> [--system]`);
+    console.log(`    gull scene <washi|hemp|obsidian|670>`);
+    console.log(`      ${SLATE}One-click unified sync across IDE, Windows, Taskbars, Cursors, Hue & Razer${RESET}`);
+    console.log(`    gull theme <name> [--scene]`);
     console.log(`      ${SLATE}Options: washi, hemp, obsidian, 670, curie, rams, hypertext${RESET}`);
     console.log(`    gull cursor [ophthalmic|scotopic|default]`);
-    console.log(`      ${SLATE}Applies 64px high-contrast or 650nm melatonin-safe cursor scheme${RESET}`);
+    console.log(`      ${SLATE}Applies 64px high-contrast or 650nm melatonin-safe cursor suite${RESET}`);
+    console.log(`    gull ergo [apply|restore|status]`);
+    console.log(`      ${SLATE}Manages 18px tremor drag-slip guard, 750ms clicks, and pointer damping${RESET}`);
     console.log(`    gull philocardia [on|off|pace]`);
     console.log(`      ${SLATE}Toggles or launches 0.1 Hz Vagal Parasympathetic Breathing Pacer${RESET}`);
-    console.log(`    gull bionic [on|off|<text>]`);
-    console.log(`      ${SLATE}Toggles or renders saccadic fixation reading guidance${RESET}`);
     console.log(`    gull tray [--startup]`);
-    console.log(`      ${SLATE}Launches system tray daemon or configures auto-start on Windows logon${RESET}`);
-    console.log(`    gull status`);
-    console.log(`      ${SLATE}Displays current state, cursor, and font registry readiness${RESET}\n`);
+    console.log(`      ${SLATE}Launches system tray + 4-Slot Control Deck (or opens Deck if running)${RESET}`);
+    console.log(`    gull status\n`);
     break;
 }
