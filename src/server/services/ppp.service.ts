@@ -33,6 +33,7 @@ const TIER_4_COUNTRIES: Record<string, string> = {
   ZW: 'Zimbabwe',
   MM: 'Myanmar',
   KH: 'Cambodia',
+  SY: 'Syria',
 };
 
 const TIER_3_COUNTRIES: Record<string, string> = {

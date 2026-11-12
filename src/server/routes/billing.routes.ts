@@ -191,14 +191,14 @@ export function createBillingRouter() {
           },
           quantity: 1,
         }];
-      } else if (tier === 'kintsugi_pro') {
+      } else if (tier === 'kinpaku_pro' || tier === 'kintsugi_pro') {
         mode = 'payment';
         lineItems = [{
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'PocketGull Kintsugi™ v2 — 24k Gold COLR & Eco-Ink Pro Pack',
-              description: 'Includes OpenType COLR/CPAL 4-Palette 24k Urushi Gold-Seam Color Font (PocketGull-KintsugiGold.ttf) + Kintsugi v2 (-45.8% Eco-Ink LCA Certificate) + 3-Workstation Perpetual Commercial EULA.',
+              name: 'PocketGull Kinpaku™ (金箔) — 24k Gold COLR & Eco-Ink Pro Pack',
+              description: 'Includes OpenType COLR/CPAL 4-Palette 24k Kinpaku Gold-Leaf Color Font (PocketGull-Kinpaku.ttf) + Kintsugi v2 (-45.8% Eco-Ink LCA Certificate) + 3-Workstation Perpetual Commercial EULA.',
               tax_code: 'txcd_10501000',
             },
             unit_amount: 2900,
@@ -211,8 +211,8 @@ export function createBillingRouter() {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'PocketGull Artisan Duo™ (Botanica + Kintsugi 24k Gold) & Foundry Patron Pass',
-              description: 'Complete Artisan Studio Bundle: Kintsugi 24k Gold COLR/CPAL Color Font + Botanica v3 + 6 Herbarium SVG Plates + 10-Workstation Commercial EULA + Foundry Patron Recognition.',
+              name: 'PocketGull Artisan Duo™ (Botanica + Kinpaku 24k Gold) & Foundry Patron Pass',
+              description: 'Complete Artisan Studio Bundle: Kinpaku 24k Gold COLR/CPAL Color Font + Botanica v3 + 6 Herbarium SVG Plates + 10-Workstation Commercial EULA + Foundry Patron Recognition.',
               tax_code: 'txcd_10501000',
             },
             unit_amount: 4900,
@@ -226,7 +226,7 @@ export function createBillingRouter() {
             currency: 'usd',
             product_data: {
               name: 'PocketGull Artisan Foundry — Unlimited Agency, Brand & Print License',
-              description: 'Unlimited workstations, unlimited web views, commercial app/game embedding, Kintsugi 24k Gold COLR + Botanica v3 SVG Suite, and full IP Indemnification Certificate.',
+              description: 'Unlimited workstations, unlimited web views, commercial app/game embedding, Kinpaku 24k Gold COLR + Botanica v3 SVG Suite, and full IP Indemnification Certificate.',
               tax_code: 'txcd_10501000',
             },
             unit_amount: 19900,
@@ -234,7 +234,7 @@ export function createBillingRouter() {
           quantity: 1,
         }];
       } else {
-        return res.status(400).json({ error: 'A valid priceId or tier (founder_lifetime, clinic_annual, clinic_onboarding, clinic_pro_monthly, academic, enterprise, botanica_pro, kintsugi_pro, artisan_duo_patron, foundry_agency) is required.' });
+        return res.status(400).json({ error: 'A valid priceId or tier (founder_lifetime, clinic_annual, clinic_onboarding, clinic_pro_monthly, academic, enterprise, botanica_pro, kinpaku_pro, kintsugi_pro, artisan_duo_patron, foundry_agency) is required.' });
       }
 
       // Check if Stripe key is configured or in simulated mode
