@@ -1,8 +1,10 @@
+// SPDX-License-Identifier: Apache-2.0
 /**
  * Patient CRUD Routes — JSON file-backed patient database.
  *
  * Extracted from server.ts to reduce monolith size.
- * Uses strict allowlist field filtering and prototype pollution prevention.
+ * Uses strict allowlist field filtering, prototype pollution prevention,
+ * atomic async file persistence, and Mandiant M-of-N Dual-Custody Anti-Whaling export gates.
  *
  * @module server/routes/patients.routes
  */
@@ -10,9 +12,10 @@ import { Router, json as expressJson } from 'express';
 import type { Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import fs from 'node:fs';
+import fsPromises from 'node:fs/promises';
 import crypto from 'node:crypto';
-import { join } from 'node:path';
 import { sanitizeLogInput, securePathResolve } from '../../utils/security-helper';
+import { SoarOrchestratorService } from '../services/soar-orchestrator.service';
 
 // ── Typed Interfaces (P0-B: `:any` resolution) ─────────────────────────
 
@@ -23,8 +26,11 @@ const ALLOWED_PATIENT_FIELDS = [
   'demographics', 'assessment'
 ] as const;
 
-/** Maximum database file size (50 MB). */
-const MAX_DB_BYTES = 50 * 1024 * 1024;
+/** Maximum database file size (10 MB). */
+const MAX_DB_BYTES = 10 * 1024 * 1024;
+
+/** Mandiant Anti-Whaling threshold: bulk FHIR export > 50 records requires M-of-N Dual-Custody. */
+const BULK_EXPORT_DUAL_CUSTODY_THRESHOLD = 50;
 
 /** Maximum patient ID length. */
 const PATIENT_ID_PATTERN = /^[a-zA-Z0-9_-]{1,64}$/;
@@ -33,7 +39,7 @@ const PATIENT_ID_PATTERN = /^[a-zA-Z0-9_-]{1,64}$/;
 
 function getSafePatientsDbPath(): string {
   const dir = securePathResolve(process.cwd(), 'data');
-  try { fs.mkdirSync(dir, { recursive: true }); } catch (e: any) { if (e?.code !== 'EEXIST') console.warn('[PatientsRoutes] mkdirSync failed:', e); }
+  try { fs.mkdirSync(dir, { recursive: true }); } catch (e: unknown) { if ((e as NodeJS.ErrnoException)?.code !== 'EEXIST') console.warn('[PatientsRoutes] mkdirSync failed:', e); }
   return securePathResolve(dir, 'patients.json');
 }
 
@@ -66,6 +72,17 @@ function safeSerialize(data: unknown): Buffer {
   return buf;
 }
 
+/**
+ * Atomically writes a serialized buffer via a CSPRNG temporary sibling file + rename.
+ */
+async function atomicWriteDbFile(targetPath: string, payload: Buffer): Promise<void> {
+  const dir = securePathResolve(process.cwd(), 'data');
+  const tmpName = `patients.${crypto.randomBytes(6).toString('hex')}.tmp`;
+  const tmpPath = securePathResolve(dir, tmpName);
+  await fsPromises.writeFile(tmpPath, payload);
+  await fsPromises.rename(tmpPath, targetPath);
+}
+
 // ── Factory: Creates the patients router ────────────────────────────────
 
 export function createPatientsRouter(): Router {
@@ -83,16 +100,16 @@ export function createPatientsRouter(): Router {
   });
 
   // GET /api/patients
-  router.get('/', limiter, (req: Request, res: Response) => {
+  router.get('/', limiter, async (_req: Request, res: Response) => {
     try {
       const dbPath = getSafePatientsDbPath();
       let data: string;
       try {
-        data = fs.readFileSync(dbPath, 'utf8');
+        data = await fsPromises.readFile(dbPath, 'utf8');
       } catch (readErr: unknown) {
         if (readErr instanceof Error && 'code' in readErr && (readErr as NodeJS.ErrnoException).code === 'ENOENT') {
           data = JSON.stringify([], null, 2);
-          fs.writeFileSync(dbPath, data);
+          await atomicWriteDbFile(dbPath, safeSerialize([]));
         } else {
           throw readErr;
         }
@@ -106,8 +123,8 @@ export function createPatientsRouter(): Router {
     }
   });
 
-  // POST /api/patients (bulk write)
-  router.post('/', limiter, expressJson({ limit: '100mb' }), (req: Request, res: Response) => {
+  // POST /api/patients (bulk write — bounded to 10 MB)
+  router.post('/', limiter, expressJson({ limit: '10mb' }), async (req: Request, res: Response) => {
     try {
       const rawBody: unknown = req.body;
       if (!Array.isArray(rawBody)) {
@@ -117,20 +134,20 @@ export function createPatientsRouter(): Router {
       const sanitizedArray = rawBody.map((item: unknown) => cleanPatientObj(item));
 
       const targetDbFile = getSafePatientsDbPath();
-      fs.writeFileSync(targetDbFile, safeSerialize(sanitizedArray));
+      await atomicWriteDbFile(targetDbFile, safeSerialize(sanitizedArray));
 
       const totalCount = Number(sanitizedArray.length) || 0;
       console.log('[API] Saved %d patients to database.', totalCount);
-      res.status(200).json({ success: true, count: totalCount });
+      return res.status(200).json({ success: true, count: totalCount });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       console.error('[API] Error saving patients database:', sanitizeLogInput(message));
-      res.status(500).json({ error: 'Internal server error while saving database' });
+      return res.status(500).json({ error: 'Internal server error while saving database' });
     }
   });
 
-  // PUT /api/patients/:id (upsert)
-  router.put('/:id', limiter, expressJson({ limit: '100mb' }), (req: Request, res: Response) => {
+  // PUT /api/patients/:id (upsert — bounded to 10 MB)
+  router.put('/:id', limiter, expressJson({ limit: '10mb' }), async (req: Request, res: Response) => {
     try {
       const rawIdStr = String(req.params['id'] || '');
       if (!PATIENT_ID_PATTERN.test(rawIdStr)) {
@@ -146,7 +163,7 @@ export function createPatientsRouter(): Router {
       const targetDbFile = getSafePatientsDbPath();
       let patients: Record<string, unknown>[] = [];
       try {
-        const data = fs.readFileSync(targetDbFile, 'utf8');
+        const data = await fsPromises.readFile(targetDbFile, 'utf8');
         patients = JSON.parse(data);
       } catch (e) { console.debug('[PatientsRoutes] No existing patients.json (first run):', e instanceof SyntaxError ? 'invalid JSON' : 'file missing'); }
 
@@ -159,27 +176,50 @@ export function createPatientsRouter(): Router {
         patients.push({ ...sanitizedPayload, id });
       }
 
-      fs.writeFileSync(targetDbFile, safeSerialize(patients));
+      await atomicWriteDbFile(targetDbFile, safeSerialize(patients));
       const safePatientId = id.replace(/[\r\n\t]/g, '_').replace(/[^\x20-\x7E]/g, '');
       console.log('[API] Synced patient %s from mobile/app to database.', safePatientId);
-      res.status(200).json({ success: true, patient: patients.find((p) => p['id'] === id) });
+      return res.status(200).json({ success: true, patient: patients.find((p) => p['id'] === id) });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       console.error('[API] Error syncing patient to database:', sanitizeLogInput(message));
-      res.status(500).json({ error: 'Internal server error while syncing patient' });
+      return res.status(500).json({ error: 'Internal server error while syncing patient' });
     }
   });
 
-  // GET /api/patients/export/fhir (FHIR R4 Bundle export with SHA-256 integrity seal)
-  router.get('/export/fhir', limiter, (req: Request, res: Response) => {
+  // GET /api/patients/export/fhir (FHIR R4 Bundle export with SHA-256 integrity seal & M-of-N Anti-Whaling Guard)
+  router.get('/export/fhir', limiter, async (req: Request, res: Response) => {
     try {
       const dbPath = getSafePatientsDbPath();
-      let patients: Record<string, any>[] = [];
+      let patients: Record<string, unknown>[] = [];
       try {
-        const data = fs.readFileSync(dbPath, 'utf8');
-        patients = JSON.parse(data);
+        const data = await fsPromises.readFile(dbPath, 'utf8');
+        const parsed = JSON.parse(data);
+        patients = Array.isArray(parsed) ? parsed : [];
       } catch {
         patients = [];
+      }
+
+      // Mandiant Anti-Whaling Gate: Bulk record export (> 50 patients) requires M-of-N Dual-Custody headers
+      if (patients.length > BULK_EXPORT_DUAL_CUSTODY_THRESHOLD) {
+        const headers = (req.headers || {}) as Record<string, unknown>;
+        const requestorRole = typeof headers['x-dual-custody-requestor'] === 'string' ? headers['x-dual-custody-requestor'] : '';
+        const authorizerRole = typeof headers['x-dual-custody-authorizer'] === 'string' ? headers['x-dual-custody-authorizer'] : '';
+        const rationale = typeof headers['x-dual-custody-rationale'] === 'string' ? headers['x-dual-custody-rationale'] : 'Bulk FHIR R4 export';
+
+        const verification = SoarOrchestratorService.verifyDualCustody({
+          requestorRole,
+          authorizerRole,
+          rationale
+        });
+
+        if (!verification.verified) {
+          return res.status(403).json({
+            error: `Anti-Whaling Guard: Bulk FHIR export of ${patients.length} records (> ${BULK_EXPORT_DUAL_CUSTODY_THRESHOLD}) requires M-of-N Dual-Custody co-authorization.`,
+            reason: verification.reason,
+            requiredHeaders: ['X-Dual-Custody-Requestor', 'X-Dual-Custody-Authorizer']
+          });
+        }
       }
 
       const fhirEntries = patients.map((p) => {

@@ -1,6 +1,6 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ClinicalDefenseGuardService, IClinicalSecurityControl } from '../../services/clinical-defense-guard.service';
+import { ClinicalDefenseGuardService, ISoarClientPlaybook } from '../../services/clinical-defense-guard.service';
 
 @Component({
   selector: 'app-clinical-defense-guard-card',
@@ -70,6 +70,13 @@ import { ClinicalDefenseGuardService, IClinicalSecurityControl } from '../../ser
                   [class.text-zinc-400]="activeTab() !== 'DFIR_LOCKER'"
                   class="px-3.5 py-1.5 rounded-xl font-bold transition cursor-pointer border-0">
             📋 Cryptographic Audit Trail
+          </button>
+          <button (click)="activeTab.set('SOAR_PLAYBOOKS')"
+                  [class.bg-teal-600]="activeTab() === 'SOAR_PLAYBOOKS'"
+                  [class.text-white]="activeTab() === 'SOAR_PLAYBOOKS'"
+                  [class.text-zinc-400]="activeTab() !== 'SOAR_PLAYBOOKS'"
+                  class="px-3.5 py-1.5 rounded-xl font-bold transition cursor-pointer border-0">
+            ⚡ SOAR Playbooks ({{ soarPlaybooks().length }})
           </button>
         </div>
 
@@ -179,18 +186,68 @@ import { ClinicalDefenseGuardService, IClinicalSecurityControl } from '../../ser
         </div>
       }
 
+      <!-- Tab 4: Serverless SOAR Playbooks -->
+      @if (activeTab() === 'SOAR_PLAYBOOKS') {
+        <div class="space-y-3">
+          @for (pb of soarPlaybooks(); track pb.playbookId) {
+            <div class="bg-zinc-900/70 border border-zinc-800 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                  <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-teal-950 text-teal-400 border border-teal-800">
+                    {{ pb.playbookId }}
+                  </span>
+                  <h4 class="text-sm font-bold text-zinc-100">{{ pb.title }}</h4>
+                  <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
+                    SLA {{ pb.slaTarget }} &bull; {{ pb.sopSection }}
+                  </span>
+                  @if (pb.dualCustodyGated) {
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-950/60 text-amber-300 border border-amber-800/60">
+                      ⚖️ M-of-N Gated
+                    </span>
+                  }
+                </div>
+                <p class="text-xs text-zinc-400 mb-1.5">
+                  <strong class="text-zinc-300">SIEM Trigger:</strong> {{ pb.triggerSource }}
+                </p>
+                <p class="text-xs text-teal-300 font-mono bg-teal-950/30 p-2 rounded-lg border border-teal-900/40">
+                  <strong>Automated Workflow:</strong> {{ pb.automatedResponse }}
+                </p>
+                @if (pb.lastReceiptDigest) {
+                  <p class="text-[10px] font-mono text-emerald-400 mt-1.5 truncate max-w-xl">
+                    ✓ Runs: {{ pb.executionCount }} &bull; Last Receipt: {{ pb.lastReceiptDigest }}
+                  </p>
+                }
+              </div>
+
+              <div class="flex items-center gap-2 shrink-0">
+                <button (click)="runSoarDrill(pb.playbookId)"
+                        type="button"
+                        class="px-3.5 py-2 rounded-xl text-xs font-mono font-bold bg-teal-700 hover:bg-teal-600 text-white border border-teal-500/40 transition cursor-pointer">
+                  ▶ Run Dry-Run Drill
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
     </div>
   `
 })
 export class ClinicalDefenseGuardCardComponent {
   public service = inject(ClinicalDefenseGuardService);
 
-  public activeTab = signal<'SECURITY_CONTROLS' | 'MITRE_ATLAS' | 'DFIR_LOCKER'>('SECURITY_CONTROLS');
+  public activeTab = signal<'SECURITY_CONTROLS' | 'MITRE_ATLAS' | 'DFIR_LOCKER' | 'SOAR_PLAYBOOKS'>('SECURITY_CONTROLS');
 
   public controls = this.service.securityControls;
   public atlasTactics = this.service.atlasTactics;
   public forensicSnapshots = this.service.forensicSnapshots;
+  public soarPlaybooks = this.service.soarPlaybooks;
   public posture = this.service.defensePosture;
+
+  public runSoarDrill(playbookId: ISoarClientPlaybook['playbookId']): void {
+    this.service.executeSoarPlaybookDrill(playbookId, 'DRY_RUN');
+  }
 }
 
 // Backwards-compatible export alias

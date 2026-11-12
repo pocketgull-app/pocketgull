@@ -11,6 +11,7 @@ import type { Request, Response } from 'express';
 import { GoogleAuth } from 'google-auth-library';
 import { rateLimit } from 'express-rate-limit';
 import { FALLBACK_SEED_ARTICLES } from '../../services/wordpress-articles.service';
+import { SoarOrchestratorService } from '../services/soar-orchestrator.service';
 
 // ── Request/Response Interfaces (P0-B: `:any` resolution) ──────────────
 
@@ -256,7 +257,10 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
       res.setHeader('Access-Control-Allow-Origin', allowedOriginHeader);
     }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key, x-goog-user-project');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization, x-api-key, x-gemini-api-key, x-gemini-cached-content, x-goog-user-project'
+    );
 
     if (req.method === 'OPTIONS') {
       res.sendStatus(200);
@@ -532,6 +536,15 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   // POST /api/ai/stream — Server-Sent Events streaming endpoint
   router.post('/stream', async (req: Request, res: Response) => {
     try {
+      if (SoarOrchestratorService.isContainmentActive()) {
+        res.status(503).json({
+          error: 'SOAR Containment Mode Active: Stochastic LLM completions halted; deterministic verified clinical rules enforced.',
+          containmentModeActive: true,
+          playbookId: 'PB-02_ADVERSARIAL_PROMPT_INJECTION'
+        });
+        return;
+      }
+
       const body = req.body as IAiStreamRequest;
       let rawModel: string;
       try {
@@ -548,6 +561,13 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         res.status(500).json({ error: 'API key or GCP credentials not available on server.' });
         return;
       }
+
+      const streamAbortController = new AbortController();
+      req.on('close', () => {
+        if (!res.writableEnded) {
+          streamAbortController.abort();
+        }
+      });
 
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
@@ -571,16 +591,23 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
 
         const sanitizedInstruction = sanitizeSystemInstruction(body.systemInstruction);
 
-        // System prompt is always the static clinical base — never includes user input
+        // FinOps Optimization: Only attach verified remote Explicit Context Cache handles (never local pg-cache-* fallbacks)
+        const cachedContent = (req.headers['x-gemini-cached-content'] as string | undefined) || body.cachedContentName;
+        const isRealRemoteCache =
+          typeof cachedContent === 'string' &&
+          (cachedContent.startsWith('projects/') ||
+            (cachedContent.startsWith('cachedContents/') && !cachedContent.startsWith('cachedContents/pg-cache-')));
+
+        // System prompt is always the static clinical base unless already pinned inside an Explicit Context Cache
         const configOptions: Record<string, unknown> = {
-          systemInstruction: BASE_CLINICAL_PROMPT,
-          temperature: body.temperature ?? 0.1
+          temperature: body.temperature ?? 0.1,
+          abortSignal: streamAbortController.signal
         };
 
-        // FinOps Optimization: Support Gemini Context Caching for large clinical corpora (75% token discount)
-        const cachedContent = (req.headers['x-gemini-cached-content'] as string | undefined) || body.cachedContentName;
-        if (cachedContent && typeof cachedContent === 'string') {
+        if (isRealRemoteCache && cachedContent) {
           configOptions['cachedContent'] = cachedContent;
+        } else {
+          configOptions['systemInstruction'] = BASE_CLINICAL_PROMPT;
         }
 
         // FinOps Optimization: Clamp thinking budget to prevent open-ended CoT loops
@@ -619,6 +646,9 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
         });
 
         for await (const chunk of streamingResponse) {
+          if (streamAbortController.signal.aborted) {
+            break;
+          }
           // Stream FinOps token telemetry if present
           if (chunk.usageMetadata) {
             const usage = chunk.usageMetadata as Record<string, number | undefined>;
@@ -652,15 +682,27 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
           }
         }
 
-        res.write(`data: [DONE]\n\n`);
-        res.end();
+        if (!streamAbortController.signal.aborted && !res.writableEnded) {
+          res.write(`data: [DONE]\n\n`);
+          res.end();
+        }
       } catch (apiError: unknown) {
+        if (streamAbortController.signal.aborted) {
+          return;
+        }
         console.error('GenAI Stream Error:', apiError);
         throw apiError;
       }
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Unknown streaming error';
-      try { res.write(`data: ${JSON.stringify({ error: message })}\n\n`); res.end(); } catch (writeErr) { console.debug('[AIRoutes] SSE error response failed (client disconnected):', (writeErr as Error)?.message); }
+      try {
+        if (!res.writableEnded) {
+          res.write(`data: ${JSON.stringify({ error: message })}\n\n`);
+          res.end();
+        }
+      } catch (writeErr) {
+        console.debug('[AIRoutes] SSE error response failed (client disconnected):', (writeErr as Error)?.message);
+      }
     }
   });
 
@@ -787,6 +829,15 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
   // POST /api/ai/chat/message
   router.post('/chat/message', async (req: Request, res: Response) => {
     try {
+      if (SoarOrchestratorService.isContainmentActive()) {
+        res.status(503).json({
+          error: 'SOAR Containment Mode Active: Stochastic LLM completions halted; deterministic verified clinical rules enforced.',
+          containmentModeActive: true,
+          playbookId: 'PB-02_ADVERSARIAL_PROMPT_INJECTION'
+        });
+        return;
+      }
+
       const body = req.body as IAiChatMessageRequest;
       const session = chatSessions.get(body.sessionId);
       if (!session) throw new Error('Chat session not found. Please refresh and try again.');

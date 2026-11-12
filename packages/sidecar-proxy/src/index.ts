@@ -12,6 +12,8 @@ export interface ISidecarProxyOptions {
   changeOrigin?: boolean;
   /** Request timeout in milliseconds (default: 30000) */
   timeoutMs?: number;
+  /** Optional headers injected into every proxied request (e.g. X-Internal-API-Key) */
+  extraHeaders?: Record<string, string> | (() => Record<string, string>);
   /** Custom error handler */
   onError?: (err: Error, req: Request, res: Response) => void;
 }
@@ -47,9 +49,19 @@ export function createSidecarProxy(options: ISidecarProxyOptions) {
       // Preserve query parameters if not already in forwardedPath
       const targetPath = forwardedPath;
 
-      const headers = { ...req.headers };
+      const headers: http.OutgoingHttpHeaders = { ...req.headers };
       if (options.changeOrigin !== false) {
         headers['host'] = targetUrl.host;
+      }
+
+      if (options.extraHeaders) {
+        const dynamicHeaders =
+          typeof options.extraHeaders === 'function' ? options.extraHeaders() : options.extraHeaders;
+        for (const [hKey, hVal] of Object.entries(dynamicHeaders)) {
+          if (hVal) {
+            headers[hKey.toLowerCase()] = hVal;
+          }
+        }
       }
 
       // Add standard reverse proxy headers
@@ -60,6 +72,21 @@ export function createSidecarProxy(options: ISidecarProxyOptions) {
       }
       headers['x-forwarded-proto'] = req.protocol || 'http';
       headers['x-forwarded-host'] = req.headers['host'] || targetUrl.host;
+
+      // Re-serialize body if upstream express.json() already consumed the request stream
+      const preParsedBody =
+        req.method !== 'GET' &&
+        req.method !== 'HEAD' &&
+        req.body !== undefined &&
+        typeof req.body === 'object' &&
+        Object.keys(req.body as Record<string, unknown>).length > 0
+          ? Buffer.from(JSON.stringify(req.body), 'utf8')
+          : null;
+
+      if (preParsedBody) {
+        headers['content-type'] = headers['content-type'] || 'application/json; charset=utf-8';
+        headers['content-length'] = String(preParsedBody.byteLength);
+      }
 
       const proxyReq = transport.request(
         {
@@ -104,8 +131,12 @@ export function createSidecarProxy(options: ISidecarProxyOptions) {
         }
       });
 
-      // Stream request body (handles JSON, form data, multipart, websockets payload)
-      req.pipe(proxyReq);
+      // Stream request body (or write pre-parsed JSON buffer when express.json() ran upstream)
+      if (preParsedBody) {
+        proxyReq.end(preParsedBody);
+      } else {
+        req.pipe(proxyReq);
+      }
     } catch (err) {
       if (options.onError && err instanceof Error) {
         options.onError(err, req, res);

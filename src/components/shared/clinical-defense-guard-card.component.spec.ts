@@ -66,4 +66,23 @@ describe('ClinicalDefenseGuardCardComponent', () => {
     expect(el.textContent).toContain('Dual-Custody Active');
     expect(el.textContent).toContain(`$${service.dualCustodyThresholdUsd()}`);
   });
+
+  it('6. Switches to SOAR_PLAYBOOKS tab and executes dry-run playbook drill with SHA-256 receipt', () => {
+    component.activeTab.set('SOAR_PLAYBOOKS');
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('PB-01_COMPROMISED_CREDENTIAL');
+    expect(component.soarPlaybooks().length).toBe(4);
+
+    const beforeCount = service.forensicSnapshots().length;
+    component.runSoarDrill('PB-03_PHI_TAINT_BOUNDARY_LEAK');
+    fixture.detectChanges();
+
+    expect(service.forensicSnapshots().length).toBe(beforeCount + 1);
+    expect(service.forensicSnapshots()[0].eventCategory).toBe('SOAR_PLAYBOOK_EXECUTION');
+    const updatedPb = component.soarPlaybooks().find(p => p.playbookId === 'PB-03_PHI_TAINT_BOUNDARY_LEAK');
+    expect(updatedPb?.executionCount).toBe(1);
+    expect(updatedPb?.lastReceiptDigest).toContain('SHA256-');
+  });
 });

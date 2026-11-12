@@ -35,9 +35,19 @@ export class CollaborationService {
   private connect(): void {
     if (this.socket) return;
 
+    let sessionToken = '';
+    if (typeof window !== 'undefined') {
+      try {
+        sessionToken = window.localStorage.getItem('pg_api_key') || '';
+      } catch {
+        sessionToken = '';
+      }
+    }
+
     this.socket = io({
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      auth: sessionToken ? { token: sessionToken } : {}
     });
 
     this.socket.on('connect', () => {

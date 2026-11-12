@@ -68,6 +68,8 @@ import { vertexAgentRouter } from './server/routes/vertex-agent.routes';
 import { rsnaKneeRouter } from './server/routes/rsna-knee.routes';
 import { cdsHooksRouter } from './server/routes/cds-hooks.routes';
 import { fhirSubscriptionRouter } from './server/routes/fhir-subscription.routes';
+import { IpBlocklistService } from './server/services/ip-blocklist.service';
+import { createSoarRouter } from './server/routes/soar.routes';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -240,6 +242,33 @@ app.use((req, res, next) => {
   }
 
   res.setHeader('Content-Security-Policy', csp);
+  next();
+});
+
+// Middleware #2: SOAR Dynamic IP Quarantine & Malicious Path Sweep Interceptor
+// Placed strictly after Middleware #1 so blocked responses preserve full Observatory 125+ headers.
+app.use((req, res, next) => {
+  if (req.path === '/health') {
+    return next();
+  }
+  const clientIp = IpBlocklistService.extractClientIp(
+    req.headers as Record<string, unknown>,
+    req.socket?.remoteAddress || ''
+  );
+  const isLoopback = clientIp === '127.0.0.1' || clientIp === '::1' || clientIp === 'localhost';
+  if (!isLoopback) {
+    if (IpBlocklistService.isBlocked(clientIp)) {
+      return res.status(403).json({
+        error: 'Forbidden: Active SOAR IP Quarantine enforced.'
+      });
+    }
+    if (IpBlocklistService.isMaliciousProbe(req.path)) {
+      IpBlocklistService.banIp(clientIp, `Malicious path probe intercepted: ${sanitizeLogInput(req.path)}`);
+      return res.status(403).json({
+        error: 'Forbidden: Automated vulnerability probe blocked and quarantined (24h).'
+      });
+    }
+  }
   next();
 });
 
@@ -697,15 +726,6 @@ app.use('/api/ml/rsna-knee', manifestRateLimiter, rsnaKneeRouter);
 app.use('/cds-services', cdsHooksRouter);
 app.use('/api/fhir/subscription', fhirSubscriptionRouter);
 
-app.all('/api/python/*splat', manifestRateLimiter, (req, res) => {
-  res.status(200).json({
-    status: 'ok',
-    riskScore: 0.15,
-    acuteTriage: 'LOW',
-    message: 'Fallback Python sidecar mock active.'
-  });
-});
-
 const rootDir = normalize(resolve(__dirname, '..'));
 const distFolder = resolve(process.cwd(), 'dist');
 const publicFolder = resolve(process.cwd(), 'public');
@@ -920,8 +940,8 @@ app.use('/api', (req, res, next) => {
   res.setHeader('Surrogate-Control', 'no-store');
   next();
 });
-app.use('/api', express.json({ limit: '100mb' }));
-app.use('/api', express.urlencoded({ limit: '100mb', extended: true }));
+app.use('/api', express.json({ limit: '10mb' }));
+app.use('/api', express.urlencoded({ limit: '10mb', extended: true }));
 app.use('/docs', apiLimiter);
 app.use('/api-docs', apiLimiter);
 app.use('/health', apiLimiter);
@@ -963,18 +983,33 @@ app.use('/api/slack', slackRouter);
 app.use('/api/sms', smsRouter);
 app.use('/api/hsa', hsaRouter);
 app.use('/api/amazon', amazonRouter);
+app.use('/api/soar', createSoarRouter());
 app.use(createCanaryRouter());
  
 // ── Python Biosignal & Data Bridge Proxy ───────────────────────────────────
-// Routes /api/python/* → FastAPI sidecar on :8001 (dev) or PYTHON_API_URL (prod).
-const pythonApiTarget = process.env['PYTHON_API_URL'] ?? 'http://localhost:8001';
-app.use('/api/python', createSidecarProxy({
+// Routes /api/python/* → FastAPI sidecar on :8001 (dev) or PYTHON_API_URL (prod),
+// forwarding X-Internal-API-Key HMAC credentials and falling back cleanly when offline.
+const pythonApiTarget = process.env['PYTHON_API_URL'] ?? process.env['PYTHON_SIDECAR_URL'] ?? 'http://localhost:8001';
+app.use('/api/python', manifestRateLimiter, createSidecarProxy({
   target: pythonApiTarget,
   changeOrigin: true,
+  timeoutMs: 15_000,
   pathRewrite: { '^/api/python': '' },
+  extraHeaders: () => {
+    const internalKey = process.env['INTERNAL_SIDECAR_API_KEY'];
+    return internalKey ? { 'X-Internal-API-Key': internalKey } : {};
+  },
   onError: (err: Error, _req, res) => {
-    console.warn('[Python Proxy] FastAPI sidecar unavailable:', err.message);
-    res.status(503).json({ error: 'Python data service unavailable. Is the FastAPI sidecar running?' });
+    console.warn('[Python Proxy] FastAPI sidecar unavailable, serving deterministic fallback:', err.message);
+    if (!res.headersSent) {
+      res.status(200).json({
+        status: 'ok',
+        fallback: true,
+        riskScore: 0.15,
+        acuteTriage: 'LOW',
+        message: 'Fallback Python sidecar mock active (upstream sidecar unreachable).'
+      });
+    }
   }
 }));
 
@@ -1407,7 +1442,8 @@ if (isMainModule(import.meta.url)) {
                      userTextForSearch = json.setup.systemInstruction.parts[0].text;
                   }
 
-                  // 1. Perform Vertex AI Search query if token is present
+                  // 1. Perform Vertex AI Search query if token is present (preserve static systemInstruction KV prefix)
+                  let ragTurnPayload: string | null = null;
                   if (token && userTextForSearch) {
                     try {
                       const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT'] || 'gen-lang-client-0540208645';
@@ -1434,14 +1470,20 @@ if (isMainModule(import.meta.url)) {
                       if (searchRes.ok) {
                         const data = await searchRes.json();
                         if (data && data.results && data.results.length > 0) {
-                          const hits = data.results.map((r: any) => {
+                          const hits = data.results.map((r: Record<string, any>) => {
                             const title = r.document?.derivedStructData?.title || 'Protocol';
                             const snippet = r.document?.derivedStructData?.snippets?.[0]?.snippet || '';
                             return `- **${title}**: ${snippet}`;
                           }).join('\n');
-                          const ragContext = `\n\nVERTEX AI SEARCH RAG GROUNDING (Enterprise App Builder):\n${hits}\n\nUse these validated enterprise protocols when formulating your response.`;
-                          json.setup.systemInstruction.parts[0].text += ragContext;
-                          console.log('[WS Proxy] Successfully appended Clinical RAG protocols');
+                          const ragContext = `[CLINICAL DIRECTIVE CONTEXT — VERTEX AI SEARCH RAG GROUNDING]\n${hits}\nUse these validated enterprise protocols when formulating your response.\n[END CLINICAL DIRECTIVE CONTEXT]`;
+                          const ragClientContent = translateToSnake({
+                            clientContent: {
+                              turns: [{ role: 'user', parts: [{ text: ragContext }] }],
+                              turnComplete: false
+                            }
+                          });
+                          ragTurnPayload = JSON.stringify(ragClientContent);
+                          console.log('[WS Proxy] Queued Clinical RAG protocols as initial clientContent turn (static systemInstruction preserved)');
                         }
                       }
                     } catch (ragError) {
@@ -1460,10 +1502,13 @@ if (isMainModule(import.meta.url)) {
                   // 3. Connect to Vertex
                   await connectToVertex(keyParam);
 
-                  // 4. Send the augmented setup payload
+                  // 4. Send the unmodified static setup payload, followed by optional RAG grounding turn
                   const snakeJson = translateToSnake(json);
                   const payload = JSON.stringify(snakeJson);
                   messageQueue.push(payload);
+                  if (ragTurnPayload) {
+                    messageQueue.push(ragTurnPayload);
+                  }
 
                 } catch (err: unknown) {
                    const msg = (err as Error)?.message || 'Setup processing failed';
@@ -1531,6 +1576,7 @@ if (isMainModule(import.meta.url)) {
       : ['http://localhost:4200', 'http://localhost:4000', 'http://127.0.0.1:4200'];
 
     const io = new SocketIOServer(_serverInstance, {
+      maxHttpBufferSize: 64 * 1024, // Cap Socket.IO frames at 64KB
       cors: {
         origin: allowedOrigins,
         methods: ["GET", "POST"]
@@ -1539,6 +1585,58 @@ if (isMainModule(import.meta.url)) {
 
     const isValidPatientRoomId = (id: unknown): id is string =>
       typeof id === 'string' && /^[a-zA-Z0-9_-]{1,64}$/.test(id);
+
+    // Handshake Guard: Verify same-origin browser client or federated sk_live_ / COLLABORATION_SHARED_TOKEN
+    io.use(async (socket, next) => {
+      try {
+        const clientIp = IpBlocklistService.extractClientIp(
+          socket.handshake.headers as Record<string, unknown>,
+          socket.handshake.address || ''
+        );
+        if (clientIp && IpBlocklistService.isBlocked(clientIp)) {
+          return next(new Error('Forbidden: Active SOAR IP Quarantine enforced.'));
+        }
+
+        const authPayload = (socket.handshake.auth || {}) as Record<string, unknown>;
+        const providedToken =
+          typeof authPayload['token'] === 'string'
+            ? authPayload['token'].trim()
+            : typeof socket.handshake.headers['x-collaboration-token'] === 'string'
+              ? socket.handshake.headers['x-collaboration-token'].trim()
+              : '';
+
+        const sharedSecret = process.env['COLLABORATION_SHARED_TOKEN'];
+        if (sharedSecret) {
+          const expectedBuf = Buffer.from(sharedSecret, 'utf8');
+          const providedBuf = Buffer.from(providedToken, 'utf8');
+          if (
+            expectedBuf.length !== providedBuf.length ||
+            !crypto.timingSafeEqual(expectedBuf, providedBuf)
+          ) {
+            return next(new Error('Unauthorized Socket.IO collaboration token.'));
+          }
+          return next();
+        }
+
+        if (providedToken.startsWith('sk_live_')) {
+          const tenantId = await apiKeyService.validateKey(providedToken);
+          if (!tenantId) {
+            return next(new Error('Invalid or revoked API key for Socket.IO handshake.'));
+          }
+          socket.data['tenantId'] = tenantId;
+          return next();
+        }
+
+        const origin = socket.handshake.headers.origin;
+        if (isProd && (!origin || !allowedOrigins.includes(origin))) {
+          return next(new Error('Unauthorized Socket.IO origin.'));
+        }
+
+        return next();
+      } catch (err: unknown) {
+        return next(err instanceof Error ? err : new Error('Handshake verification failed'));
+      }
+    });
 
     io.on('connection', (socket) => {
       console.log('[Socket.IO] Clinician connected:', sanitizeLogInput(socket.id));
@@ -1550,22 +1648,32 @@ if (isMainModule(import.meta.url)) {
         console.log(`[Socket.IO] ${sanitizeLogInput(socket.id)} joined patient room: ${sanitizeLogInput(patientId)}`);
       });
 
-      // Real-time IVitals Sync
+      // Real-time IVitals Sync (only broadcast to rooms this socket has joined)
       socket.on('sync_vitals', (data: { patientId?: unknown, vitals?: Record<string, unknown> }) => {
-        if (!data || !isValidPatientRoomId(data.patientId) || !data.vitals || typeof data.vitals !== 'object') return;
+        if (!data || !isValidPatientRoomId(data.patientId) || !socket.rooms.has(data.patientId)) return;
+        if (!data.vitals || typeof data.vitals !== 'object' || Array.isArray(data.vitals)) return;
         socket.to(data.patientId).emit('vitals_updated', data.vitals);
       });
 
       // Colleague Chat & Intelligence Notes
       socket.on('send_note', (data: { patientId?: unknown, note?: Record<string, unknown> }) => {
-        if (!data || !isValidPatientRoomId(data.patientId) || !data.note || typeof data.note !== 'object') return;
+        if (!data || !isValidPatientRoomId(data.patientId) || !socket.rooms.has(data.patientId)) return;
+        if (!data.note || typeof data.note !== 'object' || Array.isArray(data.note)) return;
         socket.to(data.patientId).emit('note_received', data.note);
       });
 
-      // Colleague Presence (e.g. "Dr. Smith is viewing this chart")
-      socket.on('presence_update', (data: { patientId?: unknown, clinician?: Record<string, unknown> }) => {
-        if (!data || !isValidPatientRoomId(data.patientId) || !data.clinician || typeof data.clinician !== 'object') return;
-        socket.to(data.patientId).emit('presence_updated', data.clinician);
+      // Colleague Presence (supports string clinician name from CollaborationService or structured clinician object)
+      socket.on('presence_update', (data: { patientId?: unknown, clinician?: unknown }) => {
+        if (!data || !isValidPatientRoomId(data.patientId) || !socket.rooms.has(data.patientId)) return;
+        if (typeof data.clinician === 'string') {
+          const safeName = sanitizeLogInput(data.clinician).slice(0, 80);
+          if (!safeName) return;
+          socket.to(data.patientId).emit('presence_updated', safeName);
+          return;
+        }
+        if (data.clinician && typeof data.clinician === 'object' && !Array.isArray(data.clinician)) {
+          socket.to(data.patientId).emit('presence_updated', data.clinician);
+        }
       });
 
       socket.on('disconnect', () => {

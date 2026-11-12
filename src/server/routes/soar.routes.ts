@@ -1,0 +1,284 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 PocketGull LLC & Phillip Gear
+
+/**
+ * 🛡️ PocketGull Serverless SOAR Webhook & SOC Orchestration Routes
+ *
+ * Exposes:
+ * - GET  /api/soar/status           — Live SOAR posture, IP blocklist stats, and recent receipts
+ * - GET  /api/soar/playbooks        — Canonical automated playbook catalog (PG-SOP-IR-01)
+ * - POST /api/soar/pubsub/webhook   — OIDC-verified Google Cloud Pub/Sub alert sink receiver
+ * - POST /api/soar/execute          — Direct/Tabletop playbook execution (supports DRY_RUN)
+ * - POST /api/soar/containment/reset — Dual-Custody gated reset of global containment mode
+ */
+
+import { Router, Request, Response, json as expressJson } from 'express';
+import { OAuth2Client } from 'google-auth-library';
+import { rateLimit } from 'express-rate-limit';
+import {
+  SoarOrchestratorService,
+  ISoarAlertEvent,
+  SoarSeverity,
+  SoarPlaybookId,
+  IDualCustodyAttestation
+} from '../services/soar-orchestrator.service';
+import { IpBlocklistService } from '../services/ip-blocklist.service';
+
+const soarOAuth2Client = new OAuth2Client();
+
+const VALID_EVENT_CATEGORIES = new Set<ISoarAlertEvent['eventCategory']>([
+  'CREDENTIAL_LEAK',
+  'PROMPT_INJECTION',
+  'PHI_TAINT_LEAK',
+  'CANARY_PROBE_SURGE',
+  'INFRASTRUCTURE_DOS'
+]);
+
+const VALID_SEVERITIES = new Set<SoarSeverity>([
+  'P1_CRITICAL',
+  'P2_HIGH',
+  'P3_MEDIUM',
+  'P4_LOW'
+]);
+
+const VALID_PLAYBOOK_IDS = new Set<SoarPlaybookId>([
+  'PB-01_COMPROMISED_CREDENTIAL',
+  'PB-02_ADVERSARIAL_PROMPT_INJECTION',
+  'PB-03_PHI_TAINT_BOUNDARY_LEAK',
+  'PB-04_INFRASTRUCTURE_DOS_HONEYPOT'
+]);
+
+/**
+ * Verifies Google Cloud Pub/Sub OIDC push token in production environments.
+ */
+export async function verifySoarPubSubOidcToken(req: Request): Promise<boolean> {
+  const isTestingEnv =
+    process.env['NODE_ENV'] === 'test' ||
+    Boolean(process.env['VITEST']) ||
+    Boolean(process.env['PLAYWRIGHT_TESTING']);
+  const isProd = (process.env['NODE_ENV'] === 'production' || Boolean(process.env['K_SERVICE'])) && !isTestingEnv;
+
+  if (!isProd) {
+    return true;
+  }
+
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return false;
+  }
+
+  const idToken = authHeader.slice('Bearer '.length).trim();
+  if (!idToken) {
+    return false;
+  }
+
+  try {
+    const expectedAudience = process.env['SOAR_PUBSUB_AUDIENCE'] || process.env['PUBSUB_WEBHOOK_AUDIENCE'];
+    const ticket = await soarOAuth2Client.verifyIdToken({
+      idToken,
+      ...(expectedAudience ? { audience: expectedAudience } : {})
+    });
+    const payload = ticket.getPayload();
+    return Boolean(payload && payload.email_verified && payload.email?.endsWith('.gserviceaccount.com'));
+  } catch (err: unknown) {
+    const safeMsg = ((err as Error)?.message || 'OIDC verification error').replace(/[\r\n]/g, ' ');
+    console.warn('[SOAR Pub/Sub Auth] Token verification rejected:', safeMsg);
+    return false;
+  }
+}
+
+function normalizeAlertPayload(
+  raw: Record<string, unknown>,
+  defaultSource: ISoarAlertEvent['source'],
+  fallbackIp?: string
+): ISoarAlertEvent {
+  const rawCategory = String(raw['eventCategory'] || 'CANARY_PROBE_SURGE') as ISoarAlertEvent['eventCategory'];
+  const eventCategory: ISoarAlertEvent['eventCategory'] = VALID_EVENT_CATEGORIES.has(rawCategory)
+    ? rawCategory
+    : 'CANARY_PROBE_SURGE';
+
+  const rawSeverity = String(raw['severity'] || 'P2_HIGH') as SoarSeverity;
+  const severity: SoarSeverity = VALID_SEVERITIES.has(rawSeverity) ? rawSeverity : 'P2_HIGH';
+
+  const rawPlaybook = raw['playbookId'] ? (String(raw['playbookId']) as SoarPlaybookId) : undefined;
+  const playbookId = rawPlaybook && VALID_PLAYBOOK_IDS.has(rawPlaybook) ? rawPlaybook : undefined;
+
+  const rawDual = raw['dualCustody'] as Record<string, unknown> | undefined;
+  const dualCustody: IDualCustodyAttestation | undefined =
+    rawDual && typeof rawDual === 'object'
+      ? {
+          requestorRole: String(rawDual['requestorRole'] || ''),
+          authorizerRole: String(rawDual['authorizerRole'] || ''),
+          rationale: String(rawDual['rationale'] || '')
+        }
+      : undefined;
+
+  return {
+    alertId: typeof raw['alertId'] === 'string' ? raw['alertId'].slice(0, 80) : undefined,
+    source: defaultSource,
+    ...(playbookId ? { playbookId } : {}),
+    eventCategory,
+    severity,
+    offendingIp:
+      typeof raw['offendingIp'] === 'string'
+        ? raw['offendingIp'].slice(0, 64)
+        : fallbackIp,
+    compromisedKeyId:
+      typeof raw['compromisedKeyId'] === 'string' ? raw['compromisedKeyId'].slice(0, 128) : undefined,
+    tenantId: typeof raw['tenantId'] === 'string' ? raw['tenantId'].slice(0, 128) : undefined,
+    rawPayloadSample:
+      typeof raw['rawPayloadSample'] === 'string' ? raw['rawPayloadSample'].slice(0, 2048) : undefined,
+    requiresDestructiveAction: Boolean(raw['requiresDestructiveAction']),
+    ...(dualCustody ? { dualCustody } : {}),
+    mode: raw['mode'] === 'DRY_RUN' ? 'DRY_RUN' : 'AUTOMATED_CONTAINMENT'
+  };
+}
+
+export function createSoarRouter(): Router {
+  const router = Router();
+
+  const isTestingEnv =
+    process.env['NODE_ENV'] === 'test' ||
+    Boolean(process.env['VITEST']) ||
+    Boolean(process.env['PLAYWRIGHT_TESTING']);
+
+  const soarRateLimiter = rateLimit({
+    windowMs: 60_000,
+    max: isTestingEnv ? 10_000 : 60,
+    standardHeaders: true,
+    legacyHeaders: false,
+    validate: { trustProxy: false },
+    message: { error: 'SOAR rate limit exceeded.' }
+  });
+
+  router.use(soarRateLimiter);
+  router.use(expressJson({ limit: '256kb' }));
+
+  /**
+   * GET /api/soar/status
+   * Live SOAR telemetry, containment mode state, IP blocklist stats, and masked execution receipts.
+   */
+  router.get('/status', (_req: Request, res: Response) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    const summary = SoarOrchestratorService.getStatusSummary();
+    res.status(200).json(summary);
+  });
+
+  /**
+   * GET /api/soar/playbooks
+   * Returns all automated incident response playbooks mapped to PG-SOP-IR-01.
+   */
+  router.get('/playbooks', (_req: Request, res: Response) => {
+    res.status(200).json({
+      governingStandard: 'NIST SP 800-61r2 & PG-SOP-IR-01 v2.4.0',
+      playbooks: SoarOrchestratorService.getPlaybookCatalog()
+    });
+  });
+
+  /**
+   * POST /api/soar/pubsub/webhook
+   * Event-driven Cloud Logging Sink -> Cloud Pub/Sub -> SOAR Playbook Executor.
+   */
+  router.post('/pubsub/webhook', async (req: Request, res: Response) => {
+    const authorized = await verifySoarPubSubOidcToken(req);
+    if (!authorized) {
+      res.status(401).json({
+        error: 'Unauthorized: Missing or invalid Google Cloud Pub/Sub OIDC token.'
+      });
+      return;
+    }
+
+    const body = (req.body || {}) as Record<string, unknown>;
+    const message = body['message'] as Record<string, unknown> | undefined;
+    if (!message || typeof message['data'] !== 'string') {
+      res.status(400).json({ error: 'Invalid Cloud Pub/Sub envelope: message.data (base64) is required.' });
+      return;
+    }
+
+    let decodedJson: Record<string, unknown> = {};
+    try {
+      const jsonStr = Buffer.from(message['data'], 'base64').toString('utf-8');
+      decodedJson = JSON.parse(jsonStr) as Record<string, unknown>;
+    } catch {
+      res.status(400).json({ error: 'Malformed base64 JSON in Pub/Sub message.data.' });
+      return;
+    }
+
+    const alertEvent = normalizeAlertPayload(decodedJson, 'CLOUD_MONITORING_PUBSUB');
+    const receipt = await SoarOrchestratorService.orchestrateAlert(alertEvent);
+
+    const safeExecId = receipt.executionId.replace(/[\r\n]/g, '');
+    const safePlaybook = receipt.playbookId.replace(/[\r\n]/g, '');
+    console.log(`[SOAR Pub/Sub Executed] id=${safeExecId} playbook=${safePlaybook} digest=${receipt.sha256EvidenceDigest}`);
+
+    res.status(200).json({
+      acknowledged: true,
+      receipt
+    });
+  });
+
+  /**
+   * POST /api/soar/execute
+   * Direct SOC / Tabletop SOAR trigger (defaults to DRY_RUN unless explicitly set, or requires valid payload).
+   */
+  router.post('/execute', async (req: Request, res: Response) => {
+    const rawBody = (req.body || {}) as Record<string, unknown>;
+    if (!rawBody['eventCategory'] && !rawBody['playbookId']) {
+      res.status(400).json({
+        error: 'Missing required field: eventCategory or playbookId.'
+      });
+      return;
+    }
+
+    const callerIp = IpBlocklistService.extractClientIp(
+      req.headers as Record<string, unknown>,
+      req.socket?.remoteAddress || ''
+    );
+    const alertEvent = normalizeAlertPayload(
+      {
+        ...rawBody,
+        // Default manual API invocations to DRY_RUN unless explicitly requesting AUTOMATED_CONTAINMENT
+        mode: rawBody['mode'] === 'AUTOMATED_CONTAINMENT' ? 'AUTOMATED_CONTAINMENT' : 'DRY_RUN'
+      },
+      rawBody['source'] === 'BIGQUERY_SIEM' ? 'BIGQUERY_SIEM' : 'MANUAL_SOC',
+      rawBody['offendingIp'] ? undefined : callerIp || undefined
+    );
+
+    const receipt = await SoarOrchestratorService.orchestrateAlert(alertEvent);
+    res.status(200).json({ receipt });
+  });
+
+  /**
+   * POST /api/soar/containment/reset
+   * Resets server-side SOAR containment lockdown — strictly requires M-of-N Dual-Custody verification.
+   */
+  router.post('/containment/reset', (req: Request, res: Response) => {
+    const rawBody = (req.body || {}) as Record<string, unknown>;
+    const rawDual = rawBody['dualCustody'] as Record<string, unknown> | undefined;
+    const verification = SoarOrchestratorService.verifyDualCustody(
+      rawDual
+        ? {
+            requestorRole: String(rawDual['requestorRole'] || ''),
+            authorizerRole: String(rawDual['authorizerRole'] || ''),
+            rationale: String(rawDual['rationale'] || '')
+          }
+        : undefined
+    );
+
+    if (!verification.verified) {
+      res.status(403).json({
+        error: 'Dual-Custody verification failed for containment reset.',
+        reason: verification.reason
+      });
+      return;
+    }
+
+    SoarOrchestratorService.setContainmentActive(false);
+    res.status(200).json({
+      containmentModeActive: false,
+      message: `Containment lockdown lifted. ${verification.reason}`
+    });
+  });
+
+  return router;
+}
