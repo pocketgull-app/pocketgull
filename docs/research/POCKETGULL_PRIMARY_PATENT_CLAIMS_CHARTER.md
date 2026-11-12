@@ -727,7 +727,7 @@ The present disclosure overcomes the aforementioned deficiencies through ten int
 400. The medium of claim 396, integrated into a sovereign indigenous health data repository under tribal institutional review board (IRB) governance.
 
 ### Cluster 21: J++ Mechanistic Interpretability Lens & 12-Pole Clinical Activation Steering Calibrator (Claims 401–420)
-*Primary Code Artifacts*: [`src/services/interpretability/clinical-drift-calibrator.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/interpretability/clinical-drift-calibrator.service.ts), [`src/components/modals/clinical-drift-calibrator-hud.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/modals/clinical-drift-calibrator-hud.component.ts), [`scripts/preflight_drift_self_heal_gate.mjs`](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/preflight_drift_self_heal_gate.mjs)  
+*Primary Code Artifacts*: [`src/services/interpretability/clinical-drift-calibrator.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/interpretability/clinical-drift-calibrator.service.ts), [`src/components/modals/clinical-drift-calibrator-hud.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/clinical/clinical-drift-calibrator-hud.component.ts), [`scripts/preflight_drift_self_heal_gate.mjs`](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/preflight_drift_self_heal_gate.mjs)  
 *USPTO Docket*: `PG-PAT-2026-DRIFT-001`
 
 401. **A computer-implemented mechanistic interpretability and conversational drift mitigation system for clinical artificial intelligence**, comprising:

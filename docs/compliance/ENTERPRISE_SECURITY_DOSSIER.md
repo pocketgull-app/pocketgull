@@ -113,6 +113,7 @@ PocketGull maintains an explicit zero-trust vendor perimeter. Only authorized, B
 * **Coordinated Vulnerability Disclosure**: Governed by RFC 9116 `.well-known/security.txt`. Private disclosures are received via GitHub Security Advisories or `dpo@pocketgull.app` with guaranteed 48-hour response SLAs.
 * **Forensic Audit Logging**: All high-impact operations (STAT emergency overrides, bulk exports) generate immutable SHA-256 evidence digests (`IIncidentForensicSnapshot`) recording timestamp, clinician role, and cryptographically hashed action payloads.
 * **Automated Tabletop Exercise Suite**: Continuous resilience drills simulate upstream LLM outages, indirect prompt injection attempts, and synthetic PHI taint leaks (`npm run tabletop:drill`).
+* **Business Continuity & Disaster Recovery (`PG-SOP-BCP-01`)**: Formal FEMA Ready.gov & HIPAA `45 CFR § 164.308(a)(7)` contingency, BIA RTO/RPO tiers, local-first edge failover, and Cloud Run multi-region DR runbooks are governed in [BUSINESS_CONTINUITY_RECOVERY_PLAN.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/compliance/BUSINESS_CONTINUITY_RECOVERY_PLAN.md) alongside [INCIDENT_RESPONSE_BREACH_PLAYBOOKS.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/compliance/INCIDENT_RESPONSE_BREACH_PLAYBOOKS.md).
 
 ---
 

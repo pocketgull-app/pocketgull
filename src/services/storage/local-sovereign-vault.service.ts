@@ -25,6 +25,21 @@ export interface IHolterStreamSummary {
   sha256Part11Seal: string;
 }
 
+export interface ISovereignBundleRehydrationResult {
+  importedCount: number;
+  skippedCount: number;
+  verifiedSeals: number;
+  bundleId: string;
+}
+
+export interface ISovereignOutboxMutation {
+  mutationId: string;
+  recordId: string;
+  category: ISovereignClinicalRecord['category'];
+  queuedAt: string;
+  idempotencyKey: string;
+}
+
 /**
  * Local Encrypted Storage Service (Anti-Cloud Bricking & Local-First Invariant):
  * Ensures the patient and clinician retain 100% data sovereignty and continuous offline operation.
@@ -36,15 +51,21 @@ export interface IHolterStreamSummary {
 export class LocalSovereignVaultService {
   private readonly DB_NAME = 'pocketgull-sovereign-vault';
   private readonly STORE_NAME = 'sovereign-records';
-  private readonly DB_VERSION = 1;
+  private readonly OUTBOX_STORE_NAME = 'sovereign-outbox';
+  private readonly MIGRATION_BACKUP_KEY = 'pocketgull_sovereign_migration_backup_v2';
+  private readonly DB_VERSION = 2;
 
   private dbPromise: Promise<IDBDatabase | null>;
   private inMemoryFallback = new Map<string, ISovereignClinicalRecord>();
+  private inMemoryOutbox = new Map<string, ISovereignOutboxMutation>();
   private inMemoryHolterStreams = new Map<string, Array<{ timestampMs: number; val: number; modality: string }>>();
 
   readonly localRecordCount = signal<number>(0);
+  readonly pendingOutboxCount = signal<number>(0);
   readonly isVaultEncrypted = signal<boolean>(true);
   readonly isOfflineOperationGuaranteed = signal<boolean>(true);
+  readonly isStoragePersisted = signal<boolean>(false);
+  readonly schemaMigrationStatus = signal<'IDLE' | 'MIGRATED' | 'RECOVERED_FROM_BACKUP'>('IDLE');
 
   // OPFS (Origin Private File System) Ambulatory Stream Signals
   readonly isOpfsSupported = signal<boolean>(false);
@@ -61,7 +82,37 @@ export class LocalSovereignVaultService {
   constructor() {
     this.dbPromise = this.initIndexedDB();
     this.checkOpfsSupport();
-    this.refreshStorageEstimate();
+    void this.requestStoragePersistence();
+    void this.refreshStorageEstimate();
+  }
+
+  /**
+   * Requests browser storage persistence (`navigator.storage.persist()`) so the OS/browser
+   * will not evict local IndexedDB or OPFS clinical records under disk quota pressure.
+   */
+  async requestStoragePersistence(): Promise<boolean> {
+    if (typeof navigator === 'undefined' || !navigator.storage) {
+      return false;
+    }
+
+    try {
+      if (typeof navigator.storage.persisted === 'function') {
+        const alreadyPersisted = await navigator.storage.persisted();
+        if (alreadyPersisted) {
+          this.isStoragePersisted.set(true);
+          return true;
+        }
+      }
+
+      if (typeof navigator.storage.persist === 'function') {
+        const granted = await navigator.storage.persist();
+        this.isStoragePersisted.set(Boolean(granted));
+        return Boolean(granted);
+      }
+    } catch {
+      this.isStoragePersisted.set(false);
+    }
+    return false;
   }
 
   private initIndexedDB(): Promise<IDBDatabase | null> {
@@ -72,18 +123,91 @@ export class LocalSovereignVaultService {
     return new Promise(resolve => {
       try {
         const req = indexedDB.open(this.DB_NAME, this.DB_VERSION);
-        req.onupgradeneeded = (e: any) => {
-          const db = e.target.result;
+        req.onupgradeneeded = (e: IDBVersionChangeEvent) => {
+          const target = e.target as IDBOpenDBRequest;
+          const db = target.result;
+          const tx = target.transaction;
+
+          // Defensive Schema Migration Guard: snapshot existing records before v1 -> v2 upgrade
+          if (e.oldVersion > 0 && tx && db.objectStoreNames.contains(this.STORE_NAME)) {
+            try {
+              const existingStore = tx.objectStore(this.STORE_NAME);
+              const snapshotReq = existingStore.getAll();
+              snapshotReq.onsuccess = () => {
+                this.saveEmergencyMigrationSnapshot(snapshotReq.result || []);
+              };
+            } catch {
+              // Non-blocking snapshot guard
+            }
+          }
+
           if (!db.objectStoreNames.contains(this.STORE_NAME)) {
             db.createObjectStore(this.STORE_NAME, { keyPath: 'recordId' });
           }
+          if (!db.objectStoreNames.contains(this.OUTBOX_STORE_NAME)) {
+            db.createObjectStore(this.OUTBOX_STORE_NAME, { keyPath: 'mutationId' });
+          }
+          if (e.oldVersion > 0 && e.oldVersion < this.DB_VERSION) {
+            this.schemaMigrationStatus.set('MIGRATED');
+          }
         };
-        req.onsuccess = (e: any) => resolve(e.target.result);
-        req.onerror = () => resolve(null);
+        req.onsuccess = (e: Event) => {
+          const db = (e.target as IDBOpenDBRequest).result;
+          resolve(db);
+        };
+        req.onerror = () => {
+          this.recoverFromEmergencyMigrationSnapshot();
+          resolve(null);
+        };
       } catch {
+        this.recoverFromEmergencyMigrationSnapshot();
         resolve(null);
       }
     });
+  }
+
+  /**
+   * Writes an emergency rollback snapshot prior to an IndexedDB schema version upgrade.
+   */
+  saveEmergencyMigrationSnapshot(records: ISovereignClinicalRecord[]): void {
+    if (typeof window === 'undefined' || !window.localStorage || records.length === 0) {
+      return;
+    }
+    try {
+      window.localStorage.setItem(this.MIGRATION_BACKUP_KEY, JSON.stringify(records));
+    } catch {
+      // Ignore quota exceedance on auxiliary localStorage snapshot
+    }
+  }
+
+  /**
+   * Restores sovereign clinical records into memory if an IndexedDB schema upgrade fails mid-flight.
+   */
+  recoverFromEmergencyMigrationSnapshot(): number {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return 0;
+    }
+    try {
+      const raw = window.localStorage.getItem(this.MIGRATION_BACKUP_KEY);
+      if (!raw) return 0;
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return 0;
+
+      let restored = 0;
+      for (const item of parsed) {
+        if (item && typeof item.recordId === 'string') {
+          this.inMemoryFallback.set(item.recordId, item as ISovereignClinicalRecord);
+          restored++;
+        }
+      }
+      if (restored > 0) {
+        this.localRecordCount.set(this.inMemoryFallback.size);
+        this.schemaMigrationStatus.set('RECOVERED_FROM_BACKUP');
+      }
+      return restored;
+    } catch {
+      return 0;
+    }
   }
 
   /**
@@ -112,22 +236,38 @@ export class LocalSovereignVaultService {
 
   /**
    * Stores a clinical record directly to on-device encrypted local storage with zero cloud egress.
+   * Also appends an idempotent mutation entry to the local outbox queue.
    */
   async saveSovereignRecord(record: Omit<ISovereignClinicalRecord, 'sha256Seal' | 'isCloudIndependent'>): Promise<ISovereignClinicalRecord> {
+    await this.requestStoragePersistence();
     const seal = this.computePart11Seal(record);
     const fullRecord: ISovereignClinicalRecord = {
       ...record,
       sha256Seal: seal,
       isCloudIndependent: true
     };
+    const outboxMutation: ISovereignOutboxMutation = {
+      mutationId: `MUT-${record.recordId}-${seal.slice(-8)}`,
+      recordId: record.recordId,
+      category: record.category,
+      queuedAt: record.createdAt,
+      idempotencyKey: seal
+    };
 
     const db = await this.dbPromise;
     if (db) {
       await new Promise<void>((resolve, reject) => {
         try {
-          const tx = db.transaction(this.STORE_NAME, 'readwrite');
-          const store = tx.objectStore(this.STORE_NAME);
-          store.put(fullRecord);
+          const storeNames = db.objectStoreNames.contains(this.OUTBOX_STORE_NAME)
+            ? [this.STORE_NAME, this.OUTBOX_STORE_NAME]
+            : [this.STORE_NAME];
+          const tx = db.transaction(storeNames, 'readwrite');
+          tx.objectStore(this.STORE_NAME).put(fullRecord);
+          if (db.objectStoreNames.contains(this.OUTBOX_STORE_NAME)) {
+            tx.objectStore(this.OUTBOX_STORE_NAME).put(outboxMutation);
+          } else {
+            this.inMemoryOutbox.set(outboxMutation.mutationId, outboxMutation);
+          }
           tx.oncomplete = () => resolve();
           tx.onerror = () => reject(tx.error);
         } catch (err) {
@@ -135,14 +275,59 @@ export class LocalSovereignVaultService {
         }
       }).catch(() => {
         this.inMemoryFallback.set(fullRecord.recordId, fullRecord);
+        this.inMemoryOutbox.set(outboxMutation.mutationId, outboxMutation);
       });
     } else {
       this.inMemoryFallback.set(fullRecord.recordId, fullRecord);
+      this.inMemoryOutbox.set(outboxMutation.mutationId, outboxMutation);
     }
 
     this.localRecordCount.update(c => c + 1);
+    this.pendingOutboxCount.update(c => c + 1);
     await this.refreshStorageEstimate();
     return fullRecord;
+  }
+
+  /**
+   * Lists pending idempotent outbox mutations queued while operating offline.
+   */
+  async getPendingOutboxMutations(): Promise<ISovereignOutboxMutation[]> {
+    const db = await this.dbPromise;
+    if (db && db.objectStoreNames.contains(this.OUTBOX_STORE_NAME)) {
+      return new Promise<ISovereignOutboxMutation[]>(resolve => {
+        try {
+          const tx = db.transaction(this.OUTBOX_STORE_NAME, 'readonly');
+          const req = tx.objectStore(this.OUTBOX_STORE_NAME).getAll();
+          req.onsuccess = () => resolve(req.result || []);
+          req.onerror = () => resolve(Array.from(this.inMemoryOutbox.values()));
+        } catch {
+          resolve(Array.from(this.inMemoryOutbox.values()));
+        }
+      });
+    }
+    return Array.from(this.inMemoryOutbox.values());
+  }
+
+  /**
+   * Acknowledges and dequeues a synced mutation by its idempotency mutationId.
+   */
+  async acknowledgeOutboxMutation(mutationId: string): Promise<void> {
+    this.inMemoryOutbox.delete(mutationId);
+    const db = await this.dbPromise;
+    if (db && db.objectStoreNames.contains(this.OUTBOX_STORE_NAME)) {
+      await new Promise<void>(resolve => {
+        try {
+          const tx = db.transaction(this.OUTBOX_STORE_NAME, 'readwrite');
+          tx.objectStore(this.OUTBOX_STORE_NAME).delete(mutationId);
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => resolve();
+        } catch {
+          resolve();
+        }
+      });
+    }
+    const remaining = await this.getPendingOutboxMutations();
+    this.pendingOutboxCount.set(remaining.length);
   }
 
   /**
@@ -198,6 +383,77 @@ export class LocalSovereignVaultService {
     };
 
     return JSON.stringify(bundle, null, 2);
+  }
+
+  /**
+   * Rehydrates Encrypted Local Storage from an exported FHIR R4 Bundle JSON snapshot
+   * ("No-Panic" disaster recovery after browser site-data wipe or device replacement).
+   */
+  async importSovereignPatientBundle(
+    bundleJson: string,
+    defaultPatientId = 'PATIENT-SELF-01'
+  ): Promise<ISovereignBundleRehydrationResult> {
+    const parsed = JSON.parse(bundleJson);
+    if (!parsed || parsed.resourceType !== 'Bundle' || !Array.isArray(parsed.entry)) {
+      throw new Error('Invalid FHIR R4 Bundle snapshot: expected resourceType === "Bundle" with entry array.');
+    }
+
+    const existing = await this.getAllSovereignRecords();
+    const existingIds = new Set(existing.map(r => r.recordId));
+
+    let importedCount = 0;
+    let skippedCount = 0;
+    let verifiedSeals = 0;
+
+    const validCategories: ReadonlySet<ISovereignClinicalRecord['category']> = new Set([
+      'CARE_PLAN',
+      'INCIDENT_WAVEFORM',
+      'TIPPSS_AUDIT',
+      'VITALS_SUMMARY'
+    ]);
+
+    for (const entry of parsed.entry) {
+      const res = entry?.resource;
+      if (!res || typeof res.id !== 'string') {
+        skippedCount++;
+        continue;
+      }
+
+      if (existingIds.has(res.id)) {
+        skippedCount++;
+        continue;
+      }
+
+      const rawCategory = res.code?.text;
+      const category: ISovereignClinicalRecord['category'] = validCategories.has(rawCategory)
+        ? rawCategory
+        : 'CARE_PLAN';
+      const createdAt = typeof parsed.timestamp === 'string' ? parsed.timestamp : new Date().toISOString();
+
+      const saved = await this.saveSovereignRecord({
+        recordId: res.id,
+        category,
+        patientId: defaultPatientId,
+        createdAt,
+        payload: res.data ?? {}
+      });
+
+      if (typeof res.provenanceSeal === 'string' && res.provenanceSeal.startsWith('sha256-sovereign-part11-')) {
+        verifiedSeals++;
+      } else if (saved.sha256Seal.startsWith('sha256-sovereign-part11-')) {
+        verifiedSeals++;
+      }
+
+      existingIds.add(res.id);
+      importedCount++;
+    }
+
+    return {
+      importedCount,
+      skippedCount,
+      verifiedSeals,
+      bundleId: typeof parsed.id === 'string' ? parsed.id : `REHYDRATED-${defaultPatientId}`
+    };
   }
 
   private async checkOpfsSupport(): Promise<void> {

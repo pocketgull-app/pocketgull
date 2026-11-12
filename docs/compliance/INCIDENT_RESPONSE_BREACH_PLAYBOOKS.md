@@ -3,7 +3,9 @@
 **Governing Standard**: NIST SP 800-61 Rev. 2, HIPAA Breach Notification Rule (45 CFR §§ 164.400–414), CISA CIRCIA, FDA 21 CFR Part 11  
 **Incident Commander & Lead DPO**: `dpo@pocketgull.app`  
 **Security Notification Channel**: `projects/gen-lang-client-0540208645/notificationChannels/14170492235561525169`  
+**Automated SOAR Engine**: [`SoarOrchestratorService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/server/services/soar-orchestrator.service.ts) & `/api/soar/pubsub/webhook` (`npm run soar:audit`)  
 **Target Cloud Platform**: Google Cloud Platform (`gen-lang-client-0540208645`)  
+**Companion Continuity & DR SOP**: [BUSINESS_CONTINUITY_RECOVERY_PLAN.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/compliance/BUSINESS_CONTINUITY_RECOVERY_PLAN.md) (`PG-SOP-BCP-01`)
 
 ---
 

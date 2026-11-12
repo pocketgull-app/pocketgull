@@ -87,4 +87,33 @@ describe('StorageService Hermetic Persistence & In-Memory Fallback Suite', () =>
     expect(loaded?.state.selectedPartId).toBe('cervical-spine');
     expect(loaded?.chatHistory.length).toBe(2);
   });
+
+  it('6. Requests persistent storage (navigator.storage.persist) on clinical write', async () => {
+    const originalStorage = navigator.storage;
+    let persistCalled = false;
+
+    Object.defineProperty(navigator, 'storage', {
+      configurable: true,
+      value: {
+        ...originalStorage,
+        persisted: async () => false,
+        persist: async () => {
+          persistCalled = true;
+          return true;
+        }
+      }
+    });
+
+    try {
+      const granted = await service.ensurePersistentStorage();
+      expect(granted).toBe(true);
+      expect(persistCalled).toBe(true);
+      expect(service.isStoragePersisted()).toBe(true);
+    } finally {
+      Object.defineProperty(navigator, 'storage', {
+        configurable: true,
+        value: originalStorage
+      });
+    }
+  });
 });
