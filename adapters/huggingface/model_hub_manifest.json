@@ -14,7 +14,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-ambient-soap-scribe"
+    "directory": "adapters/huggingface/gemma-3-ambient-soap-scribe"
   },
   {
     "id": "gemma-3-biomarker-velocity",
@@ -31,7 +31,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-biomarker-velocity"
+    "directory": "adapters/huggingface/gemma-3-biomarker-velocity"
   },
   {
     "id": "gemma-3-clinical-rxguard",
@@ -48,7 +48,7 @@
       "medqa_retention_pct": 90.6,
       "popperian_h0_pct": 97.1
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-clinical-rxguard"
+    "directory": "adapters/huggingface/gemma-3-clinical-rxguard"
   },
   {
     "id": "gemma-3-grand-rounds-care-presenter",
@@ -65,7 +65,7 @@
       "medqa_retention_pct": 91.2,
       "popperian_h0_pct": 96.5
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-grand-rounds-care-presenter"
+    "directory": "adapters/huggingface/gemma-3-grand-rounds-care-presenter"
   },
   {
     "id": "gemma-3-hipaa-tamper-sentinel",
@@ -82,7 +82,7 @@
       "medqa_retention_pct": 90.1,
       "popperian_h0_pct": 98.2
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-hipaa-tamper-sentinel"
+    "directory": "adapters/huggingface/gemma-3-hipaa-tamper-sentinel"
   },
   {
     "id": "gemma-3-mandiant-defense-auditor",
@@ -99,7 +99,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-mandiant-defense-auditor"
+    "directory": "adapters/huggingface/gemma-3-mandiant-defense-auditor"
   },
   {
     "id": "gemma-3-nof1-trial-designer",
@@ -116,7 +116,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-nof1-trial-designer"
+    "directory": "adapters/huggingface/gemma-3-nof1-trial-designer"
   },
   {
     "id": "gemma-3-ophthalmology-retina-cds",
@@ -133,7 +133,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-ophthalmology-retina-cds"
+    "directory": "adapters/huggingface/gemma-3-ophthalmology-retina-cds"
   },
   {
     "id": "gemma-3-osteopathic-rounds-director",
@@ -150,7 +150,7 @@
       "medqa_retention_pct": 91.2,
       "popperian_h0_pct": 96.5
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-osteopathic-rounds-director"
+    "directory": "adapters/huggingface/gemma-3-osteopathic-rounds-director"
   },
   {
     "id": "gemma-3-phenopackets-genomics",
@@ -167,7 +167,7 @@
       "medqa_retention_pct": 91.2,
       "popperian_h0_pct": 96.5
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-phenopackets-genomics"
+    "directory": "adapters/huggingface/gemma-3-phenopackets-genomics"
   },
   {
     "id": "gemma-3-prior-auth-cms0057",
@@ -184,7 +184,7 @@
       "medqa_retention_pct": 89.5,
       "popperian_h0_pct": 95.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-prior-auth-cms0057"
+    "directory": "adapters/huggingface/gemma-3-prior-auth-cms0057"
   },
   {
     "id": "gemma-3-sdoh-equity-compass",
@@ -201,7 +201,7 @@
       "medqa_retention_pct": 89.8,
       "popperian_h0_pct": 96
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-sdoh-equity-compass"
+    "directory": "adapters/huggingface/gemma-3-sdoh-equity-compass"
   },
   {
     "id": "gemma-3-sensory-ambient",
@@ -218,7 +218,7 @@
       "medqa_retention_pct": 89.2,
       "popperian_h0_pct": 95.4
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-sensory-ambient"
+    "directory": "adapters/huggingface/gemma-3-sensory-ambient"
   },
   {
     "id": "gemma-3-tri-paradigm-radar",
@@ -235,7 +235,7 @@
       "medqa_retention_pct": 91.4,
       "popperian_h0_pct": 96.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\gemma-3-tri-paradigm-radar"
+    "directory": "adapters/huggingface/gemma-3-tri-paradigm-radar"
   },
   {
     "id": "pocketgull-albatross-multimodal",
@@ -252,7 +252,7 @@
       "medqa_retention_pct": 91.2,
       "popperian_h0_pct": 96.5
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-albatross-multimodal"
+    "directory": "adapters/huggingface/pocketgull-albatross-multimodal"
   },
   {
     "id": "pocketgull-allometric-sfi-1b",
@@ -269,7 +269,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-allometric-sfi-1b"
+    "directory": "adapters/huggingface/pocketgull-allometric-sfi-1b"
   },
   {
     "id": "pocketgull-causal-posology-4b",
@@ -286,7 +286,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-causal-posology-4b"
+    "directory": "adapters/huggingface/pocketgull-causal-posology-4b"
   },
   {
     "id": "pocketgull-circular-posology-1b",
@@ -303,7 +303,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-circular-posology-1b"
+    "directory": "adapters/huggingface/pocketgull-circular-posology-1b"
   },
   {
     "id": "pocketgull-compass-2b",
@@ -320,7 +320,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-compass-2b"
+    "directory": "adapters/huggingface/pocketgull-compass-2b"
   },
   {
     "id": "pocketgull-edge-onnx-recovery",
@@ -337,7 +337,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-edge-onnx-recovery"
+    "directory": "adapters/huggingface/pocketgull-edge-onnx-recovery"
   },
   {
     "id": "pocketgull-lateral-flow-edge",
@@ -354,7 +354,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-lateral-flow-edge"
+    "directory": "adapters/huggingface/pocketgull-lateral-flow-edge"
   },
   {
     "id": "pocketgull-rxguard-pgx",
@@ -371,7 +371,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-rxguard-pgx"
+    "directory": "adapters/huggingface/pocketgull-rxguard-pgx"
   },
   {
     "id": "pocketgull-scribe-soap",
@@ -388,7 +388,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-scribe-soap"
+    "directory": "adapters/huggingface/pocketgull-scribe-soap"
   },
   {
     "id": "pocketgull-sentinel-peft",
@@ -405,7 +405,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-sentinel-peft"
+    "directory": "adapters/huggingface/pocketgull-sentinel-peft"
   },
   {
     "id": "pocketgull-skeptic-cds-4b",
@@ -422,7 +422,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-skeptic-cds-4b"
+    "directory": "adapters/huggingface/pocketgull-skeptic-cds-4b"
   },
   {
     "id": "pocketgull-steeep-quality",
@@ -439,7 +439,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-steeep-quality"
+    "directory": "adapters/huggingface/pocketgull-steeep-quality"
   },
   {
     "id": "pocketgull-tern-edge",
@@ -456,7 +456,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-tern-edge"
+    "directory": "adapters/huggingface/pocketgull-tern-edge"
   },
   {
     "id": "pocketgull-thermal-posology-1b",
@@ -473,7 +473,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-thermal-posology-1b"
+    "directory": "adapters/huggingface/pocketgull-thermal-posology-1b"
   },
   {
     "id": "pocketgull-veteran-nexus-2b",
@@ -490,7 +490,7 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-veteran-nexus-2b"
+    "directory": "adapters/huggingface/pocketgull-veteran-nexus-2b"
   },
   {
     "id": "pocketgull-waveform-qrs-1d",
@@ -507,6 +507,6 @@
       "medqa_retention_pct": 88.6,
       "popperian_h0_pct": 94.8
     },
-    "directory": "C:\\Users\\philg\\Pocketgull\\pocketgull\\adapters\\huggingface\\pocketgull-waveform-qrs-1d"
+    "directory": "adapters/huggingface/pocketgull-waveform-qrs-1d"
   }
 ]

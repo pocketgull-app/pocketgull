@@ -8,6 +8,7 @@
  */
 
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { execSync, spawn } from 'child_process';
@@ -16,7 +17,7 @@ const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const WORKSPACE_DIR = path.resolve(SCRIPT_DIR, '..');
 const SETTINGS_PATH = path.join(WORKSPACE_DIR, '.vscode', 'settings.json');
 const STATE_PATH = path.join(WORKSPACE_DIR, '.pocketgull_a11y.json');
-const LOCALAPPDATA = process.env.LOCALAPPDATA || 'C:\\Users\\philg\\AppData\\Local';
+const LOCALAPPDATA = process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
 const WIN_THEMES_DIR = path.join(LOCALAPPDATA, 'Microsoft', 'Windows', 'Themes');
 
 const OMP_WASHI = path.join(WORKSPACE_DIR, 'public', 'brand', 'terminal', 'pocketgull-washi.omp.json');

@@ -1,8 +1,9 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const cwd = 'c:\\Users\\philg\\Pocketgull\\pocketgull';
+const cwd = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outputFile = path.join(cwd, 'build_source.tgz');
 
 console.log(`[Tar] Creating clean source archive at ${outputFile}...`);

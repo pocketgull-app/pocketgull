@@ -410,17 +410,13 @@ scripts/output/
 
 
 # ─── Repository front-door hygiene ─────────────────────────────────────────────
-# Confidential IP filings (USPTO provisional specs + generated PDFs + claim charters),
-# grant applications, and internal SOC/GCP incident response dossiers are local-only.
+# Confidential pre-filing USPTO provisional packets and competitive grant drafts
+# remain local-only; public IP charters & sanitized compliance dossiers stay tracked
+# per docs/patents/OPEN_PATENT_PLEDGE_AND_RESEARCH_COVENANT.md (§ 4.1).
 /USPTO_PROVISIONAL_*.pdf
 /docs/patents/USPTO_PROVISIONAL_*.md
-/docs/research/POCKETGULL_IP_AND_PATENT_PORTFOLIO.md
-/docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md
 /docs/research/KAGGLE_BENCHMARKS_GRANT_PROPOSAL.md
 /docs/research/KAGGLE_COMPETITIONS_GRANT_APPLICATION.md
-/docs/compliance/INCIDENT_RESPONSE_BREACH_PLAYBOOKS.md
-/docs/compliance/ENTERPRISE_SECURITY_DOSSIER.md
-/docs/compliance/BUSINESS_CONTINUITY_RECOVERY_PLAN.md
 
 # Local Lighthouse & scratch debug outputs
 sandbox/lighthouse_report.*
