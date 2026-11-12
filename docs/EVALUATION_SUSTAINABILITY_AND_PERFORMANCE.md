@@ -145,8 +145,8 @@ Year 3 Gross Revenue: $9,650,000   | COGS: $560,000  | Gross Margin: 94.2% | EBI
 ---
 
 ## 🔗 Related Documentation
-- [IEEE PES Power & Energy Sustainability](file:///c:/Users/philg/Pocketgull/pocketgull/docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md)
-- [Cloud Cost Governance](file:///c:/Users/philg/Pocketgull/pocketgull/docs/cloud-cost-governance.md)
-- [Pro Forma Financial Model](file:///c:/Users/philg/Pocketgull/pocketgull/PROFORMA.md)
-- [COCOMO II Engineering Valuation](file:///c:/Users/philg/Pocketgull/pocketgull/cocomo2_report.md)
-- [Diataxis Quadrant Map](file:///c:/Users/philg/Pocketgull/pocketgull/docs/DIATAXIS_MAP.md)
+- [IEEE PES Power & Energy Sustainability](docs/IEEE_PES_POWER_ENERGY_SUSTAINABILITY.md)
+- [Cloud Cost Governance](docs/cloud-cost-governance.md)
+- [Pro Forma Financial Model](PROFORMA.md)
+- [COCOMO II Engineering Valuation](cocomo2_report.md)
+- [Diataxis Quadrant Map](docs/DIATAXIS_MAP.md)

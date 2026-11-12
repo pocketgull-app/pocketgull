@@ -55,8 +55,8 @@ High-quality medical AI must be economically sustainable for rural clinics and c
 
 ## Technical Core References
 
-- **Founding README**: [README.md](file:///c:/Users/philg/Pocketgull/pocketgull/README.md)
-- **Clinical Paradigms Guide**: [docs/study/src/pages/clinical-paradigms.mdx](file:///c:/Users/philg/Pocketgull/pocketgull/docs/study/src/pages/clinical-paradigms.mdx)
-- **Jeff Dean Systems Architecture**: [docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md)
-- **Dieter Rams Design Audit**: [docs/DIETER_RAMS_CLINICAL_DESIGN_PRINCIPLES.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/DIETER_RAMS_CLINICAL_DESIGN_PRINCIPLES.md)
-- **Phil Gear Contribution Guide**: [docs/PHIL_GEAR_VISION_AND_CONTRIBUTION_GUIDE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/PHIL_GEAR_VISION_AND_CONTRIBUTION_GUIDE.md)
+- **Founding README**: [README.md](README.md)
+- **Clinical Paradigms Guide**: [docs/study/src/pages/clinical-paradigms.mdx](docs/study/src/pages/clinical-paradigms.mdx)
+- **Jeff Dean Systems Architecture**: [docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md](docs/SIGARCH_QUANTITATIVE_SYSTEMS_ARCHITECTURE.md)
+- **Dieter Rams Design Audit**: [docs/DIETER_RAMS_CLINICAL_DESIGN_PRINCIPLES.md](docs/DIETER_RAMS_CLINICAL_DESIGN_PRINCIPLES.md)
+- **Phil Gear Contribution Guide**: [docs/PHIL_GEAR_VISION_AND_CONTRIBUTION_GUIDE.md](docs/PHIL_GEAR_VISION_AND_CONTRIBUTION_GUIDE.md)

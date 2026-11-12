@@ -28,7 +28,7 @@ graph TD
 ### 1. HIPAA Safe Harbor §164.514 De-Identification
 * **SIGSAC Principle**: Protected Health Information (PHI) must have all 18 explicit identifiers (names, exact geographic data, dates, phone numbers, SSNs, medical record numbers) stripped prior to cloud AI model transmission.
 * **Pocket-Gull Application**:
-  - Encodes demographic archetypes (e.g., `Homo Sapiens (Female, Neurological, 34y)` or historical/scientific luminaries like Curie, Darwin, Kahlo) in [PatientStateService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts), guaranteeing zero PHI leakage to third-party endpoints.
+  - Encodes demographic archetypes (e.g., `Homo Sapiens (Female, Neurological, 34y)` or historical/scientific luminaries like Curie, Darwin, Kahlo) in [PatientStateService](src/services/patient-state.service.ts), guaranteeing zero PHI leakage to third-party endpoints.
 
 ---
 
@@ -51,7 +51,7 @@ graph TD
 ### 4. Strict Content Security Policy (CSP) & Egress Boundaries
 * **SIGSAC Principle**: Web applications managing healthcare data must enforce restrictive CSP headers, prohibiting untrusted inline script execution and un-whitelisted outbound network connections.
 * **Pocket-Gull Application**:
-  - Enforces strict CSP response headers in Express SSR backend ([server.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/server.ts)), restricting WebSocket connections to authorized Gemini and backend endpoints.
+  - Enforces strict CSP response headers in Express SSR backend ([server.ts](src/server.ts)), restricting WebSocket connections to authorized Gemini and backend endpoints.
 
 ---
 
@@ -74,6 +74,6 @@ graph TD
 
 ## Technical Reference Links
 
-- **Security & Privacy Policy**: [SECURITY.md](file:///c:/Users/philg/Pocketgull/pocketgull/SECURITY.md)
-- **Express SSR Guard**: [src/server.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/server.ts)
-- **Patient State Central**: [src/services/patient-state.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts)
+- **Security & Privacy Policy**: [SECURITY.md](SECURITY.md)
+- **Express SSR Guard**: [src/server.ts](src/server.ts)
+- **Patient State Central**: [src/services/patient-state.service.ts](src/services/patient-state.service.ts)

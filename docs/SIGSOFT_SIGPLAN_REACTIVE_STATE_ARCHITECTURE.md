@@ -28,7 +28,7 @@ graph TD
 ### 1. Push/Pull Reactive Signal Graph
 * **SIGPLAN Principle**: Reactive state management systems must avoid imperative mutation and un-tracked event subscriptions. Push/pull signal DAGs guarantee glitcheless evaluation where dependent values update synchronously on demand.
 * **Pocket-Gull Application**:
-  - Centralizes state management in [PatientStateService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts) using `WritableSignal` and `Signal` derived via `computed()`. Completely eliminates un-subscribed RxJS Observable memory leaks.
+  - Centralizes state management in [PatientStateService](src/services/patient-state.service.ts) using `WritableSignal` and `Signal` derived via `computed()`. Completely eliminates un-subscribed RxJS Observable memory leaks.
 
 ---
 
@@ -42,7 +42,7 @@ graph TD
 ### 3. Deterministic Clinical Strategy Protocol DSL
 * **SIGPLAN Principle**: Domain-specific logic (e.g., symptom scoring, dosage recalculations, evidence synthesis) must be expressed through deterministic functions with explicit input/output contracts.
 * **Pocket-Gull Application**:
-  - Implements modular clinical synthesis pipelines in [infinite-clinical-synthesis.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/infinite-clinical-synthesis.service.ts), ensuring deterministic care plan generation.
+  - Implements modular clinical synthesis pipelines in [infinite-clinical-synthesis.service.ts](src/services/infinite-clinical-synthesis.service.ts), ensuring deterministic care plan generation.
 
 ---
 
@@ -72,6 +72,6 @@ graph TD
 
 ## Technical Reference Links
 
-- **Patient State Central**: [src/services/patient-state.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts)
-- **Infinite Clinical Synthesis**: [src/services/infinite-clinical-synthesis.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/infinite-clinical-synthesis.service.ts)
-- **Project Rules & Conventions**: [AGENTS.md](file:///c:/Users/philg/Pocketgull/pocketgull/.agents/AGENTS.md)
+- **Patient State Central**: [src/services/patient-state.service.ts](src/services/patient-state.service.ts)
+- **Infinite Clinical Synthesis**: [src/services/infinite-clinical-synthesis.service.ts](src/services/infinite-clinical-synthesis.service.ts)
+- **Project Rules & Conventions**: [AGENTS.md](.agents/AGENTS.md)

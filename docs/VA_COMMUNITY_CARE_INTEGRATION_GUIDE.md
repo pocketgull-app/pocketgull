@@ -96,6 +96,6 @@ When private clinics generate paper records or PDF attachments for third-party a
 
 ## 6. Open Source Reference Implementations
 
-* **Angular 22 Signals**: [`src/components/federal-uswds-portal.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/federal-uswds-portal.component.ts)
-* **React 19 Standalone Package**: [`packages/uswds-react-cds/`](file:///c:/Users/philg/Pocketgull/pocketgull/packages/uswds-react-cds/)
-* **Demarcation Standard**: [`docs/FEDERAL_DESIGN_SYSTEM_DEMARCATION.md`](file:///c:/Users/philg/Pocketgull/pocketgull/docs/FEDERAL_DESIGN_SYSTEM_DEMARCATION.md)
+* **Angular 22 Signals**: [`src/components/federal-uswds-portal.component.ts`](src/components/federal-uswds-portal.component.ts)
+* **React 19 Standalone Package**: [`packages/uswds-react-cds/`](packages/uswds-react-cds/)
+* **Demarcation Standard**: [`docs/FEDERAL_DESIGN_SYSTEM_DEMARCATION.md`](docs/FEDERAL_DESIGN_SYSTEM_DEMARCATION.md)

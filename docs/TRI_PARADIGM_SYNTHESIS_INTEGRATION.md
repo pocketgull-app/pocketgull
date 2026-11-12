@@ -78,8 +78,8 @@ graph TD
 
 ## Technical Implementations
 
-- **Service**: [src/services/infinite-clinical-synthesis.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/infinite-clinical-synthesis.service.ts)
-- **FHIR R4 TM1 & OKN Extensions**: [src/models/fhir-skeptical-extensions.model.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/models/fhir-skeptical-extensions.model.ts)
-- **MoE Router Integration**: [src/services/clinical-moe-router.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/clinical-moe-router.service.ts)
-- **UI Telemetry HUD**: [src/components/shared/pathways-moe-badge.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/shared/pathways-moe-badge.component.ts)
-- **Unit Suite**: [src/services/infinite-clinical-synthesis.service.spec.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/infinite-clinical-synthesis.service.spec.ts)
+- **Service**: [src/services/infinite-clinical-synthesis.service.ts](src/services/infinite-clinical-synthesis.service.ts)
+- **FHIR R4 TM1 & OKN Extensions**: [src/models/fhir-skeptical-extensions.model.ts](src/models/fhir-skeptical-extensions.model.ts)
+- **MoE Router Integration**: [src/services/clinical-moe-router.service.ts](src/services/clinical-moe-router.service.ts)
+- **UI Telemetry HUD**: [src/components/shared/pathways-moe-badge.component.ts](src/components/shared/pathways-moe-badge.component.ts)
+- **Unit Suite**: [src/services/infinite-clinical-synthesis.service.spec.ts](src/services/infinite-clinical-synthesis.service.spec.ts)

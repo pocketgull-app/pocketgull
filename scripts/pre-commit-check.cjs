@@ -343,7 +343,6 @@ if (process.platform === 'win32') {
   const possiblePaths = [
     path.join(workspaceRoot, '.venv', 'Scripts', 'python.exe'),
     path.join(process.env.USERPROFILE || '', 'anaconda3', 'python.exe'),
-    'C:\\Users\\philg\\anaconda3\\python.exe',
     'python'
   ];
   for (const p of possiblePaths) {

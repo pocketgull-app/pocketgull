@@ -20,7 +20,7 @@ Modern life and digital interfaces are fraught with cognitive overload, fragment
 ## ⚡ Quickstart
 
 ### 1. Zero-Install Vanilla Browser Demo
-Simply open [`demo/index.html`](file:///c:/Users/philg/Pocketgull/pocketgull/packages/open-sanctuary/demo/index.html) in any browser (Chromebook, iPhone, Android, or Desktop) or serve it statically.
+Simply open [`demo/index.html`](packages/open-sanctuary/demo/index.html) in any browser (Chromebook, iPhone, Android, or Desktop) or serve it statically.
 
 ### 2. Install as an NPM Package
 ```bash

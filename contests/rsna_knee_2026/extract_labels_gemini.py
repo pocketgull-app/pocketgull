@@ -176,7 +176,7 @@ def call_lemonade_local(reports_batch: List[Tuple[str, str]], base_url: str = LE
 
 def get_access_token() -> str:
     """Get a fresh access token via gcloud ADC."""
-    gcloud_cmd = r'C:\Users\philg\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin\gcloud.cmd'
+    gcloud_cmd = r'~/AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin\gcloud.cmd'
     result = subprocess.run(
         [gcloud_cmd, 'auth', 'application-default', 'print-access-token'],
         capture_output=True, text=True, timeout=15, shell=True

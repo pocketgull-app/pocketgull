@@ -9,7 +9,7 @@ This document outlines the standard operating procedures, repository boundaries,
 ## 1. Core Principles for Specialists
 
 1. **Contract-Driven Boundaries**:
-   * All inter-service communications, request/response models, and ML predictions MUST strictly adhere to the OpenAPI specification in [`contracts/clinical-ml-openapi.yaml`](file:///c:/Users/philg/Pocketgull/pocketgull/contracts/clinical-ml-openapi.yaml) or FHIR R4 schema standards.
+   * All inter-service communications, request/response models, and ML predictions MUST strictly adhere to the OpenAPI specification in [`contracts/clinical-ml-openapi.yaml`](contracts/clinical-ml-openapi.yaml) or FHIR R4 schema standards.
    * If an endpoint schema needs to evolve, update the contract first before modifying implementation code.
 
 2. **Least Privilege & IP Isolation**:
@@ -69,7 +69,7 @@ This document outlines the standard operating procedures, repository boundaries,
    ```
 3. **Automated Status Checks**:
    * Pull requests automatically trigger CodeQL security scanning, typechecking, and unit test suites.
-   * Merges require signoff from the designated team in [`.github/CODEOWNERS`](file:///c:/Users/philg/Pocketgull/pocketgull/.github/CODEOWNERS).
+   * Merges require signoff from the designated team in [`.github/CODEOWNERS`](.github/CODEOWNERS).
 
 ---
 

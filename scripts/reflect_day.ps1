@@ -5,7 +5,7 @@ param(
     [string]$Date = (Get-Date -Format "yyyy-MM-dd")
 )
 
-$journalFile = "C:\Users\philg\.gemini\acoustic_journal\resonance_$Date.jsonl"
+$journalFile = "$env:USERPROFILE\.gemini\acoustic_journal\resonance_$Date.jsonl"
 
 if (!(Test-Path $journalFile)) {
     Write-Host ""
@@ -41,7 +41,7 @@ Write-Host "---------------------------------------------------------" -Foregrou
 if ($PlayAudio) {
     Write-Host ""
     Write-Host "Playing 15-second acoustic daily time-lapse..." -ForegroundColor Magenta
-    $soundsDir = "C:\Users\philg\AppData\Local\PocketGull\Sounds"
+    $soundsDir = "$env:LOCALAPPDATA\PocketGull\Sounds"
     $chimeCeramic = Join-Path $soundsDir "pocketgull_ceramic_chime.wav"
     $chime528     = Join-Path $soundsDir "pocketgull_528hz_notification.wav"
     $chordOcean   = Join-Path $soundsDir "pocketgull_ocean_chord.wav"

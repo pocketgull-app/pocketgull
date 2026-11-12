@@ -141,7 +141,7 @@ if ($SetupDevTools) {
     }
 
     # Copy Go binaries if found in user profile
-    $userGoBin = "C:\Users\philg\go\bin"
+    $userGoBin = "$env:USERPROFILE\go\bin"
     if (Test-Path $userGoBin) {
         Get-ChildItem -Path $userGoBin -Filter "*.exe" | ForEach-Object {
             Copy-Item $_.FullName -Destination $devToolsBin -Force

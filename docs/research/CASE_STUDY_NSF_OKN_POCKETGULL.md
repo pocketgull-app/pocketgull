@@ -92,7 +92,7 @@ flowchart TD
 
 ## 3. Empirical Trial: 5-Patient Cohort Evaluation
 
-We executed a comprehensive benchmark trial across 5 complex clinical archetypes in [`src/services/patient-okn-cohort.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-okn-cohort.spec.ts). All evaluations completed hermetically in **10 ms**:
+We executed a comprehensive benchmark trial across 5 complex clinical archetypes in [`src/services/patient-okn-cohort.spec.ts`](src/services/patient-okn-cohort.spec.ts). All evaluations completed hermetically in **10 ms**:
 
 | Patient Cohort Profile | Clinical Challenge & Presentation | Traversed NSF OKN Federal Path | Epistemic Quality ($H_0$ / Cochrane) | Pocket-Gull Actionable Care Plan |
 | :--- | :--- | :--- | :--- | :--- |
@@ -117,7 +117,7 @@ Knowledge graphs simply record assertions; they do not evaluate clinical validit
 * Interventions with rigorous evidence (e.g. Photobiomodulation at 660nm) were stamped with **`[🏛️ NSF OKN Verified]`**, citing exact PMIDs.
 
 ### Breakthrough 3: Multimodal Clinical PDF & WHO Alignment
-The Care Plan Print Studio ([`care-plan-print-preview.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/care-plan-print-preview.component.ts)) was upgraded to automatically render:
+The Care Plan Print Studio ([`care-plan-print-preview.component.ts`](src/components/care-plan-print-preview.component.ts)) was upgraded to automatically render:
 1. **The NSF OKN Provenance Seal**: Citing participating federal agencies and the SHA-256 audit digest.
 2. **WHO SDG 3.4 CVD Risk Projections**: Quantifying 10-year non-communicable cardiovascular risk.
 3. **WHO ICD-11 Chapter 26 Traditional Medicine Codes**: Formally encoding holistic patterns (`SF50`, `SE20`, `SF72`, `SG14`, `SD45`).

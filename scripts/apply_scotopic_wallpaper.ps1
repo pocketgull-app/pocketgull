@@ -26,7 +26,7 @@ $g.FillEllipse($coreBrush, [float]($centerX - 16), [float]($centerY - 16), 32, 3
 
 $g.Dispose()
 
-$outDir = "C:\Users\philg\AppData\Local\PocketGull\Wallpapers"
+$outDir = "$env:LOCALAPPDATA\PocketGull\Wallpapers"
 if (!(Test-Path $outDir)) { New-Item -ItemType Directory -Path $outDir -Force | Out-Null }
 $outPath = Join-Path $outDir "scotopic_cymatics_3840.png"
 $bmp.Save($outPath, [System.Drawing.Imaging.ImageFormat]::Png)

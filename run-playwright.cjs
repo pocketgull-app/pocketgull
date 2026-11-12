@@ -63,11 +63,10 @@ const candidatePaths = [
   path.resolve(__dirname, 'node_modules/@playwright/test/cli.js'),
   path.resolve(__dirname, 'node_modules/playwright/cli.js'),
   path.resolve(process.cwd(), 'node_modules/@playwright/test/cli.js'),
-  path.resolve(process.cwd(), 'node_modules/playwright/cli.js'),
-  path.resolve('c:/Users/philg/Pocketgull/pocketgull/node_modules/playwright/cli.js')
+  path.resolve(process.cwd(), 'node_modules/playwright/cli.js')
 ];
 const cliPath = candidatePaths.find(p => fs.existsSync(p)) || candidatePaths[1];
-const targetCwd = fs.existsSync(path.resolve(__dirname, 'playwright.config.ts')) ? __dirname : 'c:/Users/philg/Pocketgull/pocketgull';
+const targetCwd = fs.existsSync(path.resolve(__dirname, 'playwright.config.ts')) ? __dirname : process.cwd();
 
 const userArgs = process.argv.slice(2);
 const cliArgs = userArgs[0] === 'test' ? userArgs : ['test', ...userArgs];

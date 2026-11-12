@@ -22,7 +22,7 @@ Clinical voice scribes have become dominated by proprietary multi-billion dollar
 ## ⚡ Quickstart
 
 ### 1. Zero-Install Browser Demo
-Simply open [`demo/index.html`](file:///c:/Users/philg/Pocketgull/pocketgull/packages/open-scribe/demo/index.html) in any browser (Chrome, Edge, Safari, Chromebook, Mobile) and click **"🎙️ Start Ambient Scribe"**.
+Simply open [`demo/index.html`](packages/open-scribe/demo/index.html) in any browser (Chrome, Edge, Safari, Chromebook, Mobile) and click **"🎙️ Start Ambient Scribe"**.
 
 ### 2. Install as an NPM Package
 ```bash

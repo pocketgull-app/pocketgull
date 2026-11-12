@@ -86,7 +86,7 @@ Legacy clinical applications remain locked into ICD-10-CM (1992 nomenclature), w
 
 ### The Pocket-Gull Solution
 1. **Primary Internal Reasoning**: All AI models, clinical risk calculators, and diagnostic crosswalks operate natively on **WHO ICD-11 MMS** stem codes and **WHO ICTM Chapter 26** traditional medicine concepts.
-2. **Dual-Coding Output Projection**: When serializing FHIR R4 resources or generating superbills, [`FhirWhoIctmSerializerService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/fhir-who-ictm-serializer.service.ts) automatically projects primary ICD-11 codes into verified ICD-10-CM and SNOMED CT equivalents:
+2. **Dual-Coding Output Projection**: When serializing FHIR R4 resources or generating superbills, [`FhirWhoIctmSerializerService`](src/services/fhir-who-ictm-serializer.service.ts) automatically projects primary ICD-11 codes into verified ICD-10-CM and SNOMED CT equivalents:
 
 ```json
 {
@@ -138,9 +138,9 @@ The **WHO-NIH Strategic Alignment Hub** aligns every individual care plan agains
 
 ## 5. Summary of Key Services and Components
 
-- [`src/components/shared/sowa-rigpa-tree-spatial-viewer.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/shared/sowa-rigpa-tree-spatial-viewer.component.ts): Interactive 3D Living Tree visualizer.
-- [`src/components/shared/global-decad-healing-spectrum.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/shared/global-decad-healing-spectrum.component.ts): 10-paradigm spectrum tabbed navigator.
-- [`src/components/shared/who-nih-healing-alignment-hub.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/shared/who-nih-healing-alignment-hub.component.ts): WHO & NIH strategic milestone dashboard.
-- [`src/services/fhir-who-ictm-serializer.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/fhir-who-ictm-serializer.service.ts): Dual-coding FHIR R4 Bundle exporter.
-- [`src/services/global-healing-paradigms.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/global-healing-paradigms.service.ts): ICD-11 primary stem code crosswalk registry.
-- [`e2e/global-decad-and-who-nih-alignment.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/e2e/global-decad-and-who-nih-alignment.spec.ts): Multi-device Playwright test suite.
+- [`src/components/shared/sowa-rigpa-tree-spatial-viewer.component.ts`](src/components/shared/sowa-rigpa-tree-spatial-viewer.component.ts): Interactive 3D Living Tree visualizer.
+- [`src/components/shared/global-decad-healing-spectrum.component.ts`](src/components/shared/global-decad-healing-spectrum.component.ts): 10-paradigm spectrum tabbed navigator.
+- [`src/components/shared/who-nih-healing-alignment-hub.component.ts`](src/components/shared/who-nih-healing-alignment-hub.component.ts): WHO & NIH strategic milestone dashboard.
+- [`src/services/fhir-who-ictm-serializer.service.ts`](src/services/fhir-who-ictm-serializer.service.ts): Dual-coding FHIR R4 Bundle exporter.
+- [`src/services/global-healing-paradigms.service.ts`](src/services/global-healing-paradigms.service.ts): ICD-11 primary stem code crosswalk registry.
+- [`e2e/global-decad-and-who-nih-alignment.spec.ts`](e2e/global-decad-and-who-nih-alignment.spec.ts): Multi-device Playwright test suite.

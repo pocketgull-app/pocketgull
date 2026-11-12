@@ -60,7 +60,7 @@ $nzxtColorMap = @{
 }
 $targetHex = $nzxtColorMap[$Theme]
 
-$nzxtControllerPath = "C:\Users\philg\AppData\Roaming\NZXT CAM\DataStorage\latest\user\lightingController.json"
+$nzxtControllerPath = "$env:APPDATA\NZXT CAM\DataStorage\latest\user\lightingController.json"
 if (Test-Path $nzxtControllerPath) {
     try {
         $cfg = Get-Content $nzxtControllerPath -Raw | ConvertFrom-Json

@@ -62,7 +62,7 @@ if (Test-Path $pixelThemeScript) {
 }
 
 # 4. Soft Acoustic Confirmation Chime
-$chime = "C:\Users\philg\AppData\Local\PocketGull\Sounds\pocketgull_ceramic_chime.wav"
+$chime = "$env:LOCALAPPDATA\PocketGull\Sounds\pocketgull_ceramic_chime.wav"
 if (Test-Path $chime) {
     try {
         (New-Object System.Media.SoundPlayer $chime).Play()

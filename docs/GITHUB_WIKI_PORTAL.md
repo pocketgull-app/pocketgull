@@ -20,7 +20,7 @@ graph TD
 * **Server / SSR**: Node.js v24.x LTS with Express and Angular Universal SSR.
 * **AI Layer**: Google Gemini 2.5 (`@google/genai`, Google Genkit, `@google/adk` `InMemoryRunner`).
 * **Biophysical 3D Viewer**: Three.js WebGL procedural anatomical rendering with Edwin Smith surgical codex biophysical shaders.
-* **Scripting & Tooling**: [Randal L. Schwartz Standard](file:///c:/Users/philg/Pocketgull/pocketgull/.github/copilot-instructions.md#3-scripting--tooling-standard-randal-l-schwartz-standard) — prefer **Dart** (`dart run scripts/dart/tool.dart`) over Python for zero virtualenv friction and sound static typing.
+* **Scripting & Tooling**: [Randal L. Schwartz Standard](.github/copilot-instructions.md#3-scripting--tooling-standard-randal-l-schwartz-standard) — prefer **Dart** (`dart run scripts/dart/tool.dart`) over Python for zero virtualenv friction and sound static typing.
 
 ### 2. 🩺 Clinical Intelligence & Epistemological Boundaries
 * **FDA 520(o) Non-Device CDS**: All AI care plans, symptom radars, and drug-interaction warnings are supportive clinical decision support tools and do not substitute for licensed practitioner judgment.
@@ -28,7 +28,7 @@ graph TD
 * **Cochrane RoB 2 Integration**: Literature citations are mapped to Cochrane Risk of Bias tiers (`Level A`, `Level B`, `Level C`).
 
 ### 3. 🌐 API & FHIR Interoperability
-* **Interactive OpenAPI Portal**: View the full OpenAPI 3.0.3 specification at [`docs/openapi.json`](file:///c:/Users/philg/Pocketgull/pocketgull/docs/openapi.json).
+* **Interactive OpenAPI Portal**: View the full OpenAPI 3.0.3 specification at [`docs/openapi.json`](docs/openapi.json).
 * **HL7 FHIR R4 Bundle Standard**: All clinical state serialization strictly adheres to FHIR R4 standard models (`Patient`, `Condition`, `Observation`, `Consent`, `CarePlan`).
 * **Canonical Domain Anchor**: All StructureDefinitions and security labels anchor to `https://pocketgull.app`.
 

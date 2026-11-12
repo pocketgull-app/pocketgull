@@ -93,7 +93,7 @@ PocketGull models run hermetically on consumer and clinical workstation hardware
 Every evaluation log is stored deterministically in Inspect AI `.eval` archives:
 * **Test Harness Execution:**
   ```bash
-  cd C:\Users\philg\.gemini\antigravity\scratch\safety-evals-lab
+  cd ~/.gemini\antigravity\scratch\safety-evals-lab
   .venv\Scripts\inspect eval us_benchmarks.py --model ollama/pocketgull-clinical:latest
   .venv\Scripts\inspect eval test_clinical_safety.py --model ollama/pocketgull-clinical:latest
   ```

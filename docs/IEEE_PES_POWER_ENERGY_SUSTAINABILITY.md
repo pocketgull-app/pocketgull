@@ -30,7 +30,7 @@ graph TD
   $$\Delta E_{\text{metabolic}} = Q_{\text{heat}} - W_{\text{work}}$$
   Mitochondrial ATP synthesis and metabolic power output govern cellular recovery rates and organ stress.
 * **Pocket-Gull Application**:
-  - Computes patient **Metabolic Power Expenditure (MPE)** in [PatientStateService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts) based on vital signs (HR, temperature, respiratory rate) to personalize functional medicine care plans.
+  - Computes patient **Metabolic Power Expenditure (MPE)** in [PatientStateService](src/services/patient-state.service.ts) based on vital signs (HR, temperature, respiratory rate) to personalize functional medicine care plans.
 
 ---
 
@@ -39,7 +39,7 @@ graph TD
   $$P_{\text{dynamic}} = \alpha C V^2 f$$
   Unchecked 3D graphics rendering on battery power induces thermal throttling and rapidly exhausts mobile battery life.
 * **Pocket-Gull Application**:
-  - Reads `navigator.getBattery()` telemetry in [body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/anatomy-3d/body-3d-viewer.component.ts). When operating on low battery ($<20\%$), frame rate caps automatically downscale to 30 FPS and post-processing passes disable, extending device battery life by **3.8x**.
+  - Reads `navigator.getBattery()` telemetry in [body-3d-viewer.component.ts](src/components/anatomy-3d/body-3d-viewer.component.ts). When operating on low battery ($<20\%$), frame rate caps automatically downscale to 30 FPS and post-processing passes disable, extending device battery life by **3.8x**.
 
 ---
 
@@ -53,7 +53,7 @@ graph TD
 ### 4. Storage Lifecycle Energy Waste Elimination
 * **IEEE PES Principle**: Persistent storage of orphaned container layers and build zips consumes continuous datacenter drive power and cooling resources.
 * **Pocket-Gull Application**:
-  - Enforces automated 7-day storage lifecycle policies across Artifact Registry and Cloud Storage source buckets ([scripts/apply-gcp-lifecycle-policies.mjs](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/apply-gcp-lifecycle-policies.mjs)), purging $>175\text{ GB}$ of historical disk overhead.
+  - Enforces automated 7-day storage lifecycle policies across Artifact Registry and Cloud Storage source buckets ([scripts/apply-gcp-lifecycle-policies.mjs](scripts/apply-gcp-lifecycle-policies.mjs)), purging $>175\text{ GB}$ of historical disk overhead.
 
 ---
 
@@ -77,6 +77,6 @@ graph TD
 
 ## Technical Reference Links
 
-- **GCP Lifecycle Script**: [scripts/apply-gcp-lifecycle-policies.mjs](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/apply-gcp-lifecycle-policies.mjs)
-- **3D Spatial Viewer**: [src/components/body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/anatomy-3d/body-3d-viewer.component.ts)
-- **Patient State Central**: [src/services/patient-state.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts)
+- **GCP Lifecycle Script**: [scripts/apply-gcp-lifecycle-policies.mjs](scripts/apply-gcp-lifecycle-policies.mjs)
+- **3D Spatial Viewer**: [src/components/body-3d-viewer.component.ts](src/components/anatomy-3d/body-3d-viewer.component.ts)
+- **Patient State Central**: [src/services/patient-state.service.ts](src/services/patient-state.service.ts)

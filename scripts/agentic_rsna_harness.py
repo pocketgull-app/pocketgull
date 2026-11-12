@@ -220,7 +220,7 @@ def get_series_slice_paths_physically_sorted(series_dir):
         try:
             import subprocess
             cmd = [
-                r"C:\Users\philg\anaconda3\Scripts\kaggle.exe",
+                r"~/anaconda3\Scripts\kaggle.exe",
                 "competitions", "submit",
                 COMPETITION_ID,
                 "-f", "submission.csv",

@@ -159,10 +159,10 @@ To protect non-governmental civilian healthcare partners (e.g. treating veterans
 The patterns proposed in this RFC have been built, battle-tested, and empirically validated in the PocketGull monorepo across two modern frontend architectures:
 
 1. **Angular 22 (Signals Architecture)**:
-   * Source components: [`src/components/uswds/`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/uswds/) and [`src/components/federal-uswds-portal.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/federal-uswds-portal.component.ts).
+   * Source components: [`src/components/uswds/`](src/components/uswds/) and [`src/components/federal-uswds-portal.component.ts`](src/components/federal-uswds-portal.component.ts).
    * Verified with 18 Vitest unit tests and Playwright desktop/mobile browser tests.
 2. **React 19 (TypeScript Standalone Library)**:
-   * Source package: [`packages/uswds-react-cds/`](file:///c:/Users/philg/Pocketgull/pocketgull/packages/uswds-react-cds/).
+   * Source package: [`packages/uswds-react-cds/`](packages/uswds-react-cds/).
    * Zero external runtime dependencies; peer-dependency typed against React 18 & 19.
 
 ---

@@ -43,6 +43,11 @@ function getSafePatientsDbPath(): string {
   return securePathResolve(dir, 'patients.json');
 }
 
+function getSafePatientsSeedPath(): string {
+  const dir = securePathResolve(process.cwd(), 'data');
+  return securePathResolve(dir, 'patients.seed.json');
+}
+
 /**
  * Strips unknown keys and prototype pollution vectors from a patient object.
  * Only keys in ALLOWED_PATIENT_FIELDS survive.
@@ -108,8 +113,14 @@ export function createPatientsRouter(): Router {
         data = await fsPromises.readFile(dbPath, 'utf8');
       } catch (readErr: unknown) {
         if (readErr instanceof Error && 'code' in readErr && (readErr as NodeJS.ErrnoException).code === 'ENOENT') {
-          data = JSON.stringify([], null, 2);
-          await atomicWriteDbFile(dbPath, safeSerialize([]));
+          try {
+            data = await fsPromises.readFile(getSafePatientsSeedPath(), 'utf8');
+            const parsedSeed = JSON.parse(data);
+            await atomicWriteDbFile(dbPath, safeSerialize(Array.isArray(parsedSeed) ? parsedSeed : []));
+          } catch {
+            data = JSON.stringify([], null, 2);
+            await atomicWriteDbFile(dbPath, safeSerialize([]));
+          }
         } else {
           throw readErr;
         }
