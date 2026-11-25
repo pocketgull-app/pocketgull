@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { MaternalPostpartumService, ILactMedEntry } from '../../services/maternal-postpartum.service';
 import { ReproductiveAutonomyService, IContraceptiveMethod, IEmergencyContraceptionOption } from '../../services/reproductive-autonomy.service';
 import { SovereigntyHealthModelsService } from '../../services/sovereignty-health-models.service';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-maternal-postpartum-lens-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full space-y-6 text-slate-100 font-sans">
@@ -19,15 +20,15 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
             <div class="flex items-center gap-2">
               <span class="text-xl">🩺</span>
               <div>
-                <h3 class="text-base font-semibold text-white">General Reference: Adult Daily Micronutrient Guidelines</h3>
-                <p class="text-xs text-slate-400">Dietary Reference Intakes (DRI) & Tolerable Upper Intake Levels</p>
+                <h3 class="text-base font-semibold text-white">{{ 'General Reference: Adult Daily Micronutrient Guidelines' | pgT:'maternal.decoy_title' }}</h3>
+                <p class="text-xs text-slate-400">{{ 'Dietary Reference Intakes (DRI) & Tolerable Upper Intake Levels' | pgT:'maternal.decoy_subtitle' }}</p>
               </div>
             </div>
             <button
               type="button"
               (click)="repro.toggleDiscreetDecoy()"
               class="px-3 py-1.5 rounded-lg text-xs font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
-              Exit Reference View
+              {{ 'Exit Reference View' | pgT:'maternal.exit_reference' }}
             </button>
           </div>
           <div class="overflow-x-auto">
@@ -75,13 +76,13 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
               <span class="text-3xl">🌸</span>
               <div>
                 <div class="flex items-center gap-2">
-                  <h3 class="text-xl font-bold text-white tracking-tight">Women's Health, Reproductive Autonomy & Perinatal Continuum</h3>
+                  <h3 class="text-xl font-bold text-white tracking-tight">{{ "Women's Health, Reproductive Autonomy & Perinatal Continuum" | pgT:'maternal.title' }}</h3>
                   <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-950 text-purple-300 border border-purple-700/50">
-                    Patient-Centered Bodily Sovereignty
+                    {{ 'Patient-Centered Bodily Sovereignty' | pgT:'maternal.badge' }}
                   </span>
                 </div>
                 <p class="text-xs text-slate-400 mt-0.5">
-                  Private, non-judgmental decision support: Contraceptive CDC MEC, Emergency Contraception, Pregnancy Options, and 4th-Trimester recovery.
+                  {{ 'Private, non-judgmental decision support: Contraceptive CDC MEC, Emergency Contraception, Pregnancy Options, and 4th-Trimester recovery.' | pgT:'maternal.subtitle' }}
                 </p>
               </div>
             </div>
@@ -93,20 +94,20 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
                 (click)="repro.toggleDiscreetDecoy()"
                 title="Instantly display an innocuous reference table"
                 class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl transition">
-                <span>🛡️</span> Discreet Mode
+                <span>🛡️</span> {{ 'Discreet Mode' | pgT:'maternal.discreet_mode' }}
               </button>
               <button
                 type="button"
                 (click)="repro.executeEmergencyScrub()"
                 title="Wipes session data and engages decoy view immediately"
                 class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-300 bg-rose-950/70 hover:bg-rose-900/90 border border-rose-700/80 rounded-xl transition">
-                <span>⚡</span> Rapid Scrub
+                <span>⚡</span> {{ 'Rapid Scrub' | pgT:'maternal.rapid_scrub' }}
               </button>
               <button
                 type="button"
                 (click)="exportRestrictedBundle()"
                 class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-purple-200 bg-purple-950 hover:bg-purple-900 border border-purple-700/60 rounded-xl transition">
-                <span>🔒</span> Export FHIR (Restricted 'R')
+                <span>🔒</span> {{ "Export FHIR (Restricted 'R')" | pgT:'maternal.export_fhir' }}
               </button>
             </div>
           </div>
@@ -121,7 +122,7 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
               [class.border-transparent]="activeSection() !== 'autonomy'"
               [class.text-slate-400]="activeSection() !== 'autonomy'"
               class="pb-2 border-b-2 font-semibold hover:text-white transition flex items-center gap-1.5">
-              <span>⚖️</span> Reproductive Autonomy & Right to Choose
+              <span>⚖️</span> {{ 'Reproductive Autonomy & Right to Choose' | pgT:'maternal.tab_autonomy' }}
             </button>
             <button
               type="button"
@@ -131,7 +132,7 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
               [class.border-transparent]="activeSection() !== 'postpartum'"
               [class.text-slate-400]="activeSection() !== 'postpartum'"
               class="pb-2 border-b-2 font-semibold hover:text-white transition flex items-center gap-1.5">
-              <span>🤰</span> 4th-Trimester Postpartum & LactMed
+              <span>🤰</span> {{ '4th-Trimester Postpartum & LactMed' | pgT:'maternal.tab_postpartum' }}
             </button>
           </div>
         </div>

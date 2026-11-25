@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
+import { setupE2ePage, enterDemoMode, selectPatientByName, switchToAnalysisLens } from './utils/setup';
 
 test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -13,18 +13,8 @@ test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () =
     // 2. Select patient Homo Sapiens
     await selectPatientByName(page, 'Homo Sapiens');
 
-    // Switch to Analysis panel if on mobile/tablet viewports
-    const reportTab = page.locator('button', { hasText: 'Analysis' }).first();
-    if (await reportTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await reportTab.click({ force: true });
-      await page.waitForTimeout(500);
-    }
-
     // 3. Switch to ASSESSMENTS lens tab
-    const assessmentsBtn = page.getByTestId('tab-assessments');
-    await assessmentsBtn.scrollIntoViewIfNeeded();
-    await assessmentsBtn.click({ force: true });
-    await page.waitForTimeout(500);
+    await switchToAnalysisLens(page, 'tab-assessments');
 
     // 5. Select General Clinical Suite sub-tab
     const suiteTab = page.getByTestId('tab-clinical-suite');
@@ -65,8 +55,8 @@ test.describe('General Clinical & Sovereignty Assessments Suite E2E Tests', () =
     await growTabBtn.dispatchEvent('click');
     await page.waitForTimeout(500);
 
-    // Verify Grow-Thyself header renders
-    const growHeader = page.locator('text=/Grow-Thyself/i').first();
+    // Verify Grow-Thyself active tab/panel renders inside the clinical suite
+    const growHeader = page.locator('app-clinical-assessments-suite').getByText(/Grow-Thyself/i).filter({ visible: true }).first();
     await expect(growHeader).toBeVisible({ timeout: 10000 });
   });
 

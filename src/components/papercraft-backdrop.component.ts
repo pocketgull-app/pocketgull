@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-papercraft-backdrop',
+  host: {
+    'class': 'block overflow-hidden',
+  },
   standalone: true,
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,

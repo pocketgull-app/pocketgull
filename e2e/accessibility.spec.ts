@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, ensureAnalysisViewVisible, ensureChartViewVisible } from './utils/setup';
 
 test.describe('WCAG & ARIA Accessibility Audit', () => {
   
@@ -12,9 +12,11 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
     
     // Set session lock so splash screen authentication renders
     await page.addInitScript(() => {
-      window.sessionStorage.setItem('pg_session_locked', 'true');
-      window.sessionStorage.removeItem('pg_session_onboarded');
-      window.localStorage.removeItem('pg_mock_clinician');
+      try {
+        window.sessionStorage.setItem('pg_session_locked', 'true');
+        window.sessionStorage.removeItem('pg_session_onboarded');
+        window.localStorage.removeItem('pg_mock_clinician');
+      } catch {}
     });
     await page.goto('/');
     await expect(page.locator('.secure-splash-main, [role="heading"]').first()).toBeVisible({ timeout: 25000 });
@@ -68,8 +70,10 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
 
   test('main clinical dashboard accessibility audit', async ({ page }) => {
     await page.addInitScript(() => {
-      window.localStorage.setItem('pg_mock_clinician', '1');
-      window.localStorage.setItem('pg_data_consent_v1', 'true');
+      try {
+        window.localStorage.setItem('pg_mock_clinician', '1');
+        window.localStorage.setItem('pg_data_consent_v1', 'true');
+      } catch {}
     });
     await page.goto('/');
     
@@ -79,11 +83,7 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
     await expect(page.locator('main')).toBeVisible();
 
     // On mobile viewports (<768px), activate the Analysis tab so app-analysis-report is unhidden
-    const analysisTabBtn = page.locator('button', { hasText: /Analysis/i }).first();
-    if (await analysisTabBtn.isVisible().catch(() => false)) {
-      await analysisTabBtn.click();
-      await page.waitForTimeout(300);
-    }
+    await ensureAnalysisViewVisible(page);
 
     await expect(page.locator('app-analysis-report')).toBeVisible({ timeout: 10000 });
 
@@ -127,11 +127,7 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
       expect(await collapsibleCharts.count()).toBeGreaterThan(0);
     } else {
       // On mobile viewports where tabs isolate Chart from Analysis, switch to Chart tab
-      const chartTabBtn = page.locator('button', { hasText: /Chart/i }).first();
-      if (await chartTabBtn.isVisible().catch(() => false)) {
-        await chartTabBtn.click();
-        await page.waitForTimeout(300);
-      }
+      await ensureChartViewVisible(page);
       await expect(collapsibleCharts.first()).toBeVisible({ timeout: 10000 });
       expect(await collapsibleCharts.count()).toBeGreaterThan(0);
     }
@@ -180,8 +176,10 @@ test.describe('WCAG & ARIA Accessibility Audit', () => {
 
     // 2. Load dashboard
     await page.addInitScript(() => {
-      window.localStorage.setItem('pg_mock_clinician', '1');
-      window.localStorage.setItem('pg_data_consent_v1', 'true');
+      try {
+        window.localStorage.setItem('pg_mock_clinician', '1');
+        window.localStorage.setItem('pg_data_consent_v1', 'true');
+      } catch {}
     });
     await enterDemoMode(page);
     await page.evaluate(() => window.scrollTo(0, 0));

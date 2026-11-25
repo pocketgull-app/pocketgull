@@ -1,13 +1,14 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClinicalPosologyCalculatorComponent } from '../clinical-posology-calculator.component';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 export type InterventionSubTab = 'allopathic' | 'tcm' | 'ayurvedic' | 'lifestyle';
 
 @Component({
   selector: 'app-interventions-lens-tab',
   standalone: true,
-  imports: [CommonModule, ClinicalPosologyCalculatorComponent],
+  imports: [CommonModule, ClinicalPosologyCalculatorComponent, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full space-y-6">
@@ -20,7 +21,7 @@ export type InterventionSubTab = 'allopathic' | 'tcm' | 'ayurvedic' | 'lifestyle
           [class.dark:text-cyan-400]="subTab() === 'allopathic'"
           [class.text-zinc-500]="subTab() !== 'allopathic'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          🌐 Western Allopathic &amp; Age Posology
+          🌐 {{ 'Western Allopathic & Age Posology' | pgT:'lens02.tab_western_posology' }}
         </button>
         <button (click)="subTab.set('tcm')"
           [class.bg-white]="subTab() === 'tcm'"
@@ -29,7 +30,7 @@ export type InterventionSubTab = 'allopathic' | 'tcm' | 'ayurvedic' | 'lifestyle
           [class.dark:text-emerald-400]="subTab() === 'tcm'"
           [class.text-zinc-500]="subTab() !== 'tcm'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          🐉 TCM Botanical &amp; Acupoints
+          🐉 {{ 'TCM Botanical & Acupoints' | pgT:'lens02.tab_tcm_botanical' }}
         </button>
         <button (click)="subTab.set('ayurvedic')"
           [class.bg-white]="subTab() === 'ayurvedic'"
@@ -38,7 +39,7 @@ export type InterventionSubTab = 'allopathic' | 'tcm' | 'ayurvedic' | 'lifestyle
           [class.dark:text-amber-400]="subTab() === 'ayurvedic'"
           [class.text-zinc-500]="subTab() !== 'ayurvedic'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          🧘 Ayurvedic Tridosha &amp; Marma
+          🧘 {{ 'Ayurvedic Tridosha & Marma' | pgT:'lens02.tab_ayurvedic_marma' }}
         </button>
         <button (click)="subTab.set('lifestyle')"
           [class.bg-white]="subTab() === 'lifestyle'"
@@ -47,7 +48,7 @@ export type InterventionSubTab = 'allopathic' | 'tcm' | 'ayurvedic' | 'lifestyle
           [class.dark:text-indigo-400]="subTab() === 'lifestyle'"
           [class.text-zinc-500]="subTab() !== 'lifestyle'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          🌱 Circadian Lifestyle &amp; Sleep
+          🌱 {{ 'Circadian Lifestyle & Sleep' | pgT:'lens02.tab_circadian_sleep' }}
         </button>
       </div>
 
@@ -57,7 +58,7 @@ export type InterventionSubTab = 'allopathic' | 'tcm' | 'ayurvedic' | 'lifestyle
           <div class="space-y-4">
             <div>
               <h4 class="text-sm font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider font-mono">
-                Western Evidence-Based Guidelines &amp; Precision Posology
+                {{ 'Western Evidence-Based Guidelines & Precision Posology' | pgT:'lens02.heading_western' }}
               </h4>
               <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans mt-0.5">
                 First-line clinical protocols, age-stratified posology calculations (Infant Fried's Rule, Pediatric Young's/Clark's Rules, Geriatric Beers Criteria &amp; CrCl Titration), and live ISMP decimal spellchecking.
@@ -66,17 +67,17 @@ export type InterventionSubTab = 'allopathic' | 'tcm' | 'ayurvedic' | 'lifestyle
             <app-clinical-posology-calculator />
           </div>
         } @else if (subTab() === 'tcm') {
-          <h4 class="text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-mono">Traditional Chinese Medicine (Zang-Fu)</h4>
+          <h4 class="text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-mono">{{ 'Traditional Chinese Medicine (Zang-Fu)' | pgT:'lens02.heading_tcm' }}</h4>
           <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
             Pattern differentiation, botanical decoction formulas (e.g., Xiao Yao San), and specific meridian acupoint stimulation protocols.
           </p>
         } @else if (subTab() === 'ayurvedic') {
-          <h4 class="text-sm font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider font-mono">Ayurvedic Integrative Medicine</h4>
+          <h4 class="text-sm font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider font-mono">{{ 'Ayurvedic Integrative Medicine' | pgT:'lens02.heading_ayurvedic' }}</h4>
           <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
             Tridosha balancing protocols (Vata / Pitta / Kapha), Rasayana adaptogens, and Marma point somatic therapy.
           </p>
         } @else {
-          <h4 class="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider font-mono">Chrono-Nutrition & Circadian Hygiene</h4>
+          <h4 class="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider font-mono">{{ 'Chrono-Nutrition & Circadian Hygiene' | pgT:'lens02.heading_circadian' }}</h4>
           <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
             Time-restricted feeding windows, polyphenol supplementation timing, and blue-light circadian alignment protocols.
           </p>

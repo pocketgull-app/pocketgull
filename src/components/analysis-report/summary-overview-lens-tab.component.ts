@@ -9,6 +9,7 @@ import { GoalPlanningCardComponent } from '../goal-planning-card.component';
 import { ResearchDataDividendComponent } from '../research-data-dividend.component';
 import { BiologicalAgeWaterfallHudComponent } from '../biological-age-waterfall-hud.component';
 import { ActivePivotMonitorCardComponent } from '../active-pivot-monitor-card.component';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-summary-overview-lens-tab',
@@ -21,7 +22,8 @@ import { ActivePivotMonitorCardComponent } from '../active-pivot-monitor-card.co
     GoalPlanningCardComponent,
     ActivePivotMonitorCardComponent,
     ResearchDataDividendComponent,
-    BiologicalAgeWaterfallHudComponent
+    BiologicalAgeWaterfallHudComponent,
+    PgTranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -39,10 +41,10 @@ import { ActivePivotMonitorCardComponent } from '../active-pivot-monitor-card.co
             <span class="text-xl">📊</span>
             <div>
               <h3 class="text-sm font-extrabold text-slate-900 dark:text-gray-100 uppercase tracking-wide">
-                Visit Summary &amp; Strategic Care Plan
+                {{ 'Visit Summary & Strategic Care Plan' | pgT:'analysis.visit_summary_plan' }}
               </h3>
               <p class="text-xs text-slate-500 dark:text-zinc-400">
-                Synthesized clinical assessment, primary risk indicators, and verifiable care pathway.
+                {{ 'Synthesized clinical assessment, primary risk indicators, and verifiable care pathway.' | pgT:'analysis.visit_summary_desc' }}
               </p>
             </div>
           </div>
@@ -53,16 +55,16 @@ import { ActivePivotMonitorCardComponent } from '../active-pivot-monitor-card.co
               <button type="button" (click)="activeViewMode.set('narrative')"
                       [class]="activeViewMode() === 'narrative' ? 'bg-white dark:bg-zinc-900 text-slate-900 dark:text-white shadow-xs font-bold' : 'text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200'"
                       class="px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1">
-                <span>📋</span> Narrative
+                <span>📋</span> {{ 'Narrative' | pgT:'analysis.narrative' }}
               </button>
               <button type="button" (click)="activeViewMode.set('differential')"
                       [class]="activeViewMode() === 'differential' ? 'bg-purple-600 text-white shadow-xs font-bold' : 'text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-zinc-200'"
                       class="px-2.5 py-1 rounded-lg transition cursor-pointer flex items-center gap-1">
-                <span>⚖️</span> Trust-Diff Inspector
+                <span>⚖️</span> {{ 'Trust-Diff Inspector' | pgT:'analysis.trust_diff' }}
               </button>
             </div>
 
-            <pocket-gull-badge label="CLINICAL CDS" severity="info"></pocket-gull-badge>
+            <pocket-gull-badge [label]="'CLINICAL CDS' | pgT:'analysis.clinical_cds'" severity="info"></pocket-gull-badge>
           </div>
         </div>
 

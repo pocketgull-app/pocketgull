@@ -9,6 +9,7 @@ import { SoapNoteGeneratorService } from '../services/soap-note-generator.servic
 import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
 import { NavigationShellService } from '../services/navigation-shell.service';
 import { DeprescribingDepuratorService } from '../services/deprescribing-depurator.service';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 describe('ClinicalPosologyCalculatorComponent', () => {
   let component: ClinicalPosologyCalculatorComponent;
@@ -314,6 +315,43 @@ describe('ClinicalPosologyCalculatorComponent', () => {
     const updatedDay = updatedCalendar.find(d => d.date === firstDay.date);
     expect(updatedDay?.hasReading).toBe(!initialReading);
     expect(component.avsQualifyingDays()).toBe(initialReading ? initialQualifying - 1 : initialQualifying + 1);
+  });
+
+  it('17. Integrates with ClinicalMoERouterService for Micro-Skill Density, Renal Synapse, and Goal Completion Auto-Demotion', () => {
+    const moeInjector = createEnvironmentInjector([
+      { provide: PatientStateService, useValue: mockState },
+      { provide: SoapNoteGeneratorService, useValue: mockSoapNoteService },
+      { provide: CmsRpmSuperbillService, useValue: superbillService },
+      { provide: NavigationShellService, useValue: navShell },
+      DeprescribingDepuratorService,
+      ClinicalPosologyService,
+      EnvironmentalHeatPosologyService,
+      ComplexAdaptiveSystemsService,
+      ClinicalMoERouterService
+    ], undefined as any);
+
+    const moeRouter = moeInjector.get(ClinicalMoERouterService);
+    let moeComponent!: ClinicalPosologyCalculatorComponent;
+    runInInjectionContext(moeInjector, () => {
+      moeComponent = new ClinicalPosologyCalculatorComponent();
+    });
+
+    expect(moeComponent.isExploratoryCollapsed()).toBe(false);
+    expect(moeComponent.isRawFhirCollapsed()).toBe(false);
+
+    moeRouter.setMicroSkillDensityOverride('stat-focused');
+    expect(moeComponent.isExploratoryCollapsed()).toBe(true);
+    expect(moeComponent.isRawFhirCollapsed()).toBe(true);
+
+    moeComponent.onSerumCreatinineChange(1.8);
+    expect(moeComponent.serumCreatinineMgDl()).toBe(1.8);
+    expect(moeComponent.isRenalSynapseActive()).toBe(true);
+    expect(moeRouter.activeSynapsePulse()?.parameterLabel).toBe('Serum Creatinine (CrCl)');
+
+    moeComponent.applyToCarePlan();
+    expect(moeRouter.completedSkillReceipts().some(r => r.expertId === 'ismp-posology')).toBe(true);
+
+    moeRouter.clearOverrides();
   });
 });
 

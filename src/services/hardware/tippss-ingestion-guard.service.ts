@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { WebauthnPasskeyService, IPasskeyAttestationReceipt } from '../webauthn-passkey.service';
 import { NanoProvider } from '../ai/nano.provider';
+import { getSecureRandomHex } from '../../utils/security-helper';
 
 /**
  * IEEE P2933™ TIPPSS Framework:
@@ -218,16 +219,7 @@ export class TippssIngestionGuardService {
    * Generates a NIST SP 800-90A CSPRNG attestation challenge nonce for hardware handshake.
    */
   generateAttestationChallengeNonce(deviceId: string): string {
-    const randomBytes = new Uint8Array(16);
-    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-      crypto.getRandomValues(randomBytes);
-    } else {
-      for (let i = 0; i < 16; i++) {
-        randomBytes[i] = Math.floor(Math.random() * 256);
-      }
-    }
-
-    const nonce = Array.from(randomBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    const nonce = getSecureRandomHex(16);
     this.activeChallenges.set(deviceId, {
       nonce,
       expiresAtMs: Date.now() + 60000 // 60s validity window

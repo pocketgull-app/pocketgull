@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MensHealthAndrologyService } from '../../services/mens-health-andrology.service';
 import { SovereigntyHealthModelsService } from '../../services/sovereignty-health-models.service';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-mens-health-lens-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full space-y-6 text-slate-100 font-sans">
@@ -18,13 +19,13 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
             <span class="text-3xl">⚓</span>
             <div>
               <div class="flex items-center gap-2">
-                <h3 class="text-xl font-bold text-white tracking-tight">Men's Health & Andrological Vitality Engine</h3>
+                <h3 class="text-xl font-bold text-white tracking-tight">{{ "Men's Health & Andrological Vitality Engine" | pgT:'mens.title' }}</h3>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-950 text-sky-300 border border-sky-700/50">
-                  Princeton III Endothelial & Urological Suite
+                  {{ 'Princeton III Endothelial & Urological Suite' | pgT:'mens.badge' }}
                 </span>
               </div>
               <p class="text-xs text-slate-400 mt-0.5">
-                Microvascular cardiovascular risk stratification, International Prostate Symptom Score (IPSS), and St. Louis ADAM hypogonadism screening.
+                {{ 'Microvascular cardiovascular risk stratification, International Prostate Symptom Score (IPSS), and St. Louis ADAM hypogonadism screening.' | pgT:'mens.subtitle' }}
               </p>
             </div>
           </div>
@@ -37,7 +38,7 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              Export FHIR R4 Bundle
+              {{ 'Export FHIR R4 Bundle' | pgT:'mens.export_fhir' }}
             </button>
           </div>
         </div>
@@ -45,7 +46,7 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
         <!-- Telemetry HUD Grid -->
         <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
           <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1" [class.border-rose-700]="mens.princetonEvaluation().riskTier === 'High Risk'">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">Princeton III CV Risk</span>
+            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">{{ 'Princeton III CV Risk' | pgT:'mens.card_princeton' }}</span>
             <div class="text-lg font-bold" [ngClass]="getPrincetonBadgeClass(mens.princetonEvaluation().riskTier)">
               {{ mens.princetonEvaluation().riskTier }}
             </div>
@@ -55,7 +56,7 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
           </div>
 
           <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">IPSS Prostate Score</span>
+            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">{{ 'IPSS Prostate Score' | pgT:'mens.card_ipss' }}</span>
             <div class="text-lg font-bold text-sky-300">
               {{ mens.ipssScore().totalScore }} / 35
             </div>
@@ -63,13 +64,13 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
           </div>
 
           <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">PSA Biomarker / Velocity</span>
+            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">{{ 'PSA Biomarker / Velocity' | pgT:'mens.card_psa' }}</span>
             <div class="text-lg font-bold text-emerald-400">{{ mens.totalPsa() }} ng/mL</div>
             <span class="text-[11px] text-slate-400 font-sans">Velocity: +{{ mens.psaInterpretation().psaVelocityNgMlYr }} ng/mL/yr</span>
           </div>
 
           <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1" [class.border-amber-700]="mens.adamResult().isPositiveForHypogonadism">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">ADAM Androgen Screener</span>
+            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">{{ 'ADAM Androgen Screener' | pgT:'mens.card_adam' }}</span>
             <div class="text-lg font-bold" [ngClass]="mens.adamResult().isPositiveForHypogonadism ? 'text-amber-400' : 'text-emerald-400'">
               {{ mens.adamResult().isPositiveForHypogonadism ? 'POSITIVE' : 'NEGATIVE' }}
             </div>
@@ -87,7 +88,7 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
           [class.text-white]="activeTab() === 'princeton'"
           [class.text-slate-400]="activeTab() !== 'princeton'"
           class="px-3.5 py-1.5 rounded-lg transition font-medium">
-          Princeton III & Cardiovascular Axis
+          {{ 'Princeton III & Cardiovascular Axis' | pgT:'mens.tab_princeton' }}
         </button>
         <button
           type="button"
@@ -96,7 +97,7 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
           [class.text-white]="activeTab() === 'ipss'"
           [class.text-slate-400]="activeTab() !== 'ipss'"
           class="px-3.5 py-1.5 rounded-lg transition font-medium">
-          Prostate Health & IPSS Instrument
+          {{ 'Prostate Health & IPSS Instrument' | pgT:'mens.tab_ipss' }}
         </button>
         <button
           type="button"
@@ -105,7 +106,7 @@ import { SovereigntyHealthModelsService } from '../../services/sovereignty-healt
           [class.text-white]="activeTab() === 'adam'"
           [class.text-slate-400]="activeTab() !== 'adam'"
           class="px-3.5 py-1.5 rounded-lg transition font-medium">
-          ADAM Androgen & Circadian Screener
+          {{ 'ADAM Androgen & Circadian Screener' | pgT:'mens.tab_adam' }}
         </button>
       </div>
 

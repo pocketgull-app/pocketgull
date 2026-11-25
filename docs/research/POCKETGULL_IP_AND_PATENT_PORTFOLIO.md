@@ -9,7 +9,7 @@ This document outlines the proprietary algorithmic architectures, trade secrets,
 
 ```mermaid
 graph TD
-    PG["PocketGull Core IP Portfolio (24 Clusters / 480 Claims)"] --> INV1["Invention 1: Popperian Epistemological AI Verifier"]
+    PG["PocketGull Core IP Portfolio (28 Clusters / 560 Claims)"] --> INV1["Invention 1: Popperian Epistemological AI Verifier"]
     PG --> INV2["Invention 2: Zero-Egress WebGPU Optical Bio-Signals"]
     PG --> INV3["Invention 3: Stackelberg Adherence Incentive Engine"]
     PG --> INV4["Invention 4: Hardware-Bound Biometric Crypto-Ink"]
@@ -19,6 +19,10 @@ graph TD
     PG --> INV12["Invention 12: PG3D SFNT Binary Table & Scotopic Typefoundry"]
     PG --> INV13["Invention 13: SMoE UI Self-Repair & gVisor Substrate Envelope"]
     PG --> INV14["Invention 14: NECSI Multiscale Variety, CSD & Rust WASM Int8"]
+    PG --> INV15["Invention 15: Tri-Modal Wearable Asymmetric Gain & MST Debiasing"]
+    PG --> INV16["Invention 16: Ataxia Sanctuary OS Neuro-Motor Input Shield"]
+    PG --> INV17["Invention 17: Autonomous Clinical SOAR & Canary Honeypot Engine"]
+    PG --> INV18["Invention 18: Zero-Knowledge Local Vault & OPFS Holter Outbox"]
 ```
 
 ---
@@ -203,6 +207,38 @@ A complex-systems clinical resilience engine implementing Yaneer Bar-Yam's gener
 
 ---
 
+## ⌚ Invention 15: Tri-Modal Wearable Asymmetric Clinical Gain ("Doing / Feeling / Not Doing") & Monk Skin Tone (MST 1–10) Optical PPG Debiasing (Cluster 25, Claims 481–500)
+*Primary Code Artifacts*: [`src/services/wearable-asymmetric-gain.service.ts`](../../src/services/wearable-asymmetric-gain.service.ts), [`src/components/wearable-asymmetric-gain-card.component.ts`](../../src/components/wearable-asymmetric-gain-card.component.ts), [`src/tests/asymmetric-gain-wearable.spec.ts`](../../src/tests/asymmetric-gain-wearable.spec.ts)
+
+### 15.1 Technical Abstract
+A neuro-ergonomic wearable telemetry synthesis engine for Apple Watch (HealthKit) and Android Wear OS (Health Connect) that replaces linear step-counter incentives—which provoke Post-Exertional Malaise (PEM) crashes in dysautonomia, ME/CFS, and cerebellar ataxia—with a Tri-Modal Asymmetric Clinical Gain objective function: **Doing** (hormetic 0.1 Hz vagal recruitment and post-prandial glycemic walks), **Feeling** (interoceptive somatic VAS alignment against nocturnal wrist temperature delta), and **Not Doing** (strategic pacing restraint before autonomic exhaustion, polypharmacy avoidance, and blue-light cutoff). Incorporates Monk Skin Tone (MST 1–10) melanin absorption debiasing ($\text{SpO}_{2,\text{MST}} = \min(100, \text{SpO}_{2,\text{raw}} - \max(0, \text{MST} - 5) \cdot 0.35)$) to prevent occult hypoxemia under-triage in darker skin phenotypes.
+
+---
+
+## 🖱️ Invention 16: Ataxia Sanctuary Low-Level OS Neuro-Motor Input Shield & Reversible Registry Baseline Vault (Cluster 26, Claims 501–520)
+*Primary Code Artifacts*: [`packages/ataxia-sanctuary/src/InputShieldEngine.cs`](../../packages/ataxia-sanctuary/src/InputShieldEngine.cs), [`packages/ataxia-sanctuary/src/BaselineVault.cs`](../../packages/ataxia-sanctuary/src/BaselineVault.cs), [`packages/ataxia-sanctuary/src/AssetFoundry.cs`](../../packages/ataxia-sanctuary/src/AssetFoundry.cs), [`scripts/MouseAssist.cs`](../../scripts/MouseAssist.cs)
+
+### 16.1 Technical Abstract
+A kernel-adjacent neuro-motor input stabilization and environmental ergonomics engine operating via native OS `WH_MOUSE_LL` and `WH_KEYBOARD_LL` hooks. Intercepts hardware mouse button transitions to filter involuntary intention-tremor double-click bounce within a configurable refractory window ($\Delta t_{\text{bounce}} \in [20, 250]\text{ ms}$) while suppressing orphaned button-up events, maps single-press auxiliary mouse buttons (`XBUTTON1`/`XBUTTON2`) to chord-free OS voice dictation (`Win+H`), and enforces a triple-`ESC` (`< 1200 ms`) hardware panic revert that atomically restores pre-activation cursor bitmaps, DPI scales, and registry parameters from a local JSON baseline snapshot vault.
+
+---
+
+## 🚨 Invention 17: Autonomous Clinical SOAR Orchestrator, Honeytoken Canary Tripwire & NIST SP 2400-102 Adversarial AML Quarantine (Cluster 27, Claims 521–540)
+*Primary Code Artifacts*: [`src/server/services/soar-orchestrator.service.ts`](../../src/server/services/soar-orchestrator.service.ts), [`src/server/routes/soar.routes.ts`](../../src/server/routes/soar.routes.ts), [`src/server/services/active-defense-tarpit.service.ts`](../../src/server/services/active-defense-tarpit.service.ts), [`scripts/organizational_risk_audit.mjs`](../../scripts/organizational_risk_audit.mjs)
+
+### 17.1 Technical Abstract
+A serverless Security Orchestration, Automation, and Response (SOAR) containment engine bridging BigQuery SIEM audit logs, synthetic FHIR canary honeypot records, and Model Armor adversarial ML (AML) classifiers (NIST SP 2400-102 & OWASP 2026 Agentic Top 10 `ASI01`–`ASI10`) to deterministic sub-second containment playbooks (`PB-01` through `PB-04`). Enforces $M$-of-$N$ dual-custody role attestation prior to destructive key revocation, engages exponential-jitter active defense tarpits against reconnaissance probes, and emits FDA 21 CFR Part 11 SHA-256 execution receipts alongside automated HIPAA §164.402 four-factor Safe Harbor breach-exemption proofs.
+
+---
+
+## 🔐 Invention 18: Zero-Knowledge Local Sovereign Clinical Vault, OPFS Ambulatory Holter Streaming & Idempotent Offline Outbox (Cluster 28, Claims 541–560)
+*Primary Code Artifacts*: [`src/services/storage/local-sovereign-vault.service.ts`](../../src/services/storage/local-sovereign-vault.service.ts), [`src/services/storage.service.ts`](../../src/services/storage.service.ts), [`docs/compliance/BUSINESS_CONTINUITY_RECOVERY_PLAN.md`](../compliance/BUSINESS_CONTINUITY_RECOVERY_PLAN.md)
+
+### 18.1 Technical Abstract
+An anti-cloud-bricking local-first clinical storage and business-continuity architecture combining persistent IndexedDB encrypted clinical records with Origin Private File System (OPFS) high-frequency ambulatory Holter waveform streaming and a transactional offline mutation outbox (`ISovereignOutboxMutation`). Stamps every local state transition and offline outbox mutation with an idempotency key and FDA 21 CFR Part 11 SHA-256 cryptographic seal, guaranteeing zero Recovery Point Objective ($\text{RPO} = 0\text{ ms}$) on-device clinical continuity during cloud/EHR blackouts and automatic seal-verified rehydration upon connectivity restoration.
+
+---
+
 ## 📋 Comprehensive IP Summary & Recommended Action Plan
 
 | Invention Area | Patent Readiness | Key Differentiator | Recommended Target |
@@ -221,4 +257,8 @@ A complex-systems clinical resilience engine implementing Yaneer Bar-Yam's gener
 | **`PG3D` SFNT 3D & Scotopic Typefoundry** | **Ready for Provisional Filing** | Custom `0x50473344` SFNT binary table packing 1000-UPM GPU meshes, DICOM GSDF LUTs, and $-3.75\%$ `GRAD` zero-reflow dark mode. | USPTO Utility & Design Patent (`PG-PAT-2026-PG3D-001`) |
 | **SMoE UI Self-Repair & gVisor Substrate** | **Ready for Provisional Filing** | Top-2 Sparse Mixture-of-Experts DOM/WebGL self-healing paired with SPIFFE X.509 zero-secret gVisor actor hibernation. | USPTO Utility Patent (`PG-PAT-2026-SMOE-001`) + NIST |
 | **NECSI Multiscale Variety & Rust WASM** | **Ready for Provisional Filing** | Ashby multiscale variety matching, CSD lag-1 tipping-point alerts, and zero-addon `wasm32` Int8 cosine kernel. | USPTO Utility Patent (`PG-PAT-2026-NECSI-001`) + NIH NIGMS |
+| **Tri-Modal Wearable Asymmetric Gain** | **Ready for Provisional Filing** | "Doing / Feeling / Not Doing" PEM crash shield with Monk Skin Tone (MST 1–10) optical PPG $\text{SpO}_2$ melanin debiasing. | USPTO Utility Patent (`PG-PAT-2026-AGC-001`) + FDA CDRH |
+| **Ataxia Sanctuary OS Input Shield** | **Ready for Provisional Filing** | Low-level `WH_MOUSE_LL` tremor bounce suppression, chord-free voice trigger, and triple-`ESC` reversible registry baseline vault. | USPTO Utility Patent (`PG-PAT-2026-SANC-001`) + NIDILRR |
+| **Autonomous Clinical SOAR & Canary** | **Ready for Provisional Filing** | Deterministic `PB-01`..`04` containment, NIST SP 2400-102 AML quarantine, and HIPAA §164.402 Safe Harbor breach proofs. | USPTO Utility Patent (`PG-PAT-2026-SOAR-001`) + HHS OCR |
+| **Zero-Knowledge Local Sovereign Vault** | **Ready for Provisional Filing** | IndexedDB + OPFS ambulatory Holter streaming with idempotent offline mutation outboxes and SHA-256 Part 11 seals. | USPTO Utility Patent (`PG-PAT-2026-VAULT-001`) + ONC Health IT |
 

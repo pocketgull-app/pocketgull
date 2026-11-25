@@ -324,8 +324,7 @@
     }
     .care-plan-body blockquote p { margin: 0; font-size: 9pt; color: #374151; }
 
-    /* ─── Translation Matrix Layout ──────────────────── */
-        /* ─── Biomarker Matrix Export Styles ─────────────── */
+    /* ─── Biomarker Matrix Export Styles ─────────────── */
     .biomarker-matrix-export {
       margin: 14px 0 20px;
       border: 1px solid var(--border);
@@ -368,6 +367,7 @@
     .chip-optimal { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .chip-high { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
 
+    /* ─── Translation Matrix Layout ──────────────────── */
     .matrix-container {
       display: grid;
       gap: 20px;
@@ -464,7 +464,7 @@
       p, li, tr { page-break-inside: avoid; break-inside: avoid; }
       
       /* Preserve background colors and borders in PDF and paper output */
-      .vital-chip, .condition-tag, .care-plan-section, .care-plan-header, .matrix-analysis, blockquote {
+      .vital-chip, .condition-tag, .care-plan-section, .care-plan-header, .matrix-analysis, blockquote, .biomarker-matrix-export, .biomarker-chip {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
@@ -472,10 +472,7 @@
       .care-plan-body h3, .care-plan-body h4, .brand-tagline {
         letter-spacing: 0.02em !important;
       }
-      .biomarker-matrix-export, .biomarker-chip {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
+
       @page {
         size: letter portrait;
         margin: 0.75in 0.75in 1in 0.75in;
@@ -543,10 +540,6 @@
     <div class="print-bar-actions">
       <button class="btn-close" id="carePlanBtnClose">Close</button>
       <button class="btn-print" id="carePlanBtnPrint">Save as PDF / Print</button>
-      <script>
-        document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
-        document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
-      </script>
     </div>
   </div>
 
@@ -571,7 +564,7 @@
           </div>
         </div>
         <div class="report-meta">
-          <div><strong>Generated</strong> September 30, 2026 at 09:04 PM</div>
+          <div><strong>Generated</strong> November 16, 2026 at 01:01 PM</div>
           <div><strong>Report Type</strong> Care Plan &amp; Visit Summary</div>
           <div><strong>Classification</strong> Confidential – Clinical Use Only</div>
         </div>
@@ -588,7 +581,7 @@
         </div>
         <div class="patient-field">
           <div class="patient-field-label">Visit Date</div>
-          <div class="patient-field-value">September 30, 2026</div>
+          <div class="patient-field-value">November 16, 2026</div>
         </div>
         <div class="patient-field">
           <div class="patient-field-label">Prepared By</div>
@@ -599,9 +592,9 @@
       
         <div class="vitals-row">
             <div class="vital-chip"><span class="vital-label">BP</span><span class="vital-value">115/75</span></div>
-            <div class="vital-chip"><span class="vital-label">HR</span><span class="vital-value">82 <small>bpm</small></span></div>
-            <div class="vital-chip"><span class="vital-label">Temp</span><span class="vital-value">98.4°F</span></div>
-            <div class="vital-chip"><span class="vital-label">SpO2</span><span class="vital-value">97%</span></div>
+            <div class="vital-chip"><span class="vital-label">HR</span><span class="vital-value">66 <small>bpm</small></span></div>
+            <div class="vital-chip"><span class="vital-label">Temp</span><span class="vital-value">36.3°F</span></div>
+            <div class="vital-chip"><span class="vital-label">SpO2</span><span class="vital-value">98.4%</span></div>
             <div class="vital-chip"><span class="vital-label">Weight</span><span class="vital-value">110 lbs</span></div>
         </div>
       
@@ -660,7 +653,7 @@
 <li>Practice mirror box therapy for 15 minutes twice daily to retrain cortical somatosensory map.</li>
 </ul>
 <h3>Perinatal Health Assessment</h3>
-<p>Frida Kahlo is a 47-year-old female evaluated for perinatal functional optimization and maternal autonomic balance. Maternal blood pressure is 115/75 with stable SpO2 at 97%.</p>
+<p>Frida Kahlo is a 47-year-old female evaluated for perinatal functional optimization and maternal autonomic balance. Maternal blood pressure is 115/75 with stable SpO2 at 98.5.</p>
 <h3>Perinatal Safety Thresholds</h3>
 <table>
 <thead>
@@ -872,11 +865,11 @@
     </div>
   </div>
   <script>
+    document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
+    document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         window.print();
       }, 400);
     });
-  </script>
-
-</body></html>
+  </script></body></html>

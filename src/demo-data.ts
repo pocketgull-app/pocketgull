@@ -1,7 +1,7 @@
 import { AnalysisLens } from './services/clinical-intelligence.service';
 
 /**
- * Pre-baked clinical analyses for the demo patient: Sarah Jenkins.
+ * Pre-baked clinical analyses for the demo patient: Homo Sapiens (Female, Lumbar Radiculopathy & Remission, 42y).
  * Displayed in Demo Mode without requiring an API key call.
  *
  * NOTE: All special Unicode characters (<=, >=, ->, emoji, em/en dashes) are replaced
@@ -10,7 +10,7 @@ import { AnalysisLens } from './services/clinical-intelligence.service';
 
 export const DEMO_ANALYSIS_REPORT_WESTERN: Partial<Record<AnalysisLens, string>> = {
     'Summary Overview': `### Clinical Assessment
-Sarah Jenkins is a 42-year-old female presenting with chronic lower back pain (L4-L5 radiculopathy), opioid use disorder in sustained remission, and co-morbid depression. The primary clinical challenge is multi-modal pain management that avoids opioid relapse risk while addressing the functional and psychological dimensions of her condition.
+Homo Sapiens (Female, Lumbar Radiculopathy & Remission, 42y) is a 42-year-old female presenting with chronic lower back pain (L4-L5 radiculopathy), opioid use disorder in sustained remission, and co-morbid depression. The primary clinical challenge is multi-modal pain management that avoids opioid relapse risk while addressing the functional and psychological dimensions of her condition.
 
 ### Priority List
 - **Opioid Relapse Prevention**: Highest-risk factor; pain management strategy must explicitly exclude opioid analgesics.
@@ -195,7 +195,7 @@ The patient exhibits moderate systemic stress combined with suboptimal cellular 
 
 export const DEMO_ANALYSIS_REPORT_EASTERN: Partial<Record<AnalysisLens, string>> = {
     'Summary Overview': `### Clinical Assessment
-Sarah Jenkins is a 42-year-old female presenting with chronic lower back pain (L4-L5 radiculopathy) matching Qi and Blood Stasis in the Du/Ren meridians, underpinned by Kidney Jing Deficiency. History of OUD is managed as a Shen disturbance (anxiety/restlessness) in sustained stability.
+Homo Sapiens (Female, Lumbar Radiculopathy & Remission, 42y) is a 42-year-old female presenting with chronic lower back pain (L4-L5 radiculopathy) matching Qi and Blood Stasis in the Du/Ren meridians, underpinned by Kidney Jing Deficiency. History of OUD is managed as a Shen disturbance (anxiety/restlessness) in sustained stability.
 
 ### Priority List
 - **Move Qi and Resolve Blood Stasis**: Address the L4-L5 localized pain and radiculopathy.
@@ -353,7 +353,7 @@ Assessment reveals structural and metabolic strain linked to Qi stagnation and p
 
 export const DEMO_ANALYSIS_REPORT_AYURVEDIC: Partial<Record<AnalysisLens, string>> = {
     'Summary Overview': `### Clinical Assessment
-Sarah Jenkins is a 42-year-old female presenting with chronic lower back pain (Kati Shoola/radiculopathy) stemming from a severe Vata Vyadhi (neurological/movement imbalance) with localized Ama accumulation at the L4-L5 level. Her pathology has penetrated the **Asthi Dhatu** (bone/cartilage) and **Majja Dhatu** (nervous system), resulting in blockages in the **Asthivaha** and **Majjavaha Srotas** (channels). Her OUD history and depression are addressed as a Manovaha Srotas (mind-channel) imbalance characterized by high Rajas and low Sattva.
+Homo Sapiens (Female, Lumbar Radiculopathy & Remission, 42y) is a 42-year-old female presenting with chronic lower back pain (Kati Shoola/radiculopathy) stemming from a severe Vata Vyadhi (neurological/movement imbalance) with localized Ama accumulation at the L4-L5 level. Her pathology has penetrated the **Asthi Dhatu** (bone/cartilage) and **Majja Dhatu** (nervous system), resulting in blockages in the **Asthivaha** and **Majjavaha Srotas** (channels). Her OUD history and depression are addressed as a Manovaha Srotas (mind-channel) imbalance characterized by high Rajas and low Sattva.
 
 ### Priority List
 - **Pacify Vata (Ruksha/Sheeta Gunas)**: Reduce nervous system excitability, pain, and dryness in the joints.

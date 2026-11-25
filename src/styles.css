@@ -48,10 +48,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body, html {
+html, body {
   font-family: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.65;
   letter-spacing: -0.012em;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 .font-pocketgull-serif, .pocketgull-serif-prose, .font-caslon, .caslon-prose {
@@ -1336,13 +1338,13 @@ app-body-3d-viewer,
     border-color: rgba(249, 115, 22, 0.12) !important;
 }
 
-.theme-spark .text-gray-900,
+.theme-spark .text-gray-900:not(.bg-white):not(:is(.bg-white *)),
 .theme-spark .dark\:text-gray-100,
 .theme-spark .text-zinc-100,
 .theme-spark .dark\:text-zinc-100,
 .theme-spark .text-zinc-200,
 .theme-spark .dark\:text-zinc-200,
-.theme-spark .text-white {
+.theme-spark .text-white:not(.bg-white):not(:is(.bg-white *)):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark .dark\:bg-white *)):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900) {
     color: #fffaf7 !important;
 }
 
@@ -1425,11 +1427,11 @@ app-body-3d-viewer,
     border-color: rgba(245, 158, 11, 0.16) !important;
 }
 
-.theme-dream-team .text-gray-900,
+.theme-dream-team .text-gray-900:not(.bg-white):not(:is(.bg-white *)),
 .theme-dream-team .dark\:text-gray-100,
 .theme-dream-team .text-zinc-100,
 .theme-dream-team .dark\:text-zinc-100,
-.theme-dream-team .text-white {
+.theme-dream-team .text-white:not(.bg-white):not(:is(.bg-white *)):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark .dark\:bg-white *)):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900) {
     color: #f8fafc !important;
 }
 
@@ -1499,11 +1501,11 @@ app-body-3d-viewer,
     border-color: rgba(0, 142, 151, 0.22) !important;
 }
 
-.theme-dolphins-1972 .text-gray-900,
+.theme-dolphins-1972 .text-gray-900:not(.bg-white):not(:is(.bg-white *)),
 .theme-dolphins-1972 .dark\:text-gray-100,
 .theme-dolphins-1972 .text-zinc-100,
 .theme-dolphins-1972 .dark\:text-zinc-100,
-.theme-dolphins-1972 .text-white {
+.theme-dolphins-1972 .text-white:not(.bg-white):not(:is(.bg-white *)):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark .dark\:bg-white *)):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900) {
     color: #f0fdfa !important;
 }
 
@@ -1568,11 +1570,11 @@ app-body-3d-viewer,
     border-color: rgba(196, 154, 69, 0.2) !important;
 }
 
-.theme-yankees-1927 .text-gray-900,
+.theme-yankees-1927 .text-gray-900:not(.bg-white):not(:is(.bg-white *)),
 .theme-yankees-1927 .dark\:text-gray-100,
 .theme-yankees-1927 .text-zinc-100,
 .theme-yankees-1927 .dark\:text-zinc-100,
-.theme-yankees-1927 .text-white {
+.theme-yankees-1927 .text-white:not(.bg-white):not(:is(.bg-white *)):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark .dark\:bg-white *)):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900) {
     color: #f8fafc !important;
 }
 
@@ -1637,11 +1639,11 @@ app-body-3d-viewer,
     border-color: rgba(229, 175, 58, 0.22) !important;
 }
 
-.theme-arsenal-invincibles .text-gray-900,
+.theme-arsenal-invincibles .text-gray-900:not(.bg-white):not(:is(.bg-white *)),
 .theme-arsenal-invincibles .dark\:text-gray-100,
 .theme-arsenal-invincibles .text-zinc-100,
 .theme-arsenal-invincibles .dark\:text-zinc-100,
-.theme-arsenal-invincibles .text-white {
+.theme-arsenal-invincibles .text-white:not(.bg-white):not(:is(.bg-white *)):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark .dark\:bg-white *)):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900) {
     color: #fffaf7 !important;
 }
 
@@ -1706,11 +1708,11 @@ app-body-3d-viewer,
     border-color: rgba(175, 30, 45, 0.25) !important;
 }
 
-.theme-canadiens-1977 .text-gray-900,
+.theme-canadiens-1977 .text-gray-900:not(.bg-white):not(:is(.bg-white *)),
 .theme-canadiens-1977 .dark\:text-gray-100,
 .theme-canadiens-1977 .text-zinc-100,
 .theme-canadiens-1977 .dark\:text-zinc-100,
-.theme-canadiens-1977 .text-white {
+.theme-canadiens-1977 .text-white:not(.bg-white):not(:is(.bg-white *)):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark .dark\:bg-white *)):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900) {
     color: #f0f9ff !important;
 }
 
@@ -1775,11 +1777,11 @@ app-body-3d-viewer,
     border-color: rgba(247, 200, 0, 0.22) !important;
 }
 
-.theme-brazil-1970 .text-gray-900,
+.theme-brazil-1970 .text-gray-900:not(.bg-white):not(:is(.bg-white *)),
 .theme-brazil-1970 .dark\:text-gray-100,
 .theme-brazil-1970 .text-zinc-100,
 .theme-brazil-1970 .dark\:text-zinc-100,
-.theme-brazil-1970 .text-white {
+.theme-brazil-1970 .text-white:not(.bg-white):not(:is(.bg-white *)):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark .dark\:bg-white *)):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900) {
     color: #fefce8 !important;
 }
 
@@ -1844,11 +1846,11 @@ app-body-3d-viewer,
     border-color: rgba(229, 231, 235, 0.18) !important;
 }
 
-.theme-all-blacks-2013 .text-gray-900,
+.theme-all-blacks-2013 .text-gray-900:not(.bg-white):not(:is(.bg-white *)),
 .theme-all-blacks-2013 .dark\:text-gray-100,
 .theme-all-blacks-2013 .text-zinc-100,
 .theme-all-blacks-2013 .dark\:text-zinc-100,
-.theme-all-blacks-2013 .text-white {
+.theme-all-blacks-2013 .text-white:not(.bg-white):not(:is(.bg-white *)):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark .dark\:bg-white *)):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900) {
     color: #ffffff !important;
 }
 
@@ -2124,7 +2126,7 @@ body.avs-active .text-zinc-100,
 body.avs-active .dark\:text-zinc-100,
 body.avs-active .text-zinc-200,
 body.avs-active .dark\:text-zinc-200,
-body.avs-active .text-white {
+body.avs-active .text-white:not(.bg-white):not(:is(.bg-white *)):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark .dark\:bg-white *)):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900) {
     color: #ffffff !important;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
@@ -2656,10 +2658,10 @@ html.papercraft-mode {
 html.papercraft-mode body,
 html.papercraft-mode main,
 html.papercraft-mode .secure-splash-main,
-html.papercraft-mode .bg-zinc-950,
-html.papercraft-mode .bg-gray-50,
-html.papercraft-mode .bg-zinc-900,
-html.papercraft-mode .bg-zinc-800 {
+html.papercraft-mode .bg-zinc-950:not(button):not(a):not([role="button"]),
+html.papercraft-mode .bg-gray-50:not(button):not(a):not([role="button"]),
+html.papercraft-mode .bg-zinc-900:not(button):not(a):not([role="button"]),
+html.papercraft-mode .bg-zinc-800:not(button):not(a):not([role="button"]) {
   background: linear-gradient(135deg, #FFFEFA 0%, #FAF6EB 60%, #F5EEDD 100%) !important;
   color: #1F1B16 !important;
   position: relative;
@@ -2758,16 +2760,16 @@ html.theme-mandala body::before {
 }
 
 /* Tactile Translucent Light Paper Cards & Containers (10% Texture Opacity) */
-html.papercraft-mode .bg-white:not(.overflow-y-auto):not(.overflow-auto),
+html.papercraft-mode .bg-white:not(.overflow-y-auto):not(.overflow-auto):not(button):not(a):not([role="button"]),
 html.papercraft-mode .pocket-gull-card,
 html.papercraft-mode .paper-card,
 html.papercraft-mode .sub-panel,
 html.papercraft-mode .card,
-html.papercraft-mode [class*="bg-zinc-900"]:not(.overflow-y-auto):not(.overflow-auto),
-html.papercraft-mode [class*="bg-zinc-950"]:not(.overflow-y-auto):not(.overflow-auto),
-html.papercraft-mode [class*="bg-slate-900"]:not(.overflow-y-auto):not(.overflow-auto),
-html.papercraft-mode .bg-gray-50:not(.overflow-y-auto):not(.overflow-auto),
-html.papercraft-mode .bg-gray-100:not(.overflow-y-auto):not(.overflow-auto) {
+html.papercraft-mode [class*="bg-zinc-900"]:not(.overflow-y-auto):not(.overflow-auto):not(button):not(a):not([role="button"]),
+html.papercraft-mode [class*="bg-zinc-950"]:not(.overflow-y-auto):not(.overflow-auto):not(button):not(a):not([role="button"]),
+html.papercraft-mode [class*="bg-slate-900"]:not(.overflow-y-auto):not(.overflow-auto):not(button):not(a):not([role="button"]),
+html.papercraft-mode .bg-gray-50:not(.overflow-y-auto):not(.overflow-auto):not(button):not(a):not([role="button"]),
+html.papercraft-mode .bg-gray-100:not(.overflow-y-auto):not(.overflow-auto):not(button):not(a):not([role="button"]) {
   position: relative;
   background-color: rgba(255, 254, 250, 0.96) !important;
   color: #1F1B16 !important;
@@ -2946,10 +2948,10 @@ html.papercraft-mode span:not([class*="text-white"]):not([class*="text-[#"]):not
 }
 
 /* Explicit preservation of button and badge text colors in papercraft mode */
-html.papercraft-mode button [class*="text-white"],
-html.papercraft-mode button.text-white,
-html.papercraft-mode .text-white,
-html.papercraft-mode [class*="!text-white"],
+html.papercraft-mode button [class*="text-white"]:not([class*="hover:text-white"]):not([class*="dark:text-white"]):not(:is(.bg-white *)):not(:is(html.dark .dark\:bg-white *)),
+html.papercraft-mode button.text-white:not(.bg-white):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900),
+html.papercraft-mode .text-white:not(.bg-white):not(:is(.bg-white *)):not(:is(html.dark *).dark\:bg-white):not(:is(html.dark .dark\:bg-white *)):not(:is(html.dark *).dark\:text-zinc-900):not(:is(html.dark *).dark\:text-zinc-950):not(:is(html.dark *).dark\:text-gray-900),
+html.papercraft-mode [class*="!text-white"]:not(.bg-white):not(:is(html.dark *).dark\:bg-white),
 html.papercraft-mode [class*="bg-indigo-600"],
 html.papercraft-mode [class*="bg-indigo-600"] *,
 html.papercraft-mode [class*="bg-purple-600"],
@@ -3871,10 +3873,11 @@ html.theme-mandala body::before {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 70vw;
-  height: 70vw;
-  min-width: 600px;
-  min-height: 600px;
+  width: min(70vw, 600px);
+  height: min(70vw, 600px);
+  min-width: 0;
+  min-height: 0;
+  max-width: 100vw;
   background-image: url('/images/mandala_bg.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -4759,8 +4762,8 @@ html.reduce-motion [data-vagal-pacer="true"] {
     touch-action: manipulation;
   }
 
-  /* 3. Promote sticky headers, fixed HUDs, and SVGs to GPU compositing layers */
-  header, nav, .sticky, [class*="fixed"], svg.wave-layer, .origami-unfold-container {
+  /* 3. Promote wave SVGs to GPU compositing layers without trapping fixed docks/modals */
+  svg.wave-layer {
     transform: translate3d(0, 0, 0);
     will-change: transform;
     backface-visibility: hidden;
@@ -4788,9 +4791,9 @@ html.reduce-motion [data-vagal-pacer="true"] {
     font-size: 16px !important; /* Prevents iOS/Android auto-zoom shift */
   }
 
-  /* 8. Anti-Scroll Bloat: Prevent runaway page heights & horizontal overflow */
+  /* 8. Anti-Scroll Bloat: Prevent runaway page heights & horizontal overflow without breaking sticky */
   html, body {
-    overflow-x: hidden !important;
+    overflow-x: clip !important;
     max-width: 100vw !important;
     position: relative;
   }

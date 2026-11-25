@@ -4,6 +4,7 @@ import { PocketGullButtonComponent } from './shared/pocket-gull-button.component
 import { PocketGullBadgeComponent } from './shared/pocket-gull-badge.component';
 import { PatientStateService } from '../services/patient-state.service';
 import { HistoryEntry, IBodyPartIssue } from '../services/patient.types';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 interface INotesByPart {
   partId: string;
@@ -14,25 +15,25 @@ interface INotesByPart {
 @Component({
   selector: 'app-visit-review',
   standalone: true,
-  imports: [CommonModule, PocketGullButtonComponent, PocketGullBadgeComponent],
+  imports: [CommonModule, PocketGullButtonComponent, PocketGullBadgeComponent, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="h-full flex flex-col bg-white dark:bg-obsidian">
       <!-- Header -->
       <div class="h-14 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between px-6 bg-white dark:bg-obsidian shrink-0">
         <div class="flex items-center gap-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Visit Review</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-gray-500">{{ 'Visit Review' | pgT:'review.title' }}</span>
           <span class="text-xs text-gray-300">|</span>
           <span class="text-xs font-semibold text-gray-900 dark:text-zinc-100">{{ visit().date }}</span>
         </div>
-        <button (click)="close()" type="button" aria-label="Close Visit Review" class="min-h-[44px] min-w-[44px] p-2 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors touch-manipulation">
+        <button (click)="close()" type="button" [attr.aria-label]="'Close Visit Review' | pgT:'review.close'" class="min-h-[44px] min-w-[44px] p-2 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors touch-manipulation">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
       <div class="flex-1 overflow-y-auto p-6 space-y-8">
         <div>
-          <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-3">Clinical Summary</h3>
+          <h3 class="text-sm font-bold uppercase tracking-wider text-gray-400 mb-3">{{ 'Clinical Summary' | pgT:'review.clinical_summary' }}</h3>
           <p class="text-sm text-gray-800 dark:text-zinc-200 leading-relaxed">{{ visit().summary }}</p>
         </div>
 
@@ -48,7 +49,7 @@ interface INotesByPart {
                                     size="md"
                                     class="w-full text-left">
                                 <div class="flex justify-between items-center w-full">
-                                    <p class="font-medium text-gray-800 dark:text-zinc-100 flex-1 pr-4 text-xs text-left normal-case tracking-normal">{{ note.description || 'No description provided.' }}</p>
+                                    <p class="font-medium text-gray-800 dark:text-zinc-100 flex-1 pr-4 text-xs text-left normal-case tracking-normal">{{ note.description || ('No description provided.' | pgT:'review.no_description') }}</p>
                                     <pocket-gull-badge [label]="note.painLevel + '/10'" [severity]="note.painLevel > 7 ? 'error' : note.painLevel > 4 ? 'warning' : 'neutral'" size="sm">
                                     </pocket-gull-badge>
                                 </div>
@@ -58,7 +59,7 @@ interface INotesByPart {
                 </div>
             } @empty {
                 <div class="text-center text-xs text-gray-500 py-8">
-                    <p>No specific notes were recorded for this visit.</p>
+                    <p>{{ 'No specific notes were recorded for this visit.' | pgT:'review.no_notes' }}</p>
                 </div>
             }
         </div>

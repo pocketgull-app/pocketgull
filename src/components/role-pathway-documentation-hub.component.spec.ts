@@ -2,21 +2,25 @@ import '@angular/compiler';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { RolePathwayDocumentationHubComponent } from './role-pathway-documentation-hub.component';
 import { RolePathwayDocsService } from '../services/role-pathway-docs.service';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 describe('RolePathwayDocumentationHubComponent - Continuous 5-Stage Clinical Workflow Stepper', () => {
   let component: RolePathwayDocumentationHubComponent;
   let docsService: RolePathwayDocsService;
+  let moeRouter: ClinicalMoERouterService;
 
   beforeEach(() => {
     const injector = Injector.create({
       providers: [
         RolePathwayDocsService,
+        ClinicalMoERouterService,
         RolePathwayDocumentationHubComponent
       ]
     });
 
     component = runInInjectionContext(injector, () => injector.get(RolePathwayDocumentationHubComponent));
     docsService = injector.get(RolePathwayDocsService);
+    moeRouter = injector.get(ClinicalMoERouterService);
   });
 
   it('1. Initializes with Stage 1 selected for Clinician pathway', () => {
@@ -84,5 +88,13 @@ describe('RolePathwayDocumentationHubComponent - Continuous 5-Stage Clinical Wor
 
     component.launchStage('dxradar');
     expect(emittedTab).toBe('dxradar');
+  });
+
+  it('5. Synchronizes SMoE Role Pathway Priors and exposes live Role SMoE Preview on pathway switch', () => {
+    component.selectPathway('chw');
+    expect(component.activeRoleSmoePreview()?.recommendedTopK).toBe(1);
+    expect(component.activeRoleSmoePreview()?.safetyConstraintBadge).toContain('WHO IMCI');
+    expect(moeRouter.kValue()).toBe(1);
+    expect(moeRouter.microSkillDisplayPolicy().densityMode).toBe('caregiver-digest');
   });
 });

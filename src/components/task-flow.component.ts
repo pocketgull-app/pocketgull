@@ -4,13 +4,14 @@ import { PatientStateService } from '../services/patient-state.service';
 import { DictationService } from '../services/dictation.service';
 import { RevealDirective } from '../directives/reveal.directive';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 import { ClinicalAssessmentsSuiteComponent } from './clinical-assessments-suite.component';
 import * as DOMPurify from 'dompurify';
 
 @Component({
   selector: 'app-task-flow',
   standalone: true,
-  imports: [CommonModule, RevealDirective, SafeHtmlPipe, ClinicalAssessmentsSuiteComponent],
+  imports: [CommonModule, RevealDirective, SafeHtmlPipe, PgTranslatePipe, ClinicalAssessmentsSuiteComponent],
   providers: [DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -20,17 +21,17 @@ import * as DOMPurify from 'dompurify';
         <div class="flex items-center gap-4">
           <div>
             <span class="text-xs font-bold uppercase tracking-widest text-[#416B1F] dark:text-[#689f38] block mb-1">
-              Active Room
+              {{ 'Active Room' | pgT:'room.active_room' }}
             </span>
             <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <button (click)="activeView.set('tasks')" [class.text-gray-400]="activeView() !== 'tasks'" [class.dark:text-zinc-500]="activeView() !== 'tasks'" class="text-base sm:text-xl font-medium text-[#1C1C1C] dark:text-zinc-100 transition-colors hover:text-[#1C1C1C] dark:hover:text-zinc-100 cursor-pointer">Tasks & Notes</button>
+              <button (click)="activeView.set('tasks')" [class.text-gray-400]="activeView() !== 'tasks'" [class.dark:text-zinc-500]="activeView() !== 'tasks'" class="text-base sm:text-xl font-medium text-[#1C1C1C] dark:text-zinc-100 transition-colors hover:text-[#1C1C1C] dark:hover:text-zinc-100 cursor-pointer">{{ 'Tasks & Notes' | pgT:'room.tab_tasks' }}</button>
               <span class="text-gray-300 dark:text-zinc-700 text-lg sm:text-xl font-light">|</span>
               <button (click)="activeView.set('assessments')" [class.text-gray-400]="activeView() !== 'assessments'" [class.dark:text-zinc-500]="activeView() !== 'assessments'" data-testid="active-room-tab-assessments" class="text-base sm:text-xl font-medium text-[#1C1C1C] dark:text-zinc-100 transition-colors hover:text-[#1C1C1C] dark:hover:text-zinc-100 flex items-center gap-1.5 cursor-pointer">
-                Assessments
+                {{ 'Assessments' | pgT:'room.tab_assessments' }}
               </button>
               <span class="text-gray-300 dark:text-zinc-700 text-lg sm:text-xl font-light">|</span>
               <button (click)="activeView.set('collab')" [class.text-gray-400]="activeView() !== 'collab'" [class.dark:text-zinc-500]="activeView() !== 'collab'" class="text-base sm:text-xl font-medium text-[#1C1C1C] dark:text-zinc-100 transition-colors hover:text-[#1C1C1C] dark:hover:text-zinc-100 flex items-center gap-2 cursor-pointer">
-                Colleague Chat
+                {{ 'Colleague Chat' | pgT:'room.tab_collab' }}
                 <span class="flex -space-x-2">
                   <div class="w-6 h-6 rounded-md bg-blue-100 border-2 border-white dark:border-obsidian flex items-center justify-center text-[12px] font-bold text-blue-700 z-20 shadow-sm">SC</div>
                   <div class="w-6 h-6 rounded-md bg-indigo-100 border-2 border-white dark:border-obsidian flex items-center justify-center text-[12px] font-bold text-indigo-700 z-10 shadow-sm">JT</div>
@@ -42,15 +43,15 @@ import * as DOMPurify from 'dompurify';
         <div class="flex flex-col items-end gap-1 sm:gap-2">
             <div class="flex items-center gap-2">
               <button (click)="state.toggleResearchFrame(true)" class="flex items-center gap-1 px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-md border border-indigo-200 dark:border-indigo-800/50 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold uppercase tracking-wider transition-all shadow-sm">
-                <span>🔬</span> Research Frame
+                <span>🔬</span> {{ 'Research Frame' | pgT:'room.research_frame' }}
               </button>
               <div class="flex items-center gap-1.5 px-2 py-1 bg-green-50 dark:bg-[#689f38]/10 rounded-md border border-green-100 dark:border-[#689f38]/30">
                 <div class="w-1.5 h-1.5 rounded-full status-dot bg-green-500 dark:bg-[#689f38] animate-pulse"></div>
-                <span class="text-[12px] sm:text-xs font-medium text-green-700 dark:text-[#689f38] uppercase tracking-wide">Live</span>
+                <span class="text-[12px] sm:text-xs font-medium text-green-700 dark:text-[#689f38] uppercase tracking-wide">{{ 'Live' | pgT:'room.live' }}</span>
               </div>
             </div>
             <div class="text-[12px] sm:text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-widest text-right">
-               {{ checklist().length }} Tasks • {{ clinicalNotes().length }} Notes • {{ shoppingList().length }} Items
+               {{ checklist().length }} {{ 'Tasks' | pgT:'room.tasks_label' }} • {{ clinicalNotes().length }} {{ 'Notes' | pgT:'room.notes_label' }} • {{ shoppingList().length }} {{ 'Items' | pgT:'room.items_label' }}
             </div>
         </div>
       </div>
@@ -62,7 +63,7 @@ import * as DOMPurify from 'dompurify';
             <div class="h-full flex flex-col items-center justify-center opacity-40">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-4 text-gray-500 dark:text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             <p class="text-xs font-bold uppercase tracking-widest text-[#1C1C1C] dark:text-zinc-100 text-center max-w-xs leading-relaxed">
-              No tasks, notes, or list items yet. <br/> Add items using the input below or from the Assessment Panel.
+              {{ 'No tasks, notes, or list items yet.' | pgT:'room.empty' }} <br/> {{ 'Add items using the input below or from the Assessment Panel.' | pgT:'room.empty_sub' }}
             </p>
           </div>
         } @else {
@@ -75,7 +76,7 @@ import * as DOMPurify from 'dompurify';
               @if (enhancedChecklist().length > 0) {
                 <div class="mb-2">
                   <div class="flex items-center justify-between pl-8 mb-4">
-                    <h3 class="text-[12px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest">Tasks</h3>
+                    <h3 class="text-[12px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest">{{ 'Tasks' | pgT:'room.tasks_label' }}</h3>
                     <select name="taskSortOrderCtrl" id="taskSortOrderCtrl" [value]="taskSortOrder()" (change)="taskSortOrder.set($any($event.target).value)" class="text-[12px] uppercase font-bold text-gray-500 bg-transparent border-none cursor-pointer hover:text-[#1C1C1C] dark:hover:text-zinc-300 focus:ring-0">
                       <option value="default">Sort: Default</option>
                       <option value="pain">Sort: Severity (Pain)</option>
@@ -120,7 +121,7 @@ import * as DOMPurify from 'dompurify';
                 <div class="mb-2">
                   <h3 class="flex items-center gap-1.5 text-[12px] font-bold text-[#E3663B] dark:text-[#ff8a65] uppercase tracking-widest mb-4 pl-8">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                    Shopping List
+                    {{ 'Shopping List' | pgT:'room.shopping_list' }}
                   </h3>
                   <div class="flex flex-col">
                     @for (item of shoppingList(); track item.id; let i = $index) {
@@ -154,7 +155,7 @@ import * as DOMPurify from 'dompurify';
               <!-- Clinical Notes Section -->
               @if (clinicalNotes().length > 0) {
                 <div class="mb-2">
-                  <h3 class="text-[12px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mb-4 pl-8">Notes</h3>
+                  <h3 class="text-[12px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mb-4 pl-8">{{ 'Notes' | pgT:'room.notes_label' }}</h3>
                   <div class="flex flex-col">
                     @for (note of enhancedClinicalNotes(); track note.id; let i = $index) {
                       <div appReveal [revealDelay]="i * 75" class="relative pl-8 pb-6 group">
@@ -181,7 +182,7 @@ import * as DOMPurify from 'dompurify';
                             <span>{{ note.date | date:'MMM d, y, h:mm a' }}</span>
                             <span class="text-gray-400 flex items-center gap-1">
                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-emerald-400 disabled" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                               LOGGED
+                               {{ 'LOGGED' | pgT:'room.logged' }}
                             </span>
                           </div>
                         </div>
@@ -237,7 +238,7 @@ import * as DOMPurify from 'dompurify';
             #itemInput
             (keydown.enter)="handleEnter($event, itemInput)"
             (input)="autoResize(itemInput)"
-            [placeholder]="activeView() === 'tasks' ? 'Type a clinical note, task, or shopping item... (Shift+Enter for new line)' : 'Message your colleagues or @mention them...'" 
+            [placeholder]="activeView() === 'tasks' ? ('Type a clinical note, task, or shopping item...' | pgT:'room.input_tasks_ph') : ('Message your colleagues or @mention them...' | pgT:'room.input_collab_ph')" 
             rows="1"
             class="w-full bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg px-4 py-3 text-sm text-gray-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[#416B1F]/30 focus:border-[#416B1F] transition-all placeholder-gray-400 dark:placeholder-zinc-600 resize-none max-h-32"
         ></textarea>
@@ -246,23 +247,23 @@ import * as DOMPurify from 'dompurify';
           <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
               <button (click)="openDictation(itemInput)" class="w-full sm:w-auto justify-center px-4 py-2 sm:py-1.5 text-xs font-bold text-gray-600 bg-gray-100 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 rounded transition-colors uppercase tracking-widest flex items-center gap-1.5" title="Hands-free Dictation">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 sm:w-3 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
-                Dictate
+                {{ 'Dictate' | pgT:'room.btn_dictate' }}
               </button>
               <button (click)="submitNote(itemInput)" class="w-full sm:w-auto justify-center px-4 py-2 sm:py-1.5 text-xs font-bold text-gray-600 bg-gray-100 border border-gray-200 hover:bg-gray-200 rounded transition-colors uppercase tracking-widest flex items-center gap-1.5">
                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 sm:w-3 border-gray-200 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                 Add Note
+                 {{ 'Add Note' | pgT:'room.btn_add_note' }}
               </button>
               <button (click)="submitShoppingItem(itemInput)" class="w-full sm:w-auto justify-center px-4 py-2 sm:py-1.5 text-xs font-bold text-white bg-[#E3663B] hover:bg-[#c95a34] rounded transition-colors uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 sm:w-3 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                 Add Item
+                 {{ 'Add Item' | pgT:'room.btn_add_item' }}
               </button>
               <button (click)="submitResearchQuery(itemInput)" class="w-full sm:w-auto justify-center px-4 py-2 sm:py-1.5 text-xs font-bold text-white bg-teal-700 hover:bg-teal-800 rounded transition-colors uppercase tracking-widest flex items-center gap-1.5 shadow-sm" title="Search Literature for Input Context">
                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 sm:w-3 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                 ⚡ Research
+                 ⚡ {{ 'Research' | pgT:'room.btn_research' }}
               </button>
               <button (click)="submitTask(itemInput)" class="w-full sm:w-auto justify-center px-4 py-2 sm:py-1.5 text-xs font-bold text-white bg-[#1C1C1C] hover:bg-[#416B1F] rounded transition-colors uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 sm:w-3 sm:h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-                 Add Task
+                 {{ 'Add Task' | pgT:'room.btn_add_task' }}
               </button>
           </div>
         } @else {
@@ -279,7 +280,7 @@ import * as DOMPurify from 'dompurify';
                 </button>
              </div>
              <button (click)="submitCollabMessage(itemInput)" class="px-6 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
-               Send
+               {{ 'Send' | pgT:'room.btn_send' }}
              </button>
           </div>
         }

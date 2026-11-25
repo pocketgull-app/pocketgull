@@ -9,6 +9,7 @@ import { CaregiverAdvocacyCardComponent } from '../caregiver-advocacy-card.compo
 import { AgronomicSoilProcurementCardComponent } from '../shared/agronomic-soil-procurement-card.component';
 import { BioregionalClimateFlourishingCardComponent } from '../shared/bioregional-climate-flourishing-card.component';
 import { WatershedExposomeLineageCardComponent } from '../shared/watershed-exposome-lineage-card.component';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-seven-generations-stewardship-lens-tab',
@@ -23,7 +24,8 @@ import { WatershedExposomeLineageCardComponent } from '../shared/watershed-expos
     CaregiverAdvocacyCardComponent,
     AgronomicSoilProcurementCardComponent,
     BioregionalClimateFlourishingCardComponent,
-    WatershedExposomeLineageCardComponent
+    WatershedExposomeLineageCardComponent,
+    PgTranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -33,8 +35,8 @@ import { WatershedExposomeLineageCardComponent } from '../shared/watershed-expos
           <div class="flex items-center gap-2">
             <span class="text-2xl">🌲</span>
             <div>
-              <h3 class="text-lg font-bold text-zinc-100">Seven Generations Environmental &amp; Sovereign Legacy Stewardship</h3>
-              <p class="text-xs text-zinc-400">Multi-generational epigenetic lineage protection, Grow Thyself purpose reflection, and posthumous open-science data directives.</p>
+              <h3 class="text-lg font-bold text-zinc-100">{{ 'Seven Generations Environmental & Sovereign Legacy Stewardship' | pgT:'lens07.seven_title' }}</h3>
+              <p class="text-xs text-zinc-400">{{ 'Multi-generational epigenetic lineage protection, Grow Thyself purpose reflection, and posthumous open-science data directives.' | pgT:'lens07.seven_subtitle' }}</p>
             </div>
           </div>
           <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">

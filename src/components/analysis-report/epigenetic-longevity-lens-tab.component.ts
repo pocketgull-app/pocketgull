@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component';
 import { BiologicalAgeWaterfallHudComponent } from '../biological-age-waterfall-hud.component';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-epigenetic-longevity-lens-tab',
   standalone: true,
-  imports: [CommonModule, PocketGullBadgeComponent, BiologicalAgeWaterfallHudComponent],
+  imports: [CommonModule, PocketGullBadgeComponent, BiologicalAgeWaterfallHudComponent, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-5 bg-zinc-950 border border-purple-500/30 rounded-2xl shadow-xl space-y-4 font-mono text-zinc-100 backdrop-blur-md">
@@ -17,10 +18,10 @@ import { BiologicalAgeWaterfallHudComponent } from '../biological-age-waterfall-
           <span class="text-xl">⏳</span>
           <div>
             <h3 class="text-sm font-extrabold text-purple-300 uppercase tracking-wide">
-              Epigenetic Longevity & Transgenerational Epigenetics
+              {{ 'Epigenetic Longevity & Transgenerational Epigenetics' | pgT:'lens05.epi_title' }}
             </h3>
             <p class="text-xs text-zinc-400">
-              Histone methylation, telomere length decay rates, and mitochondrial healthspan telemetry.
+              {{ 'Histone methylation, telomere length decay rates, and mitochondrial healthspan telemetry.' | pgT:'lens05.epi_subtitle' }}
             </p>
           </div>
         </div>
@@ -30,17 +31,17 @@ import { BiologicalAgeWaterfallHudComponent } from '../biological-age-waterfall-
       <!-- Telemetry Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
         <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
-          <span class="text-zinc-500 block text-[10px] uppercase font-bold">DNA Methylation Pace</span>
+          <span class="text-zinc-500 block text-[10px] uppercase font-bold">{{ 'DNA Methylation Pace' | pgT:'lens05.dna_pace' }}</span>
           <span class="text-purple-400 font-extrabold text-base">0.84 / yr</span>
           <span class="text-[10px] text-emerald-400 block mt-1">↓ 16% decelerated aging</span>
         </div>
         <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
-          <span class="text-zinc-500 block text-[10px] uppercase font-bold">Telomere Buffer</span>
+          <span class="text-zinc-500 block text-[10px] uppercase font-bold">{{ 'Telomere Buffer' | pgT:'lens05.telomere_buffer' }}</span>
           <span class="text-purple-300 font-extrabold text-base">7.4 kb</span>
           <span class="text-[10px] text-purple-400 block mt-1">Optimal lengthspan</span>
         </div>
         <div class="p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
-          <span class="text-zinc-500 block text-[10px] uppercase font-bold">Mitochondrial Coupling</span>
+          <span class="text-zinc-500 block text-[10px] uppercase font-bold">{{ 'Mitochondrial Coupling' | pgT:'lens05.mito_coupling' }}</span>
           <span class="text-emerald-400 font-extrabold text-base">98.2%</span>
           <span class="text-[10px] text-zinc-400 block mt-1">High ATP efficiency</span>
         </div>

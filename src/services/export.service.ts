@@ -1501,10 +1501,6 @@ export class ExportService {
     <div class="print-bar-actions">
       <button class="btn-close" id="docBtnClose">Close</button>
       <button class="btn-print" id="docBtnPrint">Save as PDF / Print</button>
-      ${'<script>'}
-        document.getElementById('docBtnClose')?.addEventListener('click', function() { window.close(); });
-        document.getElementById('docBtnPrint')?.addEventListener('click', function() { window.print(); });
-      ${'</script>'}
     </div>
   </div>
 
@@ -1575,6 +1571,10 @@ export class ExportService {
 
     </div>
   </div>
+  ${'<script>'}
+    document.getElementById('docBtnClose')?.addEventListener('click', function() { window.close(); });
+    document.getElementById('docBtnPrint')?.addEventListener('click', function() { window.print(); });
+  ${'</script>'}
 </body>
 </html>`;
 
@@ -2292,10 +2292,6 @@ export class ExportService {
     <div class="print-bar-actions">
       <button class="btn-close" id="carePlanBtnClose">Close</button>
       <button class="btn-print" id="carePlanBtnPrint">Save as PDF / Print</button>
-      ${'<script>'}
-        document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
-        document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
-      ${'</script>'}
     </div>
   </div>
 
@@ -2373,6 +2369,8 @@ export class ExportService {
     </div>
   </div>
   ${'<script>'}
+    document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
+    document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         window.print();

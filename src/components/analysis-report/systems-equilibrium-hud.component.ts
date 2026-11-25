@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { ClinicalIntelligenceService } from '../../services/clinical-intelligence.service';
 import { PharmacogenomicsService } from '../../services/pharmacogenomics.service';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 export type SystemsNavMode = 'overview' | 'crosstalk' | 'lens' | 'gemma' | 'anatomy' | 'auxiliary';
 
 @Component({
   selector: 'app-systems-equilibrium-hud',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-4 rounded-2xl bg-zinc-950/90 border border-zinc-800 shadow-2xl backdrop-blur-md font-mono text-zinc-200 transition-all duration-300">
@@ -24,14 +25,14 @@ export type SystemsNavMode = 'overview' | 'crosstalk' | 'lens' | 'gemma' | 'anat
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <span class="text-xs font-black uppercase tracking-wider text-zinc-100">Macro Systems Equilibrium</span>
+              <span class="text-xs font-black uppercase tracking-wider text-zinc-100">{{ 'Macro Systems Equilibrium' | pgT:'systems.macro_title' }}</span>
               <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase"
                     [ngClass]="acuityBadgeClass()">
                 {{ acuityStatus() }}
               </span>
             </div>
             <p class="text-[11px] text-zinc-400 font-sans">
-              Donella Meadows Multi-Loop Feedback & Biophysical Coupling
+              {{ 'Donella Meadows Multi-Loop Feedback & Biophysical Coupling' | pgT:'systems.macro_subtitle' }}
             </p>
           </div>
         </div>
@@ -45,7 +46,7 @@ export type SystemsNavMode = 'overview' | 'crosstalk' | 'lens' | 'gemma' | 'anat
                   [class.text-zinc-400]="activeMode() !== 'overview'"
                   class="px-2.5 py-1.5 rounded-lg font-bold transition hover:text-zinc-200 cursor-pointer flex items-center gap-1">
             <span>📊</span>
-            <span class="hidden sm:inline">Systems</span>
+            <span class="hidden sm:inline">{{ 'Systems' | pgT:'systems.tab_overview' }}</span>
           </button>
           
           <button type="button"
@@ -55,7 +56,7 @@ export type SystemsNavMode = 'overview' | 'crosstalk' | 'lens' | 'gemma' | 'anat
                   [class.text-zinc-400]="activeMode() !== 'crosstalk'"
                   class="px-2.5 py-1.5 rounded-lg font-bold transition hover:text-zinc-200 cursor-pointer flex items-center gap-1">
             <span>⥯</span>
-            <span class="hidden sm:inline">Cross-Talk</span>
+            <span class="hidden sm:inline">{{ 'Cross-Talk' | pgT:'systems.tab_crosstalk' }}</span>
           </button>
 
           <button type="button"
@@ -65,7 +66,7 @@ export type SystemsNavMode = 'overview' | 'crosstalk' | 'lens' | 'gemma' | 'anat
                   [class.text-zinc-400]="activeMode() !== 'gemma'"
                   class="px-2.5 py-1.5 rounded-lg font-bold transition hover:text-zinc-200 cursor-pointer flex items-center gap-1">
             <span>⚡</span>
-            <span>Edge AI</span>
+            <span>{{ 'Edge AI' | pgT:'systems.tab_gemma' }}</span>
           </button>
 
           <button type="button"
@@ -75,7 +76,7 @@ export type SystemsNavMode = 'overview' | 'crosstalk' | 'lens' | 'gemma' | 'anat
                   [class.text-zinc-400]="activeMode() !== 'auxiliary'"
                   class="px-2.5 py-1.5 rounded-lg font-bold transition hover:text-zinc-200 cursor-pointer flex items-center gap-1">
             <span>🛠️</span>
-            <span class="hidden sm:inline">Tools</span>
+            <span class="hidden sm:inline">{{ 'Tools' | pgT:'systems.tab_tools' }}</span>
           </button>
         </div>
       </div>
@@ -88,7 +89,7 @@ export type SystemsNavMode = 'overview' | 'crosstalk' | 'lens' | 'gemma' | 'anat
           <div class="flex items-center justify-between text-xs mb-1">
             <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-              Autonomic Tone
+              {{ 'Autonomic Tone' | pgT:'systems.autonomic_tone' }}
             </span>
             <span class="text-xs font-black text-teal-300">{{ autonomicRatio() }}%</span>
           </div>

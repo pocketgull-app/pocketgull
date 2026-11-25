@@ -1,14 +1,16 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, ensureAnalysisViewVisible } from './utils/setup';
 
 test.describe('Physical Genomics & 3D Genome Engineering Suite E2E', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(90000);
     await page.addInitScript(() => {
-      window.localStorage.setItem('pg_tour_seen', '1');
-      window.localStorage.setItem('pg_data_consent_v1', 'true');
-      window.localStorage.setItem('pocketgull_pin_unlocked', 'true');
-      window.localStorage.setItem('pg_splash_dismissed', 'true');
+      try {
+        window.localStorage.setItem('pg_tour_seen', '1');
+        window.localStorage.setItem('pg_data_consent_v1', 'true');
+        window.localStorage.setItem('pocketgull_pin_unlocked', 'true');
+        window.localStorage.setItem('pg_splash_dismissed', 'true');
+      } catch {}
     });
     await setupE2ePage(page);
   });
@@ -18,11 +20,7 @@ test.describe('Physical Genomics & 3D Genome Engineering Suite E2E', () => {
     await enterDemoMode(page);
 
     // On mobile viewports, activate the Analysis tab where the toolbar is housed
-    const analysisTabBtn = page.locator('button', { hasText: /Analysis/i }).first();
-    if (await analysisTabBtn.isVisible().catch(() => false)) {
-      await analysisTabBtn.click();
-      await page.waitForTimeout(300);
-    }
+    await ensureAnalysisViewVisible(page);
 
     // 2. Locate and click the [🧬 GENOMICS] button in AnalysisContainerComponent
     const genomicsBtn = page.locator('button', { hasText: 'GENOMICS' }).first();

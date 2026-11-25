@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input, ViewChild, ElementRef, OnChanges, SimpleChanges, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HistoryEntry, IPatientVitals } from '../services/patient.types';
-import * as echarts from 'echarts';
+import type * as echarts from 'echarts';
 
 @Component({
   selector: 'app-patient-vitals-chart',
@@ -28,23 +28,25 @@ export class PatientVitalsChartComponent implements OnChanges, OnDestroy {
 
   private chart: echarts.ECharts | null = null;
   private platformId = inject(PLATFORM_ID);
+  private destroyed = false;
   noData = false;
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['history'] && isPlatformBrowser(this.platformId)) {
         // Need to wait for view to render canvas if it was previously hidden via SSR or noData toggle
-        setTimeout(() => this.updateChart(), 0);
+        setTimeout(() => void this.updateChart(), 0);
     }
   }
 
   ngOnDestroy() {
+    this.destroyed = true;
     if (this.chart) {
       this.chart.dispose();
     }
   }
 
-  private updateChart() {
-    if (!this.history || !this.chartCanvas) return;
+  private async updateChart() {
+    if (this.destroyed || !this.history || !this.chartCanvas) return;
 
     // 1. Extract and sort visits chronologically
     const visits = this.history
@@ -98,7 +100,9 @@ export class PatientVitalsChartComponent implements OnChanges, OnDestroy {
     const dom = this.chartCanvas.nativeElement;
     if (!dom) return;
 
-    this.chart = echarts.init(dom, null, { renderer: 'svg' });
+    const echartsLib = await import('echarts');
+    if (this.destroyed) return;
+    this.chart = echartsLib.init(dom, null, { renderer: 'svg' });
 
     const option = {
       tooltip: {

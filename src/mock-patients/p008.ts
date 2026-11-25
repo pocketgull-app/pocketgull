@@ -2,8 +2,8 @@ import { IPatient } from '../services/patient.types';
 
 export const p008: IPatient = {
   id: "p008",
-  name: "Homo Sapiens (Male, Orthomolecular Longevity, 93y)",
-  age: 93,
+  name: "Homo Sapiens (Male, Orthomolecular Longevity, 90+y)",
+  age: 89,
   gender: "Male",
   lastVisit: "2024.12.10",
   genomicVariants: [

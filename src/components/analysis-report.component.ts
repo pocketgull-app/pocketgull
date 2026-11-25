@@ -81,6 +81,10 @@ import { SystemsEquilibriumHudComponent, SystemsNavMode } from './analysis-repor
 import { InterSystemCrosstalkCardComponent } from './analysis-report/inter-system-crosstalk-card.component';
 import { DynamicPreconditionAlertBannerComponent } from './shared/dynamic-precondition-alert-banner.component';
 import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clinical-moe-router.service';
+import { SessionStateService } from '../services/session-state.service';
+import { PhysioNetAcousticHudComponent } from './physionet-acoustic-hud.component';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
+import { UiI18nService } from '../services/ui-i18n.service';
 
 @Component({
   selector: 'app-analysis-report',
@@ -99,6 +103,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
     TriParadigmSwarmCardComponent,
     PharmacogenomicsCardComponent,
     BiometricSensorFusionCardComponent,
+    PhysioNetAcousticHudComponent,
     LensRsnaKneeComponent,
     ClinicalSleepTwinDashboardComponent,
     ChronobiologyMatrixComponent,
@@ -139,7 +144,8 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
     DualPaneConsultationComponent,
     SocraticChallengeCardComponent,
     RpmDashboardComponent,
-    SmartFhirLauncherComponent
+    SmartFhirLauncherComponent,
+    PgTranslatePipe
   ],
 
 
@@ -156,56 +162,35 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
   template: `
 
 
-    <!-- Emergency Mode Dedicated Header & Lens Bar -->
+    <!-- Emergency Mode Dedicated Lens Switcher Strip -->
     @if (state.isEmergencyMode()) {
-      <div class="px-4 sm:px-8 py-3 no-print w-full bg-gradient-to-r from-red-950/90 via-zinc-950/95 to-red-950/90 border-b-2 border-red-700/80 font-pocketgull-mono text-zinc-100 shadow-xl">
-        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-          
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-xl bg-red-600/30 border border-red-500/50 flex items-center justify-center text-red-400 text-lg animate-pulse shadow-md">
-              🚨
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="font-pocketgull text-xs sm:text-sm font-black uppercase tracking-wider text-red-300 block">
-                  Offline Emergency First Aid Suite
-                </span>
-                <span class="px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 text-[10px] font-bold border border-red-500/40">
-                  Priority 1
-                </span>
-              </div>
-              <span class="text-[11px] text-zinc-400 font-pocketgull-inter">
-                Bystander 911 dispatch, real-time CPR coach &amp; telemetry
-              </span>
-            </div>
-          </div>
-
-          <!-- Emergency Lens Switcher -->
-          <div class="flex items-center gap-2 overflow-x-auto max-w-full pb-1 hide-scrollbar">
+      <div class="px-3 sm:px-6 py-2 no-print w-full bg-zinc-950/95 border-b border-red-800/70 font-pocketgull-mono text-zinc-100 shadow-lg shrink-0">
+        <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
+          <!-- Emergency Lens Switcher (wraps cleanly across desktop & 375px mobile) -->
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
             <button type="button" (click)="changeLens('EMT Handoff')"
-                    [class]="activeLens() === 'EMT Handoff' ? 'bg-red-600 text-white font-black shadow-lg border-red-400 scale-105' : 'bg-zinc-900 text-red-300 border border-red-900/60 hover:bg-zinc-800'"
-                    class="px-3.5 py-1.5 rounded-xl text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
-              <span>🚑</span> 1. First Aid &amp; CPR
+                    [class]="activeLens() === 'EMT Handoff' ? 'bg-red-600 text-white font-black shadow-md border-red-400' : 'bg-zinc-900 text-red-200 border border-red-900/60 hover:bg-zinc-800'"
+                    class="px-3 py-2 min-h-[40px] rounded-xl text-[11px] sm:text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
+              <span aria-hidden="true">🚑</span> <span>1. {{ 'First Aid & CPR' | pgT:'emergency.first_aid_cpr' }}</span>
             </button>
 
             <button type="button" (click)="changeLens('PhysioNet Telemetry')"
-                    [class]="activeLens() === 'PhysioNet Telemetry' ? 'bg-sky-600 text-white font-black shadow-lg border-sky-400 scale-105' : 'bg-zinc-900 text-sky-300 border border-sky-900/60 hover:bg-zinc-800'"
-                    class="px-3.5 py-1.5 rounded-xl text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
-              <span>📡</span> 2. Waveforms &amp; Vitals
+                    [class]="activeLens() === 'PhysioNet Telemetry' ? 'bg-sky-600 text-white font-black shadow-md border-sky-400' : 'bg-zinc-900 text-sky-200 border border-sky-900/60 hover:bg-zinc-800'"
+                    class="px-3 py-2 min-h-[40px] rounded-xl text-[11px] sm:text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
+              <span aria-hidden="true">📡</span> <span>2. {{ 'Waveforms & Vitals' | pgT:'emergency.waveforms_vitals' }}</span>
             </button>
 
             <button type="button" (click)="changeLens('Summary Overview')"
-                    [class]="activeLens() === 'Summary Overview' ? 'bg-amber-600 text-white font-black shadow-lg border-amber-400 scale-105' : 'bg-zinc-900 text-amber-300 border border-amber-900/60 hover:bg-zinc-800'"
-                    class="px-3.5 py-1.5 rounded-xl text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
-              <span>📋</span> 3. Clinical Summary
-            </button>
-
-            <button type="button" (click)="state.isEmergencyMode.set(false)"
-                    class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer shrink-0 ml-1">
-              ✕ Exit
+                    [class]="activeLens() === 'Summary Overview' ? 'bg-amber-600 text-white font-black shadow-md border-amber-400' : 'bg-zinc-900 text-amber-200 border border-amber-900/60 hover:bg-zinc-800'"
+                    class="px-3 py-2 min-h-[40px] rounded-xl text-[11px] sm:text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 border shrink-0">
+              <span aria-hidden="true">📋</span> <span>3. {{ 'Clinical Summary' | pgT:'emergency.clinical_summary' }}</span>
             </button>
           </div>
 
+          <button type="button" (click)="exitEmergencyMode()"
+                  class="px-3 py-2 min-h-[40px] rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white border border-zinc-700 text-[11px] sm:text-xs font-pocketgull font-bold uppercase tracking-wider transition cursor-pointer shrink-0">
+            ✕ {{ 'Lock & Exit' | pgT:'emergency.lock_exit' }}
+          </button>
         </div>
       </div>
     }
@@ -215,27 +200,27 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
         <div class="max-w-4xl mx-auto flex flex-col gap-2 font-mono">
           
           <!-- Row 1: Primary Lens Navigation Tabs (Adaptive SMoE Precision Strip) -->
-          <div class="flex items-center justify-between gap-1 w-full relative z-10 border-b border-slate-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 font-mono text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-1.5 w-full relative z-10 border-b border-slate-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 font-mono text-xs">
             @if (moeRouter.isSparseLensRoutingEnabled()) {
               <!-- Adaptive SMoE Gating Router Indicator -->
-              <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-950/40 border-r border-emerald-500/30 text-emerald-300 shrink-0 font-mono text-[10px]">
+              <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-950/40 border-e border-emerald-500/30 text-emerald-300 shrink-0 font-mono text-[10px]">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span class="font-bold uppercase tracking-wider">SMoE Top-{{ moeRouter.lensKValue() }} Route</span>
-                <span class="hidden sm:inline px-1.5 py-0.5 rounded bg-emerald-900/60 text-[9px] text-emerald-200 border border-emerald-700/50">+{{ moeRouter.coreLensNoiseReductionPercent() }}% Noise Shield</span>
+                <span class="font-bold uppercase tracking-wider">{{ 'SMoE Top-k Route' | pgT:'analysis.smoe_route' }} ({{ moeRouter.lensKValue() }})</span>
+                <span class="hidden sm:inline px-1.5 py-0.5 rounded bg-emerald-900/60 text-[9px] text-emerald-200 border border-emerald-700/50">+{{ moeRouter.coreLensNoiseReductionPercent() }}% {{ 'Noise Shield' | pgT:'analysis.noise_shield' }}</span>
               </div>
 
               <!-- Top-k Active Lenses Strip -->
-              <div #lensBarContainer class="flex items-center gap-1 overflow-x-auto scroll-smooth hide-scrollbar flex-1 min-w-0">
+              <div #lensBarContainer dir="auto" class="flex items-center flex-wrap gap-1 flex-1 min-w-[220px] px-1.5">
                 @for (item of moeRouter.topKCoreLenses(); track item.lens.id) {
                   <button (click)="changeLens(item.lens.id)"
-                    [attr.data-testid]="'tab-' + item.lens.id.toLowerCase().replace(' ', '-')"
+                    [attr.data-testid]="getLensTabTestId(item.lens.id)"
                     [class]="activeLens() === item.lens.id 
                       ? 'border-b-2 border-teal-500 text-zinc-950 dark:text-white font-bold bg-teal-500/10 -mb-px' 
                       : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
                     class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono"
                     [title]="item.routingRationale">
                     <span class="text-teal-600 dark:text-teal-400 font-bold">{{ item.lens.indexNumber }}</span>
-                    <span>{{ item.lens.label }}</span>
+                    <span>{{ uiI18n ? uiI18n.translateLensLabel(item.lens.label) : item.lens.label }}</span>
                     <span class="px-1.5 py-0.2 rounded-full bg-teal-500/15 text-teal-700 dark:text-teal-300 text-[9px] font-bold border border-teal-500/20">
                       {{ (item.weight * 100).toFixed(0) }}%
                     </span>
@@ -244,11 +229,11 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
               </div>
 
               <!-- Dormant Lenses Vault & Density Controls -->
-              <div class="relative shrink-0 flex items-center gap-1 pr-1 font-mono">
+              <div class="relative shrink-0 flex items-center gap-1 pe-1 font-mono">
                 <button type="button" (click)="showDormantLensesMenu.set(!showDormantLensesMenu())"
                   class="min-h-[36px] px-2.5 py-1 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-300 hover:text-white text-[10px] uppercase font-bold tracking-wider cursor-pointer flex items-center gap-1 transition"
                   title="View dormant uncomputed lenses collapsed to save cognitive & compute overhead">
-                  <span>[+{{ moeRouter.dormantCoreLenses().length }} DORMANT ▾]</span>
+                  <span>[+{{ moeRouter.dormantCoreLenses().length }} {{ 'DORMANT' | pgT:'analysis.dormant' }} ▾]</span>
                 </button>
 
                 @if (showDormantLensesMenu()) {
@@ -262,7 +247,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                         class="px-2 py-1.5 text-left rounded-lg text-zinc-300 hover:bg-zinc-900 hover:text-white transition flex items-center justify-between cursor-pointer group">
                         <div class="flex items-center gap-1.5 min-w-0">
                           <span class="text-zinc-500 font-bold text-[10px]">{{ item.lens.indexNumber }}</span>
-                          <span class="truncate">{{ item.lens.label }}</span>
+                          <span class="truncate">{{ uiI18n ? uiI18n.translateLensLabel(item.lens.label) : item.lens.label }}</span>
                         </div>
                         <span class="text-[9px] font-mono text-zinc-500 group-hover:text-teal-400">
                           {{ (item.weight * 100).toFixed(0) }}%
@@ -275,7 +260,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                 <button type="button" (click)="moeRouter.toggleSparseLensRouting()"
                   class="min-h-[36px] px-2.5 py-1 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-zinc-400 hover:text-zinc-200 text-[10px] uppercase font-bold tracking-wider cursor-pointer transition"
                   title="Switch to full 8-lens dense view">
-                  <span>[DENSE]</span>
+                  <span>[{{ 'DENSE' | pgT:'analysis.dense' }}]</span>
                 </button>
               </div>
             } @else {
@@ -293,7 +278,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
                   class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
                   <span class="text-teal-600 dark:text-teal-400 font-bold">01</span>
-                  <span>Summary Overview</span>
+                  <span>{{ 'Summary Overview' | pgT:'analysis.summary_overview' }}</span>
                 </button>
 
                 <button (click)="changeLens('Treatment Matrix')"
@@ -303,7 +288,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
                   class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
                   <span class="text-teal-600 dark:text-teal-400 font-bold">02</span>
-                  <span>Treatment &amp; Tri-Paradigm</span>
+                  <span>{{ 'Treatment & Tri-Paradigm' | pgT:'analysis.treatment_matrix' }}</span>
                 </button>
 
                 <button (click)="changeLens('Functional Protocols')"
@@ -313,7 +298,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
                   class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
                   <span class="text-teal-600 dark:text-teal-400 font-bold">03</span>
-                  <span>Functional &amp; Nutrition</span>
+                  <span>{{ 'Functional & Nutrition' | pgT:'analysis.functional_nutrition' }}</span>
                 </button>
 
                 <button (click)="changeLens('ASSESSMENTS')"
@@ -323,7 +308,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
                   class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
                   <span class="text-indigo-400 font-bold">04</span>
-                  <span>Assessments</span>
+                  <span>{{ 'Assessments' | pgT:'analysis.assessments' }}</span>
                 </button>
 
                 <button (click)="changeLens('Monitoring & Follow-up')"
@@ -333,7 +318,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
                   class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
                   <span class="text-teal-600 dark:text-teal-400 font-bold">05</span>
-                  <span>Monitoring &amp; Longevity</span>
+                  <span>{{ 'Monitoring & Longevity' | pgT:'analysis.monitoring_longevity' }}</span>
                 </button>
 
                 <button (click)="changeLens('Environmental Exposomics & Toxicology')"
@@ -343,7 +328,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
                   class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
                   <span class="text-amber-500 font-bold">06</span>
-                  <span>Exposomics &amp; Tox</span>
+                  <span>{{ 'Exposomics & Tox' | pgT:'analysis.exposomics_tox' }}</span>
                 </button>
 
                 <button (click)="changeLens('Global Health & WHO Initiatives')"
@@ -353,7 +338,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
                   class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
                   <span class="text-teal-500 font-bold">07</span>
-                  <span>Global Health</span>
+                  <span>{{ 'Global Health' | pgT:'analysis.global_health' }}</span>
                 </button>
 
                 <button (click)="changeLens('Skeptical Epistemology & Socratic Audit')"
@@ -363,7 +348,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     : 'border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700'"
                   class="py-2 px-2.5 sm:px-3 uppercase tracking-wider text-[11px] sm:text-xs whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer font-mono">
                   <span class="text-purple-400 font-bold">08</span>
-                  <span>Socratic Audit</span>
+                  <span>{{ 'Socratic Audit' | pgT:'analysis.socratic_audit' }}</span>
                 </button>
               </div>
 
@@ -376,34 +361,47 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
               <button type="button" (click)="moeRouter.toggleSparseLensRouting()"
                 class="min-h-[36px] px-2.5 py-1 mr-1 rounded bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-300 text-[10px] uppercase font-bold tracking-wider cursor-pointer transition shrink-0"
                 title="Activate Sparse Top-k MoE lens routing">
-                <span>[SMoE SPARSE]</span>
+                <span>[{{ 'SMoE SPARSE' | pgT:'analysis.smoe_sparse' }}]</span>
               </button>
             }
           </div>
 
           <!-- Row 2: Secondary Utilities & Sensory Controls Sub-Bar -->
           <div class="flex flex-wrap items-center justify-between gap-2 w-full pt-1 text-[11px] font-mono">
-            <div class="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
-              <span class="text-[10px] uppercase tracking-wider font-bold text-zinc-400 dark:text-zinc-500">Lens Focus:</span>
-              <span class="font-bold text-teal-600 dark:text-teal-400">{{ activeLens() }}</span>
+            <div class="flex items-center gap-2 text-zinc-500 dark:text-zinc-400 flex-wrap">
+              <span class="text-[10px] uppercase tracking-wider font-bold text-zinc-400 dark:text-zinc-500">{{ 'Lens Focus:' | pgT:'analysis.lens_focus' }}</span>
+              <span class="font-bold text-teal-600 dark:text-teal-400">{{ uiI18n ? uiI18n.translateLensLabel(activeLens()) : activeLens() }}</span>
+              @if (isFhirSoapSynapseActive()) {
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/40 text-[10px] font-bold">
+                  ⚡ {{ 'FHIR ⟷ SOAP Synapse' | pgT:'analysis.fhir_soap_synapse' }}
+                </span>
+              }
+              @if (isExploratoryCollapsed()) {
+                <span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-200 border border-amber-500/40 text-[10px] font-bold">
+                  ⚡ {{ 'Focused Density' | pgT:'analysis.focused_density' }}
+                </span>
+              }
             </div>
 
             <!-- Compact Action Controls Cluster -->
             <div class="relative shrink-0 flex items-center gap-1.5 pr-1">
-              <button (click)="showAllLensesMenu.set(!showAllLensesMenu())"
-                type="button" aria-label="Toggle Clinical Vault Lenses Menu"
-                class="min-h-[44px] px-2.5 bg-zinc-900 hover:bg-zinc-800 text-purple-300 border border-purple-500/40 text-[10px] font-mono font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 rounded-lg touch-manipulation">
-                <span>[VAULT ▾]</span>
-              </button>
+              @if (!isExploratoryCollapsed()) {
+                <button (click)="showAllLensesMenu.set(!showAllLensesMenu())"
+                  type="button" aria-label="Toggle Clinical Vault Lenses Menu"
+                  class="min-h-[44px] px-2.5 bg-zinc-900 hover:bg-zinc-800 text-purple-300 border border-purple-500/40 text-[10px] font-mono font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 rounded-lg touch-manipulation">
+                  <span>[{{ 'VAULT' | pgT:'analysis.vault' }} ▾]</span>
+                </button>
+              }
 
               @if (showAllLensesMenu()) {
                 <div class="absolute right-0 top-full mt-1 w-64 p-1.5 bg-zinc-950 border border-purple-500/40 shadow-2xl z-50 flex flex-col gap-1 max-h-80 overflow-y-auto font-mono text-xs rounded-lg">
                   @for (lens of availableLenses; track lens) {
                     <button (click)="changeLens(lens); showAllLensesMenu.set(false)"
                       type="button"
+                      [attr.data-lens-id]="lens"
                       [class]="activeLens() === lens ? 'bg-purple-600 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-900'"
                       class="min-h-[44px] px-2.5 py-2 text-left text-xs font-mono transition flex items-center justify-between cursor-pointer rounded-lg touch-manipulation">
-                      <span [class.text-white]="activeLens() === lens" [class.text-zinc-300]="activeLens() !== lens">{{ lens }}</span>
+                      <span [class.text-white]="activeLens() === lens" [class.text-zinc-300]="activeLens() !== lens">{{ uiI18n ? uiI18n.translateLensLabel(lens) : lens }}</span>
                       @if (activeLens() === lens) { <span class="text-white">✓</span> }
                     </button>
                   }
@@ -423,7 +421,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                         class="min-h-[44px] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 touch-manipulation"
                         title="Toggle Bionic Reading Mode">
                   <span>👁️</span>
-                  <span>Bionic</span>
+                  <span>{{ 'Bionic' | pgT:'analysis.bionic' }}</span>
                 </button>
                 <button (click)="themeService.togglePhilocardia()"
                         type="button"
@@ -437,7 +435,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                         class="min-h-[44px] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1 touch-manipulation"
                         title="Toggle Philocardia Heart-Centered Mode (0.1Hz Vagal Mayer Pacing)">
                   <span>{{ themeService.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
-                  <span>Philo</span>
+                  <span>{{ 'Philo' | pgT:'analysis.philo' }}</span>
                 </button>
               </div>
 
@@ -447,8 +445,17 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                       aria-label="Open Clinical Tools & Export Hub"
                       class="min-h-[44px] px-2.5 bg-zinc-900 hover:bg-zinc-800 text-indigo-300 border border-indigo-500/40 text-[10px] font-mono font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0 rounded-lg touch-manipulation"
                       title="Open Clinical Tools & Export Hub">
-                <span>[EXPORT]</span>
+                <span>[{{ 'EXPORT' | pgT:'analysis.export_btn' }}]</span>
               </button>
+
+              @if (moeRouter) {
+                <button (click)="attestAndRetireAnalysisReport()"
+                        type="button"
+                        class="min-h-[44px] px-2.5 bg-emerald-900/70 hover:bg-emerald-800 text-emerald-100 border border-emerald-500/40 text-[10px] font-mono font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 shrink-0 rounded-lg touch-manipulation"
+                        title="Stamp 21 CFR Part 11 Synthesis Receipt and yield slot to next clinical skill">
+                  <span>✓ {{ 'Attest' | pgT:'analysis.attest_btn' }}</span>
+                </button>
+              }
             </div>
           </div>
 
@@ -457,7 +464,8 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
     }
 
     <!--Content Area-->
-    <div #contentArea role="region" aria-label="Clinical Analysis Report Content" (click)="handleContentAreaClick($event)" class="flex-1 mx-2 sm:mx-8 mb-6 mt-2 overflow-y-auto max-md:overflow-y-auto max-md:h-full max-md:min-h-[450px] overflow-x-hidden bg-white dark:bg-obsidian rounded-xl shadow-sm border border-slate-200 dark:border-zinc-800 min-h-0 relative">
+    <div #contentArea role="region" aria-label="Clinical Analysis Report Content" (click)="handleContentAreaClick($event)"
+         [class]="state.isEmergencyMode() ? 'flex-1 mx-1 sm:mx-4 mb-2 mt-1 overflow-y-auto max-md:overflow-y-auto max-md:h-full max-md:min-h-[450px] overflow-x-hidden bg-zinc-950 text-zinc-100 rounded-xl shadow-sm border border-zinc-800 min-h-0 relative' : 'flex-1 mx-2 sm:mx-8 mb-6 mt-2 overflow-y-auto max-md:overflow-y-auto max-md:h-full max-md:min-h-[450px] overflow-x-hidden bg-white dark:bg-obsidian rounded-xl shadow-sm border border-slate-200 dark:border-zinc-800 min-h-0 relative'">
       <!-- Dieter Rams Industrial Precision Ventilation Grill -->
       <div class="h-1 flex gap-[1.5px] opacity-25 px-4 pt-1.5 no-print">
         <div class="flex-1 bg-slate-400 dark:bg-zinc-600 rounded-full h-0.5"></div>
@@ -467,7 +475,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
       </div>
 
       <!--Analysis Engine Body-->
-      <div class="max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8 pb-24 min-w-0">
+      <div [class]="state.isEmergencyMode() ? 'max-w-5xl mx-auto px-2.5 sm:px-6 py-3 sm:py-6 pb-24 min-w-0' : 'max-w-4xl mx-auto px-4 sm:px-8 py-6 sm:py-8 pb-24 min-w-0'">
         
         <app-dynamic-precondition-alert-banner class="block w-full mb-4" />
 
@@ -510,10 +518,10 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                         [class.dark:text-emerald-400]="state.activePhilosophy() === 'eastern'"
                         [class.text-amber-700]="state.activePhilosophy() === 'ayurvedic'"
                         [class.dark:text-amber-400]="state.activePhilosophy() === 'ayurvedic'">
-                    Active Paradigm: 
-                    @if (state.activePhilosophy() === 'western') { Western (Allopathic) }
-                    @else if (state.activePhilosophy() === 'eastern') { Eastern (Traditional Chinese Medicine) }
-                    @else if (state.activePhilosophy() === 'ayurvedic') { Ayurvedic Medicine }
+                    {{ uiI18n ? uiI18n.t('analysis.active_paradigm', 'Active Paradigm') : 'Active Paradigm' }}: 
+                    @if (state.activePhilosophy() === 'western') { {{ uiI18n && uiI18n.activeLanguageCode() !== 'en' ? uiI18n.t('analysis.western_medicine', 'Western (Allopathic)') : 'Western (Allopathic)' }} }
+                    @else if (state.activePhilosophy() === 'eastern') { {{ uiI18n && uiI18n.activeLanguageCode() !== 'en' ? uiI18n.t('analysis.eastern_medicine', 'Eastern (Traditional Chinese Medicine)') : 'Eastern (Traditional Chinese Medicine)' }} }
+                    @else if (state.activePhilosophy() === 'ayurvedic') { {{ uiI18n ? uiI18n.t('analysis.ayurvedic_medicine', 'Ayurvedic Medicine') : 'Ayurvedic Medicine' }} }
                   </span>
 
                   <!-- Dynamic Agent Badge -->
@@ -528,7 +536,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                           [class.bg-sky-500]="state.activePhilosophy() === 'western'"
                           [class.bg-emerald-500]="state.activePhilosophy() === 'eastern'"
                           [class.bg-amber-500]="state.activePhilosophy() === 'ayurvedic'"></span>
-                    Expert: {{ activeAgentName() }}
+                    {{ uiI18n ? uiI18n.t('analysis.expert', 'Expert') : 'Expert' }}: {{ activeAgentName() }}
                     <span class="ml-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1" [title]="activePersonaPropBadge().badgeLabel">
                       <span>{{ activePersonaPropBadge().badgeEmoji }}</span>
                       <span class="hidden sm:inline font-mono">({{ activePersonaPropBadge().primaryProp }})</span>
@@ -539,7 +547,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                   <button type="button" (click)="showCdsModal.set(true)"
                           class="flex items-center gap-1 px-2.5 py-1 rounded-md border text-[11px] font-bold uppercase tracking-wider bg-indigo-950/40 hover:bg-indigo-900/60 text-indigo-300 border-indigo-500/40 cursor-pointer transition shadow-xs"
                           title="View FDA 21 CFR Section 520(o) Non-Device CDS Transparency & Epistemic Uncertainty Metrics">
-                    <span>🛡️</span> FDA 520(o) CDS ({{ cdsReport().overallConfidencePercent }}%)
+                    <span>🛡️</span> {{ uiI18n ? uiI18n.t('analysis.fda_cds', 'FDA 520(o) CDS') : 'FDA 520(o) CDS' }} ({{ cdsReport().overallConfidencePercent }}%)
                   </button>
                 </div>
 
@@ -555,7 +563,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     </app-typology-badge>
 
                     <span class="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-md bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/30 uppercase">
-                      Lens Focus: {{ activeLens() }}
+                      {{ uiI18n ? uiI18n.t('analysis.lens_focus', 'Lens Focus:') : 'Lens Focus:' }} {{ uiI18n ? uiI18n.translateLensLabel(activeLens()) : activeLens() }}
                     </span>
                   </div>
                 </div>
@@ -585,7 +593,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     <!-- Clinician (Doctor) Directives -->
                     <div class="p-3 rounded-xl bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200/60 dark:border-sky-850/50">
                       <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400 font-mono mb-1">
-                        <span>👨‍⚕️ Clinician (Doctor) Analysis View:</span>
+                        <span>👨‍⚕️ {{ uiI18n && uiI18n.activeLanguageCode() !== 'en' ? uiI18n.t('analysis.clinician_view', 'Clinician Analysis View') : 'Clinician (Doctor) Analysis View' }}:</span>
                       </div>
                       <p class="text-[11.5px] text-sky-950 dark:text-sky-200 leading-relaxed">
                         @if (state.activePhilosophy() === 'western') {
@@ -601,7 +609,7 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                     <!-- Patient Self-Care Action Plan -->
                     <div class="p-3 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-850/50">
                       <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 font-mono mb-1">
-                        <span>🧑‍🤝‍🧑 Patient Health Literacy View:</span>
+                        <span>🧑‍🤝‍🧑 {{ uiI18n ? uiI18n.t('analysis.patient_view', 'Patient Health Literacy View') : 'Patient Health Literacy View' }}:</span>
                       </div>
                       <p class="text-[11.5px] text-emerald-950 dark:text-emerald-200 leading-relaxed">
                         @if (state.activePhilosophy() === 'western') {
@@ -624,26 +632,34 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
             <div class="my-6 space-y-6 font-mono no-print">
               <!-- Chronobiology Rhythm Matrix & Clock Decision Rail -->
               @if (activeLens() === 'Nutrition' || activeLens() === 'Functional Protocols') {
-                <app-chronobiology-matrix></app-chronobiology-matrix>
-                <app-chrono-clock-decision-rail></app-chrono-clock-decision-rail>
+                @defer (on immediate) {
+                  <app-chronobiology-matrix></app-chronobiology-matrix>
+                  <app-chrono-clock-decision-rail></app-chrono-clock-decision-rail>
+                }
               }
 
               <!-- 7-Day Chrono-Nutrition Meal Planner (Nutrition) -->
               @if (activeLens() === 'Nutrition') {
-                <app-chrono-weekly-meal-planner></app-chrono-weekly-meal-planner>
+                @defer (on immediate) {
+                  <app-chrono-weekly-meal-planner></app-chrono-weekly-meal-planner>
+                }
               }
 
               <!-- Functional Medicine Biomarker Matrix & Clinical Sleep Twin Simulator -->
               @if (activeLens() === 'Functional Protocols' || activeLens() === 'Precision Nutrients' || activeLens() === 'Monitoring & Follow-up') {
-                <app-functional-medicine-matrix></app-functional-medicine-matrix>
-                <app-biomarker-matrix></app-biomarker-matrix>
-                <app-clinical-sleep-twin-dashboard></app-clinical-sleep-twin-dashboard>
+                @defer (on immediate) {
+                  <app-functional-medicine-matrix></app-functional-medicine-matrix>
+                  <app-biomarker-matrix></app-biomarker-matrix>
+                  <app-clinical-sleep-twin-dashboard></app-clinical-sleep-twin-dashboard>
+                }
               }
             </div>
           }
 
           @if (activeLens() === 'RSNA Knee Abnormality') {
-            <app-lens-rsna-knee></app-lens-rsna-knee>
+            @defer (on immediate) {
+              <app-lens-rsna-knee></app-lens-rsna-knee>
+            }
           }
         }
 
@@ -672,8 +688,10 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                 </div>
               </div>
             </div>
-            <app-sleep-vagal-flourishing-hub class="block my-6"></app-sleep-vagal-flourishing-hub>
-            <app-chronobiology-matrix-lens-tab class="block my-6"></app-chronobiology-matrix-lens-tab>
+            @defer (on immediate) {
+              <app-sleep-vagal-flourishing-hub class="block my-6"></app-sleep-vagal-flourishing-hub>
+              <app-chronobiology-matrix-lens-tab class="block my-6"></app-chronobiology-matrix-lens-tab>
+            }
           }
 
           @if (activeLens() === 'Functional Medicine Matrix') {
@@ -701,66 +719,94 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                 </div>
               </div>
             </div>
-            <app-functional-medicine-matrix-lens-tab class="block my-6"></app-functional-medicine-matrix-lens-tab>
+            @defer (on immediate) {
+              <app-functional-medicine-matrix-lens-tab class="block my-6"></app-functional-medicine-matrix-lens-tab>
+            }
           }
 
           @if (activeLens() === 'Maternal & Postpartum') {
-            <app-maternal-postpartum-lens-tab class="block my-6"></app-maternal-postpartum-lens-tab>
+            @defer (on immediate) {
+              <app-maternal-postpartum-lens-tab class="block my-6"></app-maternal-postpartum-lens-tab>
+            }
           }
 
           @if (activeLens() === "Men's Health & Andrology") {
-            <app-mens-health-lens-tab class="block my-6"></app-mens-health-lens-tab>
+            @defer (on immediate) {
+              <app-mens-health-lens-tab class="block my-6"></app-mens-health-lens-tab>
+            }
           }
 
           @if (activeLens() === "Gender-Affirming Care & Transition") {
-            <app-gender-affirming-lens-tab class="block my-6"></app-gender-affirming-lens-tab>
+            @defer (on immediate) {
+              <app-gender-affirming-lens-tab class="block my-6"></app-gender-affirming-lens-tab>
+            }
           }
 
           @if (activeLens() === 'Seven Generations Stewardship') {
-            <app-seven-generations-stewardship-lens-tab class="block my-6"></app-seven-generations-stewardship-lens-tab>
+            @defer (on immediate) {
+              <app-seven-generations-stewardship-lens-tab class="block my-6"></app-seven-generations-stewardship-lens-tab>
+            }
           } @else if (activeLens() === 'Summary Overview') {
             <app-summary-overview-lens-tab class="block my-6"></app-summary-overview-lens-tab>
           } @else if (activeLens() === 'Epigenetic Longevity') {
-            <app-epigenetic-longevity-lens-tab class="block my-6"></app-epigenetic-longevity-lens-tab>
+            @defer (on immediate) {
+              <app-epigenetic-longevity-lens-tab class="block my-6"></app-epigenetic-longevity-lens-tab>
+            }
           } @else if (activeLens() === 'Patient Education') {
-            <app-patient-education-lens-tab class="block my-6"></app-patient-education-lens-tab>
+            @defer (on immediate) {
+              <app-patient-education-lens-tab class="block my-6"></app-patient-education-lens-tab>
+            }
           } @else if (activeLens() === 'Teledentistry & Systemic Health') {
-            <app-teledentistry-systemic-lens class="block my-6"></app-teledentistry-systemic-lens>
+            @defer (on immediate) {
+              <app-teledentistry-systemic-lens class="block my-6"></app-teledentistry-systemic-lens>
+            }
           } @else if (activeLens() === 'ASSESSMENTS') {
-            <app-assessments-lens-tab class="block my-6"></app-assessments-lens-tab>
+            @defer (on immediate) {
+              <app-assessments-lens-tab class="block my-6"></app-assessments-lens-tab>
+            }
           } @else if (activeLens() === 'Treatment Matrix') {
-            <app-interventions-lens-tab class="block my-6"></app-interventions-lens-tab>
-            <app-tri-paradigm-integrative-lens-tab class="block my-6"></app-tri-paradigm-integrative-lens-tab>
+            @defer (on immediate) {
+              <app-interventions-lens-tab class="block my-6"></app-interventions-lens-tab>
+              <app-tri-paradigm-integrative-lens-tab class="block my-6"></app-tri-paradigm-integrative-lens-tab>
+            }
           } @else if (activeLens() === 'Monitoring & Follow-up') {
-            <app-diagnostics-lens-tab class="block my-6"></app-diagnostics-lens-tab>
-            <app-epigenetic-longevity-lens-tab class="block my-6"></app-epigenetic-longevity-lens-tab>
+            @defer (on immediate) {
+              <app-diagnostics-lens-tab class="block my-6"></app-diagnostics-lens-tab>
+              <app-epigenetic-longevity-lens-tab class="block my-6"></app-epigenetic-longevity-lens-tab>
+            }
           } @else if (activeLens() === 'Tri-Paradigm Medicine') {
-            <app-tri-paradigm-integrative-lens-tab class="block my-6"></app-tri-paradigm-integrative-lens-tab>
+            @defer (on immediate) {
+              <app-tri-paradigm-integrative-lens-tab class="block my-6"></app-tri-paradigm-integrative-lens-tab>
+            }
           } @else if (activeLens() === 'Environmental Exposomics & Toxicology') {
             <div class="my-6 space-y-6">
-              <app-environmental-exposomics-toxicology></app-environmental-exposomics-toxicology>
+              @defer (on immediate) {
+                <app-environmental-exposomics-toxicology></app-environmental-exposomics-toxicology>
+              }
             </div>
           } @else if (activeLens() === 'Skeptical Epistemology & Socratic Audit') {
             <div class="my-6 space-y-6">
-              <app-skeptical-epistemology-hud></app-skeptical-epistemology-hud>
+              @defer (on immediate) {
+                <app-skeptical-epistemology-hud></app-skeptical-epistemology-hud>
+              }
             </div>
           } @else if (activeLens() === 'Global Health & WHO Initiatives') {
             <div class="my-6 space-y-6 p-6 rounded-2xl bg-teal-950/40 border border-teal-500/30 text-teal-100 font-mono">
               <div class="flex items-center justify-between border-b border-teal-800/60 pb-3">
                 <div class="flex items-center gap-2">
                   <span class="text-xl">🌍</span>
-                  <h3 class="text-sm font-bold uppercase tracking-wider text-teal-200">WHO Global Health Initiatives & SDG 3.4 Registry</h3>
+                  <h3 class="text-sm font-bold uppercase tracking-wider text-teal-200">{{ 'WHO Global Health Initiatives & SDG 3.4 Registry' | pgT:'aux.who_title' }}</h3>
                 </div>
-                <span class="text-[10px] px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">ICD-11 TM1 Active</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 border border-teal-500/30">{{ 'ICD-11 TM1 Active' | pgT:'aux.icd11_active' }}</span>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mt-4">
                 <div class="p-4 rounded-xl bg-teal-900/30 border border-teal-800/40 space-y-2">
-                  <div class="text-[11px] font-bold uppercase text-teal-300">WHO SDG 3.4 10-Year CVD Risk</div>
+                  <div class="text-[11px] font-bold uppercase text-teal-300">{{ 'WHO SDG 3.4 10-Year CVD Risk' | pgT:'aux.who_cvd_risk' }}</div>
                   <div class="text-2xl font-black text-teal-100">8.4% <span class="text-xs font-normal text-teal-400">(Low-to-Moderate &lt; 10%)</span></div>
                   <p class="text-[11px] text-teal-300/80">WHO HEARTS technical package task-shifting protocol applied. Target SBP &lt; 130 mmHg.</p>
                 </div>
                 <div class="p-4 rounded-xl bg-teal-900/30 border border-teal-800/40 space-y-2">
-                  <div class="text-[11px] font-bold uppercase text-teal-300">ICD-11 Chapter 26 (TM1) Dual-Code</div>
+                  <div class="text-[11px] font-bold uppercase text-teal-300">{{ 'ICD-11 Chapter 26 (TM1) Dual-Code' | pgT:'aux.icd11_dual_code' }}</div>
                   <div class="text-xs font-bold text-teal-100">SF50 Spleen Qi Deficiency <span class="text-teal-400">↔ BA00 Essential HTN</span></div>
                   <p class="text-[11px] text-teal-300/80">Cross-referenced against SNOMED CT 59621000 with sub-10ms HL7 FHIR R4 Bundle interoperability.</p>
                 </div>
@@ -799,36 +845,46 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
           <div class="mb-8 space-y-4 no-print font-mono">
             
             <!-- Tier 1: Systems Equilibrium HUD -->
-            <app-systems-equilibrium-hud (modeChange)="onSystemsModeChange($event)"></app-systems-equilibrium-hud>
+            @defer (on idle) {
+              <app-systems-equilibrium-hud (modeChange)="onSystemsModeChange($event)"></app-systems-equilibrium-hud>
+            }
 
             <!-- Mode-Driven Systems Content -->
             @if (systemsNavMode() === 'overview') {
               <div class="space-y-4 animate-in fade-in duration-200">
-                <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                  <app-tri-paradigm-swarm-card></app-tri-paradigm-swarm-card>
-                  <div class="space-y-4">
-                    <app-pharmacogenomics-card></app-pharmacogenomics-card>
-                    <app-biometric-sensor-fusion-card></app-biometric-sensor-fusion-card>
+                @defer (on immediate) {
+                  <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                    <app-tri-paradigm-swarm-card></app-tri-paradigm-swarm-card>
+                    <div class="space-y-4">
+                      <app-pharmacogenomics-card></app-pharmacogenomics-card>
+                      <app-biometric-sensor-fusion-card></app-biometric-sensor-fusion-card>
+                    </div>
                   </div>
-                </div>
-                <app-local-gemma-studio></app-local-gemma-studio>
+                  <app-local-gemma-studio></app-local-gemma-studio>
+                }
               </div>
             } @else if (systemsNavMode() === 'crosstalk') {
               <div class="space-y-4 animate-in fade-in duration-200">
-                <app-inter-system-crosstalk-card></app-inter-system-crosstalk-card>
-                <app-local-gemma-studio></app-local-gemma-studio>
+                @defer (on immediate) {
+                  <app-inter-system-crosstalk-card></app-inter-system-crosstalk-card>
+                  <app-local-gemma-studio></app-local-gemma-studio>
+                }
               </div>
             } @else if (systemsNavMode() === 'gemma') {
               <div class="animate-in fade-in duration-200">
-                <app-local-gemma-studio></app-local-gemma-studio>
+                @defer (on immediate) {
+                  <app-local-gemma-studio></app-local-gemma-studio>
+                }
               </div>
             }
 
             <!-- Multi-Paradigm Switchable Clinical Dashboard (Shown for Functional Protocols or Non-Western Paradigms) -->
             @if (activeLens() === 'Functional Protocols' || state.activePhilosophy() !== 'western') {
               <div class="space-y-4">
-                <app-occupational-hazard-card></app-occupational-hazard-card>
-                <app-paradigm-clinical-dashboard></app-paradigm-clinical-dashboard>
+                @defer (on immediate) {
+                  <app-occupational-hazard-card></app-occupational-hazard-card>
+                  <app-paradigm-clinical-dashboard></app-paradigm-clinical-dashboard>
+                }
               </div>
             }
 
@@ -837,16 +893,16 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
               <div class="p-3 bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs pocket-gull-card">
                 <div class="flex items-center gap-2">
                   <span class="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider flex items-center gap-1.5 font-mono">
-                    <span>🛠️</span> Auxiliary Clinical Apps & Prescriptions
+                    <span>🛠️</span> {{ 'Auxiliary Clinical Apps & Prescriptions' | pgT:'aux.apps_title' }}
                   </span>
                   <span class="text-[10px] px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 font-mono font-bold border border-zinc-200 dark:border-zinc-800">
-                    8 Digital Therapeutics & Biofeedback Apps
+                    {{ '8 Digital Therapeutics & Biofeedback Apps' | pgT:'aux.apps_badge' }}
                   </span>
                 </div>
 
                 <button type="button" (click)="isAuxToolsExpanded.set(!isAuxToolsExpanded())"
                   class="px-3.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30 text-xs font-bold uppercase transition cursor-pointer flex items-center gap-1.5">
-                  <span>{{ isAuxToolsExpanded() ? '▲ Hide Auxiliary Apps' : '▼ Open Auxiliary Suite' }}</span>
+                  <span>{{ isAuxToolsExpanded() ? ('▲ ' + ('Hide Auxiliary Apps' | pgT:'aux.hide_apps')) : ('▼ ' + ('Open Auxiliary Suite' | pgT:'aux.open_apps')) }}</span>
                 </button>
               </div>
 
@@ -923,11 +979,15 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
                 <!-- Active Collapsible Tool View -->
                 @if (activeAuxTool() === 'qaly') {
                   <div class="animate-in fade-in duration-200">
-                    <app-actuarial-qaly-calculator></app-actuarial-qaly-calculator>
+                    @defer (on immediate) {
+                      <app-actuarial-qaly-calculator></app-actuarial-qaly-calculator>
+                    }
                   </div>
                 } @else if (activeAuxTool() === 'vagal') {
                   <div class="animate-in fade-in duration-200">
-                    <app-vagal-biofeedback-dock></app-vagal-biofeedback-dock>
+                    @defer (on immediate) {
+                      <app-vagal-biofeedback-dock></app-vagal-biofeedback-dock>
+                    }
                   </div>
                 } @else if (activeAuxTool() === 'assessments') {
                   <div class="animate-in fade-in duration-200">
@@ -1039,7 +1099,31 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
 
         <!-- EMT Handoff Component/Layout -->
         @if (activeLens() === 'EMT Handoff') {
-          <app-emt-handoff-lens-tab></app-emt-handoff-lens-tab>
+          @defer (on immediate) {
+            <app-emt-handoff-lens-tab></app-emt-handoff-lens-tab>
+          }
+        }
+
+        <!-- Offline Emergency Waveforms & Vitals Fallback -->
+        @if (activeLens() === 'PhysioNet Telemetry' && !reportSections()) {
+          <div class="flex flex-col gap-5 font-pocketgull-inter" data-testid="emergency-waveforms-fallback">
+            @defer (on immediate) {
+              <app-biometric-sensor-fusion-card></app-biometric-sensor-fusion-card>
+              <app-physionet-acoustic-hud></app-physionet-acoustic-hud>
+            }
+          </div>
+        }
+
+        <!-- Offline Emergency Clinical Summary Fallback -->
+        @if (state.isEmergencyMode() && activeLens() === 'Summary Overview' && !reportSections()) {
+          <div class="p-5 rounded-2xl bg-zinc-900 border border-amber-500/40 text-zinc-100 space-y-2 font-pocketgull-inter" data-testid="emergency-summary-fallback">
+            <div class="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">
+              {{ 'Offline Emergency Protocol Summary' | pgT:'emergency.protocol_summary' }} • {{ state.emergencyProtocol?.()?.title || 'STAT Emergency Bypass' }}
+            </div>
+            <p class="text-xs text-zinc-300 leading-relaxed">
+              {{ state.emergencyProtocol?.()?.step1Subtitle || 'Immediate offline resuscitation and stabilization active without cloud AI latency.' }}
+            </p>
+          </div>
         }
 
         <!--AI Primary Lens Report Section & Dedicated Lens Widgets-->
@@ -1125,44 +1209,60 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
 
             <!-- Dedicated Interactive Lens Widgets (Scoped to Active Lens) -->
             @if (activeLens() === 'Functional Protocols' && hasAnyReport()) {
-              <app-kss-cognitive-shield></app-kss-cognitive-shield>
-              <app-mood-consciousness-matrix></app-mood-consciousness-matrix>
-              <app-geolocational-health-relocation></app-geolocational-health-relocation>
+              @defer (on immediate) {
+                <app-kss-cognitive-shield></app-kss-cognitive-shield>
+                <app-mood-consciousness-matrix></app-mood-consciousness-matrix>
+                <app-geolocational-health-relocation></app-geolocational-health-relocation>
+              }
             }
 
 
 
             @if (activeLens() === 'Nutrition' && hasAnyReport()) {
-              <app-dietary-allergy-shield></app-dietary-allergy-shield>
-              <app-clinical-menu [reportText]="activeReport()"></app-clinical-menu>
+              @defer (on immediate) {
+                <app-dietary-allergy-shield></app-dietary-allergy-shield>
+                <app-clinical-menu [reportText]="activeReport()"></app-clinical-menu>
+              }
             }
 
             @if (hasAnyReport()) {
-              <app-lens-insight-spark-shield [activeLens]="activeLens()"></app-lens-insight-spark-shield>
+              @defer (on idle) {
+                <app-lens-insight-spark-shield [activeLens]="activeLens()"></app-lens-insight-spark-shield>
+              }
             }
 
             <!-- Socratic Challenge Questions (Bionic Reading Mode only) -->
             @if (bionicReading.isBionicReadingEnabled() && hasAnyReport()) {
-              @for (challenge of activeLensChallenges(); track challenge.id) {
-                <app-socratic-challenge-card [challenge]="challenge"></app-socratic-challenge-card>
+              @defer (on immediate) {
+                @for (challenge of activeLensChallenges(); track challenge.id) {
+                  <app-socratic-challenge-card [challenge]="challenge"></app-socratic-challenge-card>
+                }
               }
             }
 
             @if (activeLens() === 'Patient Education' && hasAnyReport()) {
-              <app-uk-rio-pubmed-sourcing></app-uk-rio-pubmed-sourcing>
+              @defer (on immediate) {
+                <app-uk-rio-pubmed-sourcing></app-uk-rio-pubmed-sourcing>
+              }
             }
 
             @if ((activeLens() === 'Patient Education' || activeLens() === 'Summary Overview') && hasAnyReport()) {
-              <app-patient-health-trajectory-storybook></app-patient-health-trajectory-storybook>
-              <app-sdoh-navigator></app-sdoh-navigator>
+              @defer (on idle) {
+                <app-patient-health-trajectory-storybook></app-patient-health-trajectory-storybook>
+                <app-sdoh-navigator></app-sdoh-navigator>
+              }
             }
 
             @if (activeLens() === 'Precision Nutrients' && hasAnyReport()) {
-              <app-biomarker-matrix [reportText]="activeReport()"></app-biomarker-matrix>
+              @defer (on immediate) {
+                <app-biomarker-matrix [reportText]="activeReport()"></app-biomarker-matrix>
+              }
             }
 
             @if ((activeLens() === 'Summary Overview' || activeLens() === 'Treatment Matrix') && hasAnyReport()) {
-              <app-cost-benefit-analysis [reportText]="activeReport()"></app-cost-benefit-analysis>
+              @defer (on idle) {
+                <app-cost-benefit-analysis [reportText]="activeReport()"></app-cost-benefit-analysis>
+              }
             }
 
             @if (activeLens() === 'Functional Protocols' && hasAnyReport()) {
@@ -1438,7 +1538,9 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
             }
 
             <!-- 🌸 Dr. Martin Seligman Positive Psychology & Human Flourishing Suite -->
-            <app-positive-psychology-flourishing-hub class="mt-6 mb-6 block"></app-positive-psychology-flourishing-hub>
+            @defer (on idle) {
+              <app-positive-psychology-flourishing-hub class="mt-6 mb-6 block"></app-positive-psychology-flourishing-hub>
+            }
 
             <!-- Global Health Literacy vs Deep Clinical Rationale Mode Banner -->
             <div class="mb-4 p-3.5 rounded-2xl transition-all border flex items-center justify-between shadow-xs"
@@ -1600,14 +1702,18 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
             <!-- Longitudinal Clinical Trajectory Biography Component -->
             @if (themeService.analogyLensMode() !== 'clinical') {
               <div class="mb-6">
-                <app-clinical-trajectory-biography></app-clinical-trajectory-biography>
+                @defer (on immediate) {
+                  <app-clinical-trajectory-biography></app-clinical-trajectory-biography>
+                }
               </div>
             }
 
             <!-- Synchronized Dual-Pane Consultation View -->
             @if (themeService.analogyLensMode() !== 'clinical') {
               <div class="mb-6">
-                <app-dual-pane-consultation></app-dual-pane-consultation>
+                @defer (on immediate) {
+                  <app-dual-pane-consultation></app-dual-pane-consultation>
+                }
               </div>
             }
 
@@ -1799,17 +1905,25 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
 
     <!-- Node Agent Dialog (Evidence Focus) -->
     @if (nodeAgentDialogData()) {
-      <app-node-agent-dialog
-        [data]="nodeAgentDialogData()!"
-        [patientData]="currentPatientDataForDialog()"
-        (closed)="nodeAgentDialogData.set(null)">
-      </app-node-agent-dialog>
+      @defer (on immediate) {
+        <app-node-agent-dialog
+          [data]="nodeAgentDialogData()!"
+          [patientData]="currentPatientDataForDialog()"
+          (closed)="nodeAgentDialogData.set(null)">
+        </app-node-agent-dialog>
+      }
     }
 
     <!-- Clinician-to-Clinician Handoff Modal -->
-    <app-handoff-modal [isOpen]="showHandoffModal()" (close)="showHandoffModal.set(false)"></app-handoff-modal>
+    @if (showHandoffModal()) {
+      @defer (on immediate) {
+        <app-handoff-modal [isOpen]="showHandoffModal()" (close)="showHandoffModal.set(false)"></app-handoff-modal>
+      }
+    }
     @if (showSec1557Modal()) {
-      <app-sec1557-audit-modal (close)="showSec1557Modal.set(false)"></app-sec1557-audit-modal>
+      @defer (on immediate) {
+        <app-sec1557-audit-modal (close)="showSec1557Modal.set(false)"></app-sec1557-audit-modal>
+      }
     }
 
     <!-- Clinical Tools & Exports Modal -->
@@ -1933,14 +2047,18 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
               ✕ Close Dashboard
             </button>
           </div>
-          <app-rpm-dashboard></app-rpm-dashboard>
+          @defer (on immediate) {
+            <app-rpm-dashboard></app-rpm-dashboard>
+          }
         </div>
       </div>
     }
 
     <!-- FHIR R4 Patient Health Passport Modal -->
     @if (showFhirPassportModal()) {
-      <app-fhir-passport-modal (closeModal)="showFhirPassportModal.set(false)"></app-fhir-passport-modal>
+      @defer (on immediate) {
+        <app-fhir-passport-modal (closeModal)="showFhirPassportModal.set(false)"></app-fhir-passport-modal>
+      }
     }
 
     <!-- SMART on FHIR v2 / EHR Marketplace & CARIN Attestation Hub Modal -->
@@ -1957,7 +2075,9 @@ import { ClinicalMoERouterService, ICoreLensGatingScore } from '../services/clin
               <span>Close EHR Hub</span>
             </button>
           </div>
-          <app-smart-fhir-launcher></app-smart-fhir-launcher>
+          @defer (on immediate) {
+            <app-smart-fhir-launcher></app-smart-fhir-launcher>
+          }
         </div>
       </div>
     }
@@ -2131,7 +2251,24 @@ export class AnalysisReportComponent implements OnDestroy {
   protected readonly fhirIntegration = inject(FhirIntegrationService);
   protected readonly avsService = inject(AvsEngineService);
   protected readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
+  private readonly session = inject(SessionStateService, { optional: true });
   private readonly cdr = inject(ChangeDetectorRef);
+
+  exitEmergencyMode(): void {
+    this.stopCprMetronome();
+    this.state.isEmergencyMode.set(false);
+    if (this.session) {
+      this.session.lock();
+    }
+  }
+
+  readonly isExploratoryCollapsed = computed(() =>
+    Boolean(this.moeRouter?.microSkillDisplayPolicy().collapseExploratorySubViews)
+  );
+
+  readonly isFhirSoapSynapseActive = computed(() =>
+    this.moeRouter?.activeSynapseToken() === 'fhir-soap-coupling'
+  );
 
   setAvsBitrate(tier: AvsBitrateTier): void {
     this.avsService.setBitrateTier(tier);
@@ -2504,6 +2641,7 @@ export class AnalysisReportComponent implements OnDestroy {
   protected readonly exportService = inject(ExportService);
   protected readonly patientManagement = inject(PatientManagementService);
   protected readonly brandedQrService = inject(BrandedQrCodeService);
+  protected readonly uiI18n = inject(UiI18nService, { optional: true });
   protected readonly ClinicalIcons = ClinicalIcons;
 
   showClinicalToolsModal = signal<boolean>(false);
@@ -2675,6 +2813,28 @@ export class AnalysisReportComponent implements OnDestroy {
   });
 
   getParadigmLensOverview(): { title: string; subtitle: string; badges: string[]; description: string } {
+    const base = this.computeRawParadigmLensOverview();
+    if (!this.uiI18n || this.uiI18n.activeLanguageCode() === 'en') {
+      return base;
+    }
+    const phil = this.state.activePhilosophy();
+    const lens = this.activeLens();
+    const localizedTitle = this.uiI18n.translateLensLabel(lens);
+    const localizedSubtitle =
+      phil === 'western'
+        ? this.uiI18n.t('analysis.western_medicine', base.subtitle)
+        : phil === 'eastern'
+          ? this.uiI18n.t('analysis.eastern_medicine', base.subtitle)
+          : this.uiI18n.t('analysis.ayurvedic_medicine', base.subtitle);
+    return {
+      ...base,
+      title: base.title.startsWith(lens) ? localizedTitle + base.title.slice(lens.length) : `${localizedTitle} — ${base.title}`,
+      subtitle: localizedSubtitle,
+      description: this.uiI18n.localizeOverview(phil, lens, base.description),
+    };
+  }
+
+  private computeRawParadigmLensOverview(): { title: string; subtitle: string; badges: string[]; description: string } {
     const phil = this.state.activePhilosophy();
     const lens = this.activeLens();
 
@@ -3088,11 +3248,10 @@ export class AnalysisReportComponent implements OnDestroy {
     const cog = this.state.selectedCognitiveLevel();
     const isPlain = this.themeService.isPlainLanguageMode();
 
-    if (cog === 'standard' && !isPlain) {
-      return raw;
-    }
-
-    return this.transformCognitiveReportText(raw, cog, isPlain);
+    const baseText = (cog === 'standard' && !isPlain)
+      ? raw
+      : this.transformCognitiveReportText(raw, cog, isPlain);
+    return this.uiI18n ? this.uiI18n.localizeReportMarkdown(baseText) : baseText;
   });
 
   private transformCognitiveReportText(raw: string, cog: 'standard' | 'simplified' | 'dyslexia' | 'child', isPlain: boolean): string {
@@ -3234,7 +3393,7 @@ export class AnalysisReportComponent implements OnDestroy {
               highlightedHtml = `<div class="apa-citation-block flex flex-col gap-1 my-3 font-sans">
                 <div class="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-indigo-600 dark:text-indigo-400 font-extrabold">
                   <span>📖 APA 7th Edition & UK RIO Verified Citation</span>
-                  <span class="w-1.5 h-1.5 rounded-2xs bg-emerald-500"></span>
+                  <span class="w-1.5 h-1.5 rounded-sm bg-emerald-500"></span>
                   <span class="text-emerald-600 dark:text-emerald-400">Peer-Reviewed Evidence</span>
                 </div>
                 <div class="text-xs leading-relaxed text-slate-800 dark:text-slate-200 font-medium">
@@ -3832,12 +3991,39 @@ export class AnalysisReportComponent implements OnDestroy {
     }
   }
 
+  /**
+   * Maps a canonical core lens ID to its deterministic `tab-*` test selector across SMoE sparse and dense modes.
+   */
+  getLensTabTestId(lensId: string): string {
+    const map: Record<string, string> = {
+      'Summary Overview': 'tab-overview',
+      'Treatment Matrix': 'tab-treatment-matrix',
+      'Functional Protocols': 'tab-functional-protocols',
+      ASSESSMENTS: 'tab-assessments',
+      'Monitoring & Follow-up': 'tab-monitoring-follow-up',
+      'Environmental Exposomics & Toxicology': 'tab-exposomics-toxicology',
+      'Global Health & WHO Initiatives': 'tab-global-health',
+      'Skeptical Epistemology & Socratic Audit': 'tab-socratic-audit',
+    };
+    return (
+      map[lensId] ??
+      'tab-' + lensId.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    );
+  }
+
   changeLens(lens: AnalysisLens | 'EMT Handoff' | 'ASSESSMENTS' | 'Maternal & Postpartum' | string) {
     this.audit.logAction('VIEW_LENS', this.patientManager.selectedPatientId(), { lens });
     this.flushAutoSave();
     this.activeLens.set(lens as any);
     this.collapsedSections.set({});
     this.selectedMobileSectionTab.set('all');
+    this.moeRouter?.emitSynapseSignalPulse(
+      'fhir-soap-coupling',
+      'analysis-report',
+      'soap-generator',
+      'Synthesis Lens Focus',
+      String(lens)
+    );
 
     if (lens === 'Tri-Paradigm Medicine') {
       this.state.bodyViewerMode.set('3d');
@@ -3848,6 +4034,14 @@ export class AnalysisReportComponent implements OnDestroy {
       el.scrollTop = 0;
     }
     this.cdr.markForCheck();
+  }
+
+  attestAndRetireAnalysisReport(): void {
+    const lens = this.activeLens();
+    this.moeRouter?.completeAndRetireSkillGoal(
+      'analysis-report',
+      `Multi-Paradigm Synthesis Attested (${lens})`
+    );
   }
 
 

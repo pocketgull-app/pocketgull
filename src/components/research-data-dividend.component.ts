@@ -7,11 +7,12 @@ import {
   IBigQueryAnalyticsHubListing,
   IDryRunSqlQueryResult
 } from '../models/research-cohort.types';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-research-data-dividend',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PgTranslatePipe],
   template: `
     <div class="p-4 sm:p-6 bg-zinc-950 text-zinc-100 rounded-2xl border border-zinc-800 shadow-2xl space-y-6 font-sans">
       
@@ -21,7 +22,7 @@ import {
           <div class="flex items-center gap-2">
             <span class="p-2 bg-teal-500/10 text-teal-400 rounded-xl border border-teal-500/20 text-lg">🧬</span>
             <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white">
-              Ethical Open Science Commons &amp; Research Impact Hub
+              {{ 'Ethical Open Science Commons & Research Impact Hub' | pgT:'analysis.research_dividend' }}
             </h2>
           </div>
           <p class="text-xs sm:text-sm text-zinc-400 mt-1 max-w-2xl">

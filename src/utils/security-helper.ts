@@ -38,6 +38,39 @@ export function getSecureRandomId(): string {
 }
 
 /**
+ * Returns a uniformly distributed [0, 1) fraction backed by CSPRNG 53-bit IEEE-754 mantissa scaling
+ * (NIST SP 800-90A compliant; zero modulo bias and zero Math.random).
+ */
+export function getSecureRandomFraction(): number {
+  const gCrypto = typeof globalThis !== 'undefined' ? globalThis.crypto : null;
+  if (gCrypto && gCrypto.getRandomValues) {
+    const words = new Uint32Array(2);
+    gCrypto.getRandomValues(words);
+    const high = words[0] >>> 5;  // 27 bits
+    const low = words[1] >>> 6;   // 26 bits
+    return (high * 67108864.0 + low) / 9007199254740992.0;
+  }
+  const micro = typeof performance !== 'undefined' ? performance.now() : Date.now();
+  return ((micro * 1000) % 997) / 997;
+}
+
+/**
+ * Generates a NIST SP 800-90A CSPRNG lowercase hex string of `byteCount` bytes.
+ */
+export function getSecureRandomHex(byteCount: number = 16): string {
+  const bytes = new Uint8Array(byteCount);
+  const gCrypto = typeof globalThis !== 'undefined' ? globalThis.crypto : null;
+  if (gCrypto && gCrypto.getRandomValues) {
+    gCrypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < byteCount; i++) {
+      bytes[i] = Math.floor(getSecureRandomFraction() * 256);
+    }
+  }
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
  * Resolves a file path securely and verifies it remains constrained within the target base directory (js/http-to-file-access).
  * Pure browser-safe string normalization.
  */

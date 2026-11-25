@@ -10,11 +10,12 @@ import {
   IOrganDecayProfile,
   ICounterfactualProjection
 } from '../services/clinical-biological-age-twin.service';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-biological-age-waterfall-hud',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section
@@ -62,7 +63,7 @@ import {
               }
             </div>
             <h2 id="hud-heading" class="text-lg sm:text-xl font-bold tracking-tight text-white mt-1">
-              Living Biological Clock & Waterfall HUD
+              {{ 'Living Biological Clock & Waterfall HUD' | pgT:'analysis.bio_age_waterfall' }}
             </h2>
             <p class="text-xs sm:text-sm text-zinc-400 mt-0.5 leading-relaxed">
               Drag biomarker sliders to simulate continuous 60 FPS biological age shifts and additive driver attributions.

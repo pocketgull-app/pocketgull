@@ -71,4 +71,11 @@ describe('RoleDemoModalComponent', () => {
 
     expect(closeSpy).toHaveBeenCalled();
   });
+
+  it('5. renders Autonomous SMoE Top-k, 3D Camera, and Safety Constraint preview badges on role cards', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('SMoE Top-');
+    expect(el.textContent).toContain('CPIC *4/*4 + FIDO2 Rx Step-Up');
+    expect(el.textContent).toContain('8th-Grade Plain Language');
+  });
 });

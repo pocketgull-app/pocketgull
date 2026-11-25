@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { GlobalHealthInitiativesService, IWhoCvdRiskResult, IWhoIcopeAssessment, INihHealthspanAssessment, INihRecoverAssessment } from '../../services/global-health-initiatives.service';
 import { PatientStateService } from '../../services/patient-state.service';
 import { IPatient, IPatientVitals } from '../../services/patient.types';
+import { evaluatePatientTop10WhoAndNihGoals } from '../../utils/who-nih-goals-catalog';
 
 export interface INihWhoGoalItem {
   id: string;
   agency: 'WHO' | 'NIH';
-  framework: 'WHO HEARTS / SDG 3.4' | 'WHO ICOPE' | 'NIH Healthy People 2030' | 'NIH RECOVER' | 'NIH BRAIN / Geroscience';
+  framework: string;
   title: string;
   targetDescription: string;
   currentValueDisplay: string;
@@ -17,6 +18,7 @@ export interface INihWhoGoalItem {
   status: 'OPTIMAL' | 'ON_TRACK' | 'ATTENTION_NEEDED';
   statusColor: string;
   actionPrompt: string;
+  isPatientPriority?: boolean;
 }
 
 @Component({
@@ -52,14 +54,14 @@ export interface INihWhoGoalItem {
             <span class="text-[10.5px] font-bold font-mono text-zinc-500 uppercase block">Fulfillment Index</span>
             <span class="text-xl font-black font-mono text-indigo-600 dark:text-indigo-400">{{ overallFulfillmentScore() }}%</span>
           </div>
-          <div class="w-10 h-10 rounded-full flex items-center justify-center border-2 border-indigo-500/30 font-mono font-bold text-xs bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
-            {{ activeGoalsCount() }}/6
+          <div class="w-12 h-10 rounded-full flex items-center justify-center border-2 border-indigo-500/30 font-mono font-bold text-xs bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
+            {{ activeGoalsCount() }}/{{ goals().length }}
           </div>
         </div>
       </div>
 
       <!-- Filter Tabs Ribbon -->
-      <div class="flex items-center gap-2 text-xs font-bold font-mono">
+      <div class="flex items-center gap-2 text-xs font-bold font-mono flex-wrap">
         <button type="button" (click)="activeTab.set('all')"
                 [class.bg-zinc-900]="activeTab() === 'all'"
                 [class.text-white]="activeTab() === 'all'"
@@ -70,7 +72,7 @@ export interface INihWhoGoalItem {
                 [class.text-zinc-600]="activeTab() !== 'all'"
                 [class.dark:text-zinc-400]="activeTab() !== 'all'"
                 class="px-3 py-1.5 rounded-xl border border-transparent transition cursor-pointer">
-          All Targets (6)
+          All Targets ({{ goals().length }})
         </button>
         <button type="button" (click)="activeTab.set('who')"
                 [class.bg-sky-600]="activeTab() === 'who'"
@@ -80,7 +82,7 @@ export interface INihWhoGoalItem {
                 [class.text-zinc-600]="activeTab() !== 'who'"
                 [class.dark:text-zinc-400]="activeTab() !== 'who'"
                 class="px-3 py-1.5 rounded-xl border border-transparent transition cursor-pointer">
-          🌍 WHO Global (3)
+          🌍 WHO Top 10 ({{ whoGoalsCount() }})
         </button>
         <button type="button" (click)="activeTab.set('nih')"
                 [class.bg-indigo-600]="activeTab() === 'nih'"
@@ -90,7 +92,7 @@ export interface INihWhoGoalItem {
                 [class.text-zinc-600]="activeTab() !== 'nih'"
                 [class.dark:text-zinc-400]="activeTab() !== 'nih'"
                 class="px-3 py-1.5 rounded-xl border border-transparent transition cursor-pointer">
-          🧬 NIH Research (3)
+          🧬 NIH Top 10 ({{ nihGoalsCount() }})
         </button>
       </div>
 
@@ -115,8 +117,11 @@ export interface INihWhoGoalItem {
                 </span>
               </div>
 
-              <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-100">
-                {{ goal.title }}
+              <h4 class="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5 flex-wrap">
+                <span>{{ goal.title }}</span>
+                @if (goal.isPatientPriority) {
+                  <span class="px-1.5 py-0.5 text-[9px] font-mono rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">★ Priority</span>
+                }
               </h4>
 
               <p class="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -335,8 +340,60 @@ export class NihWhoGoalTrackerComponent {
       }
     ];
 
+    // Append remaining patient-specific Top 10 WHO + Top 10 NIH targets from canonical catalog
+    const patient = this.currentPatient();
+    const stateCatalog = this.patientState.whoNihGoals?.();
+    const catalog =
+      stateCatalog && stateCatalog.top10WhoGoals.length === 10 && stateCatalog.top10NihGoals.length === 10
+        ? stateCatalog
+        : evaluatePatientTop10WhoAndNihGoals(patient);
+    const prioritySet = new Set(catalog.primaryPriorityGoalIds);
+
+    const liveMappedCatalogIds: Record<string, string> = {
+      'who-cvd': 'WHO-01',
+      'who-zone2': 'WHO-03',
+      'who-icope': 'WHO-04',
+      'nih-sleep': 'NIH-03',
+      'nih-vagal': 'NIH-05',
+      'nih-recover': 'NIH-06'
+    };
+
+    items.forEach(item => {
+      const mappedId = liveMappedCatalogIds[item.id];
+      if (mappedId && prioritySet.has(mappedId)) {
+        item.isPatientPriority = true;
+      }
+    });
+
+    const coveredCatalogIds = new Set(Object.values(liveMappedCatalogIds));
+    for (const entry of [...catalog.top10WhoGoals, ...catalog.top10NihGoals]) {
+      if (coveredCatalogIds.has(entry.id)) continue;
+      const mappedStatus: INihWhoGoalItem['status'] =
+        entry.status === 'OPTIMAL' ? 'OPTIMAL' : entry.status === 'ON_TRACK' ? 'ON_TRACK' : 'ATTENTION_NEEDED';
+      items.push({
+        id: entry.id.toLowerCase(),
+        agency: entry.agency,
+        framework: entry.framework,
+        title: `${entry.code}: ${entry.title}`,
+        targetDescription: entry.evidenceKeywords,
+        currentValueDisplay: entry.patientMetric,
+        targetValueDisplay: entry.targetBenchmark,
+        progressPercent: entry.progressPct,
+        status: mappedStatus,
+        statusColor:
+          mappedStatus === 'ATTENTION_NEEDED'
+            ? 'text-amber-600 dark:text-amber-400'
+            : 'text-emerald-600 dark:text-emerald-400',
+        actionPrompt: `Aligned with ${entry.code} (${entry.framework}).`,
+        isPatientPriority: prioritySet.has(entry.id)
+      });
+    }
+
     return items;
   });
+
+  readonly whoGoalsCount = computed(() => this.goals().filter(g => g.agency === 'WHO').length);
+  readonly nihGoalsCount = computed(() => this.goals().filter(g => g.agency === 'NIH').length);
 
   readonly filteredGoals = computed(() => {
     const tab = this.activeTab();

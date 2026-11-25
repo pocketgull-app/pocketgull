@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { getSecureRandomFraction } from '../utils/security-helper';
 
 export type PriorAuthStatus = 'approved' | 'pended' | 'denied';
 
@@ -143,7 +144,7 @@ export class FhirPriorAuthService {
         status: 'active',
         outcome: 'complete',
         priorAuthStatus: 'approved',
-        authorizationNumber: `AUTH-PAS-${Math.floor(100000 + Math.random() * 900000)}`,
+        authorizationNumber: `AUTH-PAS-${Math.floor(100000 + getSecureRandomFraction() * 900000)}`,
         disposition: 'AUTOMATED PRIOR AUTHORIZATION GRANTED: Medical necessity criteria satisfied under CMS-0057-F.',
         created: new Date().toISOString(),
         approvedItems,

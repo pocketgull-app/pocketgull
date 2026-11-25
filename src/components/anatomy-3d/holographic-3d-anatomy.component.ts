@@ -18,11 +18,12 @@ export type SpatialLensType = 'western' | 'tcm' | 'ayurveda' | 'unified';
       <!-- Dark Radial Holographic Grid Backdrop -->
       <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-950/30 via-zinc-950/90 to-black z-0"></div>
 
-      <!-- Floating 3D Hologram HUD Controls -->
-      <div class="absolute top-3 right-3 z-30 flex items-center gap-1.5 bg-zinc-950/85 backdrop-blur-md p-1.5 rounded-2xl border border-zinc-800 text-xs font-mono">
-        
-        <!-- Spatial Lens Selector -->
-        <div class="flex items-center gap-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+      <!-- Floating 3D Hologram HUD Controls + Stacked Telemetry Banner (Zero Mobile Clipping) -->
+      <div class="absolute top-3 inset-x-3 z-30 flex flex-col items-end gap-2 pointer-events-none">
+        <div class="pointer-events-auto flex flex-wrap items-center justify-end gap-1.5 bg-zinc-950/85 backdrop-blur-md p-1.5 rounded-2xl border border-zinc-800 text-xs font-mono max-w-full">
+          
+          <!-- Spatial Lens Selector -->
+          <div class="flex flex-wrap items-center gap-1 bg-zinc-900 p-1 rounded-xl border border-zinc-800 max-w-full">
           <button (click)="setLens('western')" 
             data-testid="lens-western"
             [class.bg-cyan-500]="activeLens() === 'western'"
@@ -90,23 +91,24 @@ export type SpatialLensType = 'western' | 'tcm' | 'ayurveda' | 'unified';
           <span>{{ isAutoSpinning() ? 'Spin ON' : '360°' }}</span>
         </button>
 
-        <!-- Reset Camera -->
-        <button (click)="resetCameraView()" class="px-2.5 py-1.5 rounded-xl bg-zinc-900 text-zinc-300 font-bold hover:bg-zinc-800 transition cursor-pointer">
-          🎯 Reset
-        </button>
-      </div>
-
-      <!-- ANS Vagal Tone Pacing & HRV Telemetry Banner -->
-      @if (isAnsVagalActive()) {
-        <div class="absolute top-16 left-3 z-30 p-2 px-3 rounded-xl bg-zinc-950/85 border border-teal-500/40 backdrop-blur-md font-mono text-[11px] text-teal-300 flex items-center gap-2 shadow-lg">
-          <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
-          <span>ANS Vagal Resonance: <strong class="text-teal-200">0.10 Hz (10s cycle)</strong></span>
-          <span class="text-zinc-500">|</span>
-          <span>HRV: <strong class="text-white">{{ currentHrv() }} ms</strong></span>
-          <span class="text-zinc-500">|</span>
-          <span class="text-emerald-400 font-semibold">Parasympathetic Baroreflex</span>
+          <!-- Reset Camera -->
+          <button (click)="resetCameraView()" class="px-2.5 py-1.5 rounded-xl bg-zinc-900 text-zinc-300 font-bold hover:bg-zinc-800 transition cursor-pointer">
+            🎯 Reset
+          </button>
         </div>
-      }
+
+        <!-- ANS Vagal Tone Pacing & HRV Telemetry Banner -->
+        @if (isAnsVagalActive()) {
+          <div class="pointer-events-auto self-start p-2 px-3 rounded-xl bg-zinc-950/85 border border-teal-500/40 backdrop-blur-md font-mono text-[11px] text-teal-300 flex flex-wrap items-center gap-2 shadow-lg max-w-full">
+            <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+            <span>ANS Vagal Resonance: <strong class="text-teal-200">0.10 Hz (10s cycle)</strong></span>
+            <span class="text-zinc-500">|</span>
+            <span>HRV: <strong class="text-white">{{ currentHrv() }} ms</strong></span>
+            <span class="text-zinc-500">|</span>
+            <span class="text-emerald-400 font-semibold">Parasympathetic Baroreflex</span>
+          </div>
+        }
+      </div>
 
       <!-- Telemetry Holographic Lens Badge -->
       <div data-testid="telemetry-lens-badge" class="absolute bottom-3 left-3 z-30 p-2.5 px-4 rounded-xl bg-zinc-950/80 border border-zinc-800 backdrop-blur-md font-mono text-xs">

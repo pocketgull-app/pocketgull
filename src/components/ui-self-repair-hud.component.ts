@@ -11,7 +11,7 @@ import { UiSelfRepairService } from '../services/ui-self-repair.service';
   template: `
     <!-- Floating Telemetry Indicator Pill (Stealth-aware: hidden if stealthMode is active and health is 100% with 0 repairs) -->
     @if (!repairService.stealthMode() || metrics().healthScore < 100 || metrics().autoRepairsExecuted > 0 || repairService.isHudOpen()) {
-      <div class="fixed bottom-4 right-4 z-50 flex items-center gap-2">
+      <div class="fixed bottom-4 z-30 flex items-center gap-2" style="right: 5.5rem;">
         <button 
           type="button"
           (click)="repairService.toggleHud()"

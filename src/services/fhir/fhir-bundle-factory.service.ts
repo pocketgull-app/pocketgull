@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as DOMPurify from 'dompurify';
+import { getSecureRandomId } from '../../utils/security-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -73,7 +74,7 @@ export class FhirBundleFactoryService {
     options: { id?: string; loincCode?: string; category?: string; timestamp?: string } = {}
   ): Record<string, any> {
     const timestamp = options.timestamp || new Date().toISOString();
-    const obsId = options.id || `obs-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const obsId = options.id || `obs-${Date.now()}-${getSecureRandomId()}`;
 
     return {
       resourceType: 'Observation',

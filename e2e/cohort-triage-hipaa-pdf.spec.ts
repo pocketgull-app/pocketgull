@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
+import { setupE2ePage, enterDemoMode, selectPatientByName, ensureAnalysisViewVisible } from './utils/setup';
 
 test.describe('Cohort Triage Matrix, HIPAA PDF Export & Card Ergonomics E2E Suite', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(60000);
     await setupE2ePage(page);
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
     await selectPatientByName(page, 'Homo Sapiens');
 
     // Scroll down to trigger Angular @defer (on viewport) block for analysis container toolbar

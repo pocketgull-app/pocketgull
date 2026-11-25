@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, input, computed, signal, inject, ViewChild, ElementRef, effect, OnDestroy, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ThemeService } from '../services/theme.service';
-import * as echarts from 'echarts';
+import type * as echarts from 'echarts';
 
 export interface IBiomarkerStatus {
   name: string;
@@ -281,6 +281,7 @@ export class BiomarkerMatrixComponent implements OnDestroy {
   @ViewChild('chartCanvas') chartCanvas?: ElementRef<HTMLDivElement>;
   private chartInstance: echarts.ECharts | null = null;
   private resizeObserver: ResizeObserver | null = null;
+  private destroyed = false;
 
   viewMode = signal<'radar' | 'spectrum' | 'cards'>('radar');
   selectedBiomarker = signal<IBiomarkerStatus | null>(null);
@@ -301,12 +302,13 @@ export class BiomarkerMatrixComponent implements OnDestroy {
       const mode = this.viewMode();
       const isDark = this.themeService.activeTheme() === 'dark';
       if (markers.length > 0 && mode !== 'cards') {
-        setTimeout(() => this.renderChart(), 50);
+        setTimeout(() => void this.renderChart(), 50);
       }
     });
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     if (this.chartInstance) {
       this.chartInstance.dispose();
       this.chartInstance = null;
@@ -320,7 +322,7 @@ export class BiomarkerMatrixComponent implements OnDestroy {
   setViewMode(mode: 'radar' | 'spectrum' | 'cards'): void {
     this.viewMode.set(mode);
     if (mode !== 'cards') {
-      setTimeout(() => this.renderChart(), 50);
+      setTimeout(() => void this.renderChart(), 50);
     }
   }
 
@@ -581,8 +583,8 @@ export class BiomarkerMatrixComponent implements OnDestroy {
     return markers;
   });
 
-  private renderChart(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
+  private async renderChart(): Promise<void> {
+    if (this.destroyed || !isPlatformBrowser(this.platformId)) return;
     const dom = this.chartCanvas?.nativeElement;
     if (!dom) return;
 
@@ -594,7 +596,9 @@ export class BiomarkerMatrixComponent implements OnDestroy {
       this.chartInstance = null;
     }
 
-    this.chartInstance = echarts.init(dom, null, { renderer: 'svg' });
+    const echartsLib = await import('echarts');
+    if (this.destroyed) return;
+    this.chartInstance = echartsLib.init(dom, null, { renderer: 'svg' });
 
     if (!this.resizeObserver) {
       this.resizeObserver = new ResizeObserver(() => {
@@ -701,7 +705,7 @@ export class BiomarkerMatrixComponent implements OnDestroy {
                 lineStyle: { color: '#06B6D4', width: 2.5 },
                 itemStyle: { color: '#06B6D4', borderColor: '#FFFFFF', borderWidth: 1.5 },
                 areaStyle: {
-                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  color: new echartsLib.graphic.LinearGradient(0, 0, 0, 1, [
                     { offset: 0, color: 'rgba(6, 182, 212, 0.35)' },
                     { offset: 1, color: 'rgba(16, 185, 129, 0.10)' }
                   ])

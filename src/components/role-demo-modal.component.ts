@@ -63,6 +63,27 @@ import { ClinicalRolePathway } from '../services/role-pathway-docs.service';
               </div>
 
               <div class="space-y-2 pt-2 border-t border-zinc-800/80">
+                @if (scenario.smoePreview; as smoe) {
+                  <div class="p-2 rounded-xl bg-zinc-950/90 border border-teal-500/25 space-y-1 text-[9.5px] font-mono">
+                    <div class="flex items-center justify-between text-teal-300 font-bold">
+                      <span>⚡ SMoE Top-{{ smoe.recommendedTopK }}</span>
+                      <span class="px-1.5 py-0.5 rounded bg-teal-500/15 border border-teal-500/30 uppercase text-[8.5px]">
+                        {{ smoe.recommendedDensity === 'caregiver-digest' ? 'Digest' : 'Full' }} • 🧭 {{ smoe.recommendedCamera }}
+                      </span>
+                    </div>
+                    <div class="text-zinc-300 truncate">
+                      <span>{{ smoe.predictedPrimaryIcon }} {{ smoe.predictedPrimaryLabel }}</span>
+                      @if (smoe.predictedSecondaryLabel) {
+                        <span class="text-zinc-500"> + </span>
+                        <span>{{ smoe.predictedSecondaryIcon }} {{ smoe.predictedSecondaryLabel }}</span>
+                      }
+                    </div>
+                    <div class="text-[8.5px] text-amber-300/90 truncate">
+                      🛡️ {{ smoe.safetyConstraintBadge }}
+                    </div>
+                  </div>
+                }
+
                 <div class="flex flex-wrap gap-1">
                   @for (mod of scenario.highlightedModules; track mod) {
                     <span class="px-1.5 py-0.5 rounded bg-zinc-800/80 text-[9px] font-mono text-teal-300 font-semibold border border-zinc-700/40">
@@ -84,7 +105,7 @@ import { ClinicalRolePathway } from '../services/role-pathway-docs.service';
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-zinc-800 pt-4 text-xs font-mono text-zinc-400">
           <span>🔒 100% HIPAA Safe Harbor De-identified & Offline Capable</span>
           <button (click)="closeModal.emit()"
-                  class="px-4 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-850 text-zinc-300 text-xs font-mono transition cursor-pointer">
+                  class="px-4 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 text-zinc-300 text-xs font-mono transition cursor-pointer">
             Dismiss
           </button>
         </div>

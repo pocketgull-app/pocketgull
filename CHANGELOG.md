@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.42.0] - 2026-11-19
+
+**☁️ FinOps Zero-Idle-Burn Cloud Run Hardening, 3D Body Viewer Tap-Visibility Fix, Bulk Sync `413` Circuit Breaker & `/api/ai/metrics` Resilience**
+
+### Changed
+- **[Cloud Run FinOps & Direct VPC Egress Cleanup (`gen-lang-client-0540208645`)] (`scripts/teardown-gcp-idle-burn.mjs`)**:
+  - Torn down orphaned Global External Load Balancer (`35.186.221.122`), Cloud Armor policy (`pocket-gull-armor-policy`), backend service (`pocket-gull-backend`), forwarding rules, 4 unused SSL certificates, and 3 NEGs after verifying live DNS routes directly via Cloud Run Domain Mappings (`216.239.32.21`).
+  - Removed unused Direct VPC egress (`--clear-network`) from `pocket-gull-v2` (deployed revision `pocket-gull-v2-00262-lgt`), eliminating Google-managed connector VM churn (`aet-uscentral1-pocket--gull--connector`) while maintaining `minScale: 0` and Mozilla HTTP Observatory 125/100 headers across `pocketgull.app`, `pocketgull.com`, and `journal.pocketgull.com`.
+  - Aligned project billing to organizational account `011A25-87E995-C755A6` (`dpo@pocketgull.app`).
+
+### Fixed
+- **[3D Body Viewer Disappearing Layers on Tap] (`src/components/anatomy-3d/body-3d-viewer.component.ts`)**:
+  - Replaced 9 stale `this.anatomyViewMode()` calls (which stayed at the `@Input` default `'skin'`) with `this.effectiveAnatomyViewMode()` across `setCameraPreset()`, `toggleDermatomeLayer()`, AVS/philosophy effects, and model rebuild handlers so tapping a body part no longer resets layer opacity to `'skin'` and hides organs, bones, muscles, fluid dynamics, or shaders.
+  - Guarded `updatePartColors()` with `instanceof THREE.MeshStandardMaterial` so tapping in custom `ShaderMaterial` modes (`vesalian_woodcut`, `ghost`, `oregonator_turing`) never throws on missing `.color`/`.emissive` properties.
+- **[Patient Cloud Sync `413 PayloadTooLargeError` Loop] (`src/services/patient-management.service.ts`)**:
+  - Added an `8 MB` pre-flight payload size circuit breaker and sticky `413` fallback to `PUT /api/patients/:id` with serialized payload deduplication, eliminating the 5-second `PayloadTooLargeError` stderr flood and allowing Cloud Run to scale cleanly to zero.
+- **[Clinical Metrics AI Endpoint Resilience] (`src/server/genkit.ts`, `src/server/routes/ai.routes.ts`)**:
+  - Increased `generateMetricsFlow` `maxOutputTokens` from `128` to `512` to prevent `gemini-2.5-flash` JSON truncation, added markdown fence stripping and `[0, 10]` metric clamping, validated `body.text` (`400` on missing/empty input), and added sanitized server error logging on `/api/ai/metrics`.
+
 ## [1.41.2] - 2026-10-12
 
 **🛡️ Complete CodeQL Hardening (Zero Alerts), GullRenderEngine Direct-Curve Architectural Transition, Zero-Regex SAML Extraction, and Multi-Platform Companion Parity**

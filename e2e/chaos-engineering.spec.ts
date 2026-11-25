@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
+import { setupE2ePage, enterDemoMode, selectPatientByName, ensureAnalysisViewVisible } from './utils/setup';
 import * as path from 'path';
 
 test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
@@ -47,11 +47,13 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
 
     // Set up local storage and mock browser configurations
     await page.addInitScript(() => {
-      window.localStorage.setItem('pg_tour_seen', '1');
-      window.localStorage.setItem('pg_mock_clinician', '1');
-      window.localStorage.setItem('pg_data_consent_v1', 'true');
-      window.localStorage.setItem('GEMINI_API_KEY', 'AIzaMockKeyForTestingChaos12345');
-      window.sessionStorage.setItem('pg_session_onboarded', '1');
+      try {
+        window.localStorage.setItem('pg_tour_seen', '1');
+        window.localStorage.setItem('pg_mock_clinician', '1');
+        window.localStorage.setItem('pg_data_consent_v1', 'true');
+        window.localStorage.setItem('GEMINI_API_KEY', 'AIzaMockKeyForTestingChaos12345');
+        window.sessionStorage.setItem('pg_session_onboarded', '1');
+      } catch {}
       (window as any).GEMINI_API_KEY = 'AIzaMockKeyForTestingChaos12345';
 
       // Disable service worker during E2E tests
@@ -78,6 +80,7 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
   test('Enter Suite action button unlocks secure splash screen and loads dashboard', async ({ page }) => {
     const rosterResponsePromise = page.waitForResponse('**/api/patients', { timeout: 15000 }).catch(() => null);
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
 
     // Dashboard should load directly
     await expect(page.locator('main')).toBeVisible({ timeout: 15000 });
@@ -91,6 +94,7 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
     test.setTimeout(60000);
     const rosterResponsePromise = page.waitForResponse('**/api/patients', { timeout: 15000 }).catch(() => null);
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
     await selectPatientByName(page, 'Phil Gear');
     await rosterResponsePromise;
     await page.waitForTimeout(500);
@@ -131,6 +135,7 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
 
     const rosterResponsePromise = page.waitForResponse('**/api/patients', { timeout: 15000 }).catch(() => null);
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
     await selectPatientByName(page, 'Phil Gear');
     await rosterResponsePromise;
     await page.waitForTimeout(500);
@@ -169,6 +174,7 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
 
     const rosterResponsePromise = page.waitForResponse('**/api/patients', { timeout: 15000 }).catch(() => null);
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
     await selectPatientByName(page, 'Phil Gear');
     await rosterResponsePromise;
     await page.waitForTimeout(500);
@@ -186,14 +192,15 @@ test.describe('Pocket-Gull Chaos Engineering & Resilience Tests', () => {
     await expect(generateBtn).toBeEnabled({ timeout: 15000 });
     await generateBtn.click();
 
-    // Verify loading indicator or report text resolves
-    const reportText = page.locator('text=/Highly delayed|Clinical Assessment|Phil Gear|Alexander/i').first();
+    // Verify loading indicator or report text resolves inside the active analysis workspace
+    const reportText = page.locator('app-analysis-container').locator('text=/Highly delayed|Clinical Assessment|Phil Gear|Alexander/i').filter({ visible: true }).first();
     await expect(reportText).toBeVisible({ timeout: 20000 });
   });
 
   test('Resilience - Voice Assistant WebSocket connection failure handled gracefully', async ({ page }) => {
     test.setTimeout(60000);
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
 
     await expect(page.locator('main')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('app-analysis-report, app-analysis-container').first()).toBeVisible({ timeout: 15000 });

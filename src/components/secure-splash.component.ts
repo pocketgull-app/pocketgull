@@ -30,6 +30,16 @@ import { DocDrillService } from '../services/doc-drill.service';
 import { ClinicalDefenseGuardService } from '../services/clinical-defense-guard.service';
 import { SplashBedsidePhysicsBadgeComponent } from './splash/splash-bedside-physics-badge.component';
 import { BionicReadingService } from '../services/bionic-reading.service';
+import { ClinicalMoERouterService, ISplashGatePolicy } from '../services/clinical-moe-router.service';
+import { ClinicalRolePathway } from '../services/role-pathway-docs.service';
+import { getSecureRandomId } from '../utils/security-helper';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
+
+export interface IStatEmergencyBypassPayload {
+  indication: string;
+  responderRole: 'CLINICIAN' | 'GOOD_SAMARITAN_BYSTANDER';
+  badge: string;
+}
 
 @Component({
   selector: 'app-secure-splash',
@@ -37,13 +47,13 @@ import { BionicReadingService } from '../services/bionic-reading.service';
   host: {
     'class': 'block'
   },
-  imports: [CommonModule, FormsModule, PocketgullBrandMarkComponent, SafeHtmlPipe, PapercraftBackdropComponent, AvsCymaticsVisualizerComponent, SplashBedsidePhysicsBadgeComponent],
+  imports: [CommonModule, FormsModule, PocketgullBrandMarkComponent, SafeHtmlPipe, PapercraftBackdropComponent, AvsCymaticsVisualizerComponent, SplashBedsidePhysicsBadgeComponent, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <main [style.background]="telemetryGradient()"
           [style.filter]="desaturationFilter()"
           [style.--sloan-letter-spacing]="bioTypography?.letterSpacingEm() || '0em'"
-          class="fixed inset-0 w-screen h-screen min-w-full min-h-full z-[999] flex flex-col items-center justify-start sm:justify-center p-2 sm:p-4 backdrop-blur-md sm:backdrop-blur-xl secure-splash-main bio-adaptive-sloan animate-in fade-in duration-[400ms] overflow-y-auto overscroll-contain">
+          class="fixed inset-0 z-[999] flex flex-col items-center justify-start p-3 sm:p-6 pb-8 backdrop-blur-md sm:backdrop-blur-xl secure-splash-main bio-adaptive-sloan animate-in fade-in duration-[400ms] overflow-y-auto overflow-x-hidden overscroll-contain">
       <app-papercraft-backdrop
         [wavePeriod]="wavePeriod()"
         [motionEnabled]="!theme.reduceMotion()"
@@ -76,7 +86,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
               </svg>
             }
             @else if (item.type === 'surfer') {
-              <svg class="animate-surfing opacity-90 dark:opacity-75 text-zinc-700 dark:text-zinc-350"
+              <svg class="animate-surfing opacity-90 dark:opacity-75 text-zinc-700 dark:text-zinc-300"
                    [class.animate-none]="theme.reduceMotion()"
                    [style.animation-delay.s]="item.delay"
                    [style.animation-duration.s]="item.duration"
@@ -152,9 +162,9 @@ import { BionicReadingService } from '../services/bionic-reading.service';
         </div>
       </div>
 
-      <div class="w-full max-w-sm relative z-10 flex flex-col items-center">
+      <div class="w-full max-w-sm relative z-10 flex flex-col items-center my-auto py-2">
         <!-- Dynamic Entry Panel (Pocket-Like Layered Papercraft Container) -->
-        <div id="seagull-safe-zone" class="w-full relative paper-pocket-container rounded-3xl p-3 xs:p-4 sm:p-6 animate-in fade-in duration-300 backdrop-blur-2xl transition-all overflow-y-auto min-h-0 max-h-[85vh] sm:max-h-[88vh] hide-scrollbar" style="contain: layout;">
+        <div id="seagull-safe-zone" class="w-full relative paper-pocket-container rounded-3xl p-3 xs:p-4 sm:p-6 animate-in fade-in duration-300 backdrop-blur-2xl transition-all" style="contain: layout;">
           
           <!-- Tactile Paper Pocket Top Fold Notch -->
           <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#2AA4A0]/40 via-[#F6B12B]/40 to-[#EF6658]/40 border-b border-amber-300/40 dark:border-zinc-700/50"></div>
@@ -163,7 +173,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
             <h1 class="sr-only">PocketGull Clinical Suite</h1>
             <div role="heading" aria-level="1" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 border border-amber-400/30 text-amber-800 dark:text-amber-300 text-[9.5px] font-bold uppercase tracking-widest mb-2 shadow-2xs">
               <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-              Pocket-Gull Clinician Suite
+              {{ 'Pocket-Gull Clinician Suite' | pgT:'splash.suite_title' }}
               <span class="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-400/40 text-[9px] font-mono font-bold tracking-normal">v{{ appVersion }}</span>
             </div>
             
@@ -175,7 +185,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
 
             @if (isLocked()) {
               <p class="text-[11px] font-pocketgull-inter uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400 mt-1">
-                Idle Timeout Protection Active
+                {{ 'Idle Timeout Protection Active' | pgT:'splash.idle_timeout' }}
               </p>
             }
           </div>
@@ -194,6 +204,29 @@ import { BionicReadingService } from '../services/bionic-reading.service';
           <!-- Gesture Unlock & SSO Dual Gateway Flow -->
           @else if (viewState() === 'gesture' || (isLocked() && viewState() !== 'kss' && viewState() !== 'ethics')) {
             <div class="flex flex-col items-center justify-center gap-2 mt-1 mb-2 w-full animate-in fade-in duration-500">
+
+               @if (activeSplashGatePolicy(); as gate) {
+                 <div class="w-full max-w-[290px] px-2.5 py-1.5 rounded-xl border text-[9.5px] font-mono flex items-center justify-between gap-2 shadow-2xs"
+                      [class.bg-rose-950/60]="gate.regime === 'STAT Good Samaritan Emergency Gate'"
+                      [class.border-rose-500/50]="gate.regime === 'STAT Good Samaritan Emergency Gate'"
+                      [class.text-rose-200]="gate.regime === 'STAT Good Samaritan Emergency Gate'"
+                      [class.bg-amber-950/40]="gate.enforceScotopicContrastHint"
+                      [class.border-amber-500/40]="gate.enforceScotopicContrastHint"
+                      [class.text-amber-200]="gate.enforceScotopicContrastHint"
+                      [class.bg-zinc-900/75]="gate.regime !== 'STAT Good Samaritan Emergency Gate' && !gate.enforceScotopicContrastHint"
+                      [class.border-teal-500/30]="gate.regime !== 'STAT Good Samaritan Emergency Gate' && !gate.enforceScotopicContrastHint"
+                      [class.text-teal-300]="gate.regime !== 'STAT Good Samaritan Emergency Gate' && !gate.enforceScotopicContrastHint"
+                      [title]="gate.policyRationale">
+                   <span class="truncate font-bold">🧭 {{ gate.policyHeadline }}</span>
+                   @if (gate.recommendedAuthSkill === 'webauthn-passkey' && authGatewayTab() !== 'sso') {
+                     <button type="button"
+                             (click)="applyRecommendedSplashSkill()"
+                             class="px-1.5 py-0.5 rounded bg-teal-500/20 hover:bg-teal-500/30 border border-teal-400/40 text-[8.5px] font-bold uppercase shrink-0 cursor-pointer">
+                       1-Tap SSO
+                     </button>
+                   }
+                 </div>
+               }
                
                <!-- Top Dual Gateway Mode Tab Switcher -->
                <div class="grid grid-cols-2 gap-1.5 p-1 bg-zinc-200/80 dark:bg-zinc-800/90 rounded-2xl border border-zinc-300/80 dark:border-zinc-700/60 text-[11px] font-bold shadow-2xs w-full max-w-[280px]">
@@ -492,7 +525,8 @@ import { BionicReadingService } from '../services/bionic-reading.service';
                  style="position: absolute; width: 1px; height: 1px; opacity: 0.01; background: transparent; border: none; color: transparent;"
                >
                
-                <!-- Collapsible Sensory & Accessibility Quick Settings -->
+                <!-- Collapsible Sensory & Accessibility Quick Settings (Collapsed automatically under SMoE High-Fatigue / STAT Gate Policy) -->
+                @if (!activeSplashGatePolicy()?.collapseDecorativeSensoryWidgets) {
                 <details class="mt-4 w-full z-30 group">
                   <summary class="cursor-pointer flex items-center justify-between px-4 py-2.5 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md rounded-xl border border-amber-200/50 dark:border-zinc-800/60 shadow-xs text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition select-none">
                     <span class="flex items-center gap-2">
@@ -1089,6 +1123,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
                     </div>
                   </div>
                 </details>
+                }
               </div>
           }
           <!-- Restricted Entry Gateway -->
@@ -1162,7 +1197,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
                 <button 
                   type="button" 
                   (click)="viewState.set('signup'); errorMsg.set('');"
-                  class="w-full py-3 bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-350 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300"
+                  class="w-full py-3 bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-300 text-xs font-bold uppercase tracking-[0.15em] rounded-2xl transition-all duration-300"
                 >
                   Create Clinician Account (Sign Up)
                 </button>
@@ -1495,7 +1530,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
 
         <!-- Emergency Bypass Intentional Hold Trigger & 2-Step CDS Option -->
         <div class="mt-3.5 w-full space-y-1.5 z-30">
-          <div class="relative w-full overflow-hidden rounded-2xl border-2 border-rose-500/80 dark:border-rose-500/70 shadow-lg select-none touch-none bg-rose-950/20">
+          <div class="relative w-full overflow-hidden rounded-2xl border-2 border-rose-500/80 dark:border-rose-500/70 shadow-lg select-none touch-none bg-rose-800 dark:bg-rose-900">
             <!-- Hold Progress Fill Bar -->
             <div class="absolute inset-0 bg-gradient-to-r from-rose-600 to-rose-500 transition-all duration-75 ease-linear pointer-events-none"
                  [style.width.%]="emergencyHoldProgress()"></div>
@@ -1526,7 +1561,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
           <div class="flex items-center justify-center">
             <button type="button"
                     (click)="openEmergencyConfirmModal()"
-                    class="text-xs uppercase tracking-wider font-bold text-rose-400 dark:text-rose-300 hover:text-rose-200 hover:underline transition-colors bg-transparent border-none cursor-pointer min-h-[48px] px-3 py-2 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none rounded-lg"
+                    class="text-xs uppercase tracking-wider font-bold text-rose-700 dark:text-rose-300 hover:underline transition-colors bg-transparent border-none cursor-pointer min-h-[48px] px-3 py-2 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none rounded-lg"
                     aria-label="Open 2-step STAT emergency confirmation modal">
               Or use 2-Step STAT Confirmation &rarr;
             </button>
@@ -1534,7 +1569,7 @@ import { BionicReadingService } from '../services/bionic-reading.service';
         </div>
 
         <!-- Terms and Privacy Links -->
-        <div class="mt-2.5 flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider font-semibold text-zinc-400 dark:text-zinc-500 z-30">
+        <div class="mt-2.5 flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider font-semibold text-zinc-600 dark:text-zinc-400 z-30">
           <button type="button" (click)="showTermsModal.set(true)" class="min-h-[32px] px-2.5 py-1.5 inline-flex items-center justify-center hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors bg-transparent border-none cursor-pointer">Terms of Service</button>
           <span class="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-800"></span>
           <button type="button" (click)="showPrivacyModal.set(true)" class="min-h-[32px] px-2.5 py-1.5 inline-flex items-center justify-center hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors bg-transparent border-none cursor-pointer">Privacy Policy</button>
@@ -2122,7 +2157,45 @@ export class SecureSplashComponent implements OnInit {
   readonly isBrowser = signal<boolean>(isPlatformBrowser(this.platformId));
   private secureStorage = inject(SecureStorageService);
   readonly authSso = inject(AuthSsoService);
+  public readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
   readonly appVersion = APP_VERSION;
+
+  readonly activeSplashGatePolicy = computed<ISplashGatePolicy | null>(() => {
+    if (!this.moeRouter) return null;
+    const rawKss = (this.kss as { clinicianKss?: () => number; currentScore?: () => number });
+    const kssVal = typeof rawKss.clinicianKss === 'function'
+      ? rawKss.clinicianKss()
+      : typeof rawKss.currentScore === 'function'
+        ? rawKss.currentScore()
+        : 3;
+    return this.moeRouter.evaluateSplashGatePolicy({
+      isEmergencyHold: this.isHoldingEmergency() || this.showEmergencyConfirmModal(),
+      kssScore: kssVal,
+      isPlatformAuthenticatorAvailable: true,
+      isLockedIdle: this.isLocked(),
+      isDemoPreferred: false
+    });
+  });
+
+  applyRecommendedSplashSkill(): void {
+    const policy = this.activeSplashGatePolicy();
+    if (!policy) return;
+    this.authGatewayTab.set(policy.recommendedGatewayTab);
+    if (policy.recommendedAuthSkill === 'webauthn-passkey') {
+      this.selectedSsoProvider.set('webauthn');
+    } else if (policy.recommendedAuthSkill === 'smart-fhir-sso') {
+      this.selectedSsoProvider.set('smart-fhir');
+    }
+  }
+
+  private syncIamRoleToSmoePathway(iamRole: string): void {
+    if (!this.moeRouter) return;
+    let pathway: ClinicalRolePathway = 'clinician';
+    if (iamRole === 'roles/healthcare.datasetAdmin') pathway = 'executive';
+    else if (iamRole === 'roles/bigquery.jobUser') pathway = 'researcher';
+    else if (iamRole === 'roles/viewer') pathway = 'patient';
+    this.moeRouter.applyClinicalRolePathway(pathway);
+  }
 
   // --- Enterprise Single Sign-On (SSO) State ---
   selectedIamRole = 'roles/aiplatform.user';
@@ -2228,7 +2301,7 @@ export class SecureSplashComponent implements OnInit {
   loadDemo = output<void>();
   unlockSession = output<void>();
   selectAiStudio = output<void>();
-  emergencyBypass = output<void>();
+  emergencyBypass = output<IStatEmergencyBypassPayload>();
   openTriageRoster = output<void>();
 
   handleUnlockSession() {
@@ -2296,7 +2369,7 @@ export class SecureSplashComponent implements OnInit {
 
   openEmergencyConfirmModal(): void {
     this.emergencyAttestationAccepted.set(false);
-    const entropy = this.clinicalDefense?.generateHardwareEntropyHex(3).toUpperCase() || Math.random().toString(36).substring(2, 6).toUpperCase();
+    const entropy = this.clinicalDefense?.generateHardwareEntropyHex(3).toUpperCase() || getSecureRandomId().slice(0, 6).toUpperCase();
     this.emergencyBystanderToken.set(`SAMARITAN-${entropy}`);
     this.showEmergencyConfirmModal.set(true);
   }
@@ -2304,7 +2377,7 @@ export class SecureSplashComponent implements OnInit {
   setEmergencyResponderType(type: 'CLINICIAN' | 'BYSTANDER'): void {
     this.emergencyResponderType.set(type);
     if (type === 'BYSTANDER') {
-      const entropy = this.clinicalDefense?.generateHardwareEntropyHex(3).toUpperCase() || Math.random().toString(36).substring(2, 6).toUpperCase();
+      const entropy = this.clinicalDefense?.generateHardwareEntropyHex(3).toUpperCase() || getSecureRandomId().slice(0, 6).toUpperCase();
       this.emergencyBystanderToken.set(`SAMARITAN-${entropy}`);
     }
   }
@@ -2367,7 +2440,11 @@ export class SecureSplashComponent implements OnInit {
     this.showEmergencyConfirmModal.set(false);
     this.session.isLocked.set(false);
     this.session.resetIdleTimer();
-    this.emergencyBypass.emit();
+    this.emergencyBypass.emit({
+      indication: this.emergencyIndication(),
+      responderRole: role,
+      badge
+    });
   }
 
   // State
@@ -3399,6 +3476,7 @@ export class SecureSplashComponent implements OnInit {
         name: 'Dr. Gulliver (Attending Clinician)',
         zkpKineticHash
       });
+      this.syncIamRoleToSmoePathway(this.selectedIamRole);
 
       this.triggerParticleBurst(110, 110, '#3ebc9e', 35);
       this.playSuccessChime();
@@ -3428,6 +3506,7 @@ export class SecureSplashComponent implements OnInit {
     try {
       const selectedIssuer = issuer || this.selectedHospitalIssuer();
       await this.authSso.signInWithSmartFhir(selectedIssuer, 'patient-curie-2026', this.selectedIamRole);
+      this.syncIamRoleToSmoePathway(this.selectedIamRole);
 
       this.triggerParticleBurst(110, 110, '#6366f1', 35);
       this.playSuccessChime();
@@ -3712,7 +3791,10 @@ export class SecureSplashComponent implements OnInit {
   /** Select a KSS score and update the circadian service reactively. */
   selectClinicianKss(score: KssScore): void {
     this.clinicianKssSelected.set(score);
-    this.kss.clinicianKss.set(score);
+    if (typeof this.kss.clinicianKss?.set === 'function') {
+      this.kss.clinicianKss.set(score);
+    }
+    this.moeRouter?.setClinicianKssScore(score);
     this.playKeyPressChime();
   }
 
@@ -3750,6 +3832,7 @@ export class SecureSplashComponent implements OnInit {
       ? this.emergencyBystanderToken()
       : 'emergency-physician@pocketgull.app';
     const role = isBystander ? 'GOOD_SAMARITAN_BYSTANDER' : 'CLINICIAN';
+    this.moeRouter?.manualRedFlagOverride.set(true);
     this.clinicalDefense?.auditStatEmergencyOverride(
       token,
       'STAT Emergency Clinical Bypass invoked at Splash Gatekeeper under HIPAA § 164.512 and Good Samaritan emergency protocols.',
@@ -3757,6 +3840,10 @@ export class SecureSplashComponent implements OnInit {
     );
     this.session.isLocked.set(false);
     this.session.resetIdleTimer();
-    this.emergencyBypass.emit();
+    this.emergencyBypass.emit({
+      indication: this.emergencyIndication(),
+      responderRole: role,
+      badge: token
+    });
   }
 }

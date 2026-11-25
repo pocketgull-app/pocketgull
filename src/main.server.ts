@@ -12,7 +12,6 @@ try {
   }
 } catch {}
 
-import '@angular/compiler';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { BootstrapContext, bootstrapApplication, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
@@ -22,17 +21,11 @@ import { AI_CONFIG, IAiProviderConfig } from './services/ai-provider.types';
 import { IntelligenceProviderToken } from './services/ai/intelligence.provider.token';
 import { HybridProvider } from './services/ai/hybrid.provider';
 
-import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { environment } from './environments/environment';
-
 export const config: ApplicationConfig = {
     providers: [
         provideServerRendering(),
         provideZonelessChangeDetection(),
         provideHttpClient(withFetch()),
-        provideFirebaseApp(() => initializeApp(environment.firebase)),
-        provideFirestore(() => getFirestore()),
         {
             provide: AI_CONFIG,
             useFactory: () => ({

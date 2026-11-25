@@ -301,12 +301,17 @@ export function createAiRouter(deps: IAiRouteDeps): Router {
     try {
       await getApiKey(req);
       const body = req.body as IAiMetricsRequest;
+      if (!body || typeof body.text !== 'string' || body.text.trim().length === 0) {
+        return res.status(400).json({ error: 'Missing required clinical report text.' });
+      }
       const { generateMetricsFlow } = await import('../genkit.js');
       const result = await generateMetricsFlow(body.text);
-      res.json(result);
+      return res.json(result);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Unknown error';
-      res.status(500).json({ error: message });
+      const safeMsg = message.replace(/[\r\n]/g, ' ').slice(0, 200);
+      console.error('[AI /metrics] Error generating clinical metrics:', safeMsg);
+      return res.status(500).json({ error: message });
     }
   });
 

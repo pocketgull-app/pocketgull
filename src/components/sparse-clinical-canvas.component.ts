@@ -115,6 +115,33 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
                 3
               </button>
             </div>
+
+            <!-- Innovation 1: Intra-Component Micro-Skill Density Switcher -->
+            <div class="flex items-center bg-zinc-950 border border-zinc-800 rounded-xl p-0.5 text-xs"
+                 [title]="moeRouter.microSkillDisplayPolicy().policyRationale">
+              <span class="px-2 text-[10px] text-zinc-500 font-bold uppercase select-none">Density:</span>
+              <button type="button" (click)="moeRouter.setMicroSkillDensityOverride('specialist-full')"
+                [class.bg-indigo-600]="moeRouter.microSkillDisplayPolicy().densityMode === 'specialist-full'"
+                [class.text-white]="moeRouter.microSkillDisplayPolicy().densityMode === 'specialist-full'"
+                [class.text-zinc-400]="moeRouter.microSkillDisplayPolicy().densityMode !== 'specialist-full'"
+                class="px-2 py-1 rounded-lg font-bold transition text-[11px] min-h-[36px] cursor-pointer">
+                Full
+              </button>
+              <button type="button" (click)="moeRouter.setMicroSkillDensityOverride('caregiver-digest')"
+                [class.bg-teal-600]="moeRouter.microSkillDisplayPolicy().densityMode === 'caregiver-digest'"
+                [class.text-white]="moeRouter.microSkillDisplayPolicy().densityMode === 'caregiver-digest'"
+                [class.text-zinc-400]="moeRouter.microSkillDisplayPolicy().densityMode !== 'caregiver-digest'"
+                class="px-2 py-1 rounded-lg font-bold transition text-[11px] min-h-[36px] cursor-pointer">
+                Digest
+              </button>
+              <button type="button" (click)="moeRouter.setMicroSkillDensityOverride('stat-focused')"
+                [class.bg-rose-600]="moeRouter.microSkillDisplayPolicy().densityMode === 'stat-focused'"
+                [class.text-white]="moeRouter.microSkillDisplayPolicy().densityMode === 'stat-focused'"
+                [class.text-zinc-400]="moeRouter.microSkillDisplayPolicy().densityMode !== 'stat-focused'"
+                class="px-2 py-1 rounded-lg font-bold transition text-[11px] min-h-[36px] cursor-pointer">
+                STAT
+              </button>
+            </div>
           </div>
         </div>
 
@@ -306,14 +333,52 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
               </div>
             </div>
 
-            <!-- Benchmark Target Badge -->
-            <div class="sm:text-right shrink-0">
-              <span class="text-[10px] font-mono text-zinc-400 block uppercase">Benchmark Target</span>
-              <span class="font-mono text-xs font-bold text-emerald-300 px-2.5 py-1 rounded-lg bg-zinc-900 border border-emerald-500/40 shadow-inner inline-block mt-0.5">
-                {{ bridge.benchmarkMetric }}
-              </span>
+            <!-- Benchmark Target & Live Synapse Signal Pulse Badge -->
+            <div class="sm:text-right shrink-0 space-y-1.5">
+              <div>
+                <span class="text-[10px] font-mono text-zinc-400 block uppercase">Benchmark Target</span>
+                <span class="font-mono text-xs font-bold text-emerald-300 px-2.5 py-1 rounded-lg bg-zinc-900 border border-emerald-500/40 shadow-inner inline-block mt-0.5">
+                  {{ bridge.benchmarkMetric }}
+                </span>
+              </div>
+              @if (moeRouter.activeSynapsePulse(); as pulse) {
+                <div class="px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-400/60 text-[11px] font-mono text-emerald-200 flex items-center gap-1.5 justify-end">
+                  <span>⚡ Synapse Bus:</span>
+                  <strong>{{ pulse.parameterLabel }} = {{ pulse.parameterValue }}</strong>
+                </div>
+              }
             </div>
           </div>
+        </div>
+      }
+
+      <!-- ================================================================= -->
+      <!-- INNOVATION 4: CLOSED-LOOP COMPLETED GOAL RECEIPT PILLS (21 CFR 11)-->
+      <!-- ================================================================= -->
+      @if (moeRouter.completedSkillReceipts().length > 0) {
+        <div
+          class="rounded-2xl border border-emerald-500/30 bg-zinc-900/70 px-3.5 py-2.5 flex items-center gap-2 flex-wrap font-mono text-xs shrink-0"
+          role="region"
+          aria-label="Completed Clinical Skill Receipts"
+        >
+          <span class="text-[10px] uppercase font-bold text-emerald-400 shrink-0">
+            ✓ Self-Retired Skill Receipts ({{ moeRouter.completedSkillReceipts().length }}):
+          </span>
+          @for (rcpt of moeRouter.completedSkillReceipts(); track rcpt.receiptId) {
+            <div class="flex items-center gap-2 px-2.5 py-1 rounded-xl bg-emerald-950/50 border border-emerald-500/40 text-emerald-200">
+              <span>{{ rcpt.icon }}</span>
+              <span class="font-bold">{{ rcpt.expertShortLabel }}</span>
+              <span class="text-[10px] text-zinc-400">SHA-256: {{ rcpt.sha256DigestHex.slice(0, 10) }}…</span>
+              <button
+                type="button"
+                (click)="moeRouter.reopenRetiredSkillGoal(rcpt.expertId)"
+                class="text-[10px] px-1.5 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 cursor-pointer"
+                title="Re-open this retired skill into active routing"
+              >
+                ↺ Reopen
+              </button>
+            </div>
+          }
         </div>
       }
 
@@ -352,17 +417,25 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
               </div>
 
               <!-- Header Action Controls -->
-              <div class="flex items-center gap-1.5 font-mono text-xs">
+              <div class="flex items-center gap-1.5 font-mono text-xs flex-wrap">
+                <button
+                  type="button"
+                  (click)="moeRouter.completeAndRetireSkillGoal(primary.expert.id)"
+                  title="Attest & complete this clinical skill goal — compacts to SHA-256 receipt pill and promotes next skill"
+                  class="px-2.5 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/35 border border-emerald-500/40 text-emerald-300 font-bold text-[11px] min-h-[36px] transition cursor-pointer"
+                >
+                  ✓ Complete Goal
+                </button>
                 @if (moeRouter.pinnedExpertId() === primary.expert.id) {
                   <button type="button" (click)="moeRouter.pinExpert(null)"
                     title="Unpin this expert"
-                    class="px-2 py-1 rounded-lg bg-amber-500 text-zinc-950 font-bold text-[11px] min-h-[32px] cursor-pointer">
+                    class="px-2.5 py-1 rounded-lg bg-amber-500 text-zinc-950 font-bold text-[11px] min-h-[36px] cursor-pointer">
                     📌 Pinned
                   </button>
                 } @else {
                   <button type="button" (click)="moeRouter.pinExpert(primary.expert.id)"
                     title="Pin this expert as primary"
-                    class="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] min-h-[32px] transition cursor-pointer">
+                    class="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] min-h-[36px] transition cursor-pointer">
                     Pin
                   </button>
                 }
@@ -446,10 +519,18 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
               </div>
 
               <!-- Header Action Controls -->
-              <div class="flex items-center gap-1.5 font-mono text-xs">
+              <div class="flex items-center gap-1.5 font-mono text-xs flex-wrap">
+                <button
+                  type="button"
+                  (click)="moeRouter.completeAndRetireSkillGoal(secondary.expert.id)"
+                  title="Attest & complete this co-active skill goal — compacts to SHA-256 receipt pill"
+                  class="px-2.5 py-1 rounded-lg bg-teal-600/20 hover:bg-teal-600/35 border border-teal-500/40 text-teal-300 font-bold text-[11px] min-h-[36px] transition cursor-pointer"
+                >
+                  ✓ Complete
+                </button>
                 <button type="button" (click)="moeRouter.promoteLatentExpert(secondary.expert.id)"
                   title="Promote to Primary Slot"
-                  class="px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] min-h-[32px] transition cursor-pointer">
+                  class="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] min-h-[36px] transition cursor-pointer">
                   Promote ⬆
                 </button>
               </div>
@@ -504,44 +585,62 @@ import { GeofencedExposomicsRadarComponent } from './research-frame/geofenced-ex
       </section>
 
       <!-- ================================================================= -->
-      <!-- DORMANT EXPERTS SHELF (Latent Experts - Zero Memory Overhead)     -->
+      <!-- INNOVATION 2: DORMANT WHISPER CHIPS (1-Metric Micro-Perceptors)   -->
       <!-- ================================================================= -->
       <footer class="rounded-2xl border border-zinc-800/80 bg-zinc-950 p-3 shadow-lg flex flex-col gap-2 shrink-0">
-        <div class="flex items-center justify-between text-xs font-mono">
+        <div class="flex items-center justify-between text-xs font-mono flex-wrap gap-2">
           <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-zinc-600"></span>
-            <span class="text-zinc-400 font-bold uppercase tracking-wider text-[11px]">
-              Latent Experts Shelf (Dormant — Zero Memory / 0 FLOP Egress)
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-zinc-300 font-bold uppercase tracking-wider text-[11px]">
+              Latent Whisper Chips (1-Metric Micro-Perceptors — 0 DOM/WebGL Overhead)
             </span>
           </div>
           <span class="text-zinc-500 text-[11px]">
-            Click any expert chip to promote to active canvas
+            Silent when nominal • Pulses on organ-system drift • Click to promote
           </span>
         </div>
 
         <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-1 font-mono">
-          @for (latent of latentExperts(); track latent.expert.id) {
+          @for (chip of whisperChips(); track chip.expertId) {
             <button
               type="button"
-              (click)="moeRouter.promoteLatentExpert(latent.expert.id)"
-              [title]="latent.routingRationale + ' • Telemetry: ' + latent.expert.telemetrySource"
-              class="group flex items-center gap-2 px-3 py-1.5 rounded-xl border border-zinc-800 bg-zinc-900/90 hover:bg-zinc-850 hover:border-zinc-600 text-zinc-300 hover:text-white transition duration-200 shrink-0 text-xs cursor-pointer min-h-[36px]"
+              (click)="moeRouter.promoteLatentExpert(chip.expertId)"
+              [title]="chip.whisperTooltip"
+              [class.border-rose-500\/60]="chip.status === 'drift-alert' && !chip.isSafetyMasked"
+              [class.bg-rose-950\/30]="chip.status === 'drift-alert' && !chip.isSafetyMasked"
+              [class.border-amber-500\/50]="chip.status === 'watch' && !chip.isSafetyMasked"
+              [class.bg-amber-950\/20]="chip.status === 'watch' && !chip.isSafetyMasked"
+              [class.border-zinc-800]="chip.status === 'nominal' || chip.isSafetyMasked"
+              [class.bg-zinc-900\/90]="chip.status === 'nominal' || chip.isSafetyMasked"
+              [class.opacity-50]="chip.isSafetyMasked"
+              class="group flex items-center gap-2 px-3 py-1.5 rounded-xl border hover:border-zinc-500 text-zinc-200 hover:text-white transition duration-200 shrink-0 text-xs cursor-pointer min-h-[40px]"
             >
-              <span>{{ latent.expert.icon }}</span>
-              <span class="font-medium">{{ latent.expert.shortLabel }}</span>
-              <span class="text-[10px] px-1.5 py-0.5 rounded bg-zinc-950 text-zinc-400 border border-zinc-800 group-hover:border-zinc-700">
-                {{ Math.round(latent.weight * 100) }}%
+              <span>{{ chip.icon }}</span>
+              <span class="font-medium">{{ chip.shortLabel }}</span>
+              <span
+                class="text-[10px] px-1.5 py-0.5 rounded border font-bold tabular-nums"
+                [class.bg-rose-950]="chip.status === 'drift-alert' && !chip.isSafetyMasked"
+                [class.text-rose-300]="chip.status === 'drift-alert' && !chip.isSafetyMasked"
+                [class.border-rose-500\/40]="chip.status === 'drift-alert' && !chip.isSafetyMasked"
+                [class.bg-amber-950]="chip.status === 'watch' && !chip.isSafetyMasked"
+                [class.text-amber-300]="chip.status === 'watch' && !chip.isSafetyMasked"
+                [class.border-amber-500\/40]="chip.status === 'watch' && !chip.isSafetyMasked"
+                [class.bg-zinc-950]="chip.status === 'nominal' || chip.isSafetyMasked"
+                [class.text-zinc-400]="chip.status === 'nominal' || chip.isSafetyMasked"
+                [class.border-zinc-800]="chip.status === 'nominal' || chip.isSafetyMasked"
+              >
+                {{ chip.isSafetyMasked ? '🛡️ Masked' : (chip.microMetricLabel + ': ' + chip.microMetricValue) }}
               </span>
             </button>
           }
 
-          @if (moeRouter.pinnedExpertId()) {
+          @if (moeRouter.pinnedExpertId() || moeRouter.completedSkillReceipts().length > 0) {
             <button
               type="button"
               (click)="moeRouter.clearOverrides()"
-              class="ml-auto px-3 py-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono transition cursor-pointer min-h-[36px]"
+              class="ml-auto px-3 py-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono transition cursor-pointer min-h-[40px]"
             >
-              Reset Manual Pins ✕
+              Reset Canvas State ✕
             </button>
           }
         </div>
@@ -567,6 +666,7 @@ export class SparseClinicalCanvasComponent {
   readonly primaryExpert = computed(() => this.moeRouter.primaryUiExpert());
   readonly secondaryExpert = computed(() => this.moeRouter.secondaryUiExpert());
   readonly latentExperts = computed(() => this.moeRouter.latentUiExperts());
+  readonly whisperChips = computed(() => this.moeRouter.latentWhisperChips());
   readonly crossBridge = computed(() => this.moeRouter.activeCrossAttentionBridge());
 
   readonly primaryStyleFlex = computed(() => {

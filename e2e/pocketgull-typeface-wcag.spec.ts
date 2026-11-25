@@ -2,15 +2,16 @@ import { test, expect } from '@playwright/test';
 import { setupE2ePage } from './utils/setup';
 
 test.describe('PocketGull Marker Typeface WCAG 2.1 AA/AAA Accessibility Audit', () => {
+  test.describe.configure({ timeout: 60000 });
 
   test.beforeEach(async ({ page }) => {
-    test.setTimeout(60000);
     await setupE2ePage(page);
   });
 
   test('should render PocketGull typeface on splash screen and satisfy WCAG font legibility & contrast requirements', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
     // 1. Verify title heading is present and uses PocketGull marker font class
     const heading = page.locator('h1, span').filter({ hasText: /pocket\s*gull/i }).locator('visible=true').first();
@@ -37,7 +38,8 @@ test.describe('PocketGull Marker Typeface WCAG 2.1 AA/AAA Accessibility Audit', 
 
   test('should verify PocketGull Variable Superfamily and OpenType clinical features are active', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
     // Assert font-face definitions for PocketGull VF and Numerics in document.fonts
     const fontCheck = await page.evaluate(async () => {
@@ -54,7 +56,8 @@ test.describe('PocketGull Marker Typeface WCAG 2.1 AA/AAA Accessibility Audit', 
 
   test('should verify dark mode applies optical delensing without layout shifts', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
     // Toggle dark mode
     await page.evaluate(() => document.documentElement.classList.add('dark'));

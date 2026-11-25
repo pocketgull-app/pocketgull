@@ -1,11 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GoalPlanningEngineService, IFhirClinicalGoal } from '../services/goal-planning-engine.service';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-goal-planning-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   template: `
     <section 
       class="bg-zinc-950/90 border border-zinc-800 rounded-2xl p-6 text-zinc-100 shadow-xl backdrop-blur-md"
@@ -19,7 +20,7 @@ import { GoalPlanningEngineService, IFhirClinicalGoal } from '../services/goal-p
           </span>
           <div>
             <h2 class="text-lg font-bold text-zinc-100 flex items-center gap-2">
-              Clinical SMART Goals & Quests
+              {{ 'Clinical SMART Goals & Quests' | pgT:'analysis.goal_planning' }}
               <span class="text-xs px-2 py-0.5 rounded-full bg-teal-950 text-teal-400 border border-teal-800/50 font-mono">
                 FHIR R4 Goal
               </span>

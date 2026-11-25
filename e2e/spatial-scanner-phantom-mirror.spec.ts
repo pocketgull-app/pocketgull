@@ -33,10 +33,10 @@ test.describe('Spatial Scanner, 3D Body Viewer & Phantom Mirror Therapy E2E Suit
     await enterDemoMode(page);
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    const scanModalTrigger = page.locator('button', { hasText: /Spatial|Scan|LiDAR/i }).first();
+    const scanModalTrigger = page.getByTestId('btn-lidar-scan').or(page.locator('button', { hasText: /LiDAR Scan|Spatial Scan|Upload.*Scan/i })).first();
     if (await scanModalTrigger.isVisible({ timeout: 5000 }).catch(() => false)) {
       await scanModalTrigger.click();
-      const modal = page.locator('app-lidar-scan-upload-modal, app-spatial-scanner');
+      const modal = page.locator('app-lidar-scan-upload-modal > div, app-spatial-scanner').first();
       await expect(modal).toBeVisible({ timeout: 5000 });
     }
   });

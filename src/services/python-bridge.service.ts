@@ -448,8 +448,9 @@ export class PythonBridgeService {
     // Calculate local fallback immediately so the UI is responsive and never hangs
     const localResult = this.computeLocalMedicalIndicesRisk(hr, bp_systolic, bp_diastolic, spo2, age, conditions);
     
-    // If we definitely know Python is offline, just use local result immediately
-    if (this.isAvailable() === false) {
+    // If we definitely know Python is offline or the tab is hidden, use local result immediately
+    // (prevents idle background tabs from keeping Cloud Run awake)
+    if (this.isAvailable() === false || (typeof document !== 'undefined' && document.hidden)) {
       this.riskScore.set(localResult);
       return localResult;
     }
@@ -465,7 +466,12 @@ export class PythonBridgeService {
         signal: AbortSignal.timeout(1500)
       });
       if (res.ok) {
-        const result: IRiskScoreResult = await res.json();
+        const result: IRiskScoreResult & { fallback?: boolean } = await res.json();
+        if (result?.fallback) {
+          // Sidecar proxy returned deterministic fallback (no FastAPI sidecar deployed); stop re-polling
+          this.isAvailable.set(false);
+          return localResult;
+        }
         this.riskScore.set(result);
         return result;
       }

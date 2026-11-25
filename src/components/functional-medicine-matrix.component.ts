@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-functional-medicine-matrix',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-zinc-950 rounded-3xl p-6 sm:p-7 border border-emerald-500/20 shadow-2xl mb-8 font-mono text-zinc-100 relative overflow-hidden">
@@ -18,14 +19,14 @@ import { PatientStateService } from '../services/patient-state.service';
           <div class="flex items-center gap-2.5">
             <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.6)] animate-pulse"></span>
             <h3 class="text-sm font-black text-zinc-100 uppercase tracking-widest flex items-center gap-2">
-              <span>🧬</span> Functional Medicine 7-Node Matrix & Systemic Telemetry
+              <span>🧬</span> {{ 'Functional Medicine 7-Node Matrix & Systemic Telemetry' | pgT:'fm.title' }}
             </h3>
             <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 uppercase">
-              IFM Matrix Framework
+              {{ 'IFM Matrix Framework' | pgT:'fm.badge' }}
             </span>
           </div>
           <p class="text-xs text-zinc-400 mt-1 font-sans">
-            Multidimensional functional mapping across mitochondrial energetics, systemic inflammation, and mucosal intestinal barrier integrity.
+            {{ 'Multidimensional functional mapping across mitochondrial energetics, systemic inflammation, and mucosal intestinal barrier integrity.' | pgT:'fm.subtitle' }}
           </p>
         </div>
 

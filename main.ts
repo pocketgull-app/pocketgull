@@ -1,5 +1,4 @@
 
-import '@angular/compiler';
 import { bootstrapApplication, provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideZonelessChangeDetection, isDevMode } from '@angular/core';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -10,20 +9,12 @@ import { IntelligenceProviderToken } from './src/services/ai/intelligence.provid
 import { HybridProvider } from './src/services/ai/hybrid.provider';
 import { provideServiceWorker } from '@angular/service-worker';
 
-import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-import { provideAuth, getAuth } from '@angular/fire/auth';
-import { environment } from './src/environments/environment';
-
 import { getStoredApiKey } from './src/services/secure-key';
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideHttpClient(withFetch(), withInterceptors([dpopAuthInterceptor])),
     provideZonelessChangeDetection(),
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore()),
-    provideAuth(() => getAuth()),
     {
       provide: AI_CONFIG,
       useFactory: () => ({

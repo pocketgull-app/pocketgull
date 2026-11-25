@@ -1,13 +1,16 @@
 import '@angular/compiler';
 import { RoleDemoLauncherService } from './role-demo-launcher.service';
 import { RolePathwayDocsService } from './role-pathway-docs.service';
+import { ClinicalMoERouterService } from './clinical-moe-router.service';
 
 describe('RoleDemoLauncherService - Role-Tailored Clinical Demo Suite', () => {
   let service: RoleDemoLauncherService;
+  let moeRouter: ClinicalMoERouterService;
 
   beforeEach(() => {
     const docsService = new RolePathwayDocsService();
-    service = new RoleDemoLauncherService(null, docsService);
+    moeRouter = new ClinicalMoERouterService();
+    service = new RoleDemoLauncherService(null, docsService, moeRouter);
   });
 
   it('1. Provides 6 tailored role-based demo scenarios', () => {
@@ -50,5 +53,17 @@ describe('RoleDemoLauncherService - Role-Tailored Clinical Demo Suite', () => {
     expect(scenario.initialActiveTab).toBe('chw');
     expect(scenario.highlightedModules).toContain('Frontline CHW Suite');
     expect(scenario.highlightedModules).toContain('MUAC Nutrition Band');
+  });
+
+  it('6. Synchronizes ClinicalMoERouterService Top-k, Density, and Chief Complaint transcript when launching a role demo', () => {
+    const patScenario = service.launchRoleDemo('patient');
+    expect(patScenario.smoePreview?.recommendedTopK).toBe(1);
+    expect(moeRouter.kValue()).toBe(1);
+    expect(moeRouter.microSkillDisplayPolicy().densityMode).toBe('caregiver-digest');
+    expect(moeRouter.activeTranscriptQuery()).toContain('Postpartum blood pressure');
+
+    const resScenario = service.launchRoleDemo('researcher');
+    expect(resScenario.smoePreview?.recommendedTopK).toBe(3);
+    expect(moeRouter.kValue()).toBe(3);
   });
 });

@@ -2,8 +2,6 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
 
 interface TemplateMetadata {
   id: string;
@@ -170,6 +168,11 @@ export class ContractHubComponent implements OnInit {
 
     // Wait for any potential images/fonts to render
     await new Promise(resolve => setTimeout(resolve, 500));
+
+    const [{ jsPDF }, { default: html2canvas }] = await Promise.all([
+      import('jspdf'),
+      import('html2canvas'),
+    ]);
 
     const canvas = await html2canvas(container, {
       scale: 2, // Higher quality

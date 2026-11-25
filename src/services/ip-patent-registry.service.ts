@@ -385,6 +385,58 @@ export class IpPatentRegistryService {
       mathematicalFormulation: 'V_care(s) ≥ V_acuity(s);  λ_recovery = -ln(max(ε, |ρ_1|));  p_c = 1/(⟨k⟩ - 1);  Cos_i8(A, B) = (A·B) / √(‖A‖²·‖B‖²)',
       filingTier: 'Provisional Ready',
       targetAgencies: ['USPTO', 'WIPO PCT', 'NIH NIGMS']
+    },
+    {
+      id: 'cluster-25-wearable-asymmetric-gain-mst',
+      clusterNumber: 25,
+      title: 'Tri-Modal Wearable Asymmetric Clinical Gain ("Doing / Feeling / Not Doing") & Monk Skin Tone (MST 1–10) Optical PPG Debiasing',
+      claimRange: 'Claims 481 – 500',
+      totalClaims: 20,
+      inventors: ['PocketGull Neuro-Ergonomics & Wearable Biotelemetry Lab'],
+      primaryServicePath: 'src/services/wearable-asymmetric-gain.service.ts',
+      abstract: 'Wearable biotelemetry synthesis and Post-Exertional Malaise (PEM) crash-prevention engine replacing linear step counters with a Tri-Modal Asymmetric Gain objective function across Doing (0.1 Hz vagal pacing), Feeling (interoceptive somatic VAS vs. wrist temperature delta), and Not Doing (strategic restraint before autonomic exhaustion), paired with Monk Skin Tone (MST 1–10) melanin absorption debiasing for optical SpO2 oximetry.',
+      mathematicalFormulation: 'SpO2_MST = min(100, SpO2_raw - max(0, MST - 5)·0.35);  Gain_total = 0.35·Doing + 0.30·Feeling + 0.35·NotDoing',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'FDA CDRH']
+    },
+    {
+      id: 'cluster-26-ataxia-sanctuary-input-shield',
+      clusterNumber: 26,
+      title: 'Ataxia Sanctuary Low-Level OS Neuro-Motor Input Shield & Reversible Registry Baseline Vault',
+      claimRange: 'Claims 501 – 520',
+      totalClaims: 20,
+      inventors: ['PocketGull Assistive Neuro-Motor & Desktop Sanctuary Group'],
+      primaryServicePath: 'packages/ataxia-sanctuary/src/InputShieldEngine.cs',
+      abstract: 'Kernel-adjacent WH_MOUSE_LL and WH_KEYBOARD_LL operating system hook engine filtering involuntary intention-tremor click bounce within a configurable refractory window (20–250 ms), synthesizing chord-free OS voice dictation (Win+H) from single-switch auxiliary mouse buttons, and enforcing a triple-ESC (<1200 ms) atomic rollback to a pre-activation registry and cursor baseline vault.',
+      mathematicalFormulation: 'Δt_click = t_down - t_last_up < Δt_bounce ⟹ Suppress(Down ∧ PairedUp);  3×VK_ESCAPE ≤ 1200ms ⟹ Restore(BaselineVault)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'EPO', 'NIDILRR Assistive Tech']
+    },
+    {
+      id: 'cluster-27-autonomous-clinical-soar-canary',
+      clusterNumber: 27,
+      title: 'Autonomous Clinical SOAR Orchestrator, Honeytoken Canary Tripwire & NIST SP 2400-102 Adversarial AML Quarantine',
+      claimRange: 'Claims 521 – 540',
+      totalClaims: 20,
+      inventors: ['PocketGull Clinical Cybersecurity & Active Defense Group'],
+      primaryServicePath: 'src/server/services/soar-orchestrator.service.ts',
+      abstract: 'Deterministic serverless Security Orchestration, Automation, and Response (SOAR) engine bridging BigQuery SIEM audit logs, synthetic FHIR canary honeypots, and NIST SP 2400-102 / OWASP 2026 Agentic AML classifiers to sub-second containment playbooks (PB-01..04) with M-of-N dual-custody gates, active-defense tarpitting, and HIPAA §164.402 four-factor Safe Harbor breach-exemption proofs.',
+      mathematicalFormulation: 'DualCustody = (Role_req ≠ Role_auth);  Seal_Part11 = SHA256(ExecId || AlertId || PlaybookId || Steps)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'NIST Cybersecurity', 'HHS OCR']
+    },
+    {
+      id: 'cluster-28-local-sovereign-vault-opfs-outbox',
+      clusterNumber: 28,
+      title: 'Zero-Knowledge Local Sovereign Clinical Vault, OPFS Ambulatory Holter Streaming & Idempotent Offline Outbox',
+      claimRange: 'Claims 541 – 560',
+      totalClaims: 20,
+      inventors: ['PocketGull Sovereign Data Architecture & Disaster Resilience Group'],
+      primaryServicePath: 'src/services/storage/local-sovereign-vault.service.ts',
+      abstract: 'Anti-cloud-bricking local-first clinical storage engine combining persistent IndexedDB SHA-256 Part 11 sealed records, Origin Private File System (OPFS) high-frequency ambulatory Holter waveform streaming, and a transactional offline mutation outbox with deterministic idempotency keys guaranteeing RPO = 0 ms during cloud or hospital WAN blackouts.',
+      mathematicalFormulation: 'Seal_rec = SHA256(Id || Category || Patient || CreatedAt || Payload);  RPO_local = 0 ms, RTO < 5 s',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'ONC Health IT']
     }
   ]);
 
@@ -412,8 +464,8 @@ export class IpPatentRegistryService {
       article: 'Article II',
       section: 'Section 2.01',
       title: 'Statutory Invention Reservation & Patent Notice',
-      summary: 'Formally reserves patent rights under 35 U.S.C. §101 et seq. for 24 core algorithm clusters across 480 staked patent claims.',
-      fullText: 'Notice is hereby given that the computational algorithms, data pipelines, WebGPU shaders, and hardware integration architectures disclosed herein represent proprietary inventions subject to pending domestic and international patent applications under 35 U.S.C. § 101 et seq. and the Patent Cooperation Treaty (PCT), spanning 480 formal patent claims across 24 distinct invention clusters.',
+      summary: 'Formally reserves patent rights under 35 U.S.C. §101 et seq. for 28 core algorithm clusters across 560 staked patent claims.',
+      fullText: 'Notice is hereby given that the computational algorithms, data pipelines, WebGPU shaders, and hardware integration architectures disclosed herein represent proprietary inventions subject to pending domestic and international patent applications under 35 U.S.C. § 101 et seq. and the Patent Cooperation Treaty (PCT), spanning 560 formal patent claims across 28 distinct invention clusters.',
       governingLaw: '35 U.S.C. § 101, 102, 103 / PCT'
     },
     {
@@ -457,8 +509,8 @@ export class IpPatentRegistryService {
       article: 'Article VII',
       section: 'Section 7.01',
       title: 'Open Patent Research Pledge & Academic Laboratory Covenant',
-      summary: 'Grants a royalty-free, perpetual license to academic laboratories and non-commercial researchers to test, validate, and benchmark all 24 invention clusters, subject to a defensive termination clause against patent aggression.',
-      fullText: 'PocketGull hereby declares an Open Patent Research Pledge and Non-Assertion Covenant. All academic medical centers, university laboratories, non-profit institutions, and independent scientific researchers are granted a non-exclusive, royalty-free, worldwide, perpetual license under any patents or patent applications owned or controlled by PocketGull or Phil Gear to make, have made, use, and practice the inventions across all 24 invention clusters solely for research, academic benchmarking, peer-reviewed clinical validation, and open scientific inquiry. Defensive Termination Condition: Any license or covenant granted under this pledge shall immediately and automatically terminate with respect to any entity that initiates, asserts, or financially sponsors any patent infringement claim or other intellectual property litigation against PocketGull, Phil Gear, or their open-source contributors.',
+      summary: 'Grants a royalty-free, perpetual license to academic laboratories and non-commercial researchers to test, validate, and benchmark all 28 invention clusters, subject to a defensive termination clause against patent aggression.',
+      fullText: 'PocketGull hereby declares an Open Patent Research Pledge and Non-Assertion Covenant. All academic medical centers, university laboratories, non-profit institutions, and independent scientific researchers are granted a non-exclusive, royalty-free, worldwide, perpetual license under any patents or patent applications owned or controlled by PocketGull or Phil Gear to make, have made, use, and practice the inventions across all 28 invention clusters solely for research, academic benchmarking, peer-reviewed clinical validation, and open scientific inquiry. Defensive Termination Condition: Any license or covenant granted under this pledge shall immediately and automatically terminate with respect to any entity that initiates, asserts, or financially sponsors any patent infringement claim or other intellectual property litigation against PocketGull, Phil Gear, or their open-source contributors.',
       governingLaw: 'Open Patent Non-Assertion Covenant / 35 U.S.C. § 271'
     },
     {
@@ -491,7 +543,7 @@ export class IpPatentRegistryService {
       charterDocumentPath: 'docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md',
       clausesDocumentPath: 'docs/legal/INVENTION_ASSIGNMENT_AND_COPYRIGHT_CLAUSES.md',
       pledgeDocumentPath: 'docs/patents/OPEN_PATENT_PLEDGE_AND_RESEARCH_COVENANT.md',
-      lastUpdated: '2026-11-08',
+      lastUpdated: '2026-11-16',
       clusters: this.claimClusters(),
       statutoryClauses: this.statutoryClauses()
     };
@@ -909,7 +961,7 @@ ${figures.map(f => `### ${f.title}\n${f.description}\n\`\`\`\n${f.asciiArt}\n\`\
 **Governing Statutory Frameworks**: 35 U.S.C. § 101 et seq., 35 U.S.C. § 102(a)(1), 35 U.S.C. § 122(e), 37 CFR 1.290
 
 ## 1. Open Patent Research Grant & Non-Assertion Covenant
-Subject to the defensive conditions herein, PocketGull and Phil Gear irrevocably covenant not to assert any patent, patent application, or exclusive rights (spanning all 24 Invention Clusters, Claims 1–480, and Provisional Specification Docket PG-PAT-2026-CONF-001) against any academic medical center, university laboratory, hospital, or non-profit research institute for:
+Subject to the defensive conditions herein, PocketGull and Phil Gear irrevocably covenant not to assert any patent, patent application, or exclusive rights (spanning all 28 Invention Clusters, Claims 1–560, and Provisional Specification Docket PG-PAT-2026-CONF-001) against any academic medical center, university laboratory, hospital, or non-profit research institute for:
 - Academic bench trial benchmarking and algorithmic reproduction
 - Observational clinical validation studies (MIMIC-IV, eICU, OMOP cohorts)
 - Peer-reviewed scientific publication and open educational use

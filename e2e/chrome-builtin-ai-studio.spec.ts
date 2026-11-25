@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, ensureAnalysisViewVisible } from './utils/setup';
 
 test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite', () => {
   test.beforeEach(async ({ page }) => {
@@ -9,6 +9,7 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
 
   test('1. Renders Local Gemma Studio and switches between AI inference engines', async ({ page }) => {
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
 
     const studio = page.locator('app-local-gemma-studio');
     await expect(studio).toBeVisible({ timeout: 25000 });
@@ -26,6 +27,7 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
 
   test('2. Runs Vector RAG 256-Dim Embedder matching against clinical archetypes', async ({ page }) => {
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
 
     const studio = page.locator('app-local-gemma-studio');
     await expect(studio).toBeVisible({ timeout: 25000 });
@@ -50,6 +52,7 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
 
   test('3. Audits draft medication orders with Clinical Proofreader & ISMP Guard', async ({ page }) => {
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
 
     const studio = page.locator('app-local-gemma-studio');
     await expect(studio).toBeVisible({ timeout: 25000 });
@@ -74,6 +77,7 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
 
   test('4. Evaluates clinical triage acuity with instant classifier', async ({ page }) => {
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
 
     const studio = page.locator('app-local-gemma-studio');
     await expect(studio).toBeVisible({ timeout: 25000 });
@@ -98,6 +102,7 @@ test.describe('Chrome Built-in AI (Gemma 4 Dev Trial) & Edge AI Studio E2E Suite
 
   test('5. Displays hardware telemetry and cryptographic security acceleration', async ({ page }) => {
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
 
     const studio = page.locator('app-local-gemma-studio');
     await expect(studio).toBeVisible({ timeout: 25000 });

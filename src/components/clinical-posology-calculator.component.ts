@@ -8,6 +8,7 @@ import { EnvironmentalHeatPosologyService, IHeatPosologyAssessment } from '../se
 import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
 import { DeprescribingDepuratorService } from '../services/deprescribing-depurator.service';
 import { NavigationShellService } from '../services/navigation-shell.service';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 import {
   ComplexAdaptiveSystemsService,
   IWbeAllometricScalingResult,
@@ -64,6 +65,12 @@ export interface IPosology3ActTrajectory {
             <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
               ISMP &amp; AGS Beers Compliant
             </span>
+            @if (isExploratoryCollapsed()) {
+              <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-md bg-amber-500/20 text-amber-200 border border-amber-400/40"
+                    title="Intra-Component Micro-Skill Sparsity active: Exploratory WBGT/SFI tabs and raw FHIR/code actions collapsed to preserve 4-slot working memory.">
+                ⚡ Focused Density
+              </span>
+            }
           </div>
           <p class="text-xs text-slate-300 font-mono">
             Fried's Rule • Young's / Clark's Rules • Mosteller BSA • Holliday-Segar 4-2-1 • Cockcroft-Gault CrCl • Live Dosage Spellcheck
@@ -96,18 +103,20 @@ export interface IPosology3ActTrajectory {
                   class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
             <span>🧓</span> Elder (65+y)
           </button>
-          <button (click)="selectAgeTier('environmental_heat')"
-                  [class.bg-orange-600]="activeAgeTier() === 'environmental_heat'"
-                  [class.text-white]="activeAgeTier() === 'environmental_heat'"
-                  class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
-            <span>☀️</span> Heat &amp; WBGT (ASU)
-          </button>
-          <button (click)="selectAgeTier('sfi_complex_adaptive')"
-                  [class.bg-teal-600]="activeAgeTier() === 'sfi_complex_adaptive'"
-                  [class.text-white]="activeAgeTier() === 'sfi_complex_adaptive'"
-                  class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
-            <span>🧬</span> SFI Allometry &amp; CSD
-          </button>
+          @if (!isExploratoryCollapsed()) {
+            <button (click)="selectAgeTier('environmental_heat')"
+                    [class.bg-orange-600]="activeAgeTier() === 'environmental_heat'"
+                    [class.text-white]="activeAgeTier() === 'environmental_heat'"
+                    class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
+              <span>☀️</span> Heat &amp; WBGT (ASU)
+            </button>
+            <button (click)="selectAgeTier('sfi_complex_adaptive')"
+                    [class.bg-teal-600]="activeAgeTier() === 'sfi_complex_adaptive'"
+                    [class.text-white]="activeAgeTier() === 'sfi_complex_adaptive'"
+                    class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
+              <span>🧬</span> SFI Allometry &amp; CSD
+            </button>
+          }
         </div>
       </div>
 
@@ -173,12 +182,25 @@ export interface IPosology3ActTrajectory {
 
           <!-- Parameter 5: Serum Creatinine (for CrCl) -->
           @if (activeAgeTier() === 'geriatric_elder' || activeAgeTier() === 'adult') {
-            <div class="pt-2 border-t border-slate-100 dark:border-zinc-800/80 space-y-1">
-              <div class="flex justify-between text-xs font-mono">
-                <span class="text-slate-600 dark:text-zinc-400">Serum Creatinine:</span>
+            <div class="pt-2 border-t border-slate-100 dark:border-zinc-800/80 space-y-1 transition-all"
+                 [class.ring-2]="isRenalSynapseActive()"
+                 [class.ring-emerald-400/70]="isRenalSynapseActive()"
+                 [class.bg-emerald-500/5]="isRenalSynapseActive()"
+                 [class.rounded-xl]="isRenalSynapseActive()"
+                 [class.p-2.5]="isRenalSynapseActive()">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <span class="text-slate-600 dark:text-zinc-400 flex items-center gap-1.5">
+                  <span>Serum Creatinine:</span>
+                  @if (isRenalSynapseActive()) {
+                    <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/40 text-[9px] font-bold"
+                          title="Cross-Component Synapse Active: Coupled with Counterfactual Simulator / Edge Telemetry">
+                      ⚡ Synapse
+                    </span>
+                  }
+                </span>
                 <span class="font-bold text-purple-600 dark:text-purple-400">{{ serumCreatinineMgDl() }} mg/dL</span>
               </div>
-              <input type="range" min="0.5" max="3.5" step="0.1" [ngModel]="serumCreatinineMgDl()" (ngModelChange)="serumCreatinineMgDl.set($event)" class="w-full accent-purple-500" />
+              <input type="range" min="0.5" max="3.5" step="0.1" [ngModel]="serumCreatinineMgDl()" (ngModelChange)="onSerumCreatinineChange($event)" class="w-full accent-purple-500" />
               <div class="flex items-center gap-3 text-xs pt-1">
                 <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-zinc-300 font-mono">
                   <input type="radio" name="gender" [checked]="!isFemale()" (change)="isFemale.set(false)" /> Male
@@ -1093,29 +1115,31 @@ export interface IPosology3ActTrajectory {
                 <span>🖨️</span> Print Family Handout (AVS)
               </button>
 
-              <!-- Action 3: Copy EHR SOAP Note -->
-              <button
-                type="button"
-                (click)="copyEhrSoapSnippet()"
-                class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
-                <span>📝</span> Copy EHR SOAP Note
-              </button>
+              @if (!isRawFhirCollapsed()) {
+                <!-- Action 3: Copy EHR SOAP Note -->
+                <button
+                  type="button"
+                  (click)="copyEhrSoapSnippet()"
+                  class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
+                  <span>📝</span> Copy EHR SOAP Note
+                </button>
 
-              <!-- Action 4: Copy FHIR R4 MedicationStatement -->
-              <button
-                type="button"
-                (click)="copyFhirMedicationStatement()"
-                class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
-                <span>📄</span> Copy FHIR R4 JSON
-              </button>
+                <!-- Action 4: Copy FHIR R4 MedicationStatement -->
+                <button
+                  type="button"
+                  (click)="copyFhirMedicationStatement()"
+                  class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
+                  <span>📄</span> Copy FHIR R4 JSON
+                </button>
 
-              <!-- Action 5: Copy ASU / SFI Python Code -->
-              <button
-                type="button"
-                (click)="copyAsuSandboxSnippet()"
-                class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
-                <span>📓</span> Copy ASU / SFI Code
-              </button>
+                <!-- Action 5: Copy ASU / SFI Python Code -->
+                <button
+                  type="button"
+                  (click)="copyAsuSandboxSnippet()"
+                  class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
+                  <span>📓</span> Copy ASU / SFI Code
+                </button>
+              }
             </div>
 
             <!-- Feedback Toasts / Luster Badges -->
@@ -1970,6 +1994,22 @@ export class ClinicalPosologyCalculatorComponent {
   readonly superbillService = inject(CmsRpmSuperbillService, { optional: true });
   readonly deprescribing = inject(DeprescribingDepuratorService, { optional: true });
   readonly navShell = inject(NavigationShellService, { optional: true });
+  readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
+
+  /** Innovation 1: Intra-component Micro-Skill Sparsity policies */
+  readonly isExploratoryCollapsed = computed(() =>
+    Boolean(this.moeRouter?.microSkillDisplayPolicy().collapseExploratorySubViews)
+  );
+
+  readonly isRawFhirCollapsed = computed(() =>
+    Boolean(this.moeRouter?.microSkillDisplayPolicy().collapseRawFhirTables)
+  );
+
+  /** Innovation 3: Cross-Component Synapse Highlighting for Renal/Posology coupling */
+  readonly isRenalSynapseActive = computed(() => {
+    const token = this.moeRouter?.activeSynapseToken();
+    return token === 'glycemic-renal-coupling' || token === 'hemodynamic-posology-coupling';
+  });
 
   readonly lastLinkedMedication = signal<string | null>(null);
   readonly linkedRpmToast = signal<string | null>(null);
@@ -2542,6 +2582,18 @@ Attestation: Verified with ClinicalPosologyService & ISMP Disambiguation Standar
     setTimeout(() => this.showCopiedEhrToast.set(false), 3500);
   }
 
+  onSerumCreatinineChange(val: number): void {
+    const numericVal = Number(val);
+    this.serumCreatinineMgDl.set(numericVal);
+    this.moeRouter?.emitSynapseSignalPulse(
+      'glycemic-renal-coupling',
+      'ismp-posology',
+      'counterfactual-simulator',
+      'Serum Creatinine (CrCl)',
+      `${numericVal.toFixed(1)} mg/dL (${this.cockcroftResult().crClMlMin} mL/min)`
+    );
+  }
+
   applyToCarePlan(): void {
     const traj = this.posologyTrajectory();
     this.patientState.addChecklistItem({
@@ -2561,6 +2613,10 @@ Attestation: Verified with ClinicalPosologyService & ISMP Disambiguation Standar
         `${this.soapNoteService.plan()}\n• Calibrated Dose: ${traj.act2WhereYouStandToday.calibratedDosage} | Hydration: ${traj.act2WhereYouStandToday.hydrationTarget}\n• Surveillance: ${traj.act3WhereYoureGoing.actionGuidance}`
       );
     }
+    this.moeRouter?.completeAndRetireSkillGoal(
+      'ismp-posology',
+      `Posology calibrated: ${traj.act2WhereYouStandToday.calibratedDosage}`
+    );
     this.showAppliedToast.set(true);
     setTimeout(() => this.showAppliedToast.set(false), 3500);
   }

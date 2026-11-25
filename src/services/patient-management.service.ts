@@ -27,8 +27,8 @@ import {
   IDiagnosticScan
 } from "./patient.types";
 import { MOCK_PATIENTS } from "../mock-patients";
-import { dataConnect, isDataConnectEnabled } from '../lib/firebase';
-import { listPatients, getPatientWithCarePlan, createPatient } from '../lib/dataconnect/esm/index.esm.js';
+import { evaluatePatientTop10WhoAndNihGoals } from "../utils/who-nih-goals-catalog";
+import { isDataConnectEnabled } from '../lib/firebase';
 
 // Re-export for use in other components
 export type { IBodyPartIssue, HistoryEntry, IPatient };
@@ -142,6 +142,12 @@ export class PatientManagementService implements OnDestroy {
       vitals,
       oxidativeStressMarkers,
       antioxidantSources,
+      whoNihGoals:
+        p.whoNihGoals &&
+        p.whoNihGoals.top10WhoGoals?.length === 10 &&
+        p.whoNihGoals.top10NihGoals?.length === 10
+          ? p.whoNihGoals
+          : evaluatePatientTop10WhoAndNihGoals({ ...p, vitals }),
       history
     };
   }
@@ -157,12 +163,28 @@ export class PatientManagementService implements OnDestroy {
     return raw ? this.ensurePatientCompleteness(raw) : null;
   });
 
+  private backendOfflineUntil = 0;
+  private readonly backendCooldownMs = 5 * 60 * 1000;
+  private bulkSyncDisabledDueToSize = false;
+  private lastSyncedActivePatientJson = '';
+  private readonly maxBulkSyncBytes = 8 * 1024 * 1024;
+
+  private isBackendTransientFailure(error: any): boolean {
+    const status = Number(error?.status ?? error?.statusCode);
+    return status === 0 || status === 502 || status === 503 || status === 504;
+  }
+
   private async initRoster() {
     if (typeof window !== 'undefined') {
         let loaded: any[] = [];
         if (isDataConnectEnabled()) {
           try {
-            const res = await listPatients(dataConnect);
+            const [{ getDataConnectInstance }, { listPatients }] = await Promise.all([
+              import('../lib/firebase'),
+              import('../lib/dataconnect/esm/index.esm.js'),
+            ]);
+            const dc = await getDataConnectInstance();
+            const res = await listPatients(dc);
             if (res.data && res.data.patients && res.data.patients.length > 0) {
               const dbPatients = res.data.patients.map((p: any) => ({
                 id: p.id,
@@ -197,16 +219,24 @@ export class PatientManagementService implements OnDestroy {
           }
         }
 
-        try {
-            const backendPatients = await firstValueFrom(this.http.get<any[]>('/api/patients'));
-            if (backendPatients && backendPatients.length > 0) {
-                loaded = backendPatients;
-                for (const p of backendPatients) {
-                    await this.storage.savePatient(p);
-                }
-            }
-        } catch (e) {
-            console.warn('[PatientManagementService] Failed to load from backend HTTP, trying local storage:', e);
+        if (Date.now() >= this.backendOfflineUntil) {
+          try {
+              const backendPatients = await firstValueFrom(this.http.get<any[]>('/api/patients'));
+              this.backendOfflineUntil = 0;
+              if (backendPatients && backendPatients.length > 0) {
+                  loaded = backendPatients;
+                  for (const p of backendPatients) {
+                      await this.storage.savePatient(p);
+                  }
+              }
+          } catch (e) {
+              if (this.isBackendTransientFailure(e)) {
+                this.backendOfflineUntil = Date.now() + this.backendCooldownMs;
+                console.debug('[PatientManagementService] Backend HTTP offline; using local storage cache for 5m');
+              } else {
+                console.warn('[PatientManagementService] Failed to load from backend HTTP, trying local storage:', e);
+              }
+          }
         }
 
         if (loaded.length === 0) {
@@ -424,23 +454,30 @@ export class PatientManagementService implements OnDestroy {
     const dob = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
     let newPatientId = `p_local_${Date.now()}`;
 
-    try {
-      const res = await createPatient(dataConnect, {
-        firstName,
-        lastName,
-        dateOfBirth: dob,
-        gender: "Other",
-        vitalsHeartRate: 0,
-        vitalsSystolicBP: 0,
-        vitalsDiastolicBP: 0,
-        currentSymptoms: []
-      });
+    if (isDataConnectEnabled()) {
+      try {
+        const [{ getDataConnectInstance }, { createPatient }] = await Promise.all([
+          import('../lib/firebase'),
+          import('../lib/dataconnect/esm/index.esm.js'),
+        ]);
+        const dc = await getDataConnectInstance();
+        const res = await createPatient(dc, {
+          firstName,
+          lastName,
+          dateOfBirth: dob,
+          gender: "Other",
+          vitalsHeartRate: 0,
+          vitalsSystolicBP: 0,
+          vitalsDiastolicBP: 0,
+          currentSymptoms: []
+        });
 
-      if (res.data && res.data.patient_insert) {
-        newPatientId = res.data.patient_insert.id;
+        if (res.data && res.data.patient_insert) {
+          newPatientId = res.data.patient_insert.id;
+        }
+      } catch (err) {
+        console.warn('[PatientManagementService] Error creating patient in SQL Connect, falling back to local ID:', err);
       }
-    } catch (err) {
-      console.warn('[PatientManagementService] Error creating patient in SQL Connect, falling back to local ID:', err);
     }
 
     const newPatient: IPatient = {
@@ -844,33 +881,79 @@ export class PatientManagementService implements OnDestroy {
         console.warn('[PatientManagementService] Cannot sync to cloud while offline. State is safely stored locally.');
         return false;
     }
+    if (Date.now() < this.backendOfflineUntil) {
+        return false;
+    }
 
     this.saveCurrentPatientState(); // Ensure the latest state is saved
+    const patientsToSync = this.patients();
+    // Include auth header if PATIENTS_SECRET was surfaced via /api/config or env
+    const secret = (window as any).__PATIENTS_SECRET__ || '';
+    const headers: Record<string, string> = secret
+      ? { Authorization: `Bearer ${secret}` }
+      : {};
+
+    const syncActivePatient = async (): Promise<boolean> => {
+      const selectedId = this.selectedPatientId();
+      const activePatient = patientsToSync.find(p => p.id === selectedId);
+      if (!activePatient) return false;
+
+      const serializedActive = JSON.stringify(activePatient);
+      if (serializedActive === this.lastSyncedActivePatientJson) {
+        return true; // Skip redundant PUT when active patient payload is unchanged
+      }
+      try {
+        await firstValueFrom(this.http.put(`/api/patients/${encodeURIComponent(activePatient.id)}`, activePatient, { headers }));
+        this.backendOfflineUntil = 0;
+        this.lastSyncedActivePatientJson = serializedActive;
+        console.log('[PatientManagementService] Successfully synced active patient to cloud');
+        return true;
+      } catch (individualErr: any) {
+        if (this.isBackendTransientFailure(individualErr)) {
+          this.backendOfflineUntil = Date.now() + this.backendCooldownMs;
+          return false;
+        }
+        console.warn('[PatientManagementService] Individual patient sync fallback failed:', individualErr?.message || individualErr);
+        return false;
+      }
+    };
+
+    // Circuit breaker: skip bulk POST /api/patients once roster size exceeds 8 MB or after any 413
+    if (!this.bulkSyncDisabledDueToSize) {
+      try {
+        const estimatedBulkBytes = JSON.stringify(patientsToSync).length;
+        if (estimatedBulkBytes > this.maxBulkSyncBytes) {
+          this.bulkSyncDisabledDueToSize = true;
+        }
+      } catch {
+        this.bulkSyncDisabledDueToSize = true;
+      }
+    }
+
+    if (this.bulkSyncDisabledDueToSize) {
+      return syncActivePatient();
+    }
+
     try {
-      const patientsToSync = this.patients();
-      // Include auth header if PATIENTS_SECRET was surfaced via /api/config or env
-      const secret = (window as any).__PATIENTS_SECRET__ || '';
-      const headers: Record<string, string> = secret
-        ? { Authorization: `Bearer ${secret}` }
-        : {};
       await firstValueFrom(this.http.post('/api/patients', patientsToSync, { headers }));
+      this.backendOfflineUntil = 0;
+      const selectedId = this.selectedPatientId();
+      const activePatient = patientsToSync.find(p => p.id === selectedId);
+      if (activePatient) {
+        this.lastSyncedActivePatientJson = JSON.stringify(activePatient);
+      }
       console.log('[PatientManagementService] Successfully synced to cloud');
       return true;
     } catch (error: any) {
+      if (this.isBackendTransientFailure(error)) {
+        this.backendOfflineUntil = Date.now() + this.backendCooldownMs;
+        console.debug('[PatientManagementService] Cloud backend offline (5m cooldown); patient state remains synced locally.');
+        return false;
+      }
       if (error?.status === 413 || error?.statusCode === 413) {
-        const selectedId = this.selectedPatientId();
-        const activePatient = this.patients().find(p => p.id === selectedId);
-        if (activePatient) {
-          try {
-            const secret = (window as any).__PATIENTS_SECRET__ || '';
-            const headers: Record<string, string> = secret ? { Authorization: `Bearer ${secret}` } : {};
-            await firstValueFrom(this.http.put(`/api/patients/${encodeURIComponent(activePatient.id)}`, activePatient, { headers }));
-            console.log('[PatientManagementService] Successfully synced active patient fallback to cloud');
-            return true;
-          } catch (individualErr: any) {
-            console.warn('[PatientManagementService] Individual patient sync fallback failed:', individualErr?.message || individualErr);
-          }
-        }
+        this.bulkSyncDisabledDueToSize = true;
+        const synced = await syncActivePatient();
+        if (synced) return true;
       }
       console.warn('[PatientManagementService] Cloud sync unavailable (HTTP/Cloud):', error?.message || error);
       return false;

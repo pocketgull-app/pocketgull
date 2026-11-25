@@ -71,7 +71,7 @@ import { IStrategicGoalAlignment } from '../../models/who-nih-healing-goals.mode
               ? 'px-4 py-2 rounded-xl bg-sky-500 text-zinc-950 font-black shadow-md transition-all'
               : 'px-4 py-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 font-bold transition-all'"
           >
-            🇺🇳 WHO Mandates (3)
+            🇺🇳 WHO Top 10 ({{ whoCount() }})
           </button>
           <button
             type="button"
@@ -80,7 +80,7 @@ import { IStrategicGoalAlignment } from '../../models/who-nih-healing-goals.mode
               ? 'px-4 py-2 rounded-xl bg-teal-500 text-zinc-950 font-black shadow-md transition-all'
               : 'px-4 py-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 font-bold transition-all'"
           >
-            🔬 NIH Strategic Plans (3)
+            🔬 NIH Top 10 ({{ nihCount() }})
           </button>
           <button
             type="button"
@@ -130,7 +130,7 @@ import { IStrategicGoalAlignment } from '../../models/who-nih-healing-goals.mode
                       [ngClass]="{
                         'bg-emerald-500/10 text-emerald-300 border-emerald-500/30': goal.clinicalMaturityStatus === 'OPTIMAL',
                         'bg-teal-500/10 text-teal-300 border-teal-500/30': goal.clinicalMaturityStatus === 'ON_TRACK',
-                        'bg-amber-500/10 text-amber-300 border-amber-500/30': goal.clinicalMaturityStatus === 'ACCELERATING'
+                        'bg-amber-500/10 text-amber-300 border-amber-500/30': goal.clinicalMaturityStatus === 'ACCELERATING' || goal.clinicalMaturityStatus === 'ATTENTION_NEEDED'
                       }">
                   {{ goal.fulfillmentPercent }}% {{ goal.clinicalMaturityStatus }}
                 </span>
@@ -304,6 +304,8 @@ export class WhoNihHealingAlignmentHubComponent {
 
   readonly strategicSummary = this.goalsService.strategicSummary;
   readonly activeFilter = signal<'all' | 'who' | 'nih' | 'ml_assurance' | 'ictm_chapter26'>('all');
+  readonly whoCount = computed(() => this.strategicSummary().activeStrategicGoals.filter(g => g.governingBody === 'WHO').length);
+  readonly nihCount = computed(() => this.strategicSummary().activeStrategicGoals.filter(g => g.governingBody === 'NIH').length);
 
   readonly filteredGoals = computed<IStrategicGoalAlignment[]>(() => {
     const goals = this.strategicSummary().activeStrategicGoals;

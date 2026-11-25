@@ -300,6 +300,7 @@ export interface IPatientState {
     awareStewardship?: IWhoAwareClassification[];
     environmentalIndex?: IEnvironmentalHealthIndex;
     oknProfile?: IOknProvenanceProfile;
+    whoNihGoals?: IPatientWhoNihGoalsCatalog;
     [key: string]: any;
 }
 
@@ -339,6 +340,28 @@ export interface IOknProvenanceProfile {
     watershedOrAquiferSiteId?: string;
     epaRegistryId?: string;
     pmidCitation?: string;
+}
+
+export interface INihWhoGoalAlignmentEntry {
+    rank: number; // 1..10 within agency
+    id: string; // e.g. 'WHO-01'..'WHO-10', 'NIH-01'..'NIH-10'
+    agency: 'WHO' | 'NIH';
+    framework: string;
+    code: string;
+    title: string;
+    targetBenchmark: string;
+    patientMetric: string;
+    progressPct: number; // 0..100
+    status: 'OPTIMAL' | 'ON_TRACK' | 'ATTENTION_REQUIRED' | 'CRITICAL_GAP';
+    priorityScore: number; // 0..100 patient-specific clinical priority
+    evidenceKeywords: string;
+}
+
+export interface IPatientWhoNihGoalsCatalog {
+    catalogVersion: string;
+    top10WhoGoals: INihWhoGoalAlignmentEntry[];
+    top10NihGoals: INihWhoGoalAlignmentEntry[];
+    primaryPriorityGoalIds: string[];
 }
 
 export interface IEnvironmentalHealthIndex {

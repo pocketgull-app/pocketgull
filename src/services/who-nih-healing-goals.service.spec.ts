@@ -16,11 +16,13 @@ describe('WhoNihHealingGoalsService Unit Suite', () => {
     service = TestBed.inject(WhoNihHealingGoalsService);
   });
 
-  it('1. Computes the multi-goal strategic summary with high fulfillment score', () => {
+  it('1. Computes the Top 10 WHO + Top 10 NIH strategic summary with high fulfillment score', () => {
     const summary = service.strategicSummary();
     expect(summary).toBeTruthy();
     expect(summary.overallStrategicFulfillmentScore).toBeGreaterThanOrEqual(85);
-    expect(summary.activeStrategicGoals.length).toBe(6);
+    expect(summary.activeStrategicGoals.length).toBe(20);
+    expect(summary.activeStrategicGoals.filter(g => g.governingBody === 'WHO').length).toBe(10);
+    expect(summary.activeStrategicGoals.filter(g => g.governingBody === 'NIH').length).toBe(10);
   });
 
   it('2. Exposes grounded Machine Learning Contextual Assurance parameters', () => {

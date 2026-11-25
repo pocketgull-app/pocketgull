@@ -1,6 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { Firestore, collection, doc, setDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
-import { Auth, authState, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut } from '@angular/fire/auth';
+import { Injectable, inject, signal, OnDestroy } from '@angular/core';
 import { IPatient } from './patient.types';
 import { environment } from '../environments/environment';
 import { SecureStorageService } from './secure-storage.service';
@@ -15,17 +13,17 @@ export interface IRegisteredClinician {
 @Injectable({
   providedIn: 'root'
 })
-export class FirestoreSyncService {
-  private firestore = inject(Firestore, { optional: true });
-  private auth = inject(Auth, { optional: true });
+export class FirestoreSyncService implements OnDestroy {
   private storage = inject(SecureStorageService);
+  private authUnsub: (() => void) | null = null;
+  private authInitPromise: Promise<{ appMod: typeof import('firebase/app'); authMod: typeof import('firebase/auth'); auth: import('firebase/auth').Auth } | null> | null = null;
 
   /** Signal emitting the current user's UID or null if unauthenticated. */
   public readonly currentUser = signal<string | null>(null);
   /** Signal emitting the current user's email. */
   public readonly currentUserEmail = signal<string | null>(null);
-  /** Signal emitting whether the initial auth state is still loading. */
-  public readonly isAuthLoading = signal<boolean>(true);
+  /** Signal emitting whether an active auth operation is loading. */
+  public readonly isAuthLoading = signal<boolean>(false);
   /** Signal emitting the last Firestore sync error, or null if healthy. */
   public readonly syncError = signal<string | null>(null);
   /** Signal emitting whether a sync operation is in progress. */
@@ -61,45 +59,84 @@ export class FirestoreSyncService {
   }
 
   constructor() {
-    if (this.auth) {
-      authState(this.auth).subscribe(user => {
-        this.isAuthLoading.set(false);
-        if (user) {
-          if (this.isEmailRegistered(user.email || '')) {
-            this.currentUser.set(user.uid);
-            this.currentUserEmail.set(user.email);
-          } else {
-            console.error('[Firebase Auth] Unauthorized email attempt:', user.email);
-            signOut(this.auth!);
-            this.currentUser.set(null);
-            this.currentUserEmail.set(null);
-            alert(`Access Denied: The account ${user.email} is not authorized. Please contact administrator.`);
-          }
-        } else {
-          this.currentUser.set(null);
-          this.currentUserEmail.set(null);
-        }
-      });
-    } else {
-      this.isAuthLoading.set(false);
+    if (typeof window !== 'undefined' && typeof setTimeout === 'function') {
+      setTimeout(() => {
+        void this.ensureAuth().catch(() => {
+          // Offline / unconfigured Firebase environment gracefully remains in local mode.
+        });
+      }, 1200);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.authUnsub?.();
+    this.authUnsub = null;
+  }
+
+  private async ensureApp() {
+    const appMod = await import('firebase/app');
+    const app = appMod.getApps().length === 0 ? appMod.initializeApp(environment.firebase) : appMod.getApp();
+    return { appMod, app };
+  }
+
+  private async ensureAuth() {
+    if (typeof window === 'undefined') return null;
+    if (!this.authInitPromise) {
+      this.authInitPromise = Promise.all([this.ensureApp(), import('firebase/auth')])
+        .then(([{ appMod, app }, authMod]) => {
+          const auth = authMod.getAuth(app);
+          if (!this.authUnsub) {
+            this.authUnsub = authMod.onAuthStateChanged(auth, (user) => {
+              this.isAuthLoading.set(false);
+              if (user) {
+                if (this.isEmailRegistered(user.email || '')) {
+                  this.currentUser.set(user.uid);
+                  this.currentUserEmail.set(user.email);
+                } else {
+                  console.error('[Firebase Auth] Unauthorized email attempt:', user.email);
+                  void authMod.signOut(auth);
+                  this.currentUser.set(null);
+                  this.currentUserEmail.set(null);
+                  alert(`Access Denied: The account ${user.email} is not authorized. Please contact administrator.`);
+                }
+              } else {
+                this.currentUser.set(null);
+                this.currentUserEmail.set(null);
+              }
+            });
+          }
+          return { appMod, authMod, auth };
+        })
+        .catch(() => {
+          this.isAuthLoading.set(false);
+          return null;
+        });
+    }
+    return this.authInitPromise;
   }
 
   /**
    * Triggers Google Sign-In via popup or redirect fallback
    */
   async loginWithGoogle(): Promise<void> {
-    if (!this.auth) throw new Error('Firebase Auth is not configured.');
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
+    this.isAuthLoading.set(true);
     try {
-      await signInWithPopup(this.auth, provider);
-    } catch (err: any) {
-      if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
-        await signInWithRedirect(this.auth, provider);
-      } else {
-        throw err;
+      const ctx = await this.ensureAuth();
+      if (!ctx) throw new Error('Firebase Auth is not configured.');
+      const { authMod, auth } = ctx;
+      const provider = new authMod.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      try {
+        await authMod.signInWithPopup(auth, provider);
+      } catch (err: any) {
+        if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+          await authMod.signInWithRedirect(auth, provider);
+        } else {
+          throw err;
+        }
       }
+    } finally {
+      this.isAuthLoading.set(false);
     }
   }
 
@@ -111,8 +148,9 @@ export class FirestoreSyncService {
    * Logs out current user from Firebase Auth session
    */
   async logout(): Promise<void> {
-    if (this.auth) {
-      await signOut(this.auth);
+    const ctx = await this.ensureAuth();
+    if (ctx) {
+      await ctx.authMod.signOut(ctx.auth);
     }
     this.currentUser.set(null);
     this.currentUserEmail.set(null);
@@ -122,41 +160,56 @@ export class FirestoreSyncService {
    * Listens to real-time changes for a specific patient's document in Firestore.
    */
   syncPatient(patientId: string, onUpdate: (patient: IPatient) => void): () => void {
-    if (!this.firestore) {
-      console.warn('[FirestoreSyncService] Firestore not initialized, returning noop cleanup.');
+    if (typeof window === 'undefined') {
       return () => {};
     }
 
-    const patientDocRef = doc(this.firestore, 'patients', patientId);
-    
-    // Subscribe to snapshot updates
-    const unsubscribe = onSnapshot(patientDocRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.data() as IPatient;
-        console.log(`[FirestoreSyncService] Received live update for patient: ${patientId}`);
-        onUpdate(data);
-      }
-    }, (error) => {
-      const msg = `Sync error for patient ${patientId}: ${error?.message || error}`;
-      console.error(`[FirestoreSyncService] ${msg}`);
-      this.syncError.set(msg);
-    });
+    let cancelled = false;
+    let liveUnsub: (() => void) | null = null;
 
-    return unsubscribe;
+    void Promise.all([this.ensureApp(), import('firebase/firestore')])
+      .then(([{ app }, fsMod]) => {
+        if (cancelled) return;
+        const db = fsMod.getFirestore(app);
+        const patientDocRef = fsMod.doc(db, 'patients', patientId);
+        liveUnsub = fsMod.onSnapshot(patientDocRef, (snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.data() as IPatient;
+            console.log(`[FirestoreSyncService] Received live update for patient: ${patientId}`);
+            onUpdate(data);
+          }
+        }, (error) => {
+          const msg = `Sync error for patient ${patientId}: ${error?.message || error}`;
+          console.error(`[FirestoreSyncService] ${msg}`);
+          this.syncError.set(msg);
+        });
+      })
+      .catch((error) => {
+        const msg = `Sync initialization error for patient ${patientId}: ${error?.message || error}`;
+        console.warn(`[FirestoreSyncService] ${msg}`);
+      });
+
+    return () => {
+      cancelled = true;
+      liveUnsub?.();
+      liveUnsub = null;
+    };
   }
 
   /**
    * Saves or updates a patient record in Firestore.
    */
   async savePatient(patient: IPatient): Promise<void> {
-    if (!this.firestore) {
+    if (typeof window === 'undefined') {
       throw new Error('Firestore is not configured in this environment.');
     }
 
-    const patientDocRef = doc(this.firestore, 'patients', patient.id);
+    const [{ app }, fsMod] = await Promise.all([this.ensureApp(), import('firebase/firestore')]);
+    const db = fsMod.getFirestore(app);
+    const patientDocRef = fsMod.doc(db, 'patients', patient.id);
     const sanitizedData = JSON.parse(JSON.stringify(patient)); // Ensure clean object serialization
 
-    await setDoc(patientDocRef, {
+    await fsMod.setDoc(patientDocRef, {
       ...sanitizedData,
       lastSyncedAt: new Date().toISOString()
     }, { merge: true });

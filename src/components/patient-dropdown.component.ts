@@ -244,6 +244,7 @@ export class PatientDropdownComponent {
 
   selectPatient(patientId: string): void {
     this.patientManagement.selectPatient(patientId);
+    this.searchQuery.set('');
     this.game.completeQuest('select_patient');
     this.isOpen.set(false);
   }

@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
+import { setupE2ePage, enterDemoMode, selectPatientByName, ensureAnalysisViewVisible } from './utils/setup';
 
 test.describe('Human-in-the-Loop & Affirmative Clinical Oversight E2E Suite', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(90000);
     await setupE2ePage(page);
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
     await selectPatientByName(page, 'Frida Kahlo');
 
     // Scroll down to ensure the analysis container and toolbar are in viewport

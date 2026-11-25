@@ -2,6 +2,8 @@
 import { Injector, runInInjectionContext, NgZone, signal } from '@angular/core';
 import {
   WebMcpRegistrationService,
+  extractSerializableWebMcpTool,
+  inspectWebMcpToolHandle,
   normalizeToolInputSchema,
   normalizeToolOutputSchema,
   validateToolOutputAgainstSchema
@@ -381,10 +383,10 @@ mathematicalModel: Softmax T=0.85`;
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 97 WebMCP agentic tools on modelContext', () => {
+  it('should register all 98 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(97);
+    expect(registeredTools.size).toBe(98);
     expect(registeredTools.has('evaluate_clinical_hypothesis_and_cohort')).toBe(true);
     expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
@@ -896,10 +898,10 @@ mathematicalModel: Softmax T=0.85`;
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 97 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 98 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(97);
+    expect(registeredTools.size).toBe(98);
     expect(registeredTools.has('evaluate_clinical_hypothesis_and_cohort')).toBe(true);
     expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
@@ -1139,7 +1141,7 @@ mathematicalModel: Softmax T=0.85`;
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(97);
+    expect((service as any).mcpControllers.length).toBe(98);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
@@ -1801,7 +1803,8 @@ mathematicalModel: Softmax T=0.85`;
 
       const webmcpState = service.getInternalState('webmcp');
       expect(webmcpState.webmcp.pr254OutputSchemaSupported).toBe(true);
-      expect(webmcpState.webmcp.runtime).toBe('native-chrome-159');
+      expect(webmcpState.webmcp.pr348ToolInterfaceSupported).toBe(true);
+      expect(webmcpState.webmcp.runtime).toBe('native-chrome-160');
     });
 
     it('should normalize stringified and object outputSchema in getRegisteredTools()', async () => {
@@ -1819,6 +1822,77 @@ mathematicalModel: Softmax T=0.85`;
       expect(typeof tools[0].outputSchema).toBe('object');
       expect(tools[0].outputSchema.properties.temperature.type).toBe('number');
       expect(normalizeToolOutputSchema(undefined)).toBeUndefined();
+    });
+
+    it('should extract non-enumerable Chrome 160 WebIDL Tool interface getters (PR #348) safely for both serialization and execution handles', async () => {
+      const mockWindow: Record<string, any> = {};
+      mockWindow.self = mockWindow;
+
+      // Simulate Chrome 160.0.8173.0+ WebIDL Tool prototype getters (non-own-enumerable properties + non-cloneable platform object)
+      class MockChrome160WebIdlTool extends WeakMap<object, unknown> {
+        get name() { return 'chrome_160_interface_tool'; }
+        get title() { return 'Chrome 160 Tool'; }
+        get description() { return 'Non-enumerable WebIDL Tool instance'; }
+        get origin() { return 'https://pocketgull.app'; }
+        get inputSchema() { return { type: 'object', properties: { query: { type: 'string' } } }; }
+        get outputSchema() { return null; }
+        get annotations() { return null; }
+        get source() { return mockWindow; }
+      }
+
+      const idlTool = new MockChrome160WebIdlTool();
+      // Confirm standard spread / JSON.stringify / structuredClone fail on WebIDL Tool or circular Window:
+      expect(JSON.stringify(idlTool)).toBe('{}');
+      expect({ ...(idlTool as any) }).toEqual({});
+      expect(() => structuredClone(idlTool)).toThrow();
+      expect(() => JSON.stringify(mockWindow)).toThrow();
+
+      mockModelContext.getTools = vi.fn().mockResolvedValue([idlTool]);
+      const tools = await service.getRegisteredTools();
+
+      expect(tools).toHaveLength(1);
+      expect(tools[0].name).toBe('chrome_160_interface_tool');
+      expect(tools[0].title).toBe('Chrome 160 Tool');
+      expect(tools[0].origin).toBe('https://pocketgull.app');
+      expect(tools[0].inputSchema.properties.query.type).toBe('string');
+      expect(tools[0].outputSchema).toBeNull();
+      expect(tools[0].annotations).toBeNull();
+      expect(tools[0].hasSource).toBe(true);
+      expect(tools[0].rawTool).toBeUndefined();
+      expect(tools[0].source).toBeUndefined();
+      expect(structuredClone(tools)).toEqual(tools);
+      expect(JSON.parse(JSON.stringify(tools))).toEqual(tools);
+
+      const handles = await service.getRegisteredToolHandles();
+      expect(handles).toHaveLength(1);
+      expect(handles[0].rawTool).toBe(idlTool);
+      expect(handles[0].source).toBe(mockWindow);
+      expect(handles[0].hasSource).toBe(true);
+      expect(JSON.parse(JSON.stringify(handles))).toEqual(tools);
+
+      const directHandle = inspectWebMcpToolHandle(idlTool);
+      expect(directHandle.rawTool).toBe(idlTool);
+      expect(directHandle.source).toBe(mockWindow);
+      expect(JSON.parse(JSON.stringify(directHandle))).toEqual(tools[0]);
+
+      // Also verify legacy tool.window fallback (< Chrome 160 Stable)
+      const legacyExtracted = extractSerializableWebMcpTool({
+        name: 'legacy_registered_tool',
+        description: 'Legacy dict',
+        window: mockWindow,
+      });
+      expect(legacyExtracted.hasSource).toBe(true);
+      expect(legacyExtracted.source).toBeUndefined();
+      expect(structuredClone(legacyExtracted)).toEqual(legacyExtracted);
+
+      const legacyHandle = inspectWebMcpToolHandle({
+        name: 'legacy_registered_tool',
+        description: 'Legacy dict',
+        window: mockWindow,
+      });
+      expect(legacyHandle.source).toBe(mockWindow);
+      expect(legacyHandle.hasSource).toBe(true);
+      expect(JSON.parse(JSON.stringify(legacyHandle))).toEqual(legacyExtracted);
     });
 
     it('should validate tool execution outputs against outputSchema and flag malformed payloads', async () => {

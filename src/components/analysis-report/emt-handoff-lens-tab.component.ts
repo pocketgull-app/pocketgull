@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject, ChangeDetectorRef, NgZone, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, effect, untracked, OnDestroy } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { generate } from 'lean-qr';
 import { BystanderActionSuiteComponent } from '../bystander-action-suite.component';
@@ -8,6 +8,8 @@ import { BrandedQrCodeComponent } from '../shared/branded-qr-code.component';
 import { ClinicalIcons } from '../../assets/clinical-icons';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PatientManagementService } from '../../services/patient-management.service';
+import { getSecureRandomFraction, getSecureRandomId } from '../../utils/security-helper';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-emt-handoff-lens-tab',
@@ -18,7 +20,8 @@ import { PatientManagementService } from '../../services/patient-management.serv
     BystanderActionSuiteComponent,
     PocketGullButtonComponent,
     PocketGullCardComponent,
-    BrandedQrCodeComponent
+    BrandedQrCodeComponent,
+    PgTranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -26,65 +29,48 @@ import { PatientManagementService } from '../../services/patient-management.serv
       <!-- 🚨 Bystander 911 Action Suite & Role Assignment -->
       <app-bystander-action-suite></app-bystander-action-suite>
 
-      <!-- Crimson alert banner -->
-      <div class="p-4 bg-gradient-to-r from-red-950/70 via-zinc-950/90 to-red-950/70 border-2 border-red-700/80 rounded-2xl text-red-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl font-pocketgull-mono">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-red-600/30 border border-red-500/50 flex items-center justify-center text-red-400 text-xl animate-pulse shrink-0">
-            🚨
-          </div>
-          <div>
-            <h4 class="font-pocketgull text-sm sm:text-base font-black uppercase tracking-wider text-red-200">
-              Offline Emergency First Aid Suite
-            </h4>
-            <p class="text-xs text-zinc-300 font-sans opacity-90 mt-0.5">
-              Zero-latency local sandbox. Bystander CPR timing, vitals telemetry &amp; Lean-QR handoff.
-            </p>
-          </div>
-        </div>
-        <pocket-gull-button (click)="toggleCprMetronome()" 
-          [variant]="isCprMetronomeActive() ? 'primary' : 'outline'" 
-          class="shrink-0 font-pocketgull font-bold uppercase tracking-widest text-xs py-2 px-4 border border-red-500/40 transition-all active:scale-95 shadow-md min-h-[44px]"
-          [class.bg-red-600]="isCprMetronomeActive()"
-          [class.text-white]="isCprMetronomeActive()">
-          🔊 {{ isCprMetronomeActive() ? 'Stop Metronome' : 'CPR Metronome (' + (patientAgeCategory() === 'infant' ? '120' : '110') + ' BPM)' }}
-        </pocket-gull-button>
-      </div>
-
-      <!-- Patient Demographic Selector (Age & Pregnancy) -->
-      <div class="p-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-pocketgull-mono shadow-lg">
+      <!-- Patient Demographic Selector & Instant CPR Metronome Bar -->
+      <div class="p-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 font-pocketgull-mono shadow-lg">
         <div>
           <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest block mb-1.5 font-pocketgull">
-            Target Patient Demographic
+            {{ 'Target Patient Demographic' | pgT:'emt.target_demographic' }}
           </span>
-          <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <button type="button" (click)="patientAgeCategory.set('adult')"
-              [class]="patientAgeCategory() === 'adult' ? 'bg-amber-500 text-zinc-950 font-black border-amber-400 shadow-md scale-105' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750'"
+              [class]="patientAgeCategory() === 'adult' ? 'bg-amber-500 text-zinc-950 font-black border-amber-400 shadow-md scale-105' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-700'"
               class="px-3.5 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
-              🧑 Adult
+              🧑 {{ 'Adult' | pgT:'emt.adult' }}
             </button>
             <button type="button" (click)="patientAgeCategory.set('infant'); isPatientPregnant.set(false)"
-              [class]="patientAgeCategory() === 'infant' ? 'bg-amber-500 text-zinc-950 font-black border-amber-400 shadow-md scale-105' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750'"
+              [class]="patientAgeCategory() === 'infant' ? 'bg-amber-500 text-zinc-950 font-black border-amber-400 shadow-md scale-105' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-700'"
               class="px-3.5 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
-              👶 Infant (Baby)
+              👶 {{ 'Infant (Baby)' | pgT:'emt.infant' }}
             </button>
             <button type="button" (click)="patientAgeCategory.set('geriatric')"
-              [class]="patientAgeCategory() === 'geriatric' ? 'bg-amber-500 text-zinc-950 font-black border-amber-400 shadow-md scale-105' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750'"
+              [class]="patientAgeCategory() === 'geriatric' ? 'bg-amber-500 text-zinc-950 font-black border-amber-400 shadow-md scale-105' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-700'"
               class="px-3.5 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition cursor-pointer min-h-[44px]">
-              🧓 Geriatric (Elder)
+              🧓 {{ 'Geriatric (Elder)' | pgT:'emt.geriatric' }}
             </button>
           </div>
         </div>
 
-        @if (patientAgeCategory() === 'adult') {
-          <div class="flex items-center gap-2">
-            <span class="text-xs uppercase tracking-wider font-bold text-zinc-400 font-pocketgull">Pregnancy Check:</span>
+        <div class="flex flex-wrap items-center gap-2.5">
+          @if (patientAgeCategory() === 'adult') {
             <button type="button" (click)="isPatientPregnant.set(!isPatientPregnant())"
-              [class]="isPatientPregnant() ? 'bg-rose-500/20 text-rose-300 border-rose-500/50 shadow-md' : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-750'"
+              [class]="isPatientPregnant() ? 'bg-rose-500/20 text-rose-300 border-rose-500/50 shadow-md' : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-700'"
               class="px-3.5 py-2 text-xs uppercase tracking-wider font-bold rounded-xl border transition flex items-center gap-1.5 cursor-pointer min-h-[44px]">
-              🤰 {{ isPatientPregnant() ? 'Pregnant Patient' : 'Not Pregnant' }}
+              🤰 {{ isPatientPregnant() ? ('Pregnant Patient' | pgT:'emt.pregnant') : ('Not Pregnant' | pgT:'emt.not_pregnant') }}
             </button>
-          </div>
-        }
+          }
+
+          <pocket-gull-button (click)="toggleCprMetronome()" 
+            [variant]="isCprMetronomeActive() ? 'primary' : 'outline'" 
+            class="shrink-0 font-pocketgull font-bold uppercase tracking-widest text-xs py-2 px-4 border border-red-500/50 transition-all active:scale-95 shadow-md min-h-[44px]"
+            [class.bg-red-600]="isCprMetronomeActive()"
+            [class.text-white]="isCprMetronomeActive()">
+            🔊 {{ isCprMetronomeActive() ? ('Stop Metronome' | pgT:'emt.stop_metronome') : 'CPR Metronome (' + (patientAgeCategory() === 'infant' ? '120' : '110') + ' BPM)' }}
+          </pocket-gull-button>
+        </div>
       </div>
 
       <!-- CPR Visual Coach HUD -->
@@ -487,6 +473,13 @@ export class EmtHandoffLensTabComponent implements OnDestroy {
   // Quick Actions Accordion / Tab State
   readonly activeFirstAidGuide = signal<'bleeding' | 'choking' | 'overdose' | 'stroke' | 'burns' | 'heat' | null>(null);
 
+  private readonly syncIndicationGuide = effect(() => {
+    const guide = this.state.emergencyProtocol?.()?.defaultFirstAidGuide ?? null;
+    if (guide) {
+      untracked(() => this.activeFirstAidGuide.set(guide));
+    }
+  });
+
   // GPS SOS Telemetry State
   readonly isGpsAcquired = signal<boolean>(false);
   readonly gpsCoords = signal<string>('46.0503° N, 124.0502° W (Oregon Coast Buoy 46050 Boundary)');
@@ -871,10 +864,10 @@ export class EmtHandoffLensTabComponent implements OnDestroy {
     this.isPulseAcquiring.set(false);
     this.pulseProgress.set(0);
     
-    const simulatedHr = Math.floor(72 + Math.random() * 20).toString();
-    const simulatedSpO2 = Math.floor(96 + Math.random() * 4).toString();
-    const simulatedTemp = (97.8 + Math.random() * 1.5).toFixed(1);
-    const simulatedBp = `${Math.floor(115 + Math.random() * 15)}/${Math.floor(75 + Math.random() * 10)}`;
+    const simulatedHr = Math.floor(72 + getSecureRandomFraction() * 20).toString();
+    const simulatedSpO2 = Math.floor(96 + getSecureRandomFraction() * 4).toString();
+    const simulatedTemp = (97.8 + getSecureRandomFraction() * 1.5).toFixed(1);
+    const simulatedBp = `${Math.floor(115 + getSecureRandomFraction() * 15)}/${Math.floor(75 + getSecureRandomFraction() * 10)}`;
 
     this.state.vitals.update(v => ({
       ...v,
@@ -887,7 +880,7 @@ export class EmtHandoffLensTabComponent implements OnDestroy {
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     this.state.clinicalNotes.update(notes => [
       {
-        id: Math.random().toString(),
+        id: 'pulse_' + getSecureRandomId(),
         text: `Acquired Vitals: HR ${simulatedHr} BPM, SpO2 ${simulatedSpO2}%, Temp ${simulatedTemp}°F, BP ${simulatedBp}`,
         date: timestamp,
         sourceLens: 'EMT Handoff'

@@ -70,4 +70,55 @@ describe('SmoeDecisionFlowExplorerComponent', () => {
     component.askAiExplanation('p003');
     expect(aiRequestedPatient).toBe('p003');
   });
+
+  it('6. should toggle Selector Hysteresis skill lock and STAT Safety Shield simulation', () => {
+    expect(moeRouter.committedPrimaryExpertId()).toBeNull();
+    component.toggleHysteresisLock();
+    expect(moeRouter.committedPrimaryExpertId()).toBe('analysis-report');
+
+    component.toggleHysteresisLock();
+    expect(moeRouter.committedPrimaryExpertId()).toBeNull();
+
+    expect(moeRouter.activeSelectorDecision().safetyShieldActive).toBe(false);
+    component.toggleRedFlagSimulation();
+    fixture.detectChanges();
+    expect(moeRouter.activeSelectorDecision().safetyShieldActive).toBe(true);
+    expect(moeRouter.activeSelectorDecision().regime).toBe('STAT Safety Shield (Red-Flag Preemption)');
+
+    component.toggleRedFlagSimulation();
+    expect(moeRouter.activeSelectorDecision().safetyShieldActive).toBe(false);
+  });
+
+  it('7. should operate interactive Curriculum & Ablation Lab scrubbers and adversarial probes', () => {
+    expect(component.isAblationLabOpen()).toBe(false);
+    component.toggleAblationLab();
+    fixture.detectChanges();
+    expect(component.isAblationLabOpen()).toBe(true);
+
+    // Inject adversarial STEMI + 5 SDOH distractors probe: H0 vs Treatment must diverge
+    component.injectAdversarialDistractorProbe();
+    fixture.detectChanges();
+    const ablation = moeRouter.activeAblationComparison();
+    expect(ablation.divergedFromControl).toBe(true);
+    expect(ablation.controlPrimaryId).toBe('sdoh-navigator');
+    expect(ablation.treatmentPrimaryId).toBe('edge-ml-hud');
+    expect(ablation.maskedCount).toBe(8);
+    expect(ablation.probabilitySumValid).toBe(true);
+
+    // Reset and scrub SpO2 Perceptor below 90% cliff (86%)
+    component.resetLabControls();
+    component.onSpO2Input({ target: { value: '86' } } as unknown as Event);
+    expect(moeRouter.activePerceptorState().spO2Percent).toBe(86);
+    expect(moeRouter.activeSelectorDecision().safetyShieldActive).toBe(true);
+
+    // Scrub Hysteresis deadband and run Jitter Probe
+    component.resetLabControls();
+    component.injectJitterProbe();
+    expect(moeRouter.activeAblationComparison().divergedFromControl).toBe(true);
+    expect(moeRouter.activeAblationComparison().treatmentPrimaryId).toBe('analysis-report');
+    expect(moeRouter.activeAblationComparison().controlPrimaryId).toBe('counterfactual-simulator');
+
+    component.resetLabControls();
+    expect(moeRouter.activePerceptorState().redFlagDetected).toBe(false);
+  });
 });

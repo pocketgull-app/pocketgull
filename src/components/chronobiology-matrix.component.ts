@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-chronobiology-matrix',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-zinc-950 rounded-3xl p-6 sm:p-7 border border-orange-500/20 shadow-2xl mb-8 font-mono text-zinc-100 relative overflow-hidden">
@@ -18,14 +19,14 @@ import { PatientStateService } from '../services/patient-state.service';
           <div class="flex items-center gap-2.5">
             <span class="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.6)] animate-pulse"></span>
             <h3 class="text-sm font-black text-zinc-100 uppercase tracking-widest flex items-center gap-2">
-              <span>⏰</span> Chronobiology & Circadian Rhythm Matrix
+              <span>⏰</span> {{ 'Chronobiology & Circadian Rhythm Matrix' | pgT:'chrono.title' }}
             </h3>
             <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 uppercase">
-              BMAL1 / PER2 Gene Telemetry
+              {{ 'BMAL1 / PER2 Gene Telemetry' | pgT:'chrono.badge' }}
             </span>
           </div>
           <p class="text-xs text-zinc-400 mt-1 font-sans">
-            Real-time evaluation of central suprachiasmatic nucleus (SCN) pacemaking, cortisol diurnal slope, and restorative sleep architecture.
+            {{ 'Real-time evaluation of central suprachiasmatic nucleus (SCN) pacemaking, cortisol diurnal slope, and restorative sleep architecture.' | pgT:'chrono.subtitle' }}
           </p>
         </div>
 

@@ -66,4 +66,28 @@ describe('ClinicalTrialsMatcherService - ClinicalTrials.gov Matching Suite', () 
     expect((fhir['entry'] as any[]).length).toBe(report.totalMatchesFound);
     expect((fhir['entry'] as any[])[0].resource.resourceType).toBe('ResearchStudy');
   });
+
+  it('4. Prioritizes non-opioid pain trials when body-part pain burden & symptoms are present', () => {
+    const painPatient: IPatient = {
+      ...mockMetabolicPatient,
+      id: 'p_pain_test',
+      name: 'Homo Sapiens (Pain & Central Sensitization)',
+      preexistingConditions: ['Chronic Lower Back Pain', 'Opioid Use Disorder (in remission)'],
+      symptoms: [{ name: 'burning neuropathic pain', verified: true }],
+      issues: {
+        lower_back: [{
+          id: 'lower_back',
+          noteId: 'note_pain_1',
+          name: 'Lumbosacral Radicular Allodynia',
+          painLevel: 8,
+          description: 'Persistent radiating neuropathic pain worsened by sitting',
+          symptoms: ['allodynia', 'hyperalgesia']
+        }]
+      }
+    };
+
+    const report = service.matchTrialsForPatient(painPatient, 50);
+    expect(report.matches[0].nctId).toBe('NCT06210944');
+    expect(report.matches[0].matchConfidenceScore).toBeGreaterThanOrEqual(96);
+  });
 });

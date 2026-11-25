@@ -3,11 +3,13 @@ import { SoapNoteGeneratorComponent } from './soap-note-generator.component';
 import { SoapNoteGeneratorService } from '../services/soap-note-generator.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { IntelligenceProviderToken } from '../services/ai/intelligence.provider.token';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 describe('SoapNoteGeneratorComponent', () => {
   let component: SoapNoteGeneratorComponent;
   let fixture: ComponentFixture<SoapNoteGeneratorComponent>;
   let soapService: SoapNoteGeneratorService;
+  let moeRouter: ClinicalMoERouterService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -15,6 +17,7 @@ describe('SoapNoteGeneratorComponent', () => {
       providers: [
         SoapNoteGeneratorService,
         PatientStateService,
+        ClinicalMoERouterService,
         {
           provide: IntelligenceProviderToken,
           useValue: {
@@ -28,7 +31,13 @@ describe('SoapNoteGeneratorComponent', () => {
     fixture = TestBed.createComponent(SoapNoteGeneratorComponent);
     component = fixture.componentInstance;
     soapService = TestBed.inject(SoapNoteGeneratorService);
+    moeRouter = TestBed.inject(ClinicalMoERouterService);
+    moeRouter.clearOverrides();
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    moeRouter.clearOverrides();
   });
 
   it('1. Initializes and renders Ambient SOAP Note header and FHIR badge', () => {
@@ -85,5 +94,20 @@ describe('SoapNoteGeneratorComponent', () => {
 
     createUrlSpy.mockRestore();
     revokeUrlSpy.mockRestore();
+  });
+
+  it('6. Collapses raw FHIR bundle button under stat-focused density, emits fhir-soap-coupling Synapse pulse on Plan edit, and signs 64-char hex attestation receipt', () => {
+    expect(component.isRawFhirCollapsed()).toBe(false);
+    moeRouter.setMicroSkillDensityOverride('stat-focused');
+    expect(component.isRawFhirCollapsed()).toBe(true);
+
+    component.onPlanInput({ target: { value: 'Titrate GLP-1 weekly and monitor SpO2' } } as unknown as Event);
+    expect(component.isFhirSoapSynapseActive()).toBe(true);
+    expect(moeRouter.activeSynapsePulse()?.token).toBe('fhir-soap-coupling');
+
+    component.attestAndSignSoapNote();
+    const receipt = moeRouter.completedSkillReceipts().find(r => r.expertId === 'soap-generator');
+    expect(receipt).toBeDefined();
+    expect(receipt?.sha256DigestHex).toMatch(/^[0-9a-f]{64}$/);
   });
 });

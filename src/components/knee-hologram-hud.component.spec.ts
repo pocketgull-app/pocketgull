@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { KneeHologramHudComponent } from './knee-hologram-hud.component';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 describe('KneeHologramHudComponent 3D Holographic Slicer Suite', () => {
   let component: KneeHologramHudComponent;
@@ -157,6 +158,23 @@ describe('KneeHologramHudComponent 3D Holographic Slicer Suite', () => {
 
     component.toggleGaitSimulation();
     expect(component.isGaitSimulating()).toBe(false);
+  });
+
+  it('12. Broadcasts Kinematic Shear Synapse pulses, responds to SMoE Micro-Skill Sparsity, and retires Joint HUD into a verified receipt', () => {
+    const moeRouter = TestBed.inject(ClinicalMoERouterService);
+
+    expect(component.isExploratoryCollapsed()).toBe(false);
+    moeRouter.setMicroSkillDensityOverride('stat-focused');
+    expect(component.isExploratoryCollapsed()).toBe(true);
+
+    component.onFlexionChange({ target: { value: '60' } } as unknown as Event);
+    expect(component.isKinematicSynapseActive()).toBe(true);
+    expect(moeRouter.activeSynapsePulse()?.token).toBe('kinematic-shear-coupling');
+
+    component.attestAndRetireKneeHud();
+    expect(moeRouter.completedSkillReceipts().some(r => r.expertId === 'knee-hologram')).toBe(true);
+
+    moeRouter.clearOverrides();
   });
 });
 

@@ -27,7 +27,7 @@ export async function fetchWorldHealthBaselines() {
               SELECT 999999999 as person_id, 1984 as year_of_birth
             )
         `;
-        const [rows] = await getBigQuery().query({ query });
+        const [rows] = await getBigQuery().query({ query, maximumBytesBilled: '1073741824' });
         if (rows && rows.length > 0) {
             bqStats = rows[0];
             isRealBigQuery = true;

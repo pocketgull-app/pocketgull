@@ -53,6 +53,7 @@ import { MimicOmopBenchmarkService, BenchmarkCohortType } from './research/mimic
 import { EhrWritebackService } from './fhir/ehr-writeback.service';
 import { EdgeAutonomousVoiceAgentService } from './voice/edge-autonomous-voice-agent.service';
 import { ClinicalDriftCalibratorService } from './interpretability/clinical-drift-calibrator.service';
+import { WearableAsymmetricGainService, TWatchPlatform } from './wearable-asymmetric-gain.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -112,6 +113,7 @@ export class WebMcpRegistrationService {
   private ehrWritebackService = inject(EhrWritebackService, { optional: true });
   private edgeVoiceService = inject(EdgeAutonomousVoiceAgentService, { optional: true });
   private driftCalibratorService = inject(ClinicalDriftCalibratorService, { optional: true });
+  private wearableAcgService = inject(WearableAsymmetricGainService, { optional: true });
   private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
@@ -1843,7 +1845,7 @@ export class WebMcpRegistrationService {
     const ipCtrl = new AbortController();
     const ipTool = {
       name: 'get_staked_patent_claims_summary',
-      description: 'Returns a summary of PocketGull 480 formal staked patent claims across 24 core invention clusters and 9 statutory copyright & invention clauses.',
+      description: 'Returns a summary of PocketGull 560 formal staked patent claims across 28 core invention clusters and 9 statutory copyright & invention clauses.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -4289,6 +4291,76 @@ export class WebMcpRegistrationService {
     };
     try { modelContext.registerTool(driftCalibratorTool, { signal: driftCalibratorCtrl.signal }); } catch (e) { console.warn("Tool already registered:", driftCalibratorTool.name); }
     this.mcpControllers.push({ name: driftCalibratorTool.name, controller: driftCalibratorCtrl });
+
+    // 98. evaluate_wearable_asymmetric_gain (Tri-Modal Asymmetric Clinical Gain & MST SpO2 Debiasing)
+    const wearableAcgCtrl = new AbortController();
+    const wearableAcgTool = {
+      name: 'evaluate_wearable_asymmetric_gain',
+      description: 'Evaluates Wearable Vanguard Tri-Modal Asymmetric Clinical Gain (Doing, Feeling, Not Doing), Monk Skin Tone (MST 1-10) SpO2 optical debiasing, and 72h PEM crash shielding, with optional live IoMT synchronization.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          watchPlatform: {
+            type: 'string',
+            enum: ['apple_watch_healthkit', 'android_wear_health_connect'],
+            description: 'Target smartwatch telemetry source'
+          },
+          pacedBreathingMinutes: { type: 'number', description: 'Daily 0.1 Hz Mayer wave paced breathing duration (min)' },
+          monkSkinToneScale: { type: 'number', description: 'Monk Skin Tone optical PPG calibration scale (1-10)' },
+          stoppedBeforeExhaustion: { type: 'boolean', description: 'Strategic PEM pacing stop engaged prior to anaerobic threshold' },
+          syncFromHardware: { type: 'boolean', description: 'Synchronize live telemetry from DirectIomtWearablesService before scoring' }
+        }
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          watchPlatform: { type: 'string' },
+          mstCalibratedSpo2Percent: { type: 'number' },
+          doingHormeticVagalGain: { type: 'number' },
+          feelingInteroceptiveCalibrationGain: { type: 'number' },
+          notDoingRestraintPemShieldGain: { type: 'number' },
+          totalShockTrooperReadinessGain: { type: 'number' },
+          estimatedPemCrashHoursSaved: { type: 'number' },
+          seligman3pCoachingInsight: { type: 'string' }
+        },
+        required: ['totalShockTrooperReadinessGain', 'mstCalibratedSpo2Percent', 'estimatedPemCrashHoursSaved']
+      },
+      execute: async (params: {
+        watchPlatform?: TWatchPlatform;
+        pacedBreathingMinutes?: number;
+        monkSkinToneScale?: number;
+        stoppedBeforeExhaustion?: boolean;
+        syncFromHardware?: boolean;
+      }) => {
+        try {
+          if (!this.wearableAcgService) {
+            return {
+              content: [{ type: 'text', text: JSON.stringify({ error: 'WearableAsymmetricGainService unavailable' }) }],
+              isError: true
+            };
+          }
+          if (params?.syncFromHardware) {
+            this.wearableAcgService.syncFromLiveIomtHardware();
+          }
+          const patch: Record<string, any> = {};
+          if (params?.watchPlatform) patch['watchPlatform'] = params.watchPlatform;
+          if (typeof params?.pacedBreathingMinutes === 'number') patch['pacedBreathingMinutes'] = params.pacedBreathingMinutes;
+          if (typeof params?.monkSkinToneScale === 'number') patch['monkSkinToneScale'] = params.monkSkinToneScale;
+          if (typeof params?.stoppedBeforeExhaustion === 'boolean') patch['stoppedBeforeExhaustion'] = params.stoppedBeforeExhaustion;
+          if (Object.keys(patch).length > 0) {
+            this.wearableAcgService.updateTelemetry(patch);
+          }
+          const score = this.wearableAcgService.gainEvaluation();
+          return {
+            content: [{ type: 'text', text: JSON.stringify(score, null, 2) }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Wearable ACG evaluation failed: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    try { modelContext.registerTool(wearableAcgTool, { signal: wearableAcgCtrl.signal }); } catch (e) { console.warn("Tool already registered:", wearableAcgTool.name); }
+    this.mcpControllers.push({ name: wearableAcgTool.name, controller: wearableAcgCtrl });
   }
 
   /**
@@ -4364,11 +4436,15 @@ export class WebMcpRegistrationService {
     }
 
     if (cid === 'all' || cid === 'webmcp') {
+      const hasNativeModelContext =
+        (typeof document !== 'undefined' && 'modelContext' in document) ||
+        (typeof navigator !== 'undefined' && 'modelContext' in navigator);
       result.webmcp = {
         registeredToolsCount: this.mcpControllers.length,
         pr253DebuggingSupported: true,
         pr254OutputSchemaSupported: true,
-        runtime: typeof window !== 'undefined' && 'modelContext' in navigator ? 'native-chrome-159' : 'polyfilled',
+        pr348ToolInterfaceSupported: true,
+        runtime: hasNativeModelContext ? 'native-chrome-160' : 'polyfilled',
       };
     }
 
@@ -4458,6 +4534,17 @@ export class WebMcpRegistrationService {
       }
     }
 
+    if (cid === 'all' || cid === 'wearable' || cid === 'acg' || cid === 'shock_trooper') {
+      try {
+        result.wearableAsymmetricGain = {
+          telemetry: this.wearableAcgService?.telemetry() || null,
+          gainEvaluation: this.wearableAcgService?.gainEvaluation() || null
+        };
+      } catch (err: any) {
+        result.wearableAsymmetricGain = { error: err.message };
+      }
+    }
+
     return result;
   }
 
@@ -4471,31 +4558,95 @@ export class WebMcpRegistrationService {
     this.mcpControllers = [];
   }
 
-  /**
-   * Retrieves all registered WebMCP tools from document.modelContext / navigator.modelContext,
-   * safely normalizing inputSchema and outputSchema (Chrome 159.0.8140.0+ PR #254) to JavaScript
-   * objects regardless of browser version (supporting both legacy DOMString returns and updated
-   * native JavaScript object returns).
-   */
-  public async getRegisteredTools(): Promise<any[]> {
+  private async readModelContextTools(mapper: (tool: any) => any): Promise<any[]> {
     if (typeof window === 'undefined' || typeof document === 'undefined') return [];
     const modelContext = (document as any).modelContext || (navigator as any).modelContext;
     if (!modelContext || typeof modelContext.getTools !== 'function') return [];
     try {
       const tools = await modelContext.getTools();
-      return (tools || []).map((tool: any) => ({
-        ...tool,
-        inputSchema: normalizeToolInputSchema(tool.inputSchema),
-        ...(tool.outputSchema ? { outputSchema: normalizeToolOutputSchema(tool.outputSchema) } : {}),
-      }));
+      return (tools || []).map(mapper);
     } catch {
       return [];
     }
   }
+
+  /**
+   * Retrieves all registered WebMCP tools from document.modelContext / navigator.modelContext
+   * as strictly `JSON.stringify`- and `structuredClone()`-safe payloads, safely extracting
+   * explicit attributes from Chrome 160.0.8173.0+ `Tool` WebIDL interface objects (W3C WebMCP PR #348 —
+   * where `{...tool}` copies nothing, `JSON.stringify(tool)` returns `"{}"`, `tool.window` moved to
+   * `tool.source`, and unset `inputSchema` / `outputSchema` / `annotations` are `null`) while
+   * maintaining backward compatibility with legacy `RegisteredTool` dictionaries.
+   */
+  public async getRegisteredTools(): Promise<any[]> {
+    return this.readModelContextTools((tool: any) => extractSerializableWebMcpTool(tool));
+  }
+
+  /**
+   * Retrieves in-memory WebMCP tool handles preserving `source` and `rawTool` so
+   * `document.modelContext.executeTool(entry.rawTool, args)` retains its internal execution ID.
+   */
+  public async getRegisteredToolHandles(): Promise<any[]> {
+    return this.readModelContextTools((tool: any) => inspectWebMcpToolHandle(tool));
+  }
+}
+
+function resolveWebMcpToolSource(tool: any): any {
+  // TODO: Remove `tool.window` fallback when Chrome 160 reaches Stable (January 5, 2027).
+  return tool?.source ?? tool?.window ?? null;
 }
 
 /**
- * Helper to normalize WebMCP RegisteredTool inputSchema across browser implementations.
+ * Extracts explicit attributes from a Chrome 160.0.8173.0+ `Tool` WebIDL interface instance
+ * (W3C WebMCP PR #348) or legacy `RegisteredTool` dictionary into a strictly `JSON.stringify`-
+ * and `structuredClone()`-safe plain object (omitting `rawTool` and `Window` references).
+ */
+export function extractSerializableWebMcpTool(tool: any): Record<string, any> {
+  if (!tool || typeof tool !== 'object') {
+    return {
+      name: '',
+      title: null,
+      description: '',
+      origin: null,
+      inputSchema: { type: 'object', properties: {} },
+      outputSchema: null,
+      annotations: null,
+      hasSource: false,
+    };
+  }
+
+  const source = resolveWebMcpToolSource(tool);
+  const normalizedOutput = normalizeToolOutputSchema(tool.outputSchema);
+
+  return {
+    name: tool.name ?? '',
+    title: tool.title ?? null,
+    description: tool.description ?? '',
+    origin: tool.origin ?? null,
+    inputSchema: normalizeToolInputSchema(tool.inputSchema),
+    outputSchema: normalizedOutput ?? null,
+    annotations: tool.annotations ?? null,
+    hasSource: Boolean(source),
+  };
+}
+
+/**
+ * Composes `extractSerializableWebMcpTool(tool)` with in-memory `source` and `rawTool` so
+ * `document.modelContext.executeTool(entry.rawTool, args)` keeps its internal execution ID
+ * (PR #348), while `toJSON()` ensures `JSON.stringify(entry)` remains circular-safe.
+ */
+export function inspectWebMcpToolHandle(tool: any): Record<string, any> {
+  const source = tool && typeof tool === 'object' ? resolveWebMcpToolSource(tool) : null;
+  return {
+    ...extractSerializableWebMcpTool(tool),
+    source,
+    rawTool: tool ?? null,
+    toJSON: () => extractSerializableWebMcpTool(tool),
+  };
+}
+
+/**
+ * Helper to normalize WebMCP Tool / legacy RegisteredTool inputSchema across browser implementations.
  * Handles both stringified DOMString schemas and native JS Object schemas (Chrome Model Context API update).
  */
 export function normalizeToolInputSchema(schema: unknown): Record<string, any> {
@@ -4511,7 +4662,7 @@ export function normalizeToolInputSchema(schema: unknown): Record<string, any> {
 }
 
 /**
- * Helper to normalize WebMCP RegisteredTool outputSchema (Chrome 159.0.8140.0+, W3C WebMCP PR #254).
+ * Helper to normalize WebMCP Tool / legacy RegisteredTool outputSchema (Chrome 159.0.8140.0+, W3C WebMCP PR #254).
  */
 export function normalizeToolOutputSchema(schema: unknown): Record<string, any> | undefined {
   if (!schema) return undefined;

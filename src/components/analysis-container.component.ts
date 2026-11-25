@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal, inject, computed, ViewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 import { AnalysisReportComponent } from './analysis-report.component';
 import { PatientStateService } from '../services/patient-state.service';
 import { AiCacheService } from '../services/ai-cache.service';
@@ -41,6 +42,7 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
   },
   imports: [
     CommonModule, 
+    PgTranslatePipe,
     CounterfactualSimulatorComponent, 
     SoapNoteGeneratorComponent, 
     CohortTriageMatrixComponent, 
@@ -81,7 +83,7 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
             <!-- Geographical Clinical Paradigm Selector (Precision Segmented Rail) -->
             <div class="flex items-center border border-zinc-800 bg-zinc-900 overflow-x-auto max-w-full font-mono divide-x divide-zinc-800">
               <span class="hidden md:inline text-[10px] font-mono font-bold uppercase tracking-widest text-zinc-500 px-2.5 py-1.5 select-none">
-                PARADIGM:
+                {{ 'PARADIGM:' | pgT:'container.paradigm' }}
               </span>
 
               <!-- Western Clinical (North America & Europe) -->
@@ -89,8 +91,8 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
                 title="Western Clinical Medicine (North America & Europe)"
                 [class]="isWestern
                   ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-amber-500 text-zinc-950'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'">
-                <span>WESTERN</span>
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'">
+                <span>{{ 'WESTERN' | pgT:'container.western' }}</span>
               </button>
 
               <!-- Eastern TCM (East Asia Zang-Fu) -->
@@ -98,8 +100,8 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
                 title="Eastern TCM Medicine (East Asian Zang-Fu)"
                 [class]="isEastern
                   ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-amber-500 text-zinc-950'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'">
-                <span>EASTERN</span>
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'">
+                <span>{{ 'EASTERN' | pgT:'container.eastern' }}</span>
               </button>
 
               <!-- Ayurvedic (South Asia Vedic) -->
@@ -107,8 +109,8 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
                 title="Ayurvedic Medicine (South Asian Vedic Dosha)"
                 [class]="isAyurvedic
                   ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-amber-500 text-zinc-950'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'">
-                <span>AYURVEDIC</span>
+                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition-all select-none cursor-pointer bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'">
+                <span>{{ 'AYURVEDIC' | pgT:'container.ayurvedic' }}</span>
               </button>
 
               <!-- View Mode Switcher: Classic Lenses vs Functional Domain Suites vs SMoE Canvas -->
@@ -117,8 +119,8 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
                 title="Classic Multi-Lens Clinical Report"
                 [class]="viewMode() === 'lenses'
                   ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
-                <span>📄 LENSES</span>
+                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition cursor-pointer'">
+                <span>📄 {{ 'LENSES' | pgT:'container.lenses' }}</span>
               </button>
 
               <button type="button" (click)="viewMode.set('suites')"
@@ -126,8 +128,8 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
                 title="Functional Domain Suites (Paradigm Diff Engine)"
                 [class]="viewMode() === 'suites'
                   ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-teal-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
-                <span>🧬 DOMAIN SUITES</span>
+                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition cursor-pointer'">
+                <span>🧬 {{ 'DOMAIN SUITES' | pgT:'container.domain_suites' }}</span>
               </button>
 
               <button type="button" (click)="viewMode.set('canvas')"
@@ -135,16 +137,16 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
                 title="Synoptic Canvas (Adaptive Multi-Specialist Care Synthesis)"
                 [class]="viewMode() === 'canvas'
                   ? 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-emerald-500 text-zinc-950 transition cursor-pointer shadow-md'
-                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-emerald-400 hover:text-emerald-300 hover:bg-zinc-850 transition cursor-pointer'">
-                <span>🌐 SYNOPTIC CANVAS</span>
+                  : 'flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-mono font-bold uppercase bg-zinc-900 text-emerald-400 hover:text-emerald-300 hover:bg-zinc-800 transition cursor-pointer'">
+                <span>🌐 {{ 'SYNOPTIC CANVAS' | pgT:'container.synoptic_canvas' }}</span>
               </button>
             </div>
 
             <!-- Clinical Workflows & Studio Dropdown -->
-            <div class="flex items-center gap-2 font-mono ml-auto">
+            <div class="flex flex-wrap items-center justify-end gap-2 font-mono ml-auto min-w-0 max-w-full">
               @if (justGenerated() && hasReport() && !intelligence.isLoading()) {
                 <div class="hidden lg:flex items-center gap-1.5 px-2 py-1 bg-zinc-900 border border-zinc-800 text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">
-                   <span class="w-1.5 h-1.5 bg-orange-500 rounded-2xs"></span>
+                   <span class="w-1.5 h-1.5 bg-orange-500 rounded-sm"></span>
                    <span>[SYNCED]</span>
                 </div>
               }
@@ -153,82 +155,82 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
               <button type="button" (click)="showEdgeAiModal.set(!showEdgeAiModal())"
                 title="Open Edge ML &amp; ONNX WebGPU Continuous Risk Scoring Engine"
                 [class]="showEdgeAiModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-400 bg-teal-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-500/40 bg-teal-500/10 text-teal-300 hover:bg-teal-600 hover:text-white transition cursor-pointer'">
-                <span>[⚡ EDGE AI]</span>
+                  ? 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-400 bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-500/40 bg-teal-500/10 text-teal-300 hover:bg-teal-600 hover:text-white transition cursor-pointer'">
+                <span>[⚡ {{ 'EDGE AI' | pgT:'container.edge_ai' }}]</span>
               </button>
 
               <!-- NAM STEEEP Quality Audit Button -->
               <button type="button" (click)="showSteeepModal.set(!showSteeepModal())"
                 title="Open National Academy of Medicine (NAM) STEEEP 6-Axis Quality Radar"
                 [class]="showSteeepModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-400 bg-amber-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-600 hover:text-white transition cursor-pointer'">
-                <span>[📊 STEEEP]</span>
+                  ? 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-400 bg-amber-500 text-zinc-950 transition cursor-pointer'
+                  : 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-600 hover:text-white transition cursor-pointer'">
+                <span>[📊 {{ 'STEEEP' | pgT:'container.steeep' }}]</span>
               </button>
 
               <!-- Frontier Molecular Biophysics Button -->
               <button type="button" (click)="showBiophysicsModal.set(!showBiophysicsModal())"
                 title="Open Frontier Molecular Biophysics & Chemical Systems Suite (LLPS, PROTAC, Quantum Cryptochrome, MOF)"
                 [class]="showBiophysicsModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-cyan-400 bg-cyan-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-600 hover:text-white transition cursor-pointer'">
-                <span>[⚛️ BIOPHYSICS]</span>
+                  ? 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-cyan-400 bg-cyan-500 text-zinc-950 transition cursor-pointer'
+                  : 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-600 hover:text-white transition cursor-pointer'">
+                <span>[⚛️ {{ 'BIOPHYSICS' | pgT:'container.biophysics' }}]</span>
               </button>
 
               <!-- Physical Genomics & 3D Genome Engineering Button -->
               <button type="button" (click)="showGenomicsModal.set(!showGenomicsModal())"
                 title="Open Physical Genomics & 3D Genome Engineering Suite (Loop Extrusion, Super-Enhancers, CRISPR R-Loop, Nucleosome Tweezers)"
                 [class]="showGenomicsModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-400 bg-teal-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-500/40 bg-teal-500/10 text-teal-300 hover:bg-teal-600 hover:text-white transition cursor-pointer'">
-                <span>[🧬 GENOMICS]</span>
+                  ? 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-400 bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-500/40 bg-teal-500/10 text-teal-300 hover:bg-teal-600 hover:text-white transition cursor-pointer'">
+                <span>[🧬 {{ 'GENOMICS' | pgT:'container.genomics' }}]</span>
               </button>
 
               <!-- Ambient SOAP Note Generator Button -->
               <button type="button" (click)="showSoapModal.set(!showSoapModal())"
                 title="Open Ambient Real-Time FHIR R4 SOAP Note Generator"
                 [class]="showSoapModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-purple-400 bg-purple-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-purple-500/40 bg-purple-500/10 text-purple-300 hover:bg-purple-600 hover:text-white transition cursor-pointer'">
-                <span>[SOAP NOTE]</span>
+                  ? 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-purple-400 bg-purple-500 text-zinc-950 transition cursor-pointer'
+                  : 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-purple-500/40 bg-purple-500/10 text-purple-300 hover:bg-purple-600 hover:text-white transition cursor-pointer'">
+                <span>[{{ 'SOAP NOTE' | pgT:'container.soap_note' }}]</span>
               </button>
 
               <!-- What-If Sandbox Simulator Toggle Button -->
               <button type="button" (click)="showSimulatorModal.set(!showSimulatorModal())"
                 title="Open Interactive What-If Counterfactual Health Simulator"
                 [class]="showSimulatorModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-emerald-400 bg-emerald-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-600 hover:text-white transition cursor-pointer'">
-                <span>[WHAT-IF]</span>
+                  ? 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-emerald-400 bg-emerald-500 text-zinc-950 transition cursor-pointer'
+                  : 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-600 hover:text-white transition cursor-pointer'">
+                <span>[{{ 'WHAT-IF' | pgT:'container.what_if' }}]</span>
               </button>
 
               <!-- Caregiver Advocacy & Cheat Sheet Button -->
               <button type="button" (click)="showCaregiverModal.set(!showCaregiverModal())"
                 title="Open Caregiver Advocacy & Plain-Language Doctor Visit Cheat Sheet (Flesch-Kincaid Grade 6)"
                 [class]="showCaregiverModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-400 bg-teal-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-500/40 bg-teal-500/10 text-teal-300 hover:bg-teal-600 hover:text-white transition cursor-pointer'">
-                <span>[👤 CHEAT SHEET]</span>
+                  ? 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-400 bg-teal-500 text-zinc-950 transition cursor-pointer'
+                  : 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-teal-500/40 bg-teal-500/10 text-teal-300 hover:bg-teal-600 hover:text-white transition cursor-pointer'">
+                <span>[👤 {{ 'CHEAT SHEET' | pgT:'container.cheat_sheet' }}]</span>
               </button>
 
               <!-- 3D Procedural Trauma & Burn Anatomy Button -->
               <button type="button" (click)="showTraumaModal.set(!showTraumaModal())"
                 title="Open 3D Procedural Trauma & Burn Anatomy Lens (Wallace Rule of 9s, Parkland Fluid, Tourniquet)"
                 [class]="showTraumaModal()
-                  ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-400 bg-amber-500 text-zinc-950 transition cursor-pointer'
-                  : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-600 hover:text-white transition cursor-pointer'">
-                <span>[🩻 3D TRAUMA]</span>
+                  ? 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-400 bg-amber-500 text-zinc-950 transition cursor-pointer'
+                  : 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-600 hover:text-white transition cursor-pointer'">
+                <span>[🩻 {{ '3D TRAUMA' | pgT:'container.trauma_3d' }}]</span>
               </button>
 
               <!-- Clinical Studio Overflow Dropdown -->
-              <div class="relative">
+              <div class="relative shrink-0">
                 <button type="button" (click)="showToolsMenu.set(!showToolsMenu())"
                   title="Clinical Studio &amp; Advanced Analysis Tools"
                   [class]="(showCohortMatrixModal() || showHipaaPdfModal() || showEdgeAiModal() || showSteeepModal() || showBiophysicsModal() || showCaregiverModal() || showTraumaModal() || showToolsMenu())
-                    ? 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-600 bg-zinc-800 text-zinc-100 transition cursor-pointer'
-                    : 'flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 transition cursor-pointer'">
-                  <span>STUDIO ▾</span>
+                    ? 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-600 bg-zinc-800 text-zinc-100 transition cursor-pointer'
+                    : 'whitespace-nowrap shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition cursor-pointer'">
+                  <span>{{ 'STUDIO ▾' | pgT:'container.studio' }}</span>
                 </button>
 
                 @if (showToolsMenu()) {
@@ -306,87 +308,108 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
         }
 
         <div class="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden relative">
-          <div class="flex-1 min-h-0 min-w-0 h-full flex flex-col overflow-y-auto transition-all duration-300 p-4 sm:p-6">
+          <div class="flex-1 min-h-0 min-w-0 h-full flex flex-col overflow-y-auto transition-all duration-300 p-4 sm:p-6 pb-8" style="padding-bottom: 5rem;">
             
             <!-- SNO-10 Craft & Passion Confidant Studio Panel -->
             @if (showHobbyCompanionModal()) {
-              <div class="mb-4 w-full shrink-0">
-                <app-hobby-domain-companion />
-              </div>
+              @defer (on immediate) {
+                <div class="mb-4 w-full shrink-0">
+                  <app-hobby-domain-companion />
+                </div>
+              }
             }
 
             <!-- Edge AI & ONNX WebGPU Continuous Risk Scoring Panel -->
             @if (showEdgeAiModal()) {
-              <div class="mb-4 w-full shrink-0">
-                <app-edge-ml-hud></app-edge-ml-hud>
-              </div>
+              @defer (on immediate) {
+                <div class="mb-4 w-full shrink-0">
+                  <app-edge-ml-hud></app-edge-ml-hud>
+                </div>
+              }
             }
 
             <!-- NAM STEEEP Quality Audit Panel -->
             @if (showSteeepModal()) {
-              <div class="mb-4 w-full shrink-0">
-                <app-steeep-quality-hud></app-steeep-quality-hud>
-              </div>
+              @defer (on immediate) {
+                <div class="mb-4 w-full shrink-0">
+                  <app-steeep-quality-hud></app-steeep-quality-hud>
+                </div>
+              }
             }
 
             <!-- Frontier Molecular Biophysics Suite Panel -->
             @if (showBiophysicsModal()) {
-              <div class="mb-4 w-full shrink-0">
-                <app-lens-biomolecular-physics />
-              </div>
+              @defer (on immediate) {
+                <div class="mb-4 w-full shrink-0">
+                  <app-lens-biomolecular-physics />
+                </div>
+              }
             }
 
             <!-- Physical Genomics & 3D Genome Engineering Suite Panel -->
             @if (showGenomicsModal()) {
-              <div class="mb-4 w-full shrink-0">
-                <app-lens-physical-genomics />
-              </div>
+              @defer (on immediate) {
+                <div class="mb-4 w-full shrink-0">
+                  <app-lens-physical-genomics />
+                </div>
+              }
             }
 
             <!-- Cohort Triage Matrix Panel -->
             @if (showCohortMatrixModal()) {
-              <div class="mb-4 w-full shrink-0">
-                <app-cohort-triage-matrix />
-              </div>
+              @defer (on immediate) {
+                <div class="mb-4 w-full shrink-0">
+                  <app-cohort-triage-matrix />
+                </div>
+              }
             }
 
             <!-- HIPAA Audit PDF Export Panel -->
             @if (showHipaaPdfModal()) {
-              <div class="mb-4 w-full shrink-0">
-                <app-hipaa-pdf-export />
-              </div>
+              @defer (on immediate) {
+                <div class="mb-4 w-full shrink-0">
+                  <app-hipaa-pdf-export />
+                </div>
+              }
             }
 
             <!-- Ambient Real-Time SOAP Note Generator Panel -->
             @if (showSoapModal()) {
-              <div class="mb-4 w-full shrink-0">
-                <app-soap-note-generator />
-              </div>
+              @defer (on immediate) {
+                <div class="mb-4 w-full shrink-0">
+                  <app-soap-note-generator />
+                </div>
+              }
             }
 
             <!-- What-If Counterfactual Sandbox Panel -->
             @if (showSimulatorModal()) {
-              <div class="mb-4 w-full shrink-0">
-                <app-counterfactual-simulator />
-              </div>
+              @defer (on immediate) {
+                <div class="mb-4 w-full shrink-0">
+                  <app-counterfactual-simulator />
+                </div>
+              }
             }
 
-            <div class="flex-1 flex flex-col min-h-0 min-w-0 h-full overflow-y-auto relative" [class.slide-in-panel]="isSlidingIn()">
+            <div class="flex-1 flex flex-col min-h-0 min-w-0 relative" style="min-height: clamp(460px, 68vh, 780px);" [class.slide-in-panel]="isSlidingIn()">
                 @if (state.isEmergencyMode()) {
                   <app-analysis-report class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" #reportRef></app-analysis-report>
                 } @else if (viewMode() === 'canvas') {
-                  <app-sparse-clinical-canvas class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" />
+                  @defer (on immediate) {
+                    <app-sparse-clinical-canvas class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" />
+                  }
                 } @else if (viewMode() === 'suites') {
-                  <app-domain-suites-navigator class="w-full h-auto block overflow-visible" />
+                  @defer (on immediate) {
+                    <app-domain-suites-navigator class="w-full h-auto block overflow-visible" />
+                  }
                 } @else {
                   <app-analysis-report class="flex-1 flex flex-col min-h-0 h-full w-full overflow-hidden" #reportRef></app-analysis-report>
                 }
             </div>
-          </div>
           
-          <!-- Interactive Report Footer: Lens Navigation + Refresh & Clear + Metadata -->
-          @if (hasReport() && !state.isEmergencyMode()) {
-            <div class="shrink-0 mt-4 pt-4 border-t border-slate-200 dark:border-zinc-800 flex flex-col gap-4 font-mono no-print">
+            <!-- Interactive Report Footer: Lens Navigation + Refresh & Clear + Metadata (inside scrollable pane with dock clearance) -->
+            @if (hasReport() && !state.isEmergencyMode()) {
+              <div class="shrink-0 mt-4 pt-4 border-t border-slate-200 dark:border-zinc-800 flex flex-col gap-4 font-mono no-print">
               
               <!-- Lens Navigation & Action Controls Toolbar -->
               <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-slate-100/90 dark:bg-zinc-900/90 border border-slate-200 dark:border-zinc-800 shadow-sm">
@@ -440,7 +463,7 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
                   </div>
 
                   <!-- Isolated Clear Cache Button (Moved far down from Refresh Analysis) -->
-                  <div class="flex items-center gap-3 mt-2">
+                  <div class="flex items-center gap-3 mt-2 pb-6">
                     <button type="button" (click)="showEvaluationHubModal.set(true)"
                       title="Inspect NN/g 10 Usability Heuristics, Shannon ID, and Differential Privacy Telemetry"
                       class="text-[10px] font-bold uppercase tracking-wider text-indigo-500 hover:text-indigo-400 opacity-75 hover:opacity-100 transition flex items-center gap-1 cursor-pointer">
@@ -458,37 +481,50 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
 
             </div>
           }
+          <div class="h-16 shrink-0" aria-hidden="true"></div>
+          </div>
         </div>
-      </div>
 
     <!-- Epic MyChart Physician Brief & Longevity Lab Modal -->
     @if (showMyChartModal()) {
-      <app-mychart-brief-modal (closeModal)="showMyChartModal.set(false)"></app-mychart-brief-modal>
+      @defer (on immediate) {
+        <app-mychart-brief-modal (closeModal)="showMyChartModal.set(false)"></app-mychart-brief-modal>
+      }
     }
 
     <!-- Family Health Pedigree Tree & Risk Branch Pruning Modal -->
     @if (showPedigreeModal()) {
-      <app-family-tree-pedigree (closeModal)="showPedigreeModal.set(false)"></app-family-tree-pedigree>
+      @defer (on immediate) {
+        <app-family-tree-pedigree (closeModal)="showPedigreeModal.set(false)"></app-family-tree-pedigree>
+      }
     }
 
     <!-- TED-Style Patient Hero Journey Story Reader Modal -->
     @if (showStoryModal()) {
-      <app-patient-story-modal (closeModal)="showStoryModal.set(false)"></app-patient-story-modal>
+      @defer (on immediate) {
+        <app-patient-story-modal (closeModal)="showStoryModal.set(false)"></app-patient-story-modal>
+      }
     }
 
     <!-- NN/g Usability & Clinical Evaluation Hub Modal -->
     @if (showEvaluationHubModal()) {
-      <app-clinical-ux-evaluation-hub (closed)="showEvaluationHubModal.set(false)"></app-clinical-ux-evaluation-hub>
+      @defer (on immediate) {
+        <app-clinical-ux-evaluation-hub (closed)="showEvaluationHubModal.set(false)"></app-clinical-ux-evaluation-hub>
+      }
     }
 
     <!-- Caregiver Advocacy & "Doctor Visit Cheat Sheet" Modal (Flesch-Kincaid Grade 6) -->
     @if (showCaregiverModal()) {
-      <app-caregiver-cheat-sheet-modal (close)="showCaregiverModal.set(false)"></app-caregiver-cheat-sheet-modal>
+      @defer (on immediate) {
+        <app-caregiver-cheat-sheet-modal (close)="showCaregiverModal.set(false)"></app-caregiver-cheat-sheet-modal>
+      }
     }
 
     <!-- 3D Procedural Trauma & Burn Anatomy Modal (Wallace Rule of 9s & Parkland) -->
     @if (showTraumaModal()) {
-      <app-trauma-burn-modal (close)="showTraumaModal.set(false)"></app-trauma-burn-modal>
+      @defer (on immediate) {
+        <app-trauma-burn-modal (close)="showTraumaModal.set(false)"></app-trauma-burn-modal>
+      }
     }
   `,
   styles: [`
@@ -501,18 +537,17 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
 
     @keyframes slideInRight3D {
       0% {
-        transform: translateX(100%) scale(0.96);
+        transform: translateY(6px) scale(0.99);
         opacity: 0;
-        filter: blur(4px);
-        box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4);
+        filter: blur(2px);
       }
       70% {
-        transform: translateX(-0.5%) scale(1.002);
+        transform: translateY(0) scale(1);
         opacity: 1;
         filter: blur(0);
       }
       100% {
-        transform: translateX(0) scale(1);
+        transform: none;
         opacity: 1;
         filter: blur(0);
         box-shadow: none;
@@ -520,8 +555,7 @@ import { TraumaBurnModalComponent } from './modals/trauma-burn-modal.component';
     }
 
     .slide-in-panel {
-      animation: slideInRight3D 0.48s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      will-change: transform, opacity, filter;
+      animation: slideInRight3D 0.36s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
   `]
 })

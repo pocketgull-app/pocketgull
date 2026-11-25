@@ -107,7 +107,7 @@ async function runAudit() {
           type: {
             coding: [{ system: 'http://loinc.org', code: '34133-9', display: 'Summarization of Episode Note' }]
           },
-          subject: { reference: 'Patient/MRN-489201', display: 'Eleanor Vance' },
+          subject: { reference: 'Patient/p008', display: 'Homo Sapiens (Archetype p008)' },
           date: new Date().toISOString(),
           content: [
             {
@@ -127,7 +127,7 @@ async function runAudit() {
           id: 'cp-sample-01',
           status: 'active',
           intent: 'plan',
-          subject: { reference: 'Patient/MRN-489201', display: 'Eleanor Vance' },
+          subject: { reference: 'Patient/p008', display: 'Homo Sapiens (Archetype p008)' },
           description: 'Stepped care plan with 0.1 Hz vagal modulation'
         },
         request: { method: 'POST', url: 'CarePlan' }
@@ -140,7 +140,7 @@ async function runAudit() {
           code: {
             coding: [{ system: 'http://loinc.org', code: '96766-1', display: 'Sepsis risk assessment score' }]
           },
-          subject: { reference: 'Patient/MRN-489201', display: 'Eleanor Vance' },
+          subject: { reference: 'Patient/p008', display: 'Homo Sapiens (Archetype p008)' },
           valueString: '{0, 1} (95% Conformal Set)'
         },
         request: { method: 'POST', url: 'Observation' }

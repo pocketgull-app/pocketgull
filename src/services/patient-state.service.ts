@@ -16,7 +16,9 @@ import {
   IPatientAnatomicProfile
 } from './patient.types';
 import { getSecureRandomId } from '../utils/security-helper';
+import { evaluatePatientTop10WhoAndNihGoals } from '../utils/who-nih-goals-catalog';
 import { WoodCutType, SurfaceStyle } from '../shaders/vesalian-woodcut.shader';
+import { IEmergencyProtocolDescriptor, resolveEmergencyProtocolDescriptor } from './emergency-protocol';
 
 export type ShadingProfile = 'atelier' | 'clinical' | 'theatre' | 'scotopic';
 export type { IPatientState, WoodCutType, SurfaceStyle };
@@ -42,8 +44,7 @@ import { DiagnosticModalityGeneratorService } from './diagnostic-modality-genera
 import { CoppaPrivacyShieldService, IGuardianAttestation } from './coppa-privacy-shield.service';
 import { SecureStorageService } from './secure-storage.service';
 import { ConsentLineageService } from './consent-lineage.service';
-import { dataConnect } from '../lib/firebase';
-import { createCarePlan, createConsultationSession } from '../lib/dataconnect/esm/index.esm.js';
+import { isDataConnectEnabled } from '../lib/firebase';
 
 
 @Injectable({
@@ -318,6 +319,7 @@ export class PatientStateService {
     // Ephemeral state reset
     this.issues.set({});
     this.patientGoals.set('');
+    this.whoNihGoals.set(null);
     this.reasonForVisit.set('');
     this.dietaryProtocol.set('');
     this.patientHistory.set([]);
@@ -439,6 +441,23 @@ export class PatientStateService {
   readonly showGhostOverlay = signal<boolean>(false);
   readonly lensAnnotations = signal<Record<string, Record<string, any>>>({});
   readonly isEmergencyMode = signal<boolean>(false);
+  readonly emergencyIndication = signal<string>('STAT_CODE_BLUE');
+  readonly emergencyResponderRole = signal<'CLINICIAN' | 'GOOD_SAMARITAN_BYSTANDER'>('CLINICIAN');
+  readonly emergencyResponderBadge = signal<string>('EMERGENCY-STAT');
+  readonly emergencyProtocol = computed<IEmergencyProtocolDescriptor>(() =>
+    resolveEmergencyProtocolDescriptor(this.emergencyIndication())
+  );
+
+  /** Configures active STAT Good Samaritan clinical context before/during emergency triage. */
+  configureEmergencyContext(
+    indication: string,
+    responderRole: 'CLINICIAN' | 'GOOD_SAMARITAN_BYSTANDER',
+    badge: string
+  ): void {
+    this.emergencyIndication.set(indication || 'STAT_CODE_BLUE');
+    this.emergencyResponderRole.set(responderRole);
+    this.emergencyResponderBadge.set(badge || 'EMERGENCY-STAT');
+  }
   readonly isDemoMode = signal<boolean>(false);
   readonly isQuietMinimalUiMode = signal<boolean>(true);
   readonly isAudioPrimaryMode = signal<boolean>(false);
@@ -483,6 +502,7 @@ export class PatientStateService {
   readonly awareStewardship = signal<import('./patient.types').IWhoAwareClassification[]>([]);
   readonly environmentalIndex = signal<import('./patient.types').IEnvironmentalHealthIndex | null>(null);
   readonly oknProfile = signal<import('./patient.types').IOknProvenanceProfile | null>(null);
+  readonly whoNihGoals = signal<import('./patient.types').IPatientWhoNihGoalsCatalog | null>(null);
   readonly clinicianRole = signal<'Cardiology' | 'Integrative' | 'Public Health' | 'General'>('General');
   readonly paretoWeights = signal<import('./patient.types').IMlParetoWeights>({ costWeight: 0.33, speedWeight: 0.33, adherenceWeight: 0.34 });
   readonly banditState = signal<import('./patient.types').IMlBanditState>({
@@ -750,6 +770,7 @@ export class PatientStateService {
       bookmarks: [],
       issues: this.issues() || {},
       patientGoals: this.patientGoals() || '',
+      whoNihGoals: this.whoNihGoals() || undefined,
       medications: this.medications()?.length ? this.medications() : [
         { id: 'm1', name: 'Warfarin 5mg', value: '5mg' },
         { id: 'm2', name: 'Metformin 1000mg', value: '1000mg' },
@@ -1244,16 +1265,26 @@ export class PatientStateService {
   updateActivePatientSummary(plan: string | null) {
     this.activePatientSummary.set(plan);
     const patientId = this.loadedPatientId();
-    if (plan && patientId) {
-      createCarePlan(dataConnect, {
-        patientId: patientId,
-        diagnosis: "Clinical Care Strategy Update",
-        recommendations: [plan]
-      }).then(() => {
-        console.log('[SQL Connect] Care plan successfully saved to database.');
-      }).catch(err => {
-        console.error('Failed to save care plan to SQL Connect:', err);
-      });
+    if (plan && patientId && isDataConnectEnabled()) {
+      void Promise.all([
+        import('../lib/firebase'),
+        import('../lib/dataconnect/esm/index.esm.js'),
+      ])
+        .then(([{ getDataConnectInstance }, { createCarePlan }]) =>
+          getDataConnectInstance().then((dc) =>
+            createCarePlan(dc, {
+              patientId: patientId,
+              diagnosis: "Clinical Care Strategy Update",
+              recommendations: [plan]
+            })
+          )
+        )
+        .then(() => {
+          console.log('[SQL Connect] Care plan successfully saved to database.');
+        })
+        .catch(err => {
+          console.error('Failed to save care plan to SQL Connect:', err);
+        });
     }
   }
 
@@ -1405,6 +1436,7 @@ export class PatientStateService {
     this.travelProfile.set(null);
     this.awareStewardship.set([]);
     this.environmentalIndex.set(null);
+    this.whoNihGoals.set(null);
   }
 
   /** Set AI-detected anomaly highlights on body parts. Called after analysis completes. */
@@ -1481,6 +1513,7 @@ export class PatientStateService {
     this.awareStewardship.set(state.awareStewardship || []);
     this.environmentalIndex.set(state.environmentalIndex || null);
     this.oknProfile.set(state.oknProfile || state.environmentalIndex?.oknProvenance || null);
+    this.whoNihGoals.set(state.whoNihGoals || evaluatePatientTop10WhoAndNihGoals(patient));
     this.autoPrescribeToolsFromPatientData(patient);
   }
 
@@ -1555,6 +1588,7 @@ export class PatientStateService {
             awareStewardship: this.awareStewardship(),
             environmentalIndex: this.environmentalIndex(),
             oknProfile: this.oknProfile(),
+            whoNihGoals: this.whoNihGoals() || undefined,
         } as any;
   }
 

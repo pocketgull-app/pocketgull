@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GenderAffirmingCareService, TransitionRegimenType, IOrganInventory } from '../../services/gender-affirming-care.service';
 import { SovereigntyHealthModelsService, GahtCompound } from '../../services/sovereignty-health-models.service';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-gender-affirming-lens-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full space-y-6 text-slate-100 font-sans">
@@ -18,13 +19,13 @@ import { SovereigntyHealthModelsService, GahtCompound } from '../../services/sov
             <span class="text-3xl">🪷</span>
             <div>
               <div class="flex items-center gap-2">
-                <h3 class="text-xl font-bold text-white tracking-tight">Gender-Affirming Healthcare & Endocrine Suite</h3>
+                <h3 class="text-xl font-bold text-white tracking-tight">{{ 'Gender-Affirming Healthcare & Endocrine Suite' | pgT:'gac.title' }}</h3>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-950 text-teal-300 border border-teal-700/50">
-                  WPATH SOC8 & Endocrine Society Protocol
+                  {{ 'WPATH SOC8 & Endocrine Society Protocol' | pgT:'gac.badge' }}
                 </span>
               </div>
               <p class="text-xs text-slate-400 mt-0.5">
-                Organ Inventory Model ("anatomy over assumption"), physiological GAHT hormone target calibration, and muscle-mass independent eGFR.
+                {{ 'Organ Inventory Model ("anatomy over assumption"), physiological GAHT hormone target calibration, and muscle-mass independent eGFR.' | pgT:'gac.subtitle' }}
               </p>
             </div>
           </div>
@@ -37,7 +38,7 @@ import { SovereigntyHealthModelsService, GahtCompound } from '../../services/sov
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              Export FHIR R4 (Restricted 'R')
+              {{ "Export FHIR R4 (Restricted 'R')" | pgT:'gac.export_fhir' }}
             </button>
           </div>
         </div>
@@ -45,19 +46,19 @@ import { SovereigntyHealthModelsService, GahtCompound } from '../../services/sov
         <!-- Telemetry HUD Grid -->
         <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
           <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">Affirmed Identity</span>
+            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">{{ 'Affirmed Identity' | pgT:'gac.card_identity' }}</span>
             <div class="text-lg font-bold text-teal-300 truncate">{{ gac.chosenName() }}</div>
             <span class="text-[11px] text-slate-400 font-sans">Pronouns: {{ gac.affirmedPronouns() }}</span>
           </div>
 
           <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">Endocrine Regimen</span>
+            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">{{ 'Endocrine Regimen' | pgT:'gac.card_regimen' }}</span>
             <div class="text-xs font-bold text-white truncate">{{ gac.transitionRegimen() }}</div>
             <span class="text-[11px] text-teal-400 font-sans">{{ gac.durationOnGahtMonths() }} months on GAHT</span>
           </div>
 
           <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1" [class.border-rose-700]="gac.gahtEvaluation().hyperkalemiaWarning || gac.gahtEvaluation().erythrocytosisWarning">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">Endocrine Target Status</span>
+            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">{{ 'Endocrine Target Status' | pgT:'gac.card_status' }}</span>
             <div class="text-lg font-bold" [ngClass]="(gac.gahtEvaluation().estradiolTargetMet || gac.gahtEvaluation().testosteroneTargetMet) ? 'text-emerald-400' : 'text-amber-400'">
               {{ (gac.gahtEvaluation().estradiolTargetMet || gac.gahtEvaluation().testosteroneTargetMet) ? 'IN TARGET' : 'TITRATION REQ' }}
             </div>
@@ -65,7 +66,7 @@ import { SovereigntyHealthModelsService, GahtCompound } from '../../services/sov
           </div>
 
           <div class="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
-            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">Renal eGFR (Cystatin C)</span>
+            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-bold">{{ 'Renal eGFR (Cystatin C)' | pgT:'gac.card_egfr' }}</span>
             <div class="text-lg font-bold text-sky-300">{{ gac.renalEvaluation().cystatinCBasedEgfr }} mL/min</div>
             <span class="text-[11px] text-slate-400 font-sans">Muscle-Mass Independent</span>
           </div>
@@ -81,7 +82,7 @@ import { SovereigntyHealthModelsService, GahtCompound } from '../../services/sov
           [class.text-white]="activeTab() === 'inventory'"
           [class.text-slate-400]="activeTab() !== 'inventory'"
           class="px-3.5 py-1.5 rounded-lg transition font-medium">
-          Organ Inventory & Cancer Screening
+          {{ 'Organ Inventory & Cancer Screening' | pgT:'gac.tab_inventory' }}
         </button>
         <button
           type="button"
@@ -90,7 +91,7 @@ import { SovereigntyHealthModelsService, GahtCompound } from '../../services/sov
           [class.text-white]="activeTab() === 'gaht'"
           [class.text-slate-400]="activeTab() !== 'gaht'"
           class="px-3.5 py-1.5 rounded-lg transition font-medium">
-          Hormone Targets & Safety Guards
+          {{ 'Hormone Targets & Safety Guards' | pgT:'gac.tab_gaht' }}
         </button>
         <button
           type="button"
@@ -99,7 +100,7 @@ import { SovereigntyHealthModelsService, GahtCompound } from '../../services/sov
           [class.text-white]="activeTab() === 'pk'"
           [class.text-slate-400]="activeTab() !== 'pk'"
           class="px-3.5 py-1.5 rounded-lg transition font-medium">
-          In Silico PK Curve Simulator
+          {{ 'In Silico PK Curve Simulator' | pgT:'gac.tab_pk' }}
         </button>
         <button
           type="button"
@@ -108,7 +109,7 @@ import { SovereigntyHealthModelsService, GahtCompound } from '../../services/sov
           [class.text-white]="activeTab() === 'renal'"
           [class.text-slate-400]="activeTab() !== 'renal'"
           class="px-3.5 py-1.5 rounded-lg transition font-medium">
-          eGFR Renal & Cardiovascular Calibration
+          {{ 'eGFR Renal & Cardiovascular Calibration' | pgT:'gac.tab_renal' }}
         </button>
       </div>
 

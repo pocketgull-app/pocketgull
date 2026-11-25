@@ -9,7 +9,7 @@ import { PhysicalGenomicsService } from '../services/physical-genomics.service';
 import { OnDeviceEmbedderService } from '../services/ai/on-device-embedder.service';
 import { IntelligenceProviderToken } from '../services/ai/intelligence.provider.token';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { vi } from 'vitest';
 
 describe('ResearchFrameComponent Suite', () => {
@@ -125,5 +125,31 @@ describe('ResearchFrameComponent Suite', () => {
 
     expect(moeRouter.activeTranscriptQuery()).toContain('GLP-1 receptor agonists');
     expect(moeRouter.activeTranscriptQuery()).toContain('microalbuminuria');
+  });
+
+  it('8. Engages VertexAgentBuilderService grounded fallback for pain queries when PubMed is offline and saves clinical note', async () => {
+    const httpMock = TestBed.inject(HttpTestingController);
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Offline E2E'));
+    try {
+      const searchPromise = component.searchPubmed('neuropathic pain allodynia');
+      // Wait microtask tick for fetch catch block to dispatch Vertex HttpClient POST
+      await new Promise(resolve => setTimeout(resolve, 10));
+      const pending = httpMock.match('/api/v1/agent-builder/search');
+      expect(pending.length).toBe(1);
+      for (const req of pending) {
+        req.error(new ProgressEvent('Offline E2E'));
+      }
+      await searchPromise;
+      const results = component.pubmedResults();
+      expect(results).not.toBeNull();
+      expect(results!.length).toBeGreaterThanOrEqual(1);
+      expect(results!.some(r => /NaV1\.8|Neuropathic/i.test(r.title))).toBe(true);
+
+      const initialNotes = patientState.clinicalNotes().length;
+      component.saveResultToActiveRoomNotes(results![0]);
+      expect(patientState.clinicalNotes().length).toBe(initialNotes + 1);
+    } finally {
+      fetchSpy.mockRestore();
+    }
   });
 });

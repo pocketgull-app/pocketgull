@@ -77,6 +77,27 @@ export const ai = genkit({
   model: `vertexai/gemini-2.5-flash`,
 });
 
+/** Safely strips optional markdown code fences before parsing Genkit JSON responses. */
+function parseGenkitJson<T>(rawText: unknown, fallback: T): T {
+  const cleaned = String(rawText ?? '')
+    .trim()
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+  if (!cleaned) return fallback;
+  try {
+    return JSON.parse(cleaned) as T;
+  } catch {
+    const match = cleaned.match(/[\[{][\s\S]*[\]}]/);
+    if (!match) return fallback;
+    try {
+      return JSON.parse(match[0]) as T;
+    } catch {
+      return fallback;
+    }
+  }
+}
+
 // 1. Generate Metrics Flow
 export const generateMetricsFlow = ai.defineFlow(
   {
@@ -107,7 +128,7 @@ export const generateMetricsFlow = ai.defineFlow(
       prompt,
       config: {
         temperature: 0,
-        maxOutputTokens: 128,
+        maxOutputTokens: 512,
         responseMimeType: 'application/json',
         // Clinical CDS Safety Policy: See SECURITY.md §2
         safetySettings: [
@@ -119,8 +140,22 @@ export const generateMetricsFlow = ai.defineFlow(
       }
     });
 
-    const data = JSON.parse(response.text);
-    return data;
+    const rawText = String(response?.text ?? '').trim();
+    const cleaned = rawText
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim();
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
+    const clampMetric = (val: unknown, fallback: number): number => {
+      const n = Number(val);
+      return Number.isFinite(n) ? Math.min(10, Math.max(0, n)) : fallback;
+    };
+    return {
+      complexity: clampMetric(parsed.complexity, 5),
+      stability: clampMetric(parsed.stability, 5),
+      certainty: clampMetric(parsed.certainty, 5),
+    };
   }
 );
 
@@ -150,7 +185,7 @@ export const detectClinicalChangesFlow = ai.defineFlow(
       prompt,
       config: {
         temperature: 0,
-        maxOutputTokens: 20,
+        maxOutputTokens: 256,
         // Clinical CDS Safety Policy: See SECURITY.md §2
         safetySettings: [
           { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
@@ -487,7 +522,7 @@ Return ONLY a JSON array of objects with this exact structure:
         }
       });
 
-      const parsed = JSON.parse(response.text);
+      const parsed = parseGenkitJson<unknown[]>(response?.text, []);
       if (!Array.isArray(parsed)) return [];
       return parsed.map((item: any) => ({
         ...item,
@@ -615,7 +650,7 @@ Return all results structured into the response schema.`;
       }
     });
 
-    return JSON.parse(response.text);
+    return parseGenkitJson(response?.text, {});
   }
 );
 
@@ -677,7 +712,12 @@ ${patientSymptoms ? 'Reported Symptoms: ' + patientSymptoms : ''}`;
       }
     });
 
-    return JSON.parse(response.text);
+    return parseGenkitJson(response?.text, {
+      primaryObservation: 'Unable to parse structured dermatology analysis.',
+      woundClassification: 'Other' as const,
+      severityTier: 'Moderate' as const,
+      recommendedClinicalAction: 'Review photograph manually with a clinician.'
+    });
   }
 );
 

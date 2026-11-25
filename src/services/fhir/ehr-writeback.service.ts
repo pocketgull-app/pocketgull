@@ -2,6 +2,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { PatientStateService } from '../patient-state.service';
 import { MimicOmopBenchmarkService } from '../research/mimic-omop-benchmark.service';
+import { getSecureRandomHex, getSecureRandomId } from '../../utils/security-helper';
 
 export interface IEhrWritebackContext {
   patientId: string;
@@ -117,7 +118,7 @@ export class EhrWritebackService {
     tokenEndpoint: string = this.tokenEndpoint()
   ): Promise<{ assertion: string; header: any; payload: any }> {
     const now = Math.floor(Date.now() / 1000);
-    const jti = 'jti_' + Array.from(new Uint8Array(16), () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0')).join('');
+    const jti = 'jti_' + getSecureRandomHex(16);
 
     const header = {
       alg: 'RS384',
@@ -149,7 +150,7 @@ export class EhrWritebackService {
 
     // Cryptographic signature stub (or pure WebCrypto HMAC-SHA384 fallback for browser testing)
     const signingInput = `${encodedHeader}.${encodedPayload}`;
-    let signature = 'mock_signature_rs384_' + Array.from(new Uint8Array(32), () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0')).join('');
+    let signature = 'mock_signature_rs384_' + getSecureRandomHex(32);
 
     if (typeof globalThis !== 'undefined' && globalThis.crypto?.subtle) {
       try {
@@ -538,10 +539,7 @@ PocketGull Applied Clinical AI Consortium`;
       const nowIso = new Date().toISOString();
 
       // Build Cryptographic Attestation Receipts
-      const computeSeal = (res: any) => {
-        const str = JSON.stringify(res);
-        return 'sha256_' + Array.from(new Uint8Array(16), () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0')).join('');
-      };
+      const computeSeal = (_res: any) => 'sha256_' + getSecureRandomHex(16);
 
       const receipts: IEhrWritebackReceipt[] = [
         {
@@ -656,7 +654,7 @@ PocketGull Applied Clinical AI Consortium`;
       encounterId: 'enc-sim-' + Date.now().toString().slice(-5),
       timestamp: new Date().toISOString(),
       securityAttestation: {
-        sha256Digest: 'sha256_mock_simulated_' + Math.random().toString(36).slice(2)
+        sha256Digest: 'sha256_mock_simulated_' + getSecureRandomId()
       },
       clinicalDecisionTriggered: {
         actionSummary: type === 'ADT_ADMISSION'

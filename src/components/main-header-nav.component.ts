@@ -1,4 +1,4 @@
-import { Component, inject, output, signal, effect, computed } from '@angular/core';
+import { Component, inject, output, signal, effect, computed, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NetworkStateService } from '../services/network-state.service';
 import { PatientStateService } from '../services/patient-state.service';
@@ -20,6 +20,8 @@ import { FrontlineVernacularVoiceService, VernacularLanguageCode } from '../serv
 import { ClinicalAbacusComponent, AbacusScriptSystem } from './shared/clinical-abacus.component';
 import { EarthBiophysicsSomaticHubComponent } from './research-frame/earth-biophysics-somatic-hub.component';
 import { kachinkaAudio } from '../utils/kachinka-audio.service';
+import { UiI18nService } from '../services/ui-i18n.service';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-main-header-nav',
@@ -31,37 +33,39 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
     AmbientFlowPlayerComponent,
     ConsoleIntegrityBadgeComponent,
     ClinicalAbacusComponent,
-    EarthBiophysicsSomaticHubComponent
+    EarthBiophysicsSomaticHubComponent,
+    PgTranslatePipe
   ],
   template: `
     <!-- Navbar: Pure utility & theme harmony -->
-    <nav class="theme-nav-bar h-14 flex items-center justify-between px-3 sm:px-6 shrink-0 z-50 no-print relative">
-      <div class="flex items-center gap-3 shrink-0">
-        <a href="/" class="flex items-center gap-2.5 shrink-0 cursor-pointer group select-none">
+    <nav class="theme-nav-bar h-14 flex items-center justify-between px-3 sm:px-6 shrink-0 z-40 no-print relative">
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <a href="/" class="flex items-center gap-2 shrink-0 cursor-pointer group select-none">
           <app-pocketgull-brand-mark size="sm" [showSubtext]="false" />
         </a>
 
         <!-- System Status Indicator (Accessible Button) -->
-        <button type="button" class="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all cursor-pointer group relative no-print shrink-0" 
+        <button type="button" class="flex items-center justify-center gap-1.5 min-h-[28px] min-w-[28px] px-2 py-1.5 bg-gray-100 dark:bg-zinc-900 rounded-md border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 transition-all cursor-pointer group relative no-print shrink-0" 
              (click)="network.toggleForceOffline()"
+             [attr.aria-label]="network.isLieFiSuspected() ? 'Lie-Fi Detected' : (network.isOnline() ? 'System Ready' : (network.forceOffline() ? 'App Forced Offline' : 'System Offline'))"
              [title]="'Network: ' + network.networkQuality() + ' • RTT: ' + network.latencyMs() + 'ms • Speed: ' + network.connectionSpeed() + (network.pendingQueueCount() > 0 ? ' • ' + network.pendingQueueCount() + ' offline items queued' : '')">
           <div class="relative flex h-2 w-2 items-center justify-center">
             <span class="relative inline-flex rounded-full status-dot h-2 w-2 transition-colors duration-300"
                   [style.background-color]="network.isOnline() ? 'var(--spectral-stable)' : (network.isLieFiSuspected() ? '#f59e0b' : 'var(--spectral-critical)')"
                   [class.animate-pulse]="network.isLieFiSuspected()"></span>
           </div>
-          <span class="text-[11px] sm:text-xs font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">
+          <span class="sr-only text-[11px] font-bold text-gray-600 dark:text-zinc-400 uppercase tracking-widest">
             {{ network.isLieFiSuspected() ? 'Lie-Fi Detected' : (network.isOnline() ? 'System Ready' : (network.forceOffline() ? 'App Forced Offline' : 'System Offline')) }}
           </span>
           @if (network.pendingQueueCount() > 0) {
-            <span class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+            <span class="ml-0.5 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
               ⚡ {{ network.pendingQueueCount() }}
             </span>
           }
         </button>
 
         <!-- Ambient Flow Background Music Quick Indicator (Desktop & Thin-Clients) -->
-        <div class="hidden md:flex items-center gap-2">
+        <div class="hidden md:flex items-center gap-1.5">
           <button 
             type="button" 
             id="btn-ambient-flow-trigger"
@@ -70,10 +74,10 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
             [class.text-teal-700]="soundscapeService.isPlaying()"
             [class.dark:text-teal-300]="soundscapeService.isPlaying()"
             [class.border-teal-500/50]="soundscapeService.isPlaying()"
-            class="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer shrink-0"
+            class="flex items-center gap-1.5 px-2.5 py-1.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-md text-xs font-bold uppercase tracking-wider transition shadow-xs focus:ring-2 focus:ring-teal-500/50 outline-none cursor-pointer shrink-0 whitespace-nowrap"
             title="Toggle Ambient Flow Soundscape & Offline Binaural Focus Music">
             <span [class.animate-pulse]="soundscapeService.isPlaying()">{{ soundscapeService.isPlaying() ? '🎶' : '🎵' }}</span>
-            <span>{{ soundscapeService.isPlaying() ? 'Flow: ' + soundscapeService.activePreset().carrierFreqHz + 'Hz' : 'Ambient Flow' }}</span>
+            <span>{{ soundscapeService.isPlaying() ? 'Flow: ' + soundscapeService.activePreset().carrierFreqHz + 'Hz' : ('Ambient Flow' | pgT:'nav.ambient_flow') }}</span>
           </button>
         </div>
       </div>
@@ -91,9 +95,9 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.shadow-xs]="navShell?.activeTab() === 'chart' && !state.showActiveRoom()"
           [class.text-zinc-600]="navShell?.activeTab() !== 'chart' || state.showActiveRoom()"
           [class.dark:text-zinc-400]="navShell?.activeTab() !== 'chart' || state.showActiveRoom()"
-          class="px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
+          class="min-h-[28px] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 whitespace-nowrap">
           <span>🩺</span>
-          <span>Chart</span>
+          <span>{{ 'Chart' | pgT:'nav.chart' }}</span>
         </button>
 
         <!-- 📊 Analysis Tab -->
@@ -107,12 +111,12 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.shadow-xs]="navShell?.activeTab() === 'analysis'"
           [class.text-zinc-600]="navShell?.activeTab() !== 'analysis'"
           [class.dark:text-zinc-400]="navShell?.activeTab() !== 'analysis'"
-          class="px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
+          class="min-h-[28px] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 whitespace-nowrap">
           <span>📊</span>
-          <span>Analysis</span>
+          <span>{{ 'Analysis' | pgT:'nav.analysis' }}</span>
         </button>
 
-        <!-- 📋 Active Room Tab -->
+        <!-- 📋 Active Room Tab (Hidden duplicate of #btn-active-room-trigger to prevent navbar overflow) -->
         <button
           type="button"
           (click)="toggleActiveRoomTab()"
@@ -121,9 +125,9 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.shadow-xs]="state.showActiveRoom() || navShell?.activeTab() === 'tasks'"
           [class.text-zinc-600]="!state.showActiveRoom() && navShell?.activeTab() !== 'tasks'"
           [class.dark:text-zinc-400]="!state.showActiveRoom() && navShell?.activeTab() !== 'tasks'"
-          class="px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
+          class="hidden px-2.5 py-1 rounded-md font-bold uppercase tracking-wider transition-all items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
           <span>📋</span>
-          <span>Room</span>
+          <span>{{ 'Room' | pgT:'nav.room' }}</span>
         </button>
 
         <!-- 🧩 MoCA 30-Pt Battery Tab -->
@@ -135,12 +139,12 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.shadow-xs]="navShell?.showMocaSuiteModal()"
           [class.text-zinc-600]="!navShell?.showMocaSuiteModal()"
           [class.dark:text-zinc-400]="!navShell?.showMocaSuiteModal()"
-          class="px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
+          class="min-h-[28px] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 whitespace-nowrap">
           <span>🧩</span>
-          <span>MoCA 30-Pt</span>
+          <span>{{ 'MoCA 30-Pt' | pgT:'nav.moca' }}</span>
         </button>
 
-        <!-- 🔬 Research Tab -->
+        <!-- 🔬 Research Tab (Hidden duplicate of #tour-research-frame-trigger to prevent navbar overflow) -->
         <button
           type="button"
           (click)="toggleResearchTab()"
@@ -151,9 +155,9 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.shadow-xs]="state.isResearchFrameVisible()"
           [class.text-zinc-600]="!state.isResearchFrameVisible()"
           [class.dark:text-zinc-400]="!state.isResearchFrameVisible()"
-          class="px-3 py-1 rounded-md font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
+          class="hidden px-2.5 py-1 rounded-md font-bold uppercase tracking-wider transition-all items-center gap-1.5 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100">
           <span>🔬</span>
-          <span>Research</span>
+          <span>{{ 'Research' | pgT:'nav.research' }}</span>
         </button>
       </div>
 
@@ -175,7 +179,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.dark:text-zinc-200]="!state.showActiveRoom()"
           class="hidden md:flex items-center gap-1.5 px-3 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:border-teal-500/50 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
           <span class="text-xs">📋</span>
-          <span>Active Room</span>
+          <span class="sr-only">Active </span><span>{{ 'Room' | pgT:'nav.room' }}</span>
         </button>
 
         <!-- 🧩 MoCA Cognitive Suite Trigger (Tablet / Compact viewports) -->
@@ -193,7 +197,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.dark:text-teal-200]="!navShell?.showMocaSuiteModal()"
           class="hidden md:flex lg:hidden items-center gap-1.5 px-3 py-1.5 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
           <span class="text-xs">🧩</span>
-          <span>MoCA 30-Pt</span>
+          <span>{{ 'MoCA 30-Pt' | pgT:'nav.moca' }}</span>
         </button>
 
         <!-- ⚖️ Clinical Posology & Deprescribing Trigger (Desktop 2XL) -->
@@ -209,9 +213,9 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.dark:bg-teal-950/40]="!navShell?.showPosologyModal()"
           [class.text-teal-800]="!navShell?.showPosologyModal()"
           [class.dark:text-teal-200]="!navShell?.showPosologyModal()"
-          class="hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          class="hidden 2xl:flex items-center gap-1 px-2 py-1 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-[11px] font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer whitespace-nowrap">
           <span class="text-xs">⚖️</span>
-          <span>Posology</span>
+          <span>{{ 'Posology' | pgT:'nav.posology' }}</span>
         </button>
 
         <!-- 🏥 Specialist Referral Dossier Trigger (Desktop 2XL) -->
@@ -227,9 +231,9 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.dark:bg-teal-950/40]="!navShell?.showSpecialistReferralModal()"
           [class.text-teal-800]="!navShell?.showSpecialistReferralModal()"
           [class.dark:text-teal-200]="!navShell?.showSpecialistReferralModal()"
-          class="hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          class="hidden 2xl:flex items-center gap-1 px-2 py-1 border border-teal-300 dark:border-teal-700/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 rounded-xs text-[11px] font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer whitespace-nowrap">
           <span class="text-xs">🏥</span>
-          <span>Specialist Dossier</span>
+          <span>{{ 'Specialist' | pgT:'nav.specialist' }}<span class="sr-only"> Dossier</span></span>
         </button>
 
         <!-- 💵 CMS RPM Superbill Trigger (Desktop 2XL) -->
@@ -245,9 +249,9 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.dark:bg-emerald-950/40]="!navShell?.showCmsSuperbillModal()"
           [class.text-emerald-800]="!navShell?.showCmsSuperbillModal()"
           [class.dark:text-emerald-200]="!navShell?.showCmsSuperbillModal()"
-          class="hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          class="hidden 2xl:flex items-center gap-1 px-2 py-1 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-[11px] font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer whitespace-nowrap">
           <span class="text-xs">💵</span>
-          <span>RPM Superbill</span>
+          <span><span class="sr-only">RPM </span>{{ 'Superbill' | pgT:'nav.superbill' }}</span>
           @if (rpmService?.rpmSummary(); as rpm) {
             <span 
               [ngClass]="rpm.isCompliant ? 'bg-emerald-200/80 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-100 border-emerald-400/60' : 'bg-amber-200/80 dark:bg-amber-900/80 text-amber-900 dark:text-amber-100 border-amber-400/60'"
@@ -270,12 +274,12 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.dark:bg-indigo-950/40]="!navShell?.showTrajectoryReaderModal()"
           [class.text-indigo-800]="!navShell?.showTrajectoryReaderModal()"
           [class.dark:text-indigo-200]="!navShell?.showTrajectoryReaderModal()"
-          class="hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 border border-indigo-300 dark:border-indigo-700/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          class="hidden 2xl:flex items-center gap-1 px-2 py-1 border border-indigo-300 dark:border-indigo-700/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-xs text-[11px] font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer whitespace-nowrap">
           <span class="text-xs">📈</span>
-          <span>3-Act Trajectory</span>
+          <span>3-Act<span class="sr-only"> Trajectory</span></span>
         </button>
 
-        <app-console-integrity-badge class="hidden 2xl:inline-flex" />
+        <app-console-integrity-badge class="hidden 2xl:inline-flex shrink-0" />
 
         <!-- 📜 Institutional Compliance Certificate Trigger (Desktop XL) -->
         <button 
@@ -283,6 +287,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           id="btn-compliance-cert-trigger"
           (click)="openComplianceCertificate.emit()"
           aria-label="Open Institutional Statutory Compliance Certificate (HIPAA, FDA, NIST, MSA)"
+          title="Institutional Statutory Compliance Certificate (HIPAA, FDA, NIST, MSA)"
           [class.bg-emerald-600]="navShell?.showComplianceCertificateModal()"
           [class.text-white]="navShell?.showComplianceCertificateModal()"
           [class.border-emerald-700]="navShell?.showComplianceCertificateModal()"
@@ -290,9 +295,9 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           [class.dark:bg-emerald-950/40]="!navShell?.showComplianceCertificateModal()"
           [class.text-emerald-800]="!navShell?.showComplianceCertificateModal()"
           [class.dark:text-emerald-200]="!navShell?.showComplianceCertificateModal()"
-          class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+          class="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 border border-emerald-300 dark:border-emerald-700/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer shrink-0">
           <span class="text-xs">📜</span>
-          <span>Compliance</span>
+          <span class="sr-only">Compliance</span>
         </button>
 
         <!-- 🌟 Clinical Apps & Portals Hub Dropdown Button (Desktop) -->
@@ -302,11 +307,12 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
             id="btn-apps-hub-trigger"
             (click)="isAppsHubOpen.set(!isAppsHubOpen())"
             aria-label="Open Apps and Clinical Portals Hub"
+            title="Apps & Clinical Portals Hub"
             [class.bg-emerald-500/20]="isAppsHubOpen()"
             [class.border-emerald-500/60]="isAppsHubOpen()"
-            class="flex items-center gap-2 px-3 py-1.5 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 hover:border-emerald-500/50 dark:hover:border-emerald-500/50 hover:bg-emerald-50 dark:hover:bg-zinc-800/80 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer">
+            class="flex items-center gap-1.5 px-2.5 py-1.5 bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700 hover:border-emerald-500/50 dark:hover:border-emerald-500/50 hover:bg-emerald-50 dark:hover:bg-zinc-800/80 rounded-xs text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-xs cursor-pointer whitespace-nowrap shrink-0">
             <span class="text-xs">✨</span>
-            <span>Apps &amp; Portals</span>
+            <span>Apps<span class="sr-only"> &amp; Portals</span></span>
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-500 transition-transform duration-200" [class.rotate-180]="isAppsHubOpen()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
 
@@ -315,7 +321,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
             <!-- Backdrop click-away -->
             <div class="fixed inset-0 z-40 bg-black/20" (click)="isAppsHubOpen.set(false)"></div>
 
-            <div class="absolute right-0 top-full mt-1.5 w-[440px] z-50 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-3 animate-in fade-in slide-in-from-top-1 duration-150 font-mono text-xs">
+            <div class="absolute right-0 top-full mt-1.5 w-[440px] z-50 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl p-3 animate-in fade-in slide-in-from-top-1 duration-150 font-mono text-xs" style="max-width: calc(100vw - 1.5rem);">
               <div class="flex items-center justify-between pb-2.5 border-b border-zinc-100 dark:border-zinc-800">
                 <div class="flex items-center gap-2">
                   <span class="text-[11px] font-bold tracking-widest uppercase text-zinc-500">POCKETGULL WORKSTATION HUB</span>
@@ -706,7 +712,8 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
         <button (click)="state.toggleLiveAgent(!state.isLiveAgentActive())"
                 id="tour-voice-agent-trigger"
                 aria-label="AI Agent"
-                class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xs border transition-colors text-xs font-mono font-bold uppercase tracking-widest cursor-pointer shadow-xs"
+                title="Live AI Consult Agent"
+                class="group shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xs border transition-colors text-xs font-mono font-bold uppercase tracking-widest cursor-pointer shadow-xs"
                 [class.bg-gray-800]="state.isLiveAgentActive()"
                 [class.dark:bg-white]="state.isLiveAgentActive()"
                 [class.border-gray-800]="state.isLiveAgentActive()"
@@ -724,14 +731,15 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
             <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
             <line x1="12" x2="12" y1="19" y2="22"/>
           </svg>
-          <span class="text-[11px]">AI Agent</span>
+          <span class="sr-only">AI Agent</span>
         </button>
 
         <!-- Desktop Action Buttons (Hidden on mobile) -->
-        <div class="hidden md:flex items-center gap-2 font-mono">
+        <div class="hidden md:flex items-center gap-1.5 font-mono">
           <button (click)="toggleResearchTab()"
                   id="tour-research-frame-trigger"
                   aria-label="Research"
+                  title="Clinical Research & Epistemology Frame"
                   [class.bg-teal-600]="state.isResearchFrameVisible()"
                   [class.text-white]="state.isResearchFrameVisible()"
                   [class.border-teal-700]="state.isResearchFrameVisible()"
@@ -739,19 +747,20 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
                   [class.dark:bg-zinc-900]="!state.isResearchFrameVisible()"
                   [class.text-gray-700]="!state.isResearchFrameVisible()"
                   [class.dark:text-zinc-300]="!state.isResearchFrameVisible()"
-                  class="group shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xs border border-gray-300 dark:border-zinc-700 text-xs font-bold uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
+                  class="group shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xs border border-gray-300 dark:border-zinc-700 text-xs font-bold uppercase tracking-wider hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18c-2.29 0-4.43-.78-6.14-2.1C4.6 16.5 4 14.83 4 12c0-1.5.3-2.91.86-4.22L16.22 19.14A7.92 7.92 0 0 1 12 20m7.14-2.1C20.4 16.5 21 14.83 21 12c0-1.5-.3-2.91-.86-4.22L8.78 19.14C10.09 20.7 11.97 21.5 14 21.5c1.47 0 2.87-.42 4.14-1.14Z"/></svg>
-            <span>Research</span>
+            <span class="sr-only">Research</span>
           </button>
 
-          <!-- Frontline CHW Suite & Vernacular Audio Quick-Launcher (Desktop) -->
+          <!-- Frontline CHW Suite & Vernacular Audio Quick-Launcher (Desktop XL+) -->
           <button type="button"
                   (click)="openChwSuite()"
                   id="btn-desktop-chw-launcher"
+                  aria-label="Open Frontline CHW Suite & Vernacular Audio Prompts (WHO/MSF)"
                   title="Open Frontline CHW Suite & Vernacular Audio Prompts (WHO/MSF)"
-                  class="group shrink-0 px-2.5 py-1.5 border border-emerald-300 dark:border-emerald-800/60 hover:border-emerald-500 hover:bg-emerald-50/60 dark:hover:bg-emerald-950/40 rounded-xs transition-colors text-emerald-800 dark:text-emerald-300 cursor-pointer flex items-center gap-1.5 bg-emerald-50/40 dark:bg-emerald-950/20 shadow-xs font-mono text-xs font-bold">
+                  class="hidden xl:flex group shrink-0 px-2.5 py-1.5 border border-emerald-300 dark:border-emerald-800/60 hover:border-emerald-500 hover:bg-emerald-50/60 dark:hover:bg-emerald-950/40 rounded-xs transition-colors text-emerald-800 dark:text-emerald-300 cursor-pointer items-center gap-1.5 bg-emerald-50/40 dark:bg-emerald-950/20 shadow-xs font-mono text-xs font-bold">
             <span>🌿</span>
-            <span class="hidden xl:inline">Frontline CHW</span>
+            <span class="sr-only">Frontline CHW</span>
           </button>
 
           <!-- Language Translation Switcher Dropdown (Desktop) -->
@@ -762,11 +771,11 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
               id="btn-desktop-lang-switcher"
               [attr.aria-expanded]="isLangMenuOpen()"
               aria-label="Language translation switcher"
-              [title]="'Language: ' + translator.activeLanguage().name + ' (' + translator.activeLanguage().nativeName + ')'"
+              [title]="'Language: ' + translator.activeUiLanguage().name + ' (' + translator.activeUiLanguage().nativeName + ')'"
               class="group shrink-0 px-2.5 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:border-teal-500/60 hover:bg-teal-50/50 dark:hover:bg-teal-950/30 rounded-xs transition-colors text-zinc-700 dark:text-zinc-200 cursor-pointer flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900 shadow-xs">
-              <span class="text-xs">{{ translator.activeLanguage().flagEmoji }}</span>
-              <span class="text-[11px] font-bold font-mono tracking-tight uppercase">{{ translator.selectedLanguageCode() }}</span>
-              @if (isFrontlineLanguage(translator.selectedLanguageCode())) {
+              <span class="text-xs">{{ translator.activeUiLanguage().flagEmoji }}</span>
+              <span class="text-[11px] font-bold font-mono tracking-tight uppercase">{{ translator.uiLanguageCode() }}</span>
+              @if (isFrontlineLanguage(translator.uiLanguageCode())) {
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400" title="Frontline Vernacular Voice Prompts Active"></span>
               }
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-400 transition-transform duration-200" [class.rotate-180]="isLangMenuOpen()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -780,7 +789,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
                 <div class="flex items-center justify-between pb-2 mb-2 border-b border-zinc-100 dark:border-zinc-800 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">
                   <div class="flex items-center gap-1.5">
                     <span>🌐</span>
-                    <span>Language &amp; Script Beacons</span>
+                    <span>{{ 'Language & Script Beacons' | pgT:'nav.language_beacons' }}</span>
                   </div>
                   <div class="flex items-center gap-2">
                     <button type="button" (click)="toggleEarthBiophysicsModal(); isLangMenuOpen.set(false)" class="text-emerald-500 hover:text-emerald-400 font-bold cursor-pointer" title="Open Earth Biophysics &amp; Somatic Hub">🌍 Earth</button>
@@ -800,16 +809,16 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
                       <button
                         type="button"
                         (click)="selectScriptBeacon(beacon); isLangMenuOpen.set(false)"
-                        [class.bg-teal-500/20]="translator.selectedLanguageCode() === beacon.targetLangCode"
-                        [class.border-teal-500]="translator.selectedLanguageCode() === beacon.targetLangCode"
-                        [class.text-teal-700]="translator.selectedLanguageCode() === beacon.targetLangCode"
-                        [class.dark:text-teal-300]="translator.selectedLanguageCode() === beacon.targetLangCode"
-                        [class.border-zinc-200]="translator.selectedLanguageCode() !== beacon.targetLangCode"
-                        [class.dark:border-zinc-800]="translator.selectedLanguageCode() !== beacon.targetLangCode"
-                        [class.bg-white]="translator.selectedLanguageCode() !== beacon.targetLangCode"
-                        [class.dark:bg-zinc-900/60]="translator.selectedLanguageCode() !== beacon.targetLangCode"
-                        [class.text-zinc-700]="translator.selectedLanguageCode() !== beacon.targetLangCode"
-                        [class.dark:text-zinc-300]="translator.selectedLanguageCode() !== beacon.targetLangCode"
+                        [class.bg-teal-500/20]="translator.uiLanguageCode() === beacon.targetLangCode"
+                        [class.border-teal-500]="translator.uiLanguageCode() === beacon.targetLangCode"
+                        [class.text-teal-700]="translator.uiLanguageCode() === beacon.targetLangCode"
+                        [class.dark:text-teal-300]="translator.uiLanguageCode() === beacon.targetLangCode"
+                        [class.border-zinc-200]="translator.uiLanguageCode() !== beacon.targetLangCode"
+                        [class.dark:border-zinc-800]="translator.uiLanguageCode() !== beacon.targetLangCode"
+                        [class.bg-white]="translator.uiLanguageCode() !== beacon.targetLangCode"
+                        [class.dark:bg-zinc-900/60]="translator.uiLanguageCode() !== beacon.targetLangCode"
+                        [class.text-zinc-700]="translator.uiLanguageCode() !== beacon.targetLangCode"
+                        [class.dark:text-zinc-300]="translator.uiLanguageCode() !== beacon.targetLangCode"
                         class="p-1.5 border rounded-md text-center transition flex flex-col items-center justify-center cursor-pointer hover:border-amber-500/60 group"
                         [title]="beacon.label + ': ' + beacon.culturalContext"
                       >
@@ -825,11 +834,11 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
                   @for (lang of primaryLanguages; track lang.code) {
                     <button 
                       type="button"
-                      (click)="translator.setLanguage(lang.code); isLangMenuOpen.set(false)"
+                      (click)="selectAppLanguage(lang.code); isLangMenuOpen.set(false)"
                       class="w-full text-left px-2 py-1.5 rounded-md transition flex items-center justify-between text-xs cursor-pointer"
                       [ngClass]="{
-                        'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 font-bold border border-teal-300 dark:border-teal-700': translator.selectedLanguageCode() === lang.code,
-                        'hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-transparent': translator.selectedLanguageCode() !== lang.code
+                        'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 font-bold border border-teal-300 dark:border-teal-700': translator.uiLanguageCode() === lang.code,
+                        'hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-transparent': translator.uiLanguageCode() !== lang.code
                       }">
                       <div class="flex items-center gap-2">
                         <span class="text-sm">{{ lang.flagEmoji }}</span>
@@ -898,9 +907,9 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
                   [class.dark:bg-amber-950/40]="bionicReading.isBionicReadingEnabled()"
                   [class.text-amber-600]="bionicReading.isBionicReadingEnabled()"
                   [class.dark:text-amber-300]="bionicReading.isBionicReadingEnabled()"
-                  class="group shrink-0 px-2.5 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:bg-amber-50/50 dark:hover:bg-amber-950/20 rounded-xs transition-colors text-zinc-600 dark:text-zinc-300 cursor-pointer flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900 shadow-xs">
+                  class="hidden xl:flex group shrink-0 px-2 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:bg-amber-50/50 dark:hover:bg-amber-950/20 rounded-xs transition-colors text-zinc-600 dark:text-zinc-300 cursor-pointer items-center gap-1 bg-white/80 dark:bg-zinc-900 shadow-xs">
             <span class="text-xs">📖</span>
-            <span class="hidden xl:inline text-[11px] font-bold tracking-tight">Bionic</span>
+            <span class="sr-only">Bionic</span>
           </button>
 
           <!-- Philocardia Heart-Centered Sensory Mode Toggle -->
@@ -914,18 +923,18 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
                   [class.dark:bg-rose-950/40]="theme.isPhilocardiaEnabled()"
                   [class.text-rose-600]="theme.isPhilocardiaEnabled()"
                   [class.dark:text-rose-300]="theme.isPhilocardiaEnabled()"
-                  class="group shrink-0 px-2.5 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:bg-rose-50/50 dark:hover:bg-rose-950/20 rounded-xs transition-colors text-zinc-600 dark:text-zinc-300 cursor-pointer flex items-center gap-1.5 bg-white/80 dark:bg-zinc-900 shadow-xs">
+                  class="hidden xl:flex group shrink-0 px-2 py-1.5 border border-zinc-300 dark:border-zinc-700 hover:bg-rose-50/50 dark:hover:bg-rose-950/20 rounded-xs transition-colors text-zinc-600 dark:text-zinc-300 cursor-pointer items-center gap-1 bg-white/80 dark:bg-zinc-900 shadow-xs">
             <span class="text-xs" [class.animate-pulse]="theme.isPhilocardiaEnabled()">{{ theme.isPhilocardiaEnabled() ? '❤️' : '🤍' }}</span>
-            <span class="hidden xl:inline text-[11px] font-bold tracking-tight">Philocardia</span>
+            <span class="sr-only">Philocardia</span>
           </button>
 
           <!-- Desktop Lock Session / Secure Splash Trigger -->
           <button (click)="session.lock()"
                   aria-label="Lock Session & Open Secure Splash Screen"
                   title="Lock Session (HIPAA / Secure Splash Screen)"
-                  class="px-2.5 py-1.5 rounded-xs transition font-mono text-xs font-bold cursor-pointer bg-zinc-900 text-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 border border-zinc-700 hover:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center gap-1 shrink-0 shadow-xs">
+                  class="px-2 py-1.5 rounded-xs transition font-mono text-xs font-bold cursor-pointer bg-zinc-900 text-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 border border-zinc-700 hover:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center gap-1 shrink-0 shadow-xs">
             <span>🔒</span>
-            <span class="hidden lg:inline text-[11px] uppercase tracking-wider">Lock</span>
+            <span class="sr-only">Lock</span>
           </button>
         </div>
 
@@ -994,7 +1003,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
           <div class="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800">
             <div class="flex items-center gap-2">
               <app-pocketgull-icon name="seagull" />
-              <span class="text-base font-bold text-zinc-900 dark:text-zinc-100 font-pocketgull-inter">PocketGull Navigation</span>
+              <span class="text-base font-bold text-zinc-900 dark:text-zinc-100 font-pocketgull-inter">{{ 'PocketGull Navigation' | pgT:'nav.navigation_title' }}</span>
             </div>
             <button type="button" (click)="isMobileMenuOpen.set(false)" class="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-zinc-500 hover:text-zinc-900 dark:hover:text-white active:scale-95 cursor-pointer" aria-label="Close Mobile Menu">
               ✕
@@ -1010,7 +1019,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
                     [class.bg-zinc-100]="navShell?.activeTab() !== 'chart' || state.showActiveRoom()"
                     [class.dark:bg-zinc-900]="navShell?.activeTab() !== 'chart' || state.showActiveRoom()"
                     class="min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 font-bold text-xs uppercase tracking-wider cursor-pointer transition">
-              <span>🩺</span> <span>Chart</span>
+              <span>🩺</span> <span>{{ 'Chart' | pgT:'nav.chart' }}</span>
             </button>
             <button type="button" (click)="navShell?.selectTab('analysis'); isMobileMenuOpen.set(false);" 
                     [class.bg-teal-600]="navShell?.activeTab() === 'analysis'"
@@ -1019,7 +1028,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
                     [class.bg-zinc-100]="navShell?.activeTab() !== 'analysis'"
                     [class.dark:bg-zinc-900]="navShell?.activeTab() !== 'analysis'"
                     class="min-h-[44px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 font-bold text-xs uppercase tracking-wider cursor-pointer transition">
-              <span>📊</span> <span>Analysis</span>
+              <span>📊</span> <span>{{ 'Analysis' | pgT:'nav.analysis' }}</span>
             </button>
           </div>
 
@@ -1156,7 +1165,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
               <span class="text-base">🩻</span> <span>3D Joint Hologram HUD</span>
             </button>
 
-            <button type="button" (click)="openBiophysicalLenses.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+            <button type="button" data-testid="mobile-btn-biophysical-lenses" (click)="openBiophysicalLenses.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🫀</span> <span>Biophysical 3D Lenses &amp; Phenotypers</span>
             </button>
 
@@ -1172,7 +1181,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
               <span class="text-base">📱</span> <span>Sync Mobile Companion</span>
             </button>
 
-            <button type="button" (click)="openPatientPortal.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
+            <button type="button" data-testid="mobile-btn-patient-portal" (click)="openPatientPortal.emit(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-800 font-bold text-xs uppercase tracking-wider active:scale-[0.98] transition cursor-pointer">
               <span class="text-base">🩺</span> <span>Patient Self-Service Portal</span>
             </button>
 
@@ -1235,18 +1244,18 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
             <!-- Mobile Language Switcher -->
             <div class="pt-2">
               <div class="flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-1.5">
-                <span>Translate ({{ translator.activeLanguage().name }})</span>
-                <button type="button" (click)="navShell?.openMultilingualTerminal(); isMobileMenuOpen.set(false)" class="text-teal-600 dark:text-teal-400 font-bold hover:underline cursor-pointer">50+ Dialects →</button>
+                <span>{{ 'Translate' | pgT:'nav.translate' }} ({{ translator.activeUiLanguage().name }})</span>
+                <button type="button" (click)="navShell?.openMultilingualTerminal(); isMobileMenuOpen.set(false)" class="text-teal-600 dark:text-teal-400 font-bold hover:underline cursor-pointer">{{ '50+ Dialects' | pgT:'nav.dialects_more' }} →</button>
               </div>
               <div class="grid grid-cols-4 gap-1.5 font-mono text-[11px]">
                 @for (lang of primaryLanguages.slice(0, 8); track lang.code) {
                   <button 
                     type="button" 
-                    (click)="translator.setLanguage(lang.code)"
+                    (click)="selectAppLanguage(lang.code)"
                     class="min-h-[44px] py-1 px-1 rounded-xl border text-center flex flex-col items-center justify-center gap-0.5 cursor-pointer transition"
                     [ngClass]="{
-                      'bg-teal-50 dark:bg-teal-950/70 text-teal-900 dark:text-teal-100 border-teal-500 font-bold': translator.selectedLanguageCode() === lang.code,
-                      'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800': translator.selectedLanguageCode() !== lang.code
+                      'bg-teal-50 dark:bg-teal-950/70 text-teal-900 dark:text-teal-100 border-teal-500 font-bold': translator.uiLanguageCode() === lang.code,
+                      'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-800': translator.uiLanguageCode() !== lang.code
                     }">
                     <span class="text-xs">{{ lang.flagEmoji }}</span>
                     <span class="text-[10px] uppercase font-bold">{{ lang.code }}</span>
@@ -1260,7 +1269,7 @@ import { kachinkaAudio } from '../utils/kachinka-audio.service';
         <!-- Lock Session Footer Button -->
         <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
           <button type="button" (click)="session.lock(); isMobileMenuOpen.set(false);" class="w-full min-h-[48px] py-3.5 bg-zinc-900 dark:bg-zinc-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 active:scale-[0.98] transition cursor-pointer shadow-md">
-            <span>🔒</span> <span>Lock Session</span>
+            <span>🔒</span> <span>{{ 'Lock Session' | pgT:'nav.lock_session' }}</span>
           </button>
         </div>
       </div>
@@ -1298,22 +1307,25 @@ export class MainHeaderNavComponent {
   rpmService = inject(CmsRpmSuperbillService, { optional: true });
   translator = inject(SocraticMultilingualTranslatorService, { optional: true }) ?? new SocraticMultilingualTranslatorService();
   vernacularVoice = inject(FrontlineVernacularVoiceService, { optional: true });
+  uiI18n = inject(UiI18nService, { optional: true });
 
   constructor() {
     try {
       effect(() => {
-        const code = this.translator.selectedLanguageCode();
-        if (this.vernacularVoice && this.isFrontlineLanguage(code)) {
-          if (this.vernacularVoice.activeLanguageCode() !== code) {
-            this.vernacularVoice.setLanguage(code as VernacularLanguageCode);
-          }
+        const code = this.translator.uiLanguageCode();
+        if (!this.vernacularVoice) return;
+        const targetVoice: VernacularLanguageCode = this.isFrontlineLanguage(code)
+          ? (code as VernacularLanguageCode)
+          : 'en';
+        if (untracked(() => this.vernacularVoice!.activeLanguageCode()) !== targetVoice) {
+          this.vernacularVoice.setLanguage(targetVoice);
         }
       });
 
       effect(() => {
-        if (this.vernacularVoice) {
-          const vCode = this.vernacularVoice.activeLanguageCode();
-          if (this.translator.selectedLanguageCode() !== vCode) {
+        const vCode = this.vernacularVoice?.activeLanguageCode();
+        if (vCode && vCode !== 'en') {
+          if (untracked(() => this.translator.uiLanguageCode()) !== vCode) {
             this.translator.setLanguage(vCode);
           }
         }
@@ -1336,10 +1348,18 @@ export class MainHeaderNavComponent {
   showEarthBiophysicsModal = signal<boolean>(false);
 
   readonly scriptBeacons = SCRIPT_GLYPH_BEACONS;
-  currentAbacusScript = computed<AbacusScriptSystem>(() => this.translator.activeLanguage().abacusSystem ?? 'latin');
+  currentAbacusScript = computed<AbacusScriptSystem>(() => this.translator.activeUiLanguage().abacusSystem ?? 'latin');
+
+  selectAppLanguage(code: string): void {
+    if (this.uiI18n) {
+      this.uiI18n.setLanguage(code);
+    } else {
+      this.translator.setLanguage(code);
+    }
+  }
 
   selectScriptBeacon(beacon: IScriptBeacon): void {
-    this.translator.setLanguage(beacon.targetLangCode);
+    this.selectAppLanguage(beacon.targetLangCode);
     kachinkaAudio.playWoodBeadClick(1.2);
   }
 

@@ -56,9 +56,13 @@ test.describe('Mobile Clinical Flow & Touch Accessibility E2E', () => {
     expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 2);
   });
 
-  test('should render responsive mobile view of Business Site', async ({ page }) => {
+  test('should render responsive mobile view of Business Site', async ({ page, request }) => {
+    const bizRes = await request.get('/business', { maxRedirects: 0 });
+    expect(bizRes.status()).toBe(301);
+    expect(bizRes.headers()['location']).toBe('https://pocketgull.com/');
+
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/business', { waitUntil: 'domcontentloaded' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('body')).toContainText(/PocketGull/i, { timeout: 15000 });
 
     // Check that layout adapts cleanly to 390px mobile viewport without horizontal blowout

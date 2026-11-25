@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { IPatient } from './patient.types';
 import { GlobalHealthInitiativesService } from './global-health-initiatives.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
+import { WearableAsymmetricGainService } from './wearable-asymmetric-gain.service';
 import {
   IGroundedClinicalAssertion,
   createDefaultGroundedClinicalAssertion
@@ -21,6 +22,7 @@ export interface IFhirBundle {
 export class FhirR4BundleExportService {
   private globalHealth: GlobalHealthInitiativesService;
   private skepticalService: SkepticalEpistemologyService;
+  private wearableAcgService: WearableAsymmetricGainService;
 
   constructor() {
     try {
@@ -32,6 +34,11 @@ export class FhirR4BundleExportService {
       this.skepticalService = inject(SkepticalEpistemologyService, { optional: true }) || new SkepticalEpistemologyService();
     } catch {
       this.skepticalService = new SkepticalEpistemologyService();
+    }
+    try {
+      this.wearableAcgService = inject(WearableAsymmetricGainService, { optional: true }) || new WearableAsymmetricGainService();
+    } catch {
+      this.wearableAcgService = new WearableAsymmetricGainService();
     }
   }
 
@@ -428,6 +435,81 @@ export class FhirR4BundleExportService {
       ]
     };
 
+    // Wearable Tri-Modal Asymmetric Clinical Gain Observation (IEEE P2933 TIPPSS & MST SpO2 Debiasing)
+    const wearableEval = this.wearableAcgService.gainEvaluation();
+    const wearableTelemetry = this.wearableAcgService.telemetry();
+    const wearableGainObservation = {
+      resourceType: 'Observation',
+      id: `obs-wearable-acg-${patient.id}`,
+      status: 'final',
+      category: [
+        {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+              code: 'vital-signs',
+              display: 'Vital Signs'
+            }
+          ]
+        }
+      ],
+      code: {
+        coding: [
+          {
+            system: 'http://loinc.org',
+            code: '59408-5',
+            display: 'Oxygen saturation in Arterial blood by Pulse oximetry'
+          },
+          {
+            system: 'https://pocketgull.app/fhir/CodeSystem/asymmetric-gain',
+            code: 'ACG-TRIMODAL-READINESS',
+            display: 'Wearable Tri-Modal Asymmetric Clinical Gain & MST SpO2'
+          }
+        ],
+        text: `Wearable Asymmetric Gain (${wearableEval.watchPlatform}) — [EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC]`
+      },
+      subject: { reference: patientUrn, display: patient.name },
+      effectiveDateTime: timestamp,
+      valueQuantity: {
+        value: wearableEval.totalShockTrooperReadinessGain,
+        unit: 'pts',
+        system: 'http://unitsofmeasure.org',
+        code: '{score}'
+      },
+      extension: [
+        {
+          url: 'https://pocketgull.app/fhir/StructureDefinition/popperian-null-hypothesis',
+          valueString: 'H0: wearable tri-modal readiness gain does not exceed baseline pacing variance (in silico)'
+        }
+      ],
+      component: [
+        {
+          code: { text: 'MST-Calibrated SpO2 (%)' },
+          valueQuantity: { value: wearableEval.mstCalibratedSpo2Percent, unit: '%', code: '%' }
+        },
+        {
+          code: { text: 'Doing Hormetic & Vagal Gain' },
+          valueQuantity: { value: wearableEval.doingHormeticVagalGain, unit: 'pts', code: '{score}' }
+        },
+        {
+          code: { text: 'Feeling Interoceptive Calibration Gain' },
+          valueQuantity: { value: wearableEval.feelingInteroceptiveCalibrationGain, unit: 'pts', code: '{score}' }
+        },
+        {
+          code: { text: 'Not Doing Strategic Restraint PEM Shield Gain' },
+          valueQuantity: { value: wearableEval.notDoingRestraintPemShieldGain, unit: 'pts', code: '{score}' }
+        },
+        {
+          code: { text: 'Estimated PEM Crash Hours Saved (72h)' },
+          valueQuantity: { value: wearableEval.estimatedPemCrashHoursSaved, unit: 'h', code: 'h' }
+        },
+        {
+          code: { text: 'Monk Skin Tone Scale' },
+          valueInteger: wearableTelemetry.monkSkinToneScale
+        }
+      ]
+    };
+
     // Provenance Resource (FDA 21 CFR Part 11 Electronic Signature & Provenance Seal)
     const provenanceSignatureDigest = this.computeSha256Signature(`${bundleId}:${patient.id}:${timestamp}`);
     const provenanceResource = {
@@ -439,6 +521,7 @@ export class FhirR4BundleExportService {
         { reference: `urn:uuid:${groundedCondition.id}`, display: activeAssertion.hypothesis },
         { reference: `urn:uuid:${hrvObservation.id}` },
         { reference: `urn:uuid:${biophysObservation.id}` },
+        { reference: `urn:uuid:${wearableGainObservation.id}` },
         { reference: `urn:uuid:${carePlanResource.id}` }
       ],
       recorded: timestamp,
@@ -541,6 +624,10 @@ export class FhirR4BundleExportService {
           entry: [{ reference: `urn:uuid:${hrvObservation.id}` }]
         },
         {
+          title: 'Wearable Tri-Modal Asymmetric Clinical Gain (IEEE P2933 TIPPSS)',
+          entry: [{ reference: `urn:uuid:${wearableGainObservation.id}` }]
+        },
+        {
           title: 'Molecular Biophysics & Quantum Falsification Suite',
           entry: [{ reference: `urn:uuid:${biophysObservation.id}` }]
         },
@@ -568,6 +655,7 @@ export class FhirR4BundleExportService {
         { fullUrl: `urn:uuid:${groundedCondition.id}`, resource: groundedCondition },
         { fullUrl: `urn:uuid:${hrvObservation.id}`, resource: hrvObservation },
         { fullUrl: `urn:uuid:${biophysObservation.id}`, resource: biophysObservation },
+        { fullUrl: `urn:uuid:${wearableGainObservation.id}`, resource: wearableGainObservation },
         { fullUrl: `urn:uuid:${carePlanResource.id}`, resource: carePlanResource },
         { fullUrl: `urn:uuid:${provenanceResource.id}`, resource: provenanceResource }
       ]

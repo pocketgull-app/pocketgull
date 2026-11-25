@@ -274,7 +274,8 @@ app.use((req, res, next) => {
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test') ? 100_000 : 2000,
+  max: isTestingEnv ? 100_000 : 2000,
+  skip: () => isTestingEnv,
   standardHeaders: true,
   legacyHeaders: false,
   validate: { trustProxy: false }
@@ -564,6 +565,7 @@ app.use((req, res, next) => {
 const manifestRateLimiter = rateLimit({
   windowMs: 60_000,
   max: isTestingEnv || process.env['NODE_ENV'] !== 'production' ? 100_000 : 300,
+  skip: () => isTestingEnv,
   standardHeaders: true,
   legacyHeaders: false,
   validate: { trustProxy: false },
@@ -927,6 +929,7 @@ async function getApiKey(req?: express.Request): Promise<string> {
 const apiLimiter = rateLimit({
   windowMs: 60_000,
   max: isTestingEnv || process.env['NODE_ENV'] !== 'production' ? 100_000 : 100,
+  skip: () => isTestingEnv,
   standardHeaders: true,
   legacyHeaders: false,
   validate: { trustProxy: false },
@@ -1042,6 +1045,7 @@ app.use('/api/fitbit', fitbitRouter);
 const docsRateLimiter = rateLimit({
   windowMs: 60_000,
   max: isTestingEnv || process.env['NODE_ENV'] !== 'production' ? 100_000 : 300,
+  skip: () => isTestingEnv,
   standardHeaders: true,
   legacyHeaders: false,
   validate: { trustProxy: false },
@@ -1267,6 +1271,35 @@ app.use((req, res, next) => {
       }
       next(err);
     });
+});
+
+// ── Structured Express Error Handler (Prevents 4xx body-parser noise from tripping 5xx error-spike alerts) ──
+app.use((err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  if (res.headersSent) {
+    return next(err);
+  }
+  const httpErr = err as { status?: number; statusCode?: number; type?: string; message?: string };
+  const status = typeof httpErr?.status === 'number'
+    ? httpErr.status
+    : typeof httpErr?.statusCode === 'number'
+      ? httpErr.statusCode
+      : 500;
+
+  if (httpErr?.type === 'entity.too.large' || status === 413) {
+    console.warn('[HTTP 413] Payload too large on %s', sanitizeLogInput(req.path));
+    return res.status(413).json({
+      error: 'Payload Too Large',
+      message: 'Request body exceeds the configured endpoint size limit.'
+    });
+  }
+
+  if (status >= 400 && status < 500) {
+    console.warn('[HTTP %d] Client request error on %s', status, sanitizeLogInput(req.path));
+    return res.status(status).json({ error: 'Bad Request' });
+  }
+
+  console.error('[HTTP 500] Unhandled server error on %s:', sanitizeLogInput(req.path), httpErr?.message || 'Unknown error');
+  return res.status(500).json({ error: 'Internal Server Error' });
 });
 
 /**

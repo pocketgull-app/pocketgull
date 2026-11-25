@@ -10,8 +10,9 @@
  *
  * @module components/family/family-health-quest
  */
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { UiI18nService } from '../../services/ui-i18n.service';
 
 export type CompanionMode = 'family' | 'peer' | 'pet' | 'solo';
 export type SupportedLanguage = 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'hi' | 'ar' | 'pt';
@@ -683,6 +684,24 @@ for (const lang of ['fr', 'de', 'zh', 'ja', 'hi', 'ar', 'pt'] as SupportedLangua
   `
 })
 export class FamilyHealthQuestComponent {
+  private readonly uiI18n = inject(UiI18nService, { optional: true });
+  private lastSyncedCount = 0;
+
+  constructor() {
+    try {
+      effect(() => {
+        const count = this.uiI18n?.explicitSelectionCount() ?? 0;
+        const code = this.uiI18n?.activeLanguageCode() as SupportedLanguage | undefined;
+        if (count > this.lastSyncedCount && code && this.languages.some(l => l.code === code)) {
+          this.lastSyncedCount = count;
+          untracked(() => this.setLanguage(code));
+        }
+      });
+    } catch {
+      // Isolated injectors without effect scheduler skip reactive sync
+    }
+  }
+
   languages: ILanguageOption[] = [
     { code: 'en', label: 'English', flag: '🇺🇸' },
     { code: 'es', label: 'Español', flag: '🇪🇸' },

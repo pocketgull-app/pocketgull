@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode, selectPatientById, selectPatientByName } from './utils/setup';
+import {
+  setupE2ePage,
+  enterDemoMode,
+  selectPatientById,
+  ensureAnalysisViewVisible,
+  switchToAnalysisLens
+} from './utils/setup';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -9,11 +15,13 @@ import * as path from 'path';
  * Simulates a full, realistic 12-hour doctor shift across 10 diverse patient encounters:
  * 1. Intake interview & documentation of new clinical complaints & treatment goals
  * 2. Unbiased background completion of clinical assessments & screeners (PHQ-9, GAD-7, MoCA, DN4, ROS-14, etc.)
- * 3. Exploration of all 10 clinical paradigms (Allopathic, Functional, TCM, Ayurveda, Biomechanical, Exposomics, Chronobiology, Socratic Audit, Global Health, Teledentistry)
- * 4. Consultation with the Research Frame & PubMed evidence synthesis
+ * 3. Autonomous consultation with Research Frame (live PubMed + offline Vertex RAG discovery) & note attachment
+ * 4. Exploration of assigned clinical paradigms across Dense Bar & Vault lenses
  * 5. Generation of comprehensive Care Plans with multi-cognitive translation (Standard, Simplified, Dyslexia, Child)
- * 6. High-fidelity PDF snapshot & HTML export into artifacts/shift-care-plans/
+ * 6. High-fidelity PDF snapshot & HTML export into artifacts/shift-care-plans/ with file-size validation
  * 7. Compilation of an immutable master shift action ledger
+ *
+ * Optional: set SHIFT_LIVE_AI=true to disable AI mocking and test live Gemini / Ollama inference.
  */
 
 interface IShiftPatientRecord {
@@ -26,17 +34,38 @@ interface IShiftPatientRecord {
   assessmentName: string;
   paradigms: string[];
   researchQuery: string;
+  researchGroundedCount: number;
+  researchSavedToChart: boolean;
   cognitiveLevel: 'standard' | 'simplified' | 'dyslexia' | 'child';
   pdfPath?: string;
+  pdfSizeBytes?: number;
   htmlPath?: string;
   timestamp: string;
   status: 'SEEN' | 'CARE_PLAN_GENERATED' | 'TRANSLATED' | 'EXPORTED';
 }
 
-const SHIFT_ROSTER = [
+interface IShiftRosterEntry {
+  id: string;
+  name: string;
+  nameHint: string;
+  expectedDropdownText: string;
+  clinicalDomain: string;
+  intakeNote: string;
+  intakeGoal: string;
+  assessmentTab: string;
+  assessmentName: string;
+  paradigms: string[];
+  researchQuery: string;
+  cognitiveLevel: 'standard' | 'simplified' | 'dyslexia' | 'child';
+  language?: string;
+}
+
+const SHIFT_ROSTER: IShiftRosterEntry[] = [
   {
     id: 'p001',
-    name: 'Homo Sapiens (Male, Metabolic',
+    name: 'Homo Sapiens (Male, Metabolic Syndrome, 58y)',
+    nameHint: 'Metabolic Syndrome',
+    expectedDropdownText: 'Metabolic Syndrome',
     clinicalDomain: 'Metabolic & Cardiometabolic Medicine',
     intakeNote: 'Patient presents for 6-month metabolic follow-up. Reports ongoing difficulty with CPAP compliance (apnea episodes > 15/hr), fasting glucose fluctuating between 145-170 mg/dL, and bilateral lower extremity edema.',
     intakeGoal: 'Titrate GLP-1/GIP co-agonist therapy, achieve HbA1c < 7.0%, and optimize CPAP bilevel pressure support.',
@@ -44,47 +73,55 @@ const SHIFT_ROSTER = [
     assessmentName: 'PHQ-9 (Depression & Metabolic Anhedonia)',
     paradigms: ['Summary Overview', 'Treatment Matrix', 'Functional Protocols'],
     researchQuery: 'metabolic syndrome GLP-1 dual agonist renal protection',
-    cognitiveLevel: 'simplified' as const,
+    cognitiveLevel: 'simplified',
   },
   {
     id: 'p002',
-    name: 'Homo Sapiens (Female, Asthma',
-    clinicalDomain: 'Pulmonary & Environmental Exposomics',
-    intakeNote: '34yo female presenting with acute nocturnal wheezing, chest tightness following regional wildfire smoke exposure, and elevated absolute eosinophil count (580 cells/uL).',
-    intakeGoal: 'Establish asthma action plan, consider biologic dupilumab initiation, and deploy HEPA environmental filtration.',
+    name: 'Homo Sapiens (Female, Asthma & Respiratory, 42y)',
+    nameHint: 'Asthma & Respiratory',
+    expectedDropdownText: 'Asthma & Respiratory',
+    clinicalDomain: 'Pulmonary Pain & Non-Opioid Rehabilitation',
+    intakeNote: '42yo female with Chronic Lower Back Pain (VAS 6/10) and Opioid Use Disorder (in remission) seeking non-opioid analgesic strategies alongside acute wildfire smoke airway reactivity.',
+    intakeGoal: 'Implement non-opioid pain modulation, avoid opioid relapse triggers, establish asthma action plan, and deploy HEPA environmental filtration.',
     assessmentTab: 'ros14',
     assessmentName: 'ROS-14 (Review of Systems - Pulmonary/Allergy)',
     paradigms: ['Environmental Exposomics & Toxicology', 'Functional Protocols', 'Monitoring & Follow-up'],
-    researchQuery: 'severe eosinophilic asthma dupilumab particulate matter PM2.5',
-    cognitiveLevel: 'dyslexia' as const,
+    researchQuery: 'chronic back pain non-opioid NaV1.8 asthma PM2.5',
+    cognitiveLevel: 'dyslexia',
   },
   {
     id: 'p003',
-    name: 'Homo Sapiens (Male, Cognitive',
-    clinicalDomain: 'Neurogeriatrics & Glymphatic Health',
-    intakeNote: '71yo male accompanied by spouse reporting progressive short-term recall difficulties over 14 months, nocturnal sleep fragmentation, and autonomic orthostatic lightheadedness.',
-    intakeGoal: 'Perform MoCA baseline screening, optimize slow-wave sleep glymphatic clearance, and screen for vascular vs neurodegenerative etiology.',
+    name: 'Homo Sapiens (Male, Geriatric Cardiac, 81y)',
+    nameHint: 'Geriatric Cardiac',
+    expectedDropdownText: 'Geriatric Cardiac',
+    clinicalDomain: 'Neurogeriatrics, Osteoarthritis Pain & Glymphatic Health',
+    intakeNote: '81yo male reporting progressive short-term recall difficulties, right hip and knee osteoarthritis discomfort, nocturnal sleep fragmentation, and autonomic orthostatic lightheadedness.',
+    intakeGoal: 'Perform MoCA baseline screening, optimize slow-wave sleep glymphatic clearance, and deploy joint-sparing geriatric analgesia.',
     assessmentTab: 'moca',
     assessmentName: 'MoCA (Montreal Cognitive Assessment 30-Point)',
     paradigms: ['Summary Overview', 'Chronobiology Matrix', 'Skeptical Epistemology & Socratic Audit'],
     researchQuery: 'glymphatic system slow wave sleep cognitive decline prevention',
-    cognitiveLevel: 'child' as const,
+    cognitiveLevel: 'child',
   },
   {
     id: 'p004',
-    name: 'Homo Sapiens (Female, Autoimmune',
-    clinicalDomain: 'Neuro-Endocrine & Functional Immunology',
-    intakeNote: '42yo female presenting with persistent afternoon exhaustion, cold intolerance, widespread fibro-myalgic tenderness, and elevated anti-TPO antibodies (> 400 IU/mL).',
-    intakeGoal: 'Implement low-dose naltrexone (LDN) trial, anti-inflammatory micronutrient protocol, and stress-induced HPA axis pacing.',
+    name: 'Pongo Pygmaeus (Orangutan, Arboreal Hominid, 16y)',
+    nameHint: 'Pongo Pygmaeus',
+    expectedDropdownText: 'Pongo Pygmaeus',
+    clinicalDomain: 'Comparative Cardiopulmonary & Renal Physiology',
+    intakeNote: '16yo arboreal hominid presenting with cardiopulmonary strain (IHD & COPD pattern) and cardiometabolic renal intolerance requiring comparative electrolyte and autonomic conservation pacing.',
+    intakeGoal: 'Stabilize cardiopulmonary hemodynamics, renal filtration margin, and anti-inflammatory phytotherapeutic diet.',
     assessmentTab: 'gad7',
-    assessmentName: 'GAD-7 (Generalized Anxiety Screener)',
+    assessmentName: 'GAD-7 (Behavioral & Autonomic Screener)',
     paradigms: ['Functional Protocols', 'Treatment Matrix', 'Patient Education'],
-    researchQuery: 'hashimoto thyroiditis low dose naltrexone gut permeability',
-    cognitiveLevel: 'standard' as const,
+    researchQuery: 'cardiopulmonary strain renal syndrome inflammatory autonomic pacing',
+    cognitiveLevel: 'standard',
   },
   {
     id: 'p_charles_darwin',
     name: 'Charles Darwin',
+    nameHint: 'Charles Darwin',
+    expectedDropdownText: 'Charles Darwin',
     clinicalDomain: 'Complex Chronic Dysautonomia & Gastrointestinal',
     intakeNote: 'Chronic recurrent postprandial dyspepsia, severe gastric flatulence, persistent nausea, and profound autonomic exhaustion following cognitive exertion.',
     intakeGoal: 'Restore vagal nerve tone, modulate gastrointestinal enteric signaling, and rebalance sympathetic-parasympathetic tone.',
@@ -92,11 +129,13 @@ const SHIFT_ROSTER = [
     assessmentName: 'MBI (Allostatic Load & Autonomic Strain)',
     paradigms: ['Treatment Matrix', 'Functional Protocols', 'Skeptical Epistemology & Socratic Audit'],
     researchQuery: 'postprandial dysautonomia vagal nerve stimulation gastroparesis',
-    cognitiveLevel: 'simplified' as const,
+    cognitiveLevel: 'simplified',
   },
   {
     id: 'p_frida_kahlo',
     name: 'Frida Kahlo',
+    nameHint: 'Frida Kahlo',
+    expectedDropdownText: 'Frida Kahlo',
     clinicalDomain: 'Neuropathic Pain & Physical Rehabilitation',
     intakeNote: 'Severe central sensitization, burning causalgia, allodynia of the right lower extremity following multi-trauma and spinal stabilization surgery.',
     intakeGoal: 'Implement somatic grounding, multimodal neuropathic pain modulation, and phantom limb mirror neuro-visual retraining.',
@@ -104,11 +143,13 @@ const SHIFT_ROSTER = [
     assessmentName: 'DN4 (Douleur Neuropathique 4 Questions)',
     paradigms: ['Summary Overview', 'Treatment Matrix', 'Patient Education'],
     researchQuery: 'neuropathic pain central sensitization mirror visual feedback',
-    cognitiveLevel: 'standard' as const,
+    cognitiveLevel: 'standard',
   },
   {
     id: 'p_marie_curie',
-    name: 'Marie Curie',
+    name: 'Madame Marie Curie',
+    nameHint: 'Marie Curie',
+    expectedDropdownText: 'Marie Curie',
     clinicalDomain: 'Hematology & Radiation Toxicology',
     intakeNote: 'Profound fatigue, petechial hemorrhages on distal forearms, normocytic normochromic anemia, and chronic cumulative ionizing radiation exposure.',
     intakeGoal: 'Prevent bone marrow hypoplasia, administer cellular antioxidant scavengers, and institute protective environmental shields.',
@@ -116,36 +157,42 @@ const SHIFT_ROSTER = [
     assessmentName: 'Sarc-F (Frailty & Musculoskeletal Sarcopenia)',
     paradigms: ['Environmental Exposomics & Toxicology', 'Monitoring & Follow-up', 'Treatment Matrix'],
     researchQuery: 'ionizing radiation aplastic anemia hematopoietic stem cell protection',
-    cognitiveLevel: 'simplified' as const,
+    cognitiveLevel: 'simplified',
   },
   {
     id: 'p_edwin_smith_3',
-    name: 'Edwin Smith',
+    name: 'Homo Sapiens (Male, Edwin Smith Papyrus Case 3, 30y)',
+    nameHint: 'Edwin Smith',
+    expectedDropdownText: 'Edwin Smith',
     clinicalDomain: 'Spinal Biomechanics & Osteopathic Ergonomics',
     intakeNote: 'C5-C6 and C6-C7 radiculopathy with progressive thenar atrophy, intermittent numbness along the C6 dermatome, and severe paraspinal muscle hypertonicity.',
     intakeGoal: 'Biomechanical cervical mobilization, postural ergonomic realignment, and neuroforaminal decompression.',
     assessmentTab: 'cvsq',
     assessmentName: 'CVSQ (Visual-Ergonomic Strain Questionnaire)',
     paradigms: ['Treatment Matrix', 'Global Health & WHO Initiatives', 'Summary Overview'],
-    researchQuery: 'cervical radiculopathy conservative biomechanical decompression',
-    cognitiveLevel: 'standard' as const,
+    researchQuery: 'cervical radiculopathy conservative biomechanical decompression pain',
+    cognitiveLevel: 'standard',
   },
   {
     id: 'p_mara_santos',
-    name: 'Mara Santos',
-    clinicalDomain: 'Pediatric Pulmonology & Rare Disease Genetics',
-    intakeNote: 'Adolescent female with Cystic Fibrosis (delta-F508 homozygous) presenting with sticky mucopurulent sputum, productive cough, and weight velocity plateauing.',
-    intakeGoal: 'Optimize highly effective CFTR modulator therapy (elexacaftor/tezacaftor/ivacaftor), airway clearance vibrating vest, and high-calorie pancreatic enzyme dosing.',
+    name: 'Homo Sapiens (Female, Neurological & Methylation, 34y)',
+    nameHint: 'Neurological & Methylation',
+    expectedDropdownText: 'Neurological & Methylation',
+    clinicalDomain: 'Neuroimmunology, MTHFR Methylation & CYP2D6 Pharmacogenomics',
+    intakeNote: '34yo female with Relapsing-Remitting Multiple Sclerosis (HLA-DRB1*15:01), compound MTHFR C677T methylation deficit (homocysteine 14.1 umol/L), mitochondrial CoQ10 depletion, and CYP2D6 pharmacogenomic constraints on neuropathic pain analgesia.',
+    intakeGoal: 'Optimize remyelination neuroprotection, replace L-methylfolate & ubiquinol CoQ10, avoid CYP2D6-incompatible opioids/SSRIs, and align baclofen safety.',
     assessmentTab: 'growthyself',
-    assessmentName: 'Grow-Thyself (Pediatric Wellness & Growth Screener)',
+    assessmentName: 'Grow-Thyself (Holistic Neuro-Metabolic & Pain Screener)',
     paradigms: ['Summary Overview', 'Functional Protocols', 'Global Health & WHO Initiatives'],
-    researchQuery: 'cystic fibrosis CFTR modulators pancreatic enzyme replacement therapy',
-    cognitiveLevel: 'child' as const,
+    researchQuery: 'multiple sclerosis MTHFR CYP2D6 remyelination pain',
+    cognitiveLevel: 'child',
     language: 'spanish',
   },
   {
     id: 'p_srinivasa_ramanujan',
     name: 'Srinivasa Ramanujan',
+    nameHint: 'Ramanujan',
+    expectedDropdownText: 'Ramanujan',
     clinicalDomain: 'Infectious Hepatology & Nutritional Rehabilitation',
     intakeNote: 'Severe cachexia, right hypochondriac dull pain, low-grade remittent pyrexia, history of amebic dysentery with secondary hepatic amebiasis.',
     intakeGoal: 'Eradicate hepatic parasitic infection, initiate aggressive micronutrient re-alimentation (vitamin B12, iron, zinc), and restore intestinal mucosal barrier integrity.',
@@ -153,7 +200,7 @@ const SHIFT_ROSTER = [
     assessmentName: 'TCM Energetic Screener (Spleen-Liver Disharmony)',
     paradigms: ['Treatment Matrix', 'Global Health & WHO Initiatives', 'Patient Education'],
     researchQuery: 'amebic liver abscess nutritional rehabilitation hepatic recovery',
-    cognitiveLevel: 'dyslexia' as const,
+    cognitiveLevel: 'dyslexia',
     language: 'german',
   },
 ];
@@ -169,12 +216,18 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
 
   test('should execute full 12-hour doctor shift across all 10 patients, complete assessments, explore 10 paradigms, and export care plans', async ({ page }) => {
     test.setTimeout(3600000); // 1 hour timeout for 10-patient local LLM shift
+    page.setDefaultTimeout(15000); // Prevent individual UI actions from stalling silently
+    await page.context().addInitScript(() => {
+      window.print = () => {};
+    });
 
+    const useLiveAi = process.env['SHIFT_LIVE_AI'] === 'true';
     console.log('\n=============================================================');
     console.log('🩺 INITIATING DOCTOR 12-HOUR CLINICAL SHIFT SIMULATION');
     console.log('🏥 Total Patient Queue:', SHIFT_ROSTER.length, 'patients');
+    console.log('🤖 AI Mode:', useLiveAi ? 'LIVE AI (Gemini/Ollama)' : 'MOCKED + VERTEX GROUNDED RAG');
     console.log('📁 Artifacts Directory:', artifactsDir);
-    await setupE2ePage(page, { mockClinician: true, mockAI: true });
+    await setupE2ePage(page, { mockClinician: true, mockAI: !useLiveAi });
     await enterDemoMode(page);
 
     const shiftLedger: IShiftPatientRecord[] = [];
@@ -189,12 +242,11 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
       console.log(`[Assessment Planned]: ${pData.assessmentName}`);
 
       // ── Step 1: Select Patient ──────────────────────────────────────────
-      await selectPatientById(page, pData.id);
-      await page.waitForTimeout(600);
+      await selectPatientById(page, pData.id, pData.nameHint);
+      await expect(page.locator('app-patient-dropdown')).toContainText(pData.expectedDropdownText, { timeout: 8000 });
 
-      // Verify patient dropdown reflects active selection
       const dropdownText = await page.locator('app-patient-dropdown').innerText().catch(() => '');
-      console.log(`[Dropdown Active]:`, dropdownText.slice(0, 40).replace(/\n/g, ' '));
+      console.log(`[Dropdown Active]:`, dropdownText.slice(0, 52).replace(/\n/g, ' '));
 
       // ── Step 2: Clinical Intake (Record Encounter Note & Goal) ──────────
       // Switch to Active Room if not already active
@@ -203,42 +255,45 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
         const headerRoomTab = page.locator('#btn-active-room-trigger, [data-testid="header-tab-room"]').first();
         const mobileRoomTab = page.getByTestId('mobile-tab-room');
 
-        if (await headerRoomTab.isVisible({ timeout: 2000 }).catch(() => false)) {
+        if (await headerRoomTab.waitFor({ state: 'visible', timeout: 1500 }).then(() => true).catch(() => false)) {
           await headerRoomTab.click({ force: true });
-        } else if (await mobileRoomTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-          await mobileRoomTab.click({ force: true });
+        } else if (await mobileRoomTab.waitFor({ state: 'visible', timeout: 2000 }).then(() => true).catch(() => false)) {
+          await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
+          await mobileRoomTab.dispatchEvent('click');
         }
-        await page.waitForTimeout(500);
+        await page.locator('app-task-flow').first().waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
       }
 
       // Ensure Tasks & Notes view is active
       const tasksNotesBtn = page.locator('app-task-flow button', { hasText: 'Tasks & Notes' }).first();
-      if (await tasksNotesBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await tasksNotesBtn.click({ force: true });
-        await page.waitForTimeout(300);
+      if (await tasksNotesBtn.waitFor({ state: 'visible', timeout: 3000 }).then(() => true).catch(() => false)) {
+        await tasksNotesBtn.dispatchEvent('click');
+        await page.waitForTimeout(250);
       }
 
       // Enter Clinical Note
       const taskInput = page.locator('#taskInputText');
-      if (await taskInput.isVisible({ timeout: 4000 }).catch(() => false)) {
+      if (await taskInput.waitFor({ state: 'visible', timeout: 6000 }).then(() => true).catch(() => false)) {
         await taskInput.fill(`[Chief Complaint & Intake]: ${pData.intakeNote}`);
-        await page.waitForTimeout(200);
+        await page.waitForTimeout(150);
 
-        const addNoteBtn = page.locator('button', { hasText: 'Add Note' }).first();
-        if (await addNoteBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-          await addNoteBtn.click({ force: true });
-          await page.waitForTimeout(300);
+        const addNoteBtn = page.locator('app-task-flow button', { hasText: 'Add Note' }).first();
+        if (await addNoteBtn.waitFor({ state: 'visible', timeout: 2000 }).then(() => true).catch(() => false)) {
+          await addNoteBtn.scrollIntoViewIfNeeded().catch(() => {});
+          await addNoteBtn.dispatchEvent('click');
+          await page.waitForTimeout(250);
           console.log(`  ✓ Recorded clinical intake note to patient chart.`);
         }
 
         // Enter Patient Goal as a Clinical Task
         await taskInput.fill(`[Goal]: ${pData.intakeGoal}`);
-        await page.waitForTimeout(200);
+        await page.waitForTimeout(150);
 
-        const addTaskBtn = page.locator('button', { hasText: 'Add Task' }).first();
-        if (await addTaskBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-          await addTaskBtn.click({ force: true });
-          await page.waitForTimeout(300);
+        const addTaskBtn = page.locator('app-task-flow button', { hasText: 'Add Task' }).first();
+        if (await addTaskBtn.waitFor({ state: 'visible', timeout: 2000 }).then(() => true).catch(() => false)) {
+          await addTaskBtn.scrollIntoViewIfNeeded().catch(() => {});
+          await addTaskBtn.dispatchEvent('click');
+          await page.waitForTimeout(250);
           console.log(`  ✓ Logged clinical goal to care plan task list.`);
         }
       }
@@ -248,15 +303,17 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
       const roomAssessmentsTab = page.getByTestId('active-room-tab-assessments');
       let screenerCompleted = false;
 
-      if (await roomAssessmentsTab.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await roomAssessmentsTab.click({ force: true });
-        await page.waitForTimeout(400);
+      if (await roomAssessmentsTab.waitFor({ state: 'visible', timeout: 3000 }).then(() => true).catch(() => false)) {
+        await roomAssessmentsTab.scrollIntoViewIfNeeded().catch(() => {});
+        await roomAssessmentsTab.dispatchEvent('click');
+        await page.waitForTimeout(350);
 
         // Switch to specific assessment tab
         const tabBtn = page.getByTestId(`cas-tab-${pData.assessmentTab}`);
-        if (await tabBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+        if (await tabBtn.waitFor({ state: 'visible', timeout: 4000 }).then(() => true).catch(() => false)) {
+          await tabBtn.scrollIntoViewIfNeeded().catch(() => {});
           await tabBtn.dispatchEvent('click');
-          await page.waitForTimeout(400);
+          await page.waitForTimeout(350);
 
           // Click first available response options/radio inputs to complete screener
           const clickableAnswers = page.locator('app-clinical-assessments-suite button, app-clinical-assessments-suite input[type="radio"]');
@@ -264,7 +321,7 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
           if (count > 0) {
             // Click 2-3 response items to register unbiased quantitative responses
             for (let i = 0; i < Math.min(3, count); i++) {
-              await clickableAnswers.nth(i).click({ force: true }).catch(() => {});
+              await clickableAnswers.nth(i).dispatchEvent('click').catch(() => {});
             }
             screenerCompleted = true;
             console.log(`  ✓ Completed ${pData.assessmentName} questionnaire in room.`);
@@ -272,84 +329,112 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
         }
       }
 
-      // ── Step 4: Research Literature & PubMed Grounding ──────────────────
-      const researchFrameTrigger = page.locator('#tour-research-frame-trigger').first();
-      if (await researchFrameTrigger.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await researchFrameTrigger.click({ force: true });
-        await page.waitForTimeout(400);
+      // ── Step 4: Autonomous Research Frame Discovery & Note Attachment ───
+      let researchGroundedCount = 0;
+      let researchSavedToChart = false;
+      const researchFrameTrigger = page.locator('#tour-research-frame-trigger:visible, app-task-flow button:has-text("Research Frame"):visible').first();
+      if (await researchFrameTrigger.waitFor({ state: 'visible', timeout: 2500 }).then(() => true).catch(() => false)) {
+        await researchFrameTrigger.dispatchEvent('click');
+        await page.waitForTimeout(350);
 
-        // Check if Research Frame opened
+        const pubmedTab = page.getByTestId('rframe-engine-pubmed');
+        if (await pubmedTab.isVisible({ timeout: 3000 }).catch(() => false)) {
+          await pubmedTab.click({ force: true });
+          const searchInput = page.locator('[data-testid="rframe-search-input"] input').first();
+          await searchInput.waitFor({ state: 'visible', timeout: 3000 });
+          await searchInput.fill(pData.researchQuery);
+          await searchInput.dispatchEvent('input');
+          await page.getByTestId('rframe-search-btn').first().click({ force: true });
+
+          const saveNoteBtn = page.getByTestId('btn-rframe-save-note').first();
+          if (await saveNoteBtn.waitFor({ state: 'visible', timeout: 6000 }).then(() => true).catch(() => false)) {
+            researchGroundedCount = await page.getByTestId('btn-rframe-save-note').count();
+            await saveNoteBtn.dispatchEvent('click').catch(() => {});
+            researchSavedToChart = true;
+            await page.waitForTimeout(250);
+          }
+          console.log(`  ✓ Grounded Research Frame discovery ("${pData.researchQuery}"): ${researchGroundedCount} cards, saved=${researchSavedToChart}`);
+        }
+
         const closeDrawerBtn = page.locator('button[aria-label="Close Evidence Drawer"]').first();
         if (await closeDrawerBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-          console.log(`  ✓ Consulted Research Frame for evidence: "${pData.researchQuery}"`);
           await closeDrawerBtn.click({ force: true });
-          await page.waitForTimeout(400);
-        } else {
-          // If close button not found, click trigger again to toggle off
-          await researchFrameTrigger.click({ force: true }).catch(() => {});
-          await page.waitForTimeout(300);
+          await closeDrawerBtn.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
         }
       }
 
       // ── Step 5: Switch to Analysis View & Generate Care Plan ─────────────
-      const analysisTab = page.getByTestId('header-tab-analysis');
-      if (await analysisTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await analysisTab.dispatchEvent('click');
-      } else {
-        const altAnalysisBtn = page.locator('button', { hasText: 'Analysis' }).first();
-        if (await altAnalysisBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
-          await altAnalysisBtn.click({ force: true });
-        }
-      }
-      await page.waitForTimeout(500);
+      await ensureAnalysisViewVisible(page);
 
       // Trigger Care Plan generation via #tour-generate-btn
       const generateBtn = page.locator('#tour-generate-btn').first();
-      if (await generateBtn.isVisible({ timeout: 4000 }).catch(() => false)) {
-        await generateBtn.click({ force: true });
-        // Wait for analysis results to populate and lens bar to render
-        await page.getByTestId('tab-overview').waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+      if (await generateBtn.waitFor({ state: 'visible', timeout: 4000 }).then(() => true).catch(() => false)) {
+        await generateBtn.scrollIntoViewIfNeeded().catch(() => {});
+        await generateBtn.dispatchEvent('click');
+        await page.locator('app-analysis-report').first().waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+        await page.waitForTimeout(450);
         console.log(`  ✓ Triggered precision Care Plan generation.`);
       }
 
+      // Expand SMoE Sparse routing into full Dense 8-Lens + Vault toolbar
+      const denseToggleBtn = page.locator('app-analysis-report button', { hasText: /\[DENSE\]/i }).first();
+      if (await denseToggleBtn.waitFor({ state: 'visible', timeout: 3500 }).then(() => true).catch(() => false)) {
+        await denseToggleBtn.scrollIntoViewIfNeeded().catch(() => {});
+        await denseToggleBtn.dispatchEvent('click');
+        await page.waitForTimeout(350);
+      }
+
       // ── Step 6: Explore Assigned Clinical Paradigms & Lenses ────────────
+      const paradigmToTestId: Record<string, string> = {
+        'Summary Overview': 'tab-overview',
+        'Treatment Matrix': 'tab-treatment-matrix',
+        'Functional Protocols': 'tab-functional-protocols',
+        'ASSESSMENTS': 'tab-assessments',
+        'Monitoring & Follow-up': 'tab-monitoring-follow-up',
+        'Environmental Exposomics & Toxicology': 'tab-exposomics-toxicology',
+        'Global Health & WHO Initiatives': 'tab-global-health',
+        'Skeptical Epistemology & Socratic Audit': 'tab-socratic-audit',
+      };
+
       const paradigmsExplored: string[] = [];
       for (const paradigm of pData.paradigms) {
-        let lensBtn = page.locator(`button:has-text("${paradigm}")`).first();
-        if (paradigm === 'Summary Overview') {
-          lensBtn = page.getByTestId('tab-overview');
-        } else if (paradigm === 'Treatment Matrix') {
-          lensBtn = page.getByTestId('tab-treatment-matrix');
-        } else if (paradigm === 'Functional Protocols') {
-          lensBtn = page.getByTestId('tab-functional-protocols');
-        } else if (paradigm === 'Environmental Exposomics & Toxicology') {
-          lensBtn = page.getByTestId('tab-exposomics-toxicology');
-        } else if (paradigm === 'Global Health & WHO Initiatives') {
-          lensBtn = page.getByTestId('tab-global-health');
-        } else if (paradigm === 'Skeptical Epistemology & Socratic Audit') {
-          lensBtn = page.getByTestId('tab-socratic-audit');
+        const mappedTestId = paradigmToTestId[paradigm];
+        if (mappedTestId) {
+          const directTab = page.getByTestId(mappedTestId);
+          if (await directTab.waitFor({ state: 'visible', timeout: 2000 }).then(() => true).catch(() => false)) {
+            await directTab.scrollIntoViewIfNeeded().catch(() => {});
+            await directTab.dispatchEvent('click');
+            await page.waitForTimeout(250);
+            paradigmsExplored.push(paradigm);
+            continue;
+          }
+          try {
+            await switchToAnalysisLens(page, mappedTestId);
+            paradigmsExplored.push(paradigm);
+            continue;
+          } catch {
+            // Fall through to Vault check
+          }
         }
 
-        if (await lensBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-          await lensBtn.dispatchEvent('click');
-          await page.waitForTimeout(300);
-          paradigmsExplored.push(paradigm);
-        } else {
-          // Fallback via Vault Menu
-          const vaultBtn = page.locator('button', { hasText: /\[VAULT/i }).first();
-          if (await vaultBtn.isVisible({ timeout: 1500 }).catch(() => false)) {
-            await vaultBtn.click({ force: true });
-            await page.waitForTimeout(200);
-            const vaultOption = page.locator(`button:has-text("${paradigm}")`).first();
-            if (await vaultOption.isVisible({ timeout: 1500 }).catch(() => false)) {
-              await vaultOption.click({ force: true });
-              await page.waitForTimeout(300);
-              paradigmsExplored.push(paradigm);
-            }
+        // Open Vault dropdown menu for deep clinical paradigms (Chronobiology, Patient Education, etc.)
+        const vaultBtn = page.locator('button[aria-label="Toggle Clinical Vault Lenses Menu"]').first();
+        if (await vaultBtn.waitFor({ state: 'visible', timeout: 2000 }).then(() => true).catch(() => false)) {
+          await vaultBtn.scrollIntoViewIfNeeded().catch(() => {});
+          await vaultBtn.dispatchEvent('click');
+          await page.waitForTimeout(200);
+          const vaultOption = page.locator(`app-analysis-report button[data-lens-id="${paradigm}"], app-analysis-report button:has-text("${paradigm}")`).first();
+          if (await vaultOption.waitFor({ state: 'visible', timeout: 2000 }).then(() => true).catch(() => false)) {
+            await vaultOption.dispatchEvent('click');
+            await page.waitForTimeout(250);
+            paradigmsExplored.push(paradigm);
+          } else {
+            await vaultBtn.dispatchEvent('click').catch(() => {});
           }
         }
       }
-      console.log(`  ✓ Explored Clinical Paradigms: ${paradigmsExplored.join(' | ')}`);
+      expect(paradigmsExplored.length).toBeGreaterThan(0);
+      console.log(`  ✓ Explored Clinical Paradigms (${paradigmsExplored.length}): ${paradigmsExplored.join(' | ')}`);
 
       // ── Step 7: Archival & Modals ──────────────────────────────────────────
       // Finalize the encounter to open the Care Plan Archiver modal
@@ -433,9 +518,10 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
 
         // Prevent window.print() from blocking Playwright (double safety)
         await popup.evaluate(() => { window.print = () => {}; }).catch(() => {});
-        
-        // Wait for document.write to render fully
-        await page.waitForTimeout(2000);
+
+        // Wait for full Care Plan content container to mount after document.write()
+        await popup.locator('.page-wrap, .report-footer').first().waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
+        await page.waitForTimeout(300);
 
         await popup.pdf({
           path: pdfFullPath,
@@ -453,7 +539,7 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
           console.warn(`  ⚠️ HTML write error: ${(htmlErr as Error).message}`);
         }
 
-        await popup.close();
+        await popup.close().catch(() => {});
         console.log(`  ✓ Saved Care Plan PDF: ${pdfFileName}`);
       } catch (pdfErr) {
         console.warn(`  ⚠️ Playwright PDF generation via popup failed: ${(pdfErr as Error).message}. Falling back to page snapshot...`);
@@ -474,17 +560,29 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
         }
       }
 
-      // Close the modal
-      const recordToChartBtn = page.locator('button', { hasText: 'Record to Chart' }).first();
+      // Validate exported Care Plan artifacts before dismissing modal
+      expect(fs.existsSync(pdfFullPath)).toBe(true);
+      const pdfSizeBytes = fs.statSync(pdfFullPath).size;
+      expect(pdfSizeBytes).toBeGreaterThan(500);
+      expect(fs.existsSync(htmlFullPath)).toBe(true);
+
+      // Dismiss Finalize Archiver modal cleanly (and reset UI language back to English before next encounter)
+      if (pData.language && pData.language !== 'english') {
+        const englishResetBtn = page.locator('.print-medical-chart button', { hasText: 'English' }).first();
+        if (await englishResetBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+          await englishResetBtn.click({ force: true, timeout: 5000 }).catch(() => {});
+          await page.waitForTimeout(250);
+        }
+      }
+      const recordToChartBtn = page.locator('.print-medical-chart button', { hasText: 'Record to Chart' }).first();
       if (await recordToChartBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await recordToChartBtn.click({ force: true }).catch(() => {});
-        await page.waitForTimeout(500);
+        await recordToChartBtn.click({ force: true, timeout: 5000 }).catch(() => {});
       }
       const modalClose = page.locator('.print-medical-chart button[aria-label="Close"], .print-medical-chart button:has-text("Cancel")').first();
-      if (await modalClose.isVisible({ timeout: 500 }).catch(() => false)) {
-        await modalClose.click({ force: true }).catch(() => {});
-        await page.waitForTimeout(400);
+      if (await modalClose.isVisible({ timeout: 600 }).catch(() => false)) {
+        await modalClose.click({ force: true, timeout: 5000 }).catch(() => {});
       }
+      await page.locator('.print-medical-chart').first().waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
 
       // Save Patient Encounter JSON Record
       const record: IShiftPatientRecord = {
@@ -497,9 +595,12 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
         assessmentName: pData.assessmentName,
         paradigms: paradigmsExplored,
         researchQuery: pData.researchQuery,
+        researchGroundedCount,
+        researchSavedToChart,
         cognitiveLevel: pData.cognitiveLevel,
-        pdfPath: fs.existsSync(pdfFullPath) ? pdfFullPath : undefined,
-        htmlPath: fs.existsSync(htmlFullPath) ? htmlFullPath : undefined,
+        pdfPath: pdfFullPath,
+        pdfSizeBytes,
+        htmlPath: htmlFullPath,
         timestamp: encounterStart,
         status: 'EXPORTED'
       };
@@ -507,7 +608,7 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
       fs.writeFileSync(jsonFullPath, JSON.stringify(record, null, 2), 'utf8');
       shiftLedger.push(record);
 
-      console.log(`[Shift Patient ${index + 1} COMPLETE]: Encounter finalized and saved.`);
+      console.log(`[Shift Patient ${index + 1} COMPLETE]: Encounter finalized (${Math.round(pdfSizeBytes / 1024)} KB PDF).`);
     }
 
     // ── Master Shift Summary & Ledger Generation ─────────────────────────
@@ -527,9 +628,9 @@ test.describe('Doctor 12-Hour Clinical Shift Simulation', () => {
 
 ## Patient Intake & Care Plan Ledger
 
-| # | Patient ID | Demographic / Archetype | Clinical Specialty | Completed Screener | Paradigms Explored | Cognitive Level | Care Plan Artifacts |
-|---|---|---|---|---|---|---|---|
-${shiftLedger.map((r, i) => `| ${i + 1} | \`${r.id}\` | **${r.name}** | ${r.clinicalDomain} | ${r.assessmentName} | ${r.paradigms.join(', ')} | \`${r.cognitiveLevel}\` | [PDF](file:///${r.pdfPath?.replace(/\\/g, '/')}) • [HTML](file:///${r.htmlPath?.replace(/\\/g, '/')}) |`).join('\n')}
+| # | Patient ID | Demographic / Archetype | Clinical Specialty | Completed Screener | Paradigms Explored | Research Discovery | Cognitive Level | Care Plan Artifacts |
+|---|---|---|---|---|---|---|---|---|
+${shiftLedger.map((r, i) => `| ${i + 1} | \`${r.id}\` | **${r.name}** | ${r.clinicalDomain} | ${r.assessmentName} | ${r.paradigms.join(', ')} | ${r.researchGroundedCount} cards (saved: ${r.researchSavedToChart ? 'yes' : 'no'}) | \`${r.cognitiveLevel}\` | [PDF (${Math.round((r.pdfSizeBytes || 0) / 1024)} KB)](file:///${r.pdfPath?.replace(/\\/g, '/')}) • [HTML](file:///${r.htmlPath?.replace(/\\/g, '/')}) |`).join('\n')}
 
 ---
 

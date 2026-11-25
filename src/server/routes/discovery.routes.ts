@@ -1113,7 +1113,9 @@ function buildArtifactSchemas(): Record<string, unknown>[] {
 export function createDiscoveryRouter(): Router {
   const router = Router();
 
-  router.use(expressJson({ limit: '100kb' }));
+  // Scope the 100kb JSON parser strictly to discovery POST endpoints so mounting
+  // this router at '/' never intercepts /api/patients or other larger API payloads.
+  const discoveryJsonParser = expressJson({ limit: '100kb' });
 
   // ── GET /v1/discovery/tools ───────────────────────────────────────────
   router.get('/v1/discovery/tools', (_req: Request, res: Response) => {
@@ -1190,7 +1192,7 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── POST /v1/discovery/resolve (metered: explorer+ with quota) ────────
-  router.post('/v1/discovery/resolve', requireTier('explorer', 'discovery_resolve', true), (req: Request, res: Response) => {
+  router.post('/v1/discovery/resolve', discoveryJsonParser, requireTier('explorer', 'discovery_resolve', true), (req: Request, res: Response) => {
     const body = req.body as IResolveRequest | undefined;
     if (!body?.query || typeof body.query !== 'string') {
       return res.status(400).json({ error: 'Missing required field: query (string).' });
@@ -1221,7 +1223,7 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── POST /v1/discovery/capabilities/probe (metered: explorer+ with quota) ──
-  router.post('/v1/discovery/capabilities/probe', requireTier('explorer', 'discovery_probe', true), (req: Request, res: Response) => {
+  router.post('/v1/discovery/capabilities/probe', discoveryJsonParser, requireTier('explorer', 'discovery_probe', true), (req: Request, res: Response) => {
     const body = req.body as ICapabilitiesProbeRequest | undefined;
     if (!body?.required_actions || !Array.isArray(body.required_actions)) {
       return res.status(400).json({ error: 'Missing required field: required_actions (string[]).' });

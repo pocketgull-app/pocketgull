@@ -26,8 +26,10 @@ import { AvsEngineService } from '../../services/avs-engine.service';
 import { VeoService } from '../../services/veo.service';
 import { ClinicalSpecialtyRiskSuiteService } from '../../services/clinical-specialty-risk-suite.service';
 import { KinesiologyBiomechanicsService, IPrescriptiveRehabPlan } from '../../services/kinesiology-biomechanics.service';
+import { ClinicalMoERouterService, SpatialCameraPreset, SynapseSharedToken } from '../../services/clinical-moe-router.service';
 import { createVesalianWoodcutMaterial, createGhostFresnelMaterial, createOregonatorTuringMaterial, WoodCutType, SurfaceStyle, getWoodCutTypeCode } from '../../shaders';
 import { IBodyPartIssue } from '../../services/patient.types';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 const PART_NAMES: Record<string, string> = {
     'head': 'Head & Neck',
@@ -98,7 +100,8 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
         RadialPieMenuComponent, 
         BiophysicalTwinTimelineComponent,
         ClinicalHolodeckViewerComponent,
-        LidarScanUploadModalComponent
+        LidarScanUploadModalComponent,
+        PgTranslatePipe
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 
@@ -109,65 +112,94 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
       <div *ngIf="webglSupported()" class="px-3 py-2 bg-slate-100/90 dark:bg-zinc-950/90 border-b border-slate-300 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-2 shrink-0 z-20 font-mono text-xs">
         <!-- Camera Angle Presets -->
         <div class="flex items-center gap-1">
-          <span class="text-[10px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider mr-1 hidden sm:inline">Camera:</span>
+          <span class="text-[10px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider mr-1 hidden sm:inline">{{ 'Camera:' | pgT:'body.camera' }}</span>
           <button (click)="setCameraPreset('cranial')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-sky-100 dark:bg-zinc-900 dark:hover:bg-cyan-950 text-sky-900 dark:text-cyan-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Head & Brain">
-            <span>🧠</span><span class="text-[10px] uppercase font-bold">Cranial</span>
+            <span>🧠</span><span class="text-[10px] uppercase font-bold">{{ 'Cranial' | pgT:'body.cranial' }}</span>
           </button>
           <button (click)="setCameraPreset('visceral')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-teal-100 dark:bg-zinc-900 dark:hover:bg-teal-950 text-teal-900 dark:text-teal-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Thorax & Organs">
-            <span>🫀</span><span class="text-[10px] uppercase font-bold">Visceral</span>
+            <span>🫀</span><span class="text-[10px] uppercase font-bold">{{ 'Visceral' | pgT:'body.visceral' }}</span>
           </button>
           <button (click)="setCameraPreset('spinal')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-indigo-100 dark:bg-zinc-900 dark:hover:bg-indigo-950 text-indigo-900 dark:text-indigo-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Spine & Posterior">
-            <span>🦴</span><span class="text-[10px] uppercase font-bold">Spine</span>
+            <span>🦴</span><span class="text-[10px] uppercase font-bold">{{ 'Spine' | pgT:'body.spine' }}</span>
           </button>
           <button (click)="setCameraPreset('peripheral')" class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-amber-100 dark:bg-zinc-900 dark:hover:bg-amber-950 text-amber-900 dark:text-amber-300 font-bold transition cursor-pointer border border-slate-300 dark:border-zinc-800 flex items-center gap-1" title="Focus Legs & Feet">
-            <span>🦵</span><span class="text-[10px] uppercase font-bold">Extremities</span>
+            <span>🦵</span><span class="text-[10px] uppercase font-bold">{{ 'Extremities' | pgT:'body.extremities' }}</span>
           </button>
         </div>
 
-        <!-- 🧬 Species & Demographic Archetype Selector -->
-        <div class="flex items-center gap-1">
-          <span class="text-[10px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider mr-1 hidden lg:inline">Archetype:</span>
-          <select [value]="activeArchetype()" 
-                  (change)="onArchetypeChange($event)"
-                  aria-label="3D Species and Demographic Archetype Selector"
-                  class="min-h-[34px] px-2 py-1 rounded-xs bg-white dark:bg-zinc-900 text-teal-800 dark:text-cyan-300 font-bold border border-slate-300 dark:border-zinc-800 text-[10.5px] cursor-pointer outline-none">
-            <option value="homo_sapiens_female">👩 Homo Sapiens (Female)</option>
-            <option value="homo_sapiens_male">👨 Homo Sapiens (Male)</option>
-            <option value="homo_sapiens_senior">👵 Homo Sapiens (Senior)</option>
-            <option value="homo_sapiens_pediatric">👶 Homo Sapiens (Pediatric)</option>
-            <option value="ecorche">🏛️ Vesalian Écorché (1543 Cast)</option>
-            <option value="pongo_pygmaeus">🦧 Pongo Pygmaeus (Orangutan)</option>
-          </select>
-        </div>
+        <!-- 🧬 Species & Demographic Archetype Selector (Hidden under Focused Micro-Skill Sparsity) -->
+        @if (!isExploratoryCollapsed()) {
+          <div class="flex items-center gap-1">
+            <span class="text-[10px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider mr-1 hidden lg:inline">{{ 'Archetype:' | pgT:'body.archetype' }}</span>
+            <select [value]="activeArchetype()" 
+                    (change)="onArchetypeChange($event)"
+                    aria-label="3D Species and Demographic Archetype Selector"
+                    class="min-h-[34px] px-2 py-1 rounded-xs bg-white dark:bg-zinc-900 text-teal-800 dark:text-cyan-300 font-bold border border-slate-300 dark:border-zinc-800 text-[10.5px] cursor-pointer outline-none">
+              <option value="homo_sapiens_female">👩 Homo Sapiens (Female)</option>
+              <option value="homo_sapiens_male">👨 Homo Sapiens (Male)</option>
+              <option value="homo_sapiens_senior">👵 Homo Sapiens (Senior)</option>
+              <option value="homo_sapiens_pediatric">👶 Homo Sapiens (Pediatric)</option>
+              <option value="ecorche">🏛️ Vesalian Écorché (1543 Cast)</option>
+              <option value="pongo_pygmaeus">🦧 Pongo Pygmaeus (Orangutan)</option>
+            </select>
+          </div>
+        }
 
         <!-- 🏛️ Anatomical Paradigm / Layer Selector -->
         <div class="flex items-center gap-1">
-          <span class="text-[10px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider mr-1 hidden lg:inline">Layer:</span>
+          <span class="text-[10px] font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider mr-1 hidden lg:inline">{{ 'Layer:' | pgT:'body.layer' }}</span>
           <select [value]="effectiveAnatomyViewMode()" 
                   (change)="onParadigmChange($event)"
                   aria-label="3D Anatomical Paradigm Layer Selector"
                   class="min-h-[34px] px-2 py-1 rounded-xs bg-white dark:bg-zinc-900 text-amber-700 dark:text-amber-300 font-bold border border-slate-300 dark:border-zinc-800 text-[10.5px] cursor-pointer outline-none">
             <option value="vesalian_woodcut">🏛️ Smooth Écorché / Vesalian</option>
-            <option value="oregonator_turing">⚛️ Turing Reaction-Diffusion (Oregonator)</option>
+            @if (!isExploratoryCollapsed()) {
+              <option value="oregonator_turing">⚛️ Turing Reaction-Diffusion (Oregonator)</option>
+            }
             <option value="muscle">🥩 Muscular System</option>
             <option value="skeleton">🦴 Skeletal Architecture</option>
             <option value="organs">🫀 Visceral Organs</option>
             <option value="skin">👤 Surface Habitus</option>
             <option value="ghost">👻 Ghost Fresnel Envelope</option>
             <option value="fluid_dynamics">🌊 Whole-Body Fluid Dynamics (Arterial, Venous, Lymphatic)</option>
-            <option value="nutrigenomics">🧬 Whole-Body Nutrigenomics (Nrf2, Butyrate, AMPK, Methylation)</option>
+            @if (!isExploratoryCollapsed()) {
+              <option value="nutrigenomics">🧬 Whole-Body Nutrigenomics (Nrf2, Butyrate, AMPK, Methylation)</option>
+            }
             <option value="eastern">🌿 TCM Jing-Luo Meridian</option>
             <option value="ayurvedic">🧘 Ayurvedic Sushumna</option>
             <option value="biomechanical_strain">⚖️ Biomechanical Strain</option>
           </select>
         </div>
 
+        <!-- 🤖 Autonomous SMoE Spatial Sub-Selector & Exam Attestation Controls -->
+        @if (spatialPolicy(); as policy) {
+          <div class="flex items-center gap-1">
+            <button type="button"
+                    (click)="applyAutonomousSpatialPolicy()"
+                    class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-indigo-950/80 hover:bg-indigo-900 text-indigo-200 border border-indigo-500/40 text-[10px] uppercase"
+                    [title]="policy.policyRationale">
+              <span>🤖</span>
+              <span>{{ 'Auto:' | pgT:'body.auto_prefix' }} {{ policy.recommendedCamera }} • {{ policy.recommendedShader }}</span>
+              @if (policy.manualCameraHysteresisLocked) {
+                <span class="px-1 rounded bg-amber-500/20 text-amber-300 text-[9px]">🔒</span>
+              }
+            </button>
+            <button type="button"
+                    (click)="attestAndRetireSpatialExam()"
+                    class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-emerald-800 hover:bg-emerald-700 text-emerald-100 border border-emerald-500/50 text-[10px] uppercase"
+                    title="Stamp 21 CFR Part 11 Spatial Exam Receipt (including pinned lesions) and complete 3D review">
+              <span>✓</span>
+              <span>{{ 'Attest 3D Exam' | pgT:'body.attest_3d' }}</span>
+            </button>
+          </div>
+        }
+
         <!-- Occupational Hazard & Strain Telemetry Badge -->
         <div *ngIf="occupationalStrainInfo() as info" class="flex items-center gap-1.5 px-2.5 py-1 rounded-xs bg-amber-500/10 dark:bg-cyan-950/50 border border-amber-500/30 dark:border-cyan-700/40 text-amber-900 dark:text-cyan-200">
           <span>{{ info.icon }}</span>
           <span class="text-[10.5px] font-bold tracking-wide hidden md:inline">{{ info.focusLabel }}</span>
           <button (click)="setCameraPreset(info.cameraPreset)" class="px-1.5 py-0.5 rounded-2xs bg-amber-500/20 dark:bg-cyan-800/40 hover:bg-amber-500/30 text-[9.5px] uppercase font-extrabold cursor-pointer border border-amber-500/40 dark:border-cyan-600/50 transition" title="Focus Ergonomic Strain Region">
-            Focus Strain 🎯
+            {{ 'Focus Strain' | pgT:'body.focus_strain' }} 🎯
           </button>
         </div>
 
@@ -182,7 +214,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             class="min-h-[34px] px-2 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Toggle Non-Glare High-Contrast Vision Mode for Low Vision">
             <span>👁️</span>
-            <span class="text-[10px] uppercase font-bold">{{ isHighContrastVision() ? 'High Contrast ON' : 'High Contrast' }}</span>
+            <span class="text-[10px] uppercase font-bold">{{ isHighContrastVision() ? ('High Contrast ON' | pgT:'body.high_contrast_on') : ('High Contrast' | pgT:'body.high_contrast') }}</span>
           </button>
 
           <button (click)="isReducedMotion.set(!isReducedMotion())" 
@@ -194,7 +226,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             class="min-h-[34px] px-2 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Freeze Animations for Photosensitive Safety & Motion Sensitivity">
             <span>⚡</span>
-            <span class="text-[10px] uppercase font-bold">{{ isReducedMotion() ? 'Motion FREEZE' : 'Motion' }}</span>
+            <span class="text-[10px] uppercase font-bold">{{ isReducedMotion() ? ('Motion FREEZE' | pgT:'body.motion_freeze') : ('Motion' | pgT:'body.motion') }}</span>
           </button>
 
           <button (click)="toggleAutoSpin()" 
@@ -207,14 +239,14 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             class="min-h-[34px] px-2 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Toggle 360° Auto-Spin">
             <span [class.animate-spin]="isAutoSpinning()">🔄</span>
-            <span class="text-[10px] uppercase font-bold">{{ isAutoSpinning() ? 'Spin ON' : '360°' }}</span>
+            <span class="text-[10px] uppercase font-bold">{{ isAutoSpinning() ? ('Spin ON' | pgT:'body.spin_on') : '360°' }}</span>
           </button>
 
           <button (click)="resetCameraView()" 
             class="min-h-[34px] px-2 py-1 rounded-xs bg-white hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-gray-800 dark:text-zinc-300 font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800"
             title="Reset Camera View">
             <span>🎯</span>
-            <span class="text-[10px] uppercase font-bold">Reset</span>
+            <span class="text-[10px] uppercase font-bold">{{ 'Reset' | pgT:'body.reset' }}</span>
           </button>
 
           <!-- 📍 3D Spatial Lesion Pinning Mode Toggle -->
@@ -228,56 +260,58 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
             class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800 shadow-xs"
             title="Click to enable 3D raycast surface lesion placement">
             <span>📍</span>
-            <span class="text-[10px] uppercase font-bold">{{ lesionMarkup.isMarkupMode() ? 'Pinning ACTIVE' : 'Pin Lesion' }}</span>
+            <span class="text-[10px] uppercase font-bold">{{ lesionMarkup.isMarkupMode() ? ('Pinning ACTIVE' | pgT:'body.pinning_active') : ('Pin Lesion' | pgT:'body.pin_lesion') }}</span>
             <span *ngIf="lesionMarkup.activeLesions().length > 0" class="ml-1 px-1.5 py-0.2 rounded-full text-[9px] bg-rose-950 text-rose-200 font-mono">
               {{ lesionMarkup.activeLesions().length }}
             </span>
           </button>
 
-          <!-- 🎧 3D HRTF Spatial Audio Pinning Toggle -->
-          <button (click)="lesionMarkup.toggleAcousticPinning()"
-            [class.bg-teal-600]="lesionMarkup.isAcousticPinningActive()"
-            [class.text-white]="lesionMarkup.isAcousticPinningActive()"
-            [class.bg-white]="!lesionMarkup.isAcousticPinningActive()"
-            [class.dark:bg-zinc-900]="!lesionMarkup.isAcousticPinningActive()"
-            [class.text-teal-700]="!lesionMarkup.isAcousticPinningActive()"
-            [class.dark:text-teal-400]="!lesionMarkup.isAcousticPinningActive()"
-            class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800 shadow-xs"
-            title="Toggle 3D Binaural HRTF Spatial Audio locked to active lesion coordinates">
-            <span>🎧</span>
-            <span class="text-[10px] uppercase font-bold">{{ lesionMarkup.isAcousticPinningActive() ? '3D HRTF ACTIVE' : '3D Spatial Audio' }}</span>
-            @if (lesionMarkup.isAcousticPinningActive() && avsEngine) {
-              <span class="ml-1 px-1.5 py-0.2 rounded-full text-[9px] bg-teal-950 text-teal-200 font-mono">
-                {{ avsEngine.spatialAzimuthDeg() }}°
-              </span>
-            }
-          </button>
+          @if (!isExploratoryCollapsed()) {
+            <!-- 🎧 3D HRTF Spatial Audio Pinning Toggle -->
+            <button (click)="lesionMarkup.toggleAcousticPinning()"
+              [class.bg-teal-600]="lesionMarkup.isAcousticPinningActive()"
+              [class.text-white]="lesionMarkup.isAcousticPinningActive()"
+              [class.bg-white]="!lesionMarkup.isAcousticPinningActive()"
+              [class.dark:bg-zinc-900]="!lesionMarkup.isAcousticPinningActive()"
+              [class.text-teal-700]="!lesionMarkup.isAcousticPinningActive()"
+              [class.dark:text-teal-400]="!lesionMarkup.isAcousticPinningActive()"
+              class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800 shadow-xs"
+              title="Toggle 3D Binaural HRTF Spatial Audio locked to active lesion coordinates">
+              <span>🎧</span>
+              <span class="text-[10px] uppercase font-bold">{{ lesionMarkup.isAcousticPinningActive() ? ('3D HRTF ACTIVE' | pgT:'body.hrtf_active_3d') : ('3D Spatial Audio' | pgT:'body.spatial_audio_3d') }}</span>
+              @if (lesionMarkup.isAcousticPinningActive() && avsEngine) {
+                <span class="ml-1 px-1.5 py-0.2 rounded-full text-[9px] bg-teal-950 text-teal-200 font-mono">
+                  {{ avsEngine.spatialAzimuthDeg() }}°
+                </span>
+              }
+            </button>
 
-          <!-- 📋 3D Spatial Lesion & AVS FHIR R4 Bundle Export -->
-          @if (lesionMarkup.activeLesions().length > 0) {
-            <button (click)="lesionMarkup.downloadFhirBundleJson()"
-              class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-500 shadow-xs text-[10px] uppercase"
-              title="Export and download standardized HL7 FHIR R4 Document Bundle of 3D Lesions and AVS Procedures">
-              <span>📋</span>
-              <span>Export FHIR R4</span>
+            <!-- 📋 3D Spatial Lesion & AVS FHIR R4 Bundle Export -->
+            @if (lesionMarkup.activeLesions().length > 0) {
+              <button (click)="lesionMarkup.downloadFhirBundleJson()"
+                class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-500 shadow-xs text-[10px] uppercase"
+                title="Export and download standardized HL7 FHIR R4 Document Bundle of 3D Lesions and AVS Procedures">
+                <span>📋</span>
+                <span>{{ 'Export FHIR R4' | pgT:'body.export_fhir_r4' }}</span>
+              </button>
+            }
+
+            <!-- 🥽 3D Holodeck WebXR Dissection Viewer Button -->
+            <button (click)="showHolodeckModal.set(true)"
+              class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-teal-700 hover:bg-teal-800 text-white border border-teal-600 shadow-xs text-[10px] uppercase"
+              title="Launch 3D WebXR Joint Dissection Holodeck">
+              <span>🥽</span>
+              <span>{{ 'Holodeck' | pgT:'body.holodeck' }}</span>
+            </button>
+
+            <!-- 📸 LiDAR / 3D Mesh Upload Button -->
+            <button type="button" data-testid="btn-lidar-scan" (click)="showLidarModal.set(true)"
+              class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-cyan-700 hover:bg-cyan-800 text-white border border-cyan-600 shadow-xs text-[10px] uppercase"
+              title="Import custom 3D LiDAR scan or photogrammetry model">
+              <span>📸</span>
+              <span>{{ 'LiDAR Scan' | pgT:'body.lidar_scan' }}</span>
             </button>
           }
-
-          <!-- 🥽 3D Holodeck WebXR Dissection Viewer Button -->
-          <button (click)="showHolodeckModal.set(true)"
-            class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-teal-700 hover:bg-teal-800 text-white border border-teal-600 shadow-xs text-[10px] uppercase"
-            title="Launch 3D WebXR Joint Dissection Holodeck">
-            <span>🥽</span>
-            <span>Holodeck</span>
-          </button>
-
-          <!-- 📸 LiDAR / 3D Mesh Upload Button -->
-          <button (click)="showLidarModal.set(true)"
-            class="min-h-[34px] px-2.5 py-1 rounded-xs font-bold transition cursor-pointer flex items-center gap-1 bg-cyan-700 hover:bg-cyan-800 text-white border border-cyan-600 shadow-xs text-[10px] uppercase"
-            title="Import custom 3D LiDAR scan or photogrammetry model">
-            <span>📸</span>
-            <span>LiDAR Scan</span>
-          </button>
 
           <!-- 🧠 MS Neuro-Lesion 3D Layer Toggle -->
           @if (isMsActive()) {
@@ -312,14 +346,14 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
 
         <!-- 🔪 3D Anatomical Cross-Section & Slice Plane Controls -->
         <div class="flex items-center gap-1 p-0.5 bg-slate-200/90 dark:bg-zinc-900 rounded-xs border border-slate-300 dark:border-zinc-800 text-[10.5px]">
-          <span class="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[9.5px] px-1">🔪 Slice:</span>
+          <span class="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[9.5px] px-1">🔪 {{ 'Slice:' | pgT:'body.slice' }}</span>
           
           <button type="button" (click)="setSlicePlaneMode('none')"
                   [class.bg-zinc-800]="slicePlaneMode() === 'none'"
                   [class.text-white]="slicePlaneMode() === 'none'"
                   [class.text-zinc-400]="slicePlaneMode() !== 'none'"
                   class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer">
-            Off
+            {{ 'Off' | pgT:'body.slice_off' }}
           </button>
           <button type="button" (click)="setSlicePlaneMode('axial')"
                   [class.bg-sky-600]="slicePlaneMode() === 'axial'"
@@ -327,7 +361,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                   [class.text-zinc-400]="slicePlaneMode() !== 'axial'"
                   class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer"
                   title="Axial Transverse (Horizontal) Cross-Section">
-            Axial
+            {{ 'Axial' | pgT:'body.slice_axial' }}
           </button>
           <button type="button" (click)="setSlicePlaneMode('coronal')"
                   [class.bg-emerald-600]="slicePlaneMode() === 'coronal'"
@@ -335,7 +369,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                   [class.text-zinc-400]="slicePlaneMode() !== 'coronal'"
                   class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer"
                   title="Coronal (Frontal / Anterior-Posterior) Cross-Section">
-            Coronal
+            {{ 'Coronal' | pgT:'body.slice_coronal' }}
           </button>
           <button type="button" (click)="setSlicePlaneMode('sagittal')"
                   [class.bg-purple-600]="slicePlaneMode() === 'sagittal'"
@@ -343,7 +377,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                   [class.text-zinc-400]="slicePlaneMode() !== 'sagittal'"
                   class="px-1.5 py-0.5 rounded-2xs font-bold transition cursor-pointer"
                   title="Sagittal (Lateral / Medial-Lateral) Cross-Section">
-            Sagittal
+            {{ 'Sagittal' | pgT:'body.slice_sagittal' }}
           </button>
 
           @if (slicePlaneMode() !== 'none') {
@@ -358,7 +392,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                       [class.text-white]="slicePlaneInverted()"
                       class="px-1.5 py-0.5 rounded text-[9px] font-bold border border-zinc-700 hover:bg-zinc-800 cursor-pointer"
                       title="Invert Slice Normal (Flip Cut Direction)">
-                🔄 Flip
+                🔄 {{ 'Flip' | pgT:'body.slice_flip' }}
               </button>
             </div>
           }
@@ -373,7 +407,7 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
                 class="min-h-[36px] px-2.5 py-1 rounded-md bg-white hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 font-bold transition cursor-pointer flex items-center gap-1 border border-slate-300 dark:border-zinc-800 text-[10px] uppercase tracking-wider font-mono shadow-2xs"
                 title="Toggle WHO / NIH Real-Time Organ Biomarker Risk Heatmap">
           <span>🔥</span>
-          <span>{{ biomarkerHeatmapMode() ? 'Biomarkers (ON)' : 'Biomarkers' }}</span>
+          <span>{{ biomarkerHeatmapMode() ? ('Biomarkers (ON)' | pgT:'body.biomarkers_on') : ('Biomarkers' | pgT:'body.biomarkers') }}</span>
         </button>
       </div>
 
@@ -381,13 +415,49 @@ export type AnatomyViewMode = 'skin' | 'muscle' | 'skeleton' | 'organs' | 'molec
       <div #canvasContainer class="w-full flex-1 min-h-[460px] relative bg-transparent overflow-hidden" [class.cursor-grab]="webglSupported()" [class.active:cursor-grabbing]="webglSupported()">
         <!-- Dynamic Translucent Radial Grid Backdrop (Allows Background Textures to Shine Through) -->
         <div class="absolute inset-0 pointer-events-none transition-all duration-500 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent dark:from-cyan-500/10 dark:via-transparent dark:to-transparent"></div>
+
+        <!-- ⚡ Innovation 3: Live Cross-Component 3D Organ <-> Clinical Synapse Floating Pill -->
+        @if (activeSynapseOrganBadge(); as syn) {
+          <div class="absolute top-3 left-3 z-30 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-950/90 border border-emerald-500/50 backdrop-blur-md shadow-xl font-mono text-[11px] text-emerald-300">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>⚡ Synapse: <strong class="text-white">{{ syn.organLabel }}</strong> ⟷ {{ syn.parameterSummary }}</span>
+            <button type="button"
+                    (click)="focusSynapseOrgan(syn.cameraPreset, syn.partId)"
+                    class="px-2 py-0.5 rounded bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-100 border border-emerald-400/40 font-bold text-[10px] cursor-pointer">
+              🎯 Fly
+            </button>
+          </div>
+        }
+
+        <!-- 📡 Innovation 4: Off-Frustum Spatial Whisper Badges (Max 2 Off-Camera Drift Alerts) -->
+        @if (offFrustumWhispers().length > 0) {
+          <div class="absolute bottom-4 left-4 z-30 flex flex-wrap items-center gap-2 font-mono text-[11px]">
+            @for (whisper of offFrustumWhispers(); track whisper.regionId) {
+              <button type="button"
+                      (click)="focusSynapseOrgan(whisper.regionId, whisper.partId)"
+                      class="px-3 py-1.5 rounded-xl backdrop-blur-md shadow-xl flex items-center gap-1.5 transition cursor-pointer border"
+                      [class.bg-rose-950/90]="whisper.severity === 'drift-alert'"
+                      [class.border-rose-500/60]="whisper.severity === 'drift-alert'"
+                      [class.text-rose-200]="whisper.severity === 'drift-alert'"
+                      [class.bg-amber-950/90]="whisper.severity === 'watch'"
+                      [class.border-amber-500/50]="whisper.severity === 'watch'"
+                      [class.text-amber-200]="whisper.severity === 'watch'"
+                      title="Off-frustum physiological drift detected outside current camera view — click to fly camera">
+                <span>{{ whisper.icon }}</span>
+                <span class="font-bold">{{ whisper.regionLabel }}:</span>
+                <span>{{ whisper.metricSummary }}</span>
+                <span class="text-[9px] uppercase px-1.5 py-0.5 rounded bg-black/40 font-bold">🎯 Fly</span>
+              </button>
+            }
+          </div>
+        }
         
         <canvas *ngIf="!webglSupported()" class="absolute opacity-0 pointer-events-none w-[1px] h-[1px]" aria-label="3D Anatomical Mannequin Canvas"></canvas>
         <div *ngIf="!webglSupported()" class="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-[#FAF8F0] dark:bg-zinc-950 text-gray-900 dark:text-zinc-100 rounded-lg border border-amber-200 dark:border-zinc-800">
           <svg class="w-10 h-10 text-teal-600 dark:text-cyan-400 mb-2 opacity-60 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
-          <span class="text-xs font-bold text-gray-800 dark:text-zinc-300">3D Holographic Engine Initializing...</span>
+          <span class="text-xs font-bold text-gray-800 dark:text-zinc-300">{{ '3D Holographic Engine Initializing...' | pgT:'body.engine_init' }}</span>
           <span *ngIf="webglError()" class="text-[11px] text-rose-500 dark:text-rose-400 mt-2 max-w-xs break-words font-mono">{{ webglError() }}</span>
         </div>
 
@@ -1035,6 +1105,53 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
     protected readonly veoService = inject(VeoService, { optional: true });
     protected readonly riskSuite = inject(ClinicalSpecialtyRiskSuiteService, { optional: true });
     protected readonly kinesiologyService = inject(KinesiologyBiomechanicsService, { optional: true });
+    readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
+
+    /** Autonomous 3D SMoE Sub-Selector & Synapse Computed Signals */
+    readonly spatialPolicy = computed(() => this.moeRouter?.activeSpatialBodyPolicy() ?? null);
+
+    readonly isExploratoryCollapsed = computed(() =>
+      Boolean(this.moeRouter?.microSkillDisplayPolicy().collapseExploratorySubViews)
+    );
+
+    readonly suppressHeavyBloom = computed(() =>
+      Boolean(this.spatialPolicy()?.suppressHeavyPostProcessing) || this.isReducedMotion()
+    );
+
+    readonly offFrustumWhispers = computed(() =>
+      this.moeRouter?.computeOffFrustumSpatialWhispers(this.activeCameraPreset()) ?? []
+    );
+
+    readonly activeSynapseOrganBadge = computed(() => {
+      const pulse = this.moeRouter?.activeSynapsePulse();
+      if (!pulse) return null;
+
+      if (pulse.token === 'glycemic-renal-coupling') {
+        return {
+          organLabel: 'Kidneys & Renal Cortex',
+          partId: 'kidneys',
+          cameraPreset: 'visceral' as SpatialCameraPreset,
+          parameterSummary: `${pulse.parameterLabel} (${pulse.parameterValue})`
+        };
+      }
+      if (pulse.token === 'kinematic-shear-coupling') {
+        return {
+          organLabel: 'Tibiofemoral / Axial Chain',
+          partId: 'r_shin',
+          cameraPreset: 'peripheral' as SpatialCameraPreset,
+          parameterSummary: `${pulse.parameterLabel} (${pulse.parameterValue})`
+        };
+      }
+      if (pulse.token === 'visceral-cardiopulmonary-coupling' || pulse.token === 'hemodynamic-posology-coupling') {
+        return {
+          organLabel: 'Cardiopulmonary Thorax',
+          partId: 'heart',
+          cameraPreset: 'visceral' as SpatialCameraPreset,
+          parameterSummary: `${pulse.parameterLabel} (${pulse.parameterValue})`
+        };
+      }
+      return null;
+    });
 
     // 📜 Vesalian Woodcut, Fresnel Ghost & Oregonator Turing Materials
     protected vesalianWoodcutMaterial: THREE.ShaderMaterial | null = null;
@@ -1739,7 +1856,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
     toggleDermatomeLayer(): void {
       this.showDermatomeLayer.set(!this.showDermatomeLayer());
-      this.updateTransparency(this.anatomyViewMode());
+      this.updateTransparency(this.effectiveAnatomyViewMode());
     }
 
     focusOnPart(partId: string | null): void {
@@ -1798,9 +1915,18 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
       this.setCameraPreset('front');
     }
 
-    setCameraPreset(preset: 'front' | 'back' | 'left' | 'right' | 'cranial' | 'spinal' | 'visceral' | 'peripheral' | 'systemic'): void {
+    setCameraPreset(
+      preset: 'front' | 'back' | 'left' | 'right' | 'cranial' | 'spinal' | 'visceral' | 'peripheral' | 'systemic',
+      fromAutonomous = false
+    ): void {
       this.activeCameraPreset.set(preset);
       this.isAutoSpinning.set(false);
+      if (
+        !fromAutonomous &&
+        (preset === 'front' || preset === 'cranial' || preset === 'spinal' || preset === 'visceral' || preset === 'peripheral' || preset === 'systemic')
+      ) {
+        this.moeRouter?.lockSpatialCamera(preset);
+      }
       if (!this.camera || !this.controls) return;
 
       if (preset === 'front') {
@@ -1841,7 +1967,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
       }
 
       this.controls.update();
-      this.updateTransparency(this.anatomyViewMode());
+      this.updateTransparency(this.effectiveAnatomyViewMode());
     }
 
     private setupInteractions() {
@@ -1877,8 +2003,20 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
             this.state.hoveredPartIdForOverlay.set(null);
         };
 
+        let pointerDownPos: { x: number; y: number } | null = null;
+        const DRAG_THRESHOLD_PX = 6;
+
         const onPointerDown = (e: MouseEvent) => {
             if (e.button !== 0) return; // Primary click
+            pointerDownPos = { x: e.clientX, y: e.clientY };
+        };
+
+        const onPointerUp = (e: MouseEvent) => {
+            if (e.button !== 0 || !pointerDownPos) return;
+            const travel = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+            pointerDownPos = null;
+            if (travel >= DRAG_THRESHOLD_PX) return; // Ignore orbit/drag gestures
+
             const rect = container.getBoundingClientRect();
             const mouse = this.raycastService.getNormalizedMouse(e.clientX, e.clientY, rect);
 
@@ -1908,6 +2046,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 const name = hit.partName;
                 this.state.selectPart(hitPartId);
                 this.partSelected.emit({ id: hitPartId, name });
+                this.emitOrganSynapsePulse(hitPartId, name);
 
                 const existingIssue = (this.state.issues()[hitPartId] || [])[0];
                 if (existingIssue) {
@@ -1940,6 +2079,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
         container.addEventListener('pointermove', onPointerMove);
         container.addEventListener('pointerdown', onPointerDown);
+        container.addEventListener('pointerup', onPointerUp);
         container.addEventListener('contextmenu', onContextMenu);
     }
 
@@ -1949,6 +2089,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         const name = PART_NAMES[partId] || partId;
         this.state.selectPart(partId);
         this.partSelected.emit({ id: partId, name });
+        this.emitOrganSynapsePulse(partId, name);
 
         switch (event.action) {
             case 'logSymptom':
@@ -1974,6 +2115,72 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
     deselectPart(): void {
         this.state.selectPart('');
+    }
+
+    /** Innovation 1: Apply the autonomous SMoE Spatial Camera & Shader policy on demand or release manual lock */
+    applyAutonomousSpatialPolicy(): void {
+        this.moeRouter?.lockSpatialCamera(null);
+        const policy = this.moeRouter?.activeSpatialBodyPolicy();
+        if (!policy) return;
+
+        this.setCameraPreset(policy.recommendedCamera, true);
+        this.state.anatomyViewMode.set(policy.recommendedShader);
+        if (policy.freezeAutoSpin) {
+            this.isAutoSpinning.set(false);
+        }
+        if (policy.targetOrganId && typeof this.state.selectPart === 'function') {
+            this.state.selectPart(policy.targetOrganId);
+        }
+        this.updateTransparency(policy.recommendedShader);
+    }
+
+    /** Innovation 3: Broadcast a 3D Anatomical Raycast Synapse Pulse to co-mounted clinical skills */
+    emitOrganSynapsePulse(partId: string, partName?: string): void {
+        if (!this.moeRouter) return;
+        const resolvedName = partName || PART_NAMES[partId] || partId;
+        const id = partId.toLowerCase();
+
+        let synapseTopic = 'visceral-cardiopulmonary-coupling' as SynapseSharedToken;
+        let targetExpert = 'edge-ml-hud';
+
+        if (id.includes('kidney') || id.includes('liver') || id.includes('abdomen') || id.includes('stomach')) {
+            synapseTopic = 'glycemic-renal-coupling';
+            targetExpert = 'ismp-posology';
+        } else if (
+            id.includes('shin') ||
+            id.includes('thigh') ||
+            id.includes('foot') ||
+            id.includes('spine') ||
+            id.includes('pelvis') ||
+            id.includes('dermatome') ||
+            id.includes('orthopedic')
+        ) {
+            synapseTopic = 'kinematic-shear-coupling';
+            targetExpert = 'knee-hologram';
+        }
+
+        this.moeRouter.emitSynapseSignalPulse(
+            synapseTopic,
+            'spatial-body-twin',
+            targetExpert,
+            '3D Anatomy Raycast',
+            resolvedName
+        );
+    }
+
+    /** Fly camera directly to a Synapse-coupled or Off-Frustum Whisper organ */
+    focusSynapseOrgan(preset: SpatialCameraPreset, partId: string): void {
+        this.setCameraPreset(preset, true);
+        if (typeof this.state.selectPart === 'function') {
+            this.state.selectPart(partId);
+        }
+    }
+
+    /** Innovation 4: Stamp a 64-char hex 21 CFR Part 11 Spatial Exam Receipt (including 3D lesion count) */
+    attestAndRetireSpatialExam(): void {
+        const lesionCount = this.lesionMarkup?.activeLesions?.().length ?? 0;
+        const summary = `3D Spatial Exam (${this.activeCameraPreset()} • ${this.effectiveAnatomyViewMode()} • ${lesionCount} lesions pinned)`;
+        this.moeRouter?.completeAndRetireSkillGoal('spatial-body-twin', summary);
     }
 
     onPainSliderChange(event: Event): void {
@@ -2225,13 +2432,13 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         effect(() => {
             const philosophy = this.state.activePhilosophy();
             this.updatePartColors();
-            this.updateTransparency(this.anatomyViewMode());
+            this.updateTransparency(this.effectiveAnatomyViewMode());
         });
 
         // React to AVS session activation to toggle neural globe visibility instantly
         effect(() => {
             const avsActive = this.state.isAvsSessionActive();
-            const mode = this.anatomyViewMode();
+            const mode = this.effectiveAnatomyViewMode();
             this.updateTransparency(mode);
         });
 
@@ -2460,7 +2667,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 this.mannequinGroup.visible = true;
                 this.restoreMannequinParts();
                 this.updatePartColors();
-                this.updateTransparency(this.anatomyViewMode());
+                this.updateTransparency(this.effectiveAnatomyViewMode());
             }
             return;
         }
@@ -2485,7 +2692,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                         this.mannequinGroup.visible = true;
                         this.restoreMannequinParts();
                         this.updatePartColors();
-                        this.updateTransparency(this.anatomyViewMode());
+                        this.updateTransparency(this.effectiveAnatomyViewMode());
                     }
                 }
             );
@@ -2503,7 +2710,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                         this.mannequinGroup.visible = true;
                         this.restoreMannequinParts();
                         this.updatePartColors();
-                        this.updateTransparency(this.anatomyViewMode());
+                        this.updateTransparency(this.effectiveAnatomyViewMode());
                     }
                 }
             );
@@ -2576,7 +2783,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         });
 
         this.updatePartColors();
-        this.updateTransparency(this.anatomyViewMode());
+        this.updateTransparency(this.effectiveAnatomyViewMode());
     }
 
     private restoreMannequinParts() {
@@ -3107,7 +3314,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
         this.createWholeBodyNutrigenomics();
 
         this.updatePartColors();
-        this.updateTransparency(this.anatomyViewMode());
+        this.updateTransparency(this.effectiveAnatomyViewMode());
     }
 
     private addPartComplex(id: string,
@@ -4348,8 +4555,16 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
 
             group.children.forEach(child => {
                 if (!(child instanceof THREE.Mesh)) return;
-                const material = child.material as THREE.MeshStandardMaterial;
                 const layer = child.userData['layer'];
+                if (layer === 'molecular' && (child.material as any)?.uniforms) {
+                    const intensity = maxPain > 0 ? maxPain / 10 : 0.0;
+                    (child.material as any).uniforms['uPainLevel'].value = intensity;
+                    return;
+                }
+                // Guard custom ShaderMaterials (e.g. vesalian_woodcut, ghost, oregonator_turing)
+                // which do not expose MeshStandardMaterial .color / .emissive properties.
+                if (!(child.material instanceof THREE.MeshStandardMaterial)) return;
+                const material = child.material;
 
                 if (maxPain > 0) {
                     const intensity = maxPain / 10;
@@ -5066,8 +5281,8 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 }
             }
 
-            // Sync external rotation or 360 Auto-Spinning Sentinel Orbit
-            if (this.isAutoSpinning()) {
+            // Sync external rotation or 360 Auto-Spinning Sentinel Orbit (Frozen automatically during STAT Safety Shield)
+            if (this.isAutoSpinning() && !this.spatialPolicy()?.freezeAutoSpin) {
                 if (this.mannequinGroup) this.mannequinGroup.rotation.y += 0.008;
                 if (this.customModelGroup) this.customModelGroup.rotation.y += 0.008;
             } else {
@@ -5079,7 +5294,7 @@ export class Body3DViewerComponent implements AfterViewInit, OnDestroy {
                 }
             }
 
-            if (this.composer) {
+            if (this.composer && !this.suppressHeavyBloom()) {
                 this.composer.render();
             } else if (this.renderer && this.scene && this.camera) {
                 this.renderer.render(this.scene, this.camera);

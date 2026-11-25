@@ -24,10 +24,12 @@ describe('WhoNihGoalSteeringHubComponent Suite', () => {
     fixture.detectChanges();
   });
 
-  it('1. Initializes WhoNihGoalSteeringHubComponent with default goals', () => {
+  it('1. Initializes WhoNihGoalSteeringHubComponent with Top 10 WHO + Top 10 NIH + NMSS goals', () => {
     expect(component).toBeTruthy();
     const goals = component.goals();
-    expect(goals.length).toBeGreaterThanOrEqual(4);
+    expect(goals.length).toBe(23);
+    expect(goals.filter(g => g.framework === 'WHO_SDG' || g.framework === 'WHO_HEARTS').length).toBe(10);
+    expect(goals.filter(g => g.framework === 'NIH_HEALTHY_PEOPLE_2030' || g.framework === 'NIH_CTSA_ITHRIV').length).toBe(10);
 
     const sdg = goals.find(g => g.framework === 'WHO_SDG');
     expect(sdg).toBeDefined();

@@ -59,15 +59,17 @@ test.describe('Desktop Clinical Flow & Ambient Soundscape E2E', () => {
     }
   });
 
-  test('should load Business Site with certified corporate identity and master branding', async ({ page }) => {
-    // Navigate directly to /business static endpoint
-    await page.goto('/business', { waitUntil: 'domcontentloaded' });
+  test('should load Business Site with certified corporate identity and master branding', async ({ page, request }) => {
+    // Verify SSR /business route intentionally issues permanent 301 redirect to dedicated portal
+    const bizRes = await request.get('/business', { maxRedirects: 0 });
+    expect(bizRes.status()).toBe(301);
+    expect(bizRes.headers()['location']).toBe('https://pocketgull.com/');
 
-    // Verify Corporate LLC imprint and credentials
+    // Verify local portal branding and corporate clinical identity on root splash
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('body')).toContainText(/PocketGull/i, { timeout: 15000 });
     await expect(page.locator('body')).toContainText(/Clinical|Assistant|Documentation/i);
 
-    // Verify SVG Wordmark Brand presence
     const wordmarkSvg = page.locator('svg').first();
     await expect(wordmarkSvg).toBeVisible();
   });

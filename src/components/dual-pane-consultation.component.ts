@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { ThemeService } from '../services/theme.service';
 import { CompassionateAnalogyService } from '../services/compassionate-analogy.service';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-dual-pane-consultation',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
     /* Interop 2025/2026 Baseline: View Transitions API */
@@ -53,14 +54,14 @@ import { CompassionateAnalogyService } from '../services/compassionate-analogy.s
         <div>
           <div class="flex items-center gap-2">
             <span class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 text-[10px] font-mono font-bold uppercase border border-indigo-700/50">
-              Dual-Pane Shared Decision Engine
+              {{ 'Dual-Pane Shared Decision Engine' | pgT:'dual.badge' }}
             </span>
             <h3 class="text-lg font-black text-white">
-              Synchronized Clinician & Patient Consultation
+              {{ 'Synchronized Clinician & Patient Consultation' | pgT:'dual.title' }}
             </h3>
           </div>
           <p class="text-xs text-zinc-400 font-medium mt-1">
-            Left: Deep clinical rationale, ICD-10 codes & evidence trials. Right: Real-time compassionate persona translation.
+            {{ 'Left: Deep clinical rationale, ICD-10 codes & evidence trials. Right: Real-time compassionate persona translation.' | pgT:'dual.subtitle' }}
           </p>
         </div>
 
@@ -75,7 +76,7 @@ import { CompassionateAnalogyService } from '../services/compassionate-analogy.s
             class="px-3 py-1.5 min-h-[38px] text-xs font-semibold rounded-lg transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-teal-400"
             role="tab"
             [attr.aria-selected]="focusedView() === 'split'">
-            Split View
+            {{ 'Split View' | pgT:'dual.tab_split' }}
           </button>
           <button
             type="button"
@@ -88,7 +89,7 @@ import { CompassionateAnalogyService } from '../services/compassionate-analogy.s
             class="px-3 py-1.5 min-h-[38px] text-xs font-semibold rounded-lg transition-colors hover:text-sky-300 focus-visible:ring-2 focus-visible:ring-sky-400"
             role="tab"
             [attr.aria-selected]="focusedView() === 'clinician'">
-            Clinician Focus
+            {{ 'Clinician Focus' | pgT:'dual.tab_clinician' }}
           </button>
           <button
             type="button"
@@ -101,7 +102,7 @@ import { CompassionateAnalogyService } from '../services/compassionate-analogy.s
             class="px-3 py-1.5 min-h-[38px] text-xs font-semibold rounded-lg transition-colors hover:text-emerald-300 focus-visible:ring-2 focus-visible:ring-emerald-400"
             role="tab"
             [attr.aria-selected]="focusedView() === 'patient'">
-            Patient Focus
+            {{ 'Patient Focus' | pgT:'dual.tab_patient' }}
           </button>
         </div>
       </div>
@@ -118,7 +119,7 @@ import { CompassionateAnalogyService } from '../services/compassionate-analogy.s
               <div class="flex items-center gap-2">
                 <span class="text-xl">🔬</span>
                 <h4 class="font-extrabold text-xs uppercase tracking-wider text-sky-400 font-mono">
-                  Clinician Technical View (EHR & Trials)
+                  {{ 'Clinician Technical View (EHR & Trials)' | pgT:'dual.clinician_pane' }}
                 </h4>
               </div>
               <span class="text-[10px] px-2 py-0.5 rounded bg-sky-950 text-sky-300 font-mono border border-sky-800/50">
@@ -130,7 +131,7 @@ import { CompassionateAnalogyService } from '../services/compassionate-analogy.s
               <!-- Diagnoses & Coding with CSS Anchor Positioning target -->
               <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-300">
                 <div class="text-[10px] text-sky-400 font-bold uppercase mb-2 flex items-center justify-between">
-                  <span>Diagnoses & Coding</span>
+                  <span>{{ 'Diagnoses & Coding' | pgT:'dual.diagnoses' }}</span>
                   <span class="text-[9px] text-zinc-500 font-normal">Click item for evidence popover</span>
                 </div>
                 @for (cond of activeConditions(); track cond) {
@@ -154,14 +155,14 @@ import { CompassionateAnalogyService } from '../services/compassionate-analogy.s
               </div>
 
               <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-300">
-                <div class="text-[10px] text-sky-400 font-bold uppercase mb-1">Pathophysiological Telemetry</div>
+                <div class="text-[10px] text-sky-400 font-bold uppercase mb-1">{{ 'Pathophysiological Telemetry' | pgT:'dual.telemetry' }}</div>
                 <div>• Heart Rate: {{ patientState.vitals().hr || '72' }} bpm | BP: {{ patientState.vitals().bp || '120/80' }} mmHg</div>
                 <div>• Cortisol Evaporation Rate: High-velocity sympathovagal shift</div>
                 <div>• Oxygen Saturation: {{ patientState.vitals().spO2 || '98%' }}</div>
               </div>
 
               <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-300">
-                <div class="text-[10px] text-sky-400 font-bold uppercase mb-1">Clinical Trial Evidence</div>
+                <div class="text-[10px] text-sky-400 font-bold uppercase mb-1">{{ 'Clinical Trial Evidence' | pgT:'dual.trials' }}</div>
                 <div>• NEJM 2025: Vagal HRV baroreflex therapy reduces systolic BP by 14 mmHg</div>
                 <div>• Lancet 2026: Fiber-rich mycorrhizal gut protocols lower systemic CRP by 38%</div>
               </div>
@@ -176,11 +177,11 @@ import { CompassionateAnalogyService } from '../services/compassionate-analogy.s
               <div class="flex items-center gap-2">
                 <span class="text-xl">📖</span>
                 <h4 class="font-extrabold text-xs uppercase tracking-wider text-emerald-400 font-mono">
-                  Patient Persona View (Compassionate Translation)
+                  {{ 'Patient Persona View (Compassionate Translation)' | pgT:'dual.patient_pane' }}
                 </h4>
               </div>
               <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono border border-emerald-800/50 uppercase font-bold">
-                Plain Language Active
+                {{ 'Plain Language Active' | pgT:'dual.plain_lang' }}
               </span>
             </div>
 
@@ -192,12 +193,12 @@ import { CompassionateAnalogyService } from '../services/compassionate-analogy.s
               </div>
 
               <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200">
-                <div class="text-[10px] text-emerald-400 font-bold uppercase font-mono mb-1">Personal Overview</div>
+                <div class="text-[10px] text-emerald-400 font-bold uppercase font-mono mb-1">{{ 'Personal Overview' | pgT:'dual.overview' }}</div>
                 {{ translation.overviewSummary }}
               </div>
 
               <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-200">
-                <div class="text-[10px] text-emerald-400 font-bold uppercase font-mono mb-1">Vital Sign Translation</div>
+                <div class="text-[10px] text-emerald-400 font-bold uppercase font-mono mb-1">{{ 'Vital Sign Translation' | pgT:'dual.vitals_translation' }}</div>
                 {{ translation.vitalsAnalogy }}
               </div>
 

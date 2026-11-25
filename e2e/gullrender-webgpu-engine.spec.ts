@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, openAppsHubAction } from './utils/setup';
 
 test.describe('GullRender In-House Browser Rendering Engine Suite', () => {
   test.beforeEach(async ({ page }) => {
@@ -9,15 +9,12 @@ test.describe('GullRender In-House Browser Rendering Engine Suite', () => {
   });
 
   test('should mount GullRender WebGPU engine, toggle dual-engine switcher, and verify zero Three.js footprint', async ({ page }) => {
-    // 1. Open Apps Hub and navigate to Biophysical 3D Lenses
-    const appsHubBtn = page.locator('#btn-apps-hub-trigger, button:has-text("Apps & Portals")').first();
-    await expect(appsHubBtn).toBeVisible({ timeout: 15000 });
-    await appsHubBtn.click();
-    await page.waitForTimeout(300);
-
-    const bioLensBtn = page.locator('[data-testid="btn-open-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")').first();
-    await expect(bioLensBtn).toBeVisible({ timeout: 10000 });
-    await bioLensBtn.click();
+    // 1. Open Apps Hub (or Mobile Drawer) and navigate to Biophysical 3D Lenses
+    await openAppsHubAction(
+      page,
+      '[data-testid="btn-open-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")',
+      '[data-testid="mobile-btn-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")'
+    );
 
     // 2. Ensure Biophysical Lenses modal is visible
     const modalTitle = page.locator('h2:has-text("Biophysical 3D Lenses")').first();
@@ -53,13 +50,12 @@ test.describe('GullRender In-House Browser Rendering Engine Suite', () => {
   });
 
   test('should interactively morph between 3D procedural ventricle and extruded font glyphs', async ({ page }) => {
-    // Open Biophysical Lenses modal directly
-    const appsHubBtn = page.locator('#btn-apps-hub-trigger, button:has-text("Apps & Portals")').first();
-    await appsHubBtn.click();
-    await page.waitForTimeout(200);
-
-    const bioLensBtn = page.locator('[data-testid="btn-open-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")').first();
-    await bioLensBtn.click();
+    // Open Biophysical Lenses modal directly across desktop or mobile drawer
+    await openAppsHubAction(
+      page,
+      '[data-testid="btn-open-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")',
+      '[data-testid="mobile-btn-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")'
+    );
 
     const webgpuLens = page.locator('app-cardiac-webgpu-lens');
     await expect(webgpuLens).toBeVisible({ timeout: 15000 });
@@ -113,12 +109,11 @@ test.describe('GullRender In-House Browser Rendering Engine Suite', () => {
   });
 
   test('should simulate electrophysiology regimes, toggle playback, and switch to Three.js legacy engine', async ({ page }) => {
-    const appsHubBtn = page.locator('#btn-apps-hub-trigger, button:has-text("Apps & Portals")').first();
-    await appsHubBtn.click();
-    await page.waitForTimeout(200);
-
-    const bioLensBtn = page.locator('[data-testid="btn-open-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")').first();
-    await bioLensBtn.click();
+    await openAppsHubAction(
+      page,
+      '[data-testid="btn-open-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")',
+      '[data-testid="mobile-btn-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")'
+    );
 
     const webgpuLens = page.locator('app-cardiac-webgpu-lens');
     await expect(webgpuLens).toBeVisible({ timeout: 15000 });
@@ -157,12 +152,11 @@ test.describe('GullRender In-House Browser Rendering Engine Suite', () => {
   });
 
   test('should enforce RSNA eye care principles: Circadian Chrono-Dock, Helmholtz anti-halation, and Sloan optotype', async ({ page }) => {
-    const appsHubBtn = page.locator('#btn-apps-hub-trigger, button:has-text("Apps & Portals")').first();
-    await appsHubBtn.click();
-    await page.waitForTimeout(200);
-
-    const bioLensBtn = page.locator('[data-testid="btn-open-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")').first();
-    await bioLensBtn.click();
+    await openAppsHubAction(
+      page,
+      '[data-testid="btn-open-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")',
+      '[data-testid="mobile-btn-biophysical-lenses"], button:has-text("Biophysical 3D Lenses")'
+    );
 
     const webgpuLens = page.locator('app-cardiac-webgpu-lens');
     await expect(webgpuLens).toBeVisible({ timeout: 15000 });

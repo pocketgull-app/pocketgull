@@ -58,11 +58,11 @@ export interface IDpoPreferenceRow {
  * - Prohibits naked decimals: '.5 mg' -> '0.5 mg', '.25 mcg' -> '0.25 mcg'
  */
 export function sanitizeIsmpDecimals(text: string): string {
-  // Replace trailing zeroes: e.g., 5.0 mg -> 5 mg, 12.00 mL -> 12 mL
-  let sanitized = text.replace(/(\b\d+)\.0+(?=\s*(?:mg|mcg|g|kg|mL|L|units|mEq|mmol|mmHg|bpm|%|cm|mm)\b)/gi, '$1');
+  // Replace trailing zeroes: e.g., 5.0 mg -> 5 mg, 12.00 mL -> 12 mL, 5.0% -> 5%
+  let sanitized = text.replace(/(\b\d+)\.0+(?=\s*(?:(?:mg|mcg|g|kg|mL|L|units|mEq|mmol|mmHg|bpm|cm|mm)\b|%))/gi, '$1');
   
-  // Replace naked decimals: e.g., .5 mg -> 0.5 mg, .25 mcg -> 0.25 mcg
-  sanitized = sanitized.replace(/(?<=\s|^|\()\.(\d+)(?=\s*(?:mg|mcg|g|kg|mL|L|units|mEq|mmol|mmHg|bpm|%|cm|mm)\b)/gi, '0.$1');
+  // Replace naked decimals: e.g., .5 mg -> 0.5 mg, .5% -> 0.5%
+  sanitized = sanitized.replace(/(?<=\s|^|\()\.(\d+)(?=\s*(?:(?:mg|mcg|g|kg|mL|L|units|mEq|mmol|mmHg|bpm|cm|mm)\b|%))/gi, '0.$1');
   
   return sanitized;
 }

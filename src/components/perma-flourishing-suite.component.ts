@@ -127,13 +127,23 @@ export interface IGratitudeLog {
       </div>
 
       <!-- Positive Psychology & Clinical Care Post-It Sticky Notes -->
-      <div class="mt-6 pt-6 border-t border-amber-200/50 dark:border-zinc-800">
-        <app-post-it-notes />
+      <div class="mt-6 pt-6 border-t border-amber-200/50 dark:border-zinc-800 flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">📌 Prescription Post-It Sticky Notes</h4>
+          <p class="text-[11px] text-zinc-500 dark:text-zinc-400">Open printable visual sticky anchors for daily home micro-habits</p>
+        </div>
+        <button type="button" (click)="showPostItModal.set(true)" class="min-h-[40px] px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-bold text-xs uppercase tracking-wider transition cursor-pointer">
+          📌 Open Post-It Notes
+        </button>
+        @if (showPostItModal()) {
+          <app-post-it-notes (closeModal)="showPostItModal.set(false)" />
+        }
       </div>
     </div>
   `
 })
 export class PermaFlourishingSuiteComponent {
+  readonly showPostItModal = signal<boolean>(false);
   newLogDimension: 'Positive Emotion' | 'Engagement' | 'Relationships' | 'Meaning' | 'Accomplishment' | 'Vitality' = 'Positive Emotion';
   newLogText = '';
 

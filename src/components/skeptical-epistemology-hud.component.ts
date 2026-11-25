@@ -17,11 +17,12 @@ import {
   createDefaultGroundedClinicalAssertion
 } from '../models/grounded-epistemic-assertion.model';
 import { ClinicalIntelligenceService } from '../services/clinical-intelligence.service';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-skeptical-epistemology-hud',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PgTranslatePipe],
   template: `
     <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md p-6 shadow-xl transition-all duration-300 hover:shadow-2xl">
       <!-- Header HUD Bar -->
@@ -32,9 +33,9 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
           </div>
           <div>
             <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-              Skeptical Epistemology & Clinical Evidence HUD
+              {{ 'Skeptical Epistemology & Clinical Evidence HUD' | pgT:'lens08.skeptical_title' }}
               <span class="inline-flex items-center rounded-md bg-indigo-100 dark:bg-indigo-950/80 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                Popperian Falsifiability
+                {{ 'Popperian Falsifiability' | pgT:'lens08.popperian_badge' }}
               </span>
             </h3>
             <p class="text-xs text-zinc-500 dark:text-zinc-400">
@@ -55,7 +56,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
             {{ report()?.evidenceLevel }}
           </span>
           <span class="text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-lg">
-            Epistemic Confidence: {{ report()?.overallConfidencePercent }}%
+            {{ 'Epistemic Confidence:' | pgT:'lens08.epistemic_confidence' }} {{ report()?.overallConfidencePercent }}%
           </span>
         </div>
       </div>
@@ -65,7 +66,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
         <div class="mt-5 rounded-xl bg-zinc-50 dark:bg-zinc-950/50 p-4 border border-zinc-200/60 dark:border-zinc-800/60">
           <div class="flex items-center justify-between">
             <span class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-              Null-Hypothesis Test (H₀): {{ fals.metricName }}
+              {{ 'Null-Hypothesis Test (H₀):' | pgT:'lens08.null_hypothesis' }} {{ fals.metricName }}
             </span>
             <span class="text-xs font-pocketgull-math font-medium text-indigo-600 dark:text-indigo-400">
               p-value = {{ fals.pValue }}
@@ -94,7 +95,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
       @if (report()?.cochraneBias; as bias) {
         <div class="mt-5">
           <h4 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-3">
-            Cochrane Risk of Bias 2.0 (RoB 2) Assessment
+            {{ 'Cochrane Risk of Bias 2.0 (RoB 2) Assessment' | pgT:'lens08.cochrane_rob2' }}
           </h4>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
             <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50/50 dark:bg-zinc-900/50">

@@ -2,6 +2,7 @@ import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OnnxWebGpuEngineService, IOnnxRiskScoreResult } from '../../services/onnx-webgpu-engine.service';
 import { PatientStateService } from '../../services/patient-state.service';
+import { ClinicalMoERouterService } from '../../services/clinical-moe-router.service';
 
 @Component({
   selector: 'app-edge-ml-hud',
@@ -23,32 +24,55 @@ import { PatientStateService } from '../../services/patient-state.service';
               <span class="text-[10px] font-mono font-normal px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/40">
                 OOF ROC-AUC {{ metadata().oofRocAuc }}
               </span>
+              @if (isHemodynamicSynapseActive()) {
+                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                      title="Cross-Component Synapse Active: Coupled with Posology / 3D Cardiopulmonary Thorax">
+                  ⚡ Hemodynamic Synapse
+                </span>
+              }
+              @if (isExploratoryCollapsed()) {
+                <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/40">
+                  ⚡ STAT Focused
+                </span>
+              }
             </h3>
             <p class="text-xs text-zinc-400">Zero-egress local browser neural inference calibrated on Parquet datasets</p>
           </div>
         </div>
 
-        <!-- Hardware Backend Badge -->
-        <div class="flex items-center gap-2">
+        <!-- Hardware Backend Badge & Attestation Controls -->
+        <div class="flex items-center gap-2 flex-wrap">
           <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded-md bg-zinc-800 border border-zinc-700 text-teal-400 flex items-center gap-1.5 shadow-xs">
             <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
             {{ metadata().backend }}
           </span>
-          <button
-            type="button"
-            (click)="runBatchBenchmark()"
-            [disabled]="isBenchmarking()"
-            class="px-2.5 py-1 rounded-md bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/40 text-teal-300 text-xs font-mono font-semibold transition cursor-pointer disabled:opacity-50">
-            {{ isBenchmarking() ? 'Benchmarking...' : '⚡ Run Batch Test' }}
-          </button>
+          @if (!isExploratoryCollapsed()) {
+            <button
+              type="button"
+              (click)="runBatchBenchmark()"
+              [disabled]="isBenchmarking()"
+              class="px-2.5 py-1 rounded-md bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/40 text-teal-300 text-xs font-mono font-semibold transition cursor-pointer disabled:opacity-50">
+              {{ isBenchmarking() ? 'Benchmarking...' : '⚡ Run Batch Test' }}
+            </button>
+          }
+          @if (moeRouter) {
+            <button
+              type="button"
+              (click)="attestAndRetireEdgeHud()"
+              class="px-2.5 py-1 rounded-md bg-emerald-800/70 hover:bg-emerald-700 border border-emerald-500/40 text-emerald-100 text-xs font-mono font-semibold transition cursor-pointer">
+              ✓ Attest Telemetry
+            </button>
+          }
         </div>
       </div>
 
       <!-- Telemetry Grid -->
       @if (latestResult(); as result) {
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <!-- Risk Score & Acuity -->
-          <div class="bg-zinc-950/60 border border-zinc-800/80 rounded-lg p-3 flex flex-col justify-between">
+          <!-- Risk Score & Acuity (Synapse Highlighted) -->
+          <div class="bg-zinc-950/60 border border-zinc-800/80 rounded-lg p-3 flex flex-col justify-between transition-all"
+               [class.ring-2]="isHemodynamicSynapseActive()"
+               [class.ring-emerald-400/70]="isHemodynamicSynapseActive()">
             <span class="text-xs text-zinc-400 font-medium">30-Day Decompensation Risk</span>
             <div class="mt-1 flex items-baseline gap-2">
               <span class="text-2xl font-bold font-mono text-zinc-100">{{ (result.riskScore * 100).toFixed(1) }}%</span>
@@ -95,31 +119,35 @@ import { PatientStateService } from '../../services/patient-state.service';
           </div>
         </div>
 
-        <!-- Top Biophysical Risk Drivers -->
-        <div class="bg-zinc-950/40 border border-zinc-800/60 rounded-lg p-3 flex flex-col gap-2">
-          <span class="text-xs font-semibold text-zinc-300">Top Neural Feature Attributions:</span>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            @for (driver of result.topDrivers; track driver.feature) {
-              <div class="bg-zinc-900/80 border border-zinc-800 px-2.5 py-1.5 rounded-md flex items-center justify-between text-xs">
-                <span class="text-zinc-400 truncate">{{ driver.feature }}</span>
-                <span class="font-mono font-bold text-teal-400 shrink-0 ml-2">+{{ (driver.impact * 100).toFixed(0) }}%</span>
-              </div>
-            }
+        <!-- Top Biophysical Risk Drivers (Collapsed under STAT Focused Sparsity) -->
+        @if (!isExploratoryCollapsed()) {
+          <div class="bg-zinc-950/40 border border-zinc-800/60 rounded-lg p-3 flex flex-col gap-2">
+            <span class="text-xs font-semibold text-zinc-300">Top Neural Feature Attributions:</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              @for (driver of result.topDrivers; track driver.feature) {
+                <div class="bg-zinc-900/80 border border-zinc-800 px-2.5 py-1.5 rounded-md flex items-center justify-between text-xs">
+                  <span class="text-zinc-400 truncate">{{ driver.feature }}</span>
+                  <span class="font-mono font-bold text-teal-400 shrink-0 ml-2">+{{ (driver.impact * 100).toFixed(0) }}%</span>
+                </div>
+              }
+            </div>
           </div>
-        </div>
+        }
       }
 
-      <!-- Batch Benchmark Results (if executed) -->
+      <!-- Batch Benchmark Results (if executed & not collapsed) -->
       @if (batchResult(); as bResult) {
-        <div class="bg-teal-950/30 border border-teal-800/50 rounded-lg p-3 flex items-center justify-between text-xs font-mono">
-          <div class="flex items-center gap-2 text-teal-200">
-            <span>🚀 50-Patient Batch Complete:</span>
-            <span class="font-bold text-teal-400">{{ bResult.totalLatencyMs }} ms total</span>
+        @if (!isExploratoryCollapsed()) {
+          <div class="bg-teal-950/30 border border-teal-800/50 rounded-lg p-3 flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center gap-2 text-teal-200">
+              <span>🚀 50-Patient Batch Complete:</span>
+              <span class="font-bold text-teal-400">{{ bResult.totalLatencyMs }} ms total</span>
+            </div>
+            <div class="text-teal-300 font-bold">
+              ⚡ {{ bResult.throughputSamplesPerSec.toLocaleString() }} samples/sec
+            </div>
           </div>
-          <div class="text-teal-300 font-bold">
-            ⚡ {{ bResult.throughputSamplesPerSec.toLocaleString() }} samples/sec
-          </div>
-        </div>
+        }
       }
     </div>
   `
@@ -127,10 +155,20 @@ import { PatientStateService } from '../../services/patient-state.service';
 export class EdgeMlHudComponent implements OnInit {
   private readonly onnx = inject(OnnxWebGpuEngineService);
   private readonly state = inject(PatientStateService);
+  readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
 
   readonly metadata = this.onnx.modelMetadata;
   readonly isBenchmarking = signal<boolean>(false);
   readonly batchResult = signal<{ totalLatencyMs: number; throughputSamplesPerSec: number } | null>(null);
+
+  readonly isExploratoryCollapsed = computed(() =>
+    Boolean(this.moeRouter?.microSkillDisplayPolicy().collapseExploratorySubViews)
+  );
+
+  readonly isHemodynamicSynapseActive = computed(() => {
+    const token = this.moeRouter?.activeSynapseToken();
+    return token === 'hemodynamic-posology-coupling' || token === 'visceral-cardiopulmonary-coupling';
+  });
 
   readonly latestResult = computed(() => {
     return this.onnx.lastInference();
@@ -162,7 +200,24 @@ export class EdgeMlHudComponent implements OnInit {
     };
 
     const features = this.onnx.extractFeaturesFromPatientState(vitals, radiomics);
-    await this.onnx.scorePatient('CURRENT_ACTIVE_PATIENT', features);
+    const scored = await this.onnx.scorePatient('CURRENT_ACTIVE_PATIENT', features);
+    if (scored) {
+      this.moeRouter?.emitSynapseSignalPulse(
+        'hemodynamic-posology-coupling',
+        'edge-ml-hud',
+        'ismp-posology',
+        'ONNX 30d Decomp Risk',
+        `${(scored.riskScore * 100).toFixed(1)}% (${scored.acuityLevel})`
+      );
+    }
+  }
+
+  attestAndRetireEdgeHud(): void {
+    const res = this.latestResult();
+    const summary = res
+      ? `ONNX Edge Telemetry (${(res.riskScore * 100).toFixed(1)}% risk • ${res.acuityLevel})`
+      : 'ONNX Edge Telemetry attested';
+    this.moeRouter?.completeAndRetireSkillGoal('edge-ml-hud', summary);
   }
 
   async runBatchBenchmark() {
@@ -170,7 +225,7 @@ export class EdgeMlHudComponent implements OnInit {
     try {
       const mockBatch = Array.from({ length: 50 }, (_, i) => ({
         patientId: `BENCH_PAT_${String(i).padStart(3, '0')}`,
-        features: Array.from({ length: 32 }, () => Math.random())
+        features: Array.from({ length: 32 }, (__, fIdx) => ((i * 17 + fIdx * 31 + 13) % 100) / 100)
       }));
 
       const res = await this.onnx.scoreBatch(mockBatch);

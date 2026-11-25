@@ -439,4 +439,9 @@ eng/
 casmi_output/
 /docs/DUAL_TRACK_ACQUISITION_PACKET.md
 
+# Generated SBOM artifacts (generated fresh in CI/Release; never commit stale snapshots)
+/sbom.cdx.json
+/sbom.prod.cdx.json
+/sbom.spdx.json
+
 

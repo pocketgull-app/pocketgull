@@ -19,6 +19,7 @@ import { GlobalHealthInitiativesService } from '../services/global-health-initia
 import { EnvironmentalExposomicsToxicologyComponent } from './environmental-exposomics-toxicology.component';
 import { InstantBodyCarePlanSheetComponent } from './anatomy-3d/instant-body-care-plan-sheet.component';
 import { PatientScansComponent } from './patient-scans.component';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-medical-chart',
@@ -37,7 +38,8 @@ import { PatientScansComponent } from './patient-scans.component';
     LongitudinalTrendSparklineComponent,
     EnvironmentalExposomicsToxicologyComponent,
     InstantBodyCarePlanSheetComponent,
-    PatientScansComponent
+    PatientScansComponent,
+    PgTranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -66,8 +68,8 @@ import { PatientScansComponent } from './patient-scans.component';
       }
 
       <!-- 🧭 Precision Workspace Navigator (Zero-Scroll Mode) -->
-      <div class="flex items-center justify-between gap-1 border-b border-zinc-200 dark:border-zinc-800 bg-white/40 dark:bg-zinc-950/40 px-1 mb-2 font-mono text-xs shrink-0 overflow-x-auto">
-        <div class="flex items-center gap-4">
+      <div class="flex items-center justify-between gap-1.5 border-b border-zinc-200 dark:border-zinc-800 bg-white/40 dark:bg-zinc-950/40 px-1 mb-2 font-mono text-xs shrink-0 overflow-x-auto hide-scrollbar">
+        <div class="flex items-center gap-2 shrink-0">
           <button type="button" (click)="activeWorkspaceTab.set('anatomy')"
             [class.border-teal-500]="activeWorkspaceTab() === 'anatomy'"
             [class.text-zinc-950]="activeWorkspaceTab() === 'anatomy'"
@@ -76,9 +78,9 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.border-transparent]="activeWorkspaceTab() !== 'anatomy'"
             [class.text-zinc-500]="activeWorkspaceTab() !== 'anatomy'"
             [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'anatomy'"
-            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            class="shrink-0 flex items-center gap-1 py-2.5 border-b-2 uppercase tracking-wide transition-all cursor-pointer whitespace-nowrap text-[10px] hover:text-zinc-800 dark:hover:text-zinc-200">
             <span class="text-teal-600 dark:text-teal-400 font-bold">01</span>
-            <span>3D Anatomy</span>
+            <span>{{ '3D Anatomy' | pgT:'chart.tab_anatomy' }}</span>
           </button>
 
           <button type="button" (click)="activeWorkspaceTab.set('vitals')"
@@ -89,9 +91,9 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.border-transparent]="activeWorkspaceTab() !== 'vitals'"
             [class.text-zinc-500]="activeWorkspaceTab() !== 'vitals'"
             [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'vitals'"
-            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            class="shrink-0 flex items-center gap-1 py-2.5 border-b-2 uppercase tracking-wide transition-all cursor-pointer whitespace-nowrap text-[10px] hover:text-zinc-800 dark:hover:text-zinc-200">
             <span class="text-teal-600 dark:text-teal-400 font-bold">02</span>
-            <span>Vitals &amp; Bio</span>
+            <span>{{ 'Vitals & Bio' | pgT:'chart.tab_vitals' }}</span>
           </button>
 
           <button type="button" (click)="activeWorkspaceTab.set('imaging')"
@@ -102,9 +104,9 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.border-transparent]="activeWorkspaceTab() !== 'imaging'"
             [class.text-zinc-500]="activeWorkspaceTab() !== 'imaging'"
             [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'imaging'"
-            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            class="shrink-0 flex items-center gap-1 py-2.5 border-b-2 uppercase tracking-wide transition-all cursor-pointer whitespace-nowrap text-[10px] hover:text-zinc-800 dark:hover:text-zinc-200">
             <span class="text-teal-600 dark:text-teal-400 font-bold">03</span>
-            <span>Imaging &amp; Tox</span>
+            <span>{{ 'Imaging & Tox' | pgT:'chart.tab_imaging' }}</span>
           </button>
 
           <button type="button" (click)="activeWorkspaceTab.set('timeline')"
@@ -115,20 +117,25 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.border-transparent]="activeWorkspaceTab() !== 'timeline'"
             [class.text-zinc-500]="activeWorkspaceTab() !== 'timeline'"
             [class.dark:text-zinc-400]="activeWorkspaceTab() !== 'timeline'"
-            class="flex items-center gap-1.5 py-2.5 border-b-2 uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap text-[11px] hover:text-zinc-800 dark:hover:text-zinc-200">
+            class="shrink-0 flex items-center gap-1 py-2.5 border-b-2 uppercase tracking-wide transition-all cursor-pointer whitespace-nowrap text-[10px] hover:text-zinc-800 dark:hover:text-zinc-200">
             <span class="text-teal-600 dark:text-teal-400 font-bold">04</span>
-            <span>History</span>
+            <span>{{ 'History' | pgT:'chart.tab_history' }}</span>
           </button>
         </div>
 
         <!-- Multi-Panel All Toggle -->
         <button type="button" (click)="activeWorkspaceTab.set(activeWorkspaceTab() === 'all' ? 'anatomy' : 'all')"
+          title="Toggle All Panels"
           [class.text-emerald-600]="activeWorkspaceTab() === 'all'"
           [class.dark:text-emerald-400]="activeWorkspaceTab() === 'all'"
           [class.border-emerald-500]="activeWorkspaceTab() === 'all'"
           [class.bg-emerald-500/10]="activeWorkspaceTab() === 'all'"
-          class="hidden sm:flex items-center gap-1 px-2 py-1 text-[10px] font-mono font-bold uppercase tracking-wider border border-zinc-300 dark:border-zinc-700 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer shrink-0">
-          <span>{{ activeWorkspaceTab() === 'all' ? '[ MULTI-PANEL ]' : '[ ALL PANELS ]' }}</span>
+          class="hidden sm:flex items-center gap-1 px-1.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wide border border-zinc-300 dark:border-zinc-700 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition cursor-pointer shrink-0">
+          @if (activeWorkspaceTab() === 'all') {
+            <span>[ MULTI<span class="sr-only">-PANEL</span> ]</span>
+          } @else {
+            <span>[ ALL<span class="sr-only"> PANELS</span> ]</span>
+          }
         </button>
       </div>
 
@@ -137,7 +144,7 @@ import { PatientScansComponent } from './patient-scans.component';
         <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <div class="flex items-center gap-1 text-[11px] font-bold text-teal-600 dark:text-teal-400 mr-1">
             <span class="pg-icon pg-icon-eye text-sm leading-none"></span>
-            <span class="tracking-wider uppercase">Sloan 5:1 Lens:</span>
+            <span class="tracking-wider uppercase">{{ 'Sloan 5:1 Lens:' | pgT:'chart.sloan_lens' }}</span>
           </div>
 
           <!-- Phoropter Mode Tabs -->
@@ -150,7 +157,7 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.text-zinc-600]="bioTypography.phoropterMode() !== 'STANDARD_20_20'"
             [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'STANDARD_20_20'"
             class="min-h-[44px] px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500 touch-manipulation inline-flex items-center justify-center">
-            20/20 Std
+            {{ '20/20 Std' | pgT:'chart.sloan_20_20' }}
           </button>
 
           <button type="button" (click)="bioTypography.setPhoropterMode('AUTO_DISTANCE')"
@@ -162,7 +169,7 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.text-zinc-600]="bioTypography.phoropterMode() !== 'AUTO_DISTANCE'"
             [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'AUTO_DISTANCE'"
             class="min-h-[44px] px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500 touch-manipulation inline-flex items-center justify-center">
-            📱 Distance ({{ bioTypography.distanceCm() }}cm)
+            📱 {{ 'Distance' | pgT:'chart.distance' }} ({{ bioTypography.distanceCm() }}cm)
           </button>
 
           <button type="button" (click)="bioTypography.setPhoropterMode('MESOPIC_ICU')"
@@ -174,7 +181,7 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.text-zinc-600]="bioTypography.phoropterMode() !== 'MESOPIC_ICU'"
             [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'MESOPIC_ICU'"
             class="min-h-[44px] px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-teal-500 touch-manipulation inline-flex items-center justify-center">
-            🌙 ICU Mesopic
+            🌙 {{ 'ICU Mesopic' | pgT:'chart.icu_mesopic' }}
           </button>
 
           <button type="button" (click)="bioTypography.setPhoropterMode('STAT_TRAUMA')"
@@ -186,7 +193,7 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.text-zinc-600]="bioTypography.phoropterMode() !== 'STAT_TRAUMA'"
             [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'STAT_TRAUMA'"
             class="min-h-[44px] px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-red-500 touch-manipulation inline-flex items-center justify-center">
-            ⚡ STAT Trauma
+            ⚡ {{ 'STAT Trauma' | pgT:'chart.stat_trauma' }}
           </button>
 
           <button type="button" (click)="bioTypography.setPhoropterMode('LOW_VISION')"
@@ -198,14 +205,14 @@ import { PatientScansComponent } from './patient-scans.component';
             [class.text-zinc-600]="bioTypography.phoropterMode() !== 'LOW_VISION'"
             [class.dark:text-zinc-400]="bioTypography.phoropterMode() !== 'LOW_VISION'"
             class="min-h-[44px] px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 text-[10px] font-bold uppercase transition cursor-pointer hover:border-amber-500 touch-manipulation inline-flex items-center justify-center">
-            👓 Low Vision
+            👓 {{ 'Low Vision' | pgT:'chart.low_vision' }}
           </button>
         </div>
 
         <!-- Live Telemetry Readout & 203 DPI Thermal Print Trigger -->
         <div class="flex items-center gap-2">
           <div class="hidden md:flex items-center gap-2 text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
-            <span>DILATION: <strong class="text-teal-600 dark:text-teal-400 font-bold">{{ bioTypography.sloanDilationFactor().toFixed(2) }}x</strong></span>
+            <span>{{ 'DILATION:' | pgT:'chart.dilation' }} <strong class="text-teal-600 dark:text-teal-400 font-bold">{{ bioTypography.sloanDilationFactor().toFixed(2) }}x</strong></span>
             <span>•</span>
             <span>5.0' ARC</span>
           </div>
@@ -213,12 +220,12 @@ import { PatientScansComponent } from './patient-scans.component';
           <button type="button" (click)="printBedsideThermalTicket()"
             class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-bold text-[10px] uppercase tracking-wider shadow-sm transition cursor-pointer">
             <span class="pg-icon pg-icon-print text-xs leading-none"></span>
-            <span>Print 203 DPI</span>
+            <span>{{ 'Print 203 DPI' | pgT:'chart.print_203' }}</span>
           </button>
 
           <button type="button" (click)="bioTypography.downloadZplPayload()" title="Download Zebra ZPL II payload"
             class="px-2 py-1 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:border-teal-500 text-zinc-700 dark:text-zinc-300 font-bold text-[10px] uppercase tracking-wider transition cursor-pointer">
-            💾 ZPL
+            💾 {{ 'ZPL' | pgT:'chart.zpl' }}
           </button>
         </div>
       </div>
@@ -250,7 +257,7 @@ import { PatientScansComponent } from './patient-scans.component';
         <!-- 3D Body Viewer Card -->
         <pocket-gull-card 
           id="tour-body-chart"
-          title="3D Body Viewer" 
+          [title]="'3D Body Viewer' | pgT:'chart.body_viewer'" 
           [icon]="viewerIcon"
           [noPadding]="true">
           
@@ -260,17 +267,23 @@ import { PatientScansComponent } from './patient-scans.component';
 
           @if(isViewerExpanded()) {
             <div class="body-viewer-container min-h-[500px] sm:min-h-[540px] xl:min-h-[580px] overflow-hidden bg-white dark:bg-black/20 shrink-0 flex flex-col">
-              <app-body-viewer class="shrink-0 flex-1 flex flex-col"></app-body-viewer>
+              @defer (on immediate) {
+                <app-body-viewer class="shrink-0 flex-1 flex flex-col"></app-body-viewer>
+              } @placeholder {
+                <div class="p-6 text-xs font-mono text-zinc-400">Loading 3D Body Viewer...</div>
+              }
             </div>
           }
         </pocket-gull-card>
 
         <!-- Instant Body Care Plan Sheet (Bottom-sheet drawer overlay) -->
-        <app-instant-body-care-plan-sheet />
+        @defer (on idle) {
+          <app-instant-body-care-plan-sheet />
+        }
 
         <!-- Medical Summary Card -->
         <pocket-gull-card 
-          title="Medical Summary" 
+          [title]="'Medical Summary' | pgT:'chart.medical_summary'" 
           [icon]="summaryIcon"
           [noPadding]="true">
           
@@ -280,7 +293,11 @@ import { PatientScansComponent } from './patient-scans.component';
 
           @if(isSummaryExpanded()) {
             <div class="bg-white dark:bg-zinc-900 shrink-0 min-h-0 min-w-0 border-b border-gray-100 dark:border-zinc-800 last:border-0 p-0">
-               <app-medical-summary class="block"></app-medical-summary>
+              @defer (on immediate) {
+                <app-medical-summary class="block"></app-medical-summary>
+              } @placeholder {
+                <div class="p-4 text-xs font-mono text-zinc-400">Loading Medical Summary...</div>
+              }
             </div>
           }
         </pocket-gull-card>
@@ -296,7 +313,7 @@ import { PatientScansComponent } from './patient-scans.component';
 
         <!-- Multi-Paradigm Longitudinal Vitals & WHO SDG 3.4 Card -->
         <pocket-gull-card 
-          title="Multi-Paradigm Longitudinal Vitals &amp; WHO SDG 3.4" 
+          [title]="'Multi-Paradigm Longitudinal Vitals & WHO SDG 3.4' | pgT:'chart.longitudinal_vitals'" 
           [icon]="sparklineIcon"
           [noPadding]="false">
           
@@ -311,9 +328,9 @@ import { PatientScansComponent } from './patient-scans.component';
               @if(whoRisk(); as risk) {
                 <div class="px-3 py-2 bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/80 border-l-4 border-l-sky-500 flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
                   <div class="flex items-center gap-2">
-                    <span class="inline-block w-1.5 h-1.5 bg-sky-500 rounded-2xs"></span>
+                    <span class="inline-block w-1.5 h-1.5 bg-sky-500 rounded-sm"></span>
                     <span class="font-bold text-zinc-800 dark:text-zinc-200 text-[11px] uppercase tracking-wider">
-                      WHO SDG 3.4 CVD TELEMETRY:
+                      {{ 'WHO SDG 3.4 CVD TELEMETRY:' | pgT:'chart.who_sdg_telemetry' }}
                     </span>
                     <span class="font-black tracking-tight" [ngClass]="risk.color">
                       [{{ risk.riskScorePercent }}% ▪ {{ risk.riskTier }}]
@@ -404,7 +421,7 @@ import { PatientScansComponent } from './patient-scans.component';
 
         <!-- Biometric Trends Card -->
         <pocket-gull-card 
-          title="Biometric Trends" 
+          [title]="'Biometric Trends' | pgT:'chart.biometric_trends'" 
           [icon]="biometricIcon"
           [noPadding]="true">
           
@@ -414,7 +431,9 @@ import { PatientScansComponent } from './patient-scans.component';
 
           @if(isBiometricExpanded()) {
             <div class="h-[250px] overflow-hidden bg-white dark:bg-black/20 shrink-0 p-4">
-               <app-biometric-history-chart></app-biometric-history-chart>
+              @defer (on idle) {
+                <app-biometric-history-chart></app-biometric-history-chart>
+              }
             </div>
           }
         </pocket-gull-card>
@@ -434,10 +453,14 @@ import { PatientScansComponent } from './patient-scans.component';
 
           @if(isScansExpanded()) {
             <div class="p-6 bg-[#F9FAFB]/50 dark:bg-zinc-900/50 min-h-0 space-y-6">
-              <app-dicom-viewer class="shrink-0"></app-dicom-viewer>
+              @defer (on immediate) {
+                <app-dicom-viewer class="shrink-0"></app-dicom-viewer>
+              }
               <div class="pt-4 border-t border-zinc-200 dark:border-zinc-800">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">Diagnostic Scans &amp; Modalities</h4>
-                <app-patient-scans [scans]="patientScans()"></app-patient-scans>
+                @defer (on idle) {
+                  <app-patient-scans [scans]="patientScans()"></app-patient-scans>
+                }
               </div>
             </div>
           }
@@ -455,7 +478,9 @@ import { PatientScansComponent } from './patient-scans.component';
 
           @if(isToxicologyExpanded()) {
             <div class="pt-2">
-              <app-environmental-exposomics-toxicology></app-environmental-exposomics-toxicology>
+              @defer (on immediate) {
+                <app-environmental-exposomics-toxicology></app-environmental-exposomics-toxicology>
+              }
             </div>
           }
         </pocket-gull-card>

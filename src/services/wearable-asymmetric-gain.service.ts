@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { DirectIomtWearablesService, IIomtBiometrics } from './hardware/direct-iomt-wearables.service';
 
 export type TWatchPlatform = 'apple_watch_healthkit' | 'android_wear_health_connect';
 
@@ -47,6 +48,16 @@ export interface ITriModalAsymmetricGainScore {
   providedIn: 'root',
 })
 export class WearableAsymmetricGainService {
+  private readonly directIomt: DirectIomtWearablesService | null;
+
+  constructor() {
+    try {
+      this.directIomt = inject(DirectIomtWearablesService, { optional: true });
+    } catch {
+      this.directIomt = null;
+    }
+  }
+
   private readonly _telemetry = signal<IWearableTriModalTelemetry>({
     watchPlatform: 'apple_watch_healthkit',
     monkSkinToneScale: 4,
@@ -79,6 +90,34 @@ export class WearableAsymmetricGainService {
 
   switchWatchPlatform(platform: TWatchPlatform): void {
     this.updateTelemetry({ watchPlatform: platform });
+  }
+
+  /**
+   * Synchronizes live IoMT telemetry from DirectIomtWearablesService (Apple HealthKit,
+   * Garmin Connect IQ, or Samsung Health BLE) into the tri-modal asymmetric gain model.
+   */
+  syncFromLiveIomtHardware(customBiometrics?: Partial<IIomtBiometrics>): ITriModalAsymmetricGainScore {
+    const bio = customBiometrics ?? this.directIomt?.liveBiometrics?.();
+    const provider = this.directIomt?.activeProvider?.();
+    const watchPlatform: TWatchPlatform =
+      provider === 'GOOGLE_HEALTH_CONNECT'
+        ? 'android_wear_health_connect'
+        : provider === 'APPLE_HEALTHKIT'
+          ? 'apple_watch_healthkit'
+          : this._telemetry().watchPlatform;
+
+    const patch: Partial<IWearableTriModalTelemetry> = { watchPlatform };
+    if (bio?.hrvRmssdMs !== undefined && Number.isFinite(bio.hrvRmssdMs)) {
+      patch.hrvRmssdMs = bio.hrvRmssdMs;
+    }
+    if (bio?.spo2Pct !== undefined && Number.isFinite(bio.spo2Pct)) {
+      patch.spo2RawPercent = bio.spo2Pct;
+    }
+    if (bio?.wristSkinTemperatureC !== undefined && Number.isFinite(bio.wristSkinTemperatureC)) {
+      patch.wristTempDeltaC = Number((bio.wristSkinTemperatureC - 33.0).toFixed(2));
+    }
+    this.updateTelemetry(patch);
+    return this.gainEvaluation();
   }
 
   /**

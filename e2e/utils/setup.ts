@@ -287,12 +287,15 @@ export async function setupE2ePage(page: Page, options: { mockClinician?: boolea
     // Mock API key so the Voice Assistant doesn't abort initialization
     (window as any).GEMINI_API_KEY = 'mock-api-key';
 
-    window.localStorage.setItem('pg_tour_seen', '1');
-    window.localStorage.setItem('pg_data_consent_v1', 'true');
-    window.sessionStorage.setItem('pg_session_onboarded', '1');
-    if (mockClinician) {
-      window.localStorage.setItem('pg_mock_clinician', '1');
-    }
+    // Guard storage writes because Playwright executes addInitScript in sandboxed/blocked frames (e.g. Firebase auth iframe under COEP)
+    try {
+      window.localStorage.setItem('pg_tour_seen', '1');
+      window.localStorage.setItem('pg_data_consent_v1', 'true');
+      window.sessionStorage.setItem('pg_session_onboarded', '1');
+      if (mockClinician) {
+        window.localStorage.setItem('pg_mock_clinician', '1');
+      }
+    } catch (e) {}
 
     // Disable service worker during tests so Playwright can intercept API requests reliably
     try {
@@ -331,7 +334,19 @@ export async function enterDemoMode(page: Page) {
   if (!existingViewport) {
     await page.setViewportSize({ width: 1440, height: 900 });
   }
-  await page.goto('/');
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      await page.goto('/');
+      break;
+    } catch (navErr) {
+      const msg = (navErr as Error)?.message || '';
+      if (attempt < 2 && /ERR_NO_BUFFER_SPACE|ERR_CONNECTION_RESET|ERR_SOCKET/i.test(msg)) {
+        await page.waitForTimeout(600 * (attempt + 1));
+        continue;
+      }
+      throw navErr;
+    }
+  }
 
   const startTime = Date.now();
   while (Date.now() - startTime < 30000) {
@@ -397,14 +412,21 @@ export async function enterDemoMode(page: Page) {
 
   // Final wait for splash screen to disappear and hydrate viewport @defer blocks
   await page.locator('.secure-splash-main').waitFor({ state: 'detached', timeout: 15000 }).catch(() => {});
-  
-  // Secondary check for consent modal after splash detachment
+
+  // Wait for primary patient & navigation controls so Demo Mode never returns mid-hydration
+  const vpWidth = page.viewportSize()?.width ?? 1280;
+  const readyNav = vpWidth < 768 ? page.getByTestId('mobile-tab-analysis') : page.getByTestId('header-tab-analysis');
+  const dropdownReady = page.locator('app-patient-dropdown button').first();
+  await readyNav.or(dropdownReady).first().waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
+
+  // Secondary check for consent modal after splash detachment / hydration
   const consentBtnAfter = page.locator('button', { hasText: /I Understand — Continue/i }).first();
-  if (await consentBtnAfter.isVisible().catch(() => false)) {
+  if (await consentBtnAfter.waitFor({ state: 'visible', timeout: 1200 }).then(() => true).catch(() => false)) {
     await consentBtnAfter.click().catch(() => {});
     await page.waitForTimeout(300).catch(() => {});
   }
 
+  await readyNav.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
   await page.evaluate(() => window.scrollTo(0, 600)).catch(() => {});
 }
 
@@ -426,15 +448,23 @@ export async function selectPatientByName(page: Page, name: string) {
   };
   const targetName = archetypeAliasMap[name] || name;
 
+  // Dismiss any lingering consent modal before touching patient dropdown
+  const consentBtn = page.locator('button', { hasText: /I Understand — Continue/i }).first();
+  if (await consentBtn.isVisible().catch(() => false)) {
+    await consentBtn.click().catch(() => {});
+    await page.waitForTimeout(250).catch(() => {});
+  }
+
   const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
-  if (await dropdownBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
+  if (await dropdownBtn.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false)) {
     await dropdownBtn.click({ force: true });
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(400);
 
     const option = page.locator('app-patient-dropdown .group\\/list button', { hasText: targetName }).first();
-    if (await option.isVisible({ timeout: 2000 }).catch(() => false)) {
+    if (await option.waitFor({ state: 'visible', timeout: 2500 }).then(() => true).catch(() => false)) {
       await option.click({ force: true });
-      await page.waitForTimeout(500);
+      await page.locator('app-patient-dropdown .group\\/list').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+      await page.waitForTimeout(400);
       return;
     }
 
@@ -444,9 +474,10 @@ export async function selectPatientByName(page: Page, name: string) {
       await searchInput.dispatchEvent('input');
       await page.waitForTimeout(300);
       const searchOption = page.locator('app-patient-dropdown .group\\/list button', { hasText: targetName }).first();
-      if (await searchOption.isVisible({ timeout: 1000 }).catch(() => false)) {
+      if (await searchOption.waitFor({ state: 'visible', timeout: 1500 }).then(() => true).catch(() => false)) {
         await searchOption.click({ force: true });
-        await page.waitForTimeout(500);
+        await page.locator('app-patient-dropdown .group\\/list').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+        await page.waitForTimeout(400);
         return;
       }
       // Clear search to restore full patient list before fallback
@@ -457,17 +488,18 @@ export async function selectPatientByName(page: Page, name: string) {
 
     // Fallback: select first active patient from roster (never click action buttons in footer)
     const fallbackOption = page.locator('app-patient-dropdown .group\\/list button').first();
-    if (await fallbackOption.isVisible({ timeout: 1000 }).catch(() => false)) {
+    if (await fallbackOption.waitFor({ state: 'visible', timeout: 1500 }).then(() => true).catch(() => false)) {
       await fallbackOption.click();
     } else {
       await page.keyboard.press('Escape').catch(() => {});
     }
-    await page.waitForTimeout(500);
+    await page.locator('app-patient-dropdown .group\\/list').waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+    await page.waitForTimeout(400);
   }
 }
 
 /** Shared patient selection helper by explicit patient ID */
-export async function selectPatientById(page: Page, patientId: string) {
+export async function selectPatientById(page: Page, patientId: string, nameHint?: string) {
   // Dismiss any lingering modals or backdrops that would block header interaction
   const closeResearch = page.locator('button[aria-label="Close Evidence Drawer"]').first();
   if (await closeResearch.isVisible({ timeout: 400 }).catch(() => false)) {
@@ -477,10 +509,10 @@ export async function selectPatientById(page: Page, patientId: string) {
   const modalClose = page.locator('.print-medical-chart button[aria-label="Close"], .print-medical-chart button:has-text("Cancel")').first();
   if (await modalClose.isVisible({ timeout: 500 }).catch(() => false)) {
     await modalClose.click({ force: true }).catch(() => {});
-    await page.waitForTimeout(300);
+    await page.locator('.print-medical-chart').first().waitFor({ state: 'detached', timeout: 3000 }).catch(() => {});
   }
 
-  // Try direct Angular component invocation if available
+  // Try direct Angular component invocation if available (dev mode)
   const switchedViaNg = await page.evaluate((pid) => {
     const dropdownEl = document.querySelector('app-patient-dropdown') as any;
     if (dropdownEl && (window as any).ng?.getComponent) {
@@ -494,67 +526,173 @@ export async function selectPatientById(page: Page, patientId: string) {
   }, patientId).catch(() => false);
 
   if (switchedViaNg) {
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(400);
     return;
   }
 
   const dropdownBtn = page.locator('app-patient-dropdown pocket-gull-button button, app-patient-dropdown button').first();
-  if (await dropdownBtn.waitFor({ state: 'attached', timeout: 10000 }).then(() => true).catch(() => false)) {
-    // Check if dropdown is already open
-    let isMenuOpen = await page.locator('app-patient-dropdown [data-testid^="patient-option-"]').first().isVisible().catch(() => false);
-    if (!isMenuOpen) {
-      await dropdownBtn.scrollIntoViewIfNeeded().catch(() => {});
-      await dropdownBtn.click({ force: true });
-      await page.waitForTimeout(400);
-    }
+  await dropdownBtn.waitFor({ state: 'attached', timeout: 10000 });
 
-    const testIdOption = page.locator(`[data-testid="patient-option-${patientId}"]`).first();
-    if (await testIdOption.waitFor({ state: 'attached', timeout: 1500 }).then(() => true).catch(() => false)) {
-      await testIdOption.scrollIntoViewIfNeeded().catch(() => {});
-      await testIdOption.click({ force: true });
-      await page.waitForTimeout(500);
-      return;
-    }
-
-    // Try search input to filter the list directly to the requested patient
-    const searchInput = page.locator('app-patient-dropdown input[placeholder*="Search"]').first();
-    if (await searchInput.isVisible({ timeout: 1500 }).catch(() => false)) {
-      await searchInput.fill(patientId);
-      await searchInput.dispatchEvent('input');
-      await page.waitForTimeout(400);
-
-      if (await testIdOption.waitFor({ state: 'attached', timeout: 2000 }).then(() => true).catch(() => false)) {
-        await testIdOption.scrollIntoViewIfNeeded().catch(() => {});
-        await testIdOption.click({ force: true });
-        await page.waitForTimeout(500);
-        return;
-      }
-      
-      // Clear search
-      await searchInput.fill('');
-      await searchInput.dispatchEvent('input');
-      await page.waitForTimeout(200);
-    }
-
-    // If still not clicked, try selecting by matching testid directly in DOM via evaluate
-    const evaluated = await page.evaluate((pid) => {
-      const btn = document.querySelector(`[data-testid="patient-option-${pid}"]`) as HTMLElement;
-      if (btn) {
-        btn.click();
-        return true;
-      }
-      return false;
-    }, patientId).catch(() => false);
-
-    if (evaluated) {
-      await page.waitForTimeout(500);
-      return;
-    }
-
-    console.error(`[selectPatientById] FAILED to locate option for patientId: ${patientId}`);
-    await page.keyboard.press('Escape').catch(() => {});
-    await page.waitForTimeout(400);
+  const searchInput = page.locator('app-patient-dropdown input[placeholder*="Search"]').first();
+  const isAlreadyOpen = await searchInput.isVisible({ timeout: 250 }).catch(() => false);
+  if (!isAlreadyOpen) {
+    await dropdownBtn.scrollIntoViewIfNeeded().catch(() => {});
+    await dropdownBtn.click({ force: true });
+    await searchInput.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {});
   }
+
+  // Always reset any stale filter first so full patient list is visible
+  if (await searchInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+    await searchInput.fill('');
+    await searchInput.dispatchEvent('input');
+    await page.waitForTimeout(150);
+  }
+
+  const testIdOption = page.locator(`[data-testid="patient-option-${patientId}"]`).first();
+  if (!(await testIdOption.isVisible({ timeout: 1000 }).catch(() => false))) {
+    if (await searchInput.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await searchInput.fill(nameHint || patientId);
+      await searchInput.dispatchEvent('input');
+      await page.waitForTimeout(300);
+    }
+  }
+
+  if (await testIdOption.waitFor({ state: 'visible', timeout: 3000 }).then(() => true).catch(() => false)) {
+    await testIdOption.scrollIntoViewIfNeeded().catch(() => {});
+    await testIdOption.click({ force: true });
+    await searchInput.waitFor({ state: 'hidden', timeout: 3000 }).catch(() => {});
+    await page.waitForTimeout(400);
+    return;
+  }
+
+  // Last-resort direct DOM click inside open list
+  const evaluated = await page.evaluate((pid) => {
+    const btn = document.querySelector(`[data-testid="patient-option-${pid}"]`) as HTMLElement | null;
+    if (btn) {
+      btn.click();
+      return true;
+    }
+    return false;
+  }, patientId).catch(() => false);
+
+  if (evaluated) {
+    await page.waitForTimeout(400);
+    return;
+  }
+
+  console.error(`[selectPatientById] FAILED to locate option for patientId: ${patientId}`);
+  await page.keyboard.press('Escape').catch(() => {});
+  await page.waitForTimeout(300);
+}
+
+/**
+ * On mobile viewports (<768px), activates the `Analysis` workspace tab so Column 3
+ * (`app-analysis-container` and `app-analysis-report`) is unhidden before asserting on it.
+ */
+export async function ensureAnalysisViewVisible(page: Page): Promise<void> {
+  const vpWidth = page.viewportSize()?.width ?? 1280;
+  if (vpWidth >= 768) return;
+
+  // Clear any blocking modal before attempting mobile tab switch
+  const consentBtn = page.locator('button', { hasText: /I Understand — Continue/i }).first();
+  if (await consentBtn.isVisible().catch(() => false)) {
+    await consentBtn.click().catch(() => {});
+    await page.waitForTimeout(250).catch(() => {});
+  }
+
+  const mobileAnalysisTab = page.getByTestId('mobile-tab-analysis');
+  const hasMobileTab = await mobileAnalysisTab.waitFor({ state: 'visible', timeout: 15000 }).then(() => true).catch(() => false);
+  if (hasMobileTab) {
+    const container = page.locator('app-analysis-container').first();
+    await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
+    await mobileAnalysisTab.scrollIntoViewIfNeeded().catch(() => {});
+
+    // Attempt Playwright click, DOM el.click() (for WebKit touch quirk parity), and dispatchEvent until container mounts visible
+    await mobileAnalysisTab.click({ force: true }).catch(() => {});
+    let analysisVisible = await container.waitFor({ state: 'visible', timeout: 3500 }).then(() => true).catch(() => false);
+    if (!analysisVisible) {
+      await mobileAnalysisTab.evaluate((el) => (el as HTMLElement).click()).catch(() => {});
+      analysisVisible = await container.waitFor({ state: 'visible', timeout: 4000 }).then(() => true).catch(() => false);
+    }
+    if (!analysisVisible) {
+      await mobileAnalysisTab.dispatchEvent('click').catch(() => {});
+      await container.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+    }
+    await page.locator('#tour-body-chart').waitFor({ state: 'hidden', timeout: 4000 }).catch(() => {});
+    await page.waitForTimeout(300);
+  }
+}
+
+/**
+ * On mobile viewports (<768px), activates the `Chart` workspace tab so Column 1
+ * (`app-medical-chart`) is unhidden before asserting on it.
+ */
+export async function ensureChartViewVisible(page: Page): Promise<void> {
+  const vpWidth = page.viewportSize()?.width ?? 1280;
+  if (vpWidth >= 768) return;
+  const mobileChartTab = page.getByTestId('mobile-tab-chart');
+  const hasMobileTab = await mobileChartTab.waitFor({ state: 'attached', timeout: 10000 }).then(() => true).catch(() => false);
+  if (hasMobileTab) {
+    await page.evaluate(() => window.scrollTo(0, 0)).catch(() => {});
+    await mobileChartTab.evaluate((el) => (el as HTMLElement).click()).catch(() => {});
+    await page.locator('app-medical-chart').first().waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+    await page.waitForTimeout(300);
+  }
+}
+
+/**
+ * Opens a Clinical Apps / Portals Hub action across desktop (`#btn-apps-hub-trigger`)
+ * and mobile (`Open Mobile Navigation Menu` slide-out drawer).
+ */
+export async function openAppsHubAction(page: Page, desktopSelector: string, mobileSelector: string): Promise<void> {
+  const desktopHubBtn = page.locator('#btn-apps-hub-trigger');
+  if (await desktopHubBtn.isVisible({ timeout: 2500 }).catch(() => false)) {
+    await desktopHubBtn.click();
+    await page.waitForTimeout(250);
+    const desktopItem = page.locator(desktopSelector).first();
+    await desktopItem.waitFor({ state: 'visible', timeout: 10000 });
+    await desktopItem.click();
+    return;
+  }
+
+  const mobileMenuBtn = page.locator('button[aria-label="Open Mobile Navigation Menu"]');
+  await mobileMenuBtn.waitFor({ state: 'visible', timeout: 10000 });
+  await mobileMenuBtn.click();
+  await page.waitForTimeout(300);
+  const mobileItem = page.locator(mobileSelector).first();
+  await mobileItem.scrollIntoViewIfNeeded();
+  await mobileItem.waitFor({ state: 'visible', timeout: 10000 });
+  await mobileItem.click();
+}
+
+/**
+ * Switches to an analysis lens tab by its `data-testid`, automatically activating the
+ * mobile `Analysis` tab when `<768px` and expanding SMoE Sparse routing (`[DENSE]`) when needed.
+ */
+export async function switchToAnalysisLens(page: Page, testId: string): Promise<void> {
+  await ensureAnalysisViewVisible(page);
+  const targetBtn = page.getByTestId(testId);
+  const denseBtn = page.locator('app-analysis-report button', { hasText: /\[DENSE\]/i }).first();
+
+  // Wait for @defer <app-analysis-report> to mount either the requested tab or the Sparse Mode [DENSE] toggle
+  await targetBtn.or(denseBtn).first().waitFor({ state: 'visible', timeout: 20000 }).catch(() => {});
+
+  if (!(await targetBtn.isVisible().catch(() => false))) {
+    if (await denseBtn.isVisible().catch(() => false)) {
+      await denseBtn.scrollIntoViewIfNeeded().catch(() => {});
+      await denseBtn.click({ force: true });
+      const revealed = await targetBtn.waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
+      if (!revealed && (await denseBtn.isVisible().catch(() => false))) {
+        await denseBtn.dispatchEvent('click').catch(() => {});
+        await page.waitForTimeout(350);
+      }
+    }
+  }
+
+  await targetBtn.waitFor({ state: 'visible', timeout: 15000 });
+  await targetBtn.scrollIntoViewIfNeeded().catch(() => {});
+  await targetBtn.dispatchEvent('click');
+  await page.waitForTimeout(500);
 }
 
 

@@ -4,6 +4,7 @@ import { PatientStateService } from '../services/patient-state.service';
 import { PatientManagementService } from '../services/patient-management.service';
 import { GlobalHealthInitiativesService } from '../services/global-health-initiatives.service';
 import { PythonBridgeService, IExposomicsRiskResponse } from '../services/python-bridge.service';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 export type ToxidromeType = 'none' | 'cholinergic' | 'anticholinergic' | 'sympathomimetic' | 'opioid' | 'botanical_aconite';
 
@@ -30,7 +31,7 @@ export interface IPfasExposomeAssessment {
 @Component({
   selector: 'app-environmental-exposomics-toxicology',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="rounded-3xl border border-zinc-200/80 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md p-6 sm:p-8 shadow-xl font-sans space-y-6">
@@ -44,10 +45,10 @@ export interface IPfasExposomeAssessment {
             </span>
             <div>
               <h3 class="text-base sm:text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-100 uppercase font-mono">
-                Environmental Exposomics & Acute Toxicology Triage
+                {{ 'Environmental Exposomics & Acute Toxicology Triage' | pgT:'lens06.expo_title' }}
               </h3>
               <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 font-mono">
-                WHO / ATSDR Acute Poisoning Protocols • EPA / NIEHS PFAS Clearance & Phase II Hepatic Induction
+                {{ 'WHO / ATSDR Acute Poisoning Protocols • EPA / NIEHS PFAS Clearance & Phase II Hepatic Induction' | pgT:'lens06.expo_subtitle' }}
               </p>
             </div>
           </div>
@@ -64,7 +65,7 @@ export interface IPfasExposomeAssessment {
                   [class.text-zinc-600]="activeTab() !== 'toxicology'"
                   [class.dark:text-zinc-400]="activeTab() !== 'toxicology'"
                   class="px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer">
-            🚨 Acute Toxidromes
+            🚨 {{ 'Acute Toxidromes' | pgT:'lens06.tab_toxidromes' }}
           </button>
 
           <button (click)="activeTab.set('pfas_exposomics')"
@@ -76,7 +77,7 @@ export interface IPfasExposomeAssessment {
                   [class.text-zinc-600]="activeTab() !== 'pfas_exposomics'"
                   [class.dark:text-zinc-400]="activeTab() !== 'pfas_exposomics'"
                   class="px-3.5 py-1.5 rounded-lg font-bold transition cursor-pointer">
-            🌊 PFAS & Exposomics
+            🌊 {{ 'PFAS & Exposomics' | pgT:'lens06.tab_pfas' }}
           </button>
         </div>
       </div>

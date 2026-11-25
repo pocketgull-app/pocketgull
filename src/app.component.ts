@@ -31,8 +31,9 @@ import { PatientDirectoryComponent } from './components/patient-directory.compon
 import { FhirCallbackComponent } from './components/fhir-callback.component';
 import { WalkthroughTourComponent } from './components/walkthrough-tour.component';
 import { WalkthroughTourService } from './services/walkthrough-tour.service';
-import { SecureSplashComponent } from './components/secure-splash.component';
+import { SecureSplashComponent, IStatEmergencyBypassPayload } from './components/secure-splash.component';
 import { SessionStateService } from './services/session-state.service';
+import { resolveEmergencyProtocolDescriptor } from './services/emergency-protocol';
 import { RulesEngineService } from './services/rules-engine.service';
 import { ClinicalMoERouterService } from './services/clinical-moe-router.service';
 import { PocketGullInputComponent } from './components/shared/pocket-gull-input.component';
@@ -55,6 +56,9 @@ import { PocketgullTypefaceSiteComponent } from './components/shared/pocketgull-
 import { DocsStudyComponent } from './components/docs-study.component';
 import { ZamecznikCanvasComponent } from './components/shared/zamecznik-canvas.component';
 import { NavigationShellService } from './services/navigation-shell.service';
+import { UiI18nService } from './services/ui-i18n.service';
+import { mapCodeToCarePlanLanguage, mapCarePlanLanguageToCode } from './services/ui-i18n-catalog';
+import { PgTranslatePipe } from './pipes/pg-translate.pipe';
 import { BillingDashboardComponent } from './components/billing-dashboard.component';
 import { ApiPricingComponent } from './components/api-pricing.component';
 import { PatientPortalComponent } from './components/patient-portal.component';
@@ -133,6 +137,7 @@ import { MonkSkinToneEquityCardComponent } from './components/clinical/monk-skin
 import { FluidResuscitationTonicityCardComponent } from './components/clinical/fluid-resuscitation-tonicity-card.component';
 import { GlymphaticBrain3dLensComponent } from './components/anatomy-3d/glymphatic-brain-3d-lens.component';
 import { Nutrigenomics3dLensComponent } from './components/anatomy-3d/nutrigenomics-3d-lens.component';
+import { WearableAsymmetricGainCardComponent } from './components/wearable-asymmetric-gain-card/wearable-asymmetric-gain-card.component';
 import { ClinicalDriftCalibratorHudComponent } from './components/clinical/clinical-drift-calibrator-hud.component';
 import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.component';
 
@@ -244,8 +249,10 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
     FluidResuscitationTonicityCardComponent,
     GlymphaticBrain3dLensComponent,
     Nutrigenomics3dLensComponent,
+    WearableAsymmetricGainCardComponent,
     ClinicalDriftCalibratorHudComponent,
-    UiSelfRepairHudComponent
+    UiSelfRepairHudComponent,
+    PgTranslatePipe
   ],
   providers: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -253,35 +260,49 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
 
     <app-onboarding-tour-overlay></app-onboarding-tour-overlay>
 
-    <!-- ACM §1.6: First-run informed consent -->
-    @if (!showSplash() && !consentService.hasConsented()) {
-      <app-consent-modal></app-consent-modal>
+    <!-- ACM §1.6: First-run informed consent (exempt during active STAT Good Samaritan emergency) -->
+    @if (!showSplash() && !consentService.hasConsented() && !state.isEmergencyMode()) {
+      @defer (on immediate) {
+        <app-consent-modal></app-consent-modal>
+      }
     }
 
     @if (showBillingDashboard()) {
-      <app-billing-dashboard (close)="showBillingDashboard.set(false)"></app-billing-dashboard>
+      @defer (on immediate) {
+        <app-billing-dashboard (close)="showBillingDashboard.set(false)"></app-billing-dashboard>
+      }
     }
 
     @if (showApiPricing()) {
-      <app-api-pricing (close)="showApiPricing.set(false)"></app-api-pricing>
+      @defer (on immediate) {
+        <app-api-pricing (close)="showApiPricing.set(false)"></app-api-pricing>
+      }
     }
 
     @if (showPatientPortal()) {
-      <app-patient-portal (close)="showPatientPortal.set(false)"></app-patient-portal>
+      @defer (on immediate) {
+        <app-patient-portal (close)="showPatientPortal.set(false)"></app-patient-portal>
+      }
     }
 
     @if (showClinicianOnboarding()) {
-      <app-clinician-onboarding (close)="showClinicianOnboarding.set(false)"></app-clinician-onboarding>
+      @defer (on immediate) {
+        <app-clinician-onboarding (close)="showClinicianOnboarding.set(false)"></app-clinician-onboarding>
+      }
     }
 
     @if (showGlossaryModal()) {
-      <app-glossary-modal (close)="showGlossaryModal.set(false)"></app-glossary-modal>
+      @defer (on immediate) {
+        <app-glossary-modal (close)="showGlossaryModal.set(false)"></app-glossary-modal>
+      }
     }
 
     @if (showFhirCallback()) {
-      <app-fhir-callback></app-fhir-callback>
+      @defer (on immediate) {
+        <app-fhir-callback></app-fhir-callback>
+      }
     } @else {
-    <div class="min-h-[100dvh] md:h-[100dvh] w-full bg-[#EEEEEE] dark:bg-zinc-950 text-[#1C1C1C] dark:text-zinc-100 flex flex-col md:overflow-hidden font-sans selection:bg-green-100 selection:text-green-900 group/app">
+    <div [attr.dir]="uiI18n.isRtl() ? 'rtl' : 'ltr'" [attr.lang]="uiI18n.activeLanguageCode()" class="min-h-[100dvh] md:h-[100dvh] w-full bg-[#EEEEEE] dark:bg-zinc-950 text-[#1C1C1C] dark:text-zinc-100 flex flex-col md:overflow-hidden font-sans selection:bg-green-100 selection:text-green-900 group/app">
       
       @if (isDirectoryOpen() || !patientMgmt.selectedPatientId()) {
          @defer (on immediate) {
@@ -291,12 +312,16 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
 
       <!-- Companion Sync Modal -->
       @if (showCompanionSyncModal()) {
-        <app-companion-sync-modal (closeModal)="showCompanionSyncModal.set(false)"></app-companion-sync-modal>
+        @defer (on immediate) {
+          <app-companion-sync-modal (closeModal)="showCompanionSyncModal.set(false)"></app-companion-sync-modal>
+        }
       }
 
       <!-- Support Ticket Modal Portal -->
       @if (showSupportTicketModal()) {
-        <app-support-ticket-modal (closed)="showSupportTicketModal.set(false)"></app-support-ticket-modal>
+        @defer (on immediate) {
+          <app-support-ticket-modal (closed)="showSupportTicketModal.set(false)"></app-support-ticket-modal>
+        }
       }
 
       <!-- Zero-Knowledge Encrypted Vault Modal, SMART on FHIR Modal & Global Health Modal -->
@@ -315,14 +340,18 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
               aria-label="Close Commercialization Hub">
               ✕
             </button>
-            <app-clinical-commercial-hub></app-clinical-commercial-hub>
+            @defer (on immediate) {
+              <app-clinical-commercial-hub></app-clinical-commercial-hub>
+            }
           </div>
         </div>
       }
 
       <!-- Role-Tailored Interactive Clinical Demo Modal -->
       @if (navShell.showRoleDemoModal()) {
-        <app-role-demo-modal (closeModal)="navShell.closeRoleDemo()" (onDemoLaunched)="navShell.selectTab('analysis')"></app-role-demo-modal>
+        @defer (on immediate) {
+          <app-role-demo-modal (closeModal)="navShell.closeRoleDemo()" (onDemoLaunched)="navShell.selectTab('analysis')"></app-role-demo-modal>
+        }
       }
 
       <!-- Cardiovascular Intimacy Safety & Couples Vitality Studio Modal -->
@@ -336,7 +365,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
               aria-label="Close Intimacy Vitality Studio">
               ✕
             </button>
-            <app-intimacy-relationship-vitality></app-intimacy-relationship-vitality>
+            @defer (on immediate) {
+              <app-intimacy-relationship-vitality></app-intimacy-relationship-vitality>
+            }
           </div>
         </div>
       }
@@ -344,7 +375,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
 
       <!-- Specialist Referral & Co-Management Dossier Hub Modal -->
       @if (navShell.showSpecialistReferralModal()) {
-        <app-specialist-referral-hub (closeModal)="navShell.closeSpecialistReferralHub()"></app-specialist-referral-hub>
+        @defer (on immediate) {
+          <app-specialist-referral-hub (closeModal)="navShell.closeSpecialistReferralHub()"></app-specialist-referral-hub>
+        }
       }
 
       <!-- Dr. Howard Barrows Clinical Inquiry & Problem-Based Reasoning Workbench Modal -->
@@ -358,7 +391,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
               aria-label="Close Clinical Workbench">
               ✕
             </button>
-            <app-barrows-clinical-inquiry-hub></app-barrows-clinical-inquiry-hub>
+            @defer (on immediate) {
+              <app-barrows-clinical-inquiry-hub></app-barrows-clinical-inquiry-hub>
+            }
           </div>
         </div>
       }
@@ -368,23 +403,29 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
 
       <!-- Institutional Statutory Compliance Certificate Modal (HIPAA, FDA, NIST, MSA) -->
       @if (navShell.showComplianceCertificateModal()) {
-        <app-institutional-compliance-modal
-          (close)="navShell.closeComplianceCertificate()">
-        </app-institutional-compliance-modal>
+        @defer (on immediate) {
+          <app-institutional-compliance-modal
+            (close)="navShell.closeComplianceCertificate()">
+          </app-institutional-compliance-modal>
+        }
       }
 
       <!-- CMS Remote Patient Monitoring (RPM) Superbill Modal (CPT 99453 / 99454) -->
       @if (navShell.showCmsSuperbillModal()) {
-        <app-cms-rpm-superbill-modal
-          (close)="navShell.closeCmsSuperbill()">
-        </app-cms-rpm-superbill-modal>
+        @defer (on immediate) {
+          <app-cms-rpm-superbill-modal
+            (close)="navShell.closeCmsSuperbill()">
+          </app-cms-rpm-superbill-modal>
+        }
       }
 
       <!-- High-Velocity Trajectory & Bionic Speed Reader Modal -->
       @if (navShell.showTrajectoryReaderModal()) {
-        <app-clinical-trajectory-reader-modal
-          (close)="navShell.closeTrajectoryReader()">
-        </app-clinical-trajectory-reader-modal>
+        @defer (on immediate) {
+          <app-clinical-trajectory-reader-modal
+            (close)="navShell.closeTrajectoryReader()">
+          </app-clinical-trajectory-reader-modal>
+        }
       }
 
       <!-- Clinical Posology & Polypharmacy Deprescribing Engine Modal -->
@@ -398,21 +439,27 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
               </div>
               <button (click)="navShell.closePosology()" class="text-zinc-400 hover:text-white text-xs px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 transition cursor-pointer">✕ Close</button>
             </div>
-            <app-clinical-posology-calculator></app-clinical-posology-calculator>
+            @defer (on immediate) {
+              <app-clinical-posology-calculator></app-clinical-posology-calculator>
+            }
           </div>
         </div>
       }
 
       <!-- MDCP Strategic Clinical & Standards Governance Hub Modal -->
       @if (navShell.showMdcpHubModal()) {
-        <app-mdcp-governance-hub></app-mdcp-governance-hub>
+        @defer (on immediate) {
+          <app-mdcp-governance-hub></app-mdcp-governance-hub>
+        }
       }
 
       <!-- Ambient AI Scribe Ingestion & CDS Adjudication Drawer Modal -->
       @if (navShell.showAmbientScribeDrawer()) {
         <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Ambient AI Scribe Ingestion Drawer">
           <div class="relative w-full max-w-4xl my-auto">
-            <app-ambient-scribe-drawer (close)="navShell.closeAmbientScribeDrawer()"></app-ambient-scribe-drawer>
+            @defer (on immediate) {
+              <app-ambient-scribe-drawer (close)="navShell.closeAmbientScribeDrawer()"></app-ambient-scribe-drawer>
+            }
           </div>
         </div>
       }
@@ -421,7 +468,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       @if (navShell.showEdiClaimsModal()) {
         <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="ANSI X12 EDI Claims Console">
           <div class="relative w-full max-w-4xl my-auto">
-            <app-edi-claims-console (close)="navShell.closeEdiClaimsModal()"></app-edi-claims-console>
+            @defer (on immediate) {
+              <app-edi-claims-console (close)="navShell.closeEdiClaimsModal()"></app-edi-claims-console>
+            }
           </div>
         </div>
       }
@@ -430,7 +479,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       @if (navShell.showEnterpriseIdentityModal()) {
         <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Institutional Enterprise Identity Console">
           <div class="relative w-full max-w-5xl my-auto">
-            <app-enterprise-identity-console (close)="navShell.closeEnterpriseIdentityModal()"></app-enterprise-identity-console>
+            @defer (on immediate) {
+              <app-enterprise-identity-console (close)="navShell.closeEnterpriseIdentityModal()"></app-enterprise-identity-console>
+            }
           </div>
         </div>
       }
@@ -439,7 +490,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       @if (navShell.showDirectIomtModal()) {
         <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Direct IoMT Wearables Console">
           <div class="relative w-full max-w-5xl my-auto">
-            <app-direct-iomt-console (close)="navShell.closeDirectIomtModal()"></app-direct-iomt-console>
+            @defer (on immediate) {
+              <app-direct-iomt-console (close)="navShell.closeDirectIomtModal()"></app-direct-iomt-console>
+            }
           </div>
         </div>
       }
@@ -448,7 +501,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       @if (navShell.showSepsisBenchmarkModal()) {
         <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="MIMIC-IV and CMS OMOP Conformal Sepsis Benchmark Hub">
           <div class="relative w-full max-w-5xl my-auto">
-            <app-mimic-omop-benchmark-hub (close)="navShell.closeSepsisBenchmarkModal()"></app-mimic-omop-benchmark-hub>
+            @defer (on immediate) {
+              <app-mimic-omop-benchmark-hub (close)="navShell.closeSepsisBenchmarkModal()"></app-mimic-omop-benchmark-hub>
+            }
           </div>
         </div>
       }
@@ -465,7 +520,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
               </div>
               <button type="button" (click)="navShell.closeEhrMarketplaceModal()" aria-label="Close EHR Marketplace Modal" class="w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer transition min-h-[44px] min-w-[44px]">✕</button>
             </div>
-            <app-smart-fhir-launcher></app-smart-fhir-launcher>
+            @defer (on immediate) {
+              <app-smart-fhir-launcher></app-smart-fhir-launcher>
+            }
           </div>
         </div>
       }
@@ -482,7 +539,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
               </div>
               <button type="button" (click)="navShell.closeDisasterMeshModal()" aria-label="Close Disaster Mesh Modal" class="w-8 h-8 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center cursor-pointer transition min-h-[44px] min-w-[44px]">✕</button>
             </div>
-            <app-disaster-ble-mesh-beacon></app-disaster-ble-mesh-beacon>
+            @defer (on immediate) {
+              <app-disaster-ble-mesh-beacon></app-disaster-ble-mesh-beacon>
+            }
           </div>
         </div>
       }
@@ -491,7 +550,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       @if (navShell.showEhrWritebackModal()) {
         <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="EHR Bi-Directional Writeback and Subscription ADT Console">
           <div class="relative w-full max-w-6xl my-auto">
-            <app-ehr-writeback-console (close)="navShell.closeEhrWritebackModal()"></app-ehr-writeback-console>
+            @defer (on immediate) {
+              <app-ehr-writeback-console (close)="navShell.closeEhrWritebackModal()"></app-ehr-writeback-console>
+            }
           </div>
         </div>
       }
@@ -500,19 +561,25 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       @if (navShell.showEdgeVoiceModal()) {
         <div class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Edge Autonomous Offline Voice Agent Console">
           <div class="relative w-full max-w-6xl my-auto">
-            <app-edge-autonomous-voice-agent (close)="navShell.closeEdgeVoiceModal()"></app-edge-autonomous-voice-agent>
+            @defer (on immediate) {
+              <app-edge-autonomous-voice-agent (close)="navShell.closeEdgeVoiceModal()"></app-edge-autonomous-voice-agent>
+            }
           </div>
         </div>
       }
 
       <!-- Yale COWS & Restorative Buprenorphine Induction Suite Modal -->
       @if (navShell.showCowsModal()) {
-        <app-cows-assessment-modal (close)="navShell.closeCowsModal()"></app-cows-assessment-modal>
+        @defer (on immediate) {
+          <app-cows-assessment-modal (close)="navShell.closeCowsModal()"></app-cows-assessment-modal>
+        }
       }
 
       <!-- Patient Recovery Companion Daily Check-In Modal -->
       @if (navShell.showRecoveryModal()) {
-        <app-recovery-companion-modal (close)="navShell.closeRecoveryModal()"></app-recovery-companion-modal>
+        @defer (on immediate) {
+          <app-recovery-companion-modal (close)="navShell.closeRecoveryModal()"></app-recovery-companion-modal>
+        }
       }
 
       @defer (on idle) {
@@ -530,51 +597,53 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
           (loadDemo)="loadDemoMode()"
           (unlockSession)="handleUnlockSession()"
           (selectAiStudio)="selectKey()"
-          (emergencyBypass)="handleEmergencyBypass()"
+          (emergencyBypass)="handleEmergencyBypass($event)"
           (openTriageRoster)="handleOpenTriageRoster()">
         </app-secure-splash>
       } @else {
         @if (state.isEmergencyMode()) {
-          <main class="flex-1 flex flex-col min-w-0 min-h-0 relative bg-zinc-950 text-zinc-100 overflow-hidden font-pocketgull-inter">
+          <main [attr.dir]="uiI18n.isRtl() ? 'rtl' : 'ltr'" [attr.lang]="uiI18n.activeLanguageCode()" class="flex-1 flex flex-col min-w-0 min-h-0 relative bg-zinc-950 text-zinc-100 overflow-hidden font-pocketgull-inter">
             <!-- 🚨 Emergency Mode Top Critical Command Bar -->
-            <div class="px-4 py-2.5 bg-gradient-to-r from-red-950 via-zinc-950 to-red-950 border-b-2 border-red-600/80 shadow-2xl flex flex-wrap items-center justify-between gap-3 shrink-0 no-print z-30 font-pocketgull-mono">
+            <div class="px-3 sm:px-4 py-2 bg-gradient-to-r from-red-950 via-zinc-950 to-red-950 border-b-2 border-red-600/80 shadow-2xl flex flex-wrap items-center justify-between gap-2.5 shrink-0 no-print z-30 font-pocketgull-mono">
               
               <!-- Left: Pulsing Beacon & Mode Title -->
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-2.5 min-w-0">
                 <div class="relative flex h-3.5 w-3.5 shrink-0">
                   <span class="absolute inline-flex h-full w-full rounded-full opacity-75 bg-red-500 animate-ping"></span>
                   <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-600 shadow-[0_0_12px_rgba(239,68,68,0.9)]"></span>
                 </div>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="font-pocketgull-mono text-sm sm:text-base font-black tracking-wider text-red-100 uppercase">
-                      CODE BLUE • EMERGENCY TRIAGE ACTIVE
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <span class="font-pocketgull-mono text-xs sm:text-base font-black tracking-wider text-red-100 uppercase">
+                      {{ 'CODE BLUE • EMERGENCY TRIAGE' | pgT:'emergency.command_title' }}
                     </span>
-                    <span class="hidden sm:inline px-2 py-0.5 rounded-md bg-red-500/20 text-red-300 text-[10px] font-bold border border-red-500/40">
-                      OFFLINE FIRST AID
+                    <span class="px-2 py-0.5 rounded-md bg-red-500/20 text-red-200 text-[10px] font-bold border border-red-500/40">
+                      {{ state.emergencyProtocol().shortBadge }}
                     </span>
                   </div>
-                  <span class="text-[11px] text-zinc-400 font-sans block">
-                    Zero-latency bystander CPR, EMT handoff telemetry &amp; rapid emergency guides
+                  <span class="text-[11px] text-zinc-300 font-sans block truncate">
+                    {{ state.emergencyProtocol().title }}
                   </span>
                 </div>
               </div>
 
               <!-- Right: Direct 911 Dialer & Exit Control -->
-              <div class="flex items-center gap-2.5 ml-auto">
-                <a href="tel:911" class="px-4 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-pocketgull font-bold text-xs uppercase tracking-wider transition shadow-lg flex items-center gap-1.5 active:scale-95 border border-red-400 no-underline cursor-pointer">
-                  <span class="animate-bounce">📞</span> CALL 911
+              <div class="flex items-center gap-2 ml-auto shrink-0">
+                <a href="tel:911" class="min-h-[44px] px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-pocketgull font-bold text-xs uppercase tracking-wider transition shadow-lg flex items-center gap-1.5 active:scale-95 border border-red-400 no-underline cursor-pointer">
+                  <span aria-hidden="true">📞</span> <span><bdi dir="ltr">{{ 'CALL 911' | pgT:'emergency.call_911' }}</bdi></span>
                 </a>
-                <button type="button" (click)="state.isEmergencyMode.set(false); session.isLocked.set(true)" 
-                        class="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 font-pocketgull font-bold text-xs uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer">
-                  <span>✕</span> Exit Emergency Mode
+                <button type="button" (click)="exitEmergencyMode()" 
+                        class="min-h-[44px] px-3 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 hover:text-white border border-zinc-700 font-pocketgull font-bold text-xs uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer">
+                  <span>✕</span> <span class="hidden sm:inline">{{ 'Exit Emergency Mode' | pgT:'emergency.exit_mode' }}</span><span class="sm:hidden">{{ 'Exit' | pgT:'emergency.exit' }}</span>
                 </button>
               </div>
 
             </div>
 
             <!-- Main Analysis Container in Emergency Mode -->
-            <app-analysis-container class="flex flex-col flex-1 min-h-0 h-full w-full overflow-hidden"></app-analysis-container>
+            @defer (on immediate) {
+              <app-analysis-container class="flex flex-col flex-1 min-h-0 h-full w-full overflow-hidden"></app-analysis-container>
+            }
           </main>
         } @else {
           <main class="flex-1 flex flex-col min-w-0 min-h-0 relative group/main"> <!-- Main Content -->
@@ -585,7 +654,7 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                style="background-color: var(--spectral-critical-bg); border-color: var(--spectral-critical-border);">
             <div class="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" style="color: var(--spectral-critical);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-              <p class="text-xs font-medium" style="color: var(--spectral-critical);">You are currently offline. Certain AI features and cloud sync may be disabled.</p>
+              <p class="text-xs font-medium" style="color: var(--spectral-critical);">{{ 'You are currently offline. Certain AI features and cloud sync may be disabled.' | pgT:'app.offline_banner' }}</p>
             </div>
             @if (network.forceOffline()) {
                 <button (click)="network.toggleForceOffline()" class="text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-colors rounded px-2 py-1"
@@ -596,7 +665,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
 
         <!-- ═══ Google Health Informed Consent Modal ═══════════════════════════════ -->
         @if (fitbit.showConsentModal()) {
-          <app-google-health-consent-modal></app-google-health-consent-modal>
+          @defer (on immediate) {
+            <app-google-health-consent-modal></app-google-health-consent-modal>
+          }
         }
 
         <!-- Fitbit Health Syncing Toast -->
@@ -721,55 +792,61 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
           </div>
         }
 
-        <app-main-header-nav
-          (openTuringSuite)="navShell.selectTab('analysis')"
-          (openSocraticRounds)="navShell.selectTab('analysis')"
-          (openKneeHologram)="showKneeHologramModal.set(true)"
-          (openBiophysicalLenses)="showBiophysicalLensesModal.set(true)"
-          (openResearchDividend)="showResearchDividendModal.set(true)"
-          (openBarrowsWorkbench)="navShell.openBarrowsWorkbench()"
-          (openSocraticIntake)="state.toggleSocraticIntake(true)"
-          (openModelGarden)="showModelGardenModal.set(true)"
-          (openTalentHrPortal)="showTalentHrPortalModal.set(true)"
-          (openCompanionSync)="showCompanionSyncModal.set(true)"
-          (openBioNetworkQr)="showCompanionSyncModal.set(true)"
-          (openBillingDashboard)="showBillingDashboard.set(true)"
-          (openApiPricing)="showApiPricing.set(true)"
-          (openPatientPortal)="showPatientPortal.set(true)"
-          (openClinicianOnboarding)="showClinicianOnboarding.set(true)"
-          (openTypefaceSite)="showTypefaceSite.set(true)"
-          (openDocsStudy)="showDocsStudy.set(true)"
-          (openSupportTicket)="showSupportTicketModal.set(true)"
-          (openComplianceCertificate)="navShell.openComplianceCertificate()"
-          (openEncryptedVault)="vaultModal.open()"
-          (openSmartFhirSync)="fhirModal.open()"
-          (openGlobalHealth)="globalHealthModal.open()"
-          (openArticles)="showArticlesModal.set(true)"
-          (openPatentClaims)="showPatentClaimsModal.set(true)"
-          (openSmartHealthPass)="showSmartHealthPassModal.set(true)"
-          (openAmbientLivingSpace)="showAmbientLivingSpaceModal.set(true)"
-          (openHumanDignityPact)="showHumanDignityPactModal.set(true)"
-          (openDoctorShiftDemo)="showDoctorShiftSalesDemoModal.set(true)"
-          (openGreenRoom)="showGreenRoomLoungeModal.set(true)"
-          (openAustereHud)="showAustereHudModal.set(true)"
-          (triggerSomaticGrounding)="triggerSomaticGrounding()">
-        </app-main-header-nav>
+        @defer (on immediate) {
+          <app-main-header-nav
+            (openTuringSuite)="navShell.selectTab('analysis')"
+            (openSocraticRounds)="navShell.selectTab('analysis')"
+            (openKneeHologram)="showKneeHologramModal.set(true)"
+            (openBiophysicalLenses)="showBiophysicalLensesModal.set(true)"
+            (openResearchDividend)="showResearchDividendModal.set(true)"
+            (openBarrowsWorkbench)="navShell.openBarrowsWorkbench()"
+            (openSocraticIntake)="state.toggleSocraticIntake(true)"
+            (openModelGarden)="showModelGardenModal.set(true)"
+            (openTalentHrPortal)="showTalentHrPortalModal.set(true)"
+            (openCompanionSync)="showCompanionSyncModal.set(true)"
+            (openBioNetworkQr)="showCompanionSyncModal.set(true)"
+            (openBillingDashboard)="showBillingDashboard.set(true)"
+            (openApiPricing)="showApiPricing.set(true)"
+            (openPatientPortal)="showPatientPortal.set(true)"
+            (openClinicianOnboarding)="showClinicianOnboarding.set(true)"
+            (openTypefaceSite)="showTypefaceSite.set(true)"
+            (openDocsStudy)="showDocsStudy.set(true)"
+            (openSupportTicket)="showSupportTicketModal.set(true)"
+            (openComplianceCertificate)="navShell.openComplianceCertificate()"
+            (openEncryptedVault)="vaultModal.open()"
+            (openSmartFhirSync)="fhirModal.open()"
+            (openGlobalHealth)="globalHealthModal.open()"
+            (openArticles)="showArticlesModal.set(true)"
+            (openPatentClaims)="showPatentClaimsModal.set(true)"
+            (openSmartHealthPass)="showSmartHealthPassModal.set(true)"
+            (openAmbientLivingSpace)="showAmbientLivingSpaceModal.set(true)"
+            (openHumanDignityPact)="showHumanDignityPactModal.set(true)"
+            (openDoctorShiftDemo)="showDoctorShiftSalesDemoModal.set(true)"
+            (openGreenRoom)="showGreenRoomLoungeModal.set(true)"
+            (openAustereHud)="showAustereHudModal.set(true)"
+            (triggerSomaticGrounding)="triggerSomaticGrounding()">
+          </app-main-header-nav>
+        } @placeholder {
+          <div class="h-12 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#09090b] shrink-0"></div>
+        }
 
-        <app-intake-toolbar
-          [hasReport]="hasReport()"
-          (openLicensingModal)="showLicensingModal.set(true)"
-          (openSocraticIntake)="state.toggleSocraticIntake(true)"
-          (exportPdf)="exportPdf()"
-          (exportJson)="exportJson()"
-          (exportFhir)="exportFhir()"
-          (exportFhirR4Bundle)="exportFhirR4Bundle()"
-          (exportLaafHapticFhir)="exportLaafHapticFhir()"
-          (connectEpic)="connectEpic()"
-          (connectAwsHealth)="connectAwsHealth()"
-          (connectAppleHealth)="connectAppleHealth()"
-          (uploadData)="uploadData()"
-          (finalizeRecord)="finalizeRecord()">
-        </app-intake-toolbar>
+        @defer (on immediate) {
+          <app-intake-toolbar
+            [hasReport]="hasReport()"
+            (openLicensingModal)="showLicensingModal.set(true)"
+            (openSocraticIntake)="state.toggleSocraticIntake(true)"
+            (exportPdf)="exportPdf()"
+            (exportJson)="exportJson()"
+            (exportFhir)="exportFhir()"
+            (exportFhirR4Bundle)="exportFhirR4Bundle()"
+            (exportLaafHapticFhir)="exportLaafHapticFhir()"
+            (connectEpic)="connectEpic()"
+            (connectAwsHealth)="connectAwsHealth()"
+            (connectAppleHealth)="connectAppleHealth()"
+            (uploadData)="uploadData()"
+            (finalizeRecord)="finalizeRecord()">
+          </app-intake-toolbar>
+        }
 
         <!-- Main Grid Layout -->
         <div #mainContainer class="flex-1 flex flex-col md:flex-row max-md:overflow-visible overflow-y-auto md:overflow-hidden relative bg-[#F9FAFB] dark:bg-[#09090b] p-2 md:p-6 gap-3 md:gap-6 min-h-0">
@@ -780,28 +857,30 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                 @if (state.selectedPartId()) {
                   <button (click)="goBackToChart()" class="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-zinc-400 hover:text-black dark:hover:text-white self-start px-2 py-1.5 -ml-2 transition-colors min-h-[44px]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                    <span>Back to Full Chart</span>
+                    <span>{{ 'Back to Full Chart' | pgT:'nav.back_full' }}</span>
                   </button>
                 }
                 <div class="flex p-1.5 bg-gray-200 dark:bg-zinc-800 rounded-[10px] w-full border border-gray-300 dark:border-zinc-700/60 shadow-sm">
                   <button (click)="selectMobileTab('chart')" 
+                          data-testid="mobile-tab-chart"
                           class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
                           [class.bg-white]="mobileActiveTab() === 'chart'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'chart'" [class.text-black]="mobileActiveTab() === 'chart'" [class.dark:text-white]="mobileActiveTab() === 'chart'"
                           [class.text-gray-700]="mobileActiveTab() !== 'chart'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'chart'">
-                    🩺 Chart
+                    🩺 {{ 'Chart' | pgT:'nav.chart' }}
                   </button>
                   <button (click)="selectMobileTab('analysis')"
+                          data-testid="mobile-tab-analysis"
                           class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
                           [class.bg-white]="mobileActiveTab() === 'analysis'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'analysis'" [class.text-black]="mobileActiveTab() === 'analysis'" [class.dark:text-white]="mobileActiveTab() === 'analysis'"
                           [class.text-gray-700]="mobileActiveTab() !== 'analysis'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'analysis'">
-                    📊 Analysis
+                    📊 {{ 'Analysis' | pgT:'nav.analysis' }}
                   </button>
                   <button (click)="selectMobileTab('tasks')"
                           data-testid="mobile-tab-room"
                           class="flex-1 py-2.5 text-xs font-bold uppercase tracking-widest rounded-md transition-all shadow-sm min-h-[44px] flex items-center justify-center gap-1.5 cursor-pointer"
                           [class.bg-white]="mobileActiveTab() === 'tasks'" [class.dark:bg-[#09090b]]="mobileActiveTab() === 'tasks'" [class.text-black]="mobileActiveTab() === 'tasks'" [class.dark:text-white]="mobileActiveTab() === 'tasks'"
                           [class.text-gray-700]="mobileActiveTab() !== 'tasks'" [class.dark:text-zinc-300]="mobileActiveTab() !== 'tasks'">
-                    📋 {{ isViewingVisitDetails() ? 'Review' : 'Room' }}
+                    📋 {{ isViewingVisitDetails() ? ('Review' | pgT:'nav.review') : ('Room' | pgT:'nav.room') }}
                   </button>
                 </div>
               </div>
@@ -819,7 +898,11 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                [class.hidden]="isChartCollapsed()"
                [class.max-md:hidden]="mobileActiveTab() !== 'chart' && !state.isSparkModeActive()">
                <div class="md:h-full w-full md:overflow-hidden flex-1 flex flex-col min-h-0">
-                  <app-medical-chart class="no-print md:h-full block md:overflow-y-auto w-full max-md:overflow-visible"></app-medical-chart>
+                  @defer (on immediate) {
+                    <app-medical-chart class="no-print md:h-full block md:overflow-y-auto w-full max-md:overflow-visible"></app-medical-chart>
+                  } @placeholder {
+                    <div class="p-4 text-xs font-mono text-zinc-400">Loading Clinical Chart Workspace...</div>
+                  }
                </div>
             </div>
 
@@ -882,7 +965,7 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                       @defer {
                         <app-intake-form appReveal></app-intake-form>
                       } @placeholder {
-                        <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Intake...</div>
+                        <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">{{ 'Loading Intake...' | pgT:'app.loading_intake' }}</div>
                       }
                     </div>
                   }
@@ -890,7 +973,7 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                     @defer (on immediate) {
                       <app-task-flow appReveal [revealDelay]="100"></app-task-flow>
                     } @placeholder {
-                      <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Tasks...</div>
+                      <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">{{ 'Loading Tasks...' | pgT:'app.loading_tasks' }}</div>
                     }
                   </div>
                </div>
@@ -898,7 +981,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                <div class="shrink-0 w-full md:w-[400px] flex flex-col h-full z-20 transition-all duration-300 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden"
                     [class.max-md:hidden]="mobileActiveTab() !== 'tasks'"
                     [class.tab-fade-enter]="mobileActiveTab() === 'tasks'">
-                  <app-visit-review [visit]="$any(state.viewingPastVisit())"></app-visit-review>
+                  @defer (on immediate) {
+                    <app-visit-review [visit]="$any(state.viewingPastVisit())"></app-visit-review>
+                  }
                </div>
             }
 
@@ -918,7 +1003,7 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                      @defer (on immediate) {
                        <app-analysis-container class="flex flex-col flex-1 min-h-0 min-w-0 h-full w-full overflow-hidden max-md:h-full max-md:min-h-[calc(100dvh-140px)]" appReveal [revealDelay]="100"></app-analysis-container>
                      } @placeholder {
-                       <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">Loading Core AI Synthesis...</div>
+                       <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">{{ 'Loading Core AI Synthesis...' | pgT:'app.loading_synthesis' }}</div>
                      }
                  </div>
                  
@@ -926,7 +1011,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
 
                  @if (intelligence.researchHits()) {
                    <div class="overflow-hidden flex flex-col bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 transition-shadow duration-300 hover:shadow-md h-[300px] shrink-0">
-                     <app-research-tab class="block h-full" [hits]="intelligence.researchHits()"></app-research-tab>
+                     @defer (on immediate) {
+                       <app-research-tab class="block h-full" [hits]="intelligence.researchHits()"></app-research-tab>
+                     }
                    </div>
                  }
               </div>
@@ -1083,63 +1170,83 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
 
     <!-- Pocket-Gull Architecture Atlas & Visual Topology Modal -->
     @if (navShell.showAtlasModal()) {
-      <app-pocketgull-architecture-atlas></app-pocketgull-architecture-atlas>
+      @defer (on immediate) {
+        <app-pocketgull-architecture-atlas></app-pocketgull-architecture-atlas>
+      }
     }
 
     <!-- Pocket-Gull Arcade & Clinical Quests Hub Modal -->
     @if (navShell.showArcadeHubModal()) {
-      <app-arcade-hub-modal></app-arcade-hub-modal>
+      @defer (on immediate) {
+        <app-arcade-hub-modal></app-arcade-hub-modal>
+      }
     }
 
     <!-- SMART Health Card & Cryptographic Pass Modal -->
     @if (showSmartHealthPassModal()) {
-      <app-smart-health-pass-modal (closeModal)="showSmartHealthPassModal.set(false)"></app-smart-health-pass-modal>
+      @defer (on immediate) {
+        <app-smart-health-pass-modal (closeModal)="showSmartHealthPassModal.set(false)"></app-smart-health-pass-modal>
+      }
     }
 
     <!-- Living Room Ambient Health Studio Modal (Developer Showcase) -->
     @if (navShell.developerMode() && showAmbientLivingSpaceModal()) {
-      <app-ambient-living-space-dashboard></app-ambient-living-space-dashboard>
+      @defer (on immediate) {
+        <app-ambient-living-space-dashboard></app-ambient-living-space-dashboard>
+      }
     }
 
     <!-- Human Dignity Charter & Autonomy Pact Modal -->
     @if (showHumanDignityPactModal()) {
-      <app-human-dignity-pact (closeModal)="showHumanDignityPactModal.set(false)"></app-human-dignity-pact>
+      @defer (on immediate) {
+        <app-human-dignity-pact (closeModal)="showHumanDignityPactModal.set(false)"></app-human-dignity-pact>
+      }
     }
 
     <!-- Patent & IP Claims Registry Modal (Developer & IP Showcase) -->
     @if (navShell.developerMode() && showPatentClaimsModal()) {
-      <app-patent-claims-hud-modal (close)="showPatentClaimsModal.set(false)"></app-patent-claims-hud-modal>
+      @defer (on immediate) {
+        <app-patent-claims-hud-modal (close)="showPatentClaimsModal.set(false)"></app-patent-claims-hud-modal>
+      }
     }
 
     <!-- Usage & Licensing Paywall Modal (Developer / Admin Settings) -->
     @if (navShell.developerMode() && showLicensingModal()) {
-      <app-usage-licensing-paywall-modal 
-        (close)="showLicensingModal.set(false)"
-        (openCaseStudy)="showLicensingModal.set(false); showNantucketCaseStudy.set(true)">
-      </app-usage-licensing-paywall-modal>
+      @defer (on immediate) {
+        <app-usage-licensing-paywall-modal 
+          (close)="showLicensingModal.set(false)"
+          (openCaseStudy)="showLicensingModal.set(false); showNantucketCaseStudy.set(true)">
+        </app-usage-licensing-paywall-modal>
+      }
     }
 
     <!-- Nantucket Island Tick Case Study Modal -->
     @if (showNantucketCaseStudy()) {
       <div class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
-        <app-nantucket-tick-case-study 
-          (close)="showNantucketCaseStudy.set(false)">
-        </app-nantucket-tick-case-study>
+        @defer (on immediate) {
+          <app-nantucket-tick-case-study 
+            (close)="showNantucketCaseStudy.set(false)">
+          </app-nantucket-tick-case-study>
+        }
       </div>
     }
 
     <!-- Cardiometabolic Radar Case Study Modal -->
     @if (showCardiometabolicCaseStudy()) {
       <div class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
-        <app-cardiometabolic-radar-case-study 
-          (close)="showCardiometabolicCaseStudy.set(false)">
-        </app-cardiometabolic-radar-case-study>
+        @defer (on immediate) {
+          <app-cardiometabolic-radar-case-study 
+            (close)="showCardiometabolicCaseStudy.set(false)">
+          </app-cardiometabolic-radar-case-study>
+        }
       </div>
     }
 
     <!-- Community Testimonials & Quotes Modal -->
     @if (showTestimonialsModal()) {
-      <app-community-testimonial-modal (close)="showTestimonialsModal.set(false)"></app-community-testimonial-modal>
+      @defer (on immediate) {
+        <app-community-testimonial-modal (close)="showTestimonialsModal.set(false)"></app-community-testimonial-modal>
+      }
     }
 
     <!-- Socratic Patient Intake Studio Modal -->
@@ -1161,7 +1268,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
             </button>
           </div>
           <div class="p-4 sm:p-6">
-            <app-serene-intake></app-serene-intake>
+            @defer (on immediate) {
+              <app-serene-intake></app-serene-intake>
+            }
           </div>
         </div>
       </div>
@@ -1174,14 +1283,18 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
           <button (click)="showTypefaceSite.set(false)" class="absolute top-6 right-6 z-[10000] px-3 py-1.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-amber-500 hover:text-zinc-950 rounded-full transition-colors font-bold text-xs">
             ✕ Close Specimen
           </button>
-          <app-pocketgull-typeface-site />
+          @defer (on immediate) {
+            <app-pocketgull-typeface-site />
+          }
         </div>
       </div>
     }
 
     <!-- Native Angular Documentation Suite -->
     @if (showDocsStudy()) {
-      <app-docs-study></app-docs-study>
+      @defer (on immediate) {
+        <app-docs-study></app-docs-study>
+      }
     }
 
     <!-- Universal Doc Drill & Evidence Focus Socratic Drawer -->
@@ -1207,7 +1320,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
             </button>
           </div>
           <div class="p-4 sm:p-6">
-            <app-vertex-model-garden-portal />
+            @defer (on immediate) {
+              <app-vertex-model-garden-portal />
+            }
           </div>
         </div>
       </div>
@@ -1232,7 +1347,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
             </button>
           </div>
           <div class="p-4 sm:p-6">
-            <app-talent-hr-portal />
+            @defer (on immediate) {
+              <app-talent-hr-portal />
+            }
           </div>
         </div>
       </div>
@@ -1257,7 +1374,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
             </button>
           </div>
           <div class="p-4 sm:p-6">
-            <app-osce-case-simulator />
+            @defer (on immediate) {
+              <app-osce-case-simulator />
+            }
           </div>
         </div>
       </div>
@@ -1277,7 +1396,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
             </button>
           </div>
           <div class="flex-1 overflow-y-auto p-4 sm:p-6">
-            <app-articles-reader />
+            @defer (on immediate) {
+              <app-articles-reader />
+            }
           </div>
         </div>
       </div>
@@ -1298,9 +1419,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
             <div>
               <div class="flex items-center gap-3 mb-1">
                  <div class="w-2 h-2 rounded-full bg-[#ff4500] animate-pulse shadow-[0_0_8px_rgba(255,69,0,0.6)]"></div>
-                 <h2 class="text-[12px] font-bold text-[#1C1C1C] dark:text-zinc-100 uppercase tracking-[0.2em] font-mono">Care Plan Archiver</h2>
+                 <h2 class="text-[12px] font-bold text-[#1C1C1C] dark:text-zinc-100 uppercase tracking-[0.2em] font-mono">{{ 'Care Plan Archiver' | pgT:'careplan.archiver' }}</h2>
               </div>
-              <p class="text-[12px] uppercase font-bold text-gray-500 dark:text-zinc-400 tracking-[0.2em] ml-5">Review • Adjust • Finalize</p>
+              <p class="text-[12px] uppercase font-bold text-gray-500 dark:text-zinc-400 tracking-[0.2em] ml-5">{{ 'Review • Adjust • Finalize' | pgT:'careplan.review_adjust' }}</p>
             </div>
             <button 
               (click)="closePreview()" 
@@ -1316,7 +1437,7 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                 <!-- Cognitive level -->
                 <div class="flex flex-col gap-3">
                   <div class="flex flex-col gap-1.5">
-                    <h3 class="text-[12px] font-bold text-[#1C1C1C] dark:text-zinc-100 uppercase tracking-[0.3em]">Cognitive Output Level</h3>
+                    <h3 class="text-[12px] font-bold text-[#1C1C1C] dark:text-zinc-100 uppercase tracking-[0.3em]">{{ 'Cognitive Output Level' | pgT:'careplan.cognitive_level' }}</h3>
                     <p class="text-[12px] text-gray-500 dark:text-zinc-400 uppercase tracking-widest font-mono">Select target patient comprehension</p>
                   </div>
                   
@@ -1343,8 +1464,8 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                 <!-- Language Translation -->
                 <div class="flex flex-col gap-3">
                   <div class="flex flex-col gap-1.5">
-                    <h3 class="text-[12px] font-bold text-[#1C1C1C] dark:text-zinc-100 uppercase tracking-[0.3em]">Language Translation</h3>
-                    <p class="text-[12px] text-gray-500 dark:text-zinc-400 uppercase tracking-widest font-mono">Select target translation language</p>
+                    <h3 class="text-[12px] font-bold text-[#1C1C1C] dark:text-zinc-100 uppercase tracking-[0.3em]">{{ 'Language Translation' | pgT:'careplan.language_translation' }}</h3>
+                    <p class="text-[12px] text-gray-500 dark:text-zinc-400 uppercase tracking-widest font-mono">{{ 'Select target translation language' | pgT:'careplan.select_language' }}</p>
                   </div>
 
                   <div class="flex flex-wrap gap-1 items-center">
@@ -1609,27 +1730,39 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       </div>
     }
     @if (showDoctorShiftSalesDemoModal()) {
-      <app-doctor-shift-sales-demo (closeModal)="showDoctorShiftSalesDemoModal.set(false)"></app-doctor-shift-sales-demo>
+      @defer (on immediate) {
+        <app-doctor-shift-sales-demo (closeModal)="showDoctorShiftSalesDemoModal.set(false)"></app-doctor-shift-sales-demo>
+      }
     }
     @if (showGreenRoomLoungeModal()) {
-      <app-green-room-lounge (closeModal)="showGreenRoomLoungeModal.set(false)"></app-green-room-lounge>
+      @defer (on immediate) {
+        <app-green-room-lounge (closeModal)="showGreenRoomLoungeModal.set(false)"></app-green-room-lounge>
+      }
     }
     @if (showAmbientLivingSpaceModal()) {
-      <app-ambient-living-space-dashboard (closeModal)="showAmbientLivingSpaceModal.set(false)"></app-ambient-living-space-dashboard>
+      @defer (on immediate) {
+        <app-ambient-living-space-dashboard (closeModal)="showAmbientLivingSpaceModal.set(false)"></app-ambient-living-space-dashboard>
+      }
     }
     @if (showHumanDignityPactModal()) {
-      <app-human-dignity-pact (closeModal)="showHumanDignityPactModal.set(false)"></app-human-dignity-pact>
+      @defer (on immediate) {
+        <app-human-dignity-pact (closeModal)="showHumanDignityPactModal.set(false)"></app-human-dignity-pact>
+      }
     }
     @if (showAustereHudModal() || navShell.showAustereHudModal()) {
       <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-labelledby="austere-modal-title">
-        <app-austere-research-hud (close)="showAustereHudModal.set(false); navShell.closeAustereHud()"></app-austere-research-hud>
+        @defer (on immediate) {
+          <app-austere-research-hud (close)="showAustereHudModal.set(false); navShell.closeAustereHud()"></app-austere-research-hud>
+        }
       </div>
     }
 
     <!-- Frontline Community Health Worker (CHW) Task-Shifting Suite Modal -->
     @if (navShell.showChwSuiteModal()) {
       <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Frontline Community Health Worker Suite">
-        <app-community-health-worker-suite (close)="navShell.closeChwSuite()"></app-community-health-worker-suite>
+        @defer (on immediate) {
+          <app-community-health-worker-suite (close)="navShell.closeChwSuite()"></app-community-health-worker-suite>
+        }
       </div>
     }
 
@@ -1637,7 +1770,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
     @if (navShell.showMultilingualTerminalModal()) {
       <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Universal Socratic Multilingual Terminal">
         <div class="relative w-full max-w-5xl my-auto">
-          <app-socratic-multilingual-terminal (close)="navShell.closeMultilingualTerminal()" />
+          @defer (on immediate) {
+            <app-socratic-multilingual-terminal (close)="navShell.closeMultilingualTerminal()" />
+          }
         </div>
       </div>
     }
@@ -1646,7 +1781,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
     @if (navShell.showMocaSuiteModal()) {
       <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200 no-print" role="dialog" aria-modal="true" aria-label="Montreal Cognitive Assessment MoCA Suite">
         <div class="relative w-full max-w-5xl my-auto">
-          <app-moca-suite (close)="navShell.closeMocaSuite()" />
+          @defer (on immediate) {
+            <app-moca-suite (close)="navShell.closeMocaSuite()" />
+          }
         </div>
       </div>
     }
@@ -1662,7 +1799,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
             aria-label="Close 3D Hologram">
             ✕
           </button>
-          <app-knee-hologram-hud />
+          @defer (on immediate) {
+            <app-knee-hologram-hud />
+          }
         </div>
       </div>
     }
@@ -1854,6 +1993,15 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
               class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
               🧬 3D Nutrigenomics &amp; Epigenetics (V11)
             </button>
+            <button
+              type="button"
+              (click)="activeBiophysicalLensTab.set('wearable_acg')"
+              [class.bg-emerald-700]="activeBiophysicalLensTab() === 'wearable_acg'"
+              [class.text-white]="activeBiophysicalLensTab() === 'wearable_acg'"
+              [class.text-emerald-400]="activeBiophysicalLensTab() !== 'wearable_acg'"
+              class="px-3 py-1.5 rounded-xl font-bold transition cursor-pointer min-h-[36px]">
+              ⌚ Wearable ACG Readiness (TIPPSS)
+            </button>
           </div>
 
           <!-- Active Panel Display -->
@@ -1959,6 +2107,10 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
               @defer (on immediate) {
                 <app-nutrigenomics-3d-lens />
               }
+            } @else if (activeBiophysicalLensTab() === 'wearable_acg') {
+              @defer (on immediate) {
+                <app-wearable-asymmetric-gain-card />
+              }
             }
           </div>
         </div>
@@ -1976,19 +2128,25 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
             aria-label="Close Research Dividend">
             ✕
           </button>
-          <app-research-data-dividend />
+          @defer (on immediate) {
+            <app-research-data-dividend />
+          }
         </div>
       </div>
     }
 
     <!-- J++ Workspace Lens & Clinical Behavioral Drift Calibrator HUD -->
     @if (navShell.showDriftCalibratorModal()) {
-      <app-clinical-drift-calibrator-hud />
+      @defer (on immediate) {
+        <app-clinical-drift-calibrator-hud />
+      }
     }
 
     <!-- Real-Time Clinician Collaboration Dock -->
     @if (!showSplash()) {
-      <app-collaboration-dock />
+      @defer (on idle) {
+        <app-collaboration-dock />
+      }
       @defer (on idle) {
         <app-ui-self-repair-hud />
       }
@@ -2036,7 +2194,7 @@ export class AppComponent implements OnDestroy {
   showAustereHudModal = signal(false);
   showKneeHologramModal = signal(false);
   showBiophysicalLensesModal = signal(false);
-  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'bioprinting_scaffold' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz' | 'monk_equity' | 'fluid_tonicity' | 'glymphatic_brain' | 'nutrigenomics'>('cardiac');
+  activeBiophysicalLensTab = signal<'cardiac' | 'alveolar' | 'hepatic' | 'renal_3d' | 'islet' | 'cyp_heme' | 'bioprinting_scaffold' | 'kdigo_aki' | 'baroreflex' | 'sepsis' | 'glycemic' | 'cyp450_ddi' | 'swan_ganz' | 'monk_equity' | 'fluid_tonicity' | 'glymphatic_brain' | 'nutrigenomics' | 'wearable_acg'>('cardiac');
   cardiacEngineMode = signal<'webgpu' | 'threejs'>('webgpu');
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
@@ -2529,6 +2687,11 @@ export class AppComponent implements OnDestroy {
   selectLanguage(lang: string) {
     this.selectedLanguage.set(lang);
     this.showCustomLanguageInput.set(false);
+    const code = mapCarePlanLanguageToCode(lang);
+    if (code && this.uiI18n.activeLanguageCode() !== code) {
+      this.lastSyncedLangCount = this.uiI18n.explicitSelectionCount() + 1;
+      this.uiI18n.setLanguage(code);
+    }
     this.updateReadingLevelAndTranslate();
   }
 
@@ -2838,8 +3001,33 @@ export class AppComponent implements OnDestroy {
   readonly fitbit = inject(FitbitService);
   readonly intelligence = inject(ClinicalIntelligenceService);
   readonly webMcp = inject(WebMcpRegistrationService);
+  readonly uiI18n = inject(UiI18nService);
+  private lastSyncedLangCount = 0;
 
   constructor() {
+    effect(() => {
+      const count = this.uiI18n.explicitSelectionCount();
+      const lang = this.uiI18n.activeLanguage();
+      if (count > this.lastSyncedLangCount) {
+        this.lastSyncedLangCount = count;
+        untracked(() => {
+          const mapped = mapCodeToCarePlanLanguage(lang.code, lang.name);
+          if (mapped.isCustom) {
+            if (this.customLanguage() !== mapped.customLanguage || !this.showCustomLanguageInput()) {
+              this.customLanguage.set(mapped.customLanguage);
+              this.showCustomLanguageInput.set(true);
+            }
+          } else if (this.selectedLanguage() !== mapped.presetLanguage || this.showCustomLanguageInput()) {
+            this.selectedLanguage.set(mapped.presetLanguage);
+            this.showCustomLanguageInput.set(false);
+          }
+          if (this.showPreviewModal() && this.originalPreviewText().trim()) {
+            void this.updateReadingLevelAndTranslate();
+          }
+          this.cdr.markForCheck();
+        });
+      }
+    });
     if (typeof window !== 'undefined') {
       (window as any).__openZamecznikCanvas = () => {
         this.triggerSomaticGrounding();
@@ -3271,13 +3459,19 @@ export class AppComponent implements OnDestroy {
     }
   }
 
-  handleEmergencyBypass() {
+  handleEmergencyBypass(context?: IStatEmergencyBypassPayload) {
     this.state.isEmergencyMode.set(true);
     this.state.clearState();
 
+    const indication = context?.indication || 'STAT_CODE_BLUE';
+    const role = context?.responderRole || 'GOOD_SAMARITAN_BYSTANDER';
+    const badge = context?.badge || 'SAMARITAN-STAT';
+    const protocol = resolveEmergencyProtocolDescriptor(indication);
+    this.state.configureEmergencyContext(indication, role, badge);
+
     const emergencyPatient: IPatient = {
       id: 'emergency_casualty',
-      name: 'Emergency Patient',
+      name: `Emergency Patient (${protocol.shortBadge})`,
       age: 30,
       gender: 'Other',
       lastVisit: new Date().toISOString(),
@@ -3285,7 +3479,7 @@ export class AppComponent implements OnDestroy {
       history: [],
       bookmarks: [],
       issues: {},
-      patientGoals: 'Immediate trauma and emergency life support bypass mode.',
+      patientGoals: `${protocol.title} — ${protocol.step1Subtitle}`,
       dietaryProtocol: '',
       vitals: {
         bp: '', hr: '', temp: '', spO2: '', weight: '', height: '',
@@ -3301,16 +3495,25 @@ export class AppComponent implements OnDestroy {
     };
 
     const currentPatients = this.patientMgmt.patients();
-    if (!currentPatients.some(p => p.id === 'emergency_casualty')) {
-      const patientsSignal = this.patientMgmt.patients;
-      if (typeof (patientsSignal as any).update === 'function') {
+    const patientsSignal = this.patientMgmt.patients;
+    if (typeof (patientsSignal as any).update === 'function') {
+      if (!currentPatients.some(p => p.id === 'emergency_casualty')) {
         (patientsSignal as any).update((list: IPatient[]) => [...list, emergencyPatient]);
+      } else {
+        (patientsSignal as any).update((list: IPatient[]) =>
+          list.map(p => (p.id === 'emergency_casualty' ? emergencyPatient : p))
+        );
       }
     }
 
     this.patientMgmt.selectedPatientId.set('emergency_casualty');
     this.state.loadState(emergencyPatient);
     this.session.isLocked.set(false);
+  }
+
+  exitEmergencyMode() {
+    this.state.isEmergencyMode.set(false);
+    this.session.lock();
   }
 
   exitDemoMode() {

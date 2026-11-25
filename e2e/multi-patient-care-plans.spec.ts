@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, ensureAnalysisViewVisible } from './utils/setup';
 
 test.describe('Multi-Patient Care Plan Strategy E2E Suite', () => {
 
   test('should generate and verify care plans across diverse patient profiles', async ({ page }) => {
     await setupE2ePage(page);
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
 
     // Verify Main Container renders
     await expect(page.locator('main')).toBeVisible({ timeout: 15000 });

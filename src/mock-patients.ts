@@ -1,4 +1,5 @@
 import { IPatient } from './services/patient.types';
+import { attachPatientWhoNihGoals } from './utils/who-nih-goals-catalog';
 import { p001 } from './mock-patients/p001';
 import { p002 } from './mock-patients/p002';
 import { p003 } from './mock-patients/p003';
@@ -20,8 +21,12 @@ import { p_ada_lovelace } from './mock-patients/p_ada_lovelace';
 import { p_default_patient } from './mock-patients/p_default_patient';
 import { p_poms_adolescent } from './mock-patients/p_poms_adolescent';
 import { p_loms_elder } from './mock-patients/p_loms_elder';
+import { p_who_oral_sibi } from './mock-patients/p_who_oral_sibi';
+import { p_who_amr_exposome } from './mock-patients/p_who_amr_exposome';
+import { p_nih_recover_heal } from './mock-patients/p_nih_recover_heal';
+import { p_nih_pgx_circadian } from './mock-patients/p_nih_pgx_circadian';
 
-export const MOCK_PATIENTS: IPatient[] = [
+const RAW_MOCK_PATIENTS: IPatient[] = [
   p_ada_lovelace,
   p001,
   p002,
@@ -42,5 +47,11 @@ export const MOCK_PATIENTS: IPatient[] = [
   p_charles_darwin,
   p_marie_curie,
   p_srinivasa_ramanujan,
+  p_who_oral_sibi,
+  p_who_amr_exposome,
+  p_nih_recover_heal,
+  p_nih_pgx_circadian,
   p_default_patient
 ];
+
+export const MOCK_PATIENTS: IPatient[] = RAW_MOCK_PATIENTS.map(attachPatientWhoNihGoals);

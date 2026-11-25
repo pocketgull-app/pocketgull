@@ -4,6 +4,7 @@ import { PatientStateService } from '../../services/patient-state.service';
 import { ClinicalMoERouterService } from '../../services/clinical-moe-router.service';
 import { UniversalPivotPulseSynthesizerService } from '../../services/universal-pivot-pulse-synthesizer.service';
 import { OllamaProvider } from '../../services/ai/ollama.provider';
+import { evaluatePatientTop10WhoAndNihGoals } from '../../utils/who-nih-goals-catalog';
 
 export interface IGlobalHealthGoal {
   id: string;
@@ -243,7 +244,7 @@ export class WhoNihGoalSteeringHubComponent {
     const hr = parseFloat(vitals?.hr || '72');
     const glucose = parseFloat(vitals?.cgmGlucoseMgDl || '110');
 
-    return [
+    const baseGoals: IGlobalHealthGoal[] = [
       {
         id: 'nmss-cures-stop',
         framework: 'NMSS_CURES',
@@ -349,6 +350,55 @@ export class WhoNihGoalSteeringHubComponent {
         institutionPartner: 'NIH NIDDK'
       }
     ];
+
+    // Append remaining Top 10 WHO + Top 10 NIH goals tailored to the active patient
+    const snapshot = this.patientState.asPatientSnapshot?.();
+    const stateCatalog = this.patientState.whoNihGoals?.();
+    const catalog =
+      stateCatalog && stateCatalog.top10WhoGoals.length === 10 && stateCatalog.top10NihGoals.length === 10
+        ? stateCatalog
+        : evaluatePatientTop10WhoAndNihGoals(snapshot || { vitals });
+
+    const coveredCodes = new Set([
+      'WHO SDG 3.4.1',
+      'WHO HEARTS-H',
+      'NIH HP2030 AOC-01',
+      'NIH CTSA UL1TR003015',
+      'NIH HP2030 D-01'
+    ]);
+
+    const mapCatalogEntry = (
+      entry: { id: string; code: string; title: string; framework: string; patientMetric: string; targetBenchmark: string; progressPct: number; status: string; evidenceKeywords: string },
+      framework: IGlobalHealthGoal['framework'],
+      partner: string
+    ): IGlobalHealthGoal | null => {
+      if (coveredCodes.has(entry.code)) return null;
+      return {
+        id: entry.id.toLowerCase(),
+        framework,
+        title: `${entry.code}: ${entry.title}`,
+        targetCode: entry.code,
+        description: `Patient-aligned ${entry.framework} benchmark.`,
+        currentPatientMetric: entry.patientMetric,
+        targetBenchmark: entry.targetBenchmark,
+        progressPct: entry.progressPct,
+        status:
+          entry.status === 'CRITICAL_GAP'
+            ? 'CRITICAL_GAP'
+            : entry.status === 'ATTENTION_REQUIRED'
+              ? 'ATTENTION_REQUIRED'
+              : 'ON_TRACK',
+        evidenceKeywords: entry.evidenceKeywords,
+        institutionPartner: partner
+      };
+    };
+
+    const mappedBaseGoals: IGlobalHealthGoal[] = [
+      ...catalog.top10WhoGoals.map(e => mapCatalogEntry(e, 'WHO_SDG', 'World Health Organization (WHO)')),
+      ...catalog.top10NihGoals.map(e => mapCatalogEntry(e, 'NIH_HEALTHY_PEOPLE_2030', e.framework))
+    ].filter((g): g is IGlobalHealthGoal => g !== null);
+
+    return [...baseGoals, ...mappedBaseGoals];
   });
 
   readonly filteredGoals = computed(() => {

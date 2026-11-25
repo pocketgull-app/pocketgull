@@ -3,7 +3,7 @@ import { IPatient } from '../services/patient.types';
 export const p_default_patient: IPatient = {
   id: "p_default_patient",
   name: "Homo Sapiens (Male, Metabolic & Executive Stress, 44y)",
-  age: 42,
+  age: 44,
   gender: "Male",
   lastVisit: "2026.05.20",
   preexistingConditions: ["Hypertension", "Mild Sleep Apnea", "Google Health Integration"],
