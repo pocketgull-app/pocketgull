@@ -10,6 +10,8 @@ import '../../services/patient_management_service.dart';
 import '../../services/ble_wearables_service.dart';
 import '../../services/teledentistry_service.dart';
 import '../../services/skeptical_epistemology_service.dart';
+import '../../services/capacity_signal_service.dart';
+import 'health_connect_provider.dart';
 
 final clinicalIntelligenceProvider = Provider<ClinicalIntelligenceService>((ref) {
   const apiKey = String.fromEnvironment('GEMINI_API_KEY', defaultValue: 'YOUR_API_KEY_HERE');
@@ -59,6 +61,22 @@ final teledentistryProvider = Provider<TeledentistryService>((ref) {
 
 final skepticalEpistemologyProvider = Provider<SkepticalEpistemologyService>((ref) {
   return SkepticalEpistemologyService();
+});
+
+final capacitySignalServiceProvider = Provider<CapacitySignalService>((ref) {
+  return CapacitySignalService();
+});
+
+final capacitySignalProvider = Provider<CapacitySignal>((ref) {
+  final service = ref.watch(capacitySignalServiceProvider);
+  final healthState = ref.watch(healthConnectProvider);
+  final bleService = ref.watch(bleWearablesProvider);
+  ref.watch(bleVitalsStreamProvider);
+
+  return service.compute(
+    biometrics: healthState.biometrics,
+    bleService: bleService,
+  );
 });
 
 

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/patient_types.dart';
+import '../services/health_connect_bridge_service.dart';
 
 const String _storageKey = 'pocketgull_patient_state';
 
@@ -175,6 +176,67 @@ class PatientNotifier extends Notifier<PatientState> {
   void addBiometricEntry(BiometricEntry entry) {
     final updated = List<BiometricEntry>.from(state.biometricHistory ?? [])..add(entry);
     state = state.copyWith(biometricHistory: updated);
+    _saveToPrefs(state);
+  }
+
+  /// Applies a [HealthConnectBiometrics] snapshot to live vitals and history.
+  void syncHealthConnectBiometrics(HealthConnectBiometrics bio) {
+    final ts = bio.lastSyncedAt.toUtc().toIso8601String();
+    final updatedVitals = PatientVitals(
+      bp: state.vitals.bp,
+      hr: '${bio.restingHeartRateBpm.round()} bpm',
+      temp: state.vitals.temp,
+      spO2: '${bio.spO2Percent.toStringAsFixed(1)}%',
+      weight: state.vitals.weight,
+      height: state.vitals.height,
+    );
+
+    final updatedHistory = List<BiometricEntry>.from(state.biometricHistory ?? [])
+      ..addAll([
+        BiometricEntry(
+          timestamp: ts,
+          type: 'hr',
+          value: bio.restingHeartRateBpm.toStringAsFixed(0),
+          source: bio.dataSource,
+        ),
+        BiometricEntry(
+          timestamp: ts,
+          type: 'hrv',
+          value: bio.heartRateVariabilityRmssdMs.toStringAsFixed(1),
+          source: bio.dataSource,
+        ),
+        BiometricEntry(
+          timestamp: ts,
+          type: 'spo2',
+          value: bio.spO2Percent.toStringAsFixed(1),
+          source: bio.dataSource,
+        ),
+        BiometricEntry(
+          timestamp: ts,
+          type: 'steps',
+          value: '${bio.dailyStepCount}',
+          source: bio.dataSource,
+        ),
+        if (bio.cgmGlucoseMgDl != null)
+          BiometricEntry(
+            timestamp: ts,
+            type: 'cgm',
+            value: bio.cgmGlucoseMgDl!.toStringAsFixed(0),
+            source: bio.dataSource,
+          ),
+        if (bio.sleepDurationMinutes != null)
+          BiometricEntry(
+            timestamp: ts,
+            type: 'sleep_min',
+            value: '${bio.sleepDurationMinutes}',
+            source: bio.dataSource,
+          ),
+      ]);
+
+    state = state.copyWith(
+      vitals: updatedVitals,
+      biometricHistory: updatedHistory,
+    );
     _saveToPrefs(state);
   }
 

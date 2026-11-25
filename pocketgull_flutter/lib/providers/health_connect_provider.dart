@@ -1,6 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../services/capacity_signal_service.dart';
+import '../services/firestore_sync_service.dart';
 import '../services/health_connect_bridge_service.dart';
+import 'patient_provider.dart';
 
 enum HealthConnectStatus {
   initial,
@@ -82,6 +85,7 @@ class HealthConnectNotifier extends Notifier<HealthConnectState> {
       if (authorized) {
         final data = await _service.fetchBiometrics();
         if (_disposed) return;
+        _propagateToPatientAndCloud(data);
         state = state.copyWith(
           status: HealthConnectStatus.synced,
           biometrics: data,
@@ -108,6 +112,7 @@ class HealthConnectNotifier extends Notifier<HealthConnectState> {
     try {
       final data = await _service.fetchBiometrics();
       if (_disposed) return;
+      _propagateToPatientAndCloud(data);
       state = state.copyWith(
         status: HealthConnectStatus.synced,
         biometrics: data,
@@ -118,6 +123,21 @@ class HealthConnectNotifier extends Notifier<HealthConnectState> {
         status: HealthConnectStatus.error,
         errorMessage: e.toString(),
       );
+    }
+  }
+
+  void _propagateToPatientAndCloud(HealthConnectBiometrics data) {
+    ref.read(patientProvider.notifier).syncHealthConnectBiometrics(data);
+    if (!data.isSimulated) {
+      final syncState = ref.read(firestoreSyncProvider);
+      if (syncState.isAuthenticated) {
+        final capacity = CapacitySignalService().compute(biometrics: data);
+        ref.read(firestoreSyncProvider.notifier).syncBiometricsToCloud(
+              'local_primary_patient',
+              data,
+              capacity: capacity,
+            );
+      }
     }
   }
 }

@@ -29,9 +29,9 @@ class MainActivity : FlutterActivity() {
     private val BLE_CHANNEL = "app.pocketgull.avs/ble"
     private val HAPTIC_EVENTS_CHANNEL = "app.pocketgull.avs/haptic_commands"
 
-    private val SERVICE_UUID = UUID.fromString("0000avs0-0000-1000-8000-00805f9b34fb")
+    private val SERVICE_UUID = UUID.fromString("0000a750-0000-1000-8000-00805f9b34fb")
     private val CEDA_CHAR_UUID = UUID.fromString("0000ceda-0000-1000-8000-00805f9b34fb")
-    private val HAPTIC_CHAR_UUID = UUID.fromString("0000hapt-0000-1000-8000-00805f9b34fb")
+    private val HAPTIC_CHAR_UUID = UUID.fromString("0000a470-0000-1000-8000-00805f9b34fb")
 
     private var vibrator: Vibrator? = null
     private var bluetoothGattServer: BluetoothGattServer? = null

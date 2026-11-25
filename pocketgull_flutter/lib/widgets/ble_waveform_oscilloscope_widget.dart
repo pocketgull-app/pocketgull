@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/ble_wearables_service.dart';
 
@@ -16,11 +17,15 @@ class BleWaveformOscilloscopeWidget extends StatefulWidget {
 class _BleWaveformOscilloscopeWidgetState extends State<BleWaveformOscilloscopeWidget> {
   List<double> _ppgData = [];
   List<double> _ecgData = [];
+  StreamSubscription<List<double>>? _ppgSub;
+  StreamSubscription<List<double>>? _ecgSub;
+  StreamSubscription<BleConnectionState>? _stateSub;
+  StreamSubscription<BleVitalsData>? _vitalsSub;
 
   @override
   void initState() {
     super.initState();
-    widget.bleService.ppgStream.listen((data) {
+    _ppgSub = widget.bleService.ppgStream.listen((data) {
       if (mounted) {
         setState(() {
           _ppgData = data;
@@ -28,13 +33,123 @@ class _BleWaveformOscilloscopeWidgetState extends State<BleWaveformOscilloscopeW
       }
     });
 
-    widget.bleService.ecgStream.listen((data) {
+    _ecgSub = widget.bleService.ecgStream.listen((data) {
       if (mounted) {
         setState(() {
           _ecgData = data;
         });
       }
     });
+
+    _stateSub = widget.bleService.stateStream.listen((_) {
+      if (mounted) setState(() {});
+    });
+
+    _vitalsSub = widget.bleService.vitalsStream.listen((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _ppgSub?.cancel();
+    _ecgSub?.cancel();
+    _stateSub?.cancel();
+    _vitalsSub?.cancel();
+    super.dispose();
+  }
+
+  void _openBleDevicePicker() {
+    widget.bleService.startScan();
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF0F172A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetCtx) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: StreamBuilder<List<BleDiscoveredDevice>>(
+            stream: widget.bleService.discoveredDevicesStream,
+            initialData: widget.bleService.discoveredDevices,
+            builder: (context, snapshot) {
+              final devices = snapshot.data ?? const [];
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Clinical BLE & Wear OS Devices',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          fontFamily: 'PocketGullMono',
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          widget.bleService.stopScan();
+                          Navigator.of(sheetCtx).pop();
+                        },
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  if (devices.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Scanning for HR/SpO2/CGM & PocketGull Wear OS sensors...',
+                              style: TextStyle(color: Colors.white70, fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    Flexible(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: devices.length,
+                        itemBuilder: (context, index) {
+                          final dev = devices[index];
+                          return ListTile(
+                            leading: const Icon(Icons.bluetooth, color: Color(0xFF06B6D4)),
+                            title: Text(dev.name, style: const TextStyle(color: Colors.white)),
+                            subtitle: Text(
+                              '${dev.id} · RSSI ${dev.rssi} dBm',
+                              style: const TextStyle(color: Colors.white54, fontSize: 11),
+                            ),
+                            onTap: () {
+                              widget.bleService.connectDevice(dev);
+                              Navigator.of(sheetCtx).pop();
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    ).whenComplete(() => widget.bleService.stopScan());
   }
 
   @override
@@ -86,33 +201,64 @@ class _BleWaveformOscilloscopeWidgetState extends State<BleWaveformOscilloscopeW
                   ),
                 ],
               ),
-              ElevatedButton.icon(
-                onPressed: () {
-                  if (widget.bleService.isSimulationActive) {
-                    widget.bleService.stopSyntheticStream();
-                  } else {
-                    widget.bleService.startSyntheticStream();
-                  }
-                  setState(() {});
-                },
-                icon: Icon(
-                  widget.bleService.isSimulationActive ? Icons.stop : Icons.play_arrow,
-                  size: 14,
-                ),
-                label: Text(
-                  widget.bleService.isSimulationActive ? 'Stop Stream' : 'Synthetic Stream',
-                  style: const TextStyle(fontSize: 11, fontFamily: 'PocketGullMono'),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: widget.bleService.isSimulationActive
-                      ? const Color(0xFFF43F5E).withValues(alpha: 0.2)
-                      : const Color(0xFF10B981).withValues(alpha: 0.2),
-                  foregroundColor: widget.bleService.isSimulationActive ? const Color(0xFFFB7185) : const Color(0xFF34D399),
-                  side: BorderSide(
-                    color: widget.bleService.isSimulationActive ? const Color(0xFFF43F5E) : const Color(0xFF10B981),
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: isConnected && !widget.bleService.isSimulationActive
+                        ? () {
+                            widget.bleService.disconnect();
+                            setState(() {});
+                          }
+                        : _openBleDevicePicker,
+                    icon: Icon(
+                      isConnected && !widget.bleService.isSimulationActive
+                          ? Icons.bluetooth_disabled
+                          : Icons.bluetooth_searching,
+                      size: 14,
+                    ),
+                    label: Text(
+                      isConnected && !widget.bleService.isSimulationActive
+                          ? 'Disconnect'
+                          : 'Scan BLE',
+                      style: const TextStyle(fontSize: 11, fontFamily: 'PocketGullMono'),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF38BDF8),
+                      side: const BorderSide(color: Color(0xFF0284C7)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
                   ),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      if (widget.bleService.isSimulationActive) {
+                        widget.bleService.stopSyntheticStream();
+                      } else {
+                        widget.bleService.startSyntheticStream();
+                      }
+                      setState(() {});
+                    },
+                    icon: Icon(
+                      widget.bleService.isSimulationActive ? Icons.stop : Icons.play_arrow,
+                      size: 14,
+                    ),
+                    label: Text(
+                      widget.bleService.isSimulationActive ? 'Stop Stream' : 'Synthetic Stream',
+                      style: const TextStyle(fontSize: 11, fontFamily: 'PocketGullMono'),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: widget.bleService.isSimulationActive
+                          ? const Color(0xFFF43F5E).withValues(alpha: 0.2)
+                          : const Color(0xFF10B981).withValues(alpha: 0.2),
+                      foregroundColor: widget.bleService.isSimulationActive ? const Color(0xFFFB7185) : const Color(0xFF34D399),
+                      side: BorderSide(
+                        color: widget.bleService.isSimulationActive ? const Color(0xFFF43F5E) : const Color(0xFF10B981),
+                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
