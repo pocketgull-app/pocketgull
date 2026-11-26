@@ -199,6 +199,22 @@ export class ClinicalPosologyService {
   ];
 
   /**
+   * Formats a clinical dosage number in strict compliance with ISMP rules:
+   * mandatory leading zero (<1) and zero trailing zeros (never 20.00 mg or 1.00 mL).
+   */
+  public formatIsmpCleanNumber(value: number, maxDecimals = 2): string {
+    if (!Number.isFinite(value)) return '0';
+    const factor = Math.pow(10, maxDecimals);
+    const rounded = Math.round((value + Number.EPSILON) * factor) / factor;
+    let str = rounded.toFixed(maxDecimals);
+    if (str.includes('.')) {
+      str = str.replace(/\.?0+$/, '');
+    }
+    if (str === '-0') return '0';
+    return str;
+  }
+
+  /**
    * 1. Neonate / Infant: Fried's Rule
    * Infant Dose = (Age in months / 150) * Adult Dose
    */
@@ -218,7 +234,7 @@ export class ClinicalPosologyService {
       ageMonths: validMonths,
       adultDoseMg,
       calculatedDoseMg,
-      formulaString: `(${validMonths} mo / 150) × ${adultDoseMg} mg = ${calculatedDoseMg.toFixed(2)} mg`,
+      formulaString: `(${this.formatIsmpCleanNumber(validMonths, 1)} mo / 150) × ${this.formatIsmpCleanNumber(adultDoseMg, 2)} mg = ${this.formatIsmpCleanNumber(calculatedDoseMg, 2)} mg`,
       microboreSyringeVolumeMl: volumeMl,
       microdripGttMin
     };
@@ -274,7 +290,7 @@ export class ClinicalPosologyService {
       bsaM2,
       dosePerM2,
       calculatedDoseMg,
-      formulaString: `√(${validH} cm × ${validW} kg / 3600) = ${bsaM2.toFixed(2)} m² → ${calculatedDoseMg} mg`
+      formulaString: `√(${validH} cm × ${validW} kg / 3600) = ${this.formatIsmpCleanNumber(bsaM2, 2)} m² → ${this.formatIsmpCleanNumber(calculatedDoseMg, 1)} mg`
     };
   }
 
@@ -413,8 +429,8 @@ export class ClinicalPosologyService {
       sanitized = sanitized.replace(m[0], m[1] + fixed);
     }
 
-    // 2. Trailing Zeros: 5.0 mg -> 5 mg
-    const trailingRegex = /(\b\d+)\.0+\s*(mg|mcg|g|mL|units?|mEq|IU)\b/gi;
+    // 2. Trailing Zeros (integer & fractional): 5.0 mg -> 5 mg, 5.50 mg -> 5.5 mg
+    const trailingRegex = /(\b\d+)\.0+\s*(mg|mcg|g|mL|units?|mEq|IU|cc)\b/gi;
     const trailingMatches = Array.from(text.matchAll(trailingRegex));
     for (const m of trailingMatches) {
       const orig = m[0];
@@ -432,11 +448,32 @@ export class ClinicalPosologyService {
       sanitized = sanitized.replace(orig, fixed);
     }
 
-    // 3. Prohibited Abbreviations: U -> units, QD -> daily, QOD -> every other day
+    const fractionalTrailingRegex = /(\b\d+\.\d*?[1-9])0+\s*(mg|mcg|g|mL|units?|mEq|IU|cc)\b/gi;
+    const fractionalTrailingMatches = Array.from(text.matchAll(fractionalTrailingRegex));
+    for (const m of fractionalTrailingMatches) {
+      const orig = m[0];
+      const fixed = `${m[1]} ${m[2]}`;
+      violations.push({
+        id: `v-trailing-${violations.length + 1}`,
+        type: 'TRAILING_ZERO',
+        originalSnippet: orig,
+        correctedSnippet: fixed,
+        cssClass: 'trailing-zero-error font-pocketgull-mono',
+        dataAttribute: 'data-error="trailing-zero"',
+        explanation: `ISMP Rule: Fractional trailing zeros prohibited (${orig}). Correct to ${fixed}.`,
+        severity: 'CRITICAL_FATAL'
+      });
+      sanitized = sanitized.replace(orig, fixed);
+    }
+
+    // 3. Prohibited Abbreviations: U -> units, IU -> units, QD -> daily, QOD -> every other day, QHS/HS -> at bedtime, cc -> mL
     const abbrevRules = [
-      { pattern: /\b(\d+)\s*U\b/gi, fix: '$1 units', label: 'U', safe: 'units', note: 'Mistaken as zero (0), four (4), or cc.' },
+      { pattern: /\b(\d+(?:\.\d+)?)\s*U\b/gi, fix: '$1 units', label: 'U', safe: 'units', note: 'Mistaken as zero (0), four (4), or cc.' },
+      { pattern: /\b(\d+(?:\.\d+)?)\s*IU\b/g, fix: '$1 units', label: 'IU', safe: 'units', note: 'Mistaken as IV (intravenous) or 10 (ten).' },
       { pattern: /\b(Q\.?D\.?|QD)\b/gi, fix: 'daily', label: 'QD', safe: 'daily', note: 'Mistaken as QOD (every other day).' },
       { pattern: /\b(Q\.?O\.?D\.?|QOD)\b/gi, fix: 'every other day', label: 'QOD', safe: 'every other day', note: 'Mistaken as QD (daily).' },
+      { pattern: /\b(Q\.?H\.?S\.?|QHS|H\.?S\.?|HS)\b/gi, fix: 'at bedtime', label: 'QHS/HS', safe: 'at bedtime', note: 'Mistaken as hourly or half-strength.' },
+      { pattern: /\b(\d+(?:\.\d+)?)\s*cc\b/gi, fix: '$1 mL', label: 'cc', safe: 'mL', note: 'Mistaken as U (units).' },
       { pattern: /\bMSO4\b/g, fix: 'morphine sulfate', label: 'MSO4', safe: 'morphine sulfate', note: 'Confused with MgSO4 (magnesium sulfate).' },
       { pattern: /\bMgSO4\b/g, fix: 'magnesium sulfate', label: 'MgSO4', safe: 'magnesium sulfate', note: 'Confused with MSO4 (morphine sulfate).' }
     ];
@@ -490,19 +527,10 @@ export class ClinicalPosologyService {
           explanation: `Fatal Overdose Alert: Dose (${doseMatch[0]}) exceeds maximum recommended safe single-dose ceiling.`,
           severity: 'CRITICAL_FATAL'
         });
-      } else if (mgEquivalent <= 1 && unit === 'mg' && ageTier === 'adult') {
-        // Subtherapeutic caution
-        violations.push({
-          id: `v-sub-${violations.length + 1}`,
-          type: 'SUBTHERAPEUTIC',
-          originalSnippet: doseMatch[0],
-          correctedSnippet: 'Verify adult therapeutic minimum',
-          cssClass: 'posology-misaligned font-pocketgull-mono',
-          dataAttribute: 'data-dosage-status="subtherapeutic"',
-          explanation: `Subtherapeutic Warning: Dose (${doseMatch[0]}) may be subtherapeutic for an adult patient (${patientWeightLbs} lbs).`,
-          severity: 'CAUTION_SUBTHERAPEUTIC'
-        });
       }
+      // Note: Drug-agnostic <= 1 mg subtherapeutic warnings are intentionally omitted because many
+      // potent adult drugs (e.g., digoxin 0.125 mg, clonidine 0.1 mg, colchicine 0.6 mg, lorazepam 0.5 mg)
+      // have narrow therapeutic windows at or below 1 mg.
     }
 
     // Determine Multi-Paradigm Font Class
@@ -704,7 +732,7 @@ export class ClinicalPosologyService {
 
     // 5. Artesunate Parenteral (Pre-Referral Severe Malaria)
     const isUnder20kg = w < 20;
-    const artesunateDoseMgKg = isUnder20kg ? 3.0 : 2.4;
+    const artesunateDoseMgKg = isUnder20kg ? 3 : 2.4;
     const totalDoseMg = Math.round(w * artesunateDoseMgKg * 10) / 10;
 
     results.push({
@@ -712,11 +740,11 @@ export class ClinicalPosologyService {
       medication: 'Artesunate IV / IM (Pre-Referral)',
       indication: 'Severe Complicated Malaria (Cerebral / Severe Anemia / Repeated Vomiting)',
       formulation: '60 mg vial powder for injection with sodium bicarbonate 5% & saline diluent',
-      weightBandLabel: isUnder20kg ? '<20 kg (3.0 mg/kg)' : '≥20 kg (2.4 mg/kg)',
+      weightBandLabel: isUnder20kg ? '<20 kg (3 mg/kg)' : '≥20 kg (2.4 mg/kg)',
       minWeightKg: isUnder20kg ? 2 : 20,
       maxWeightKg: isUnder20kg ? 20 : 150,
-      tabletCountOrDose: `${totalDoseMg} mg IM or slow IV bolus (${artesunateDoseMgKg} mg/kg)`,
-      regimenSummary: `Administer ${totalDoseMg} mg STAT at 0h, then at 12h, 24h, then daily until patient can take oral AL`,
+      tabletCountOrDose: `${this.formatIsmpCleanNumber(totalDoseMg, 1)} mg IM or slow IV bolus (${this.formatIsmpCleanNumber(artesunateDoseMgKg, 1)} mg/kg)`,
+      regimenSummary: `Administer ${this.formatIsmpCleanNumber(totalDoseMg, 1)} mg STAT at 0h, then at 12h, 24h, then daily until patient can take oral AL`,
       duration: 'Minimum 3 parenteral doses (24h) before transition to full 3-day oral AL course',
       clinicalNotes: 'Parenteral artesunate reduces mortality by 22% in African children and 34% in Asian adults compared to quinine.'
     });
@@ -847,27 +875,27 @@ export class ClinicalPosologyService {
       return {
         ageMonths: age,
         doseIU: 50000,
-        schedule: '50,000 IU orally on Day 1 and Day 2 (and Day 15 if ocular signs or malnutrition present)',
+        schedule: '50,000 International Units (units) orally on Day 1 and Day 2 (and Day 15 if ocular signs or malnutrition present)',
         indication: 'Measles Outbreak Case / Severe Acute Malnutrition (<6 months)',
-        presentation: '1 blue capsule (100,000 IU) cut with scissors and 2 drops administered, or 50,000 IU ampoule',
+        presentation: '1 blue capsule (100,000 units) cut with scissors and 2 drops administered, or 50,000 units ampoule',
         notes: 'Reduces measles-induced blindness and mortality by up to 50%. Administer orally directly into mouth.'
       };
     } else if (age < 12) {
       return {
         ageMonths: age,
         doseIU: 100000,
-        schedule: '100,000 IU orally on Day 1 and Day 2 (and Day 15 if ocular signs or malnutrition present)',
+        schedule: '100,000 International Units (units) orally on Day 1 and Day 2 (and Day 15 if ocular signs or malnutrition present)',
         indication: 'Measles Outbreak Case / Severe Acute Malnutrition (6–11 months)',
-        presentation: '1 blue capsule (100,000 IU) orally cut or swallowed',
+        presentation: '1 blue capsule (100,000 units) orally cut or swallowed',
         notes: 'Stimulates rapid mucosal epithelial regeneration and restores vitamin A liver stores depleted by acute measles viremia.'
       };
     } else {
       return {
         ageMonths: age,
         doseIU: 200000,
-        schedule: '200,000 IU orally on Day 1 and Day 2 (and Day 15 if ocular signs or malnutrition present)',
+        schedule: '200,000 International Units (units) orally on Day 1 and Day 2 (and Day 15 if ocular signs or malnutrition present)',
         indication: 'Measles Outbreak Case / Severe Acute Malnutrition (≥12 months & Adults)',
-        presentation: '1 red capsule (200,000 IU) orally',
+        presentation: '1 red capsule (200,000 units) orally',
         notes: 'Mandatory standard of care in all humanitarian measles cases regardless of prior routine vaccination status.'
       };
     }

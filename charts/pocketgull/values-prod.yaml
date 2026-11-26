@@ -1,9 +1,17 @@
-# Production overrides for GKE cluster
+# Production overrides for GKE cluster (FinOps scale-to-zero via KEDA)
 global:
   environment: production
+  version: "1.42.0"
 
 web:
-  replicaCount: 2
+  replicaCount: 0
+  keda:
+    enabled: true
+    minReplicaCount: 0
+    maxReplicaCount: 10
+  image:
+    repository: us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull
+    tag: "1.42.0"
   resources:
     requests:
       cpu: 500m
@@ -13,7 +21,14 @@ web:
       memory: 4096Mi
 
 api:
-  replicaCount: 2
+  replicaCount: 0
+  keda:
+    enabled: true
+    minReplicaCount: 0
+    maxReplicaCount: 10
+  image:
+    repository: us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull-api
+    tag: "1.42.0"
   resources:
     requests:
       cpu: 500m
@@ -22,8 +37,15 @@ api:
       cpu: 4000m
       memory: 8192Mi
 
+agonesFleet:
+  autoscaler:
+    bufferSize: 0
+    minReplicas: 0
+
 config:
   frontendOrigin: "https://pocketgull.app"
   pythonApiUrl: "http://api-service:8080"
+  otelTracesSampler: "parentbased_traceidratio"
+  otelTracesSamplerArg: "0.1"
   otelSdkDisabled: "false"
   otelExporterOtlpEndpoint: "http://otel-collector:4318"

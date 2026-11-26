@@ -101,8 +101,9 @@ export class PatientManagementService implements OnDestroy {
   }
 
   private ensurePatientCompleteness(p: IPatient): IPatient {
-    const pVitals = (p.vitals || {}) as Record<string, any>;
+    const pVitals = (p.vitals || {}) as Partial<IPatient['vitals']>;
     const vitals = {
+      ...pVitals,
       bp: pVitals.bp ?? "",
       hr: pVitals.hr ?? "",
       temp: pVitals.temp ?? "",

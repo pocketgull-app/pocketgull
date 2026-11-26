@@ -24,7 +24,8 @@ describe('SkepticalEpistemologyHudComponent', () => {
   it('2. Computes FDA CDS compliance report and Cochrane bias grid', () => {
     const r = component.report();
     expect(r.isFdaSection520oCompliant).toBe(true);
-    expect(r.cochraneBias.randomizationBias).toBe('Low Risk of Bias');
+    expect(r.cochraneBias.verificationStatus).toBe('UNVERIFIED_EXTERNAL_CIT');
+    expect(r.cochraneBias.randomizationBias).toBe('Some Concerns');
     expect(r.cochraneBias.overallRiskOfBias).toBe('Some Concerns');
     expect(r.overallConfidencePercent).toBeGreaterThan(50);
   });

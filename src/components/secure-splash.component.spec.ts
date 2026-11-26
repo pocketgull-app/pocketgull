@@ -308,4 +308,10 @@ describe('SecureSplashComponent Sensory Suite', () => {
     component.isHoldingEmergency.set(true);
     expect(component.activeSplashGatePolicy()?.regime).toBe('STAT Good Samaritan Emergency Gate');
   });
+
+  it('14. Defaults to Ataxia-safe 1-click Passkey/SSO gateway with opt-in Gesture Pad', () => {
+    const component = createComponent();
+    expect(component.authGatewayTab()).toBe('sso');
+    expect(component.selectedSsoProvider()).toBe('webauthn');
+  });
 });

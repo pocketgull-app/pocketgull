@@ -171,7 +171,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                       </div>
                       @if (!isBiometricsExpanded()) {
                         <span class="text-xs font-mono text-slate-600 dark:text-zinc-400 truncate">
-                          BP {{ state.vitals().bp || '120/80' }} • HR {{ state.vitals().hr || '72' }} bpm • SpO2 {{ state.vitals().spO2 || '98%' }}
+                          BP <bdi dir="ltr">{{ state.vitals().bp || '120/80' }}</bdi> • HR <bdi dir="ltr">{{ state.vitals().hr || '72' }} bpm</bdi> • SpO2 <bdi dir="ltr">{{ state.vitals().spO2 || '98%' }}</bdi>
                         </span>
                       }
                     </div>
@@ -249,9 +249,9 @@ import { DocDrillService } from '../services/doc-drill.service';
                               </button>
                             </div>
                             <div class="flex items-center gap-2">
-                              <span class="text-3xl font-light tracking-tight text-gray-900 dark:text-zinc-100">
+                              <bdi dir="ltr" class="text-3xl font-light tracking-tight text-gray-900 dark:text-zinc-100">
                                 {{ ((risk.risk_score ?? 0) * 100) | number:'1.0-1' }}%
-                              </span>
+                              </bdi>
                               <span class="text-xs text-gray-400 dark:text-zinc-500 font-medium">score</span>
                             </div>
                           </div>
@@ -764,12 +764,14 @@ import { DocDrillService } from '../services/doc-drill.service';
                                         </pocket-gull-input>
                                     </div>
                                     <div class="w-32">
-                                        <pocket-gull-input
-                                            [value]="med.value"
-                                            (valueChange)="state.updateMedication(med.id, 'value', $event)"
-                                            placeholder="Dosage"
-                                            class="w-full">
-                                        </pocket-gull-input>
+                                        <bdi dir="ltr" class="block w-full">
+                                          <pocket-gull-input
+                                              [value]="med.value"
+                                              (valueChange)="state.updateMedication(med.id, 'value', $event)"
+                                              placeholder="Dosage"
+                                              class="w-full">
+                                          </pocket-gull-input>
+                                        </bdi>
                                     </div>
                                     <pocket-gull-button 
                                         variant="ghost" 

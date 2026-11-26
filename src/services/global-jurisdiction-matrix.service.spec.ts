@@ -69,4 +69,23 @@ describe('GlobalJurisdictionMatrixService Unit Suite', () => {
     expect(profile.approvedParadigms).toContain('Kampo Medicine (MHLW National Health Insurance Covered Formulations)');
     expect(profile.emergencyDispatch.some(e => e.number === '119')).toBe(true);
   });
+
+  it('8. Resolves full Five Eyes (FVEY) parity including New Zealand (NZ) HIPC 2020 / HISO / 1737, US HIPAA/HITECH/HTI-1, and UK NHS DSPT', () => {
+    service.setLocation('NZ');
+    const nz = service.activeProfile();
+    expect(nz.jurisdictionId).toBe('NZ');
+    expect(nz.dataPrivacyStatute).toContain('HIPC 2020');
+    expect(JSON.stringify(nz)).toContain('HISO 10029');
+    expect(nz.electronicHealthRecordStandard).toBe('FHIR_NZ_BASE');
+    expect(nz.emergencyDispatch.some(e => e.number === '111')).toBe(true);
+    expect(nz.emergencyDispatch.some(e => e.number === '1737')).toBe(true);
+
+    const usCa = service.getProfileForCountry('US');
+    expect(usCa.dataPrivacyStatute).toContain('HIPAA §164.514');
+    expect(JSON.stringify(usCa)).toContain('ONC HTI-1');
+
+    const ukAlias = service.getProfileForCountry('UK');
+    expect(ukAlias.jurisdictionId).toBe('GB');
+    expect(JSON.stringify(ukAlias)).toContain('NHS DSPT');
+  });
 });

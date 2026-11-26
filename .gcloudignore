@@ -90,12 +90,21 @@ trained_physio_models/
 *.tgz
 scratch/
 
+# Secrets, Keys, Private Data & Credentials (Zero-Tolerance)
+.env
+.env.*
+*.pem
+*.key
+*service-account*.json
+*credentials*.json
+data/
+
 # Logs / temp
 *.log
 logs/
 .temp/
 .DS_Store
-Thumbbs.db
+Thumbs.db
 
 # Heavy Typography & Desktop Font Binaries (Hosted live on https://font.pocketgull.app — saves 300+ MB)
 *.ttf

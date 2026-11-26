@@ -51,5 +51,20 @@ export const DANGEROUS_ABBREVIATIONS: ReadonlyArray<IDangerousAbbreviation> = [
     pattern: /\b(SQ|sub q)\b/gi,
     replacement: 'subcutaneously',
     description: 'Mistaken for SL (sublingual) or "5 every". Write "subcutaneously".'
+  },
+  {
+    pattern: /\b(\d+(?:\.\d+)?)\s*IU\b/g,
+    replacement: '$1 units',
+    description: 'Mistaken for IV (intravenous) or 10 (ten). Write "units" or "International Units".'
+  },
+  {
+    pattern: /\b(Q\.?H\.?S\.?|QHS|H\.?S\.?|HS)\b/gi,
+    replacement: 'at bedtime',
+    description: 'Mistaken for hourly or half-strength. Write "at bedtime".'
+  },
+  {
+    pattern: /\b(\d+(?:\.\d+)?)\s*cc\b/gi,
+    replacement: '$1 mL',
+    description: 'Mistaken for U (units). Write "mL".'
   }
 ];

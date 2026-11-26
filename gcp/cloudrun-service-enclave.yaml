@@ -9,6 +9,7 @@ metadata:
   annotations:
     run.googleapis.com/ingress: all
     run.googleapis.com/launch-stage: GA
+    run.googleapis.com/binary-authorization: default
     run.googleapis.com/description: "Pocket-Gull Clinical Care Engine & Multi-Agent Sanctuary"
 spec:
   template:
@@ -24,10 +25,11 @@ spec:
         run.googleapis.com/cpu-throttling: "true"
         run.googleapis.com/startup-cpu-boost: "true"
     spec:
+      serviceAccountName: pocketgull-run@gen-lang-client-0540208645.iam.gserviceaccount.com
       containerConcurrency: 80
       timeoutSeconds: 300
       containers:
-      - image: gcr.io/gen-lang-client-0540208645/pocket-gull:latest
+      - image: us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull:latest
         resources:
           limits:
             cpu: "2"

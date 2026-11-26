@@ -16,8 +16,8 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
-const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test');
-const isProd = (process.env['NODE_ENV'] === 'production' || Boolean(process.env['K_SERVICE'])) && !isTestingEnv;
+const isProd = process.env['NODE_ENV'] === 'production' || Boolean(process.env['K_SERVICE']);
+const isTestingEnv = !isProd && Boolean(process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test' || process.env['VITEST']);
 const isDev = !isProd;
 
 const ALLOWED_ORIGINS_REGEX = isProd
@@ -96,6 +96,9 @@ app.use((req, res, next) => {
   // 4. Cross-Origin-Embedder-Policy (satisfies COEP requirement)
   res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
 
+  // 4b. Origin-Agent-Cluster isolation for WebMCP
+  res.setHeader('Origin-Agent-Cluster', '?1');
+
   // 5. Anti-Clickjacking & Framing
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
 
@@ -109,10 +112,10 @@ app.use((req, res, next) => {
   res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
   res.setHeader('X-XSS-Protection', '1; mode=block');
 
-  // 9. Permissions Policy (Granular device permissions)
+  // 9. Permissions Policy (Granular device & WebMCP tool permissions)
   res.setHeader(
     'Permissions-Policy',
-    'geolocation=(), microphone=(self), camera=(), payment=(self "https://pay.google.com"), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
+    'geolocation=(), microphone=(self), camera=(), payment=(self "https://pay.google.com"), tools=(self), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
   );
 
   // 9b. ICRC Digital Emblem & Medical Sanctuary Header (Geneva Conventions / Tallinn Manual Rule 131)
@@ -325,8 +328,19 @@ try {
       const [type, credentials] = authHeader.split(' ');
       if (type === 'Basic' && credentials && username && password) {
         const decoded = Buffer.from(credentials, 'base64').toString('utf8');
-        const [u, p] = decoded.split(':');
-        if (u === username && p === password) {
+        const colonIdx = decoded.indexOf(':');
+        const u = colonIdx >= 0 ? decoded.slice(0, colonIdx) : '';
+        const p = colonIdx >= 0 ? decoded.slice(colonIdx + 1) : '';
+        const timingSafeEq = (a, b) => {
+          const bufA = Buffer.from(String(a), 'utf8');
+          const bufB = Buffer.from(String(b), 'utf8');
+          if (bufA.length !== bufB.length) {
+            crypto.timingSafeEqual(bufA, bufA);
+            return false;
+          }
+          return crypto.timingSafeEqual(bufA, bufB);
+        };
+        if (timingSafeEq(u, username) && timingSafeEq(p, password)) {
           return next();
         }
       }
@@ -536,7 +550,7 @@ app.get('/api/pubmed/summary', async (req, res) => {
   try {
     const { id } = req.query;
     if (!id) return res.status(400).json({ error: 'ID is required' });
-    const eSummaryUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${id}&retmode=json`;
+    const eSummaryUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${encodeURIComponent(String(id))}&retmode=json`;
     const response = await fetch(eSummaryUrl);
     const data = await response.json();
     res.json(data);
@@ -707,23 +721,29 @@ app.get(['/.well-known/digital-emblem.json', '/api/digital-emblem'], (req, res) 
   }
 });
 
-// JSON File Database Configuration
+// Ephemeral in-memory store in production (zero plaintext ePHI disk persistence); local JSON file in dev only
+let ephemeralPatientsStore = [];
 const dataDir = join(process.cwd(), 'data');
 const patientsDbPath = join(dataDir, 'patients.json');
 
-// Ensure data directory and empty DB exists atomically
-try {
-  fs.mkdirSync(dataDir, { recursive: true });
-} catch {}
-try {
-  fs.writeFileSync(patientsDbPath, JSON.stringify([], null, 2), { flag: 'wx' });
-} catch (err) {
-  if (err.code !== 'EEXIST') throw err;
+if (!isProd) {
+  try {
+    fs.mkdirSync(dataDir, { recursive: true });
+  } catch {}
+  try {
+    fs.writeFileSync(patientsDbPath, JSON.stringify([], null, 2), { flag: 'wx' });
+  } catch (err) {
+    if (err.code !== 'EEXIST') throw err;
+  }
 }
 
 // Patients API Endpoints
 app.get('/api/patients', (req, res) => {
   try {
+    res.setHeader('Cache-Control', 'no-store');
+    if (isProd) {
+      return res.json(ephemeralPatientsStore);
+    }
     const data = fs.readFileSync(patientsDbPath, 'utf8');
     res.setHeader('Content-Type', 'application/json');
     res.send(data);
@@ -824,7 +844,13 @@ app.post('/api/patients', (req, res) => {
     // Sanitize and validate incoming patient data
     const sanitized = validatePatientData(req.body);
 
-    // Save validated data to file
+    if (isProd) {
+      ephemeralPatientsStore = sanitized;
+      console.log(`[API] Stored ${sanitized.length} patients in ephemeral production memory (zero disk ePHI).`);
+      return res.status(200).json({ success: true, count: sanitized.length });
+    }
+
+    // Save validated data to file (local dev only)
     const MAX_FILE_SIZE = 10 * 1024 * 1024;
     const safePatientsJson = JSON.stringify(sanitized, null, 2).replace(/[^\x20-\x7E\r\n\t]/g, '');
     const safeLen1 = Math.min(safePatientsJson.length, MAX_FILE_SIZE) | 0;
@@ -853,8 +879,9 @@ app.put('/api/patients/:id', (req, res) => {
       return res.status(400).json({ error: 'Body must be a JSON object representing the patient' });
     }
 
-    const data = fs.readFileSync(patientsDbPath, 'utf8');
-    const patients = JSON.parse(data);
+    const patients = isProd
+      ? ephemeralPatientsStore
+      : JSON.parse(fs.readFileSync(patientsDbPath, 'utf8'));
     const index = patients.findIndex(p => p.id === id);
 
     const allowedPatientFields = ['id', 'name', 'age', 'gender', 'vitals', 'symptoms', 'history', 'conditions', 'carePlan', 'metrics', 'demographics', 'assessment'];
@@ -876,6 +903,13 @@ app.put('/api/patients/:id', (req, res) => {
     } else {
       // If it doesn't exist, we can create it
       patients.push({ ...cleanPayload, id });
+    }
+
+    if (isProd) {
+      ephemeralPatientsStore = patients;
+      const safeLogId = id.replace(/[\r\n\t]/g, '_').replace(/[^\x20-\x7E]/g, '');
+      console.log(`[API] Synced patient ${safeLogId} to ephemeral production memory.`);
+      return res.status(200).json({ success: true, patient: patients.find(p => p.id === id) });
     }
 
     const safeFileJson = JSON.stringify(patients, null, 2).replace(/[^\x20-\x7E\r\n\t]/g, '');

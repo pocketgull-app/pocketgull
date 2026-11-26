@@ -9,6 +9,7 @@ import { ActuarialLongevityService } from '../actuarial-longevity.service';
 import { ResearchLecturesService } from '../research-lectures.service';
 import { MdcpDomainService } from '../mdcp/mdcp-domain.service';
 import { IEpsdtAppealPackage } from '../mdcp/epsdt-advocacy.service';
+import { computeFipsSha256Hex } from '../clinical-defense-guard.service';
 
 export interface IFhirResource {
   resourceType: string;
@@ -100,72 +101,80 @@ export class FhirExportStrategyService {
     return 'unknown';
   }
 
+  private buildSafeHarborPatientFields(patient: Partial<IPatient>, cleanId: string): {
+    syntheticToken: string;
+    name: Array<{ use: string; text: string }>;
+    birthDate?: string;
+    extension?: Array<{ url: string; valueString: string }>;
+  } {
+    const token = computeFipsSha256Hex(`SAFE-HARBOR-FHIR|${cleanId}|${patient.gender || 'unknown'}`).slice(0, 12).toUpperCase();
+    const syntheticToken = `SUBJ-${token}`;
+    const rawAge = typeof patient.age === 'number' && Number.isFinite(patient.age) ? patient.age : undefined;
+
+    let birthDate: string | undefined;
+    let extension: Array<{ url: string; valueString: string }> | undefined;
+
+    if (rawAge !== undefined && rawAge > 89) {
+      // HIPAA Safe Harbor §164.514(b)(2)(i)(C): ages > 89 MUST be aggregated to 90+ with no birthDate
+      birthDate = undefined;
+      extension = [
+        {
+          url: 'https://pocketgull.app/fhir/StructureDefinition/safe-harbor-age-bracket',
+          valueString: '90+'
+        }
+      ];
+    } else if (rawAge !== undefined && rawAge >= 0) {
+      // HIPAA Safe Harbor permits year-only birth representation for ages <= 89
+      birthDate = String(new Date().getUTCFullYear() - rawAge);
+    }
+
+    return {
+      syntheticToken,
+      name: [{ use: 'anonymous', text: `Safe Harbor Subject ${syntheticToken}` }],
+      birthDate,
+      extension
+    };
+  }
+
   /**
-   * Generates a FHIR R4 Bundle for patient state export.
+   * Generates a HIPAA Safe Harbor §164.514 compliant FHIR R4 Bundle for patient state export.
    */
   public generateFhirBundle(patient: IPatient): IFhirBundle {
     const sanitize = (val?: string) => this.sanitizeForExport(val || '');
     const cleanId = (patient.id || 'patient-1').replace(/[^a-zA-Z0-9\-\.]/g, '-');
     const timestamp = new Date().toISOString();
+    const safeSubject = this.buildSafeHarborPatientFields(patient, cleanId);
 
     const patientResource: IFhirResource = {
       resourceType: 'Patient',
       id: cleanId,
       active: true,
-      name: [{ use: 'official', text: sanitize(patient.name) }],
+      name: safeSubject.name,
       gender: this.toFhirGender(patient.gender),
-      birthDate: patient.age ? `${new Date().getFullYear() - patient.age}-01-01` : undefined
+      ...(safeSubject.birthDate ? { birthDate: safeSubject.birthDate } : {}),
+      ...(safeSubject.extension ? { extension: safeSubject.extension } : {})
     };
 
     const practitionerResource: IFhirResource = {
       resourceType: 'Practitioner',
-      id: 'practitioner-npi-1487569752',
+      id: 'practitioner-pocketgull-cds',
       identifier: [
         {
-          system: 'http://hl7.org/fhir/sid/us-npi',
-          value: '1487569752'
+          system: 'https://pocketgull.app/fhir/institutional-practitioner',
+          value: 'POCKETGULL-CDS-SYSTEM'
         }
       ],
       name: [
         {
           use: 'official',
-          family: 'Gear',
-          given: ['Phillip', 'Arthur'],
-          text: 'Phillip Arthur Gear'
+          text: 'PocketGull Clinical Decision Support System'
         }
       ],
-      qualification: [
+      telecom: [
         {
-          code: {
-            coding: [
-              {
-                system: 'http://nucc.org/provider-taxonomy',
-                code: '174400000X',
-                display: 'Specialist'
-              },
-              {
-                system: 'http://nucc.org/provider-taxonomy',
-                code: '171M00000X',
-                display: 'Case Manager/Care Coordinator'
-              },
-              {
-                system: 'http://nucc.org/provider-taxonomy',
-                code: '174H00000X',
-                display: 'Health Educator'
-              }
-            ],
-            text: 'Specialist / Health Educator / Care Coordinator'
-          }
-        }
-      ],
-      address: [
-        {
-          use: 'work',
-          line: ['101 SW Madison St Unit 1664'],
-          city: 'Portland',
-          state: 'OR',
-          postalCode: '97207-2116',
-          country: 'USA'
+          system: 'email',
+          value: 'dpo@pocketgull.app',
+          use: 'work'
         }
       ]
     };
@@ -182,12 +191,22 @@ export class FhirExportStrategyService {
           id: `obs-vitals-${cleanId}`,
           status: 'final',
           category: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'vital-signs', display: 'Vital Signs' }] }],
+          code: {
+            coding: [
+              {
+                system: 'http://loinc.org',
+                code: '85353-1',
+                display: 'Vital signs, weight, height, head circumference, oxygen saturation and BMI panel'
+              }
+            ],
+            text: 'Vital Signs Panel'
+          },
           subject: { reference: `Patient/${cleanId}` },
           effectiveDateTime: timestamp,
           component: [
-            ...(patient.vitals.bp ? [{ code: { text: 'Blood Pressure' }, valueString: sanitize(patient.vitals.bp) }] : []),
-            ...(patient.vitals.hr ? [{ code: { text: 'Heart Rate' }, valueString: sanitize(patient.vitals.hr) }] : []),
-            ...(patient.vitals.spO2 ? [{ code: { text: 'Oxygen Saturation' }, valueString: sanitize(patient.vitals.spO2) }] : [])
+            ...(patient.vitals.bp ? [{ code: { coding: [{ system: 'http://loinc.org', code: '85354-9', display: 'Blood pressure panel' }], text: 'Blood Pressure' }, valueString: sanitize(patient.vitals.bp) }] : []),
+            ...(patient.vitals.hr ? [{ code: { coding: [{ system: 'http://loinc.org', code: '8867-4', display: 'Heart rate' }], text: 'Heart Rate' }, valueString: sanitize(patient.vitals.hr) }] : []),
+            ...(patient.vitals.spO2 ? [{ code: { coding: [{ system: 'http://loinc.org', code: '2708-6', display: 'Oxygen saturation in Arterial blood' }], text: 'Oxygen Saturation' }, valueString: sanitize(patient.vitals.spO2) }] : [])
           ]
         }
       });
@@ -209,8 +228,8 @@ export class FhirExportStrategyService {
       const json = JSON.stringify(bundle, null, 2);
       const blob = new Blob([json], { type: 'application/fhir+json' });
       const url = URL.createObjectURL(blob);
-      const cleanName = (patient.name || 'patient').toLowerCase().replace(/[^a-z0-9]/g, '-');
-      const filename = `${cleanName}-${filenameSuffix}-${new Date().toISOString().slice(0, 10)}.json`;
+      const safeToken = (patient.id || 'subject').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      const filename = `safe-harbor-${safeToken}-${filenameSuffix}-${new Date().toISOString().slice(0, 10)}.json`;
 
       const a = document.createElement('a');
       a.href = url;
@@ -231,8 +250,8 @@ export class FhirExportStrategyService {
       const json = JSON.stringify(bundle, null, 2);
       const blob = new Blob([json], { type: 'application/fhir+json' });
       const url = URL.createObjectURL(blob);
-      const cleanName = (patient.name || 'patient').toLowerCase().replace(/[^a-z0-9]/g, '-');
-      const filename = `${cleanName}-mdcp-four-domain-bundle-${new Date().toISOString().slice(0, 10)}.json`;
+      const safeToken = (patient.id || 'subject').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      const filename = `safe-harbor-${safeToken}-mdcp-four-domain-bundle-${new Date().toISOString().slice(0, 10)}.json`;
 
       const a = document.createElement('a');
       a.href = url;
@@ -249,19 +268,20 @@ export class FhirExportStrategyService {
   public generateEpsdtFhirBundle(patient: Partial<IPatient> | IPatient, pkg: IEpsdtAppealPackage): IFhirBundle {
     const cleanId = this.sanitizeForExport(patient.id || 'pat-pediatric-01');
     const timestamp = new Date().toISOString();
-    const sanitize = (val: string) => this.sanitizeForExport(val);
+    const safeSubject = this.buildSafeHarborPatientFields(patient, cleanId);
 
     const entries: { resource: IFhirResource }[] = [];
 
-    // 1. Patient Resource
+    // 1. Patient Resource (HIPAA Safe Harbor de-identified subject)
     entries.push({
       resource: {
         resourceType: 'Patient',
         id: cleanId,
         active: true,
-        name: [{ text: sanitize(patient.name || 'Jordan Rivera') }],
+        name: safeSubject.name,
         gender: this.toFhirGender(patient.gender),
-        birthDate: patient.age ? `${new Date().getFullYear() - patient.age}-01-01` : undefined
+        ...(safeSubject.birthDate ? { birthDate: safeSubject.birthDate } : {}),
+        ...(safeSubject.extension ? { extension: safeSubject.extension } : {})
       }
     });
 
@@ -419,8 +439,8 @@ export class FhirExportStrategyService {
       const json = JSON.stringify(bundle, null, 2);
       const blob = new Blob([json], { type: 'application/fhir+json' });
       const url = URL.createObjectURL(blob);
-      const cleanName = (patient.name || 'patient').toLowerCase().replace(/[^a-z0-9]/g, '-');
-      const filename = `${cleanName}-epsdt-appeal-fhir-r4-${pkg.stateCode}-${new Date().toISOString().slice(0, 10)}.json`;
+      const safeToken = (patient.id || 'subject').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      const filename = `safe-harbor-${safeToken}-epsdt-appeal-fhir-r4-${pkg.stateCode}-${new Date().toISOString().slice(0, 10)}.json`;
 
       const a = document.createElement('a');
       a.href = url;

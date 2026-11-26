@@ -9,17 +9,53 @@ import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent } from '@angul
 import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-// In-memory ephemeral ECDSA P-256 keypair for the client session
+// In-memory ephemeral ECDSA P-256 keypair (browser client session only; never shared across SSR requests)
 let ephemeralKeyPair: CryptoKeyPair | null = null;
 let publicJwk: JsonWebKey | null = null;
 
+function isBrowserRuntime(): boolean {
+  return typeof window !== 'undefined' && typeof document !== 'undefined';
+}
+
+export function isTrustedPocketGullApiUrl(rawUrl: string): boolean {
+  if (!rawUrl) return false;
+  // Same-origin relative API path
+  if (rawUrl.startsWith('/api/')) {
+    return true;
+  }
+  try {
+    const parsed = new URL(rawUrl);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+      return false;
+    }
+    const hostname = parsed.hostname.toLowerCase();
+    // Exact sovereign production host or subdomain over HTTPS
+    if (parsed.protocol === 'https:' && (hostname === 'pocketgull.app' || hostname.endsWith('.pocketgull.app'))) {
+      return true;
+    }
+    // Strict same-origin /api/ match in browser
+    if (
+      typeof window !== 'undefined' &&
+      window.location?.origin &&
+      parsed.origin === window.location.origin &&
+      parsed.pathname.startsWith('/api/')
+    ) {
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 async function getOrCreateDPoPKeyPair(): Promise<{ keyPair: CryptoKeyPair; jwk: JsonWebKey }> {
-  if (ephemeralKeyPair && publicJwk) {
+  const canCacheInBrowser = isBrowserRuntime();
+  if (canCacheInBrowser && ephemeralKeyPair && publicJwk) {
     return { keyPair: ephemeralKeyPair, jwk: publicJwk };
   }
 
-  // Generate ephemeral ECDSA P-256 key pair in non-extractable client memory
-  ephemeralKeyPair = await globalThis.crypto.subtle.generateKey(
+  // Generate ephemeral ECDSA P-256 key pair in non-extractable memory
+  const generatedKeyPair = await globalThis.crypto.subtle.generateKey(
     {
       name: 'ECDSA',
       namedCurve: 'P-256'
@@ -28,12 +64,18 @@ async function getOrCreateDPoPKeyPair(): Promise<{ keyPair: CryptoKeyPair; jwk: 
     ['sign']
   );
 
-  publicJwk = await globalThis.crypto.subtle.exportKey(
+  const exportedJwk = await globalThis.crypto.subtle.exportKey(
     'jwk',
-    ephemeralKeyPair.publicKey
+    generatedKeyPair.publicKey
   );
 
-  return { keyPair: ephemeralKeyPair, jwk: publicJwk };
+  // Only persist module-scoped keypair on the browser platform (never across SSR requests)
+  if (canCacheInBrowser) {
+    ephemeralKeyPair = generatedKeyPair;
+    publicJwk = exportedJwk;
+  }
+
+  return { keyPair: generatedKeyPair, jwk: exportedJwk };
 }
 
 function base64UrlEncode(bytes: Uint8Array): string {
@@ -115,8 +157,13 @@ export const dpopAuthInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
-  // Only attach DPoP tokens to internal API endpoints
-  if (!req.url.startsWith('/api/') && !req.url.includes('pocketgull')) {
+  // Never generate or attach browser-bound DPoP proofs during SSR
+  if (typeof window === 'undefined') {
+    return next(req);
+  }
+
+  // Only attach DPoP tokens to strict same-origin /api/ or exact pocketgull.app endpoints
+  if (!isTrustedPocketGullApiUrl(req.url)) {
     return next(req);
   }
 

@@ -7,9 +7,9 @@
  * Exposes:
  * - GET  /api/soar/status           — Live SOAR posture, IP blocklist stats, and recent receipts
  * - GET  /api/soar/playbooks        — Canonical automated playbook catalog (PG-SOP-IR-01)
- * - POST /api/soar/pubsub/webhook   — OIDC-verified Google Cloud Pub/Sub alert sink receiver
- * - POST /api/soar/execute          — Direct/Tabletop playbook execution (supports DRY_RUN)
- * - POST /api/soar/containment/reset — Dual-Custody gated reset of global containment mode
+ * - POST /api/soar/pubsub/webhook   — OIDC-verified Google Cloud Pub/Sub alert sink receiver (mandatory audience + exact SA email)
+ * - POST /api/soar/execute          — SOC/Admin auth-gated playbook execution
+ * - POST /api/soar/containment/reset — SOC/Admin auth + Cryptographic M-of-N Dual-Custody gated reset
  */
 
 import { Router, Request, Response, json as expressJson } from 'express';
@@ -23,6 +23,7 @@ import {
   IDualCustodyAttestation
 } from '../services/soar-orchestrator.service';
 import { IpBlocklistService } from '../services/ip-blocklist.service';
+import { requireAuth, isStrictProductionEnv } from '../middleware/auth-guard';
 
 const soarOAuth2Client = new OAuth2Client();
 
@@ -50,16 +51,28 @@ const VALID_PLAYBOOK_IDS = new Set<SoarPlaybookId>([
 
 /**
  * Verifies Google Cloud Pub/Sub OIDC push token in production environments.
+ * Enforces mandatory `audience` and exact Service Account email equality (never downgraded by CI=true).
  */
 export async function verifySoarPubSubOidcToken(req: Request): Promise<boolean> {
-  const isTestingEnv =
-    process.env['NODE_ENV'] === 'test' ||
-    Boolean(process.env['VITEST']) ||
-    Boolean(process.env['PLAYWRIGHT_TESTING']);
-  const isProd = (process.env['NODE_ENV'] === 'production' || Boolean(process.env['K_SERVICE'])) && !isTestingEnv;
-
-  if (!isProd) {
+  if (!isStrictProductionEnv()) {
     return true;
+  }
+
+  const expectedAudience = (
+    process.env['SOAR_PUBSUB_AUDIENCE'] ||
+    process.env['PUBSUB_WEBHOOK_AUDIENCE'] ||
+    ''
+  ).trim();
+  const expectedSaEmail = (
+    process.env['SOAR_PUBSUB_SA_EMAIL'] ||
+    process.env['PUBSUB_PUSH_SERVICE_ACCOUNT'] ||
+    'pocketgull-run@gen-lang-client-0540208645.iam.gserviceaccount.com'
+  ).trim().toLowerCase();
+
+  // Fail closed when audience is unconfigured in production
+  if (!expectedAudience) {
+    console.warn('[SOAR Pub/Sub Auth] Rejecting push request: SOAR_PUBSUB_AUDIENCE / PUBSUB_WEBHOOK_AUDIENCE is not set.');
+    return false;
   }
 
   const authHeader = req.headers['authorization'];
@@ -73,13 +86,17 @@ export async function verifySoarPubSubOidcToken(req: Request): Promise<boolean> 
   }
 
   try {
-    const expectedAudience = process.env['SOAR_PUBSUB_AUDIENCE'] || process.env['PUBSUB_WEBHOOK_AUDIENCE'];
     const ticket = await soarOAuth2Client.verifyIdToken({
       idToken,
-      ...(expectedAudience ? { audience: expectedAudience } : {})
+      audience: expectedAudience
     });
     const payload = ticket.getPayload();
-    return Boolean(payload && payload.email_verified && payload.email?.endsWith('.gserviceaccount.com'));
+    return Boolean(
+      payload &&
+      payload.email_verified &&
+      typeof payload.email === 'string' &&
+      payload.email.toLowerCase() === expectedSaEmail
+    );
   } catch (err: unknown) {
     const safeMsg = ((err as Error)?.message || 'OIDC verification error').replace(/[\r\n]/g, ' ');
     console.warn('[SOAR Pub/Sub Auth] Token verification rejected:', safeMsg);
@@ -87,10 +104,38 @@ export async function verifySoarPubSubOidcToken(req: Request): Promise<boolean> 
   }
 }
 
+function extractDualCustodyAttestation(req: Request, rawBody: Record<string, unknown>): IDualCustodyAttestation | undefined {
+  const rawDual = rawBody['dualCustody'] as Record<string, unknown> | undefined;
+  const headers = (req.headers || {}) as Record<string, unknown>;
+
+  const requestorToken =
+    (rawDual && typeof rawDual['requestorToken'] === 'string' ? rawDual['requestorToken'] : undefined) ||
+    (typeof headers['x-dual-custody-requestor-token'] === 'string' ? headers['x-dual-custody-requestor-token'] : undefined);
+  const authorizerToken =
+    (rawDual && typeof rawDual['authorizerToken'] === 'string' ? rawDual['authorizerToken'] : undefined) ||
+    (typeof headers['x-dual-custody-authorizer-token'] === 'string' ? headers['x-dual-custody-authorizer-token'] : undefined);
+  const rationale =
+    (rawDual && typeof rawDual['rationale'] === 'string' ? rawDual['rationale'] : undefined) ||
+    (typeof headers['x-dual-custody-rationale'] === 'string' ? headers['x-dual-custody-rationale'] : undefined);
+
+  if (!rawDual && !requestorToken && !authorizerToken) {
+    return undefined;
+  }
+
+  return {
+    requestorToken,
+    authorizerToken,
+    requestorRole: rawDual && typeof rawDual['requestorRole'] === 'string' ? rawDual['requestorRole'] : undefined,
+    authorizerRole: rawDual && typeof rawDual['authorizerRole'] === 'string' ? rawDual['authorizerRole'] : undefined,
+    rationale
+  };
+}
+
 function normalizeAlertPayload(
   raw: Record<string, unknown>,
   defaultSource: ISoarAlertEvent['source'],
-  fallbackIp?: string
+  fallbackIp?: string,
+  dualCustodyOverride?: IDualCustodyAttestation
 ): ISoarAlertEvent {
   const rawCategory = String(raw['eventCategory'] || 'CANARY_PROBE_SURGE') as ISoarAlertEvent['eventCategory'];
   const eventCategory: ISoarAlertEvent['eventCategory'] = VALID_EVENT_CATEGORIES.has(rawCategory)
@@ -105,13 +150,16 @@ function normalizeAlertPayload(
 
   const rawDual = raw['dualCustody'] as Record<string, unknown> | undefined;
   const dualCustody: IDualCustodyAttestation | undefined =
-    rawDual && typeof rawDual === 'object'
+    dualCustodyOverride ??
+    (rawDual && typeof rawDual === 'object'
       ? {
-          requestorRole: String(rawDual['requestorRole'] || ''),
-          authorizerRole: String(rawDual['authorizerRole'] || ''),
-          rationale: String(rawDual['rationale'] || '')
+          requestorToken: typeof rawDual['requestorToken'] === 'string' ? rawDual['requestorToken'] : undefined,
+          authorizerToken: typeof rawDual['authorizerToken'] === 'string' ? rawDual['authorizerToken'] : undefined,
+          requestorRole: typeof rawDual['requestorRole'] === 'string' ? rawDual['requestorRole'] : undefined,
+          authorizerRole: typeof rawDual['authorizerRole'] === 'string' ? rawDual['authorizerRole'] : undefined,
+          rationale: typeof rawDual['rationale'] === 'string' ? rawDual['rationale'] : undefined
         }
-      : undefined;
+      : undefined);
 
   return {
     alertId: typeof raw['alertId'] === 'string' ? raw['alertId'].slice(0, 80) : undefined,
@@ -138,9 +186,8 @@ export function createSoarRouter(): Router {
   const router = Router();
 
   const isTestingEnv =
-    process.env['NODE_ENV'] === 'test' ||
-    Boolean(process.env['VITEST']) ||
-    Boolean(process.env['PLAYWRIGHT_TESTING']);
+    !isStrictProductionEnv() &&
+    Boolean(process.env['NODE_ENV'] === 'test' || process.env['VITEST'] || process.env['PLAYWRIGHT_TESTING']);
 
   const soarRateLimiter = rateLimit({
     windowMs: 60_000,
@@ -219,9 +266,10 @@ export function createSoarRouter(): Router {
 
   /**
    * POST /api/soar/execute
-   * Direct SOC / Tabletop SOAR trigger (defaults to DRY_RUN unless explicitly set, or requires valid payload).
+   * Direct SOC / Tabletop SOAR trigger — gated behind verified SOC/Admin auth.
+   * Destructive containment actions additionally enforce cryptographic Dual-Custody verification.
    */
-  router.post('/execute', async (req: Request, res: Response) => {
+  router.post('/execute', requireAuth(['SOC', 'ADMIN']), async (req: Request, res: Response) => {
     const rawBody = (req.body || {}) as Record<string, unknown>;
     if (!rawBody['eventCategory'] && !rawBody['playbookId']) {
       res.status(400).json({
@@ -230,18 +278,16 @@ export function createSoarRouter(): Router {
       return;
     }
 
-    const callerIp = IpBlocklistService.extractClientIp(
-      req.headers as Record<string, unknown>,
-      req.socket?.remoteAddress || ''
-    );
+    const dualCustody = extractDualCustodyAttestation(req, rawBody);
+    const callerIp = IpBlocklistService.extractClientIp(req);
     const alertEvent = normalizeAlertPayload(
       {
         ...rawBody,
-        // Default manual API invocations to DRY_RUN unless explicitly requesting AUTOMATED_CONTAINMENT
         mode: rawBody['mode'] === 'AUTOMATED_CONTAINMENT' ? 'AUTOMATED_CONTAINMENT' : 'DRY_RUN'
       },
       rawBody['source'] === 'BIGQUERY_SIEM' ? 'BIGQUERY_SIEM' : 'MANUAL_SOC',
-      rawBody['offendingIp'] ? undefined : callerIp || undefined
+      rawBody['offendingIp'] ? undefined : callerIp || undefined,
+      dualCustody
     );
 
     const receipt = await SoarOrchestratorService.orchestrateAlert(alertEvent);
@@ -250,20 +296,12 @@ export function createSoarRouter(): Router {
 
   /**
    * POST /api/soar/containment/reset
-   * Resets server-side SOAR containment lockdown — strictly requires M-of-N Dual-Custody verification.
+   * Resets server-side SOAR containment lockdown — strictly requires SOC/Admin auth + cryptographic M-of-N Dual-Custody.
    */
-  router.post('/containment/reset', (req: Request, res: Response) => {
+  router.post('/containment/reset', requireAuth(['SOC', 'ADMIN']), (req: Request, res: Response) => {
     const rawBody = (req.body || {}) as Record<string, unknown>;
-    const rawDual = rawBody['dualCustody'] as Record<string, unknown> | undefined;
-    const verification = SoarOrchestratorService.verifyDualCustody(
-      rawDual
-        ? {
-            requestorRole: String(rawDual['requestorRole'] || ''),
-            authorizerRole: String(rawDual['authorizerRole'] || ''),
-            rationale: String(rawDual['rationale'] || '')
-          }
-        : undefined
-    );
+    const dualCustody = extractDualCustodyAttestation(req, rawBody);
+    const verification = SoarOrchestratorService.verifyDualCustody(dualCustody);
 
     if (!verification.verified) {
       res.status(403).json({

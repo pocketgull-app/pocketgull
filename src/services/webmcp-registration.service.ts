@@ -1,4 +1,4 @@
-import { Injectable, inject, NgZone } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { PatientStateService, BODY_PART_NAMES } from './patient-state.service';
 import { IPatient } from './patient.types';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';
@@ -114,7 +114,6 @@ export class WebMcpRegistrationService {
   private edgeVoiceService = inject(EdgeAutonomousVoiceAgentService, { optional: true });
   private driftCalibratorService = inject(ClinicalDriftCalibratorService, { optional: true });
   private wearableAcgService = inject(WearableAsymmetricGainService, { optional: true });
-  private ngZone = inject(NgZone);
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
 
@@ -212,12 +211,10 @@ export class WebMcpRegistrationService {
       execute: async (params: any) => {
         try {
           if (BODY_PART_NAMES[params.partId]) {
-            this.ngZone.run(() => {
-              this.state.selectPart(params.partId);
-              if (callbacks.onNavigateToBodyPart) {
-                callbacks.onNavigateToBodyPart(params.partId);
-              }
-            });
+            this.state.selectPart(params.partId);
+            if (callbacks.onNavigateToBodyPart) {
+              callbacks.onNavigateToBodyPart(params.partId);
+            }
             return { content: [{ type: 'text', text: `Successfully navigated to ${BODY_PART_NAMES[params.partId]}` }] };
           } else {
             throw new Error(`Invalid body part ID: ${params.partId}`);
@@ -258,11 +255,9 @@ export class WebMcpRegistrationService {
             symptoms: [],
             recommendation: params.recommendation || ''
           };
-          this.ngZone.run(() => {
-            this.state.updateIssue(params.partId, newNote);
-            this.state.selectPart(params.partId);
-            this.state.selectNote(newNoteId);
-          });
+          this.state.updateIssue(params.partId, newNote);
+          this.state.selectPart(params.partId);
+          this.state.selectNote(newNoteId);
           return { content: [{ type: 'text', text: `Successfully injected clinical note for ${partName}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to inject note: ${e.message}` }], isError: true };
@@ -286,10 +281,8 @@ export class WebMcpRegistrationService {
       },
       execute: async (params: any) => {
         try {
-          this.ngZone.run(() => {
-            this.state.requestResearchUrl(params.url);
-            this.state.toggleResearchFrame(true);
-          });
+          this.state.requestResearchUrl(params.url);
+          this.state.toggleResearchFrame(true);
           return { content: [{ type: 'text', text: `Loaded URL: ${params.url}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to load URL: ${e.message}` }], isError: true };
@@ -318,11 +311,9 @@ export class WebMcpRegistrationService {
       },
       execute: async (params: any) => {
         try {
-          this.ngZone.run(() => {
-            if (callbacks.onAddBookmark) {
-              callbacks.onAddBookmark(params);
-            }
-          });
+          if (callbacks.onAddBookmark) {
+            callbacks.onAddBookmark(params);
+          }
           return { content: [{ type: 'text', text: `Added bookmark: ${params.title}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to add bookmark: ${e.message}` }], isError: true };
@@ -347,9 +338,7 @@ export class WebMcpRegistrationService {
         try {
           const patientData = this.state.getCurrentState();
           if (params?.downloadFile) {
-            this.ngZone.run(() => {
-              this.exportService.exportCsvReport(patientData);
-            });
+            this.exportService.exportCsvReport(patientData);
           }
           const csvText = (this.exportService as any).csvStrategy.generatePatientCsv(patientData);
           return { content: [{ type: 'text', text: csvText }] };
@@ -376,9 +365,7 @@ export class WebMcpRegistrationService {
         try {
           const patientData = this.state.getCurrentState();
           if (params?.downloadFile) {
-            this.ngZone.run(() => {
-              this.exportService.exportHl7v2Report(patientData);
-            });
+            this.exportService.exportHl7v2Report(patientData);
           }
           const hl7Text = (this.exportService as any).hl7v2Strategy.generateHl7v2Message(patientData);
           return { content: [{ type: 'text', text: hl7Text }] };
@@ -514,9 +501,7 @@ export class WebMcpRegistrationService {
       execute: async () => {
         try {
           let res: { timestamp: string; purgedItemsCount: number } = { timestamp: '', purgedItemsCount: 0 };
-          this.ngZone.run(() => {
-            res = this.state.purgeTransientPatientState();
-          });
+          res = this.state.purgeTransientPatientState();
           return { content: [{ type: 'text', text: `Successfully purged ${res.purgedItemsCount} transient items at ${res.timestamp}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to purge transient patient state: ${e.message}` }], isError: true };
@@ -540,9 +525,7 @@ export class WebMcpRegistrationService {
       execute: async (params: any) => {
         try {
           let nextState = true;
-          this.ngZone.run(() => {
-            nextState = this.state.toggleEphemeralPrivacyMode(params?.enabled);
-          });
+          nextState = this.state.toggleEphemeralPrivacyMode(params?.enabled);
           return { content: [{ type: 'text', text: `Ephemeral Privacy Mode set to: ${nextState ? 'ENABLED (Strict Edge Isolation)' : 'DISABLED'}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to toggle privacy mode: ${e.message}` }], isError: true };
@@ -599,20 +582,18 @@ export class WebMcpRegistrationService {
           if (!fdi || fdi < 11 || fdi > 48) {
             throw new Error(`Invalid FDI tooth number: ${params.fdiNumber}`);
           }
-          this.ngZone.run(() => {
-            if (typeof params.probingDepthMm === 'number') {
-              this.teledentistryService.setProbingDepth(fdi, params.probingDepthMm);
+          if (typeof params.probingDepthMm === 'number') {
+            this.teledentistryService.setProbingDepth(fdi, params.probingDepthMm);
+          }
+          if (typeof params.hasBleedingOnProbing === 'boolean') {
+            const currentTooth = this.teledentistryService.teeth().find(t => t.fdiNumber === fdi);
+            if (currentTooth && currentTooth.hasBleedingOnProbing !== params.hasBleedingOnProbing) {
+              this.teledentistryService.toggleBOP(fdi);
             }
-            if (typeof params.hasBleedingOnProbing === 'boolean') {
-              const currentTooth = this.teledentistryService.teeth().find(t => t.fdiNumber === fdi);
-              if (currentTooth && currentTooth.hasBleedingOnProbing !== params.hasBleedingOnProbing) {
-                this.teledentistryService.toggleBOP(fdi);
-              }
-            }
-            if (typeof params.twiGrade === 'number' && params.twiGrade >= 0 && params.twiGrade <= 4) {
-              this.teledentistryService.setTWIGrade(fdi, params.twiGrade as any);
-            }
-          });
+          }
+          if (typeof params.twiGrade === 'number' && params.twiGrade >= 0 && params.twiGrade <= 4) {
+            this.teledentistryService.setTWIGrade(fdi, params.twiGrade as any);
+          }
           return { content: [{ type: 'text', text: `Successfully updated FDI Tooth ${fdi} periodontal status. Recalculated SIBI score: ${this.teledentistryService.sibiScore()}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to update tooth status: ${e.message}` }], isError: true };
@@ -699,9 +680,7 @@ export class WebMcpRegistrationService {
       },
       execute: async (params: any) => {
         try {
-          this.ngZone.run(() => {
-            this.moeRouter.setCustomThinkingBudget(params.enabled === false ? 0 : params.thinkingBudget);
-          });
+          this.moeRouter.setCustomThinkingBudget(params.enabled === false ? 0 : params.thinkingBudget);
           const currentConfig = this.moeRouter.currentThinkingConfig();
           return { content: [{ type: 'text', text: `Gemini 2.5 Thinking model budget updated: ${JSON.stringify(currentConfig)}` }] };
         } catch (e: any) {
@@ -1476,9 +1455,7 @@ export class WebMcpRegistrationService {
       },
       execute: async () => {
         if (this.zenService) {
-          this.ngZone.run(() => {
-            this.zenService?.openSanctuary();
-          });
+          this.zenService?.openSanctuary();
         }
         return {
           content: [
@@ -2439,17 +2416,15 @@ export class WebMcpRegistrationService {
             };
           }
 
-          this.ngZone.run(() => {
-            if (args?.mode) optical.setMode(args.mode);
-            if (args?.pbmAction === 'start') optical.startPbmSession();
-            if (args?.pbmAction === 'pause') optical.pausePbmSession();
-            if (args?.pbmAction === 'reset') optical.resetPbmSession();
-            if (args?.circadianPhase) optical.setCircadianPhase(args.circadianPhase);
-            if (args?.oknDirection) optical.updateOknDirection(args.oknDirection);
-            if (typeof args?.dichopticLeftHz === 'number' && typeof args?.dichopticRightHz === 'number') {
-              optical.updateDichopticFrequencies(args.dichopticLeftHz, args.dichopticRightHz);
-            }
-          });
+          if (args?.mode) optical.setMode(args.mode);
+          if (args?.pbmAction === 'start') optical.startPbmSession();
+          if (args?.pbmAction === 'pause') optical.pausePbmSession();
+          if (args?.pbmAction === 'reset') optical.resetPbmSession();
+          if (args?.circadianPhase) optical.setCircadianPhase(args.circadianPhase);
+          if (args?.oknDirection) optical.updateOknDirection(args.oknDirection);
+          if (typeof args?.dichopticLeftHz === 'number' && typeof args?.dichopticRightHz === 'number') {
+            optical.updateDichopticFrequencies(args.dichopticLeftHz, args.dichopticRightHz);
+          }
 
           const result = {
             activeMode: optical.activeMode(),
@@ -2510,9 +2485,7 @@ export class WebMcpRegistrationService {
 
           let cert: any = null;
           if (args?.generateCertificate) {
-            this.ngZone.run(() => {
-              cert = traj.generateVitalityCertificate();
-            });
+            cert = traj.generateVitalityCertificate();
           }
 
           const response = {
@@ -2740,15 +2713,11 @@ export class WebMcpRegistrationService {
           const flexion = typeof params?.flexionAngleDegrees === 'number' ? params.flexionAngleDegrees : undefined;
 
           if (callbacks.onSetKneeSlicingPlane) {
-            this.ngZone.run(() => {
-              callbacks.onSetKneeSlicingPlane!(plane, targetKey, flexion);
-            });
+            callbacks.onSetKneeSlicingPlane!(plane, targetKey, flexion);
           }
 
           // Also focus part in state
-          this.ngZone.run(() => {
-            this.state.selectPart('leg_left');
-          });
+          this.state.selectPart('leg_left');
 
           return {
             content: [{
@@ -2984,9 +2953,7 @@ export class WebMcpRegistrationService {
       },
       execute: async ({ patientId }: { patientId: string }) => {
         try {
-          this.ngZone.run(() => {
-            this.moeRouter.loadShiftPatient(patientId);
-          });
+          this.moeRouter.loadShiftPatient(patientId);
           const patient = this.moeRouter.activeShiftPatient();
           return {
             content: [{ type: 'text', text: `Activated clinical shift patient: ${patient?.name || patientId} (${patient?.clinicalDomain || ''}). SMoE canvas successfully routed to Top-1 primary slot: ${this.moeRouter.primaryUiExpert()?.expert.name}.` }]
@@ -4265,7 +4232,7 @@ export class WebMcpRegistrationService {
       execute: async (params: { action: 'inspect' | 'evaluate_utterance' | 'apply_steering' | 'open_hud'; utterance?: string }) => {
         try {
           if (params.action === 'open_hud') {
-            this.ngZone.run(() => this.navService?.openDriftCalibrator());
+            this.navService?.openDriftCalibrator();
           } else if (params.action === 'evaluate_utterance' && params.utterance && this.driftCalibratorService) {
             await this.driftCalibratorService.evaluateCustomUtterance(params.utterance);
           } else if (params.action === 'apply_steering' && this.driftCalibratorService) {

@@ -228,19 +228,8 @@ export interface IStatEmergencyBypassPayload {
                  </div>
                }
                
-               <!-- Top Dual Gateway Mode Tab Switcher -->
+               <!-- Top Dual Gateway Mode Tab Switcher (Ataxia-Safe Passkey/SSO First; Gesture Pad Opt-In) -->
                <div class="grid grid-cols-2 gap-1.5 p-1 bg-zinc-200/80 dark:bg-zinc-800/90 rounded-2xl border border-zinc-300/80 dark:border-zinc-700/60 text-[11px] font-bold shadow-2xs w-full max-w-[280px]">
-                 <button type="button"
-                         (click)="authGatewayTab.set('gesture')"
-                         [class.bg-white]="authGatewayTab() === 'gesture'"
-                         [class.dark:bg-zinc-700]="authGatewayTab() === 'gesture'"
-                         [class.text-emerald-700]="authGatewayTab() === 'gesture'"
-                         [class.dark:text-emerald-300]="authGatewayTab() === 'gesture'"
-                         [class.shadow-xs]="authGatewayTab() === 'gesture'"
-                         class="py-1.5 px-2 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 text-zinc-600 dark:text-zinc-400">
-                   <span>✍️</span>
-                   <span>Gesture Pad</span>
-                 </button>
                  <button type="button"
                          (click)="authGatewayTab.set('sso')"
                          [class.bg-white]="authGatewayTab() === 'sso'"
@@ -248,9 +237,20 @@ export interface IStatEmergencyBypassPayload {
                          [class.text-indigo-700]="authGatewayTab() === 'sso'"
                          [class.dark:text-indigo-300]="authGatewayTab() === 'sso'"
                          [class.shadow-xs]="authGatewayTab() === 'sso'"
-                         class="py-1.5 px-2 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 text-zinc-600 dark:text-zinc-400">
-                   <span>🔐</span>
-                   <span>Enterprise SSO</span>
+                         class="min-h-[44px] py-1.5 px-2 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 text-zinc-600 dark:text-zinc-400">
+                   <span>🔑</span>
+                   <span>Passkey &amp; SSO</span>
+                 </button>
+                 <button type="button"
+                         (click)="authGatewayTab.set('gesture')"
+                         [class.bg-white]="authGatewayTab() === 'gesture'"
+                         [class.dark:bg-zinc-700]="authGatewayTab() === 'gesture'"
+                         [class.text-emerald-700]="authGatewayTab() === 'gesture'"
+                         [class.dark:text-emerald-300]="authGatewayTab() === 'gesture'"
+                         [class.shadow-xs]="authGatewayTab() === 'gesture'"
+                         class="min-h-[44px] py-1.5 px-2 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 text-zinc-600 dark:text-zinc-400">
+                   <span>✍️</span>
+                   <span>Gesture (Opt-In)</span>
                  </button>
                </div>
 
@@ -400,15 +400,24 @@ export interface IStatEmergencyBypassPayload {
                      </span>
                    </div>
 
-                   <!-- SSO Provider Switcher Tabs -->
+                   <!-- SSO Provider Switcher Tabs (1-Click Passkey Default) -->
                    <div class="grid grid-cols-3 gap-1 p-0.5 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl text-[9.5px] font-bold">
+                     <button type="button" (click)="selectedSsoProvider.set('webauthn')"
+                             [class.bg-white]="selectedSsoProvider() === 'webauthn'"
+                             [class.dark:bg-zinc-700]="selectedSsoProvider() === 'webauthn'"
+                             [class.shadow-xs]="selectedSsoProvider() === 'webauthn'"
+                             [class.text-zinc-900]="selectedSsoProvider() === 'webauthn'"
+                             [class.dark:text-white]="selectedSsoProvider() === 'webauthn'"
+                             class="min-h-[38px] py-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
+                       Passkey
+                     </button>
                      <button type="button" (click)="selectedSsoProvider.set('google')"
                              [class.bg-white]="selectedSsoProvider() === 'google'"
                              [class.dark:bg-zinc-700]="selectedSsoProvider() === 'google'"
                              [class.shadow-xs]="selectedSsoProvider() === 'google'"
                              [class.text-zinc-900]="selectedSsoProvider() === 'google'"
                              [class.dark:text-white]="selectedSsoProvider() === 'google'"
-                             class="py-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
+                             class="min-h-[38px] py-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
                        Google IAM
                      </button>
                      <button type="button" (click)="selectedSsoProvider.set('smart-fhir')"
@@ -417,17 +426,8 @@ export interface IStatEmergencyBypassPayload {
                              [class.shadow-xs]="selectedSsoProvider() === 'smart-fhir'"
                              [class.text-zinc-900]="selectedSsoProvider() === 'smart-fhir'"
                              [class.dark:text-white]="selectedSsoProvider() === 'smart-fhir'"
-                             class="py-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
+                             class="min-h-[38px] py-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
                        FHIR EHR
-                     </button>
-                     <button type="button" (click)="selectedSsoProvider.set('webauthn')"
-                             [class.bg-white]="selectedSsoProvider() === 'webauthn'"
-                             [class.dark:bg-zinc-700]="selectedSsoProvider() === 'webauthn'"
-                             [class.shadow-xs]="selectedSsoProvider() === 'webauthn'"
-                             [class.text-zinc-900]="selectedSsoProvider() === 'webauthn'"
-                             [class.dark:text-white]="selectedSsoProvider() === 'webauthn'"
-                             class="py-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer text-center">
-                       Passkey
                      </button>
                    </div>
 
@@ -483,10 +483,30 @@ export interface IStatEmergencyBypassPayload {
                        type="button"
                        (click)="loginWithWebAuthnPasskey()"
                        [disabled]="isChecking()"
-                       class="w-full py-3 px-3 flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-sm transition active:scale-[0.98] cursor-pointer disabled:opacity-50 font-pocketgull-inter">
-                       <span>🔑 Biometric Passkey Login</span>
+                       class="w-full min-h-[44px] py-3 px-3 flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-[11px] font-bold uppercase tracking-wider shadow-sm transition active:scale-[0.98] cursor-pointer disabled:opacity-50 font-pocketgull-inter">
+                       <span>🔑 1-Click Passkey Login</span>
                      </button>
                    }
+
+                   <!-- 1-Click Synthetic Demo & Triaged Situation Entry (Zero-Drawing Ataxia Fast Path) -->
+                   <div class="grid grid-cols-1 gap-1.5 pt-1">
+                     <button
+                       type="button"
+                       (click)="enterDemoSandbox()"
+                       class="w-full min-h-[44px] px-3 py-2 flex justify-center items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 transition-all rounded-xl shadow-xs active:scale-[0.98] cursor-pointer"
+                       aria-label="Enter Synthetic Demo Sandbox without Clinical Credentials">
+                       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-teal-600 dark:text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+                       <span>Demo Mode</span>
+                     </button>
+                     <button
+                       type="button"
+                       (click)="enterTriageCommand()"
+                       class="w-full min-h-[44px] px-3 py-1.5 flex justify-center items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-300 border border-amber-500/40 transition-all rounded-xl shadow-xs active:scale-[0.98] cursor-pointer"
+                       aria-label="Enter Clinical Triage Command Center to view all patients sorted by acuity">
+                       <span class="text-xs">🚨</span>
+                       <span>Triaged Situation (All 19 Patients)</span>
+                     </button>
+                   </div>
                    
                    <div class="flex items-center justify-between text-[9px] text-zinc-500 dark:text-zinc-400 pt-1 font-pocketgull-mono border-t border-zinc-200/60 dark:border-zinc-800">
                      <span class="flex items-center gap-1">
@@ -2197,9 +2217,9 @@ export class SecureSplashComponent implements OnInit {
     this.moeRouter.applyClinicalRolePathway(pathway);
   }
 
-  // --- Enterprise Single Sign-On (SSO) State ---
+  // --- Enterprise Single Sign-On (SSO) State (1-Click Passkey default for Ataxia ergonomics) ---
   selectedIamRole = 'roles/aiplatform.user';
-  selectedSsoProvider = signal<'google' | 'smart-fhir' | 'webauthn'>('google');
+  selectedSsoProvider = signal<'google' | 'smart-fhir' | 'webauthn'>('webauthn');
 
   /**
    * 1-Click Bedside 203 DPI Thermal Label Demonstration for Hospital Kiosks
@@ -2447,9 +2467,9 @@ export class SecureSplashComponent implements OnInit {
     });
   }
 
-  // State
+  // State — default to Ataxia-safe 1-click Passkey / Demo SSO gateway (Gesture Pad is strictly opt-in)
   viewState = signal<'auth' | 'beta' | 'ethics' | 'kss' | 'signup' | 'gesture'>('gesture');
-  authGatewayTab = signal<'gesture' | 'sso'>('gesture');
+  authGatewayTab = signal<'gesture' | 'sso'>('sso');
   gestureConfidence = signal<number>(0);
   isGestureConfirmed = signal<boolean>(false);
   emergencyHoldProgress = signal<number>(0);

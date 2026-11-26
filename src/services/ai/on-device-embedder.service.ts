@@ -1,20 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { RustWasmComputeService } from './rust-wasm-compute.service';
-
-// Global declaration for Chrome experimental Built-in AI APIs
-declare global {
-  interface Window {
-    ai?: {
-      semanticEmbedder?: {
-        capabilities: () => Promise<{ available: 'readily' | 'after-download' | 'no' }>;
-        create: (options?: { outputDimensionality?: number }) => Promise<{
-          embed: (text: string) => Promise<{ embedding: Float32Array | number[] }>;
-          embedBatch?: (texts: string[]) => Promise<Array<{ embedding: Float32Array | number[] }>>;
-        }>;
-      };
-    };
-  }
-}
+import { computeFipsSha256Hex } from '../clinical-defense-guard.service';
 
 export interface ISemanticMatch<T = any> {
   id: string;
@@ -644,15 +630,44 @@ export class OnDeviceEmbedderService {
    * clinical code taxonomies without cloud API latency.
    * Generates a 21 CFR Part 11 compliant cryptographic integrity digest.
    */
+  private calibrateGroundingConfidence(denseScore: number, bm25Score: number): number {
+    const densePos = Math.max(0, denseScore);
+    const bm25Norm = Math.min(1.0, Math.max(0, bm25Score) / 8.0);
+    if (bm25Score <= 0 && densePos <= 0.05) {
+      return 0;
+    }
+    const combinedEvidence = (densePos * 0.55) + (bm25Norm * 0.45);
+    if (combinedEvidence <= 0.05) {
+      return Number(combinedEvidence.toFixed(3));
+    }
+    return Math.min(0.99, Number((1 - Math.exp(-2.6 * combinedEvidence)).toFixed(3)));
+  }
+
   async groundToClinicalTaxonomies(query: string): Promise<IClinicalTaxonomyGrounding> {
     const startTime = performance.now();
-    const searchResult = await this.matchClinicalLenses(query, 3);
+    const cleanQuery = (query || '').trim();
+    if (!cleanQuery) {
+      const defaultLens = POCKETGULL_11_CLINICAL_LENSES[0];
+      return {
+        query: '',
+        associatedLens: defaultLens.lensName,
+        confidence: 0,
+        loinc: { code: defaultLens.loincCode, name: defaultLens.loincName, confidence: 0 },
+        snomed: { id: defaultLens.snomedId, term: defaultLens.snomedTerm, confidence: 0 },
+        rxNorm: defaultLens.rxNormId
+          ? { id: defaultLens.rxNormId, name: defaultLens.rxNormName || '', confidence: 0 }
+          : undefined,
+        latencyMs: Number((performance.now() - startTime).toFixed(3)),
+        integrityDigest: this.computeTaxonomyDigest('', defaultLens)
+      };
+    }
+
+    const searchResult = await this.matchClinicalLenses(cleanQuery, 3);
     const topMatch = searchResult.matches[0];
     const topLens = topMatch ? topMatch.lens : POCKETGULL_11_CLINICAL_LENSES[0];
-    const rawScore = topMatch ? Math.max(topMatch.score, topMatch.hybridScore) : 0.70;
     const baseScore = topMatch
-      ? Math.min(0.99, Math.max(0.70, Number((0.50 + (rawScore * 0.50)).toFixed(3))))
-      : 0.75;
+      ? this.calibrateGroundingConfidence(topMatch.score, topMatch.bm25Score)
+      : 0;
 
     const grounding: IClinicalTaxonomyGrounding = {
       query,
@@ -697,11 +712,11 @@ export class OnDeviceEmbedderService {
       return {
         query: '',
         associatedLens: defaultLens.lensName,
-        confidence: 0.75,
-        loinc: { code: defaultLens.loincCode, name: defaultLens.loincName, confidence: 0.735 },
-        snomed: { id: defaultLens.snomedId, term: defaultLens.snomedTerm, confidence: 0.743 },
+        confidence: 0,
+        loinc: { code: defaultLens.loincCode, name: defaultLens.loincName, confidence: 0 },
+        snomed: { id: defaultLens.snomedId, term: defaultLens.snomedTerm, confidence: 0 },
         rxNorm: defaultLens.rxNormId
-          ? { id: defaultLens.rxNormId, name: defaultLens.rxNormName || '', confidence: 0.705 }
+          ? { id: defaultLens.rxNormId, name: defaultLens.rxNormName || '', confidence: 0 }
           : undefined,
         latencyMs: Number((performance.now() - startTime).toFixed(3)),
         integrityDigest: this.computeTaxonomyDigest('', defaultLens)
@@ -716,6 +731,7 @@ export class OnDeviceEmbedderService {
     let bestLens: IClinicalTaxonomyItem = POCKETGULL_11_CLINICAL_LENSES[0];
     let bestHybrid = -1;
     let bestDense = 0;
+    let bestBm25 = 0;
 
     for (const item of this.clinicalLensesIndex) {
       const denseScore = this.quantizedCosineSimilarity(queryQ, item.quantizedVector);
@@ -731,12 +747,12 @@ export class OnDeviceEmbedderService {
       if (hybridScore > bestHybrid) {
         bestHybrid = hybridScore;
         bestDense = denseScore;
+        bestBm25 = bm25Score;
         bestLens = item.lens;
       }
     }
 
-    const rawScore = Math.max(bestDense, bestHybrid, 0.70);
-    const baseScore = Math.min(0.99, Math.max(0.70, Number((0.50 + (rawScore * 0.50)).toFixed(3))));
+    const baseScore = this.calibrateGroundingConfidence(bestDense, bestBm25);
 
     return {
       query: cleanQuery,
@@ -766,21 +782,8 @@ export class OnDeviceEmbedderService {
    * Deterministic cryptographic-style integrity digest for FDA 21 CFR Part 11 compliance.
    */
   private computeTaxonomyDigest(query: string, lens: IClinicalTaxonomyItem): string {
-    let h1 = 0x811c9dc5;
-    let h2 = 0x9e3779b9;
     const str = `${query}::${lens.lensId}::${lens.loincCode}::${lens.snomedId}::${lens.rxNormId || 'none'}`;
-    for (let i = 0; i < str.length; i++) {
-      const ch = str.charCodeAt(i);
-      h1 ^= ch;
-      h1 = Math.imul(h1, 0x01000193);
-      h2 = Math.imul(h2 ^ ch, 0x5bd1e995);
-      h2 ^= h2 >>> 15;
-    }
-    const hex1 = (h1 >>> 0).toString(16).padStart(8, '0');
-    const hex2 = (h2 >>> 0).toString(16).padStart(8, '0');
-    const hex3 = ((h1 ^ h2) >>> 0).toString(16).padStart(8, '0');
-    const hex4 = ((Math.imul(h1, 31) + h2) >>> 0).toString(16).padStart(8, '0');
-    return `0x_biomed_${hex1}${hex2}${hex3}${hex4}`;
+    return `0x_biomed_${computeFipsSha256Hex(str)}`;
   }
 
   /**

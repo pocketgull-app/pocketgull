@@ -379,7 +379,7 @@ export class SowaRigpaTreeSpatialViewerComponent implements AfterViewInit, OnDes
 
   readonly hrv = computed(() => {
     const v = this.patientState.vitals();
-    return v?.hrv || 45;
+    return Number(v?.hrv) || 45;
   });
 
   readonly currentPulseDescriptor = computed(() => {
@@ -746,7 +746,7 @@ export class SowaRigpaTreeSpatialViewerComponent implements AfterViewInit, OnDes
     // Baseline center
     const midY = height / 2;
     const hrFreq = (hr / 60) * 2.5;
-    const hrvMod = (hrv / 100);
+    const hrvMod = (Number(hrv) / 100);
 
     // Waveform simulation (Gyushi Four Tantras Spec)
     // 1. rLung (Wind): Cyan #38bdf8 - rapid fluttering ripples + high-frequency tremolo

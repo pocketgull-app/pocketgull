@@ -110,7 +110,7 @@ export class PatientStateService {
     const age = this.patientAge() || 38;
     const vitals = this.vitals();
     const hrVal = parseFloat(vitals?.hr || '72');
-    const hrvVal = parseFloat(vitals?.hrvMs || '45');
+    const hrvVal = parseFloat(vitals?.hrvRmssd || '45');
 
     // Check athletic conditioning indicators (resting HR <= 55 with high HRV)
     const isAthletic = hrVal <= 55 && hrvVal >= 50;

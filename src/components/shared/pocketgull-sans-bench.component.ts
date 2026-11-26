@@ -96,7 +96,7 @@ export interface IClinicalDosageExample {
             class="p-2.5 rounded-xl border text-left transition flex flex-col gap-1 cursor-pointer"
           >
             <div class="flex items-center justify-between font-bold">
-              <span>Slashed Zero (Ø)</span>
+              <span>Slashed Zero (<span class="ot-slashed-zero" style="font-feature-settings: 'cv08' 1, 'zero' 1; font-variant-numeric: slashed-zero;">0</span>)</span>
               <span>{{ enableSlashedZero() ? '✓ ON' : 'OFF' }}</span>
             </div>
             <span class="text-[10px] text-zinc-400 font-sans">cv08 • 0 vs O vs D</span>
@@ -410,8 +410,8 @@ export class PocketgullSansBenchComponent implements OnInit, OnDestroy {
     {
       id: '0-O-D',
       category: 'Zero vs Letter O',
-      testChars: '0 Ø O D Q | 50 mg | 5O mg',
-      description: "Slashed zero 'Ø' (cv08/zero) ensures instant differentiation from uppercase 'O' and 'D'.",
+      testChars: '0 00 O D Q | 50 mg | 5O mg',
+      description: "OpenType slashed zero '0' (cv08/zero) ensures instant differentiation from uppercase 'O' and 'D'.",
       clinicalRisk: 'Prevents 10x overdose misreads'
     },
     {
@@ -461,7 +461,7 @@ export class PocketgullSansBenchComponent implements OnInit, OnDestroy {
       title: 'Electrolyte Additive Order',
       correct: 'KCl 20 mEq in 1000 mL D5W over 8 hrs',
       confusable: 'KCI 2O mEq in 1OOO mL DSW',
-      rationale: "Slashed zero 'Ø' and serifed 'I' in Potassium Chloride (KCl) prevent mistaking 'O' for '0'."
+      rationale: "OpenType slashed zero '0' (cv08/zero) and serifed 'I' in Potassium Chloride (KCl) prevent mistaking 'O' for '0'."
     },
     {
       title: 'Inflammatory Biomarker Cytokine',

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import { Router } from 'express';
 import { apiKeyService } from '../services/api-key.service';
 import { rateLimit } from 'express-rate-limit';
@@ -5,6 +6,7 @@ import { usageMeterService } from '../services/usage-meter.service';
 import { TIER_DEFINITIONS } from '../services/tier-config';
 import type { SubscriptionTier } from '../services/tier-config';
 import { Firestore } from '@google-cloud/firestore';
+import { requireAuth, type IAuthenticatedRequest } from '../middleware/auth-guard';
 
 export function createApiKeysRouter() {
   const router = Router();
@@ -12,58 +14,69 @@ export function createApiKeysRouter() {
   const limiter = rateLimit({
     windowMs: 60 * 1000,
     max: 30,
+    validate: { trustProxy: false },
     message: { error: 'Too many requests for API key management.' }
   });
 
   router.use(limiter);
+  // Strictly enforce verified clinician/admin authentication on all API key management routes
+  router.use(requireAuth(['CLINICIAN']));
 
-  const getTenantId = (req: any) => {
-    // Mocking tenant resolution for now. In real app, decode JWT.
-    const tenantId = req.headers['x-tenant-id'] || 'demo-tenant-123';
-    return typeof tenantId === 'string' ? tenantId : 'demo-tenant-123';
+  // Derive tenantId strictly from verified cryptographic auth principal — NEVER trust raw X-Tenant-Id header
+  const getVerifiedTenantId = (req: IAuthenticatedRequest): string => {
+    const tenantId = req.auth?.tenantId;
+    if (!tenantId || typeof tenantId !== 'string') {
+      throw new Error('Missing verified tenant identity.');
+    }
+    return tenantId;
   };
 
-  router.get('/', async (req, res) => {
+  router.get('/', async (req: IAuthenticatedRequest, res) => {
     try {
-      const tenantId = getTenantId(req);
+      const tenantId = getVerifiedTenantId(req);
       const keys = await apiKeyService.listKeys(tenantId);
-      res.json(keys);
-    } catch (err: any) {
-      console.error('[API Keys] Error listing keys:', err.message);
+      // Defense-in-depth: strip any keyHash property if present
+      const sanitizedKeys = keys.map((k) => {
+        const { keyHash: _omitted, ...rest } = k as Record<string, unknown>;
+        return rest;
+      });
+      res.json(sanitizedKeys);
+    } catch (err: unknown) {
+      console.error('[API Keys] Error listing keys:', (err as Error)?.message);
       res.status(500).json({ error: 'Failed to list API keys' });
     }
   });
 
-  router.post('/generate', async (req, res) => {
+  router.post('/generate', async (req: IAuthenticatedRequest, res) => {
     try {
-      const tenantId = getTenantId(req);
-      const { name } = req.body;
-      
+      const tenantId = getVerifiedTenantId(req);
+      const { name } = req.body || {};
+
       if (!name || typeof name !== 'string' || name.trim().length === 0) {
         return res.status(400).json({ error: 'A name is required for the API key.' });
       }
 
-      const result = await apiKeyService.generateKey(tenantId, name.trim());
+      const result = await apiKeyService.generateKey(tenantId, name.trim().slice(0, 120));
       res.status(201).json(result);
-    } catch (err: any) {
-      console.error('[API Keys] Error generating key:', err.message);
+    } catch (err: unknown) {
+      console.error('[API Keys] Error generating key:', (err as Error)?.message);
       res.status(500).json({ error: 'Failed to generate API key' });
     }
   });
 
-  router.delete('/:keyId', async (req, res) => {
+  router.delete('/:keyId', async (req: IAuthenticatedRequest, res) => {
     try {
-      const tenantId = getTenantId(req);
-      const { keyId } = req.params;
-      
+      const tenantId = getVerifiedTenantId(req);
+      const keyId = String(req.params['keyId'] || '');
+
       const success = await apiKeyService.revokeKey(keyId, tenantId);
       if (success) {
         res.json({ success: true, message: 'API key revoked successfully.' });
       } else {
         res.status(404).json({ error: 'Key not found or already revoked.' });
       }
-    } catch (err: any) {
-      console.error('[API Keys] Error revoking key:', err.message);
+    } catch (err: unknown) {
+      console.error('[API Keys] Error revoking key:', (err as Error)?.message);
       res.status(500).json({ error: 'Failed to revoke API key' });
     }
   });
@@ -78,9 +91,9 @@ export function createApiKeysRouter() {
   }
 
   /** GET /api/keys/usage — Current month usage + quota for authenticated tenant */
-  router.get('/usage', async (req, res) => {
+  router.get('/usage', async (req: IAuthenticatedRequest, res) => {
     try {
-      const tenantId = getTenantId(req);
+      const tenantId = getVerifiedTenantId(req);
       const usage = await usageMeterService.getUsage(tenantId);
 
       // Fetch tenant tier from Firestore
@@ -113,21 +126,21 @@ export function createApiKeysRouter() {
         },
         upgradeUrl: tier !== 'institution' ? '/api/billing/checkout' : null
       });
-    } catch (err: any) {
-      console.error('[API Keys] Error fetching usage:', err.message);
+    } catch (err: unknown) {
+      console.error('[API Keys] Error fetching usage:', (err as Error)?.message);
       res.status(500).json({ error: 'Failed to fetch usage data' });
     }
   });
 
   /** GET /api/keys/usage/history — Last 6 months usage trend */
-  router.get('/usage/history', async (req, res) => {
+  router.get('/usage/history', async (req: IAuthenticatedRequest, res) => {
     try {
-      const tenantId = getTenantId(req);
-      const months = Math.min(parseInt(String(req.query['months'] || '6'), 10), 12);
+      const tenantId = getVerifiedTenantId(req);
+      const months = Math.min(Math.max(1, parseInt(String(req.query['months'] || '6'), 10) || 6), 12);
       const history = await usageMeterService.getUsageHistory(tenantId, months);
       res.json({ tenantId, history });
-    } catch (err: any) {
-      console.error('[API Keys] Error fetching usage history:', err.message);
+    } catch (err: unknown) {
+      console.error('[API Keys] Error fetching usage history:', (err as Error)?.message);
       res.status(500).json({ error: 'Failed to fetch usage history' });
     }
   });

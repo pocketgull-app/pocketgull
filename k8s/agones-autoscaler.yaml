@@ -8,6 +8,6 @@ spec:
   policy:
     type: Buffer
     buffer:
-      bufferSize: 2 # keep 2 Ready pods in reserve when active
+      bufferSize: 0 # true idle scale-to-zero (FinOps GreenOps invariant)
       minReplicas: 0 # scales to 0 when idle to eliminate baseline compute charges
       maxReplicas: 20

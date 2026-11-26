@@ -84,8 +84,8 @@ export class GAAPAccountingService {
       periodStart,
       periodEnd,
       tierName,
-      endowmentFund = 'Alumni Health & Research Endowment',
-      revenueSplit = '50-30-20'
+      endowmentFund = 'PocketGull Seven Generations Tribal & Public Health Fund',
+      revenueSplit = '85-10-5'
     } = params;
 
     const netCash = Math.round((amountGrossUsd - stripeFeeUsd) * 100) / 100;
@@ -141,14 +141,28 @@ export class GAAPAccountingService {
     });
 
     const journalDoc = this.ledgerCollection.doc();
-    const journalEntry: IJournalEntry = {
-      entryDate: Timestamp.fromDate(new Date()),
+    const entryDateIso = new Date().toISOString();
+    const memo = `ASC 606 subscription billing recognition for ${tenantId} (${tierName})`;
+    const sealPreImage = JSON.stringify({
+      entryDateIso,
       referenceId,
       tenantId,
       source: 'stripe_invoice',
       lines,
-      memo: `ASC 606 subscription billing recognition for ${tenantId} (${tierName})`,
+      memo,
+      totalAmount: amountGrossUsd
+    });
+    const integritySealSha256 = createHash('sha256').update(sealPreImage, 'utf8').digest('hex');
+
+    const journalEntry: IJournalEntry = {
+      entryDate: Timestamp.fromDate(new Date(entryDateIso)),
+      referenceId,
+      tenantId,
+      source: 'stripe_invoice',
+      lines,
+      memo,
       totalAmount: amountGrossUsd,
+      integritySealSha256,
       createdAt: Timestamp.now()
     };
 

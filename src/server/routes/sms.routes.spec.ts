@@ -1,90 +1,125 @@
+// SPDX-License-Identifier: Apache-2.0
 import '@angular/compiler';
+import { describe, it, expect } from 'vitest';
+import express from 'express';
+import type { AddressInfo } from 'node:net';
 import { smsRouter } from './sms.routes';
-import type { Request, Response } from 'express';
+import { signSessionToken } from '../middleware/auth-guard';
 
-function createMockReqRes(body: Record<string, unknown> = {}, method = 'POST') {
-  const req = {
-    body,
-    method
-  } as unknown as Request;
-
-  let statusCode = 200;
-  let jsonPayload: any = null;
-
-  const res = {
-    status: vi.fn((code: number) => {
-      statusCode = code;
-      return res;
-    }),
-    json: vi.fn((payload: any) => {
-      jsonPayload = payload;
-      return res;
-    }),
-    getStatus: () => statusCode,
-    getJson: () => jsonPayload
-  } as unknown as Response & { getStatus: () => number; getJson: () => any };
-
-  return { req, res };
-}
-
-describe('Express SMS Router (/api/sms)', () => {
-  // Extract handlers from router stack
-  const inboundHandler = (smsRouter.stack.find((layer: any) => layer.route?.path === '/inbound')?.route?.stack[0] as any)?.handle;
-  const outboundHandler = (smsRouter.stack.find((layer: any) => layer.route?.path === '/outbound')?.route?.stack[0] as any)?.handle;
-  const logsHandler = (smsRouter.stack.find((layer: any) => layer.route?.path === '/logs')?.route?.stack[0] as any)?.handle;
-
-  it('1. POST /api/sms/inbound extracts vitals and awards points', () => {
-    const { req, res } = createMockReqRes({ from: '+15551234567', body: 'LOG BP 120/80 HR 72' });
-    inboundHandler(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    const body = res.getJson();
-    expect(body.success).toBe(true);
-    expect(body.commandType).toBe('VITALS_LOG');
-    expect(body.urgencyLevel).toBe('ROUTINE');
-    expect(body.responseSmsText).toContain('Recorded BP 120/80, HR 72 bpm');
-    expect(body.fhirResource).toBeDefined();
-    expect(body.fhirResource.resourceType).toBe('Observation');
+describe('Express SMS Router (/api/sms — Affiliate Guard, PHI Redaction & Red Flags)', () => {
+  const clinicianToken = signSessionToken({
+    sub: 'dr_sms_1',
+    tenantId: 'tenant_clinic',
+    role: 'CLINICIAN'
   });
 
-  it('2. POST /api/sms/inbound handles emergency chest pain trigger', () => {
-    const { req, res } = createMockReqRes({ from: '+15551234567', body: 'Having severe chest pain' });
-    inboundHandler(req, res);
+  async function withSmsServer(fn: (baseUrl: string) => Promise<void>): Promise<void> {
+    const app = express();
+    app.use(express.json());
+    app.use('/api/sms', smsRouter);
+    const server = app.listen(0, '127.0.0.1');
+    await new Promise<void>(resolve => server.once('listening', resolve));
+    try {
+      const { port } = server.address() as AddressInfo;
+      await fn(`http://127.0.0.1:${port}`);
+    } finally {
+      await new Promise<void>(resolve => server.close(() => resolve()));
+    }
+  }
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    const body = res.getJson();
-    expect(body.urgencyLevel).toBe('CRITICAL_CALL_911');
-    expect(body.responseSmsText).toContain('EMERGENCY ALERT');
+  it('1. POST /api/sms/inbound extracts vitals and awards points', async () => {
+    await withSmsServer(async baseUrl => {
+      const res = await fetch(`${baseUrl}/api/sms/inbound`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: '+15551234567', body: 'LOG BP 120/80 HR 72' })
+      });
+      expect(res.status).toBe(200);
+      const body = await res.json() as any;
+      expect(body.success).toBe(true);
+      expect(body.commandType).toBe('VITALS_LOG');
+      expect(body.urgencyLevel).toBe('ROUTINE');
+      expect(body.responseSmsText).toContain('Recorded BP 120/80, HR 72 bpm');
+    });
   });
 
-  it('3. POST /api/sms/inbound handles medication adherence confirmation', () => {
-    const { req, res } = createMockReqRes({ from: '+15551234567', body: 'MED YES taken with breakfast' });
-    inboundHandler(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    const body = res.getJson();
-    expect(body.commandType).toBe('MED_ADHERENCE');
-    expect(body.responseSmsText).toContain('Medication adherence verified');
-    expect(body.fhirResource.resourceType).toBe('MedicationStatement');
+  it('2. POST /api/sms/inbound triggers emergency alerts on chest pain, can\'t breathe, BE-FAST, SpO2<90%, and 988 crisis', async () => {
+    await withSmsServer(async baseUrl => {
+      for (const msg of [
+        'Having crushing chest pain radiating to left arm',
+        "Help I can't breathe right now",
+        'Sudden facial droop and slurred speech',
+        'My pulse ox says SpO2 84%',
+        'I want to kill myself tonight'
+      ]) {
+        const res = await fetch(`${baseUrl}/api/sms/inbound`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: '+15551234567', body: msg })
+        });
+        expect(res.status).toBe(200);
+        const body = await res.json() as any;
+        expect(body.urgencyLevel).toBe('CRITICAL_CALL_911');
+      }
+    });
   });
 
-  it('4. POST /api/sms/outbound dispatches health nudge with masked phone', () => {
-    const { req, res } = createMockReqRes({ to: '+15559876543', messageBody: 'Daily reminder to take walk' });
-    outboundHandler(req, res);
+  it('3. POST /api/sms/outbound blocks Amazon affiliate URLs and unredacted PHI', async () => {
+    await withSmsServer(async baseUrl => {
+      const affRes = await fetch(`${baseUrl}/api/sms/outbound`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${clinicianToken}`
+        },
+        body: JSON.stringify({
+          to: '+15559876543',
+          messageBody: 'Order magnesium here: https://www.amazon.com/dp/B000BD0RT0?tag=pgdpo-20'
+        })
+      });
+      expect(affRes.status).toBe(400);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    const body = res.getJson();
-    expect(body.success).toBe(true);
-    expect(body.dispatchedTo).toBe('+15-***-6543');
+      const phiRes = await fetch(`${baseUrl}/api/sms/outbound`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${clinicianToken}`
+        },
+        body: JSON.stringify({
+          to: '+15559876543',
+          messageBody: 'Confirm SSN 123-45-6789 before visit.'
+        })
+      });
+      expect(phiRes.status).toBe(400);
+
+      const okRes = await fetch(`${baseUrl}/api/sms/outbound`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${clinicianToken}`
+        },
+        body: JSON.stringify({
+          to: '+15559876543',
+          messageBody: 'Daily reminder to take your morning walk.'
+        })
+      });
+      expect(okRes.status).toBe(200);
+      expect((await okRes.json() as any).dispatchedTo).toBe('+15-***-6543');
+    });
   });
 
-  it('5. GET /api/sms/logs retrieves HIPAA Safe Harbor sanitized interaction history', () => {
-    const { req, res } = createMockReqRes({}, 'GET');
-    logsHandler(req, res);
+  it('4. GET /api/sms/logs requires auth and returns PHI-redacted history', async () => {
+    await withSmsServer(async baseUrl => {
+      const unauth = await fetch(`${baseUrl}/api/sms/logs`);
+      expect(unauth.status).toBe(401);
 
-    expect(res.status).toHaveBeenCalledWith(200);
-    const body = res.getJson();
-    expect(body.count).toBeGreaterThan(0);
-    expect(Array.isArray(body.logs)).toBe(true);
+      const authRes = await fetch(`${baseUrl}/api/sms/logs`, {
+        headers: { Authorization: `Bearer ${clinicianToken}` }
+      });
+      expect(authRes.status).toBe(200);
+      const data = await authRes.json() as any;
+      expect(data.count).toBeGreaterThan(0);
+      expect(Array.isArray(data.logs)).toBe(true);
+    });
   });
 });

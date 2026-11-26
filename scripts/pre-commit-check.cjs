@@ -110,11 +110,7 @@ console.log('🔹 Running: Markdown Image Reference validation...');
 let mdFilesCount = 0;
 let errorsCount = 0;
 
-// Resolve appDataDir artifact path
-const userProfile = process.env.USERPROFILE || process.env.HOME || '';
-const brainDir = path.join(userProfile, '.gemini', 'antigravity', 'brain');
-
-// Collect all markdown files from the workspace and active brain folder
+// Collect modified markdown files strictly within this repository (never scan host ~/.gemini)
 const filesToCheck = [];
 
 function walkDir(dir, filter, list) {
@@ -130,17 +126,6 @@ function walkDir(dir, filter, list) {
       }
     } else if (filePath.endsWith(filter)) {
       list.push(filePath);
-    }
-  }
-}
-
-// Add current brain conversation markdown files (if any exist)
-if (fs.existsSync(brainDir)) {
-  const conversations = fs.readdirSync(brainDir);
-  for (const conv of conversations) {
-    const convPath = path.join(brainDir, conv);
-    if (fs.statSync(convPath).isDirectory() && !conv.startsWith('.')) {
-      walkDir(convPath, '.md', filesToCheck);
     }
   }
 }
@@ -337,19 +322,12 @@ if (secretsCount > 0) {
   console.log('✅ Secret / Credential Leak check passed.\n');
 }
 
-// Check 5: Python PHI / PII & Secret Compliance Scan
-let pythonCmd = 'python3';
-if (process.platform === 'win32') {
-  const possiblePaths = [
-    path.join(workspaceRoot, '.venv', 'Scripts', 'python.exe'),
-    path.join(process.env.USERPROFILE || '', 'anaconda3', 'python.exe'),
-    'python'
-  ];
-  for (const p of possiblePaths) {
-    if (fs.existsSync(p)) {
-      pythonCmd = `"${p}"`;
-      break;
-    }
+// Check 5: Python Sidecar PHI / Test Verification
+const pyRunnerScript = path.resolve(workspaceRoot, 'scripts/run-python-tests.mjs');
+if (fs.existsSync(pyRunnerScript)) {
+  const pyPassed = runNodeScript(pyRunnerScript, [], 'Python FastAPI Sidecar Test Suite');
+  if (!pyPassed) {
+    process.exit(1);
   }
 }
 // Check 6: Sentinel Network Egress & High-Entropy Security Guard
@@ -362,7 +340,7 @@ if (!sentinelPassed) {
 // Check 7: Monorepo Package Boundary Validation
 console.log('🔹 Running: Monorepo Package Boundary validation...');
 let boundaryViolations = 0;
-const workspacePackages = ['companion-apps', 'pocketgull_api', 'docs'];
+const workspacePackages = ['packages', 'companion-apps', 'pocketgull_api', 'docs'];
 
 for (const pkg of workspacePackages) {
   const pkgDir = path.join(workspaceRoot, pkg);

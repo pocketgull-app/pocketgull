@@ -2,6 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
 import { ClinicalBiologicalAgeTwinService } from './clinical-biological-age-twin.service';
 import { IPatientVitals } from './patient.types';
+import { computeFipsSha256Hex } from './clinical-defense-guard.service';
 
 export type TrajectoryPersona = 'clinician' | 'patient';
 
@@ -135,8 +136,17 @@ export class ClinicalTrajectoryReaderService {
       }
     ];
 
+    const activeAge = this.patientState?.patientAge?.() || 34;
+    const activeGender = this.patientState?.patientGender?.() || 'Unspecified';
+    const activePatientId = this.patientState?.patientId?.() || 'SAFE-HARBOR-SUBJECT';
+    const rawPatientName = (this.patientState?.patientName?.() || '').trim();
+    const safeAgeDisplay = activeAge > 89 ? '90+' : `${activeAge}y`;
+    const activePatientName = rawPatientName
+      ? `${rawPatientName} (${activeGender}, ${safeAgeDisplay})`
+      : `Safe Harbor Subject ${activePatientId} (${activeGender}, ${safeAgeDisplay})`;
+
     const bioEval = this.biologicalAgeTwin?.calculatePhenoAge({
-      chronologicalAge: 34,
+      chronologicalAge: activeAge,
       albumin: 4.5,
       creatinine: 0.82,
       glucose: 88,
@@ -150,8 +160,8 @@ export class ClinicalTrajectoryReaderService {
       systolicBp: parseInt((vitals.bloodPressure || '120/80').split('/')[0], 10) || 120,
       restingHr: parseInt(String(vitals.heartRate), 10) || 72
     }) || {
-      chronologicalAge: 34,
-      biologicalPhenoAge: 31.8,
+      chronologicalAge: activeAge,
+      biologicalPhenoAge: Math.max(18, activeAge - 2.2),
       ageDelta: -2.2,
       tenYearMortalityRisk: 0.011,
       mortalityHazardRatio: 0.82,
@@ -220,8 +230,8 @@ export class ClinicalTrajectoryReaderService {
     const digestSeal = this.computeDigest(pastFoundation, presentFulcrum, futureHorizon);
 
     return {
-      patientId: 'P001',
-      patientName: 'Sarah Lin (Homo Sapiens, Female, 34y)',
+      patientId: activePatientId,
+      patientName: activePatientName,
       persona: activePersona,
       pastFoundation,
       presentFulcrum,
@@ -236,8 +246,18 @@ export class ClinicalTrajectoryReaderService {
     };
   }
 
+  private escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   /**
-   * Transforms plain text into fixation-anchored Bionic Speed Reading HTML
+   * Transforms plain text into fixation-anchored Bionic Speed Reading HTML.
+   * Strictly escapes HTML entities before wrapping fixation prefixes in <strong> to prevent XSS.
    */
   toBionicHtml(text: string): string {
     if (!text) return '';
@@ -245,7 +265,10 @@ export class ClinicalTrajectoryReaderService {
     return words.map(word => {
       if (/^\s+$/.test(word)) return word;
       const parsed = this.parseBionicWord(word);
-      return `${parsed.prefix}<strong class="font-extrabold text-zinc-900 dark:text-zinc-50">${parsed.fixation}</strong>${parsed.suffix}`;
+      const safePrefix = this.escapeHtml(parsed.prefix);
+      const safeFixation = this.escapeHtml(parsed.fixation);
+      const safeSuffix = this.escapeHtml(parsed.suffix);
+      return `${safePrefix}<strong class="font-extrabold text-zinc-900 dark:text-zinc-50">${safeFixation}</strong>${safeSuffix}`;
     }).join('');
   }
 
@@ -312,7 +335,20 @@ export class ClinicalTrajectoryReaderService {
   /**
    * Serializes Trajectory into a standard HL7 FHIR R4 CarePlan Resource
    */
-  exportFhirCarePlan(): Record<string, any> {
+  exportFhirCarePlan(): {
+    resourceType: 'CarePlan';
+    id: string;
+    status: string;
+    intent: string;
+    subject: { reference: string; display: string };
+    period: { start: string; end: string };
+    title: string;
+    description: string;
+    category: Array<{ coding: Array<{ system: string; code: string; display: string }> }>;
+    goal: Array<{ display: string }>;
+    activity: Array<{ detail: { status: string; description: string } }>;
+    meta: { lastUpdated: string; tag: Array<{ system: string; code: string }> };
+  } {
     const profile = this.getTrajectoryProfile('clinician');
     return {
       resourceType: 'CarePlan',
@@ -386,11 +422,6 @@ export class ClinicalTrajectoryReaderService {
 
   private computeDigest(past: ITrajectoryNode[], pres: ITrajectoryNode[], fut: ITrajectoryNode[]): string {
     const raw = JSON.stringify({ past, pres, fut });
-    let hash = 0x811c9dc5;
-    for (let i = 0; i < raw.length; i++) {
-      hash ^= raw.charCodeAt(i);
-      hash = Math.imul(hash, 0x01000193);
-    }
-    return `sha256-traj-${(hash >>> 0).toString(16).padStart(8, '0')}`;
+    return `sha256-traj-${computeFipsSha256Hex(raw)}`;
   }
 }

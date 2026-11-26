@@ -1,9 +1,9 @@
-import { Component, ChangeDetectionStrategy, inject, computed, signal, viewChild, ElementRef, afterNextRender, effect, ChangeDetectorRef, untracked, OnDestroy, NgZone, HostListener, WritableSignal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, Injector, computed, signal, viewChild, ElementRef, afterNextRender, effect, ChangeDetectorRef, untracked, OnDestroy, DestroyRef, HostListener } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClinicalIcons } from './assets/clinical-icons';
-import { PatientDropdownComponent } from './components/patient-dropdown.component';
-import { PatientStateService, BODY_PART_NAMES } from './services/patient-state.service';
+import { PatientStateService } from './services/patient-state.service';
 import { ResearchFrameComponent } from './components/research-frame.component';
 import { MedicalChartComponent } from './components/medical-chart.component';
 import { AnalysisContainerComponent } from './components/analysis-container.component';
@@ -14,24 +14,21 @@ import { VisitReviewComponent } from './components/visit-review.component';
 import { VoiceAssistantComponent } from './components/voice-assistant.component';
 import { getStoredApiKey, setStoredApiKey } from './services/secure-key';
 import { SecureStorageService } from './services/secure-storage.service';
-import { AI_CONFIG, IAiProviderConfig } from './services/ai-provider.types';
-import { IntelligenceProviderToken } from './services/ai/intelligence.provider.token';
-import { GeminiProvider } from './services/ai/gemini.provider';
+import { AI_CONFIG } from './services/ai-provider.types';
 import { ClinicalIntelligenceService, AnalysisLens } from './services/clinical-intelligence.service';
 import { PatientManagementService } from './services/patient-management.service';
 import { HistoryEntry, IPatient } from './services/patient.types';
 import { ThemeService, AppTheme } from './services/theme.service';
 import { NetworkStateService } from './services/network-state.service';
-import { HardwareTelemetryService } from './services/hardware/hardware-telemetry.service';
-import { ExportService } from './services/export.service';
+import type { ExportService } from './services/export.service';
 import { RevealDirective } from './directives/reveal.directive';
-import { DEMO_ANALYSIS_REPORT_WESTERN } from './demo-data';
 import { p_charles_darwin } from './mock-patients/p_charles_darwin';
 import { PatientDirectoryComponent } from './components/patient-directory.component';
 import { FhirCallbackComponent } from './components/fhir-callback.component';
 import { WalkthroughTourComponent } from './components/walkthrough-tour.component';
 import { WalkthroughTourService } from './services/walkthrough-tour.service';
-import { SecureSplashComponent, IStatEmergencyBypassPayload } from './components/secure-splash.component';
+import { SecureSplashComponent } from './components/secure-splash.component';
+import type { IStatEmergencyBypassPayload } from './components/secure-splash.component';
 import { SessionStateService } from './services/session-state.service';
 import { resolveEmergencyProtocolDescriptor } from './services/emergency-protocol';
 import { RulesEngineService } from './services/rules-engine.service';
@@ -39,11 +36,9 @@ import { ClinicalMoERouterService } from './services/clinical-moe-router.service
 import { PocketGullInputComponent } from './components/shared/pocket-gull-input.component';
 import { ClinicalCdsDisclaimerBannerComponent } from './components/clinical-cds-disclaimer-banner.component';
 
-import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
-import { WebMcpRegistrationService } from './services/webmcp-registration.service';
+import type { WebMcpRegistrationService } from './services/webmcp-registration.service';
 import { PetAuditoryService } from './services/pet-auditory.service';
 import { StressInterventionService } from './services/stress-intervention.service';
-import { CollaborationService } from './services/collaboration.service';
 import { GamificationService } from './services/gamification.service';
 import { SwUpdate, VersionEvent } from '@angular/service-worker';
 import { FitbitService } from './services/hardware/fitbit.service';
@@ -93,7 +88,6 @@ import { CmsRpmSuperbillModalComponent } from './components/modals/cms-rpm-super
 import { ClinicalTrajectoryReaderModalComponent } from './components/modals/clinical-trajectory-reader-modal.component';
 import { ClinicalPosologyCalculatorComponent } from './components/clinical-posology-calculator.component';
 import { AustereResearchHudComponent } from './components/austere-research-hud/austere-research-hud.component';
-import { AppLicensingGuardService } from './services/app-licensing-guard.service';
 import { DocDrillDrawerComponent } from './components/shared/doc-drill-drawer.component';
 import { CollaborationDockComponent } from './components/collaboration-dock.component';
 import { KneeHologramHudComponent } from './components/knee-hologram-hud.component';
@@ -144,9 +138,6 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
 @Component({
   selector: 'app-root',
   standalone: true,
-  host: {
-    'ngSkipHydration': 'true'
-  },
   imports: [
     CommonModule,
     FormsModule,
@@ -258,7 +249,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
 
-    <app-onboarding-tour-overlay></app-onboarding-tour-overlay>
+    @defer (on idle) {
+      <app-onboarding-tour-overlay></app-onboarding-tour-overlay>
+    }
 
     <!-- ACM §1.6: First-run informed consent (exempt during active STAT Good Samaritan emergency) -->
     @if (!showSplash() && !consentService.hasConsented() && !state.isEmergencyMode()) {
@@ -325,9 +318,15 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       }
 
       <!-- Zero-Knowledge Encrypted Vault Modal, SMART on FHIR Modal & Global Health Modal -->
-      <app-encrypted-vault-modal #vaultModal></app-encrypted-vault-modal>
-      <app-smart-fhir-sync-modal #fhirModal></app-smart-fhir-sync-modal>
-      <app-global-health-initiatives-modal #globalHealthModal></app-global-health-initiatives-modal>
+      @defer (on idle; when vaultModalRequested()) {
+        <app-encrypted-vault-modal #vaultModal></app-encrypted-vault-modal>
+      }
+      @defer (on idle; when fhirModalRequested()) {
+        <app-smart-fhir-sync-modal #fhirModal></app-smart-fhir-sync-modal>
+      }
+      @defer (on idle; when globalHealthModalRequested()) {
+        <app-global-health-initiatives-modal #globalHealthModal></app-global-health-initiatives-modal>
+      }
 
       <!-- Practice Commercialization & Practice Growth Hub Modal -->
       @if (navShell.showCommercialHubModal()) {
@@ -399,7 +398,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       }
 
       <!-- NIST SP 800-63B FIDO2 Passkey Step-Up Challenge Modal -->
-      <app-passkey-step-up-modal></app-passkey-step-up-modal>
+      @defer (on idle) {
+        <app-passkey-step-up-modal></app-passkey-step-up-modal>
+      }
 
       <!-- Institutional Statutory Compliance Certificate Modal (HIPAA, FDA, NIST, MSA) -->
       @if (navShell.showComplianceCertificateModal()) {
@@ -590,16 +591,22 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       }
       
       @if (showSplash()) {
-        <app-secure-splash
-          [apiKeyError]="apiKeyError()"
-          [hasApiKey]="hasApiKey()"
-          (submitKey)="apiKeyInput.set($event); submitApiKey()"
-          (loadDemo)="loadDemoMode()"
-          (unlockSession)="handleUnlockSession()"
-          (selectAiStudio)="selectKey()"
-          (emergencyBypass)="handleEmergencyBypass($event)"
-          (openTriageRoster)="handleOpenTriageRoster()">
-        </app-secure-splash>
+        @defer (on immediate) {
+          <app-secure-splash
+            [apiKeyError]="apiKeyError()"
+            [hasApiKey]="hasApiKey()"
+            (submitKey)="apiKeyInput.set($event); submitApiKey()"
+            (loadDemo)="loadDemoMode()"
+            (unlockSession)="handleUnlockSession()"
+            (selectAiStudio)="selectKey()"
+            (emergencyBypass)="handleEmergencyBypass($event)"
+            (openTriageRoster)="handleOpenTriageRoster()">
+          </app-secure-splash>
+        } @placeholder {
+          <div class="min-h-[100dvh] w-full bg-[#0d090b] text-[#ede3d2] flex items-center justify-center font-mono text-xs uppercase tracking-widest">
+            PocketGull Clinical Cockpit
+          </div>
+        }
       } @else {
         @if (state.isEmergencyMode()) {
           <main [attr.dir]="uiI18n.isRtl() ? 'rtl' : 'ltr'" [attr.lang]="uiI18n.activeLanguageCode()" class="flex-1 flex flex-col min-w-0 min-h-0 relative bg-zinc-950 text-zinc-100 overflow-hidden font-pocketgull-inter">
@@ -813,9 +820,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
             (openDocsStudy)="showDocsStudy.set(true)"
             (openSupportTicket)="showSupportTicketModal.set(true)"
             (openComplianceCertificate)="navShell.openComplianceCertificate()"
-            (openEncryptedVault)="vaultModal.open()"
-            (openSmartFhirSync)="fhirModal.open()"
-            (openGlobalHealth)="globalHealthModal.open()"
+            (openEncryptedVault)="openEncryptedVaultModal()"
+            (openSmartFhirSync)="openSmartFhirSyncModal()"
+            (openGlobalHealth)="openGlobalHealthModal()"
             (openArticles)="showArticlesModal.set(true)"
             (openPatentClaims)="showPatentClaimsModal.set(true)"
             (openSmartHealthPass)="showSmartHealthPassModal.set(true)"
@@ -962,7 +969,7 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                     [class.tab-fade-enter]="mobileActiveTab() === 'tasks'">
                   @if (state.selectedPartId()) {
                     <div id="tour-intake-form" class="flex-1 min-h-0 overflow-hidden rounded-xl shadow-sm border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-                      @defer {
+                      @defer (on immediate) {
                         <app-intake-form appReveal></app-intake-form>
                       } @placeholder {
                         <div class="h-full flex items-center justify-center text-zinc-400 text-xs uppercase tracking-widest font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 m-4 rounded-xl">{{ 'Loading Intake...' | pgT:'app.loading_intake' }}</div>
@@ -1027,31 +1034,6 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
               @if (state.liveAgentWindowMode() !== 'minimized') {
                 <div class="fixed inset-0 z-[99] bg-black/10 dark:bg-black/30 backdrop-blur-[2px] animate-in fade-in" (click)="state.setLiveAgentWindowMode('minimized')"></div>
               }
-              
-              <!-- Animation Styles for Folding -->
-              <style>
-                @keyframes origami-unfold {
-                    0% { transform: scaleY(0.1) rotateX(80deg) rotateZ(-10deg); opacity: 0; }
-                    60% { transform: scaleY(1.1) rotateX(-15deg) rotateZ(5deg); opacity: 1; }
-                    100% { transform: scaleY(1) rotateX(0deg) rotateZ(0deg); opacity: 1; }
-                }
-                @keyframes fly-out-pocket {
-                    0% { transform: translateY(100px) scale(0.2) rotate(-20deg); opacity: 0; }
-                    60% { transform: translateY(-15px) scale(1.1) rotate(10deg); opacity: 1; }
-                    100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
-                }
-                .origami-fold {
-                    animation: origami-unfold 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-                    transform-style: preserve-3d;
-                }
-                .fly-out {
-                    animation: fly-out-pocket 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-                }
-                .fold-1 { animation-delay: 150ms; }
-                .fold-2 { animation-delay: 300ms; }
-                .fold-3 { animation-delay: 450ms; }
-                .fold-4 { animation-delay: 600ms; }
-              </style>
 
               @if (state.liveAgentWindowMode() === 'minimized') {
                 <!-- Minimized Floating Live Consult Dock -->
@@ -1128,14 +1110,16 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
             <span class="text-zinc-500 dark:text-zinc-400 hidden sm:inline">Copyright © 2026 Applied Clinical AI Consortium • Global Health Equity &amp; HIPAA Safe Harbor</span>
           </div>
           <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-5 font-semibold text-[11px] sm:text-xs">
-            <button type="button" (click)="showPatentClaimsModal.set(true)" class="text-teal-600 dark:text-teal-400 hover:underline transition cursor-pointer flex items-center gap-1 font-mono text-[11px] font-bold">
-              <span>⚖️ IP &amp; 200 Claims</span>
-            </button>
+            @if (navShell.developerMode()) {
+              <button type="button" (click)="showPatentClaimsModal.set(true)" class="text-teal-600 dark:text-teal-400 hover:underline transition cursor-pointer flex items-center gap-1 font-mono text-[11px] font-bold">
+                <span>⚖️ IP &amp; 200 Claims</span>
+              </button>
+              <button type="button" (click)="showTalentHrPortalModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
+                <span>🤝 Join Team &amp; Fellowships</span>
+              </button>
+            }
             <button type="button" (click)="showOsceSimulatorModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>🎓 Case Simulator</span>
-            </button>
-            <button type="button" (click)="showTalentHrPortalModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
-              <span>🤝 Join Team &amp; Fellowships</span>
             </button>
             <button type="button" (click)="showTestimonialsModal.set(true)" class="hover:text-teal-600 dark:hover:text-teal-400 transition cursor-pointer flex items-center gap-1">
               <span>💬 Seeking Clients &amp; Reviews</span>
@@ -1298,7 +1282,9 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
     }
 
     <!-- Universal Doc Drill & Evidence Focus Socratic Drawer -->
-    <app-doc-drill-drawer />
+    @defer (on idle) {
+      <app-doc-drill-drawer />
+    }
 
 
     <!-- Vertex AI Model Garden & Developer API Portal Modal Site -->
@@ -1600,6 +1586,7 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                 </div>
               }
              
+              @defer (on immediate) {
               <div class="relative grid gap-8 transition-all duration-300" [class.grid-cols-1]="selectedReadingLevel() === 'standard'" [class.sm:grid-cols-2]="selectedReadingLevel() !== 'standard'">
                
                <!-- Original English -->
@@ -1663,6 +1650,7 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
                   </div>
                }
              </div>
+              }
              
              <!-- TRANSLATION ANALYSIS UI -->
              @if (selectedReadingLevel() !== 'standard') {
@@ -2152,8 +2140,12 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       }
     }
 
-    <app-clinical-cds-disclaimer-banner></app-clinical-cds-disclaimer-banner>
-    <app-zamecznik-canvas></app-zamecznik-canvas>
+    @defer (on idle) {
+      <app-clinical-cds-disclaimer-banner></app-clinical-cds-disclaimer-banner>
+    }
+    @defer (on idle; when zamecznikRequested()) {
+      <app-zamecznik-canvas #zamecznikCanvas></app-zamecznik-canvas>
+    }
 
     @if (swUpdateReady()) {
       <div class="fixed bottom-4 left-4 z-[9999] bg-zinc-900 text-zinc-100 border border-teal-500/40 rounded-2xl shadow-2xl px-4 py-3 flex items-center gap-3 animate-in slide-in-from-bottom-4 duration-200 no-print" role="status" aria-live="polite">
@@ -2199,18 +2191,63 @@ export class AppComponent implements OnDestroy {
   showResearchDividendModal = signal(false);
   readonly showGlossaryModal = signal<boolean>(false);
   private _translateTimer: ReturnType<typeof setTimeout> | null = null;
-  readonly fhirModalRef = viewChild(SmartFhirSyncModalComponent);
-  readonly vaultModalRef = viewChild(EncryptedVaultModalComponent);
+  readonly vaultModalRequested = signal(false);
+  readonly fhirModalRequested = signal(false);
+  readonly globalHealthModalRequested = signal(false);
+  readonly zamecznikRequested = signal(false);
+  private readonly pendingVaultOpen = signal(false);
+  private readonly pendingFhirOpen = signal(false);
+  private readonly pendingGlobalHealthOpen = signal(false);
+  private readonly pendingZamecznikOpen = signal(false);
+  readonly fhirModalRef = viewChild<{ open(): void; selectPreset(preset: 'epic_sandbox' | 'cerner_sandbox' | 'hapi_r4' | 'local_mock'): void }>('fhirModal');
+  readonly vaultModalRef = viewChild<{ open(): void }>('vaultModal');
+  readonly globalHealthModalRef = viewChild<{ open(): void }>('globalHealthModal');
 
   @HostListener('window:close-docs-study')
   onCloseDocsStudy() {
     this.showDocsStudy.set(false);
   }
 
-  readonly zamecznikCanvas = viewChild(ZamecznikCanvasComponent);
+  readonly zamecznikCanvas = viewChild<{ open(): void }>('zamecznikCanvas');
+
+  openEncryptedVaultModal(): void {
+    this.vaultModalRequested.set(true);
+    const modal = this.vaultModalRef();
+    if (modal) {
+      modal.open();
+    } else {
+      this.pendingVaultOpen.set(true);
+    }
+  }
+
+  openSmartFhirSyncModal(): void {
+    this.fhirModalRequested.set(true);
+    const modal = this.fhirModalRef();
+    if (modal) {
+      modal.open();
+    } else {
+      this.pendingFhirOpen.set(true);
+    }
+  }
+
+  openGlobalHealthModal(): void {
+    this.globalHealthModalRequested.set(true);
+    const modal = this.globalHealthModalRef();
+    if (modal) {
+      modal.open();
+    } else {
+      this.pendingGlobalHealthOpen.set(true);
+    }
+  }
 
   triggerSomaticGrounding(): void {
-    this.zamecznikCanvas()?.open();
+    this.zamecznikRequested.set(true);
+    const canvas = this.zamecznikCanvas();
+    if (canvas) {
+      canvas.open();
+    } else {
+      this.pendingZamecznikOpen.set(true);
+    }
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('somatic-grounding-activate'));
     }
@@ -2225,7 +2262,7 @@ export class AppComponent implements OnDestroy {
     this._translateTimer = setTimeout(async () => {
       this.isTranslating.set(true);
       try {
-        const translated = await this.clinicalIntelligence.translateReadingLevel(text, target);
+        const translated = await this.intelligence.translateReadingLevel(text, target);
         this.previewText.set(translated);
         await this.analyzeCurrentTranslation();
       } catch (error) {
@@ -2242,19 +2279,14 @@ export class AppComponent implements OnDestroy {
   public tour = inject(WalkthroughTourService);
   public readonly petAuditory = inject(PetAuditoryService);
   private readonly stressIntervention = inject(StressInterventionService);
-  public readonly collaboration = inject(CollaborationService);
-  patientDropdown = viewChild(PatientDropdownComponent);
   state = inject(PatientStateService);
   public theme = inject(ThemeService);
   public game = inject(GamificationService);
-  private ngZone = inject(NgZone);
-
+  private readonly destroyRef = inject(DestroyRef);
 
   public patientMgmt = inject(PatientManagementService);
-  private clinicalIntelligence = inject(ClinicalIntelligenceService);
   network = inject(NetworkStateService);
   consentService = inject(ConsentService);
-  hardware = inject(HardwareTelemetryService);
   readonly rules = inject(RulesEngineService);
   readonly moeRouter = inject(ClinicalMoERouterService);
   private aiConfig = inject(AI_CONFIG, { optional: true });
@@ -2279,7 +2311,6 @@ export class AppComponent implements OnDestroy {
   readonly showNantucketCaseStudy = signal<boolean>(false);
   readonly showCardiometabolicCaseStudy = signal<boolean>(false);
   readonly showTestimonialsModal = signal<boolean>(false);
-  licensing = inject(AppLicensingGuardService);
   readonly showHeaderThemeMenu = signal<boolean>(false);
   apiKeyInput = signal<string>('');
   showPassword = signal<boolean>(false);
@@ -2289,7 +2320,10 @@ export class AppComponent implements OnDestroy {
   showFhirCallback = signal<boolean>(false);
   showAnalysisPdf = signal<boolean>(false);
 
-  export = inject(ExportService);
+  private async getExportService(): Promise<ExportService> {
+    const { ExportService } = await import('./services/export.service');
+    return this.injector.get(ExportService);
+  }
   showExportMenu = signal(false);
   isSimplifying = signal(false);
   isSimplifyingChild = signal(false);
@@ -2327,14 +2361,14 @@ export class AppComponent implements OnDestroy {
   connectMenuOpen = signal(false);
   isDirectoryOpen = signal(false);
 
-  hasReport = computed(() => Object.keys(this.clinicalIntelligence.analysisResults()).length > 0);
+  hasReport = computed(() => Object.keys(this.intelligence.analysisResults()).length > 0);
 
-  exportPdf() {
-    const results = this.clinicalIntelligence.analysisResults();
+  async exportPdf() {
+    const results = this.intelligence.analysisResults();
     const patient = this.patientMgmt.selectedPatient();
     const patientName = patient?.name || 'Clinical User';
 
-    this.export.downloadAsPdf({
+    (await this.getExportService()).downloadAsPdf({
       report: results,
       summary: results['Summary Overview'] || 'No summary available.'
     }, patientName);
@@ -2344,14 +2378,14 @@ export class AppComponent implements OnDestroy {
     this.isSimplifying.set(true);
     this.rules.setContext('dyslexia_mode', true);
     try {
-      const results = this.clinicalIntelligence.analysisResults();
+      const results = this.intelligence.analysisResults();
       const patient = this.patientMgmt.selectedPatient();
       const patientName = patient?.name || 'Clinical User';
 
       const originalSummary = results['Summary Overview'] || 'No summary available.';
-      const simplifiedSummary = await this.clinicalIntelligence.translateReadingLevel(originalSummary, 'dyslexia');
+      const simplifiedSummary = await this.intelligence.translateReadingLevel(originalSummary, 'dyslexia');
 
-      this.export.downloadAsPdf({
+      (await this.getExportService()).downloadAsPdf({
         report: results,
         summary: simplifiedSummary
       }, patientName + ' (Cognition)');
@@ -2368,14 +2402,14 @@ export class AppComponent implements OnDestroy {
     this.isSimplifyingChild.set(true);
     this.rules.setContext('pediatric_mode', true);
     try {
-      const results = this.clinicalIntelligence.analysisResults();
+      const results = this.intelligence.analysisResults();
       const patient = this.patientMgmt.selectedPatient();
       const patientName = patient?.name || 'Clinical User';
 
       const originalSummary = results['Summary Overview'] || 'No summary available.';
-      const simplifiedSummary = await this.clinicalIntelligence.translateReadingLevel(originalSummary, 'child');
+      const simplifiedSummary = await this.intelligence.translateReadingLevel(originalSummary, 'child');
 
-      this.export.downloadAsPdf({
+      (await this.getExportService()).downloadAsPdf({
         report: results,
         summary: simplifiedSummary
       }, patientName + ' (Pediatric Overview)');
@@ -2388,30 +2422,30 @@ export class AppComponent implements OnDestroy {
     }
   }
 
-  exportFhir() {
+  async exportFhir() {
     const patient = this.patientMgmt.selectedPatient();
     if (patient) {
-      this.export.downloadAsFhirBundle(patient);
+      (await this.getExportService()).downloadAsFhirBundle(patient);
     } else {
       // Fallback
-      const results = this.clinicalIntelligence.analysisResults();
-      this.export.downloadAsFhir({
+      const results = this.intelligence.analysisResults();
+      (await this.getExportService()).downloadAsFhir({
         report: results,
         summary: results['Summary Overview']
       }, 'Clinical User');
     }
   }
 
-  exportFhirR4Bundle() {
+  async exportFhirR4Bundle() {
     const patient = this.patientMgmt.selectedPatient();
     if (patient) {
-      this.export.downloadFhirR4Bundle(patient);
+      (await this.getExportService()).downloadFhirR4Bundle(patient);
     }
   }
 
-  exportLaafHapticFhir() {
+  async exportLaafHapticFhir() {
     const patient = this.patientMgmt.selectedPatient();
-    this.export.downloadLaafHapticScheduleBundle(patient);
+    (await this.getExportService()).downloadLaafHapticScheduleBundle(patient);
     this.exportMenuOpen.set(false);
   }
 
@@ -2572,39 +2606,26 @@ export class AppComponent implements OnDestroy {
     }
   }
 
-  @HostListener('window:close-docs-study')
-  handleCloseDocsStudy() {
-    this.showDocsStudy.set(false);
-  }
-
   connectAppleHealth() {
     this.showCompanionSyncModal.set(true);
   }
 
   uploadData() {
-    const dropdown = this.patientDropdown();
-    if (dropdown) {
-      dropdown.triggerImport();
+    const fileInput = typeof document !== 'undefined'
+      ? (document.querySelector('app-patient-dropdown input[type="file"]') as HTMLInputElement | null)
+      : null;
+    if (fileInput) {
+      fileInput.value = '';
+      fileInput.click();
     } else {
-      const fileInput = document.querySelector('app-patient-dropdown input[type="file"]') as HTMLInputElement;
-      if (fileInput) {
-        fileInput.value = '';
-        fileInput.click();
-      } else {
-        const vault = this.vaultModalRef();
-        if (vault) {
-          vault.open();
-        } else {
-          this.navShell.showPatientDirectoryModal.set(true);
-        }
-      }
+      this.openEncryptedVaultModal();
     }
   }
 
   openFinalizePreview() {
     let plan = this.state.activePatientSummary();
     if (!plan) {
-      const results = this.clinicalIntelligence.analysisResults();
+      const results = this.intelligence.analysisResults();
       const annotations = this.state.lensAnnotations();
       
       if (Object.keys(results).length > 0) {
@@ -2737,7 +2758,7 @@ export class AppComponent implements OnDestroy {
 
     this.isTranslating.set(true);
     try {
-      const translated = await this.clinicalIntelligence.translateReadingLevel(
+      const translated = await this.intelligence.translateReadingLevel(
         this.originalPreviewText(),
         undefined,
         cog,
@@ -2813,7 +2834,7 @@ export class AppComponent implements OnDestroy {
     this.isAnalyzingTranslation.set(true);
     this.translationAnalysis.set('');
     try {
-      const analysis = await this.clinicalIntelligence.analyzeTranslation(
+      const analysis = await this.intelligence.analyzeTranslation(
         this.originalPreviewText(),
         this.previewText()
       );
@@ -2827,7 +2848,7 @@ export class AppComponent implements OnDestroy {
   }
 
 
-  printReport() {
+  async printReport() {
     const p = this.patientMgmt.selectedPatient();
     const vitals = this.state.vitals();
     let textToPrint = this.previewText();
@@ -2848,7 +2869,7 @@ export class AppComponent implements OnDestroy {
         analysisMarkdown: this.includeAnalysisInPrint() ? this.translationAnalysis() : null
       };
 
-      this.export.downloadCarePlanPdf(
+      (await this.getExportService()).downloadCarePlanPdf(
         textToPrint,
         p?.name ?? 'Patient',
         {
@@ -2862,7 +2883,7 @@ export class AppComponent implements OnDestroy {
         translationMatrix
       );
     } else {
-      this.export.downloadCarePlanPdf(
+      (await this.getExportService()).downloadCarePlanPdf(
         textToPrint,
         p?.name ?? 'Patient',
         {
@@ -3000,11 +3021,49 @@ export class AppComponent implements OnDestroy {
   readonly session = inject(SessionStateService);
   readonly fitbit = inject(FitbitService);
   readonly intelligence = inject(ClinicalIntelligenceService);
-  readonly webMcp = inject(WebMcpRegistrationService);
+  private readonly injector = inject(Injector);
+  private webMcpInstance: WebMcpRegistrationService | null = null;
+  private isDestroyed = false;
   readonly uiI18n = inject(UiI18nService);
   private lastSyncedLangCount = 0;
 
   constructor() {
+    effect(() => {
+      const modal = this.vaultModalRef();
+      if (modal && this.pendingVaultOpen()) {
+        untracked(() => {
+          this.pendingVaultOpen.set(false);
+          modal.open();
+        });
+      }
+    });
+    effect(() => {
+      const modal = this.fhirModalRef();
+      if (modal && this.pendingFhirOpen()) {
+        untracked(() => {
+          this.pendingFhirOpen.set(false);
+          modal.open();
+        });
+      }
+    });
+    effect(() => {
+      const modal = this.globalHealthModalRef();
+      if (modal && this.pendingGlobalHealthOpen()) {
+        untracked(() => {
+          this.pendingGlobalHealthOpen.set(false);
+          modal.open();
+        });
+      }
+    });
+    effect(() => {
+      const canvas = this.zamecznikCanvas();
+      if (canvas && this.pendingZamecznikOpen()) {
+        untracked(() => {
+          this.pendingZamecznikOpen.set(false);
+          canvas.open();
+        });
+      }
+    });
     effect(() => {
       const count = this.uiI18n.explicitSelectionCount();
       const lang = this.uiI18n.activeLanguage();
@@ -3087,12 +3146,23 @@ export class AppComponent implements OnDestroy {
 
     const swUpdate = inject(SwUpdate, { optional: true });
     if (swUpdate && swUpdate.isEnabled) {
-      swUpdate.versionUpdates.subscribe((evt: VersionEvent) => {
-        if (evt.type === 'VERSION_READY') {
-          this.swUpdateReady.set(true);
-        }
-      });
+      swUpdate.versionUpdates
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((evt: VersionEvent) => {
+          if (evt.type === 'VERSION_READY') {
+            this.swUpdateReady.set(true);
+          }
+        });
     }
+
+    this.destroyRef.onDestroy(() => {
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('mousemove', this.boundDoColumnDrag);
+        document.removeEventListener('mouseup', this.boundStopColumnDrag);
+        document.removeEventListener('mousemove', this.boundDoVoiceColDrag);
+        document.removeEventListener('mouseup', this.boundStopVoiceColDrag);
+      }
+    });
 
     afterNextRender(async () => {
       if (typeof window === 'undefined') return;
@@ -3176,20 +3246,27 @@ export class AppComponent implements OnDestroy {
       // 3. Also check AI Studio key selection (dev environment)
       await this.checkApiKey();
 
-      // Initialize WebMCP Polyfill and register tools via WebMcpRegistrationService
-      this.webMcp.registerTools({
-        onNavigateToBodyPart: () => {
-          this.mobileActiveTab.set('analysis');
-        },
-        onAddBookmark: (bmk: any) => {
-          this.patientMgmt.addBookmark(bmk);
-        },
-        onSetKneeSlicingPlane: () => {
-          this.state.selectPart('leg_left');
-          this.isAnalysisCollapsed.set(false);
-          this.mobileActiveTab.set('analysis');
-        }
-      });
+      // Lazily load WebMCP Polyfill and register tools out of the initial JS bundle
+      try {
+        const { WebMcpRegistrationService } = await import('./services/webmcp-registration.service');
+        if (this.isDestroyed) return;
+        this.webMcpInstance = this.injector.get(WebMcpRegistrationService);
+        this.webMcpInstance.registerTools({
+          onNavigateToBodyPart: () => {
+            this.mobileActiveTab.set('analysis');
+          },
+          onAddBookmark: (bmk: any) => {
+            this.patientMgmt.addBookmark(bmk);
+          },
+          onSetKneeSlicingPlane: () => {
+            this.state.selectPart('leg_left');
+            this.isAnalysisCollapsed.set(false);
+            this.mobileActiveTab.set('analysis');
+          }
+        });
+      } catch (err) {
+        console.warn('[AppComponent] Lazy WebMCP registration skipped:', err);
+      }
 
       // Set up window resize listener for responsive layout
       this.boundOnWindowResize = this.onWindowResize.bind(this);
@@ -3211,7 +3288,8 @@ export class AppComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.webMcp.unregisterTools();
+    this.isDestroyed = true;
+    this.webMcpInstance?.unregisterTools();
 
     if (typeof window !== 'undefined' && this.boundOnWindowResize) {
       window.removeEventListener('resize', this.boundOnWindowResize);
@@ -3289,9 +3367,9 @@ export class AppComponent implements OnDestroy {
     this.state.activePhilosophy.set('western');
     const darwinAnalysis = p_charles_darwin.history.find((h: HistoryEntry) => h.type === 'AnalysisRun');
     const darwinReport = darwinAnalysis && 'report' in darwinAnalysis ? darwinAnalysis.report : {};
-    this.clinicalIntelligence.loadArchivedAnalysis(darwinReport as Partial<Record<AnalysisLens, string>>);
-    this.clinicalIntelligence.lastActivePhilosophy.set('western');
-    this.clinicalIntelligence.lastPatientData.set(this.state.getAllDataForPrompt());
+    this.intelligence.loadArchivedAnalysis(darwinReport as Partial<Record<AnalysisLens, string>>);
+    this.intelligence.lastActivePhilosophy.set('western');
+    this.intelligence.lastPatientData.set(this.state.getAllDataForPrompt());
   }
 
   handleOpenTriageRoster() {

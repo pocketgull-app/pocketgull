@@ -6,6 +6,7 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SoarOrchestratorService } from '../src/server/services/soar-orchestrator.service';
 import { IpBlocklistService } from '../src/server/services/ip-blocklist.service';
+import { signDualCustodyToken } from '../src/server/middleware/auth-guard';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,7 +57,33 @@ async function runSoarAudit(): Promise<void> {
     'Unilateral destructive rotation blocked without DPO co-signature'
   );
 
-  // 3. Playbook 1 with Valid M-of-N Dual-Custody
+  // 3. Playbook 1 with Valid Cryptographic M-of-N Dual-Custody Tokens (plus negative spoof check)
+  const pb1Spoofed = await SoarOrchestratorService.orchestrateAlert({
+    source: 'BIGQUERY_SIEM',
+    eventCategory: 'CREDENTIAL_LEAK',
+    severity: 'P1_CRITICAL',
+    requiresDestructiveAction: true,
+    dualCustody: {
+      requestorRole: 'SENIOR_CLOUD_ENGINEER',
+      authorizerRole: 'PRIVACY_OFFICER_DPO',
+      rationale: 'Spoofed unsigned header attempt (must fail)'
+    },
+    mode: 'DRY_RUN'
+  });
+
+  const requestorToken = signDualCustodyToken({
+    sub: 'eng-soar-drill-01',
+    role: 'SENIOR_CLOUD_ENGINEER',
+    action: 'PB-01_COMPROMISED_CREDENTIAL',
+    ttlSeconds: 300
+  });
+  const authorizerToken = signDualCustodyToken({
+    sub: 'dpo-soar-drill-02',
+    role: 'PRIVACY_OFFICER_DPO',
+    action: 'PB-01_COMPROMISED_CREDENTIAL',
+    ttlSeconds: 300
+  });
+
   const pb1Approved = await SoarOrchestratorService.orchestrateAlert({
     source: 'BIGQUERY_SIEM',
     eventCategory: 'CREDENTIAL_LEAK',
@@ -65,14 +92,16 @@ async function runSoarAudit(): Promise<void> {
     dualCustody: {
       requestorRole: 'SENIOR_CLOUD_ENGINEER',
       authorizerRole: 'PRIVACY_OFFICER_DPO',
-      rationale: 'Scheduled SOAR verification drill'
+      requestorToken,
+      authorizerToken,
+      rationale: 'Scheduled SOAR cryptographic verification drill'
     },
     mode: 'DRY_RUN'
   });
   check(
-    'Playbook 1 Dual-Custody Co-Sign Verification',
-    pb1Approved.dualCustodyVerified === true,
-    `SHA-256 Receipt: ${pb1Approved.sha256EvidenceDigest.slice(0, 24)}...`
+    'Playbook 1 Dual-Custody Co-Sign Verification (Falsification + Cryptographic Tokens)',
+    pb1Spoofed.dualCustodyVerified === false && pb1Approved.dualCustodyVerified === true,
+    `Unsigned spoof rejected & signed co-sign verified (SHA-256: ${pb1Approved.sha256EvidenceDigest.slice(0, 24)}...)`
   );
 
   // 4. Playbook 2: Adversarial Prompt Injection Containment

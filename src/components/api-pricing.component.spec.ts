@@ -92,14 +92,24 @@ describe('ApiPricingComponent', () => {
     expect(component.getUsagePercent(10, -1)).toBe(0);
   });
 
-  it('should trigger checkout request on subscribe', () => {
+  it('should trigger checkout request on subscribe without hardcoded demo email', () => {
     component.subscribe('price_test_123', 'Practitioner');
     expect(component.isLoading()).toBe(true);
     expect(mockHttpClient.post).toHaveBeenCalledWith('/api/billing/checkout', {
       priceId: 'price_test_123',
-      customerEmail: 'admin@demo-tenant.com',
       itemType: 'agentic_api_tier',
       packageName: 'Pocket Gull Practitioner API'
+    });
+  });
+
+  it('should include customerEmail in checkout payload only when explicitly provided', () => {
+    component.customerEmail = 'clinician@hospital.org';
+    component.subscribe('price_test_456', 'Institution');
+    expect(mockHttpClient.post).toHaveBeenCalledWith('/api/billing/checkout', {
+      priceId: 'price_test_456',
+      customerEmail: 'clinician@hospital.org',
+      itemType: 'agentic_api_tier',
+      packageName: 'Pocket Gull Institution API'
     });
   });
 

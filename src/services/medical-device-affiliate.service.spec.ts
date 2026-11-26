@@ -40,6 +40,6 @@ describe('MedicalDeviceAffiliateService Unit Suite', () => {
 
     expect(service.isLinkSafeAndCompliant(safeUrl)).toBe(true);
     expect(service.isLinkSafeAndCompliant(unsafeUrl)).toBe(false);
-    expect(service.isLinkSafeAndCompliant('http://unencrypted.com')).toBe(false);
+    expect(service.isLinkSafeAndCompliant('http://example.com')).toBe(false);
   });
 });

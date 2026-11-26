@@ -73,4 +73,30 @@ describe('IpBlocklistService & Threat Mitigation Suite ($0.00 Cost)', () => {
     expect(telemetry.dynamicBannedCount).toBe(2);
     expect(telemetry.activeBans.map(b => b.ip)).toContain('198.51.100.101');
   });
+
+  it('prefers trust-proxy req.ip and defeats leftmost X-Forwarded-For spoofing', () => {
+    // Direct untrusted internet peer trying to spoof XFF: 127.0.0.1 MUST NOT bypass
+    const spoofed = IpBlocklistService.extractClientIp(
+      { 'x-forwarded-for': '127.0.0.1, 198.51.100.77' },
+      '198.51.100.77'
+    );
+    expect(spoofed).toBe('198.51.100.77');
+    expect(IpBlocklistService.isDirectLoopback('198.51.100.77')).toBe(false);
+    expect(IpBlocklistService.isDirectLoopback('::ffff:127.0.0.1')).toBe(true);
+
+    // Behind trusted internal proxy, rightmost public hop wins over leftmost spoofed hop
+    const behindProxy = IpBlocklistService.extractClientIp(
+      { 'x-forwarded-for': '127.0.0.1, 203.0.113.88, 10.0.0.5' },
+      '10.0.0.5'
+    );
+    expect(behindProxy).toBe('203.0.113.88');
+
+    // Express req.ip preferred directly
+    const expressReqIp = IpBlocklistService.extractClientIp({
+      ip: '203.0.113.55',
+      headers: { 'x-forwarded-for': '127.0.0.1' },
+      socket: { remoteAddress: '10.0.0.1' }
+    });
+    expect(expressReqIp).toBe('203.0.113.55');
+  });
 });

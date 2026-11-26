@@ -22,9 +22,10 @@ describe('BillingDashboardComponent (Stripe Add-To-Cart & Commercial Packages)',
     component = runInInjectionContext(injector, () => injector.get(BillingDashboardComponent));
   });
 
-  it('1. Initializes default custom institutions and endowment split settings', () => {
+  it('1. Initializes default custom institutions and ASC 958 85-10-5 endowment split settings', () => {
     expect(component.selectedEndowment).toBe('Alumni Health & Research Endowment');
-    expect(component.selectedSplit).toBe('50-30-20');
+    expect(component.selectedSplit).toBe('85-10-5');
+    expect(component.liveUsageLoaded()).toBe(false);
     expect(component.customInstitutions().length).toBeGreaterThan(0);
   });
 

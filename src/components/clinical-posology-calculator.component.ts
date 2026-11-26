@@ -175,7 +175,7 @@ export interface IPosology3ActTrajectory {
           <div class="space-y-1">
             <div class="flex justify-between text-xs font-mono">
               <span class="text-slate-600 dark:text-zinc-400">Adult Reference Dose:</span>
-              <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ adultReferenceDoseMg() }} mg</span>
+              <span class="font-bold text-emerald-600 dark:text-emerald-400"><bdi dir="ltr">{{ adultReferenceDoseMg() }} mg</bdi></span>
             </div>
             <input type="range" min="50" max="1000" step="25" [ngModel]="adultReferenceDoseMg()" (ngModelChange)="adultReferenceDoseMg.set($event)" class="w-full accent-emerald-500" />
           </div>
@@ -198,7 +198,7 @@ export interface IPosology3ActTrajectory {
                     </span>
                   }
                 </span>
-                <span class="font-bold text-purple-600 dark:text-purple-400">{{ serumCreatinineMgDl() }} mg/dL</span>
+                <span class="font-bold text-purple-600 dark:text-purple-400"><bdi dir="ltr">{{ formatIsmpDose(serumCreatinineMgDl(), 1) }} mg/dL</bdi></span>
               </div>
               <input type="range" min="0.5" max="3.5" step="0.1" [ngModel]="serumCreatinineMgDl()" (ngModelChange)="onSerumCreatinineChange($event)" class="w-full accent-purple-500" />
               <div class="flex items-center gap-3 text-xs pt-1">
@@ -240,13 +240,13 @@ export interface IPosology3ActTrajectory {
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-rose-200 dark:border-rose-900/40 space-y-1.5">
                   <span class="text-[11px] font-bold text-rose-900 dark:text-rose-300 block">Microbore Syringe Resolution:</span>
                   <div class="flex items-baseline gap-2 font-mono">
-                    <span class="text-xl font-black text-rose-600 dark:text-rose-400">
-                      {{ friedResult().microboreSyringeVolumeMl.toFixed(2) }} mL
-                    </span>
-                    <span class="text-[10px] text-slate-500 font-bold uppercase">(Leading Zero Enforced)</span>
+                    <bdi dir="ltr" class="text-xl font-black text-rose-600 dark:text-rose-400">
+                      {{ formatIsmpDose(friedResult().microboreSyringeVolumeMl, 2) }} mL
+                    </bdi>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase">(Leading Zero Enforced • No Trailing Zeros)</span>
                   </div>
                   <div class="text-[10px] font-mono text-slate-600 dark:text-zinc-400">
-                    Microdrip Infusion: <strong class="text-rose-600 dark:text-rose-400">{{ friedResult().microdripGttMin }} gtt/min</strong> (60 gtt/mL IV set)
+                    Microdrip Infusion: <bdi dir="ltr"><strong class="text-rose-600 dark:text-rose-400">{{ friedResult().microdripGttMin }} gtt/min</strong></bdi> (60 gtt/mL IV set)
                   </div>
                 </div>
               </div>
@@ -284,7 +284,7 @@ export interface IPosology3ActTrajectory {
                   <div class="posology-formula text-xs text-amber-700 dark:text-amber-300">
                     {{ youngResult().formulaString }}
                   </div>
-                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Calculated Dose: <strong>{{ youngResult().calculatedDoseMg }} mg</strong></span>
+                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Calculated Dose: <bdi dir="ltr"><strong>{{ formatIsmpDose(youngResult().calculatedDoseMg, 1) }} mg</strong></bdi></span>
                 </div>
 
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-amber-200 dark:border-amber-900/40">
@@ -292,7 +292,7 @@ export interface IPosology3ActTrajectory {
                   <div class="posology-formula text-xs text-amber-700 dark:text-amber-300">
                     {{ clarkResult().formulaString }}
                   </div>
-                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Calculated Dose: <strong>{{ clarkResult().calculatedDoseMg }} mg</strong></span>
+                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Calculated Dose: <bdi dir="ltr"><strong>{{ formatIsmpDose(clarkResult().calculatedDoseMg, 1) }} mg</strong></bdi></span>
                 </div>
               </div>
 
@@ -303,18 +303,18 @@ export interface IPosology3ActTrajectory {
                   <div class="text-xs font-mono text-slate-800 dark:text-zinc-200">
                     {{ mostellerResult().formulaString }}
                   </div>
-                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Pediatric BSA: <strong>{{ mostellerResult().bsaM2 }} m²</strong></span>
+                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Pediatric BSA: <bdi dir="ltr"><strong>{{ formatIsmpDose(mostellerResult().bsaM2, 2) }} m²</strong></bdi></span>
                 </div>
 
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-amber-200 dark:border-amber-900/40">
                   <span class="text-[11px] font-bold text-amber-900 dark:text-amber-300 block mb-1">Holliday-Segar 4-2-1 Maintenance IV Fluid:</span>
                   <div class="pediatric-fluid-421 text-xs">
-                    <span>1st 10kg: {{ fluidResult().breakdown.first10kgMlHr }} mL/h</span>
-                    <span>2nd 10kg: {{ fluidResult().breakdown.second10kgMlHr }} mL/h</span>
-                    <span>>20kg: {{ fluidResult().breakdown.remainingKgMlHr }} mL/h</span>
+                    <span>1st 10kg: <bdi dir="ltr">{{ fluidResult().breakdown.first10kgMlHr }} mL/h</bdi></span>
+                    <span>2nd 10kg: <bdi dir="ltr">{{ fluidResult().breakdown.second10kgMlHr }} mL/h</bdi></span>
+                    <span>>20kg: <bdi dir="ltr">{{ fluidResult().breakdown.remainingKgMlHr }} mL/h</bdi></span>
                   </div>
                   <div class="mt-1 text-xs font-bold text-cyan-600 dark:text-cyan-400 font-mono">
-                    {{ fluidResult().telemetryDisplay }}
+                    <bdi dir="ltr">{{ fluidResult().telemetryDisplay }}</bdi>
                   </div>
                 </div>
               </div>
@@ -323,12 +323,12 @@ export interface IPosology3ActTrajectory {
               <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-amber-200 dark:border-amber-900/40">
                 <span class="text-[11px] font-bold text-amber-900 dark:text-amber-300 block mb-2">Oral Syringe Volumetric Snapping Chips:</span>
                 <div class="flex flex-wrap gap-2 font-mono text-xs">
-                  @for (chip of [0.5, 1.0, 2.5, 5.0, 10.0]; track chip) {
+                  @for (chip of [0.5, 1, 2.5, 5, 10]; track chip) {
                     <button (click)="selectedOralSyringeVol.set(chip)"
                             [class.bg-amber-500]="selectedOralSyringeVol() === chip"
                             [class.text-white]="selectedOralSyringeVol() === chip"
                             class="px-2.5 py-1 rounded-lg border border-amber-400/60 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 font-bold cursor-pointer transition">
-                      {{ chip }} mL Syringe
+                      <bdi dir="ltr">{{ formatIsmpDose(chip, 1) }} mL</bdi> Syringe
                     </button>
                   }
                 </div>
@@ -350,7 +350,7 @@ export interface IPosology3ActTrajectory {
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-emerald-200 dark:border-emerald-900/40">
                   <span class="text-[11px] font-bold text-emerald-900 dark:text-emerald-300 block mb-1">Standard Adult Dose:</span>
                   <div class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                    {{ adultReferenceDoseMg() }} mg
+                    <bdi dir="ltr">{{ formatIsmpDose(adultReferenceDoseMg(), 2) }} mg</bdi>
                   </div>
                   <span class="text-[10px] text-slate-500 font-mono">100% Reference Dosage</span>
                 </div>
@@ -358,15 +358,15 @@ export interface IPosology3ActTrajectory {
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-emerald-200 dark:border-emerald-900/40">
                   <span class="text-[11px] font-bold text-emerald-900 dark:text-emerald-300 block mb-1">Adult BSA Clearance:</span>
                   <div class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                    {{ mostellerResult().bsaM2 }} m²
+                    <bdi dir="ltr">{{ formatIsmpDose(mostellerResult().bsaM2, 2) }} m²</bdi>
                   </div>
-                  <span class="text-[10px] text-slate-500 font-mono">Based on {{ patientHeightCm() }}cm / {{ patientWeightKg() }}kg</span>
+                  <span class="text-[10px] text-slate-500 font-mono">Based on <bdi dir="ltr">{{ patientHeightCm() }}cm / {{ patientWeightKg() }}kg</bdi></span>
                 </div>
 
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-emerald-200 dark:border-emerald-900/40">
                   <span class="text-[11px] font-bold text-emerald-900 dark:text-emerald-300 block mb-1">Estimated CrCl:</span>
                   <div class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                    {{ cockcroftResult().crClMlMin }} mL/min
+                    <bdi dir="ltr">{{ formatIsmpDose(cockcroftResult().crClMlMin, 1) }} mL/min</bdi>
                   </div>
                   <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-mono font-bold">{{ cockcroftResult().renalDosingTier }}</span>
                 </div>
@@ -394,7 +394,7 @@ export interface IPosology3ActTrajectory {
                   <div class="flex items-center justify-between mb-1">
                     <span class="text-[11px] font-bold text-purple-900 dark:text-purple-300">Cockcroft-Gault CrCl:</span>
                     <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-200">
-                      {{ cockcroftResult().crClMlMin }} mL/min
+                      <bdi dir="ltr">{{ formatIsmpDose(cockcroftResult().crClMlMin, 1) }} mL/min</bdi>
                     </span>
                   </div>
                   <div class="posology-formula text-xs text-purple-700 dark:text-purple-300">
@@ -2770,6 +2770,13 @@ if __name__ == "__main__":
         this.linkedRpmToast.set(null);
       }
     }, 4500);
+  }
+
+  /**
+   * Formats clinical dosages without ISMP-prohibited trailing zeros (e.g. 1.00 -> 1, 0.50 -> 0.5).
+   */
+  formatIsmpDose(value: number, maxDecimals = 2): string {
+    return this.posology.formatIsmpCleanNumber(value, maxDecimals);
   }
 
   openRpmSuperbill(): void {

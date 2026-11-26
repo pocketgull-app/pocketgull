@@ -32,7 +32,9 @@ describe('ExportService FHIR R4 Tri-Paradigm Bundle Suite', () => {
 
     const patientEntry = bundle.entry.find((e: any) => e.resource.resourceType === 'Patient');
     expect(patientEntry).toBeDefined();
-    expect(patientEntry.resource.name[0].text).toBe('Homo Sapiens (Male, 44y)');
+    expect(patientEntry.resource.name[0].use).toBe('anonymous');
+    expect(patientEntry.resource.name[0].text).toContain('Safe Harbor Subject');
+    expect(patientEntry.resource.name[0].text).not.toContain('Homo Sapiens');
 
     const hrObs = bundle.entry.find((e: any) => e.resource.resourceType === 'Observation' && e.resource.code?.coding?.[0]?.code === '8867-4');
     expect(hrObs).toBeDefined();
@@ -57,11 +59,17 @@ describe('ExportService FHIR R4 Tri-Paradigm Bundle Suite', () => {
     expect(docRefEntry.resource.content.length).toBeGreaterThan(0);
   });
 
-  it('verifies DeviceRequest, NutritionOrder, and MedicationRequest resource specs', () => {
+  it('verifies DeviceRequest, NutritionOrder, and MedicationRequest resource specs and HIPAA Safe Harbor age > 89 capping', () => {
     const fhirResources = ['Patient', 'Observation', 'Condition', 'DeviceRequest', 'NutritionOrder', 'MedicationRequest'];
     expect(fhirResources).toHaveLength(6);
     expect(fhirResources).toContain('DeviceRequest');
     expect(fhirResources).toContain('NutritionOrder');
+
+    const elderBundle = exportService.buildFhirR4Bundle({ ...mockPatient, id: 'pt-95', name: 'Private Elder', age: 95 });
+    const elderPatient = elderBundle.entry.find((e: any) => e.resource.resourceType === 'Patient')?.resource;
+    expect(elderPatient.birthDate).toBeUndefined();
+    expect(JSON.stringify(elderBundle)).not.toContain('Private Elder');
+    expect(elderPatient.extension?.some((ex: any) => ex.valueString === '90+')).toBe(true);
   });
   it('generates cryptographic SHA-256 receipt for clinical document validation', async () => {
     const receipt = await exportService.generateCryptographicReceipt(mockPatient);

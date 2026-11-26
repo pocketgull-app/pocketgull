@@ -75,6 +75,15 @@ pocketgull_flutter/
 *.tar.gz
 *.tgz
 
+# Secrets, Keys, Private Data & Credentials (Zero-Tolerance)
+.env
+.env.*
+*.pem
+*.key
+*service-account*.json
+*credentials*.json
+data/
+
 # Heavy Typography & Desktop Font Binaries (Hosted on https://font.pocketgull.app)
 *.ttf
 public/fonts/*.ttf

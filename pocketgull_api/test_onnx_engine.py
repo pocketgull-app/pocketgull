@@ -40,15 +40,15 @@ class TestOnnxFp16Engine(unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(onnx_engine, OnnxFp16InferenceEngine)
 
 
-# Expose standard function wrappers so custom runner run_tests.py detects them
-async def test_onnx_engine_heuristic_fallback():
+# Expose standard synchronous wrappers so both pytest (without pytest-asyncio) and run_tests.py pass cleanly
+def test_onnx_engine_heuristic_fallback():
     tc = TestOnnxFp16Engine()
-    await tc.test_onnx_engine_heuristic_fallback()
+    asyncio.run(tc.test_onnx_engine_heuristic_fallback())
 
 
-async def test_onnx_engine_scikit_fallback_thread_pool():
+def test_onnx_engine_scikit_fallback_thread_pool():
     tc = TestOnnxFp16Engine()
-    await tc.test_onnx_engine_scikit_fallback_thread_pool()
+    asyncio.run(tc.test_onnx_engine_scikit_fallback_thread_pool())
 
 
 def test_global_singleton_instance():

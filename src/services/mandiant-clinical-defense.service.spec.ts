@@ -1,5 +1,6 @@
 import '@angular/compiler';
 import { MandiantClinicalDefenseService } from './mandiant-clinical-defense.service';
+import { computeFipsSha256Hex } from './clinical-defense-guard.service';
 
 describe('MandiantClinicalDefenseService Unit Suite', () => {
   let service: MandiantClinicalDefenseService;
@@ -76,5 +77,18 @@ describe('MandiantClinicalDefenseService Unit Suite', () => {
     service.resetContainment();
     expect(service.isContainmentModeActive()).toBe(false);
     expect(service.defensePosture().threatLevel).toBe('SECURE_NOMINAL');
+  });
+
+  it('7. Verifies FIPS 180-4 SHA-256 test vectors (empty, "abc", multi-block) and genuine forensic seals', () => {
+    expect(computeFipsSha256Hex('')).toBe('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+    expect(computeFipsSha256Hex('abc')).toBe('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
+    expect(computeFipsSha256Hex('abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq')).toBe(
+      '248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1'
+    );
+    expect(service.computeSha256Sync('abc')).toBe('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
+
+    const snapshot = service.auditStatEmergencyOverride('DR-TEST-01', 'Acute Stroke Alert');
+    expect(snapshot.evidencePayloadHash).toMatch(/^SHA256-[A-Fa-f0-9]{64}$/);
+    expect(snapshot.evidencePayloadHash.toLowerCase()).not.toContain('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
   });
 });

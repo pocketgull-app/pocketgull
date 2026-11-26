@@ -18,6 +18,7 @@ import * as crypto from 'node:crypto';
 import { IpBlocklistService } from './ip-blocklist.service';
 import { ModelArmorService } from './model-armor.service';
 import { apiKeyService } from './api-key.service';
+import { verifyDualCustodyTokens } from '../middleware/auth-guard';
 
 export type SoarPlaybookId =
   | 'PB-01_COMPROMISED_CREDENTIAL'
@@ -30,9 +31,11 @@ export type SoarSeverity = 'P1_CRITICAL' | 'P2_HIGH' | 'P3_MEDIUM' | 'P4_LOW';
 export type SoarExecutionMode = 'DRY_RUN' | 'AUTOMATED_CONTAINMENT';
 
 export interface IDualCustodyAttestation {
-  requestorRole: string;
-  authorizerRole: string;
-  rationale: string;
+  requestorToken?: string;
+  authorizerToken?: string;
+  requestorRole?: string;
+  authorizerRole?: string;
+  rationale?: string;
 }
 
 export interface ISoarAlertEvent {
@@ -228,43 +231,24 @@ export class SoarOrchestratorService {
 
   /**
    * Verifies Mandiant M-of-N Dual-Custody separation of duties for high-impact destructive SOAR actions.
+   * Strictly requires two cryptographically signed approval tokens (`requestorToken` and `authorizerToken`)
+   * from distinct subject IDs where the authorizer carries a DPO / COMPLIANCE / CHIEF claim (TTL <= 15 min).
    */
   public static verifyDualCustody(attestation?: IDualCustodyAttestation): {
     verified: boolean;
     reason: string;
   } {
-    if (!attestation || !attestation.requestorRole || !attestation.authorizerRole) {
+    if (!attestation || !attestation.requestorToken || !attestation.authorizerToken) {
       return {
         verified: false,
-        reason: 'Missing Dual-Custody attestation roles (requestorRole and authorizerRole required).'
-      };
-    }
-    const reqRole = attestation.requestorRole.trim().toUpperCase();
-    const authRole = attestation.authorizerRole.trim().toUpperCase();
-    if (reqRole === authRole) {
-      return {
-        verified: false,
-        reason: 'Separation of Duties violation: requestorRole and authorizerRole must be distinct.'
-      };
-    }
-    const hasDpoOrExec =
-      reqRole.includes('DPO') ||
-      authRole.includes('DPO') ||
-      reqRole.includes('COMPLIANCE') ||
-      authRole.includes('COMPLIANCE') ||
-      reqRole.includes('CHIEF') ||
-      authRole.includes('CHIEF');
-
-    if (!hasDpoOrExec) {
-      return {
-        verified: false,
-        reason: 'Destructive SOAR action requires DPO, Compliance, or Chief Officer co-authorization.'
+        reason: 'Missing cryptographic Dual-Custody tokens (signed requestorToken and authorizerToken required).'
       };
     }
 
+    const result = verifyDualCustodyTokens(attestation.requestorToken, attestation.authorizerToken);
     return {
-      verified: true,
-      reason: `Dual-Custody verified (${reqRole} + ${authRole}).`
+      verified: result.verified,
+      reason: result.reason
     };
   }
 

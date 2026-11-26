@@ -1290,11 +1290,12 @@ export function createDiscoveryRouter(): Router {
     });
   });
 
+  // Pinned canonical public base URL — never reflect untrusted req.get('host') into cached discovery metadata
+  const pinnedPublicBaseUrl = (process.env['PUBLIC_BASE_URL'] || 'https://pocketgull.app').replace(/\/+$/, '');
+
   // ── GET /.well-known/smart-configuration (SMART on FHIR v2 Discovery) ─────
-  router.get('/.well-known/smart-configuration', (req: Request, res: Response) => {
-    const host = req.get('host') || 'pocketgull.app';
-    const protocol = req.protocol || 'https';
-    const baseUrl = `${protocol}://${host}`;
+  router.get('/.well-known/smart-configuration', (_req: Request, res: Response) => {
+    const baseUrl = pinnedPublicBaseUrl;
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'public, max-age=3600');
@@ -1337,10 +1338,8 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── GET /api/fhir/metadata (HL7 FHIR R4 CapabilityStatement) ─────────────
-  router.get('/api/fhir/metadata', (req: Request, res: Response) => {
-    const host = req.get('host') || 'pocketgull.app';
-    const protocol = req.protocol || 'https';
-    const baseUrl = `${protocol}://${host}`;
+  router.get('/api/fhir/metadata', (_req: Request, res: Response) => {
+    const baseUrl = pinnedPublicBaseUrl;
 
     res.setHeader('Content-Type', 'application/fhir+json; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');

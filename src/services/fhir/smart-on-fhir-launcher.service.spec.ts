@@ -1,6 +1,7 @@
 import '@angular/compiler';
 import { Injector, runInInjectionContext } from '@angular/core';
 import { SmartOnFhirLauncherService } from './smart-on-fhir-launcher.service';
+import { computeFipsSha256Bytes } from '../clinical-defense-guard.service';
 
 describe('SmartOnFhirLauncherService Unit Suite', () => {
   let service: SmartOnFhirLauncherService;
@@ -148,5 +149,17 @@ describe('SmartOnFhirLauncherService Unit Suite', () => {
 
     service.closeEmbeddedSmartApp();
     expect(service.embeddedIframeOpen()).toBe(false);
+  });
+
+  it('11. Computes genuine RFC 7636 FIPS 180-4 SHA-256 Base64URL PKCE code_challenge (verifying k[62] fix)', () => {
+    const result = service.validateSmartLaunchConformance('epic', {
+      launchType: 'ehr_launch',
+      launchContextToken: 'epic-fips-verify'
+    });
+    const expectedBytes = computeFipsSha256Bytes(result.codeVerifier);
+    let bin = '';
+    for (let i = 0; i < expectedBytes.length; i++) bin += String.fromCharCode(expectedBytes[i]);
+    const expectedChallenge = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    expect(result.pkceChallengeS256).toBe(expectedChallenge);
   });
 });

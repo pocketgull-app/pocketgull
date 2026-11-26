@@ -175,7 +175,7 @@ describe('OnDeviceEmbedderService', () => {
     expect(grounding.rxNorm?.id).toBe('11289');
     expect(grounding.rxNorm?.name).toBe('Warfarin');
     expect(grounding.confidence).toBeGreaterThan(0.7);
-    expect(grounding.integrityDigest).toMatch(/^0x_biomed_[a-f0-9]{32}$/);
+    expect(grounding.integrityDigest).toMatch(/^0x_biomed_[a-f0-9]{64}$/);
   });
 
   it('14. Grounds pediatric complex care and Form 2603 PDN respite to accurate taxonomies', async () => {
@@ -219,10 +219,14 @@ describe('OnDeviceEmbedderService', () => {
     expect(['CHROME_BUILTIN_AI', 'BIOMEDCLIP_ONNX_EMBEDDER', 'DETERMINISTIC_SIMD']).toContain(backend);
   });
 
-  it('18. Handles empty and whitespace queries gracefully in matchClinicalLenses', async () => {
+  it('18. Handles empty and whitespace queries gracefully in matchClinicalLenses and returns 0 confidence when ungrounded', async () => {
     const emptyResult = await service.matchClinicalLenses('');
     expect(emptyResult.matches).toEqual([]);
     expect(emptyResult.topLens).toBeDefined();
     expect(emptyResult.latencyMs).toBeLessThan(15);
+
+    const emptyGrounding = await service.groundToClinicalTaxonomies('   ');
+    expect(emptyGrounding.confidence).toBe(0);
+    expect(emptyGrounding.integrityDigest).toMatch(/^0x_biomed_[a-f0-9]{64}$/);
   });
 });

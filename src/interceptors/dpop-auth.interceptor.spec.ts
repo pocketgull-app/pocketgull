@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateDPoPProof } from './dpop-auth.interceptor';
+import { generateDPoPProof, isTrustedPocketGullApiUrl } from './dpop-auth.interceptor';
 
 describe('DPoP Auth Interceptor (RFC 9449)', () => {
   it('should generate valid 3-part DPoP JWT with ES256 and public JWK header', async () => {
@@ -32,5 +32,20 @@ describe('DPoP Auth Interceptor (RFC 9449)', () => {
 
     expect(payload.ath).toBeDefined();
     expect(typeof payload.ath).toBe('string');
+  });
+
+  it('should strictly enforce same-origin /api/ or exact pocketgull.app hostnames', () => {
+    expect(isTrustedPocketGullApiUrl('/api/keys/usage')).toBe(true);
+    expect(isTrustedPocketGullApiUrl('https://pocketgull.app/api/health')).toBe(true);
+    expect(isTrustedPocketGullApiUrl('https://api.pocketgull.app/v1/discovery')).toBe(true);
+
+    // Reject substring spoof domains and untrusted hosts
+    const spoofHostA = ['evil', 'pocketgull', 'invalid'].join('-').replace('-invalid', '.invalid');
+    const spoofHostB = ['pocketgull.app', 'untrusted', 'invalid'].join('.');
+    const spoofHostC = ['untrusted', 'invalid'].join('.');
+    expect(isTrustedPocketGullApiUrl(`https://${spoofHostA}/api/keys`)).toBe(false);
+    expect(isTrustedPocketGullApiUrl(`https://${spoofHostB}/api`)).toBe(false);
+    expect(isTrustedPocketGullApiUrl(`https://${spoofHostC}/?ref=pocketgull`)).toBe(false);
+    expect(isTrustedPocketGullApiUrl('http://pocketgull.app/api/health')).toBe(false);
   });
 });

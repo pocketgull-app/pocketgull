@@ -1,37 +1,31 @@
-import fs from 'fs';
-import path from 'path';
-import { execSync } from 'child_process';
-import { fileURLToPath } from 'url';
+// SPDX-License-Identifier: Apache-2.0
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
+// Lean GreenOps allowlist: dist/ already contains compiled browser + SSR assets.
+// Do NOT double-pack raw public/ or legacy server.js or local secrets (.env*, data/).
 const projectItems = [
-  'main.ts',
   'Dockerfile',
   'package.json',
   'package-lock.json',
-  'angular.json',
-  'tsconfig.json',
-  'tsconfig.app.json',
-  'proxy.conf.mjs',
-  'proxy.conf.json',
-  'tailwind.config.js',
   'ngsw-config.json',
-  'index.html',
-  'manifest.webmanifest',
-  'favicon.svg',
-  'README.md',
-  'SECURITY.md',
   'cloudbuild.yaml',
   '.dockerignore',
   '.gcloudignore',
-  'server.js',
   'dist',
-  'public',
   'docs/openapi.json'
 ].filter(item => fs.existsSync(path.resolve(rootDir, item)));
 
-console.log(`📦 Packaging clean project source files from ${rootDir}:`);
+if (!projectItems.includes('dist')) {
+  console.error('❌ [GreenOps Packaging Error] Pre-compiled dist/ directory is missing. Run `npm run build` first.');
+  process.exit(1);
+}
+
+console.log(`📦 Packaging lean GreenOps deployment archive from ${rootDir}:`);
 console.log(projectItems.map(i => `  - ${i}`).join('\n'));
 
 const outputPath = path.resolve(rootDir, 'deploy_source.tar.gz');
@@ -46,6 +40,15 @@ const excludes = [
   '*/.venv/*',
   '.angular',
   '*/.angular/*',
+  '.env',
+  '.env.*',
+  '*/.env*',
+  '*.pem',
+  '*.key',
+  '*service-account*.json',
+  '*credentials*.json',
+  'data',
+  '*/data/*',
   'tmp',
   '*/tmp/*',
   '.temp',
@@ -66,25 +69,14 @@ const excludes = [
   '*/.dart_tool/*',
   'build',
   '*/build/*',
-  '*.dill',
-  '*.apk',
-  '*.dex',
-  '*.so',
-  '.gradle',
-  '*/.gradle/*',
-  'companion-apps/patient_app',
-  'companion-apps/provider_app',
-  'companion-apps/neuro_reader_app',
-  'pocketgull_flutter',
-  'e2e',
-  'tests',
-  'typefaces_vault',
-  '.typefaces_vault',
-  'public/fonts/*.ttf',
-  'public/fonts/google_fonts_submission',
+  '*.ttf',
+  '*.TTF',
+  '*.otf',
+  'dist/brand',
+  'dist/browser/brand',
+  'dist/browser/images/screenshots',
+  'dist/browser/images/workflow',
   'public/brand',
-  'public/brand/fonts',
-  'case-studies',
   'public/images/screenshots',
   'public/images/workflow',
   'docs/images'
@@ -94,4 +86,11 @@ const tarCmd = `tar -czf "${outputPath}" ${excludes} ${projectItems.join(' ')}`;
 execSync(tarCmd, { cwd: rootDir, stdio: 'inherit' });
 
 const stats = fs.statSync(outputPath);
-console.log(`\n✅ Clean source archive created successfully: ${outputPath} (${(stats.size / 1024 / 1024).toFixed(2)} MB)`);
+const sizeMb = stats.size / (1024 * 1024);
+console.log(`\n✅ Clean source archive created: ${outputPath} (${sizeMb.toFixed(2)} MB)`);
+
+const MAX_ARCHIVE_MB = Number(process.env.MAX_DEPLOY_ARCHIVE_MB || 50);
+if (sizeMb > MAX_ARCHIVE_MB) {
+  console.error(`❌ [GreenOps Guard] Archive size (${sizeMb.toFixed(2)} MB) exceeds ${MAX_ARCHIVE_MB} MB ceiling! Prune unused dist/ assets before deploying.`);
+  process.exit(1);
+}

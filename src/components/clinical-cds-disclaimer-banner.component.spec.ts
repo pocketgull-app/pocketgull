@@ -14,11 +14,12 @@ describe('ClinicalCdsDisclaimerBannerComponent', () => {
     fixture.detectChanges();
   });
 
-  it('1. Renders the customer-facing FDA CDS and HIPAA notice', () => {
+  it('1. Renders the customer-facing FDA CDS, MSA §14.i health notice, and HIPAA notice', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('FDA CDS Guidance');
     expect(compiled.textContent).toContain('HIPAA Security Rule Notice');
     expect(compiled.textContent).toContain('NIST AI RMF 1.0');
     expect(compiled.textContent).toContain('SPDX 2.3 SBOM');
+    expect(compiled.textContent).toContain('not intended or made available as a medical device');
   });
 });

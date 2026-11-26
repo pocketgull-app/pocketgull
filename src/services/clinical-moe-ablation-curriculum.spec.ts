@@ -196,7 +196,17 @@ describe('Composable SMoE Curriculum & Popperian H0 Ablation Benchmark Suite', (
       expect(decision.workingMemoryBudgetMax).toBe(4);
     }
 
-    // Verify human-in-the-loop sovereignty: explicit clinician pin intentionally overrides automated shield
+    // Verify STAT Safety Shield invariants: non-STAT manual pins cannot bypass active hypoxemia shield
+    router.pinExpert('knee-hologram');
+    expect(router.activeSelectorDecision().safetyShieldActive).toBe(true);
+    expect(['edge-ml-hud', 'ismp-posology', 'soap-generator', 'steeep-quality-hud']).toContain(
+      router.primaryUiExpert()?.expert.id
+    );
+
+    // Clear STAT red flag -> verify human-in-the-loop sovereignty for explicit clinician pinning in non-STAT state
+    router.clearOverrides();
+    expect(router.pinnedExpertId()).toBeNull();
+    expect(router.activeSelectorDecision().safetyShieldActive).toBe(false);
     for (const expert of REGISTERED_UI_EXPERTS) {
       router.pinExpert(expert.id);
       expect(router.primaryUiExpert()?.expert.id).toBe(expert.id);

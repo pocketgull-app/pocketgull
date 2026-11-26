@@ -93,7 +93,13 @@ export interface IPatientSymptom {
     type?: string;
     verified?: boolean;
     timeline?: string;
-    [key: string]: any;
+    severity?: string | number;
+    duration?: string;
+    onset?: string;
+    notes?: string;
+    icd10?: string;
+    snomedCode?: string;
+    [key: string]: unknown;
 }
 
 export interface IBodyPartIssue {
@@ -139,30 +145,59 @@ export interface ICmpLabs {
     uricAcid?: string;
 }
 
-export interface IPatientVitals {
+export type IPatientVitals = {
     bp: string;      // Blood Pressure
     hr: string;      // Heart Rate
     temp: string;    // Temperature
     spO2: string;    // Oxygen Saturation
     weight: string;
     height: string;
-    // Continuous Glucose Monitoring (CGM)
+    // Continuous Glucose Monitoring (CGM) & Glycemic Labs
     cgmGlucoseMgDl?: string;
+    fastingGlucoseMgDl?: string;
+    bloodGlucoseMgDl?: number;
+    hba1c?: string;
+    // Respiratory & Anthropometric
+    heartRate?: number;
+    respiratoryRate?: number;
+    rr?: string;
+    bmi?: string;
     // Biochemical Telemetry
     vitC?: string;
     vitD3?: string;
     magnesium?: string;
     zinc?: string;
     b12?: string;
+    homocysteine?: string;
+    ast?: string;
+    alt?: string;
+    fastingGlucose?: string;
+    triglycerides?: string;
+    hdl?: string;
+    ldl?: string;
+    vo2Max?: string;
+    bodyFatPercentage?: string;
+    microbiomeDiversityIndex?: string;
+    firmicutesBacteroidetesRatio?: string;
+    cortisolAwakeningResponse?: string;
+    dheaS?: string;
+    salivaryMelatoninPeak?: string;
+    hrvSdnn?: string;
+    egfr?: string;
     // Comprehensive Metabolic Panel (CMP)
     cmpLabs?: ICmpLabs;
-    // Activity & Autonomic Telemetry
+    // Activity, Autonomic, Periodontal & Neuro Telemetry
     steps?: string;
     sleepEfficiency?: string;
+    // Legacy dual string/number consumers across external components outside Lane B
+    hrv?: string | number;
     hrvRmssd?: string;
     crp?: string;
-    [key: string]: any;
-}
+    sNflPgMl?: number;
+    maxPpdMm?: number;
+    sibiIndex?: number;
+    anticholinergicBurdenScore?: number;
+};
 
 export interface IDynamicMarker {
     id: string;
@@ -301,7 +336,37 @@ export interface IPatientState {
     environmentalIndex?: IEnvironmentalHealthIndex;
     oknProfile?: IOknProvenanceProfile;
     whoNihGoals?: IPatientWhoNihGoalsCatalog;
-    [key: string]: any;
+    dietarySupplements?: IDynamicMarker[];
+    allergies?: string[];
+    dateOfBirth?: string;
+    dob?: string;
+    id?: string;
+    patientId?: string;
+    name?: string;
+    symptoms?: (IPatientSymptom | (string & { name?: string; description?: string }))[];
+    condition?: string;
+    anatomicalTarget?: string;
+    biometrics?: IBiometricEntry[];
+    calculatedVitals?: {
+        crclMlMin?: number;
+        creatinineClearance?: number;
+        bsaM2?: number;
+        bmi?: number;
+        map?: number;
+        egfr?: number;
+    };
+    selectedPartId?: string | null;
+    clinicalMoERoute?: string | Record<string, unknown>;
+    labResults?: Array<{ testName: string; result: string; unit?: string; referenceRange?: string; status?: string }>;
+    wearablesTelemetry?: Record<string, number | string>;
+    aiSummary?: string;
+    clinicalRoadmap?: Array<{ phase: string; objective: string; status: string }>;
+    phq9Score?: number;
+    gad7Score?: number;
+    ybocsScore?: number;
+    kssScore?: number;
+    conditions?: string[];
+    genomicProfile?: IFhirGenomicObservation[];
 }
 
 export interface IEwarsOutbreakAlert {

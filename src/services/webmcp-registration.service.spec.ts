@@ -1,5 +1,5 @@
 ﻿import '@angular/compiler';
-import { Injector, runInInjectionContext, NgZone, signal } from '@angular/core';
+import { Injector, runInInjectionContext, signal } from '@angular/core';
 import {
   WebMcpRegistrationService,
   extractSerializableWebMcpTool,
@@ -181,9 +181,6 @@ mathematicalModel: Softmax T=0.85`;
       activeCrossAttentionBridge: vi.fn().mockReturnValue({ id: 'bridge-01', title: 'Test Bridge' })
     };
 
-    const mockNgZone = {
-      run: (fn: Function) => fn()
-    };
 
     const mockTrajectory = {
       teaspoonExplanations: vi.fn().mockReturnValue([
@@ -375,8 +372,7 @@ mathematicalModel: Softmax T=0.85`;
         { provide: DirectIomtWearablesService, useValue: mockIomtService },
         { provide: MimicOmopBenchmarkService, useClass: MimicOmopBenchmarkService },
         { provide: EhrWritebackService, useClass: EhrWritebackService },
-        { provide: EdgeAutonomousVoiceAgentService, useClass: EdgeAutonomousVoiceAgentService },
-        { provide: NgZone, useValue: mockNgZone }
+        { provide: EdgeAutonomousVoiceAgentService, useClass: EdgeAutonomousVoiceAgentService }
       ]
     });
 

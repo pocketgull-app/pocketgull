@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
@@ -95,7 +95,7 @@ interface IUsageResponse {
             @if (currentTier() === 'practitioner') {
               <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-sky-500 text-white text-[11px] font-bold rounded-full shadow-sm">Current Plan</span>
             } @else if (currentTier() !== 'institution') {
-              <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-sky-500 text-white text-[11px] font-bold rounded-full shadow-sm animate-pulse">Most Popular</span>
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-sky-500 text-white text-[11px] font-bold rounded-full shadow-sm">Most Popular</span>
             }
             <div class="mb-4">
               <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Practitioner</h3>
@@ -196,24 +196,27 @@ interface IUsageResponse {
         <div class="p-5 bg-gradient-to-r from-emerald-950/30 via-teal-950/20 to-indigo-950/30 rounded-xl border border-teal-500/30 mb-4 shadow-sm">
           <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <div class="flex items-center gap-2">
+              <div class="flex flex-wrap items-center gap-2">
                 <span class="text-xl">🌸</span>
                 <h3 class="text-sm font-bold text-teal-300 uppercase tracking-wider font-mono">
                   Dr. Martin Seligman Flourishing & Burnout Reduction ROI
                 </h3>
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-[10px] font-mono font-bold text-amber-200 uppercase tracking-wider">
+                  [ESTIMATED BENCHMARK • NON-GUARANTEED]
+                </span>
               </div>
               <p class="text-xs text-zinc-300 mt-1 max-w-2xl leading-relaxed">
-                By eliminating manual EHR chart transcription with ambient intelligence, PocketGull restores clinical flow ($E$) and emotional vitality ($V$), saving health systems hundreds of thousands per retained clinician.
+                Illustrative literature benchmark (non-guaranteed, varies by clinical setting): ambient chart assistance is modeled to reduce documentation burden and clinician turnover costs.
               </p>
             </div>
             <div class="flex gap-4 shrink-0 font-mono text-center">
               <div class="p-2.5 rounded-lg bg-zinc-900/80 border border-teal-500/20">
-                <div class="text-lg font-black text-teal-300">2.1 hrs</div>
-                <div class="text-[10px] text-zinc-400">Pajama-Time Saved / Day</div>
+                <div class="text-lg font-black text-teal-300">~2.1 hrs</div>
+                <div class="text-[10px] text-zinc-400">Est. Admin Time / Day</div>
               </div>
               <div class="p-2.5 rounded-lg bg-zinc-900/80 border border-teal-500/20">
                 <div class="text-lg font-black text-emerald-300">$500k+</div>
-                <div class="text-[10px] text-zinc-400">Turnover Cost Saved / MD</div>
+                <div class="text-[10px] text-zinc-400">Lit. Turnover Benchmark / MD</div>
               </div>
             </div>
           </div>
@@ -223,24 +226,27 @@ interface IUsageResponse {
         <div class="p-5 bg-gradient-to-r from-teal-950/40 via-cyan-950/30 to-blue-950/40 rounded-xl border border-cyan-500/40 mb-6 shadow-sm">
           <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <div class="flex items-center gap-2">
+              <div class="flex flex-wrap items-center gap-2">
                 <span class="text-xl">🏥</span>
                 <h3 class="text-sm font-bold text-cyan-300 uppercase tracking-wider font-mono">
                   CMS Remote Patient Monitoring (RPM) Medicare Claims Revenue
                 </h3>
+                <span class="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-[10px] font-mono font-bold text-amber-200 uppercase tracking-wider">
+                  [ESTIMATED BENCHMARK • NON-GUARANTEED]
+                </span>
               </div>
               <p class="text-xs text-zinc-300 mt-1 max-w-2xl leading-relaxed">
-                PocketGull turns continuous biometric telemetry into recurring clinical practice revenue with automated 16-day transmission attestation, ICD-10 crosswalks, and 1-click CMS-1500 / FHIR R4 Claim generation for CPT 99453, 99454, 99457, and 99458.
+                Illustrative CMS fee-schedule benchmark (actual reimbursement depends on payer coverage, geographic adjustment, and documented medical necessity) supporting 16-day transmission attestation and CMS-1500 / FHIR R4 drafting for CPT 99453, 99454, 99457, and 99458.
               </p>
             </div>
             <div class="flex gap-3 shrink-0 font-mono text-center">
               <div class="p-2.5 rounded-lg bg-zinc-900/80 border border-cyan-500/30">
                 <div class="text-lg font-black text-cyan-300">$118 - $158</div>
-                <div class="text-[10px] text-zinc-400">Monthly Payout / Patient</div>
+                <div class="text-[10px] text-zinc-400">Est. CMS Benchmark / Pt</div>
               </div>
               <div class="p-2.5 rounded-lg bg-zinc-900/80 border border-cyan-500/30">
                 <div class="text-lg font-black text-green-300">$141,696 / yr</div>
-                <div class="text-[10px] text-zinc-400">Practice Revenue / 100 Pts</div>
+                <div class="text-[10px] text-zinc-400">Est. Model / 100 Eligible Pts</div>
               </div>
             </div>
           </div>
@@ -294,10 +300,13 @@ interface IUsageResponse {
     </div>
   `
 })
-export class ApiPricingComponent implements OnInit {
+export class ApiPricingComponent implements OnInit, OnDestroy {
+  @Input() customerEmail?: string;
   @Output() close = new EventEmitter<void>();
 
   private http = inject(HttpClient);
+  private hadAvsActive = false;
+  private hadPhilocardiaActive = false;
 
   isLoading = signal(false);
   usageData = signal<IUsageResponse | null>(null);
@@ -319,7 +328,25 @@ export class ApiPricingComponent implements OnInit {
   -d '{"query": "BRCA1", "domain": "genomics"}'`;
 
   ngOnInit(): void {
+    // Ethical Motion Quarantine (WCAG 2.2 §2.3.3): suspend ambient rhythmic classes on pricing surfaces
+    if (typeof document !== 'undefined') {
+      this.hadAvsActive = document.body?.classList?.contains('avs-active') ?? false;
+      this.hadPhilocardiaActive = document.documentElement?.classList?.contains('philocardia-active') ?? false;
+      document.body?.classList?.remove('avs-active');
+      document.documentElement?.classList?.remove('philocardia-active');
+    }
     this.fetchUsage();
+  }
+
+  ngOnDestroy(): void {
+    if (typeof document !== 'undefined') {
+      if (this.hadAvsActive) {
+        document.body?.classList?.add('avs-active');
+      }
+      if (this.hadPhilocardiaActive) {
+        document.documentElement?.classList?.add('philocardia-active');
+      }
+    }
   }
 
   fetchUsage(): void {
@@ -334,12 +361,16 @@ export class ApiPricingComponent implements OnInit {
 
   subscribe(priceId: string, tierName: string): void {
     this.isLoading.set(true);
-    this.http.post<{ url: string }>('/api/billing/checkout', {
+    const payload: Record<string, string> = {
       priceId,
-      customerEmail: 'admin@demo-tenant.com',
       itemType: 'agentic_api_tier',
       packageName: `Pocket Gull ${tierName} API`
-    }).subscribe({
+    };
+    const email = this.customerEmail?.trim();
+    if (email) {
+      payload['customerEmail'] = email;
+    }
+    this.http.post<{ url: string }>('/api/billing/checkout', payload).subscribe({
       next: (res) => {
         if (res.url && typeof window !== 'undefined') {
           window.location.href = res.url;

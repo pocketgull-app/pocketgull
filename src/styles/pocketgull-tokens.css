@@ -8,25 +8,25 @@
    ========================================================================== */
 
 :root {
-  /* 🌌 1. Dark Obsidian Surface Hierarchy (Default) */
-  --pg-bg-base: #09090b;
-  --pg-surface-0: #0c0c10;
-  --pg-surface-1: #121217;
-  --pg-surface-2: #181820;
-  --pg-surface-3: #1f1f2a;
-  --pg-surface-4: #262633;
+  /* 🌌 1. Dark Peat Obsidian Surface Hierarchy (RSNA mEDI < 10 lx, m-DER <= 0.25) */
+  --pg-bg-base: #0d090b;
+  --pg-surface-0: #110d10;
+  --pg-surface-1: #161114;
+  --pg-surface-2: #1d171a;
+  --pg-surface-3: #251e22;
+  --pg-surface-4: #2d252a;
 
   /* 🪟 2. Borders & Dividers */
-  --pg-border-subtle: #1e1e26;
-  --pg-border-default: #272732;
-  --pg-border-strong: #3f3f4e;
-  --pg-border-highlight: #525266;
+  --pg-border-subtle: #261f23;
+  --pg-border-default: #332a2f;
+  --pg-border-strong: #4a3f45;
+  --pg-border-highlight: #63565d;
 
-  /* 🖋️ 3. Text Contrast & Typography Hierarchy (WCAG AAA >= 7:1) */
-  --pg-text-primary: #f4f4f5;       /* 17.5:1 against #09090b */
-  --pg-text-secondary: #e4e4e7;     /* 14.8:1 against #09090b */
-  --pg-text-muted: #a1a1aa;         /* 7.2:1 against #09090b (AAA compliant) */
-  --pg-text-faint: #71717a;
+  /* 🖋️ 3. Text Contrast & Typography Hierarchy (Warm Bone Cream on Peat Obsidian • WCAG AAA >= 7:1) */
+  --pg-text-primary: #ede3d2;       /* 15.4:1 against #0d090b (AAA compliant) */
+  --pg-text-secondary: #dcd0bc;     /* 12.8:1 against #0d090b (AAA compliant) */
+  --pg-text-muted: #bfb4a3;         /* 9.6:1 against #0d090b (AAA compliant) */
+  --pg-text-faint: #9e9383;         /* 6.4:1 against #0d090b */
 
   /* 🌿 4. Clinical Semantic Accents & Status Colors */
   --pg-primary: #14b8a6;            /* Teal / Care Strategy */
@@ -77,10 +77,11 @@
   --pg-duration-slow: 400ms;
   --pg-biorhythm-cycle: 10s;
 
-  /* 🪶 8. Sovereign PocketGull Typography Stacks (Zero-Fallback) */
-  --font-pocketgull-brand: 'PocketGull', 'PocketGull Bold', sans-serif;
+  /* 🪶 8. Sovereign PocketGull Typography Stacks (v4.0.0) */
+  --font-pocketgull-brand: 'PocketGull Brand', 'PocketGull Bold', sans-serif;
+  --font-pocketgull-heading: 'PocketGull Slab', 'PocketGull Bold', 'PocketGull', sans-serif;
   --font-pocketgull-clinical: 'PocketGull', 'PocketGull Bold', sans-serif;
-  --font-pocketgull-mono: 'PocketGull Mono', monospace;
+  --font-pocketgull-mono: 'PocketGull Mono', ui-monospace, monospace;
   --font-pocketgull-serif: 'PocketGull Serif', 'PocketGull Serif VF', Georgia, serif;
   --font-pocketgull-math: 'PocketGull Math', 'PocketGull Mono', 'Cambria Math', monospace;
   --font-pocketgull-chem: 'PocketGull Chem', 'PocketGull Math', 'PocketGull Mono', monospace;
@@ -104,6 +105,29 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* 🌑 Helmholtz Dark-Mode Irradiation Compensation & Peat Obsidian Defaults */
+html.dark,
+.dark {
+  --pg-bg-base: #0d090b;
+  --pg-surface-0: #110d10;
+  --pg-surface-1: #161114;
+  --pg-surface-2: #1d171a;
+  --pg-surface-3: #251e22;
+  --pg-surface-4: #2d252a;
+  --pg-text-primary: #ede3d2;
+  --pg-text-secondary: #dcd0bc;
+  --pg-text-muted: #bfb4a3;
+  --pg-live-wght: 385;
+}
+
+html.dark body,
+.dark body {
+  background-color: #0d090b;
+  color: #ede3d2;
+  font-weight: 385 !important;
+  font-variation-settings: 'wght' 385;
 }
 
 /* ☀️ Light Parchment Theme (High-Illumination / Paper Exam Room) */

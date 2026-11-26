@@ -1,13 +1,17 @@
+// SPDX-License-Identifier: Apache-2.0
 import { Router } from 'express';
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { GoogleAuth } from 'google-auth-library';
 import { Readable } from 'stream';
 import { ReadableStream } from 'stream/web';
+import { requireAuth, isStrictProductionEnv } from './middleware/auth-guard';
 
 export const dicomRouter = Router();
 
-const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] !== 'production');
+const isTestingEnv =
+  !isStrictProductionEnv() &&
+  Boolean(process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test' || process.env['VITEST']);
 
 // Rate limiting: 60 requests per minute per IP for all DICOM proxy routes
 dicomRouter.use(rateLimit({
@@ -18,6 +22,9 @@ dicomRouter.use(rateLimit({
   validate: { trustProxy: false },
   message: { error: 'Too many DICOM requests. Please try again later.' }
 }));
+
+// Require authenticated clinician/admin session on all DICOM imaging routes
+dicomRouter.use(requireAuth(['CLINICIAN']));
 
 // Initialize Google Auth with the Healthcare API scope
 let _auth: GoogleAuth | null = null;
@@ -38,34 +45,51 @@ function sanitizeUrl(urlStr: string): URL {
   if (!parsed.pathname.startsWith('/v1/projects/')) {
     throw new Error('SSRF Blocked: URL path is not authorized.');
   }
+  if (parsed.pathname.includes('..')) {
+    throw new Error('SSRF Blocked: Path traversal sequence rejected.');
+  }
   return new URL(`https://healthcare.googleapis.com${parsed.pathname}${parsed.search}`);
 }
 
-
 /**
- * Sanitise a DICOM proxy parameter to prevent SSRF.
- * Only allows alphanumerics, hyphens, underscores, and dots.
- * Returns null if the value is absent or contains illegal characters after stripping.
+ * Sanitise a DICOM proxy parameter to prevent SSRF and path traversal.
+ * Strictly forbids `..` segments and only allows alphanumerics, hyphens, underscores, and single dots.
  */
-function sanitiseDicomParam(value: unknown): string | null {
+export function sanitiseDicomParam(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   const trimmed = value.trim();
-  return /^[a-zA-Z0-9._\-]+$/.test(trimmed) ? trimmed : null;
+  if (!trimmed || trimmed.includes('..') || trimmed.startsWith('.') || trimmed.endsWith('.')) {
+    return null;
+  }
+  return /^[a-zA-Z0-9._\-]{1,128}$/.test(trimmed) ? trimmed : null;
 }
 
 /**
- * Validate a DICOM UID (digits and dots only, per DICOM standard).
+ * Validate a DICOM UID (digits and single dots only, per DICOM standard, no `..`).
  */
-function validateDicomUid(value: unknown): string | null {
+export function validateDicomUid(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   const trimmed = value.trim();
+  if (!trimmed || trimmed.includes('..') || trimmed.endsWith('.')) return null;
   return /^\d[\d.]{0,63}$/.test(trimmed) ? trimmed : null;
 }
 
-/** Resolve project/location from query param with env var fallback, sanitised. */
-function resolveParam(queryVal: unknown, envVal: string | undefined, fallback?: string): string | null {
-  const raw = queryVal ?? envVal ?? fallback;
-  return sanitiseDicomParam(raw);
+/**
+ * Resolves pinned server-side Healthcare API target configuration strictly from env vars.
+ * Never allows callers to override project, location, dataset, or dicomStore via query parameters.
+ */
+function getPinnedDicomConfig(): {
+  projectId: string | null;
+  location: string | null;
+  datasetId: string | null;
+  dicomStoreId: string | null;
+} {
+  return {
+    projectId: sanitiseDicomParam(process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT']),
+    location: sanitiseDicomParam(process.env['HC_LOCATION'] || 'us-central1'),
+    datasetId: sanitiseDicomParam(process.env['HC_DATASET']),
+    dicomStoreId: sanitiseDicomParam(process.env['HC_DICOM_STORE'])
+  };
 }
 
 /**
@@ -74,20 +98,17 @@ function resolveParam(queryVal: unknown, envVal: string | undefined, fallback?: 
  */
 dicomRouter.get('/studies', async (req, res) => {
   try {
-    const projectId  = resolveParam(req.query['project'],   process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT']);
-    const location   = resolveParam(req.query['location'],  process.env['HC_LOCATION'], 'us-central1');
-    const datasetId  = resolveParam(req.query['dataset'],   process.env['HC_DATASET']);
-    const dicomStoreId = resolveParam(req.query['dicomStore'], process.env['HC_DICOM_STORE']);
+    const { projectId, location, datasetId, dicomStoreId } = getPinnedDicomConfig();
 
-    if (!projectId || !datasetId || !dicomStoreId) {
-      // Missing config — return empty array rather than noisy 400 in unconfigured demo environments.
+    if (!projectId || !location || !datasetId || !dicomStoreId) {
       return res.status(200).json([]);
     }
 
-    // Pass along safe query parameters for filtering (PatientName, PatientID, etc.)
+    // Pass along allowlisted safe QIDO-RS filter parameters only
+    const allowedFilters = new Set(['PatientID', 'StudyDate', 'Modality', 'AccessionNumber', 'StudyInstanceUID', 'limit', 'offset']);
     const searchParams = new URLSearchParams();
     for (const [k, v] of Object.entries(req.query)) {
-      if (['project', 'location', 'dataset', 'dicomStore'].includes(k)) continue;
+      if (!allowedFilters.has(k)) continue;
       const safe = sanitiseDicomParam(v);
       if (safe) searchParams.set(k, safe);
     }
@@ -109,6 +130,7 @@ dicomRouter.get('/studies', async (req, res) => {
     }
 
     const data = await response.json();
+    res.setHeader('Cache-Control', 'private, no-store');
     res.json(data);
   } catch (error: any) {
     console.error('[DICOM] Proxy Error (Studies):', error.message);
@@ -118,19 +140,16 @@ dicomRouter.get('/studies', async (req, res) => {
 
 /**
  * GET /api/dicom/rendered
- * Proxy for retrieving rendered JPEGs via WADO-RS.
+ * Proxy for retrieving rendered JPEGs via WADO-RS (strictly private, no-store for PHI protection).
  */
 dicomRouter.get('/rendered', async (req, res) => {
   try {
-    const projectId    = resolveParam(req.query['project'],    process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT']);
-    const location     = resolveParam(req.query['location'],   process.env['HC_LOCATION'], 'us-central2');
-    const datasetId    = resolveParam(req.query['dataset'],    process.env['HC_DATASET']);
-    const dicomStoreId = resolveParam(req.query['dicomStore'], process.env['HC_DICOM_STORE']);
-    const studyUid     = validateDicomUid(req.query['studyUid']);
-    const seriesUid    = validateDicomUid(req.query['seriesUid']);
-    const instanceUid  = validateDicomUid(req.query['instanceUid']);
+    const { projectId, location, datasetId, dicomStoreId } = getPinnedDicomConfig();
+    const studyUid = validateDicomUid(req.query['studyUid']);
+    const seriesUid = validateDicomUid(req.query['seriesUid']);
+    const instanceUid = validateDicomUid(req.query['instanceUid']);
 
-    if (!projectId || !datasetId || !dicomStoreId || !studyUid || !seriesUid || !instanceUid) {
+    if (!projectId || !location || !datasetId || !dicomStoreId || !studyUid || !seriesUid || !instanceUid) {
       return res.status(400).json({ error: 'Missing or invalid required parameters.' });
     }
 
@@ -151,7 +170,7 @@ dicomRouter.get('/rendered', async (req, res) => {
     }
 
     res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('Cache-Control', 'private, no-store');
 
     if (response.body) {
       Readable.fromWeb(response.body as ReadableStream).pipe(res);
@@ -170,13 +189,10 @@ dicomRouter.get('/rendered', async (req, res) => {
  */
 dicomRouter.post('/store', express.raw({ type: 'application/dicom', limit: '100mb' }), async (req, res) => {
   try {
-    const projectId    = resolveParam(req.query['project'],    process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT']);
-    const location     = resolveParam(req.query['location'],   process.env['HC_LOCATION'], 'us-central2');
-    const datasetId    = resolveParam(req.query['dataset'],    process.env['HC_DATASET']);
-    const dicomStoreId = resolveParam(req.query['dicomStore'], process.env['HC_DICOM_STORE']);
+    const { projectId, location, datasetId, dicomStoreId } = getPinnedDicomConfig();
 
-    if (!projectId || !datasetId || !dicomStoreId) {
-      return res.status(400).json({ error: 'Missing required parameters.' });
+    if (!projectId || !location || !datasetId || !dicomStoreId) {
+      return res.status(400).json({ error: 'Missing required server DICOM store configuration.' });
     }
 
     const dicomWebUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${location}/datasets/${datasetId}/dicomStores/${dicomStoreId}/dicomWeb/studies`;
@@ -207,19 +223,16 @@ dicomRouter.post('/store', express.raw({ type: 'application/dicom', limit: '100m
 
 /**
  * GET /api/dicom/raw
- * Proxy for retrieving raw DICOM binaries via WADO-RS.
+ * Proxy for retrieving raw DICOM binaries via WADO-RS (strictly private, no-store).
  */
 dicomRouter.get('/raw', async (req, res) => {
   try {
-    const projectId    = resolveParam(req.query['project'],    process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT']);
-    const location     = resolveParam(req.query['location'],   process.env['HC_LOCATION'], 'us-central2');
-    const datasetId    = resolveParam(req.query['dataset'],    process.env['HC_DATASET']);
-    const dicomStoreId = resolveParam(req.query['dicomStore'], process.env['HC_DICOM_STORE']);
-    const studyUid     = validateDicomUid(req.query['studyUid']);
-    const seriesUid    = validateDicomUid(req.query['seriesUid']);
-    const instanceUid  = validateDicomUid(req.query['instanceUid']);
+    const { projectId, location, datasetId, dicomStoreId } = getPinnedDicomConfig();
+    const studyUid = validateDicomUid(req.query['studyUid']);
+    const seriesUid = validateDicomUid(req.query['seriesUid']);
+    const instanceUid = validateDicomUid(req.query['instanceUid']);
 
-    if (!projectId || !datasetId || !dicomStoreId || !studyUid || !seriesUid || !instanceUid) {
+    if (!projectId || !location || !datasetId || !dicomStoreId || !studyUid || !seriesUid || !instanceUid) {
       return res.status(400).json({ error: 'Missing or invalid required parameters.' });
     }
 
@@ -240,6 +253,7 @@ dicomRouter.get('/raw', async (req, res) => {
     }
 
     res.setHeader('Content-Type', 'application/dicom');
+    res.setHeader('Cache-Control', 'private, no-store');
 
     if (response.body) {
       Readable.fromWeb(response.body as ReadableStream).pipe(res);
@@ -258,15 +272,12 @@ dicomRouter.get('/raw', async (req, res) => {
  */
 dicomRouter.delete('/delete', async (req, res) => {
   try {
-    const projectId    = resolveParam(req.query['project'],    process.env['GOOGLE_CLOUD_PROJECT'] || process.env['GCLOUD_PROJECT']);
-    const location     = resolveParam(req.query['location'],   process.env['HC_LOCATION'], 'us-central2');
-    const datasetId    = resolveParam(req.query['dataset'],    process.env['HC_DATASET']);
-    const dicomStoreId = resolveParam(req.query['dicomStore'], process.env['HC_DICOM_STORE']);
-    const studyUid     = validateDicomUid(req.query['studyUid']);
-    const seriesUid    = validateDicomUid(req.query['seriesUid']);
-    const instanceUid  = validateDicomUid(req.query['instanceUid']);
+    const { projectId, location, datasetId, dicomStoreId } = getPinnedDicomConfig();
+    const studyUid = validateDicomUid(req.query['studyUid']);
+    const seriesUid = validateDicomUid(req.query['seriesUid']);
+    const instanceUid = validateDicomUid(req.query['instanceUid']);
 
-    if (!projectId || !datasetId || !dicomStoreId || !studyUid) {
+    if (!projectId || !location || !datasetId || !dicomStoreId || !studyUid) {
       return res.status(400).json({ error: 'Missing required parameters.' });
     }
 

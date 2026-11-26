@@ -65,4 +65,24 @@ describe('@pocketgull/ismp-clinical-guard', () => {
   it('7. Exports singleton instance for zero-config usage', () => {
     expect(ismpGuard.sanitizeClinicalDosage('5.0 mg')).toBe('5 mg');
   });
+
+  it('8. Catches fractional trailing zeros (5.50 mg, 0.250 mL), negative naked decimals (-.5 -> -0.5), IU/QHS/HS/cc, and clean vincristine 2 mg cap', () => {
+    expect(guard.formatIsmpNumber('-.5')).toBe('-0.5');
+    expect(guard.formatIsmpNumber('-.25', 'mg')).toBe('-0.25 mg');
+    expect(guard.sanitizeClinicalDosage('Give Warfarin 5.50 mg QHS + 0.250 mL + 1000 IU + 5 cc + -.5 mg')).toContain('5.5 mg at bedtime');
+    expect(guard.sanitizeClinicalDosage('Give 0.250 mL HS')).toBe('Give 0.25 mL at bedtime');
+
+    const audit = guard.auditPrescription('Warfarin 5.50 mg QHS; Vitamin D 1000 IU; 5 cc syrup; delta -.5 mg; hydralazine');
+    expect(audit.hasViolations).toBe(true);
+    expect(audit.violationsCount).toBe(audit.violations.length);
+    expect(audit.violations.some(v => v.type === 'TRAILING_ZERO' && v.corrected === '5.5 mg')).toBe(true);
+    expect(audit.violations.some(v => v.type === 'NAKED_DECIMAL' && v.corrected === '-0.5 mg')).toBe(true);
+    expect(audit.violations.some(v => v.type === 'ERROR_PRONE_ABBREVIATION' && v.corrected === 'at bedtime')).toBe(true);
+    expect(audit.violations.some(v => v.type === 'ERROR_PRONE_ABBREVIATION' && v.corrected === '1000 units')).toBe(true);
+    expect(audit.violations.some(v => v.type === 'ERROR_PRONE_ABBREVIATION' && v.corrected === '5 mL')).toBe(true);
+
+    const vincaPair = guard.getLasaPair('vincristine');
+    expect(vincaPair?.drugB.typicalDose).toContain('2 mg');
+    expect(vincaPair?.drugB.typicalDose).not.toContain('2.0 mg');
+  });
 });

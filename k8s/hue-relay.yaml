@@ -5,7 +5,7 @@ metadata:
   labels:
     app: hue-relay
 spec:
-  replicas: 1
+  replicas: 0 # Scale-to-zero default (enable on-demand via KEDA / workstation Hue bridge)
   selector:
     matchLabels:
       app: hue-relay
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: hue-relay
-          image: pocketgull-web
+          image: us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull:latest
           command: ["node", "scripts/hue-relay.js"]
           ports:
             - containerPort: 8080

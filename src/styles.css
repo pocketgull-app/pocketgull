@@ -6,37 +6,37 @@
 @import './styles/directcurves.css';
 
 :root {
-  /* Material Design 3 (M3) System Color Tokens (Dark Obsidian Theme) */
+  /* Material Design 3 (M3) System Color Tokens (Peat Obsidian / Warm Bone Cream — RSNA mEDI < 10 lx) */
   --md-sys-color-primary: #14b8a6;
   --md-sys-color-on-primary: #003731;
   --md-sys-color-primary-container: #005047;
   --md-sys-color-on-primary-container: #70f7e4;
-  --md-sys-color-surface: #09090b;
-  --md-sys-color-surface-dim: #0e0e12;
-  --md-sys-color-surface-container-lowest: #0c0c10;
-  --md-sys-color-surface-container-low: #121217;
-  --md-sys-color-surface-container: #181820;
-  --md-sys-color-surface-container-high: #1f1f2a;
-  --md-sys-color-surface-container-highest: #262633;
-  --md-sys-color-on-surface: #f4f4f5;
-  --md-sys-color-on-surface-variant: #a1a1aa;
-  --md-sys-color-outline: #272732;
-  --md-sys-color-outline-variant: #3f3f4e;
+  --md-sys-color-surface: #0d090b;
+  --md-sys-color-surface-dim: #110d10;
+  --md-sys-color-surface-container-lowest: #0d090b;
+  --md-sys-color-surface-container-low: #161114;
+  --md-sys-color-surface-container: #1d171a;
+  --md-sys-color-surface-container-high: #251e22;
+  --md-sys-color-surface-container-highest: #2d252a;
+  --md-sys-color-on-surface: #ede3d2;
+  --md-sys-color-on-surface-variant: #bfb4a3;
+  --md-sys-color-outline: #332a2f;
+  --md-sys-color-outline-variant: #4a3f45;
 
-  /* Material Design 3 Typography Roles Mapped to Sovereign PocketGull */
-  --md-sys-typescale-display-large-font: 'PocketGull Bold', 'PocketGull', sans-serif;
-  --md-sys-typescale-headline-medium-font: 'PocketGull Bold', 'PocketGull', sans-serif;
+  /* Material Design 3 Typography Roles Mapped to Sovereign PocketGull v4.0.0 */
+  --md-sys-typescale-display-large-font: 'PocketGull Slab', 'PocketGull Bold', 'PocketGull', sans-serif;
+  --md-sys-typescale-headline-medium-font: 'PocketGull Slab', 'PocketGull Bold', 'PocketGull', sans-serif;
   --md-sys-typescale-title-medium-font: 'PocketGull Bold', 'PocketGull', sans-serif;
-  --md-sys-typescale-body-large-font: 'PocketGull Fineliner', 'PocketGull', sans-serif;
-  --md-sys-typescale-label-large-font: 'PocketGull Mono', monospace;
+  --md-sys-typescale-body-large-font: 'PocketGull', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --md-sys-typescale-label-large-font: 'PocketGull Mono', ui-monospace, monospace;
 
-  font-family: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'PocketGull Bold', 'PocketGull', sans-serif;
-  --font-serif: 'PocketGull Serif', 'PocketGull Serif VF', Georgia, serif;
-  --font-pocketgull-serif: 'PocketGull Serif', 'PocketGull Serif VF', Georgia, serif;
+  font-family: 'PocketGull', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'PocketGull', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'PocketGull Slab', 'PocketGull Bold', 'PocketGull', sans-serif;
+  --font-serif: 'PocketGull Serif', Georgia, serif;
+  --font-pocketgull-serif: 'PocketGull Serif', Georgia, serif;
   --font-caslon: var(--font-pocketgull-serif);
-  --font-mono: 'PocketGull Mono', monospace;
+  --font-mono: 'PocketGull Mono', ui-monospace, monospace;
   --font-rounded: 'PocketGull', 'PocketGull Bold', sans-serif;
   --font-math: var(--font-pocketgull-math);
   --font-chem: var(--font-pocketgull-chem);
@@ -49,11 +49,40 @@
 }
 
 html, body {
-  font-family: 'PocketGull', 'PocketGull Bold', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'PocketGull', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.65;
   letter-spacing: -0.012em;
   overflow-x: clip;
   max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Global Margin Containment Invariant across Thin-Client & Mobile Viewports */
+p,
+article,
+section,
+.card,
+.pg-card,
+.paper-card,
+.pocket-gull-card,
+.sub-panel,
+.specimen-card,
+.clinical-specimen,
+pre,
+blockquote {
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Helmholtz Dark-Mode Irradiation Compensation & Peat Obsidian Baseline */
+html.dark body,
+.dark body {
+  background-color: #0d090b;
+  color: #ede3d2;
+  font-weight: 385 !important;
+  font-variation-settings: 'wght' 385;
 }
 
 .font-pocketgull-serif, .pocketgull-serif-prose, .font-caslon, .caslon-prose {
@@ -217,23 +246,24 @@ html, body {
 
 
 h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', 'Inter', sans-serif;
+  font-family: var(--font-heading, 'PocketGull Slab', 'PocketGull Bold', 'PocketGull', sans-serif);
   font-weight: 800;
   letter-spacing: -0.015em;
   line-height: 1.25;
 }
 
 .font-sans, .ui-sans-serif {
-  font-family: 'Atkinson Hyperlegible', 'Atkinson Hyperlegible Next', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans, 'PocketGull', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
 }
 
 .font-mono, .ui-monospace, code, kbd, samp, pre {
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
-  font-feature-settings: "zero", "ss01", "ss02";
+  font-family: var(--font-mono, 'PocketGull Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: "cv08" 1, "cv05" 1, "ss02" 1, "tnum" 1, "zero" 1;
 }
 
 .font-rounded, .ui-rounded {
-  font-family: 'Atkinson Hyperlegible Next', 'Plus Jakarta Sans', 'Outfit', sans-serif !important;
+  font-family: var(--font-rounded, 'PocketGull', 'PocketGull Bold', sans-serif);
 }
 
 /* ==========================================================================
@@ -1954,7 +1984,7 @@ app-body-3d-viewer,
 
 /* --- Default (idle) AVS tokens --- */
 :root {
-    --avs-breath-duration: 10.9s;       /* 5.5 BPM resonance default */
+    --avs-breath-duration: 10s;         /* 0.1 Hz Mayer Wave resonance default (4s in / 6s out) */
     --avs-breath-phase: 0;              /* 0→1 written each rAF frame  */
     --avs-color-primary: 16, 185, 129;  /* Emerald 500 (rgb triplet)   */
     --avs-color-glow: 16, 185, 129;
@@ -2422,12 +2452,12 @@ body[data-kss-tier="caution"] #kss-ambient-halo {
 }
 
 @keyframes kss-alert-pulse {
-    0%, 100% { opacity: 0.8; }
-    50%       { opacity: 1.4; }
+    0%, 100% { opacity: 0.65; }
+    50%       { opacity: 1; }
 }
 @keyframes kss-caution-breathe {
-    0%, 100% { opacity: 0.9; }
-    50%       { opacity: 1.2; }
+    0%, 100% { opacity: 0.75; }
+    50%       { opacity: 1; }
 }
 
 /* Nav border tint */
@@ -3422,42 +3452,7 @@ html.theme-papyrus app-root {
   color: var(--papyrus-text);
 }
 
-/* Torchlight Cave Flicker Overlay */
-html.theme-papyrus body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 999;
-  mix-blend-mode: color-dodge;
-  background-image: 
-    radial-gradient(circle at 25% 35%, rgba(251, 146, 60, 0.16) 0%, rgba(217, 119, 6, 0.08) 35%, transparent 70%),
-    radial-gradient(circle at 75% 65%, rgba(251, 113, 133, 0.12) 0%, rgba(185, 28, 28, 0.06) 40%, transparent 75%);
-  animation: torch-flicker 4.5s infinite ease-in-out alternate;
-}
-
-@keyframes torch-flicker {
-  0% {
-    opacity: 0.8;
-    transform: scale(1.0) translate(0px, 0px) rotate(0deg);
-  }
-  25% {
-    opacity: 0.95;
-    transform: scale(1.04) translate(-12px, 8px) rotate(0.5deg);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(0.97) translate(10px, -15px) rotate(-0.5deg);
-  }
-  75% {
-    opacity: 0.88;
-    transform: scale(1.02) translate(-5px, -5px) rotate(0.2deg);
-  }
-  100% {
-    opacity: 0.82;
-    transform: scale(0.99) translate(8px, 12px) rotate(-0.2deg);
-  }
-}
+/* Note: body::after is reserved exclusively for body.cpr-flash::after CPR visual metronome. */
 
 /* Component slabs styled as clay/dark papyrus tablets */
 html.theme-papyrus .bg-white,
@@ -3495,7 +3490,7 @@ html.theme-papyrus h3,
 html.theme-papyrus h4,
 html.theme-papyrus h5 {
   color: var(--egyptian-gold) !important;
-  font-family: serif, 'Times New Roman', Georgia;
+  font-family: 'PocketGull Serif', Georgia, 'Times New Roman', serif;
   letter-spacing: 0.05em;
   text-shadow: 0 0 10px rgba(217, 119, 6, 0.12);
 }
@@ -3610,23 +3605,7 @@ html.theme-pool-dark body::before {
   100% { background-position: 60px 40px; }
 }
 
-/* Gentle floating animation for Blow-up UI Panels */
-html.theme-pool .bg-white,
-html.theme-pool .bg-zinc-900,
-html.theme-pool .bg-zinc-950,
-html.theme-pool .pocket-gull-card,
-html.theme-pool .paper-card,
-html.theme-pool .sub-panel,
-html.theme-pool .card {
-  animation: floating-lounger 6s ease-in-out infinite alternate;
-}
-
-@keyframes floating-lounger {
-  0% { transform: translateY(0px) rotate(0deg); }
-  100% { transform: translateY(-5px) rotate(0.4deg); }
-}
-
-/* Glossy Solid Floating Vinyl Lounger & Pool Furniture Panels */
+/* Glossy Solid Floating Vinyl Lounger & Pool Furniture Panels (stationary for Ataxia/vestibular calm) */
 html.theme-pool .bg-white,
 html.theme-pool .bg-zinc-900,
 html.theme-pool .bg-zinc-950,
@@ -3932,7 +3911,7 @@ html.theme-mandala h4,
 html.theme-mandala h5 {
   color: var(--mandala-gold) !important;
   text-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
-  font-family: serif, 'Times New Roman', Georgia;
+  font-family: 'PocketGull Serif', Georgia, 'Times New Roman', serif;
   letter-spacing: 0.08em;
 }
 
@@ -3983,15 +3962,15 @@ html.theme-mandala .bg-slate-900:hover {
   color: #ffffff !important;
 }
 
-/* ─── Scotopic 650nm Emergency HUD (Dark Adaptation Preserved) ─── */
+/* ─── Scotopic 650nm Emergency HUD (Dark Adaptation Preserved • WCAG AAA >= 7:1, m-DER <= 0.25) ─── */
 html.theme-scotopic {
   background-color: #050000 !important;
-  color: #ff6655 !important;
+  color: #ff7a6b !important;
 }
 html.theme-scotopic body,
 html.theme-scotopic app-root {
   background-color: #050000 !important;
-  color: #ff6655 !important;
+  color: #ff7a6b !important;
 }
 html.theme-scotopic .bg-white,
 html.theme-scotopic .bg-zinc-900,
@@ -4001,32 +3980,32 @@ html.theme-scotopic .paper-card,
 html.theme-scotopic .sub-panel,
 html.theme-scotopic .card {
   background-color: #0e0202 !important;
-  border-color: #3d0a0a !important;
-  color: #ff6655 !important;
+  border-color: #5c1414 !important;
+  color: #ff7a6b !important;
 }
 html.theme-scotopic h1,
 html.theme-scotopic h2,
 html.theme-scotopic h3,
 html.theme-scotopic h4,
 html.theme-scotopic h5 {
-  color: #ff2211 !important;
+  color: #ff8f80 !important;
 }
 html.theme-scotopic .text-gray-900,
 html.theme-scotopic .text-gray-800,
 html.theme-scotopic .text-zinc-100,
 html.theme-scotopic .text-zinc-200 {
-  color: #ff6655 !important;
+  color: #ff7a6b !important;
 }
 html.theme-scotopic .text-gray-600,
 html.theme-scotopic .text-gray-500,
 html.theme-scotopic .text-zinc-400,
 html.theme-scotopic .text-zinc-500 {
-  color: #e05544 !important;
+  color: #ff8a7a !important;
 }
 html.theme-scotopic .border,
 html.theme-scotopic .border-zinc-700,
 html.theme-scotopic .border-zinc-800 {
-  border-color: #3d0a0a !important;
+  border-color: #5c1414 !important;
 }
 
 /* ─── Disaster Triage E-Paper Mode (1-Bit High-Contrast Reflectance) ─── */
@@ -4260,7 +4239,7 @@ html.theme-curie h4 {
 html.theme-curie .text-zinc-400,
 html.theme-curie .text-zinc-500,
 html.theme-curie .text-gray-500 {
-  color: #94a3b8 !important;
+  color: #c2d6e0 !important;
 }
 
 /* 2. Dieter Rams Tactile Controls & Typography Tokens */
@@ -4613,26 +4592,7 @@ html.theme-curie .thematic-3d-container {
   color: #f3f4f6 !important;
 }
 
-/* 3. Neurodivergent Reduced Motion Override */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-html.reduce-motion *,
-html.reduce-motion ::before,
-html.reduce-motion ::after {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
-  scroll-behavior: auto !important;
-}
+/* 3. Neurodivergent Reduced Motion Override (Consolidated into single universal block above) */
 
 /* 4. Keyboard Traversal Focus Visible Rings (WCAG 2.2 SC 2.4.13 Focus Appearance >= 3:1) */
 button:focus-visible,
@@ -4921,6 +4881,29 @@ html.philocardia-active.dark .bionic-fixation-anchor {
   outline: none;
   box-shadow: 0 0 0 2px #14b8a6;
 }
+
+/* ─── Origami Voice Pocket Unfolding Keyframes (Moved from inline AppComponent <style>) ─── */
+@keyframes origami-unfold {
+  0% { transform: scaleY(0.1) rotateX(80deg) rotateZ(-10deg); opacity: 0; }
+  60% { transform: scaleY(1.1) rotateX(-15deg) rotateZ(5deg); opacity: 1; }
+  100% { transform: scaleY(1) rotateX(0deg) rotateZ(0deg); opacity: 1; }
+}
+@keyframes fly-out-pocket {
+  0% { transform: translateY(100px) scale(0.2) rotate(-20deg); opacity: 0; }
+  60% { transform: translateY(-15px) scale(1.1) rotate(10deg); opacity: 1; }
+  100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+}
+.origami-fold {
+  animation: origami-unfold 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-style: preserve-3d;
+}
+.fly-out {
+  animation: fly-out-pocket 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.fold-1 { animation-delay: 150ms; }
+.fold-2 { animation-delay: 300ms; }
+.fold-3 { animation-delay: 450ms; }
+.fold-4 { animation-delay: 600ms; }
 
 
 

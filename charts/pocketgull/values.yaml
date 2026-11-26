@@ -3,12 +3,17 @@
 global:
   environment: production
   project: "gen-lang-client-0540208645"
+  version: "1.42.0"
 
 web:
-  replicaCount: 1
+  replicaCount: 0
+  keda:
+    enabled: true
+    minReplicaCount: 0
+    maxReplicaCount: 10
   image:
-    repository: us-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull-web
-    tag: "1.31.0"
+    repository: us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull
+    tag: "1.42.0"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -30,10 +35,14 @@ web:
         - ALL
 
 api:
-  replicaCount: 1
+  replicaCount: 0
+  keda:
+    enabled: true
+    minReplicaCount: 0
+    maxReplicaCount: 10
   image:
-    repository: us-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull-api
-    tag: "1.31.0"
+    repository: us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull-api
+    tag: "1.42.0"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -55,11 +64,11 @@ api:
         - ALL
 
 hueRelay:
-  enabled: true
-  replicaCount: 1
+  enabled: false
+  replicaCount: 0
   image:
-    repository: us-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull-hue-relay
-    tag: "1.31.0"
+    repository: us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull-hue-relay
+    tag: "1.42.0"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -70,11 +79,11 @@ agonesFleet:
   enabled: true
   replicas: 0
   image:
-    repository: us-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull
-    tag: "1.31.0"
+    repository: us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull
+    tag: "1.42.0"
   autoscaler:
     enabled: true
-    bufferSize: 2
+    bufferSize: 0
     minReplicas: 0
     maxReplicas: 20
 
@@ -95,6 +104,7 @@ config:
   frontendOrigin: "https://pocketgull.app"
   pythonApiUrl: "http://api-service:8080"
   otelServiceName: "pocketgull"
-  otelTracesSampler: "parentbased_always_on"
+  otelTracesSampler: "parentbased_traceidratio"
+  otelTracesSamplerArg: "0.1"
   otelSdkDisabled: "false"
   otelExporterOtlpEndpoint: "http://otel-collector:4318"

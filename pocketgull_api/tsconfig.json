@@ -1,16 +1,9 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "composite": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "typeRoots": ["./node_modules/@types", "../node_modules/@types"]
+    "outDir": "./dist"
   },
-  "include": ["src/**/*"]
+  "files": [],
+  "include": []
 }
-

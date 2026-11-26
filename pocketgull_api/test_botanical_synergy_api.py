@@ -2,6 +2,13 @@
 Unit test suite for Botanical Synergy & CYP450 Bio-Equivalence ML Service.
 """
 
+import sys
+from pathlib import Path
+
+_API_DIR = str(Path(__file__).resolve().parent)
+if _API_DIR not in sys.path:
+    sys.path.insert(0, _API_DIR)
+
 from fastapi.testclient import TestClient
 from main import app
 from services.botanical_synergy_service import (

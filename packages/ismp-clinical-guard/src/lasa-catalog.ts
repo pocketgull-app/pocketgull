@@ -24,7 +24,7 @@ export const CANONICAL_LASA_PAIRS: ReadonlyArray<ILasaDrugPair> = [
       tallMan: 'vinCRIStine',
       indication: 'Acute lymphoblastic leukemia (ALL), non-Hodgkin lymphoma, pediatric Wilms tumor',
       pharmacologicalClass: 'Vinca alkaloid microtubule inhibitor',
-      typicalDose: '1.4 to 2.0 mg/m² IV weekly (STRICT 2.0 mg single-dose cap to prevent fatal neurotoxicity)',
+      typicalDose: '1.4 to 2 mg/m² IV weekly (STRICT 2 mg single-dose cap to prevent fatal neurotoxicity)',
       route: 'Intravenous (IV) infusion ONLY',
       boxedWarning: 'FATAL IF GIVEN INTRATHECALLY. For intravenous use only. Severe sensorimotor peripheral neuropathy and paralytic ileus.'
     },

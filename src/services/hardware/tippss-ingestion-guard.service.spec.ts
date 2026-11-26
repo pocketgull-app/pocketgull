@@ -290,7 +290,7 @@ describe('TippssIngestionGuardService (IEEE P2933™ TIPPSS Compliance)', () => 
       expect(latestAudit).toBeDefined();
       expect(latestAudit.action).toBe('INGESTED');
       expect(latestAudit.modality).toBe('spo2');
-      expect(latestAudit.integritySeal).toContain('sha256-tippss-');
+      expect(latestAudit.integritySeal).toMatch(/^sha256-tippss-[a-f0-9]{64}$/);
     });
 
     it('6.2 Cryptographically zeroizes session state on device unpair/disconnect', () => {
@@ -361,6 +361,120 @@ describe('TippssIngestionGuardService (IEEE P2933™ TIPPSS Compliance)', () => 
       expect(triage.acuity).toBe('STAT_EMERGENCY');
       expect(triage.anomalyScore).toBeGreaterThanOrEqual(0.9);
       expect(triage.rationale).toContain('Critical tachyarrhythmia');
+    });
+
+    it('7.4 Closes all 5 TIPPSS bypasses, enforces SpO2 < 90% STAT, and prevents window.ai.classifier downgrade (monotonic acuity)', async () => {
+      // Bypass 1: Exact UDI equality (substring spoofing rejected)
+      const spoofedUdi = service.verifyAndSanitize({
+        deviceId: 'PIXELWATCH2',
+        patientId: 'PATIENT-SELF-01',
+        timestampMs: Date.now(),
+        sequenceNumber: 700,
+        modality: 'heart_rate',
+        value: 72,
+        signalQualityIndex: 95,
+        leadOffDetected: false
+      });
+      expect(spoofedUdi.isApproved).toBe(false);
+      expect(spoofedUdi.pillarViolations).toContain('TRUST');
+
+      // Bypass 2: ANONYMOUS rejected on patient-bound clinical device
+      const anonFrame = service.verifyAndSanitize({
+        deviceId: 'FDA-UDI-00840244700018-PIXELWATCH2',
+        patientId: 'ANONYMOUS',
+        timestampMs: Date.now(),
+        sequenceNumber: 701,
+        modality: 'heart_rate',
+        value: 72,
+        signalQualityIndex: 95,
+        leadOffDetected: false
+      });
+      expect(anonFrame.isApproved).toBe(false);
+      expect(anonFrame.pillarViolations).toContain('IDENTITY');
+
+      // Bypass 5: Multi-modality delta tracking keyed by deviceId::modality (HR 72 then SpO2 98 both pass)
+      const hrOk = service.verifyAndSanitize({
+        deviceId: 'FDA-UDI-00840244700018-PIXELWATCH2',
+        patientId: 'PATIENT-SELF-01',
+        timestampMs: Date.now(),
+        sequenceNumber: 702,
+        modality: 'heart_rate',
+        value: 72,
+        signalQualityIndex: 95,
+        leadOffDetected: false
+      });
+      expect(hrOk.isApproved).toBe(true);
+      const spo2Ok = service.verifyAndSanitize({
+        deviceId: 'FDA-UDI-00840244700018-PIXELWATCH2',
+        patientId: 'PATIENT-SELF-01',
+        timestampMs: Date.now(),
+        sequenceNumber: 703,
+        modality: 'spo2',
+        value: 98,
+        signalQualityIndex: 95,
+        leadOffDetected: false
+      });
+      expect(spo2Ok.isApproved).toBe(true);
+
+      // Bypass 3: Active challenge nonce enforces payloadSignature
+      service.generateAttestationChallengeNonce('FDA-UDI-00840244700018-PIXELWATCH2');
+      const forgedSig = service.verifyAndSanitize({
+        deviceId: 'FDA-UDI-00840244700018-PIXELWATCH2',
+        patientId: 'PATIENT-SELF-01',
+        timestampMs: Date.now(),
+        sequenceNumber: 704,
+        modality: 'heart_rate',
+        value: 74,
+        signalQualityIndex: 95,
+        leadOffDetected: false,
+        payloadSignature: 'forged-bad-signature'
+      });
+      expect(forgedSig.isApproved).toBe(false);
+      expect(forgedSig.pillarViolations).toContain('PROTECTION');
+
+      // Bypass 4: Fail closed when Stage 6 device has knownVulnerabilities (zeroize pending nonce first so Stage 6 runs)
+      service.zeroizeSession('FDA-UDI-00840244700018-PIXELWATCH2');
+      service.enrolledDevices.update(list => list.map(d =>
+        d.deviceId === 'FDA-UDI-00840244700018-PIXELWATCH2'
+          ? { ...d, knownVulnerabilities: ['CVE-2026-9999'] }
+          : d
+      ));
+      const cveBlocked = service.verifyAndSanitize({
+        deviceId: 'FDA-UDI-00840244700018-PIXELWATCH2',
+        patientId: 'PATIENT-SELF-01',
+        timestampMs: Date.now(),
+        sequenceNumber: 705,
+        modality: 'heart_rate',
+        value: 74,
+        signalQualityIndex: 95,
+        leadOffDetected: false
+      });
+      expect(cveBlocked.isApproved).toBe(false);
+      expect(cveBlocked.pillarViolations).toContain('SECURITY');
+
+      // SpO2 < 90% (e.g. 89%) MUST be STAT_EMERGENCY and window.ai.classifier returning ROUTINE cannot downgrade it
+      (globalThis as any).ai = {
+        classifier: {
+          create: async () => ({
+            classify: async () => ({ topCategory: 'ROUTINE', confidence: 0.99 })
+          })
+        }
+      };
+      try {
+        const hypoxicTriage = await service.triageTelemetryEdgeAnomaly({
+          deviceId: 'FDA-UDI-00840244700018-PIXELWATCH2',
+          patientId: 'PATIENT-SELF-01',
+          timestampMs: Date.now(),
+          sequenceNumber: 706,
+          modality: 'spo2',
+          value: 89,
+          signalQualityIndex: 95,
+          leadOffDetected: false
+        });
+        expect(hypoxicTriage.acuity).toBe('STAT_EMERGENCY');
+      } finally {
+        delete (globalThis as any).ai;
+      }
     });
   });
 });

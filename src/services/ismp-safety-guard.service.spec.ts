@@ -141,5 +141,21 @@ describe('IsmpSafetyGuardService - ISMP / FDA Pharmacological Safety Suite', () 
     expect(formatted).not.toMatch(/(^|[^\d])\.5\s*mg/);
     expect(formatted).not.toMatch(/\b5\.0\s*mg/);
   });
+
+  it('14. Catches fractional trailing zeros (5.50 mg), fixes negative naked decimals (-.5 -> -0.5), flags IU/QHS/HS/cc, and preserves LASA token', () => {
+    expect(service.formatIsmpNumber('-.5')).toBe('-0.5');
+    expect(service.formatIsmpNumber('-.25', 'mg')).toBe('-0.25 mg');
+
+    const audit = service.auditPrescription('Give Warfarin 5.50 mg QHS + Vitamin D 1000 IU + 5 cc elixir; review hydralazine');
+    expect(audit.hasViolations).toBe(true);
+    expect(audit.violations.some(v => v.type === 'TRAILING_ZERO' && v.corrected === '5.5 mg')).toBe(true);
+    expect(audit.violations.some(v => v.type === 'ERROR_PRONE_ABBREVIATION' && v.corrected === 'at bedtime')).toBe(true);
+    expect(audit.violations.some(v => v.type === 'ERROR_PRONE_ABBREVIATION' && v.corrected.includes('units'))).toBe(true);
+    expect(audit.violations.some(v => v.type === 'ERROR_PRONE_ABBREVIATION' && v.corrected.includes('mL'))).toBe(true);
+    const lasa = audit.violations.find(v => v.type === 'LOOK_ALIKE_SOUND_ALIKE');
+    expect(lasa?.original).toBe('hydralazine');
+    expect(audit.sanitizedText).toContain('5.5 mg');
+    expect(audit.sanitizedText).toContain('hydrALAZINE');
+  });
 });
 

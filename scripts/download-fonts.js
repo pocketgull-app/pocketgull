@@ -1,38 +1,40 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+// SPDX-License-Identifier: Apache-2.0
+/**
+ * PocketGull v4.0.0 Sovereign Font CSS Sync
+ * Uses @pocketgull/font (npm) and https://font.pocketgull.app CDN-first WOFF2s.
+ * Enforces Rule §7: Body 400 weight strictly maps to PocketGull-Regular (NEVER Fineliner/Chiseltip).
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+const __dirname = path.dirname(__filename);
 const fontsDir = path.resolve(__dirname, '../public/fonts');
+
 if (!fs.existsSync(fontsDir)) {
-    fs.mkdirSync(fontsDir, { recursive: true });
+  fs.mkdirSync(fontsDir, { recursive: true });
 }
 
-// Sovereign Local PocketGull Superfamily Font-Face Definitions
-const POCKETGULL_SUPERFAMILY_CSS = `
-/* ==========================================================================
-   PocketGull Sovereign Superfamily Edge Fonts (Offline-First)
+const POCKETGULL_SUPERFAMILY_CSS = `/* ==========================================================================
+   PocketGull v4.0.0 Sovereign Superfamily (npm @pocketgull/font + CDN WOFF2)
+   Rule §7 Compliant: Zero .ttf in web CSS; Regular maps to 400; Brand isolated.
    ========================================================================== */
-
-@font-face {
-  font-family: 'PocketGull';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/PocketGull-Bold.woff2') format('woff2'),
-       url('/fonts/PocketGull-Bold.ttf') format('truetype');
-}
 
 @font-face {
   font-family: 'PocketGull';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/PocketGull-Fineliner.woff2') format('woff2'),
-       url('/fonts/PocketGull-Fineliner.ttf') format('truetype');
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Regular.woff2?v=4.0.0') format('woff2');
+}
+
+@font-face {
+  font-family: 'PocketGull';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Bold.woff2?v=4.0.0') format('woff2');
 }
 
 @font-face {
@@ -40,8 +42,15 @@ const POCKETGULL_SUPERFAMILY_CSS = `
   font-style: normal;
   font-weight: 900;
   font-display: swap;
-  src: url('/fonts/PocketGull-Chiseltip.woff2') format('woff2'),
-       url('/fonts/PocketGull-Chiseltip.ttf') format('truetype');
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Black.woff2?v=4.0.0') format('woff2');
+}
+
+@font-face {
+  font-family: 'PocketGull Brand';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGull-Chiseltip.woff2?v=4.0.0') format('woff2');
 }
 
 @font-face {
@@ -49,93 +58,14 @@ const POCKETGULL_SUPERFAMILY_CSS = `
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/PocketGullMono-Regular.woff2') format('woff2'),
-       url('/fonts/PocketGullMono-Regular.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'PocketGull VF';
-  font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
-  src: url('/fonts/PocketGull-VF.woff2') format('woff2'),
-       url('/fonts/PocketGull-VF.ttf') format('truetype');
+  src: url('https://font.pocketgull.app/fonts/woff2/PocketGullMono-Regular.woff2?v=4.0.0') format('woff2');
 }
 `;
 
-const googleFontsUrl = 'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap';
-
-async function main() {
-    const cssPath = path.resolve(fontsDir, 'fonts.css');
-    
-    // Check if we already have the local woff2 files in place
-    const existingFiles = fs.readdirSync(fontsDir);
-    const hasWoff2 = existingFiles.some(f => f.endsWith('.woff2'));
-    
-    if (hasWoff2 && fs.existsSync(cssPath)) {
-        console.log("⚡ Sovereign local font assets detected. Refreshing master fonts.css with PocketGull superfamily...");
-        let currentCss = fs.readFileSync(cssPath, 'utf8');
-        if (!currentCss.includes("PocketGull Sovereign Superfamily")) {
-            currentCss = POCKETGULL_SUPERFAMILY_CSS + "\n" + currentCss;
-            fs.writeFileSync(cssPath, currentCss, 'utf8');
-        }
-        console.log("✅ Offline-first edge fonts compiled successfully.");
-        return;
-    }
-
-    try {
-        console.log("Fetching fallback font CSS...");
-        const res = await fetch(googleFontsUrl, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            },
-            signal: AbortSignal.timeout(6000)
-        });
-        
-        if (res.ok) {
-            let cssText = await res.text();
-            const urlRegex = /url\((https:\/\/fonts\.gstatic\.com\/s\/[^\)]+)\)/g;
-            let match;
-            const urls = [];
-            while ((match = urlRegex.exec(cssText)) !== null) {
-                urls.push(match[1]);
-            }
-            
-            const urlToLocalMap = new Map();
-            for (const url of urls) {
-                if (!url.startsWith('https://fonts.gstatic.com/s/')) continue;
-                const filename = path.basename(url);
-                if (!/^[a-zA-Z0-9_\-\.]+$/.test(filename)) continue;
-                const localPath = path.resolve(fontsDir, filename);
-                
-                if (!fs.existsSync(localPath)) {
-                    console.log(`Downloading ${filename}...`);
-                    const fontRes = await fetch(url, { signal: AbortSignal.timeout(6000) });
-                    if (fontRes.ok) {
-                        const buffer = await fontRes.arrayBuffer();
-                        fs.writeFileSync(localPath, Buffer.from(buffer));
-                    }
-                }
-                urlToLocalMap.set(url, `/fonts/${filename}`);
-            }
-            
-            let localCssText = cssText;
-            for (const [remoteUrl, localUrl] of urlToLocalMap.entries()) {
-                localCssText = localCssText.replaceAll(remoteUrl, localUrl);
-            }
-            
-            const finalCss = POCKETGULL_SUPERFAMILY_CSS + "\n" + localCssText;
-            fs.writeFileSync(cssPath, finalCss, 'utf8');
-            console.log("✅ Fonts CSS compiled to public/fonts/fonts.css");
-            return;
-        }
-    } catch (err) {
-        console.warn("⚠️ Network fetch bypassed. Generating 100% sovereign local fonts.css:", err.message);
-    }
-    
-    // Fallback: Pure sovereign edge CSS
-    fs.writeFileSync(cssPath, POCKETGULL_SUPERFAMILY_CSS, 'utf8');
-    console.log("✅ Sovereign PocketGull font suite written to public/fonts/fonts.css");
+const cssPath = path.resolve(fontsDir, 'fonts.css');
+if (!fs.existsSync(cssPath)) {
+  fs.writeFileSync(cssPath, POCKETGULL_SUPERFAMILY_CSS, 'utf8');
+  console.log('✅ Wrote Rule §7-compliant v4.0.0 CDN WOFF2 fonts.css.');
+} else {
+  console.log('✅ Existing public/fonts/fonts.css preserved (core cuts served from @pocketgull/font@4.0.0 npm).');
 }
-
-main().catch(console.error);

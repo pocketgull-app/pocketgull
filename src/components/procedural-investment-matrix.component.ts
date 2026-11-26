@@ -18,19 +18,19 @@ import { ProceduralHealthInvestmentService } from '../services/procedural-health
           <span class="text-3xl p-2.5 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">📈</span>
           <div>
             <div class="flex flex-wrap items-center gap-2">
-              <span class="text-xs sm:text-sm font-mono font-extrabold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Actuarial Financial & Healthspan ROI</span>
-              <span class="text-xs px-2.5 py-0.5 rounded-full bg-[#10B981] text-white font-mono font-extrabold uppercase border border-[#1C1C1C] shadow-[1px_1px_0px_0px_rgba(28,28,28,0.9)]">
-                Scribes 📖 Financial Strategy
+              <span class="text-xs sm:text-sm font-mono font-extrabold uppercase tracking-widest text-amber-600 dark:text-amber-400">[EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC]</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-600 text-white font-mono font-extrabold uppercase border border-[#1C1C1C] shadow-[1px_1px_0px_0px_rgba(28,28,28,0.9)]">
+                Cochrane Evidence Tier: Level C
               </span>
-              <pocket-gull-badge label="Procedural Innovation & Investment" severity="success"></pocket-gull-badge>
+              <pocket-gull-badge label="Exploratory Preventive Cost Model" severity="warning"></pocket-gull-badge>
             </div>
-            <h3 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight mt-1 uppercase">Procedural Innovations & Capital Return Matrix</h3>
+            <h3 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white tracking-tight mt-1 uppercase">Exploratory Procedural Health Investment Matrix</h3>
           </div>
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
-          <span class="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-xs sm:text-sm font-mono font-extrabold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
-            Total 5-Yr Cost Avoidance: {{ totalSavings() | currency:'USD':'symbol':'1.0-0' }}
+          <span class="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-xs sm:text-sm font-mono font-extrabold text-amber-800 dark:text-amber-300 uppercase tracking-wider">
+            Exploratory 5-Yr Estimate: {{ totalSavings() | currency:'USD':'symbol':'1.0-0' }}
           </span>
         </div>
       </div>
@@ -42,10 +42,10 @@ import { ProceduralHealthInvestmentService } from '../services/procedural-health
             <div>
               <div class="flex items-center justify-between mb-2">
                 <span class="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
-                  {{ item.category }}
+                  {{ item.category }} • {{ item.evidenceTier }}
                 </span>
-                <span class="text-xs font-mono font-extrabold text-emerald-400">
-                  {{ item.actuarialRoiRatio }}x Actuarial ROI
+                <span class="text-[10px] font-mono font-extrabold text-amber-300">
+                  {{ item.epistemicBadge }}
                 </span>
               </div>
 
@@ -55,16 +55,16 @@ import { ProceduralHealthInvestmentService } from '../services/procedural-health
 
             <div class="mt-4 pt-3 border-t border-slate-800 grid grid-cols-3 gap-2 text-center text-xs font-mono">
               <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
-                <div class="text-[10px] text-slate-400 uppercase">Upfront</div>
-                <div class="font-bold text-slate-200 mt-0.5">{{ item.upfrontInvestmentUsd | currency:'USD':'symbol':'1.0-0' }}</div>
+                <div class="text-[10px] text-slate-400 uppercase">Est. Out-of-Pocket</div>
+                <div class="font-bold text-slate-200 mt-0.5"><bdi dir="ltr">{{ item.upfrontInvestmentUsd | currency:'USD':'symbol':'1.0-0' }}</bdi></div>
               </div>
               <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
-                <div class="text-[10px] text-slate-400 uppercase">5-Yr Savings</div>
-                <div class="font-bold text-emerald-400 mt-0.5">{{ item.projected5YearSavingsUsd | currency:'USD':'symbol':'1.0-0' }}</div>
+                <div class="text-[10px] text-slate-400 uppercase">Modeled 5-Yr Offset</div>
+                <div class="font-bold text-emerald-400 mt-0.5"><bdi dir="ltr">{{ item.projected5YearSavingsUsd | currency:'USD':'symbol':'1.0-0' }}</bdi></div>
               </div>
               <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800">
-                <div class="text-[10px] text-slate-400 uppercase">QALY Yield</div>
-                <div class="font-bold text-sky-400 mt-0.5">+{{ item.qalyYield }} QALYs</div>
+                <div class="text-[10px] text-slate-400 uppercase">Exploratory QALY</div>
+                <div class="font-bold text-sky-400 mt-0.5"><bdi dir="ltr">+{{ item.qalyYield }} QALYs</bdi></div>
               </div>
             </div>
           </div>

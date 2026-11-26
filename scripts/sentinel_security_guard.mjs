@@ -197,7 +197,6 @@ const APPROVED_EGRESS_DOMAINS = [
   'www.dexcom.com',
   'kardia.com',
   'www.kardia.com',
-  'unencrypted.com',
   'walmart.com',
   'www.walmart.com',
   'i5.walmartimages.com',
@@ -308,13 +307,7 @@ const APPROVED_EGRESS_DOMAINS = [
   'meta.com',
   'ai.meta.com',
   'esmatlas.com',
-  'walmart.com',
-  'www.walmart.com',
-  'instacart.com',
-  'www.instacart.com',
-  'azurehealthcareapis.com',
   'pocketgull-fhir.azurehealthcareapis.com',
-  'unencrypted.com',
   'unicef.org',
   'rfc-editor.org',
   'epic.org',
@@ -677,19 +670,28 @@ function auditBioethicalAntiDarkPatterns() {
     }
   }
 
-  // 2. Anti-Entrainment Compliance Isolation: Ensure bio-rhythmic classes are not used in billing/payment templates
+  // 2. Anti-Entrainment Compliance Isolation: Ensure bio-rhythmic or pulsing classes are never used in billing/payment/pricing templates
+  const prohibitedCommerceMotionRe = /\b(mayer-wave-pulse|vagal-pacing|parasympathetic-pulse|font-biorhythmic-pulse|font-parasympathetic-breathing|animate-pulse|animate-bounce|animate-ping)\b/;
   for (const file of srcFiles) {
     const lowerPath = file.toLowerCase();
+    if (lowerPath.includes('.spec.ts')) continue;
     if (lowerPath.includes('billing') || lowerPath.includes('payment') || lowerPath.includes('checkout') || lowerPath.includes('pricing')) {
       const content = fs.readFileSync(file, 'utf8');
-      if (content.includes('mayer-wave-pulse') || content.includes('vagal-pacing') || content.includes('parasympathetic-pulse')) {
-        issues.push({
-          file: path.relative(ROOT_DIR, file).replace(/\\/g, '/'),
-          type: 'BIOETHICAL_ENTRAINMENT_MANIPULATION',
-          severity: 'HIGH',
-          message: 'Bio-rhythmic parasympathetic pacing (.mayer-wave-pulse) is strictly prohibited in billing/payment/pricing contexts to prevent affective compliance manipulation.',
-          line: 1,
-        });
+      const lines = content.split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+        if (trimmed.startsWith('//') || trimmed.startsWith('*') || trimmed.includes('classList.remove')) continue;
+        const match = line.match(prohibitedCommerceMotionRe);
+        if (match) {
+          issues.push({
+            file: path.relative(ROOT_DIR, file).replace(/\\/g, '/'),
+            type: 'BIOETHICAL_ENTRAINMENT_MANIPULATION',
+            severity: 'HIGH',
+            message: `Prohibited rhythmic/pulsing motion token (${match[1]}) detected in billing/payment/pricing context (line ${i + 1}).`,
+            line: i + 1,
+          });
+        }
       }
     }
   }

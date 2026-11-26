@@ -4,6 +4,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SoarOrchestratorService } from './soar-orchestrator.service';
 import { IpBlocklistService } from './ip-blocklist.service';
+import { signDualCustodyToken } from '../middleware/auth-guard';
 
 describe('SoarOrchestratorService Unit Suite', () => {
   beforeEach(() => {
@@ -24,15 +25,15 @@ describe('SoarOrchestratorService Unit Suite', () => {
     ]);
   });
 
-  it('2. Blocks destructive Playbook 1 actions without M-of-N Dual-Custody and approves with DPO co-sign', async () => {
+  it('2. Blocks destructive Playbook 1 actions without cryptographic M-of-N Dual-Custody and approves with distinct DPO co-sign', async () => {
     const blocked = await SoarOrchestratorService.orchestrateAlert({
       source: 'BIGQUERY_SIEM',
       eventCategory: 'CREDENTIAL_LEAK',
       severity: 'P1_CRITICAL',
       requiresDestructiveAction: true,
       dualCustody: {
-        requestorRole: 'CLOUD_ENGINEER',
-        authorizerRole: 'CLOUD_ENGINEER', // Same role violation
+        requestorToken: signDualCustodyToken({ sub: 'eng_1', role: 'CLOUD_ENGINEER' }),
+        authorizerToken: signDualCustodyToken({ sub: 'eng_1', role: 'CLOUD_ENGINEER' }),
         rationale: 'Attempted unilateral key rotation'
       },
       mode: 'DRY_RUN'
@@ -47,8 +48,8 @@ describe('SoarOrchestratorService Unit Suite', () => {
       severity: 'P1_CRITICAL',
       requiresDestructiveAction: true,
       dualCustody: {
-        requestorRole: 'CLOUD_ENGINEER',
-        authorizerRole: 'PRIVACY_OFFICER_DPO',
+        requestorToken: signDualCustodyToken({ sub: 'eng_1', role: 'CLOUD_ENGINEER' }),
+        authorizerToken: signDualCustodyToken({ sub: 'dpo_2', role: 'PRIVACY_OFFICER_DPO' }),
         rationale: 'Emergency secret rotation verified'
       },
       mode: 'DRY_RUN'

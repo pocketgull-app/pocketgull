@@ -261,7 +261,7 @@ export class Holographic3DAnatomyComponent implements AfterViewInit, OnDestroy {
 
   readonly currentHrv = computed(() => {
     const v = this.state.vitals()?.hrv;
-    return v ? parseInt(v, 10) || 65 : 65;
+    return v !== undefined && v !== null ? parseInt(String(v), 10) || 65 : 65;
   });
 
   readonly selectedTooth = signal<{

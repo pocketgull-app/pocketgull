@@ -11,6 +11,33 @@ import type { Request, Response } from 'express';
 import fs from 'node:fs';
 import { join, normalize } from 'node:path';
 import { APP_VERSION } from '../../version';
+import { ModelArmorService } from '../services/model-armor.service';
+
+const DIRECT_PHI_KEYS = new Set([
+  'name', 'patient_name', 'first_name', 'last_name', 'full_name',
+  'ssn', 'social_security_number', 'mrn', 'medical_record_number',
+  'email', 'phone', 'telephone', 'address', 'birthdate', 'birth_date', 'dob'
+]);
+
+function containsUnredactedPhiKeys(obj: unknown, depth = 0): string[] {
+  if (!obj || typeof obj !== 'object' || depth > 12) return [];
+  const hits: string[] = [];
+  if (Array.isArray(obj)) {
+    for (const item of obj) {
+      hits.push(...containsUnredactedPhiKeys(item, depth + 1));
+    }
+    return hits;
+  }
+  for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
+    const norm = k.toLowerCase().replace(/[\s-]/g, '_');
+    if (DIRECT_PHI_KEYS.has(norm) && v !== null && v !== undefined && String(v).trim() !== '' && !String(v).startsWith('[REDACTED')) {
+      hits.push(k);
+    } else if (v && typeof v === 'object') {
+      hits.push(...containsUnredactedPhiKeys(v, depth + 1));
+    }
+  }
+  return hits;
+}
 
 // ── Typed Interfaces ────────────────────────────────────────────────────
 
@@ -262,23 +289,40 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
   router.post('/research/donate', async (req: Request, res: Response) => {
     try {
       const { bundle, labDomain } = req.body || {};
-      console.log(`[Research Donation] Received de-identified cohort payload for lab domain: ${labDomain || 'General Science'}. Safe Harbor §164.514 sanitized.`);
-      
-      res.json({
+      if (!bundle || typeof bundle !== 'object') {
+        return res.status(400).json({ error: 'A FHIR R4 research bundle object is required.' });
+      }
+
+      // Programmatic HIPAA Safe Harbor §164.514 verification (never blindly assert safeHarborVerified: true)
+      const phiKeyHits = containsUnredactedPhiKeys(bundle);
+      const armorScan = ModelArmorService.scan(JSON.stringify(bundle));
+      if (phiKeyHits.length > 0 || !armorScan.passed || armorScan.findings.length > 0) {
+        return res.status(422).json({
+          error: 'HIPAA Safe Harbor §164.514 Verification Failed: Unredacted direct identifiers detected in research payload.',
+          safeHarborVerified: false,
+          flaggedFields: Array.from(new Set(phiKeyHits)),
+          modelArmorFindings: armorScan.findings.map(f => f.ruleId)
+        });
+      }
+
+      const safeDomain = String(labDomain || 'General Science').replace(/[\r\n]/g, ' ').slice(0, 80);
+      console.log(`[Research Donation] Verified de-identified cohort payload for lab domain: ${safeDomain}.`);
+
+      return res.json({
         status: 'success',
-        message: 'De-identified FHIR R4 ResearchSubject bundle ingested into Open Science Data Lake.',
+        message: 'De-identified FHIR R4 ResearchSubject bundle verified and ingested into Open Science Data Lake.',
         donatedAt: new Date().toISOString(),
         safeHarborVerified: true
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Research donation error';
       console.error('[Research Donation Error]:', err);
-      res.status(500).json({ error: message });
+      return res.status(500).json({ error: message });
     }
   });
 
-  // GET /api/equity/who-cdc — Returns WHO GPW 14 & CDC Global Health Equity scoring
-  router.get('/api/equity/who-cdc', async (req: Request, res: Response) => {
+  // GET /equity/who-cdc — Returns WHO GPW 14 & CDC Global Health Equity scoring (mounted at /api -> /api/equity/who-cdc)
+  router.get('/equity/who-cdc', async (req: Request, res: Response) => {
     try {
       const housingInsecurity = req.query.housing === 'true';
       const foodInsecurity = req.query.food === 'true';
@@ -287,7 +331,7 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
       const digitalLiteracyBarrier = req.query.digital === 'true';
 
       const sdohCount = [housingInsecurity, foodInsecurity, transportationBarrier, utilityInsecurity, digitalLiteracyBarrier].filter(Boolean).length;
-      let compositeIndex = Math.max(0, 100 - (sdohCount * 15));
+      const compositeIndex = Math.max(0, 100 - (sdohCount * 15));
 
       res.json({
         standard: 'WHO GPW 14 (2025-2028) & CDC Global Health Equity',
@@ -301,8 +345,8 @@ export function createUtilityRouter(deps: IUtilityRouteDeps): Router {
     }
   });
 
-  // GET /api/lists/helpful — Returns curated quick-reference emergency & legal lists
-  router.get('/api/lists/helpful', (_req: Request, res: Response) => {
+  // GET /lists/helpful — Returns curated quick-reference emergency & legal lists (mounted at /api -> /api/lists/helpful)
+  router.get('/lists/helpful', (_req: Request, res: Response) => {
     res.json({
       hotlines: [
         { title: '988 Suicide & Crisis Lifeline', contact: '988', text: 'Call/Text 24/7' },

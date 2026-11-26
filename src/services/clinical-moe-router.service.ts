@@ -975,7 +975,7 @@ export const SHIFT_DECISION_FLOW_MAP: Record<string, IPatientDecisionFlow> = {
       secondaryRatio: 38,
       bridgeTitle: 'In-Silico Glycemic & Microvascular Trajectory Projection',
       bridgeMechanism: 'Coupling dual incretin receptor titration with overnight AHI reduction to protect renal capillary beds.',
-      bridgeActionableVector: 'Prescribe tirzepatide 5.0mg weekly with 4-week titration ladder, coupled with automated CPAP pressure auto-ramp.',
+      bridgeActionableVector: 'Prescribe tirzepatide 5 mg weekly with 4-week titration ladder, coupled with automated CPAP pressure auto-ramp.',
       bridgeBenchmark: 'HbA1c < 7.0%, AHI < 5.0/hr, eGFR stabilization',
       noiseReductionPercent: 75,
       dormantShelfCount: 6
@@ -1113,7 +1113,7 @@ export const SHIFT_DECISION_FLOW_MAP: Record<string, IPatientDecisionFlow> = {
       secondaryRatio: 39,
       bridgeTitle: 'Autoimmune Epitope Clearance to Low-Dose Naltrexone Calibration',
       bridgeMechanism: 'Transient opioid receptor blockade prompts rebound beta-endorphin surge, downregulating TLR4 cytokine signaling.',
-      bridgeActionableVector: 'Compound LDN 1.5mg PO QHS for 14 days, titrating to 3.0mg then 4.5mg; add selenomethionine 200mcg daily.',
+      bridgeActionableVector: 'Compound LDN 1.5 mg by mouth at bedtime for 14 days, titrating to 3 mg then 4.5 mg; add selenomethionine 200 mcg daily.',
       bridgeBenchmark: 'Anti-TPO reduction > 30%, Morning Energy Index score > 7/10',
       noiseReductionPercent: 75,
       dormantShelfCount: 6
@@ -1516,11 +1516,11 @@ export class ClinicalMoERouterService {
     const parsedCgm = parseFloat(vitals?.cgmGlucoseMgDl || '110');
     const cgm = lab.cgmGlucoseMgDl !== null ? lab.cgmGlucoseMgDl : (Number.isFinite(parsedCgm) ? parsedCgm : 110);
 
-    const spO2Raw = (vitals as Record<string, string> | undefined)?.['spO2'] || '98%';
+    const spO2Raw = vitals?.spO2 || '98%';
     const parsedSpO2 = parseFloat(String(spO2Raw).replace('%', ''));
     const spO2 = lab.spO2Percent !== null ? lab.spO2Percent : (Number.isFinite(parsedSpO2) ? parsedSpO2 : 98);
 
-    const bpRaw = (vitals as Record<string, string> | undefined)?.['bp'] || '120/80';
+    const bpRaw = vitals?.bp || '120/80';
     const parsedSbp = parseInt(String(bpRaw).split('/')[0] || '120', 10);
     const sysBp = lab.systolicBpMmHg !== null ? lab.systolicBpMmHg : (Number.isFinite(parsedSbp) ? parsedSbp : 120);
 
@@ -1544,8 +1544,8 @@ export class ClinicalMoERouterService {
     if (spO2 < 90) redFlagTriggers.push(`Severe Hypoxemia (SpO2 ${spO2}% < 90%)`);
     if (sysBp <= 85 || sysBp >= 220) redFlagTriggers.push(`Hemodynamic Instability (SBP ${sysBp} mmHg)`);
     if (cgm < 54) redFlagTriggers.push(`Level 2 Hypoglycemia (CGM ${cgm} mg/dL)`);
-    if (/\b(be-fast|facial droop|slurred speech|crushing chest pain|stemi|anaphylaxis|suicid|c-ssrs|resuscitation)\b/i.test(transcript)) {
-      redFlagTriggers.push('Deterministic Clinical Red-Flag Cue (BE-FAST / ACS / C-SSRS)');
+    if (/\b(be-?fast|facial\s+droop|arm\s+weakness|arm\s+drift|slurred\s+speech|vision\s+loss|acute\s+ataxia|crushing\s+chest\s+pain|chest\s+pain\s+radiat\w*|stemi|nstemi|anaphylaxis|suicid\w*|c-?ssrs|phq-?9\s*(?:item|q|question)\s*9|preeclampsia|pre-eclampsia|resuscitation)\b/i.test(transcript)) {
+      redFlagTriggers.push('Deterministic Clinical Red-Flag Cue (BE-FAST / ACS / NSTEMI / PHQ-9 Item 9 / C-SSRS)');
     }
 
     const issueCount = Object.keys(issues).length;
@@ -1960,7 +1960,8 @@ export class ClinicalMoERouterService {
 
     const perceptor = this.activePerceptorState();
     const rolePerceptor = this.activeSessionRolePerceptor();
-    const safetyShieldActive = enableSafetyShield && perceptor.redFlagDetected && !pinnedId;
+    // Emergency STAT red-flag safety shield ALWAYS overrides manual widget pins
+    const safetyShieldActive = enableSafetyShield && perceptor.redFlagDetected;
     const roleScopeActive = enableSafetyShield && !safetyShieldActive && !pinnedId;
     const committedId = applyHysteresis ? this.committedPrimaryExpertId() : null;
     const margin = this.hysteresisMargin();
@@ -2122,8 +2123,8 @@ export class ClinicalMoERouterService {
         }
       }
 
-      // 7. Manual Pinning Override
-      if (pinnedId === expert.id) {
+      // 7. Manual Pinning Override (NEVER overrides active STAT Emergency Safety Shield)
+      if (pinnedId === expert.id && !safetyShieldActive) {
         score += 12.0;
         isSafetyMasked = false;
         rationaleParts.unshift('Clinician Manual Pin Override');

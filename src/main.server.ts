@@ -1,48 +1,45 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 PocketGull LLC & Phillip Gear
+
 // Server-side polyfill for Domino / SSR missing CSSStyleDeclaration.setProperty
 try {
-  const g = (typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : {}) as any;
+  const g = (typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : {}) as Record<string, unknown>;
   if (g) {
-    if (g.CSSStyleDeclaration && g.CSSStyleDeclaration.prototype) {
-      if (typeof g.CSSStyleDeclaration.prototype.setProperty !== 'function') {
-        g.CSSStyleDeclaration.prototype.setProperty = function (name: string, value: string) {
-          try { this[name] = value; } catch {}
+    const cssStyle = g['CSSStyleDeclaration'] as { prototype?: Record<string, unknown> } | undefined;
+    if (cssStyle && cssStyle.prototype) {
+      if (typeof cssStyle.prototype['setProperty'] !== 'function') {
+        cssStyle.prototype['setProperty'] = function (name: string, value: string) {
+          try { (this as Record<string, unknown>)[name] = value; } catch {}
         };
       }
     }
   }
 } catch {}
 
-import { provideHttpClient, withFetch } from '@angular/common/http';
-import { BootstrapContext, bootstrapApplication, provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { AppComponent } from './app.component';
+import { BootstrapContext, bootstrapApplication } from '@angular/platform-browser';
 import { provideServerRendering } from '@angular/platform-server';
-import { provideZonelessChangeDetection, ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, mergeApplicationConfig } from '@angular/core';
+import { AppComponent } from './app.component';
+import { appConfig } from './app.config';
 import { AI_CONFIG, IAiProviderConfig } from './services/ai-provider.types';
-import { IntelligenceProviderToken } from './services/ai/intelligence.provider.token';
-import { HybridProvider } from './services/ai/hybrid.provider';
 
-export const config: ApplicationConfig = {
-    providers: [
-        provideServerRendering(),
-        provideZonelessChangeDetection(),
-        provideHttpClient(withFetch()),
-        {
-            provide: AI_CONFIG,
-            useFactory: () => ({
-                apiKey: process.env['GEMINI_API_KEY'] || '',
-                defaultModel: { modelId: 'gemini-3.8-flash', temperature: 0.1 },
-                verificationModel: { modelId: 'gemini-3.8-flash', temperature: 0.0 }
-            } as IAiProviderConfig)
-        },
-        {
-            provide: IntelligenceProviderToken,
-            useClass: HybridProvider
-        },
-        provideClientHydration(withEventReplay())
-    ]
+const serverConfig: ApplicationConfig = {
+  providers: [
+    provideServerRendering(),
+    {
+      provide: AI_CONFIG,
+      useFactory: (): IAiProviderConfig => ({
+        apiKey: process.env['GEMINI_API_KEY'] || '',
+        defaultModel: { modelId: 'gemini-3.8-flash', temperature: 0.1 },
+        verificationModel: { modelId: 'gemini-3.8-flash', temperature: 0.0 }
+      })
+    }
+  ]
 };
 
+export const config: ApplicationConfig = mergeApplicationConfig(appConfig, serverConfig);
+
 const bootstrap = (context: BootstrapContext) =>
-    bootstrapApplication(AppComponent, config, context);
+  bootstrapApplication(AppComponent, config, context);
 
 export default bootstrap;

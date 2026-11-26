@@ -162,8 +162,8 @@ export interface IGlyphSpec {
                 <div class="text-xs text-zinc-400 font-mono">Zero vs Capital O</div>
                 <div class="flex items-center justify-around py-2">
                   <div class="text-center">
-                    <div class="text-4xl font-mono font-bold text-cyan-400">Ø</div>
-                    <div class="text-[10px] text-zinc-400 font-mono mt-1">Slashed Zero</div>
+                    <div class="text-4xl font-mono font-bold text-cyan-400 ot-slashed-zero" style="font-feature-settings: 'cv08' 1, 'zero' 1, 'tnum' 1; font-variant-numeric: slashed-zero tabular-nums;">0</div>
+                    <div class="text-[10px] text-zinc-400 font-mono mt-1">Slashed Zero (cv08)</div>
                   </div>
                   <span class="text-zinc-600 font-mono">vs</span>
                   <div class="text-center">
@@ -267,7 +267,7 @@ export interface IGlyphSpec {
                 <!-- Slashed Zero -->
                 <path d="M 580 30 C 530 30, 510 90, 510 110 C 510 130, 530 190, 580 190 C 630 190, 650 130, 650 110 C 650 90, 630 30, 580 30 Z" fill="none" stroke="#10b981" stroke-width="16" />
                 <line x1="535" y1="160" x2="625" y2="60" stroke="#10b981" stroke-width="10" stroke-linecap="round" />
-                <text x="540" y="220" fill="#10b981" font-size="12">Slashed Zero Ø</text>
+                <text x="530" y="220" fill="#10b981" font-size="12" style="font-feature-settings: 'cv08' 1, 'zero' 1;">Slashed Zero 0 (cv08)</text>
               </svg>
             </div>
           </div>

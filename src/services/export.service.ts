@@ -22,6 +22,7 @@ import { CsvExportStrategyService } from './export/csv-export-strategy.service';
 import { Hl7v2ExportStrategyService } from './export/hl7v2-export-strategy.service';
 import { Ga4ghPhenopacketService, IGa4ghPhenopacketV2 } from './ga4gh-phenopacket.service';
 import { FhirR4BundleExportService } from './fhir-r4-bundle-export.service';
+import { computeFipsSha256Hex } from './clinical-defense-guard.service';
 
 /** Shape of the native JSON export file. */
 export interface INativePatientExport {
@@ -41,7 +42,7 @@ interface IFhirExtension {
 interface IFhirResource {
   resourceType: string;
   id?: string;
-  name?: { text?: string; family?: string }[];
+  name?: { use?: string; text?: string; family?: string }[];
   gender?: string;
   birthDate?: string;
   extension?: IFhirExtension[];
@@ -155,7 +156,7 @@ export class ExportService {
 
     const encoder = new TextEncoder();
     const data = encoder.encode(payload);
-    let hashHex = '0000000000000000000000000000000000000000000000000000000000000000';
+    let hashHex = computeFipsSha256Hex(payload);
 
     if (typeof crypto !== 'undefined' && crypto.subtle) {
       const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -315,7 +316,9 @@ export class ExportService {
         resource: {
           resourceType: 'Patient',
           id: sanitizedP.id || 'p001',
-          name: [{ text: sanitizedP.name || 'Patient' }]
+          name: [{ use: 'anonymous', text: this._safeHarborSubjectName(sanitizedP.id) }],
+          gender: this._toFhirGender(sanitizedP.gender || 'Other'),
+          ...this._safeHarborAgeFields(sanitizedP.age)
         }
       }
     ];
@@ -2430,7 +2433,7 @@ export class ExportService {
           text: 'Pocket Gull AI Clinical Analysis'
         },
         subject: {
-          display: patientName
+          display: this._safeHarborSubjectName(patientName)
         },
         effectiveDateTime: new Date().toISOString(),
         issued: new Date().toISOString(),
@@ -2447,7 +2450,7 @@ export class ExportService {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `FHIR_Report_${patientName.replace(/\s+/g, '_')}.json`;
+      a.download = `FHIR_Report_${this._safeFileToken(computeFipsSha256Hex(patientName).slice(0, 10))}.json`;
       console.log('[ExportService] Triggering FHIR download:', a.download);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -2471,7 +2474,7 @@ export class ExportService {
       patient: patientWithoutId,
     };
 
-    this._downloadJson(exportData, `Pocket Gull_Patient_${patient.name.replace(/\s+/g, '_')}.json`);
+    this._downloadJson(exportData, `PocketGull_Patient_${this._safeFileToken(patient.id)}.json`);
   }
 
   /**
@@ -2510,20 +2513,23 @@ export class ExportService {
    * Includes Patient, Condition, Observation, Goal, and DiagnosticReport resources.
    */
   downloadAsFhirBundle(patient: IPatient, system?: string): void {
-    console.log('[ExportService] Starting FHIR Bundle generation for:', patient.name);
+    const safeToken = this._safeFileToken(patient.id);
+    console.log('[ExportService] Starting Safe Harbor FHIR Bundle generation for subject:', safeToken);
     try {
       const patientRef = `Patient/pocket-gull-${patient.id}`;
       const entries: { resource: IFhirResource }[] = [];
+      const ageFields = this._safeHarborAgeFields(patient.age);
 
-      // 1. Patient resource
+      // 1. Patient resource (HIPAA Safe Harbor §164.514 de-identified)
       entries.push({
         resource: {
           resourceType: 'Patient',
           id: `pocket-gull-${patient.id}`,
-          name: [{ text: patient.name }],
+          name: [{ use: 'anonymous', text: this._safeHarborSubjectName(patient.id) }],
           gender: this._toFhirGender(patient.gender),
-          birthDate: this._estimateBirthYear(patient.age),
+          ...(ageFields.birthDate ? { birthDate: ageFields.birthDate } : {}),
           extension: [
+            ...(ageFields.extension || []),
             {
               url: 'http://pocketgull.app/fhir/StructureDefinition/last-visit',
               valueString: patient.lastVisit,
@@ -2771,9 +2777,9 @@ export class ExportService {
       // Strict HIPAA-compliant client-side sanitization
       const sanitizedBundle = this.sanitizeObject(bundle);
 
-      const filename = system 
-        ? `FHIR_${system}_Export_${patient.name.replace(/\s+/g, '_')}.json`
-        : `FHIR_Bundle_${patient.name.replace(/\s+/g, '_')}.json`;
+      const filename = system
+        ? `FHIR_${system}_Export_${safeToken}.json`
+        : `FHIR_Bundle_${safeToken}.json`;
       console.log('[ExportService] Triggering FHIR Bundle download:', filename);
       this._downloadJson(sanitizedBundle, filename);
     } catch (error) {
@@ -2891,7 +2897,7 @@ export class ExportService {
       r['resourceType'] === 'Observation' &&
       r['category']?.[0]?.coding?.[0]?.code === 'vital-signs'
     );
-    const loincToField: Record<string, keyof IPatientVitals> = {
+    const loincToField: Record<string, 'bp' | 'hr' | 'temp' | 'spO2' | 'weight' | 'height'> = {
       '85354-9': 'bp', '8867-4': 'hr', '8310-5': 'temp',
       '2708-6': 'spO2', '29463-7': 'weight', '8302-2': 'height',
     };
@@ -2909,13 +2915,13 @@ export class ExportService {
       r['resourceType'] === 'Observation' &&
       r['category']?.[0]?.coding?.[0]?.code === 'exam'
     );
-    issueObs.forEach(obs => {
+    issueObs.forEach((obs, idx) => {
       const partId = obs['bodySite']?.text || 'unknown';
       const painExt = obs.extension?.find(e => e.url?.includes('pain-level'));
       const noteIdExt = obs.extension?.find(e => e.url?.includes('note-id'));
       const issue: IBodyPartIssue = {
         id: partId,
-        noteId: noteIdExt?.valueString || `note_imported_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        noteId: noteIdExt?.valueString || `note_imported_${Date.now()}_${computeFipsSha256Hex(`${partId}:${idx}:${Date.now()}`).slice(0, 8)}`,
         name: obs['code']?.text || partId,
         painLevel: painExt?.valueInteger ?? 0,
         description: obs['valueString'] || '',
@@ -3204,9 +3210,9 @@ export class ExportService {
           resource: {
             resourceType: 'Patient',
             id: sanitizedP.id,
-            name: [{ text: sanitizedP.name }],
+            name: [{ use: 'anonymous', text: this._safeHarborSubjectName(sanitizedP.id) }],
             gender: this._toFhirGender(sanitizedP.gender),
-            birthDate: this._estimateBirthYear(sanitizedP.age)
+            ...this._safeHarborAgeFields(sanitizedP.age)
           }
         },
         {
@@ -3299,9 +3305,40 @@ export class ExportService {
     return map[fhirGender || ''] || 'Other';
   }
 
-  private _estimateBirthYear(age: number): string {
-    const year = new Date().getFullYear() - age;
-    return `${year}-01-01`;
+  private _safeHarborSubjectName(idOrSeed?: string): string {
+    const token = computeFipsSha256Hex(`SAFE-HARBOR-EXPORT|${idOrSeed || 'anon'}`).slice(0, 12).toUpperCase();
+    return `Safe Harbor Subject SUBJ-${token}`;
+  }
+
+  private _safeFileToken(id?: string): string {
+    return (id || 'subject').toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  }
+
+  private _safeHarborAgeFields(age?: number): { birthDate?: string; extension?: IFhirExtension[] } {
+    if (typeof age !== 'number' || !Number.isFinite(age) || age < 0) {
+      return {};
+    }
+    if (age > 89) {
+      return {
+        extension: [
+          {
+            url: 'https://pocketgull.app/fhir/StructureDefinition/safe-harbor-age-bracket',
+            valueString: '90+'
+          }
+        ]
+      };
+    }
+    return {
+      birthDate: String(new Date().getUTCFullYear() - age)
+    };
+  }
+
+  private _estimateBirthYear(age: number): string | undefined {
+    if (typeof age !== 'number' || !Number.isFinite(age) || age > 89) {
+      return undefined;
+    }
+    const year = new Date().getUTCFullYear() - age;
+    return `${year}`;
   }
 
   private _ageFromBirthDate(birthDate: string): number {

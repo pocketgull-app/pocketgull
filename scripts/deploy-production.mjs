@@ -1,6 +1,7 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: Apache-2.0
 /**
- * Pocket Gull — Production Google Cloud Run Deployment Script
+ * Pocket Gull — Production Google Cloud Run Deployment Script (Artifact Registry + Fail-Closed)
  * Targets: gen-lang-client-0540208645
  */
 
@@ -21,13 +22,15 @@ process.chdir(rootDir);
 const TARGET_PROJECT = process.env.GCP_PROJECT || 'gen-lang-client-0540208645';
 const SERVICE_NAME = 'pocket-gull';
 const REGION = 'us-central1';
-const IMAGE_TAG = `gcr.io/${TARGET_PROJECT}/${SERVICE_NAME}:latest`;
+const AR_REPO = 'cloud-run-source-deploy';
+const IMAGE_BASE = `${REGION}-docker.pkg.dev/${TARGET_PROJECT}/${AR_REPO}/${SERVICE_NAME}`;
+const IMAGE_TAG = `${IMAGE_BASE}:latest`;
 
 console.log('==========================================================');
-console.log(`🚀 Deploying Pocket Gull to Google Cloud Run`);
+console.log('🚀 Deploying Pocket Gull to Google Cloud Run (Artifact Registry)');
 console.log(`📌 Target Project: ${TARGET_PROJECT}`);
 console.log(`🌐 Region: ${REGION}`);
-console.log(`📦 Image Tag: ${IMAGE_TAG}`);
+console.log(`📦 Image Base: ${IMAGE_BASE}`);
 console.log('==========================================================');
 
 function run(cmd, options = {}) {
@@ -40,120 +43,87 @@ function run(cmd, options = {}) {
   }
 }
 
-// 0. Mandatory Pre-Flight Verification Chain (Unit Tests, Lint, Security, SBOM)
-console.log('\n🧪 Step 0/5: Running mandatory pre-flight test & security verification chain...');
-run(`node "${join(rootDir, 'scripts/pre-commit-check.cjs')}"`);
-
-console.log('• J++ Lens & Clinical Drift Self-Healing Gate...');
-run(`node "${join(rootDir, 'scripts/preflight_drift_self_heal_gate.mjs')}"`);
-
-console.log('• CycloneDX 1.6 SBOM Verification...');
+// 0. Mandatory 8-Gate + Epistemic Pre-Flight Verification Chain
+console.log('\n🧪 Step 0/5: Running mandatory pre-flight test, security, epistemic & IAM verification chain...');
+run('npm run typecheck:all');
+run('npx vitest run --config vitest.config.ts');
+run('node scripts/run-python-tests.mjs');
+run(`node "${join(rootDir, 'scripts/sentinel_security_guard.mjs')}"`);
+run(`node "${join(rootDir, 'scripts/observatory_headers_guard.mjs')}"`);
+run('npm run tippss:audit');
+run('npm run taint:audit');
+run(`node "${join(rootDir, 'scripts/fhir_conformance_guard.mjs')}"`);
+run(`node "${join(rootDir, 'scripts/msa_governance_guard.mjs')}"`);
+run(`node "${join(rootDir, 'scripts/poka_yoke_type_guard.mjs')}"`);
+run(`node "${join(rootDir, 'scripts/epistemic_ground_truth_audit.mjs')}"`);
 run(`node "${join(rootDir, 'scripts/generate_cyclonedx_sbom.mjs')}"`);
-
-console.log('• Google Cloud Security & IAM Architecture Audit (Frameworks 0–6)...');
 run(`node "${join(rootDir, 'scripts/audit-gcp-security-posture.mjs')}"`);
 
-console.log('• Compiling production Angular SSR bundle locally (Zero Cloud Compute)...');
+console.log('• Compiling production Angular SSR bundle locally...');
 run('npm run build');
 
-console.log('✅ All pre-flight tests & local build passed successfully. Proceeding with deployment.');
+console.log('✅ All pre-flight gates & local build passed. Proceeding with deployment.');
 
 // 1. Verify Project Config
 console.log('\n🔍 Step 1/5: Verifying gcloud project configuration...');
 run(`gcloud config set project ${TARGET_PROJECT}`);
 
-// 2. Package Clean Deployment Source Archive
-console.log('\n📦 Step 2/5: Packaging clean source archive for Cloud Build...');
-const tmpDir = join(rootDir, 'tmp');
-const archivePath = join(tmpDir, 'deploy_source.tar.gz');
+// 2. Package Clean Allowlisted Deployment Source Archive (FAIL-CLOSED — never fall back to raw workspace upload!)
+console.log('\n📦 Step 2/5: Packaging clean allowlisted source archive for Cloud Build...');
+run(`node "${join(rootDir, 'scripts/package-deploy-source.mjs')}"`);
 
-try {
-  run(`node "${join(rootDir, 'scripts/package-deploy-source.mjs')}"`);
-} catch (e) {
-  console.warn('⚠️ Fallback to direct directory upload...');
+const sourceTar = join(rootDir, 'deploy_source.tar.gz');
+if (!existsSync(sourceTar)) {
+  console.error('❌ FATAL: Allowlisted deploy_source.tar.gz was not generated. Aborting to prevent leaking local workspace files.');
+  process.exit(1);
 }
 
 // 3. Submit Cloud Build
-console.log('\n🏗️ Step 3/5: Submitting pre-compiled container to Google Cloud Build (Free Tier)...');
-const sourceTar = join(rootDir, 'deploy_source.tar.gz');
-if (existsSync(sourceTar)) {
-  console.log(`Found clean source archive with pre-compiled dist (${(statSync(sourceTar).size / 1024 / 1024).toFixed(2)} MB). Submitting to Cloud Build...`);
-  run(`gcloud builds submit "${sourceTar}" --config=cloudbuild.yaml --project=${TARGET_PROJECT} --quiet`);
-} else {
-  run(`gcloud builds submit --config=cloudbuild.yaml --project=${TARGET_PROJECT} --quiet`);
-}
+console.log(`\n🏗️ Step 3/5: Submitting allowlisted archive (${(statSync(sourceTar).size / 1024 / 1024).toFixed(2)} MB) to Google Cloud Build...`);
+run(`gcloud builds submit "${sourceTar}" --config=cloudbuild.yaml --project=${TARGET_PROJECT} --quiet`);
 
-// 3b. Resolve Immutable Digest (OpenSSF / SLSA Standard: Deploy by Immutable Content Digest)
+// 3b. Resolve Immutable Digest (FAIL-CLOSED — never fall back to mutable :latest tag!)
 console.log('\n🔒 Step 3b/5: Resolving immutable image digest (OpenSSF / SLSA Provenance Standard)...');
-let deployTarget = IMAGE_TAG;
-try {
-  const digestRaw = execSync(
-    `gcloud container images describe ${IMAGE_TAG} --format="value(image_summary.digest)" --project=${TARGET_PROJECT}`,
-    { encoding: 'utf8', cwd: rootDir }
-  ).trim();
-  if (digestRaw && digestRaw.startsWith('sha256:')) {
-    deployTarget = `gcr.io/${TARGET_PROJECT}/${SERVICE_NAME}@${digestRaw}`;
-    console.log(`✅ Resolved immutable image digest: ${digestRaw}`);
-    console.log(`🔒 OpenSSF Immutable Target: ${deployTarget}`);
-  }
-} catch (e) {
-  console.warn('⚠️ Could not resolve immutable digest, falling back to tag:', e.message);
+const digestRaw = execSync(
+  `gcloud artifacts docker images describe ${IMAGE_TAG} --format="value(image_summary.digest)" --project=${TARGET_PROJECT}`,
+  { encoding: 'utf8', cwd: rootDir }
+).trim();
+
+if (!digestRaw || !digestRaw.startsWith('sha256:')) {
+  console.error(`❌ FATAL: Could not resolve immutable sha256 digest for ${IMAGE_TAG}. Aborting deployment.`);
+  process.exit(1);
 }
+const deployTarget = `${IMAGE_BASE}@${digestRaw}`;
+console.log(`✅ Resolved immutable Artifact Registry target: ${deployTarget}`);
 
 // 4. Deploy to Google Cloud Run
-console.log('\n🚀 Step 4/5: Deploying image to Google Cloud Run (Scale-to-Zero, Binary Authorization & Least-Privilege SA)...');
-run(
-  `gcloud run deploy ${SERVICE_NAME} ` +
-  `--image ${deployTarget} ` +
-  `--project=${TARGET_PROJECT} ` +
-  `--service-account=pocketgull-run@${TARGET_PROJECT}.iam.gserviceaccount.com ` +
-  `--binary-authorization=default ` +
-  `--platform managed ` +
-  `--region ${REGION} ` +
-  `--allow-unauthenticated ` +
-  `--execution-environment gen2 ` +
-  `--memory 2Gi ` +
-  `--cpu 2 ` +
-  `--min-instances 0 ` +
-  `--max-instances 2 ` +
-  `--clear-secrets ` +
-  `--update-env-vars=OTEL_SDK_DISABLED=true,GOOGLE_CLOUD_PROJECT=${TARGET_PROJECT} ` +
-  `--quiet`
-);
+console.log('\n🚀 Step 4/5: Deploying immutable image to Google Cloud Run (Scale-to-Zero, Binary Authorization & Least-Privilege SA)...');
+const commonRunArgs = [
+  `--image ${deployTarget}`,
+  `--project=${TARGET_PROJECT}`,
+  `--service-account=pocketgull-run@${TARGET_PROJECT}.iam.gserviceaccount.com`,
+  '--binary-authorization=default',
+  '--platform managed',
+  `--region ${REGION}`,
+  '--allow-unauthenticated',
+  '--execution-environment gen2',
+  '--memory 2Gi',
+  '--cpu 2',
+  '--min-instances 0',
+  '--max-instances 4',
+  '--set-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest',
+  `--update-env-vars=NODE_ENV=production,OTEL_SDK_DISABLED=true,GOOGLE_CLOUD_PROJECT=${TARGET_PROJECT}`,
+  '--quiet'
+].join(' ');
 
-console.log('\n🚀 Step 4b/5: Deploying to pocket-gull-v2 (Custom Domain Root pocketgull.app)...');
-try {
-  run(
-    `gcloud run deploy pocket-gull-v2 ` +
-    `--image ${deployTarget} ` +
-    `--project=${TARGET_PROJECT} ` +
-    `--service-account=pocketgull-run@${TARGET_PROJECT}.iam.gserviceaccount.com ` +
-    `--binary-authorization=default ` +
-    `--platform managed ` +
-    `--region ${REGION} ` +
-    `--allow-unauthenticated ` +
-    `--execution-environment gen2 ` +
-    `--memory 2Gi ` +
-    `--cpu 2 ` +
-    `--min-instances 0 ` +
-    `--max-instances 2 ` +
-    `--clear-secrets ` +
-    `--update-env-vars=OTEL_SDK_DISABLED=true,GOOGLE_CLOUD_PROJECT=${TARGET_PROJECT} ` +
-    `--quiet`
-  );
-} catch (e) {
-  console.warn('⚠️ pocket-gull-v2 deploy notice:', e.message);
-}
+run(`gcloud run deploy ${SERVICE_NAME} ${commonRunArgs}`);
+run(`gcloud run deploy pocket-gull-v2 ${commonRunArgs}`);
 
 // 5. Apply Lifecycle & Cost Controls
 console.log('\n🧹 Step 5/5: Applying storage lifecycle and cost control policies...');
-try {
-  run(`node "${join(rootDir, 'scripts/apply-gcp-lifecycle-policies.mjs')}"`);
-} catch (e) {
-  console.warn('⚠️ Lifecycle policy application notice:', e.message);
-}
+run(`node "${join(rootDir, 'scripts/apply-gcp-lifecycle-policies.mjs')}"`);
 
-// 5b. Live Synthetic Mozilla HTTP Observatory 125 Verification Probe
+// 5b. Live Synthetic Mozilla HTTP Observatory 125 Verification Probe (FAIL-CLOSED)
 console.log('\n🛡️ Step 5b/5: Probing live production endpoints for Mozilla Observatory 125 compliance...');
 const probeDomains = [
   'https://pocketgull.app',
@@ -161,50 +131,52 @@ const probeDomains = [
   'https://www.pocketgull.com'
 ];
 
-try {
-  console.log('• Performing synthetic live HTTP header verification on production domains...');
-  for (const url of probeDomains) {
-    try {
-      const res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(8000) });
-      const csp = res.headers.get('content-security-policy') || '';
-      const hsts = res.headers.get('strict-transport-security') || '';
-      const coop = res.headers.get('cross-origin-opener-policy') || '';
-      const corp = res.headers.get('cross-origin-resource-policy') || '';
-      const coep = res.headers.get('cross-origin-embedder-policy') || '';
+let probeFailures = 0;
+for (const url of probeDomains) {
+  try {
+    const res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(10000) });
+    const csp = res.headers.get('content-security-policy') || '';
+    const hsts = res.headers.get('strict-transport-security') || '';
+    const coop = res.headers.get('cross-origin-opener-policy') || '';
+    const corp = res.headers.get('cross-origin-resource-policy') || '';
+    const coep = res.headers.get('cross-origin-embedder-policy') || '';
+    const ref = res.headers.get('referrer-policy') || '';
+    const xfo = res.headers.get('x-frame-options') || '';
+    const xcto = res.headers.get('x-content-type-options') || '';
 
-      const hasStrictDynamic = csp.includes('strict-dynamic');
-      const hasPreload = hsts.includes('preload') && hsts.includes('31536000');
-      const hasCoop = coop === 'same-origin';
-      const hasCorp = corp === 'same-origin';
-      const hasCoep = coep === 'credentialless' || coep === 'require-corp';
+    const scriptSrc = (csp.match(/script-src\s+([^;]+)/i) || [])[1] || '';
+    const checks = {
+      cspStrictDynamic: scriptSrc.includes('strict-dynamic') && !scriptSrc.includes("'unsafe-inline'") && !scriptSrc.includes("'unsafe-eval'"),
+      hstsPreload: hsts.includes('preload') && hsts.includes('31536000'),
+      coop: coop === 'same-origin',
+      corp: corp === 'same-origin',
+      coep: coep === 'credentialless' || coep === 'require-corp',
+      referrerPolicy: ref === 'strict-origin-when-cross-origin',
+      xFrameOptions: xfo === 'SAMEORIGIN' || xfo === 'DENY',
+      xContentTypeOptions: xcto === 'nosniff'
+    };
 
-      if (hasStrictDynamic && hasPreload && hasCoop && hasCorp && hasCoep) {
-        console.log(`  ✅ [LIVE OBSERVATORY PASS] ${url} (CSP + HSTS Preload + COOP + CORP + COEP Verified)`);
-      } else {
-        console.warn(`  ⚠️  [NOTICE] ${url} header propagation in progress:`);
-        console.warn(`     CSP Strict-Dynamic: ${hasStrictDynamic ? 'YES' : 'PENDING'}`);
-        console.warn(`     HSTS Preload: ${hasPreload ? 'YES' : 'PENDING'}`);
-        console.warn(`     COOP same-origin: ${hasCoop ? 'YES' : 'PENDING'}`);
-        console.warn(`     CORP same-origin: ${hasCorp ? 'YES' : 'PENDING'}`);
-        console.warn(`     COEP credentialless: ${hasCoep ? 'YES' : 'PENDING'}`);
-      }
-    } catch (probeErr) {
-      console.warn(`  ⚠️ Probe for ${url} timed out or awaiting cold start:`, probeErr.message);
+    const failed = Object.entries(checks).filter(([, ok]) => !ok).map(([k]) => k);
+    if (failed.length === 0) {
+      console.log(`  ✅ [LIVE OBSERVATORY 125 PASS] ${url}`);
+    } else {
+      probeFailures++;
+      console.error(`  ❌ [LIVE OBSERVATORY FAIL] ${url} missing/degraded: ${failed.join(', ')}`);
     }
+  } catch (probeErr) {
+    probeFailures++;
+    console.error(`  ❌ [LIVE PROBE ERROR] ${url}: ${probeErr.message}`);
   }
-} catch (probeBatchErr) {
-  console.warn('⚠️ Live header probe warning:', probeBatchErr.message);
 }
 
 // Clean up local tarball
 if (existsSync(sourceTar)) {
-  try {
-    unlinkSync(sourceTar);
-  } catch (e) {}
+  unlinkSync(sourceTar);
 }
 
-console.log('\n==========================================================');
-console.log('✅ Pocket Gull Deployment to Google Cloud Run Succeeded!');
-console.log(`🔗 Live URL: https://${SERVICE_NAME}-0540208645.us-central1.run.app`);
-console.log('==========================================================');
+if (probeFailures > 0) {
+  console.error(`\n❌ Production live Observatory probe failed on ${probeFailures} domain(s).`);
+  process.exit(1);
+}
 
+console.log('\n🏆 Production deployment and live Observatory 125 verification succeeded!\n');

@@ -43,8 +43,10 @@ describe('InstitutionalComplianceService Unit Suite', () => {
     expect(cert.certificateId).toContain('PGCERT-2026-');
     expect(cert.overallComplianceScore).toBe(100);
     expect(cert.c2paProvenanceManifest).toContain('urn:c2pa:manifest:pocketgull:compliance:');
-    expect(cert.nistEntropySha256).toContain('SHA256:');
+    expect(cert.nistEntropySha256).toMatch(/^SHA256:[a-f0-9]{64}$/);
+    expect(cert.nistEntropySha256).not.toContain('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
     expect(cert.dualCustodyVerified).toBe(true);
     expect(cert.zeroKnowledgeEnforced).toBe(true);
+    expect(service.fveyCoverageAudit().isComplete).toBe(true);
   });
 });

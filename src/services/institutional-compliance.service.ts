@@ -1,4 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+// SPDX-License-Identifier: Apache-2.0
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { GlobalJurisdictionMatrixService } from './global-jurisdiction-matrix.service';
+import { computeFipsSha256Hex } from './clinical-defense-guard.service';
 
 export interface IStatutoryStandardAudit {
   frameworkId: string;
@@ -29,11 +32,31 @@ export interface IInstitutionalComplianceCertificate {
   providedIn: 'root'
 })
 export class InstitutionalComplianceService {
+  private readonly jurisdictionMatrix = inject(GlobalJurisdictionMatrixService, { optional: true }) || new GlobalJurisdictionMatrixService();
+
   /** Active institutional entity name (e.g. Hospital Health System or Clinic) */
   public readonly institutionName = signal<string>('PocketGull LLC.');
 
-  /** Live statutory standards register */
-  public readonly statutoryStandards = signal<IStatutoryStandardAudit[]>([
+  /** Dynamic Five Eyes (FVEY) coverage verification computed from GlobalJurisdictionMatrixService */
+  public readonly fveyCoverageAudit = computed(() => {
+    const requiredCountries = ['US', 'GB', 'CA', 'AU', 'NZ'];
+    const allProfiles = this.jurisdictionMatrix.getAllJurisdictions();
+    const presentCountries = new Set(allProfiles.map(p => p.countryCode.toUpperCase()));
+    const verifiedCountries = requiredCountries.filter(c => presentCountries.has(c));
+    const missingCountries = requiredCountries.filter(c => !presentCountries.has(c));
+    const activeProfile = this.jurisdictionMatrix.activeProfile();
+    return {
+      isComplete: missingCountries.length === 0,
+      verifiedCountries,
+      missingCountries,
+      activeJurisdictionId: activeProfile.jurisdictionId,
+      activeStatute: activeProfile.dataPrivacyStatute,
+      activeEhrStandard: activeProfile.electronicHealthRecordStandard
+    };
+  });
+
+  /** Live statutory standards register (base entries) */
+  private readonly baseStatutoryStandards = signal<IStatutoryStandardAudit[]>([
     {
       frameworkId: 'HIPAA-SAFE-HARBOR',
       name: 'HIPAA §164.514 Safe Harbor De-Identification',
@@ -186,6 +209,35 @@ export class InstitutionalComplianceService {
     }
   ]);
 
+  /** Live statutory standards register dynamically reconciled against FVEY jurisdiction matrix & CSPRNG availability */
+  public readonly statutoryStandards = computed<IStatutoryStandardAudit[]>(() => {
+    const fvey = this.fveyCoverageAudit();
+    const csprngAvailable = typeof globalThis !== 'undefined' && typeof globalThis.crypto?.getRandomValues === 'function';
+    return this.baseStatutoryStandards().map(standard => {
+      if (standard.frameworkId === 'FVEY-SOVEREIGNTY') {
+        return {
+          ...standard,
+          complianceLevel: fvey.isComplete ? 'COMPLIANT_100' : 'COMPLIANT_ATTUNED',
+          auditBadgeColor: fvey.isComplete ? 'emerald' : 'amber',
+          evidenceSummary: fvey.isComplete
+            ? `Verified 5/5 FVEY profiles (${fvey.verifiedCountries.join('/')}); active jurisdiction ${fvey.activeJurisdictionId} (${fvey.activeEhrStandard}).`
+            : `Incomplete FVEY coverage — missing: ${fvey.missingCountries.join(', ')}.`
+        };
+      }
+      if (standard.frameworkId === 'NIST-SP-800-90A') {
+        return {
+          ...standard,
+          complianceLevel: csprngAvailable ? 'COMPLIANT_100' : 'COMPLIANT_ATTUNED',
+          auditBadgeColor: csprngAvailable ? 'emerald' : 'amber',
+          evidenceSummary: csprngAvailable
+            ? 'Verified OS kernel CSPRNG (crypto.getRandomValues) active; fail-closed entropy policy enforced.'
+            : 'WARNING: CSPRNG unavailable in current runtime — cryptographic operations will fail closed.'
+        };
+      }
+      return standard;
+    });
+  });
+
   /** Overall compliance score (0-100) */
   public readonly complianceScore = computed<number>(() => {
     const standards = this.statutoryStandards();
@@ -194,37 +246,48 @@ export class InstitutionalComplianceService {
   });
 
   /**
-   * Generates a formal, immutable Institutional Compliance Certificate.
+   * Generates a formal, immutable Institutional Compliance Certificate sealed with FIPS 180-4 SHA-256.
    */
   public generateComplianceCertificate(): IInstitutionalComplianceCertificate {
-    const certNonce = this.generateNonceHex(8);
+    const certNonce = this.generateNonceHex(16);
     const issuanceTime = new Date();
     const expirationTime = new Date(issuanceTime.getTime() + 365 * 24 * 60 * 60 * 1000);
+    const certificateId = `PGCERT-2026-${certNonce.slice(0, 16).toUpperCase()}`;
+    const standards = this.statutoryStandards();
+    const overallComplianceScore = this.complianceScore();
+    const issuedTo = this.institutionName();
+    const preImage = JSON.stringify({
+      certificateId,
+      issuedTo,
+      issuanceTimestamp: issuanceTime.toISOString(),
+      expirationTimestamp: expirationTime.toISOString(),
+      overallComplianceScore,
+      frameworkIds: standards.map(s => `${s.frameworkId}:${s.complianceLevel}`),
+      certNonce
+    });
+    const digest = computeFipsSha256Hex(preImage);
 
     return {
-      certificateId: `PGCERT-2026-${certNonce.toUpperCase()}`,
-      issuedTo: this.institutionName(),
+      certificateId,
+      issuedTo,
       issuedBy: 'PocketGull Autonomous Compliance Engine (NIST SP 800-90A Verified)',
       issuanceTimestamp: issuanceTime.toISOString(),
       expirationTimestamp: expirationTime.toISOString(),
-      nistEntropySha256: `SHA256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`,
+      nistEntropySha256: `SHA256:${digest}`,
       c2paProvenanceManifest: `urn:c2pa:manifest:pocketgull:compliance:${certNonce}`,
-      overallComplianceScore: this.complianceScore(),
-      standards: this.statutoryStandards(),
+      overallComplianceScore,
+      standards,
       dualCustodyVerified: true,
       zeroKnowledgeEnforced: true
     };
   }
 
   private generateNonceHex(bytesCount: number): string {
-    const arr = new Uint8Array(bytesCount);
-    if (typeof globalThis.crypto !== 'undefined' && globalThis.crypto.getRandomValues) {
-      globalThis.crypto.getRandomValues(arr);
-    } else {
-      for (let i = 0; i < arr.length; i++) {
-        arr[i] = (Date.now() + i * 29) & 0xff;
-      }
+    if (typeof globalThis === 'undefined' || typeof globalThis.crypto?.getRandomValues !== 'function') {
+      throw new Error('NIST SP 800-90A CSPRNG unavailable: cannot generate institutional compliance certificate nonce.');
     }
+    const arr = new Uint8Array(bytesCount);
+    globalThis.crypto.getRandomValues(arr);
     return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
   }
 }

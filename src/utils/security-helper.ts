@@ -20,63 +20,141 @@ export function sanitizeLogInput(value: unknown): string {
   return encodeURIComponent(cleanStr).slice(0, 2000);
 }
 
+function requireCsprng(): Crypto {
+  const gCrypto = typeof globalThis !== 'undefined' ? globalThis.crypto : undefined;
+  if (!gCrypto || typeof gCrypto.getRandomValues !== 'function') {
+    throw new Error('NIST SP 800-90A CSPRNG unavailable: globalThis.crypto.getRandomValues is required (fail-closed).');
+  }
+  return gCrypto;
+}
+
 /**
- * Generates an unpredictable security identifier using NIST SP 800-90A CSPRNG hardware entropy.
+ * Generates an unpredictable 128-bit security identifier using NIST SP 800-90A CSPRNG hardware entropy.
  * Complies with FDA 21 CFR Part 11 electronic records integrity and HIPAA § 164.312(c)(1) data integrity verification.
- * Seamlessly interfaces with W3C Web Crypto API (`globalThis.crypto.getRandomValues`) and Node.js security runtimes.
+ * Fails closed if Web Crypto / Node CSPRNG is unavailable.
  */
 export function getSecureRandomId(): string {
-  const gCrypto = typeof globalThis !== 'undefined' ? globalThis.crypto : null;
-  if (gCrypto && gCrypto.getRandomValues) {
-    const array = new Uint32Array(2);
-    gCrypto.getRandomValues(array);
-    return Array.from(array, num => num.toString(36)).join('');
-  }
-  const timestamp = Date.now().toString(36);
-  const perf = typeof performance !== 'undefined' ? performance.now().toString(36).replace('.', '') : '';
-  return `${timestamp}${perf}`;
+  return getSecureRandomHex(16);
 }
 
 /**
  * Returns a uniformly distributed [0, 1) fraction backed by CSPRNG 53-bit IEEE-754 mantissa scaling
- * (NIST SP 800-90A compliant; zero modulo bias and zero Math.random).
+ * (NIST SP 800-90A compliant; zero modulo bias, zero Math.random, and fail-closed without weak LCG fallback).
  */
 export function getSecureRandomFraction(): number {
-  const gCrypto = typeof globalThis !== 'undefined' ? globalThis.crypto : null;
-  if (gCrypto && gCrypto.getRandomValues) {
-    const words = new Uint32Array(2);
-    gCrypto.getRandomValues(words);
-    const high = words[0] >>> 5;  // 27 bits
-    const low = words[1] >>> 6;   // 26 bits
-    return (high * 67108864.0 + low) / 9007199254740992.0;
-  }
-  const micro = typeof performance !== 'undefined' ? performance.now() : Date.now();
-  return ((micro * 1000) % 997) / 997;
+  const gCrypto = requireCsprng();
+  const words = new Uint32Array(2);
+  gCrypto.getRandomValues(words);
+  const high = words[0] >>> 5;  // 27 bits
+  const low = words[1] >>> 6;   // 26 bits
+  return (high * 67108864.0 + low) / 9007199254740992.0;
 }
 
 /**
  * Generates a NIST SP 800-90A CSPRNG lowercase hex string of `byteCount` bytes.
+ * Fails closed if CSPRNG is unavailable.
  */
 export function getSecureRandomHex(byteCount: number = 16): string {
-  const bytes = new Uint8Array(byteCount);
-  const gCrypto = typeof globalThis !== 'undefined' ? globalThis.crypto : null;
-  if (gCrypto && gCrypto.getRandomValues) {
-    gCrypto.getRandomValues(bytes);
-  } else {
-    for (let i = 0; i < byteCount; i++) {
-      bytes[i] = Math.floor(getSecureRandomFraction() * 256);
-    }
+  if (!Number.isInteger(byteCount) || byteCount <= 0 || byteCount > 4096) {
+    throw new RangeError('byteCount must be an integer between 1 and 4096.');
   }
+  const gCrypto = requireCsprng();
+  const bytes = new Uint8Array(byteCount);
+  gCrypto.getRandomValues(bytes);
   return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
 }
 
+function normalizeBasePath(rawBase: string): { prefix: string; parts: string[] } {
+  if (!rawBase || typeof rawBase !== 'string' || rawBase.includes('\0')) {
+    throw new Error('Invalid baseDir: must be a non-empty string without null bytes.');
+  }
+  const unified = rawBase.replace(/\\/g, '/');
+  let prefix = '';
+  let remainder = unified;
+
+  const winDriveMatch = unified.match(/^([a-zA-Z]:)\//);
+  if (winDriveMatch) {
+    prefix = `${winDriveMatch[1]}/`;
+    remainder = unified.slice(prefix.length);
+  } else if (unified.startsWith('/')) {
+    prefix = '/';
+    remainder = unified.slice(1);
+  }
+
+  const stack: string[] = [];
+  for (const part of remainder.split('/')) {
+    if (!part || part === '.') continue;
+    if (part === '..') {
+      if (stack.length > 0) stack.pop();
+    } else {
+      stack.push(part);
+    }
+  }
+  return { prefix, parts: stack };
+}
+
 /**
- * Resolves a file path securely and verifies it remains constrained within the target base directory (js/http-to-file-access).
- * Pure browser-safe string normalization.
+ * Resolves a file path securely and verifies it remains strictly constrained within `baseDir` (js/http-to-file-access).
+ * Rejects null bytes, backslashes, URL-encoded traversal (`%2e%2e`, `%2f`, `%5c`), absolute escapes, and `..` traversal.
+ * Pure browser-and-Node-safe normalization.
  */
 export function securePathResolve(baseDir: string, ...pathSegments: string[]): string {
-  const combined = [baseDir, ...pathSegments].join('/').replace(/\/+/g, '/');
-  return combined;
+  const { prefix, parts: baseParts } = normalizeBasePath(baseDir);
+  const resolvedParts = [...baseParts];
+
+  for (const rawSeg of pathSegments) {
+    if (typeof rawSeg !== 'string') {
+      throw new Error('Path traversal rejected: path segment must be a string.');
+    }
+    if (rawSeg.includes('\0')) {
+      throw new Error('Path traversal rejected: null byte detected in path segment.');
+    }
+    if (rawSeg.includes('\\')) {
+      throw new Error('Path traversal rejected: backslash separator not allowed in path segment.');
+    }
+    if (/^[a-zA-Z]:/.test(rawSeg) || rawSeg.startsWith('/')) {
+      throw new Error('Path traversal rejected: absolute path segment cannot override baseDir.');
+    }
+
+    // Iteratively decode percent-encoding to block %2e%2e, %252e%252e, %2f, %5c obfuscation
+    let decoded = rawSeg;
+    for (let i = 0; i < 3; i++) {
+      if (/%2e|%2f|%5c|%00/i.test(decoded)) {
+        throw new Error('Path traversal rejected: URL-encoded traversal or separator sequence detected.');
+      }
+      try {
+        const next = decodeURIComponent(decoded);
+        if (next === decoded) break;
+        decoded = next;
+      } catch {
+        throw new Error('Path traversal rejected: malformed percent-encoding in path segment.');
+      }
+    }
+
+    if (decoded.includes('\0') || decoded.includes('\\')) {
+      throw new Error('Path traversal rejected: decoded segment contains illegal separator or null byte.');
+    }
+
+    for (const part of decoded.split('/')) {
+      if (!part || part === '.') continue;
+      if (part === '..') {
+        throw new Error('Path traversal rejected: parent directory ("..") segment is prohibited.');
+      }
+      resolvedParts.push(part);
+    }
+  }
+
+  // Final containment invariant check
+  if (resolvedParts.length < baseParts.length) {
+    throw new Error('Path traversal rejected: resolved path escapes base directory.');
+  }
+  for (let i = 0; i < baseParts.length; i++) {
+    if (resolvedParts[i] !== baseParts[i]) {
+      throw new Error('Path traversal rejected: resolved path escapes base directory.');
+    }
+  }
+
+  return `${prefix}${resolvedParts.join('/')}`;
 }
 
 /**

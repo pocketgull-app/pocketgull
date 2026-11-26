@@ -30,12 +30,15 @@ export interface ISkepticalMetricEvaluation {
   nullHypothesisH0: string;
   pValue: number;
   isFalsified: boolean;
+  /** Canonical Popperian indicator: true strictly when pValue < 0.05 (null hypothesis H0 rejected). */
+  nullHypothesisRejected?: boolean;
   epistemicConfidencePercent: number; // 0-100%
   skepticalWarningNotice: string | null;
 }
 
 export interface ICochraneBiasReport {
   citationId: string;
+  verificationStatus?: 'VERIFIED_REGISTRY' | 'UNVERIFIED_EXTERNAL_CIT';
   randomizationBias: CochraneRiskOfBiasLevel;
   deviationFromInterventionBias: CochraneRiskOfBiasLevel;
   missingDataBias: CochraneRiskOfBiasLevel;
@@ -1214,6 +1217,32 @@ export class SkepticalEpistemologyService {
     return Math.abs(hash);
   }
   /**
+   * Resolves physiological population standard deviation (sigma) for a given clinical metric.
+   * Uses explicit caller-supplied sigma when provided, then domain-calibrated clinical lookup,
+   * and falls back to 10 only for generic/unmatched statistical metrics.
+   */
+  public resolvePhysiologicalStdDev(metricName: string, populationStdDev?: number): number {
+    if (typeof populationStdDev === 'number' && Number.isFinite(populationStdDev) && populationStdDev > 0) {
+      return populationStdDev;
+    }
+    const lower = (metricName || '').toLowerCase();
+    if (/\bhba1c\b|glycated\s+hemoglobin/.test(lower)) return 1.2;
+    if (/\bspo2\b|oxygen\s+saturation/.test(lower)) return 2.0;
+    if (/\bpotassium\b|\bserum\s+k\+?\b/.test(lower)) return 0.4;
+    if (/\bsodium\b|\bserum\s+na\+?\b/.test(lower)) return 3.0;
+    if (/\bcreatinine\b/.test(lower)) return 0.3;
+    if (/\begfr\b|\bcrcl\b/.test(lower)) return 15.0;
+    if (/\bhs-?crp\b|\bcrp\b|c-reactive/.test(lower)) return 2.5;
+    if (/\bglucose\b|\bcgm\b|blood\s+sugar/.test(lower)) return 25.0;
+    if (/\bhrv\b|\brmssd\b|\bsdnn\b/.test(lower)) return 15.0;
+    if (/\btemp(?:erature)?\b/.test(lower)) return 0.5;
+    if (/\bsystolic\b|\bsbp\b|blood\s+pressure/.test(lower)) return 15.0;
+    if (/\bdiastolic\b|\bdbp\b/.test(lower)) return 10.0;
+    if (/\bheart\s+rate\b|\bhr\b|\bpulse\b/.test(lower)) return 12.0;
+    return 10.0;
+  }
+
+  /**
    * Popperian Falsifiability & Null-Hypothesis (H0) Tester
    * Evaluates whether a biophysics or clinical indicator has sufficient statistical power or if it remains unproven.
    */
@@ -1221,53 +1250,70 @@ export class SkepticalEpistemologyService {
     metricName: string,
     observedValue: number,
     baselineMean: number,
-    sampleCount: number = 10
+    sampleCount: number = 10,
+    populationStdDev?: number
   ): ISkepticalMetricEvaluation {
     // Standard error calculation for two-tailed null hypothesis p-value: p = erfc(|z| / sqrt(2))
+    const sigma = this.resolvePhysiologicalStdDev(metricName, populationStdDev);
     const diff = Math.abs(observedValue - baselineMean);
-    const zScore = diff / (10 / Math.sqrt(Math.max(1, sampleCount)));
+    const zScore = diff / (sigma / Math.sqrt(Math.max(1, sampleCount)));
     const x = zScore / Math.SQRT2;
     const t = 1.0 / (1.0 + 0.3275911 * x);
     const erfcVal = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-x * x);
     const pValue = parseFloat(Math.min(1.0, Math.max(0.0, erfcVal)).toFixed(4));
-    
-    const isStatisticallySignificant = pValue < 0.05;
+
+    const nullHypothesisRejected = pValue < 0.05;
     const epistemicConfidencePercent = Math.min(99, Math.max(15, Math.round((1 - pValue) * 100)));
 
     let notice: string | null = null;
-    if (!isStatisticallySignificant) {
-      notice = `Skeptical Epistemic Guardrail: Null hypothesis H0 cannot be rejected (p=${pValue} > 0.05). Observed ${metricName} may reflect random variance rather than true physiological effect.`;
+    if (!nullHypothesisRejected) {
+      notice = `Skeptical Epistemic Guardrail: Null hypothesis H0 cannot be rejected (p=${pValue} >= 0.05, sigma=${sigma}). Observed ${metricName} may reflect random variance rather than true physiological effect.`;
     }
 
     return {
       metricName,
       observedValue,
-      nullHypothesisH0: `Observed ${metricName} is equal to population baseline mean (${baselineMean}).`,
+      nullHypothesisH0: `Observed ${metricName} is equal to population baseline mean (${baselineMean}, sigma=${sigma}).`,
       pValue,
-      isFalsified: isStatisticallySignificant,
+      isFalsified: nullHypothesisRejected,
+      nullHypothesisRejected,
       epistemicConfidencePercent,
       skepticalWarningNotice: notice
     };
   }
 
   /**
-   * Cochrane Risk of Bias (RoB 2) Evaluator for Academic Citations
+   * Cochrane Risk of Bias (RoB 2) Evaluator for Academic Citations.
+   * Returns curated registry evaluations for verified citations, and explicitly labels
+   * unknown/external citations as UNVERIFIED_EXTERNAL_CIT rather than returning fabricated low-bias stubs.
    */
   evaluateCochraneRiskOfBias(citationId: string): ICochraneBiasReport {
-    // Rigorous default bias grading
+    const cleanId = (citationId || '').trim();
+    const curatedMatch = BIOHACK_EPISTEMIC_CATALOG.find(
+      b => b.cochraneBias.citationId.toLowerCase() === cleanId.toLowerCase()
+    );
+    if (curatedMatch) {
+      return {
+        ...curatedMatch.cochraneBias,
+        verificationStatus: 'VERIFIED_REGISTRY'
+      };
+    }
+
     return {
-      citationId,
-      randomizationBias: 'Low Risk of Bias',
-      deviationFromInterventionBias: 'Low Risk of Bias',
+      citationId: cleanId || 'UNVERIFIED_EXTERNAL_CIT',
+      verificationStatus: 'UNVERIFIED_EXTERNAL_CIT',
+      randomizationBias: 'Some Concerns',
+      deviationFromInterventionBias: 'Some Concerns',
       missingDataBias: 'Some Concerns',
-      measurementBias: 'Low Risk of Bias',
+      measurementBias: 'Some Concerns',
       overallRiskOfBias: 'Some Concerns',
-      skepticalSummary: 'Study presents sound methodology but carries moderate risk of bias due to non-blinded participant self-reporting.'
+      skepticalSummary: 'UNVERIFIED_EXTERNAL_CIT: Citation is not in the curated verified registry and carries moderate risk of bias until independently appraised by a clinician.'
     };
   }
 
   /**
    * Evaluates clinical recommendations under FDA 21 CFR Section 520(o)(1)(E) Non-Device CDS rules.
+   * Never fabricates NEJM DOIs or synthetic PubMed IDs.
    */
   evaluateCdsCompliance(lensName: string, activeIssuesCount: number = 0): ICdsComplianceReport {
     const falsifiability = this.evaluateFalsifiability(
@@ -1277,7 +1323,7 @@ export class SkepticalEpistemologyService {
       14
     );
 
-    const cochraneBias = this.evaluateCochraneRiskOfBias(`PUBMED-${Math.abs(this.stableHash(lensName)) % 900000 + 100000}`);
+    const cochraneBias = this.evaluateCochraneRiskOfBias('UNVERIFIED_EXTERNAL_CIT');
 
     const baseConfidence = falsifiability.epistemicConfidencePercent;
     const overallConfidencePercent = Math.min(98, Math.max(65, Math.round(baseConfidence * 0.92)));
@@ -1289,7 +1335,7 @@ export class SkepticalEpistemologyService {
       falsifiability,
       cochraneBias,
       evidenceLevel: overallConfidencePercent > 85 ? 'Level A (RCTs)' : 'Level B (Cohort)',
-      primaryCitation: `N Engl J Med 2025; 392:1401-1412 (DOI: 10.1056/NEJMra240${Math.abs(this.stableHash(lensName)) % 999})`,
+      primaryCitation: 'UNVERIFIED_EXTERNAL_CIT — Dynamic lens synthesis requires independent verification against peer-reviewed clinical practice guidelines.',
       regulatoryMetadata: {
         cfrReference: '21 CFR Part 860 / FD&C Act Section 520(o)',
         clinicianMandate: 'Licensed Healthcare Professional must independently verify underlying clinical data, physiological rationale, and patient history before initiating treatment.'
@@ -1325,9 +1371,9 @@ export class SkepticalEpistemologyService {
     );
     if (match) return match;
 
-    // Dynamic fallback generation for custom query
+    // Dynamic fallback generation for custom query — never fabricates PubMed IDs
     const falsifiability = this.evaluateFalsifiability(queryOrId, 75, 70, 8);
-    const cochraneBias = this.evaluateCochraneRiskOfBias(`PUBMED-CUSTOM-${Math.abs(this.stableHash(queryOrId)) % 800000 + 100000}`);
+    const cochraneBias = this.evaluateCochraneRiskOfBias('UNVERIFIED_EXTERNAL_CIT');
 
     return {
       id: cleanQuery.replace(/[^a-z0-9]+/g, '-'),
@@ -1367,18 +1413,20 @@ export class SkepticalEpistemologyService {
       nullHypothesisH0: `Adding N+1 nutraceutical compound confers positive marginal efficacy beyond ${optimalDoseCopt}-compound optimal baseline.`,
       pValue,
       isFalsified,
+      nullHypothesisRejected: isFalsified,
       epistemicConfidencePercent: isHookEffectSuppressed ? 35 : 98,
       skepticalWarningNotice: notice
     };
 
     const cochraneBias: ICochraneBiasReport = {
-      citationId: 'PUBMED-38491204',
+      citationId: 'EXPLORATORY-MODEL-PROTAC-HOOK',
+      verificationStatus: 'UNVERIFIED_EXTERNAL_CIT',
       randomizationBias: 'Low Risk of Bias',
       deviationFromInterventionBias: isHookEffectSuppressed ? 'High Risk of Bias' : 'Low Risk of Bias',
       missingDataBias: 'Low Risk of Bias',
       measurementBias: 'Some Concerns',
       overallRiskOfBias: isHookEffectSuppressed ? 'High Risk of Bias' : 'Low Risk of Bias',
-      skepticalSummary: 'Complex multi-compound supplement regimens routinely fail randomized trials due to competitive hepatic clearance and non-linear binding saturation.'
+      skepticalSummary: 'Exploratory in-silico pharmacokinetic model (non-diagnostic): complex multi-compound supplement regimens can encounter competitive hepatic clearance and non-linear binding saturation.'
     };
 
     return {
@@ -1421,18 +1469,20 @@ export class SkepticalEpistemologyService {
       nullHypothesisH0: `In vitro kinetic dissolution of ${claimedAggregateTarget} achieves thermodynamic free energy parity (ΔF_mix < 0) in in vivo CSF concentrations.`,
       pValue,
       isFalsified,
+      nullHypothesisRejected: isFalsified,
       epistemicConfidencePercent: isPhaseBoundaryAchieved ? 96 : 28,
       skepticalWarningNotice: notice
     };
 
     const cochraneBias: ICochraneBiasReport = {
-      citationId: 'PUBMED-36912048',
+      citationId: 'EXPLORATORY-MODEL-LLPS-SPINODAL',
+      verificationStatus: 'UNVERIFIED_EXTERNAL_CIT',
       randomizationBias: 'Some Concerns',
       deviationFromInterventionBias: 'High Risk of Bias',
       missingDataBias: 'Low Risk of Bias',
       measurementBias: 'High Risk of Bias',
       overallRiskOfBias: 'High Risk of Bias',
-      skepticalSummary: 'In vitro cell-free turbidimetry assays over-estimate in vivo plaque dissolution by 400x due to blood-brain barrier exclusion and rapid glucuronidation.'
+      skepticalSummary: 'Exploratory in-silico biophysical bound (non-diagnostic): in vitro cell-free turbidimetry assays frequently over-estimate in vivo plaque dissolution due to blood-brain barrier exclusion and rapid glucuronidation.'
     };
 
     return {
@@ -1484,18 +1534,20 @@ export class SkepticalEpistemologyService {
       nullHypothesisH0: `Applied magnetic or RF field overcomes stochastic thermal collision noise (k_B T = 4.28e-21 J) to induce biological radical pair polarization.`,
       pValue,
       isFalsified,
+      nullHypothesisRejected: isFalsified,
       epistemicConfidencePercent: isThermalNoiseOvercome ? 98 : 5,
       skepticalWarningNotice: notice
     };
 
     const cochraneBias: ICochraneBiasReport = {
-      citationId: 'PUBMED-37291044',
+      citationId: 'EXPLORATORY-MODEL-QUANTUM-KBT',
+      verificationStatus: 'UNVERIFIED_EXTERNAL_CIT',
       randomizationBias: 'High Risk of Bias',
       deviationFromInterventionBias: 'High Risk of Bias',
       missingDataBias: 'High Risk of Bias',
       measurementBias: 'High Risk of Bias',
       overallRiskOfBias: 'High Risk of Bias',
-      skepticalSummary: 'Bio-resonance frequency devices lack sham-controlled double-blind replication and violate basic quantum electrodynamics thermal dissipation bounds.'
+      skepticalSummary: 'First-principles thermodynamic bound: bio-resonance frequency claims lack sham-controlled double-blind replication and remain orders of magnitude below the k_B T thermal dissipation floor.'
     };
 
     return {
@@ -1539,13 +1591,14 @@ export class SkepticalEpistemologyService {
     }
 
     const cochraneBias: ICochraneBiasReport = {
-      citationId: 'PUBMED-38102947',
+      citationId: 'EXPLORATORY-MODEL-DUAL-SPIN',
+      verificationStatus: 'UNVERIFIED_EXTERNAL_CIT',
       randomizationBias: 'Low Risk of Bias',
       deviationFromInterventionBias: 'Low Risk of Bias',
       missingDataBias: 'Low Risk of Bias',
       measurementBias: 'Low Risk of Bias',
       overallRiskOfBias: singletYieldPhiS > 0.60 ? 'Low Risk of Bias' : 'Some Concerns',
-      skepticalSummary: 'Standard of care maintains Level A RCT grounding. Integrative adjuvant supports autonomic balance with Level B clinical evidence.'
+      skepticalSummary: 'Exploratory decision-weighting heuristic (non-diagnostic): standard of care maintains Level A RCT grounding while integrative adjuvants remain secondary supportive care.'
     };
 
     return {
@@ -1589,18 +1642,20 @@ export class SkepticalEpistemologyService {
       nullHypothesisH0: `Binder selectively chelates target heavy metals (Pb2+, Hg2+) without co-adsorbing essential serum cations (Mg2+, Zn2+, Ca2+).`,
       pValue,
       isFalsified,
+      nullHypothesisRejected: isFalsified,
       epistemicConfidencePercent: isSelectivelySieved ? 94 : 42,
       skepticalWarningNotice: notice
     };
 
     const cochraneBias: ICochraneBiasReport = {
-      citationId: 'PUBMED-35109281',
+      citationId: 'EXPLORATORY-MODEL-RETICULAR-PORE',
+      verificationStatus: 'UNVERIFIED_EXTERNAL_CIT',
       randomizationBias: 'Low Risk of Bias',
       deviationFromInterventionBias: 'Some Concerns',
       missingDataBias: 'Low Risk of Bias',
       measurementBias: 'Some Concerns',
       overallRiskOfBias: 'Some Concerns',
-      skepticalSummary: 'Oral clay and zeolite binders exhibit broad non-selective cation exchange, leading to documented iatrogenic hypomagnesemia and zinc depletion.'
+      skepticalSummary: 'Exploratory ionic-radius selectivity check (non-diagnostic): oral clay and zeolite binders exhibit non-selective cation exchange that can co-adsorb essential minerals.'
     };
 
     return {
@@ -1643,18 +1698,20 @@ export class SkepticalEpistemologyService {
       nullHypothesisH0: `${compound} produces zero statistically significant elevation in tubulin Lys40 acetylation or reduction in catastrophe frequency over vehicle control.`,
       pValue,
       isFalsified,
+      nullHypothesisRejected: isFalsified,
       epistemicConfidencePercent: isEfficacious ? 94 : 35,
       skepticalWarningNotice: notice
     };
 
     const cochraneBias: ICochraneBiasReport = {
-      citationId: 'PUBMED-38102941',
+      citationId: 'EXPLORATORY-MODEL-CANNABINOID-TUBULIN',
+      verificationStatus: 'UNVERIFIED_EXTERNAL_CIT',
       randomizationBias: 'Low Risk of Bias',
       deviationFromInterventionBias: 'Low Risk of Bias',
       missingDataBias: 'Low Risk of Bias',
       measurementBias: 'Some Concerns',
-      overallRiskOfBias: 'Low Risk of Bias',
-      skepticalSummary: 'Consistent in vitro and in vivo animal models demonstrate cannabinoid-mediated GSK-3β inhibition and tubulin Lys40 acetylation, protecting against chemotherapy neuropathy and Tau hyperphosphorylation.'
+      overallRiskOfBias: 'Some Concerns',
+      skepticalSummary: 'Exploratory preclinical mechanistic model (non-diagnostic): human clinical translation requires replicated randomized trials.'
     };
 
     return {
@@ -1692,12 +1749,11 @@ export class SkepticalEpistemologyService {
    * and Cochrane risk of bias invariants.
    */
   evaluateGroundedAssertion(assertion: IGroundedClinicalAssertion): ISkepticalMetricEvaluation {
-    const isStatisticallySignificant = assertion.pValueNullRejection < 0.05;
+    const nullHypothesisRejected = assertion.pValueNullRejection < 0.05;
     const isHighRiskOfBias = assertion.cochraneRiskOfBias === 'High Risk of Bias';
-    const isFalsified = !isStatisticallySignificant || isHighRiskOfBias;
 
     let warningNotice: string | null = null;
-    if (!isStatisticallySignificant) {
+    if (!nullHypothesisRejected) {
       warningNotice = `H0 Null Hypothesis cannot be rejected (p = ${assertion.pValueNullRejection.toFixed(3)} >= 0.05). Risk of placebo effect or regression to the mean.`;
     } else if (isHighRiskOfBias) {
       warningNotice = `Underlying clinical evidence has High Risk of Bias (${assertion.cochraneRiskOfBias}). Proceed with clinician oversight.`;
@@ -1710,7 +1766,8 @@ export class SkepticalEpistemologyService {
       observedValue: `${(assertion.epistemicConfidence * 100).toFixed(1)}% Confidence`,
       nullHypothesisH0: assertion.nullHypothesisH0,
       pValue: assertion.pValueNullRejection,
-      isFalsified,
+      isFalsified: nullHypothesisRejected,
+      nullHypothesisRejected,
       epistemicConfidencePercent: Math.round(assertion.epistemicConfidence * 100),
       skepticalWarningNotice: warningNotice
     };

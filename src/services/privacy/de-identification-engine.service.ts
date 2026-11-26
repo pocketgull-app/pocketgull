@@ -6,6 +6,7 @@
  */
 
 import { Injectable } from '@angular/core';
+import { computeFipsSha256Hex } from '../clinical-defense-guard.service';
 
 export interface IRawPatientRecord {
   // 1. Names
@@ -137,26 +138,38 @@ export interface IKAnonymityAuditResult {
 export class DeIdentificationEngineService {
   public static readonly MINIMUM_K_ANONYMITY = 8;
   public static readonly DEFAULT_EPSILON = 1.0; // Standard epsilon budget for clinical telemetry
-  public static readonly STUDY_EPOCH_MS = new Date('2026-01-01T00:00:00Z').getTime();
+
+  private readonly pseudonymSaltHex: string;
+
+  constructor() {
+    this.pseudonymSaltHex = this.generateRandomSaltHex(16);
+  }
+
+  private generateRandomSaltHex(byteLength: number): string {
+    const gCrypto = typeof globalThis !== 'undefined' ? globalThis.crypto : null;
+    if (!gCrypto || typeof gCrypto.getRandomValues !== 'function') {
+      throw new Error('NIST SP 800-90A CSPRNG unavailable: cannot initialize Safe Harbor pseudonym salt.');
+    }
+    const buf = new Uint8Array(byteLength);
+    gCrypto.getRandomValues(buf);
+    return Array.from(buf, b => b.toString(16).padStart(2, '0')).join('');
+  }
 
   /**
    * Generates an unbiased 53-bit IEEE-754 mantissa float in [0, 1) using NIST SP 800-90A CSPRNG entropy.
    * Formula: (high * 4294967296.0 + low) / 9007199254740992.0
-   * Prohibits Math.random() in adherence to clinical security directives.
+   * Fails closed when Web/Node Crypto CSPRNG is unavailable (zero Math.random / Math.sin fallbacks).
    */
   public getUnbiasedCspRandomFloat(): number {
     const gCrypto = typeof globalThis !== 'undefined' ? globalThis.crypto : null;
-    if (gCrypto && gCrypto.getRandomValues) {
-      const buf = new Uint32Array(2);
-      gCrypto.getRandomValues(buf);
-      const high = buf[0] & 0x1fffff; // 21 bits
-      const low = buf[1];             // 32 bits
-      return (high * 4294967296.0 + low) / 9007199254740992.0;
+    if (!gCrypto || typeof gCrypto.getRandomValues !== 'function') {
+      throw new Error('NIST SP 800-90A CSPRNG unavailable: refusing weak entropy fallback for differential privacy.');
     }
-    // High-precision fallback when Web Crypto is unavailable in mock environments
-    const perf = typeof performance !== 'undefined' ? performance.now() : Date.now();
-    const seed = Math.sin(perf) * 10000;
-    return Math.abs(seed - Math.floor(seed));
+    const buf = new Uint32Array(2);
+    gCrypto.getRandomValues(buf);
+    const high = buf[0] & 0x1fffff; // 21 bits
+    const low = buf[1];             // 32 bits
+    return (high * 4294967296.0 + low) / 9007199254740992.0;
   }
 
   /**
@@ -291,31 +304,42 @@ export class DeIdentificationEngineService {
     if (rawRecord.nationalId) strippedIdentifiersList.push('nationalId');
     if (rawRecord.passportNumber) strippedIdentifiersList.push('passportNumber');
 
-    // Coarse Age Bracket & Safe Harbor age-capping (> 89 -> 90+)
-    let ageBracket = '30-49';
+    // Coarse Age Bracket & Safe Harbor age-capping (> 89 -> 90+); NaN dates never default to '90+'
+    let ageBracket = 'UNKNOWN';
     if (rawRecord.birthDate) {
       strippedIdentifiersList.push('birthDate');
-      const birthYear = new Date(rawRecord.birthDate).getFullYear();
-      const currentYear = new Date().getFullYear();
-      const calculatedAge = currentYear - birthYear;
+      const parsedBirth = new Date(rawRecord.birthDate);
+      const birthTime = parsedBirth.getTime();
+      if (Number.isFinite(birthTime)) {
+        const birthYear = parsedBirth.getUTCFullYear();
+        const currentYear = new Date().getUTCFullYear();
+        const calculatedAge = currentYear - birthYear;
 
-      if (calculatedAge < 18) ageBracket = '<18';
-      else if (calculatedAge < 30) ageBracket = '18-29';
-      else if (calculatedAge < 50) ageBracket = '30-49';
-      else if (calculatedAge <= 89) ageBracket = '50-69';
-      else ageBracket = '90+';
+        if (!Number.isFinite(calculatedAge) || calculatedAge < 0) ageBracket = 'UNKNOWN';
+        else if (calculatedAge < 18) ageBracket = '<18';
+        else if (calculatedAge < 30) ageBracket = '18-29';
+        else if (calculatedAge < 50) ageBracket = '30-49';
+        else if (calculatedAge < 70) ageBracket = '50-69';
+        else if (calculatedAge <= 89) ageBracket = '70-89';
+        else ageBracket = '90+';
+      }
     }
 
-    // Geographic generalization (preserves state only; strips ZIP/city)
-    const stateCode = rawRecord.state || 'OR';
+    // Geographic generalization (preserves explicit state only; never invents a default state)
+    const stateCode = rawRecord.state?.trim() ? rawRecord.state.trim().toUpperCase() : 'UNKNOWN';
 
-    // Relative date shifting: converts admission or encounter date to integer study day offset
+    // Relative date shifting: CSPRNG per-subject random date shift (no fixed global calendar epoch leak)
     let studyDayOffset = 0;
     const targetDate = rawRecord.admissionDate || rawRecord.encounterDate;
     if (targetDate) {
       if (rawRecord.admissionDate) strippedIdentifiersList.push('admissionDate');
       const recordTime = new Date(targetDate).getTime();
-      studyDayOffset = Math.max(0, Math.floor((recordTime - DeIdentificationEngineService.STUDY_EPOCH_MS) / 86400000));
+      if (Number.isFinite(recordTime)) {
+        const yearStartMs = Date.UTC(new Date(recordTime).getUTCFullYear(), 0, 1);
+        const dayOfYear = Math.max(0, Math.floor((recordTime - yearStartMs) / 86400000));
+        const randomSubjectShiftDays = 1 + Math.floor(this.getUnbiasedCspRandomFloat() * 365);
+        studyDayOffset = dayOfYear + randomSubjectShiftDays;
+      }
     }
 
     // Laplace Differential Privacy Noise Injection for continuous biosignals
@@ -323,9 +347,10 @@ export class DeIdentificationEngineService {
       ? this.perturbBiosignalVector(rawRecord.biosignals, DeIdentificationEngineService.DEFAULT_EPSILON)
       : {};
 
-    // Deterministic cryptographic pseudonym
+    // Salted FIPS 180-4 SHA-256 cryptographic pseudonym (replaces unsalted 32-bit FNV-1a)
     const mrnSeed = rawRecord.mrn || rawRecord.name || 'anon';
-    const studySubjectId = `SUBJ-${Math.abs(hashStringSha256(mrnSeed + stateCode + ageBracket)).toString(16).padStart(8, '0')}`;
+    const pseudonymDigest = computeFipsSha256Hex(`${this.pseudonymSaltHex}|${mrnSeed}|${stateCode}|${ageBracket}`);
+    const studySubjectId = `SUBJ-${pseudonymDigest.slice(0, 16)}`;
 
     return {
       studySubjectId,
@@ -336,7 +361,8 @@ export class DeIdentificationEngineService {
       continuousBiosignals: perturbedBiosignals,
       strippedAttributesCount: strippedIdentifiersList.length,
       strippedIdentifiersList,
-      kAnonymityPassed: true,
+      // Single records cannot self-certify k >= 8 anonymity; callers must run validateCohortKAnonymity()
+      kAnonymityPassed: false,
       differentialPrivacyEpsilon: DeIdentificationEngineService.DEFAULT_EPSILON,
       noiseScaleParamB: 1.0 / DeIdentificationEngineService.DEFAULT_EPSILON,
       timestampAttestation: new Date().toISOString()
@@ -404,16 +430,4 @@ export class DeIdentificationEngineService {
       violatingClasses
     };
   }
-}
-
-/**
- * 32-bit FNV-1a / Murmur hybrid hashing fallback for fast deterministic hex pseudonym prefixes.
- */
-function hashStringSha256(str: string): number {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
-  }
-  return h >>> 0;
 }

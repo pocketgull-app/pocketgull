@@ -5,6 +5,35 @@ import { Firestore } from '@google-cloud/firestore';
 import { resolveTierFromPriceId } from '../services/tier-config';
 import { gaapAccountingService } from '../services/gaap-accounting.service';
 import { pppPricingService } from '../services/ppp.service';
+import { isSafeRedirectUrl } from '../../utils/security-helper';
+import { requireAuth, type IAuthenticatedRequest } from '../middleware/auth-guard';
+
+const ALLOWED_BILLING_DOMAINS = ['pocketgull.app', 'pocketgull.com'];
+const PINNED_PUBLIC_ORIGIN = (process.env['PUBLIC_BASE_URL'] || 'https://pocketgull.app').replace(/\/+$/, '');
+
+function resolveSafeBillingOrigin(req: express.Request): string {
+  const candidate = typeof req.headers.origin === 'string' ? req.headers.origin.trim() : '';
+  if (candidate && isSafeRedirectUrl(candidate, ALLOWED_BILLING_DOMAINS)) {
+    try {
+      return new URL(candidate).origin;
+    } catch {
+      return PINNED_PUBLIC_ORIGIN;
+    }
+  }
+  return PINNED_PUBLIC_ORIGIN;
+}
+
+function resolveSafeCheckoutUrl(rawUrl: unknown, fallbackUrl: string): string {
+  if (typeof rawUrl === 'string' && rawUrl.trim()) {
+    const trimmed = rawUrl.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      if (isSafeRedirectUrl(trimmed, ALLOWED_BILLING_DOMAINS)) {
+        return trimmed;
+      }
+    }
+  }
+  return fallbackUrl;
+}
 
 let _db: Firestore | null = null;
 function getDb(): Firestore {
@@ -34,7 +63,15 @@ export function createBillingRouter() {
       const isGet = req.method === 'GET';
       const params = isGet ? req.query : req.body;
       const { priceId, tier, successUrl, cancelUrl, customerEmail, endowmentFund, revenueSplit, country } = params || {};
-      const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
+      const origin = resolveSafeBillingOrigin(req);
+      const safeSuccessUrl = resolveSafeCheckoutUrl(
+        successUrl,
+        `${origin}/?billing=success&session_id={CHECKOUT_SESSION_ID}&onboarding=true`
+      );
+      const safeCancelUrl = resolveSafeCheckoutUrl(
+        cancelUrl,
+        `${origin}/?billing=canceled`
+      );
 
       // Geolocation country resolution (Cloud Run, Cloudflare, Fastly, or user override)
       const detectedCountry = String(
@@ -240,10 +277,10 @@ export function createBillingRouter() {
       // Check if Stripe key is configured or in simulated mode
       const stripeKey = process.env['STRIPE_SECRET_KEY'];
       if (!stripeKey || stripeKey === 'sk_test_placeholder') {
-        const isAllowedReturnHost = typeof successUrl === 'string' && /^https:\/\/([a-z0-9-]+\.)?pocketgull\.(com|app)(\/|$)/i.test(successUrl);
+        const isAllowedReturnHost = typeof successUrl === 'string' && isSafeRedirectUrl(successUrl, ALLOWED_BILLING_DOMAINS);
         const fallbackUrl = isAllowedReturnHost
           ? String(successUrl).replace('{CHECKOUT_SESSION_ID}', 'cs_simulated_' + Date.now())
-          : `https://pocketgull.app/?checkout_tier=${encodeURIComponent(String(tier || 'pro'))}&status=simulated_checkout`;
+          : `${PINNED_PUBLIC_ORIGIN}/?checkout_tier=${encodeURIComponent(String(tier || 'pro'))}&status=simulated_checkout`;
         if (isGet) {
           return res.redirect(303, fallbackUrl);
         }
@@ -254,8 +291,8 @@ export function createBillingRouter() {
       const sessionParams: Stripe.Checkout.SessionCreateParams = {
         line_items: lineItems,
         mode: mode,
-        success_url: String(successUrl || `${origin}/?billing=success&session_id={CHECKOUT_SESSION_ID}&onboarding=true`),
-        cancel_url: String(cancelUrl || `${origin}/?billing=canceled`),
+        success_url: safeSuccessUrl,
+        cancel_url: safeCancelUrl,
         customer_email: customerEmail ? String(customerEmail) : undefined,
         billing_address_collection: 'required',
         allow_promotion_codes: true,
@@ -312,11 +349,13 @@ export function createBillingRouter() {
   router.post('/checkout', limiter, express.json(), handleCheckoutRequest);
   router.get('/checkout', limiter, handleCheckoutRequest);
 
-  router.post('/portal', limiter, express.json(), async (req, res) => {
+  router.post('/portal', limiter, requireAuth(['CLINICIAN']), express.json(), async (req: IAuthenticatedRequest, res) => {
     try {
-      const { customerEmail } = req.body || {};
+      const requestedEmail = typeof req.body?.customerEmail === 'string' ? req.body.customerEmail.trim() : '';
+      const isAdmin = req.auth?.roles.some(r => r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'ROLES/HEALTHCARE.DATASETADMIN');
+      const customerEmail = (isAdmin && requestedEmail) ? requestedEmail : (req.auth?.email || requestedEmail);
       if (!customerEmail) {
-        return res.status(400).json({ error: 'A customerEmail is required.' });
+        return res.status(400).json({ error: 'A verified customerEmail is required.' });
       }
 
       // Fetch the stripeCustomerId from Firestore
@@ -330,12 +369,12 @@ export function createBillingRouter() {
         return res.status(404).json({ error: 'No active Stripe subscription found for this tenant.' });
       }
 
-      const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
+      const safeOrigin = resolveSafeBillingOrigin(req);
 
       // Create a Customer Portal Session
       const portalSession = await getStripe().billingPortal.sessions.create({
         customer: stripeCustomerId,
-        return_url: `${origin}/`,
+        return_url: `${safeOrigin}/`,
       });
 
       res.json({ url: portalSession.url });
@@ -420,8 +459,8 @@ export function createBillingRouter() {
             periodStart: now,
             periodEnd,
             tierName: resolvedTier,
-            endowmentFund: checkoutSession.metadata?.endowment_fund,
-            revenueSplit: checkoutSession.metadata?.revenue_split
+            endowmentFund: checkoutSession.metadata?.endowment_fund || 'PocketGull Seven Generations Tribal & Public Health Fund',
+            revenueSplit: checkoutSession.metadata?.revenue_split || '85-10-5'
           }).catch(e => console.error('[Billing] Error recording GAAP journal entry:', e.message));
         }
         break;
@@ -442,6 +481,8 @@ export function createBillingRouter() {
             periodStart: now,
             periodEnd,
             tierName: 'subscription',
+            endowmentFund: 'PocketGull Seven Generations Tribal & Public Health Fund',
+            revenueSplit: '85-10-5'
           }).catch(e => console.error('[Billing] Error recording GAAP invoice payment:', e.message));
         }
         break;
@@ -536,7 +577,7 @@ export function createBillingRouter() {
    * GET /api/billing/gaap-ledger — Returns ASC 606 compliant GAAP financial statements
    * (Balance Sheet, Income Statement, Double-Entry Journal Audit Trail).
    */
-  router.get('/gaap-ledger', limiter, async (_req, res) => {
+  router.get('/gaap-ledger', limiter, requireAuth(['ADMIN', 'DPO']), async (_req, res) => {
     try {
       const report = await gaapAccountingService.generateFinancialReport();
       res.json(report);

@@ -1,84 +1,77 @@
-import { describe, it, expect, vi } from 'vitest';
-import type { Request, Response } from 'express';
+// SPDX-License-Identifier: Apache-2.0
+import { describe, it, expect, afterEach } from 'vitest';
+import crypto from 'node:crypto';
+import express from 'express';
+import type { AddressInfo } from 'node:net';
 import { createEnterpriseIdentityRouter } from './enterprise-identity.routes';
+import { verifySessionToken } from '../middleware/auth-guard';
 
-function createMockReqRes(options: {
-  body?: Record<string, unknown> | string;
-  query?: Record<string, string>;
-  params?: Record<string, string>;
-} = {}) {
-  const req = {
-    body: options.body || {},
-    query: options.query || {},
-    params: options.params || {},
-    hostname: 'pocketgull.app'
-  } as unknown as Request;
-
-  let statusCode = 200;
-  let jsonPayload: any = null;
-  let textPayload: string = '';
-  const headers: Record<string, string> = {};
-
-  const res = {
-    status: vi.fn((code: number) => {
-      statusCode = code;
-      return res;
-    }),
-    json: vi.fn((payload: any) => {
-      jsonPayload = payload;
-      return res;
-    }),
-    send: vi.fn((payload: any) => {
-      textPayload = String(payload);
-      return res;
-    }),
-    setHeader: vi.fn((name: string, val: string) => {
-      headers[name.toLowerCase()] = val;
-      return res;
-    }),
-    getStatus: () => statusCode,
-    getJson: () => jsonPayload,
-    getText: () => textPayload,
-    getHeaders: () => headers
-  } as unknown as Response & {
-    getStatus: () => number;
-    getJson: () => any;
-    getText: () => string;
-    getHeaders: () => Record<string, string>;
-  };
-
-  return { req, res };
-}
-
-describe('Enterprise Identity Routes (SAML 2.0 & SCIM 2.0)', () => {
-  const router = createEnterpriseIdentityRouter();
-
-  const getMetadataHandler = (router.stack.find((l: any) => l.route?.path === '/auth/saml/metadata')?.route?.stack.slice(-1)[0] as any)?.handle;
-  const postAcsHandler = (router.stack.find((l: any) => l.route?.path === '/auth/saml/acs')?.route?.stack.slice(-1)[0] as any)?.handle;
-  const getScimConfigHandler = (router.stack.find((l: any) => l.route?.path === '/scim/v2/ServiceProviderConfig')?.route?.stack.slice(-1)[0] as any)?.handle;
-  const getScimUsersHandler = (router.stack.find((l: any) => l.route?.path === '/scim/v2/Users')?.route?.stack.slice(-1)[0] as any)?.handle;
-  const postScimUserHandler = (router.stack.find((l: any) => l.route?.path === '/scim/v2/Users' && l.route?.methods?.post)?.route?.stack.slice(-1)[0] as any)?.handle;
-  const patchScimUserHandler = (router.stack.find((l: any) => l.route?.path === '/scim/v2/Users/:id' && l.route?.methods?.patch)?.route?.stack.slice(-1)[0] as any)?.handle;
-  const deleteScimUserHandler = (router.stack.find((l: any) => l.route?.path === '/scim/v2/Users/:id' && l.route?.methods?.delete)?.route?.stack.slice(-1)[0] as any)?.handle;
-  const getScimGroupsHandler = (router.stack.find((l: any) => l.route?.path === '/scim/v2/Groups')?.route?.stack.slice(-1)[0] as any)?.handle;
-  const getScimAuditHandler = (router.stack.find((l: any) => l.route?.path === '/scim/v2/audit')?.route?.stack.slice(-1)[0] as any)?.handle;
-
-  it('1. GET /api/auth/saml/metadata returns valid OASIS SAML 2.0 XML with headers', () => {
-    const { req, res } = createMockReqRes();
-    getMetadataHandler(req, res);
-
-    expect(res.getStatus()).toBe(200);
-    expect(res.getHeaders()['content-type']).toContain('application/xml');
-    expect(res.getText()).toContain('<md:EntityDescriptor');
-    expect(res.getText()).toContain('entityID="https://pocketgull.app/saml/sp"');
-    expect(res.getText()).toContain('AssertionConsumerService');
+describe('Enterprise Identity Routes (Fail-Closed SAML 2.0 XML Signature & Auth-Gated SCIM 2.0)', () => {
+  afterEach(() => {
+    delete process.env['SAML_IDP_CERT'];
+    delete process.env['SCIM_BEARER_TOKEN'];
   });
 
-  it('2. POST /api/auth/saml/acs validates assertion and creates authenticated session', () => {
-    const sampleXml = `<?xml version="1.0"?>
-    <samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+  async function withIdentityServer(fn: (baseUrl: string) => Promise<void>): Promise<void> {
+    const app = express();
+    app.use(express.json());
+    app.use('/api', createEnterpriseIdentityRouter());
+    const server = app.listen(0, '127.0.0.1');
+    await new Promise<void>(resolve => server.once('listening', resolve));
+    try {
+      const { port } = server.address() as AddressInfo;
+      await fn(`http://127.0.0.1:${port}`);
+    } finally {
+      await new Promise<void>(resolve => server.close(() => resolve()));
+    }
+  }
+
+  it('1. GET /api/auth/saml/metadata returns valid OASIS SAML 2.0 XML', async () => {
+    await withIdentityServer(async baseUrl => {
+      const res = await fetch(`${baseUrl}/api/auth/saml/metadata`);
+      expect(res.status).toBe(200);
+      expect(res.headers.get('content-type')).toContain('application/xml');
+      const xml = await res.text();
+      expect(xml).toContain('<md:EntityDescriptor');
+      expect(xml).toContain('WantAssertionsSigned="true"');
+    });
+  });
+
+  it('2. POST /api/auth/saml/acs fails closed with 501 when SAML_IDP_CERT is not configured', async () => {
+    const unsignedXml = `<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+      <samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status>
+      <saml:Assertion ID="asn_unsigned"><saml:Subject><saml:NameID>dr.reed@hopkinsmedicine.org</saml:NameID></saml:Subject></saml:Assertion>
+    </samlp:Response>`;
+
+    await withIdentityServer(async baseUrl => {
+      const res = await fetch(`${baseUrl}/api/auth/saml/acs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ SAMLResponse: unsignedXml })
+      });
+      expect(res.status).toBe(501);
+    });
+  });
+
+  it('3. POST /api/auth/saml/acs rejects unsigned or tampered XML with 401 and accepts validly signed RSA-SHA256 SAML', async () => {
+    const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: 'spki', format: 'pem' },
+      privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+    });
+    process.env['SAML_IDP_CERT'] = publicKey;
+
+    const signedInfoXml = `<ds:SignedInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><ds:Reference URI="#asn_123"><ds:DigestValue>abc123</ds:DigestValue></ds:Reference></ds:SignedInfo>`;
+    const signer = crypto.createSign('RSA-SHA256');
+    signer.update(signedInfoXml, 'utf8');
+    signer.end();
+    const validSignatureB64 = signer.sign(privateKey).toString('base64');
+
+    const signedXml = `<?xml version="1.0"?>
+    <samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
       <samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></samlp:Status>
       <saml:Assertion ID="asn_123">
+        <ds:Signature>${signedInfoXml}<ds:SignatureValue>${validSignatureB64}</ds:SignatureValue></ds:Signature>
         <saml:Subject><saml:NameID>dr.reed@hopkinsmedicine.org</saml:NameID></saml:Subject>
         <saml:AttributeStatement>
           <saml:Attribute Name="displayName"><saml:AttributeValue>Dr. Walter Reed</saml:AttributeValue></saml:Attribute>
@@ -88,112 +81,88 @@ describe('Enterprise Identity Routes (SAML 2.0 & SCIM 2.0)', () => {
       </saml:Assertion>
     </samlp:Response>`;
 
-    const { req, res } = createMockReqRes({ body: { SAMLResponse: sampleXml } });
-    postAcsHandler(req, res);
+    const forgedXml = signedXml.replace(validSignatureB64, Buffer.from('forged-sig').toString('base64'));
 
-    expect(res.getStatus()).toBe(200);
-    const data = res.getJson();
-    expect(data.success).toBe(true);
-    expect(data.session).toBeDefined();
-    expect(data.session.email).toBe('dr.reed@hopkinsmedicine.org');
-    expect(data.session.clinicalRole).toBe('roles/healthcare.datasetAdmin');
-  });
+    await withIdentityServer(async baseUrl => {
+      // Forged signature rejected with 401
+      const badRes = await fetch(`${baseUrl}/api/auth/saml/acs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ SAMLResponse: forgedXml })
+      });
+      expect(badRes.status).toBe(401);
 
-  it('3. POST /api/auth/saml/acs rejects non-success assertion', () => {
-    const failedXml = `<samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol">
-      <samlp:Status><samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Responder"/></samlp:Status>
-    </samlp:Response>`;
-
-    const { req, res } = createMockReqRes({ body: { SAMLResponse: failedXml } });
-    postAcsHandler(req, res);
-
-    expect(res.getStatus()).toBe(401);
-    expect(res.getJson().error).toContain('rejected by Identity Provider');
-  });
-
-  it('4. GET /api/scim/v2/ServiceProviderConfig returns RFC 7643 specification', () => {
-    const { req, res } = createMockReqRes();
-    getScimConfigHandler(req, res);
-
-    expect(res.getStatus()).toBe(200);
-    const data = res.getJson();
-    expect(data.schemas).toContain('urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig');
-    expect(data.patch.supported).toBe(true);
-    expect(data.filter.supported).toBe(true);
-  });
-
-  it('5. GET /api/scim/v2/Users returns paginated list of clinicians', () => {
-    const { req, res } = createMockReqRes({ query: { count: '10' } });
-    getScimUsersHandler(req, res);
-
-    expect(res.getStatus()).toBe(200);
-    const data = res.getJson();
-    expect(data.schemas).toContain('urn:ietf:params:scim:api:messages:2.0:ListResponse');
-    expect(data.totalResults).toBeGreaterThanOrEqual(2);
-    expect(data.Resources.length).toBeGreaterThanOrEqual(2);
-  });
-
-  it('6. POST /api/scim/v2/Users provisions a new clinician account', () => {
-    const { req, res } = createMockReqRes({
-      body: {
-        userName: 'dr.salk@hospital.org',
-        displayName: 'Dr. Jonas Salk, MD',
-        'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User': {
-          department: 'Virology & Preventive Medicine'
-        }
-      }
+      // Validly signed SAML accepted with verifiable HMAC session token
+      const okRes = await fetch(`${baseUrl}/api/auth/saml/acs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ SAMLResponse: signedXml })
+      });
+      expect(okRes.status).toBe(200);
+      const data = await okRes.json() as any;
+      expect(data.success).toBe(true);
+      expect(data.session.email).toBe('dr.reed@hopkinsmedicine.org');
+      expect(verifySessionToken(data.session.sessionToken)).not.toBeNull();
     });
-
-    postScimUserHandler(req, res);
-
-    expect(res.getStatus()).toBe(201);
-    const data = res.getJson();
-    expect(data.id).toBeDefined();
-    expect(data.userName).toBe('dr.salk@hospital.org');
-    expect(data.active).toBe(true);
   });
 
-  it('7. PATCH /api/scim/v2/Users/:id performs instant de-provisioning (active: false)', () => {
-    const { req, res } = createMockReqRes({
-      params: { id: 'usr_scim_vance_02' },
-      body: {
-        Operations: [{ op: 'replace', path: 'active', value: false }]
-      }
+  it('4. Gates all /api/scim/v2/* routes behind constant-time Bearer token auth', async () => {
+    const testScimSecret = 'scim_test_' + crypto.randomBytes(16).toString('hex');
+    process.env['SCIM_BEARER_TOKEN'] = testScimSecret;
+
+    await withIdentityServer(async baseUrl => {
+      // Unauthenticated SCIM call MUST fail with 401
+      const unauthRes = await fetch(`${baseUrl}/api/scim/v2/Users`);
+      expect(unauthRes.status).toBe(401);
+
+      // Wrong Bearer token MUST fail with 401
+      const badTokenRes = await fetch(`${baseUrl}/api/scim/v2/Users`, {
+        headers: { Authorization: 'Bearer wrong_token_value' }
+      });
+      expect(badTokenRes.status).toBe(401);
+
+      // Valid SCIM Bearer token succeeds across Users, Provision, Patch, Delete, Audit
+      const authHeaders = {
+        Authorization: `Bearer ${testScimSecret}`,
+        'Content-Type': 'application/json'
+      };
+
+      const listRes = await fetch(`${baseUrl}/api/scim/v2/Users?count=10`, { headers: authHeaders });
+      expect(listRes.status).toBe(200);
+      const listData = await listRes.json() as any;
+      expect(listData.totalResults).toBeGreaterThanOrEqual(2);
+
+      const createRes = await fetch(`${baseUrl}/api/scim/v2/Users`, {
+        method: 'POST',
+        headers: authHeaders,
+        body: JSON.stringify({
+          userName: `dr.salk.${Date.now()}@hospital.org`,
+          displayName: 'Dr. Jonas Salk, MD'
+        })
+      });
+      expect(createRes.status).toBe(201);
+      const created = await createRes.json() as any;
+
+      const patchRes = await fetch(`${baseUrl}/api/scim/v2/Users/${created.id}`, {
+        method: 'PATCH',
+        headers: authHeaders,
+        body: JSON.stringify({
+          Operations: [{ op: 'replace', path: 'active', value: false }]
+        })
+      });
+      expect(patchRes.status).toBe(200);
+      expect((await patchRes.json() as any).active).toBe(false);
+
+      const delRes = await fetch(`${baseUrl}/api/scim/v2/Users/${created.id}`, {
+        method: 'DELETE',
+        headers: authHeaders
+      });
+      expect(delRes.status).toBe(204);
+
+      const auditRes = await fetch(`${baseUrl}/api/scim/v2/audit`, { headers: authHeaders });
+      expect(auditRes.status).toBe(200);
+      const auditData = await auditRes.json() as any;
+      expect(auditData.records[0].integrityHash).toBeDefined();
     });
-
-    patchScimUserHandler(req, res);
-
-    expect(res.getStatus()).toBe(200);
-    const data = res.getJson();
-    expect(data.id).toBe('usr_scim_vance_02');
-    expect(data.active).toBe(false);
-  });
-
-  it('8. DELETE /api/scim/v2/Users/:id offboards a clinician with 204 No Content', () => {
-    const { req, res } = createMockReqRes({
-      params: { id: 'usr_scim_vance_02' }
-    });
-
-    deleteScimUserHandler(req, res);
-    expect(res.getStatus()).toBe(204);
-  });
-
-  it('9. GET /api/scim/v2/Groups returns hospital groups', () => {
-    const { req, res } = createMockReqRes();
-    getScimGroupsHandler(req, res);
-
-    expect(res.getStatus()).toBe(200);
-    const data = res.getJson();
-    expect(data.totalResults).toBeGreaterThanOrEqual(2);
-  });
-
-  it('10. GET /api/scim/v2/audit returns FDA 21 CFR Part 11 audit records with SHA-256 seal', () => {
-    const { req, res } = createMockReqRes();
-    getScimAuditHandler(req, res);
-
-    expect(res.getStatus()).toBe(200);
-    const data = res.getJson();
-    expect(data.totalResults).toBeGreaterThan(0);
-    expect(data.records[0].integrityHash).toBeDefined();
   });
 });

@@ -341,9 +341,11 @@ export class DirectIomtWearablesService {
       value: sample.heartRateBpm || 64,
       signalQualityIndex: 99,
       leadOffDetected: false,
-      rssiDbm: -58, // Strong local BLE proximity
-      payloadSignature: `attest_enclave_${generateCsprngHex(16)}`
+      rssiDbm: -58 // Strong local BLE proximity
     };
+    if (this.tippssGuard) {
+      frame.payloadSignature = this.tippssGuard.signFrameForEnrolledDevice(frame);
+    }
 
     const verification = this.tippssGuard
       ? this.tippssGuard.verifyAndSanitize(frame)
@@ -434,9 +436,11 @@ export class DirectIomtWearablesService {
       value: record.heartRateBpm || 65,
       signalQualityIndex: 98,
       leadOffDetected: false,
-      rssiDbm: -62,
-      payloadSignature: `attest_titan_${generateCsprngHex(16)}`
+      rssiDbm: -62
     };
+    if (this.tippssGuard) {
+      frame.payloadSignature = this.tippssGuard.signFrameForEnrolledDevice(frame);
+    }
 
     const verification = this.tippssGuard
       ? this.tippssGuard.verifyAndSanitize(frame)
@@ -516,9 +520,11 @@ export class DirectIomtWearablesService {
       value: sample.heartRateBpm || 70,
       signalQualityIndex: 96,
       leadOffDetected: false,
-      rssiDbm: -70,
-      payloadSignature: `attest_ble_${generateCsprngHex(16)}`
+      rssiDbm: -70
     };
+    if (this.tippssGuard) {
+      frame.payloadSignature = this.tippssGuard.signFrameForEnrolledDevice(frame);
+    }
 
     const verification = this.tippssGuard
       ? this.tippssGuard.verifyAndSanitize(frame)

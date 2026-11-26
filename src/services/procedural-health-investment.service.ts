@@ -7,8 +7,10 @@ export interface IProceduralInvestmentItem {
   proceduralInnovation: string;
   upfrontInvestmentUsd: number;
   projected5YearSavingsUsd: number;
-  actuarialRoiRatio: number; // e.g. 4.8x ROI
-  qalyYield: number; // QALYs gained
+  actuarialRoiRatio: number; // Exploratory modeled ratio
+  qalyYield: number; // Exploratory modeled QALYs
+  evidenceTier: 'Level A' | 'Level B' | 'Level C';
+  epistemicBadge: string;
   roiBreakdown: string;
 }
 
@@ -19,49 +21,59 @@ export class ProceduralHealthInvestmentService {
   private state = inject(PatientStateService);
 
   /**
-   * Generates Procedural Investment & Actuarial Financial Health Return Matrix
+   * Generates Exploratory Procedural Health Investment Model Matrix.
+   * All projections are explicitly badged as non-diagnostic in-silico hypotheses with Cochrane Evidence Tiers.
    */
   calculateProceduralInvestments(): IProceduralInvestmentItem[] {
+    const EXPLORATORY_BADGE = '[EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC]';
     return [
       {
         id: 'inv_vagal',
         category: 'Acoustic & Vagal',
-        proceduralInnovation: 'Resonant 0.1 Hz Vagal Breathing & Actuarial Duet Karaoke',
+        proceduralInnovation: 'Resonant 0.1 Hz Paced Vagal Breathing & HRV Biofeedback',
         upfrontInvestmentUsd: 45,
-        projected5YearSavingsUsd: 8400,
-        actuarialRoiRatio: 186.6,
-        qalyYield: 2.8,
-        roiBreakdown: 'Reduces sympathetic cortisol surges, lowering ER visit risk for panic/tachycardia by 84%.'
+        projected5YearSavingsUsd: 450,
+        actuarialRoiRatio: 10.0,
+        qalyYield: 0.15,
+        evidenceTier: 'Level C',
+        epistemicBadge: EXPLORATORY_BADGE,
+        roiBreakdown: `${EXPLORATORY_BADGE} (Cochrane Level C): Exploratory autonomic pacing adjunct; may modestly support parasympathetic tone and perceived stress regulation alongside standard clinical care.`
       },
       {
         id: 'inv_ortho',
         category: 'Orthomolecular',
-        proceduralInnovation: 'High-Bioavailability Magnesium Glycinate & Curcumin Phytosome',
+        proceduralInnovation: 'Magnesium Glycinate & Standardized Curcumin Adjunct (Clinician-Reviewed)',
         upfrontInvestmentUsd: 180,
-        projected5YearSavingsUsd: 14200,
-        actuarialRoiRatio: 78.8,
-        qalyYield: 3.4,
-        roiBreakdown: 'Subdues chronic sub-acute cytokine inflammation, slowing vascular calcification trajectory.'
+        projected5YearSavingsUsd: 540,
+        actuarialRoiRatio: 3.0,
+        qalyYield: 0.1,
+        evidenceTier: 'Level C',
+        epistemicBadge: EXPLORATORY_BADGE,
+        roiBreakdown: `${EXPLORATORY_BADGE} (Cochrane Level C): Exploratory nutritional adjunct; hard long-term cardiovascular endpoint savings remain unconfirmed in large Phase 3 RCTs (H0 unrejected).`
       },
       {
         id: 'inv_foraging',
         category: 'Lifestyle & Movement',
-        proceduralInnovation: 'Riverbank Outdoor Foraging & Conifer Terpene Phytoncides',
-        upfrontInvestmentUsd: 0, // Free natural resource
-        projected5YearSavingsUsd: 6800,
-        actuarialRoiRatio: 680.0,
-        qalyYield: 2.1,
-        roiBreakdown: 'Boosts natural killer (NK) cell tumor surveillance immunity through natural forest inhalation.'
+        proceduralInnovation: 'Structured Outdoor Walking & Nature Exposure Routine',
+        upfrontInvestmentUsd: 0,
+        projected5YearSavingsUsd: 600,
+        actuarialRoiRatio: 0,
+        qalyYield: 0.2,
+        evidenceTier: 'Level C',
+        epistemicBadge: EXPLORATORY_BADGE,
+        roiBreakdown: `${EXPLORATORY_BADGE} (Cochrane Level C): Low-cost aerobic and biophilic movement hypothesis supporting stress reduction and daily step volume; long-term cost savings are exploratory estimates.`
       },
       {
         id: 'inv_aiga',
         category: 'Clinical Diagnostics',
-        proceduralInnovation: 'Deep Neural ECG & NMR Metabolomics Tracking',
+        proceduralInnovation: 'Preventive Cardiometabolic Panel & Standard 12-Lead ECG Screening',
         upfrontInvestmentUsd: 250,
-        projected5YearSavingsUsd: 28500,
-        actuarialRoiRatio: 114.0,
-        qalyYield: 4.6,
-        roiBreakdown: 'Early detection of micro-vascular endothelial friction 3-5 years prior to clinical symptoms.'
+        projected5YearSavingsUsd: 1250,
+        actuarialRoiRatio: 5.0,
+        qalyYield: 0.25,
+        evidenceTier: 'Level C',
+        epistemicBadge: EXPLORATORY_BADGE,
+        roiBreakdown: `${EXPLORATORY_BADGE} (Cochrane Level C): Exploratory cost-offset model for guideline-directed preventive lab tracking when clinically indicated by an attending physician.`
       }
     ];
   }

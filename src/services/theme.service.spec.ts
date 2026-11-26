@@ -63,4 +63,12 @@ describe('ThemeService (App Themes & Accessibility Cycles)', () => {
     service.setPhilocardia(false);
     expect(service.isPhilocardiaEnabled()).toBe(false);
   });
+
+  it('5. Defaults UI audio chimes to opt-in (disabled) for acoustic sensitivity', () => {
+    expect(service.uiAudioChimesEnabled()).toBe(false);
+    service.setUiAudioChimesEnabled(true);
+    expect(service.uiAudioChimesEnabled()).toBe(true);
+    service.setUiAudioChimesEnabled(false);
+    expect(service.uiAudioChimesEnabled()).toBe(false);
+  });
 });

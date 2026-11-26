@@ -1,34 +1,23 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: Apache-2.0
 /**
- * 🛡️ Mozilla HTTP Observatory 125 Security Guard
- * Shift-Left Continuous Assurance & Zero-Drift Verifier
+ * 🛡️ Mozilla HTTP Observatory 125 Continuous Guard (Epistemic Ground-Truth Edition)
  *
- * Verifies that all endpoints and server files enforce the exact configuration
- * required to achieve a 125 / 100 (Grade A+) rating on Mozilla HTTP Observatory:
- * 1. Content Security Policy (CSP): CSP3, nonces, strict-dynamic, default-src 'none',
- *    form-action 'self', zero 'unsafe-inline' in script-src, zero 'unsafe-eval' in script-src.
- * 2. Strict-Transport-Security (HSTS): max-age >= 31536000, includeSubDomains, preload (+10 bonus).
- * 3. Cross-Origin-Opener-Policy (COOP): same-origin (+5 bonus).
- * 4. Cross-Origin-Resource-Policy (CORP): same-origin (+5 bonus).
- * 5. Referrer-Policy: strict-origin-when-cross-origin (+5 bonus).
- * 6. X-Content-Type-Options: nosniff.
- * 7. X-Frame-Options: SAMEORIGIN.
- * 8. Middleware Ordering: Security headers must precede all route/domain dispatchers.
+ * Verifies real production server source code, edge routes, billing portal, FastAPI sidecar,
+ * and sidecar proxy against Mozilla HTTP Observatory 125/100 (Grade A+) & WebMCP invariants,
+ * PLUS Popperian Negative Falsification Controls proving the validator catches degraded headers.
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import http from 'node:http';
-import express from 'express';
-import crypto from 'node:crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
 console.log('===============================================================');
-console.log('🛡️  Running Mozilla HTTP Observatory 125 Continuous Guard');
+console.log('🛡️  Running Mozilla HTTP Observatory 125 Continuous Guard (Epistemic)');
 console.log('===============================================================\n');
 
 let violations = 0;
@@ -43,7 +32,62 @@ function reportPass(checkName, detail) {
   console.log(`✅ [PASS] ${checkName}: ${detail}`);
 }
 
-// 1. Audit Server Source Files for Middleware Ordering & Forbidden CSP Keywords
+export function evaluateObservatoryHeaders(headers) {
+  const issues = [];
+  const csp = headers['content-security-policy'] || '';
+  const hsts = headers['strict-transport-security'] || '';
+  const coop = headers['cross-origin-opener-policy'] || '';
+  const corp = headers['cross-origin-resource-policy'] || '';
+  const coep = headers['cross-origin-embedder-policy'] || '';
+  const xcto = headers['x-content-type-options'] || '';
+  const xfo = headers['x-frame-options'] || '';
+  const ref = headers['referrer-policy'] || '';
+  const oac = headers['origin-agent-cluster'] || '';
+  const pp = headers['permissions-policy'] || '';
+
+  const scriptSrcMatch = (csp.match(/script-src\s+([^;]+)/i) || [])[1] || '';
+  if (!csp || !csp.includes("default-src 'none'") || !csp.includes("form-action 'self'")) {
+    issues.push('CSP missing default-src none or form-action self');
+  }
+  if (!scriptSrcMatch.includes('strict-dynamic') || scriptSrcMatch.includes("'unsafe-inline'") || scriptSrcMatch.includes("'unsafe-eval'")) {
+    issues.push(`CSP script-src unsafe or missing strict-dynamic: "${scriptSrcMatch}"`);
+  }
+  if (!hsts.includes('preload') || !hsts.includes('31536000') || !hsts.includes('includeSubDomains')) {
+    issues.push(`HSTS preload invalid: "${hsts}"`);
+  }
+  if (coop !== 'same-origin') issues.push(`COOP invalid: "${coop}"`);
+  if (corp !== 'same-origin') issues.push(`CORP invalid: "${corp}"`);
+  if (coep !== 'credentialless' && coep !== 'require-corp') issues.push(`COEP invalid: "${coep}"`);
+  if (xcto !== 'nosniff') issues.push(`X-Content-Type-Options invalid: "${xcto}"`);
+  if (xfo !== 'SAMEORIGIN' && xfo !== 'DENY') issues.push(`X-Frame-Options invalid: "${xfo}"`);
+  if (ref !== 'strict-origin-when-cross-origin') issues.push(`Referrer-Policy invalid: "${ref}"`);
+  if (oac !== '?1') issues.push(`Origin-Agent-Cluster missing ?1: "${oac}"`);
+  if (!pp.includes('tools=(self)')) issues.push(`Permissions-Policy missing tools=(self): "${pp}"`);
+
+  return issues;
+}
+
+// 0. Popperian Negative Falsification Control
+const poisonedHeaders = {
+  'content-security-policy': "default-src 'self'; script-src 'self' 'unsafe-inline'",
+  'strict-transport-security': 'max-age=300',
+  'cross-origin-opener-policy': 'unsafe-none',
+  'cross-origin-resource-policy': 'cross-origin',
+  'cross-origin-embedder-policy': 'unsafe-none',
+  'x-content-type-options': '',
+  'x-frame-options': 'ALLOWALL',
+  'referrer-policy': 'unsafe-url',
+  'origin-agent-cluster': '',
+  'permissions-policy': ''
+};
+const poisonIssues = evaluateObservatoryHeaders(poisonedHeaders);
+if (poisonIssues.length < 9) {
+  reportViolation('Falsification Control', `Header validator caught only ${poisonIssues.length} of 10 injected header defects!`);
+} else {
+  reportPass('Popperian Falsification Control', `Header validator properly rejected ${poisonIssues.length}/10 synthetic security header regressions.`);
+}
+
+// 1. Audit Real Server Source Files (src/server.ts & server.js)
 const serverFiles = [
   path.join(ROOT_DIR, 'src', 'server.ts'),
   path.join(ROOT_DIR, 'server.js')
@@ -54,290 +98,116 @@ for (const filePath of serverFiles) {
   const relPath = path.relative(ROOT_DIR, filePath);
   const content = fs.readFileSync(filePath, 'utf8');
 
-  console.log(`🔍 Static Audit: ${relPath}...`);
+  console.log(`\n🔍 Static Ground-Truth Audit: ${relPath}...`);
 
-  // Check 1: Middleware ordering (Security headers must precede domain router / business site)
   const businessSiteIdx = content.indexOf('isBusinessSite');
   const securityHeaderIdx = content.indexOf("res.setHeader('Strict-Transport-Security'");
 
   if (securityHeaderIdx === -1) {
-    reportViolation(
-      `${relPath} Missing Security Headers`,
-      `Strict-Transport-Security header was not found in ${relPath}.`
-    );
+    reportViolation(`${relPath} Missing Security Headers`, `Strict-Transport-Security header not found in ${relPath}.`);
   } else if (businessSiteIdx !== -1 && securityHeaderIdx > businessSiteIdx) {
-    reportViolation(
-      `${relPath} Middleware Ordering Invariant`,
-      `Security headers middleware (pos ${securityHeaderIdx}) is placed AFTER domain routing (pos ${businessSiteIdx}). All domains will lose headers!`
-    );
+    reportViolation(`${relPath} Middleware Ordering Invariant`, `Security headers placed AFTER domain routing.`);
   } else {
-    reportPass(`${relPath} Middleware Order`, 'Security headers registered before domain router.');
+    reportPass(`${relPath} Middleware #1 Order`, 'Security headers registered before domain router.');
   }
 
-  // Check 2: Production CSP must not contain 'unsafe-inline' or 'unsafe-eval' in scriptSrc
   const prodScriptSrcMatch = content.match(/scriptSrc\s*=\s*isProd\s*\?\s*`([^`\r\n]+)`/);
-  if (prodScriptSrcMatch) {
+  if (!prodScriptSrcMatch) {
+    reportViolation(`${relPath} Production script-src Missing`, 'Could not locate isProd scriptSrc template.');
+  } else {
     const prodScriptSrc = prodScriptSrcMatch[1];
-    if (prodScriptSrc.includes("'unsafe-inline'")) {
-      reportViolation(
-        `${relPath} CSP 'unsafe-inline' in script-src`,
-        "Production script-src contains 'unsafe-inline'. Mozilla Observatory revokes all 25 bonus points (-20 penalty)."
-      );
+    if (prodScriptSrc.includes("'unsafe-inline'") || prodScriptSrc.includes("'unsafe-eval'") || !prodScriptSrc.includes("'strict-dynamic'")) {
+      reportViolation(`${relPath} Production script-src Unsafe`, `Invalid prod script-src: ${prodScriptSrc}`);
     } else {
-      reportPass(`${relPath} Script Defense`, "Zero 'unsafe-inline' in production script-src.");
+      reportPass(`${relPath} Strict CSP3 script-src`, "Zero 'unsafe-inline'/'unsafe-eval', 'strict-dynamic' + nonce enforced.");
     }
-
-    if (prodScriptSrc.includes("'unsafe-eval'")) {
-      reportViolation(
-        `${relPath} CSP 'unsafe-eval' in script-src`,
-        "Production script-src contains 'unsafe-eval'. This fails Mozilla Observatory CSP evaluation."
-      );
-    } else {
-      reportPass(`${relPath} Eval Defense`, "Zero 'unsafe-eval' in production script-src.");
-    }
-
-    if (!prodScriptSrc.includes("'strict-dynamic'")) {
-      reportViolation(
-        `${relPath} CSP Strict-Dynamic Invariant`,
-        "Production script-src must contain 'strict-dynamic' to allow nonce-based script loading."
-      );
-    } else {
-      reportPass(`${relPath} Strict Dynamic`, "'strict-dynamic' enabled for modern script security.");
-    }
-  } else {
-    reportViolation(
-      `${relPath} Production script-src Definition Missing`,
-      "Could not locate the isProd scriptSrc template definition."
-    );
   }
 
-  // Check CSP directives list
-  if (!content.includes('"default-src \'none\'"') && !content.includes("'default-src \\'none\\''")) {
-    reportViolation(
-      `${relPath} CSP Default Source Invariant`,
-      "Production CSP must specify default-src 'none' for maximum defense and Observatory compliance."
-    );
-  } else {
-    reportPass(`${relPath} CSP Default Source`, "default-src 'none' enforced.");
-  }
-
-  if (!content.includes('"form-action \'self\'"') && !content.includes("'form-action \\'self\\''")) {
-    reportViolation(
-      `${relPath} CSP Form Action Invariant`,
-      "Production CSP must specify form-action 'self' to restrict form submissions."
-    );
-  } else {
-    reportPass(`${relPath} CSP Form Action`, "form-action 'self' enforced.");
-  }
-
-  // Check 3: Bonus Headers (HSTS Preload, COOP, CORP, Referrer)
-  if (!content.includes('max-age=31536000; includeSubDomains; preload')) {
-    reportViolation(
-      `${relPath} HSTS Preload Missing`,
-      "Strict-Transport-Security must contain 'max-age=31536000; includeSubDomains; preload' (+10 bonus pts)."
-    );
-  } else {
-    reportPass(`${relPath} HSTS Preload`, '+10 bonus points guaranteed.');
-  }
-
-  if (!content.includes("res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')")) {
-    reportViolation(
-      `${relPath} COOP Same-Origin Missing`,
-      "Cross-Origin-Opener-Policy must be 'same-origin' (+5 bonus pts)."
-    );
-  } else {
-    reportPass(`${relPath} COOP Header`, '+5 bonus points guaranteed.');
-  }
-
-  if (!content.includes("res.setHeader('Cross-Origin-Resource-Policy', 'same-origin')")) {
-    reportViolation(
-      `${relPath} CORP Same-Origin Missing`,
-      "Cross-Origin-Resource-Policy must be 'same-origin' (+10 bonus pts)."
-    );
-  } else {
-    reportPass(`${relPath} CORP Header`, '+10 bonus points guaranteed.');
-  }
-
-  if (!content.includes("res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless')") &&
-      !content.includes("res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')")) {
-    reportViolation(
-      `${relPath} COEP Missing`,
-      "Cross-Origin-Embedder-Policy must be 'credentialless' or 'require-corp' (+10 bonus pts)."
-    );
-  } else {
-    reportPass(`${relPath} COEP Header`, '+10 bonus points guaranteed.');
-  }
-
-  if (!content.includes("res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')")) {
-    reportViolation(
-      `${relPath} Referrer-Policy Missing`,
-      "Referrer-Policy must be 'strict-origin-when-cross-origin' (+5 bonus pts)."
-    );
-  } else {
-    reportPass(`${relPath} Referrer Policy`, '+5 bonus points guaranteed.');
-  }
-
-  console.log('');
-}
-
-// 2. Dynamic HTTP Server Simulation Test across all Supported Domains
-console.log('🌐 Dynamic Routing Simulation (Testing Domains & Header Attachment):');
-
-async function testServerSimulation() {
-  const testApp = express();
-
-  // Attach the exact production security middleware pattern
-  testApp.use((req, res, next) => {
-    const nonce = crypto.randomBytes(16).toString('base64');
-    res.locals = res.locals || {};
-    res.locals.nonce = nonce;
-
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-    res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
-    res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless');
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(self), camera=(), payment=(self "https://pay.google.com")');
-
-    const scriptSrc = `'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval' https://apis.google.com https://cloud.google.com https://pay.google.com`;
-    const csp = [
-      "default-src 'none'",
-      `script-src ${scriptSrc}`,
-      `script-src-elem ${scriptSrc}`,
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com data:",
-      "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https: wss:",
-      "frame-src 'self'",
-      "object-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "frame-ancestors 'self'"
-    ].join('; ');
-
-    res.setHeader('Content-Security-Policy', csp);
-    next();
-  });
-
-  // Domain router simulation
-  testApp.use((req, res, next) => {
-    const host = (req.headers.host || '').toLowerCase();
-    if (host.includes('pocketgull.com')) {
-      return res.status(200).send(`<!DOCTYPE html><html><head><title>PocketGull Business</title></head><body><h1>Business</h1></body></html>`);
-    }
-    return res.status(200).send(`<!DOCTYPE html><html><head><title>PocketGull App</title></head><body><h1>App</h1></body></html>`);
-  });
-
-  const server = http.createServer(testApp);
-  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
-  const port = server.address().port;
-
-  const domainsToTest = [
-    'pocketgull.app',
-    'pocketgull.com',
-    'www.pocketgull.com',
-    'preview.pocketgull.app'
+  const requiredLiterals = [
+    ["default-src 'none'", `${relPath} default-src 'none'`],
+    ["form-action 'self'", `${relPath} form-action 'self'`],
+    ['max-age=31536000; includeSubDomains; preload', `${relPath} HSTS Preload`],
+    ["res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')", `${relPath} COOP`],
+    ["res.setHeader('Cross-Origin-Resource-Policy', 'same-origin')", `${relPath} CORP`],
+    ["res.setHeader('Cross-Origin-Embedder-Policy', 'credentialless')", `${relPath} COEP`],
+    ["res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')", `${relPath} Referrer-Policy`],
+    ["res.setHeader('Origin-Agent-Cluster', '?1')", `${relPath} WebMCP Origin-Agent-Cluster`],
+    ['tools=(self)', `${relPath} WebMCP Permissions-Policy tools=(self)`]
   ];
 
-  for (const domain of domainsToTest) {
-    const resHeaders = await new Promise((resolve, reject) => {
-      const req = http.request({
-        host: '127.0.0.1',
-        port,
-        path: '/',
-        headers: { Host: domain }
-      }, (res) => {
-        resolve(res.headers);
-      });
-      req.on('error', reject);
-      req.end();
-    });
-
-    const csp = resHeaders['content-security-policy'] || '';
-    const hsts = resHeaders['strict-transport-security'] || '';
-    const coop = resHeaders['cross-origin-opener-policy'] || '';
-    const corp = resHeaders['cross-origin-resource-policy'] || '';
-    const coep = resHeaders['cross-origin-embedder-policy'] || '';
-    const xcto = resHeaders['x-content-type-options'] || '';
-    const ref = resHeaders['referrer-policy'] || '';
-
-    // Check script-src specifically for unsafe-inline and unsafe-eval
-    const scriptSrcMatch = (csp.match(/script-src\s+([^;]+)/i) || [])[1] || '';
-    if (!csp || !scriptSrcMatch.includes('strict-dynamic') || scriptSrcMatch.includes("'unsafe-inline'") || scriptSrcMatch.includes("'unsafe-eval'")) {
-      reportViolation(`Runtime Domain Test [${domain}]`, `script-src is invalid: "${scriptSrcMatch}"`);
+  for (const [needle, label] of requiredLiterals) {
+    if (!content.includes(needle)) {
+      reportViolation(`${label} Missing`, `Expected exact directive/header "${needle}" in ${relPath}.`);
+    } else {
+      reportPass(label, 'Verified in source.');
     }
-    if (!hsts.includes('preload') || !hsts.includes('31536000')) {
-      reportViolation(`Runtime Domain Test [${domain}]`, `HSTS preload header is invalid or missing: "${hsts}"`);
-    }
-    if (coop !== 'same-origin') {
-      reportViolation(`Runtime Domain Test [${domain}]`, `COOP header is not 'same-origin': "${coop}"`);
-    }
-    if (corp !== 'same-origin') {
-      reportViolation(`Runtime Domain Test [${domain}]`, `CORP header is not 'same-origin': "${corp}"`);
-    }
-    if (coep !== 'credentialless' && coep !== 'require-corp') {
-      reportViolation(`Runtime Domain Test [${domain}]`, `COEP header is not 'credentialless' or 'require-corp': "${coep}"`);
-    }
-    if (xcto !== 'nosniff') {
-      reportViolation(`Runtime Domain Test [${domain}]`, `X-Content-Type-Options is not 'nosniff': "${xcto}"`);
-    }
-    if (ref !== 'strict-origin-when-cross-origin') {
-      reportViolation(`Runtime Domain Test [${domain}]`, `Referrer-Policy is not 'strict-origin-when-cross-origin': "${ref}"`);
-    }
-
-    reportPass(`Runtime Domain [${domain}]`, 'Full Observatory Grade A+ headers verified on live route.');
   }
 
-  await new Promise((resolve) => server.close(resolve));
-}
+  // Deep runtime edge-case invariants in src/server.ts
+  if (relPath.replace(/\\/g, '/') === 'src/server.ts') {
+    if (/process\.env\['GEMINI_API_KEY'\]\s*=\s*trimmed/.test(content)) {
+      reportViolation('src/server.ts Global Secret Mutation', "getApiKey() mutates global process.env['GEMINI_API_KEY'] from client header.");
+    } else {
+      reportPass('src/server.ts Request-Scoped API Key Isolation', 'Zero global process.env mutation from client headers.');
+    }
 
-await testServerSimulation();
+    if (/res\.sendFile\s*\(\s*indexPath\s*\)/.test(content)) {
+      reportViolation('src/server.ts CSR Nonce Bypass', 'CSR fallback calls res.sendFile(indexPath) directly, bypassing sendHtmlResponse() CSP3 nonce injection.');
+    } else {
+      reportPass('src/server.ts CSR Nonce Stamping', 'CSR fallback routes through nonce-injecting sendHtmlResponse().');
+    }
 
-// 3. Compute Simulated Mozilla Observatory Scorecard
-console.log('\n📊 Computing Mozilla HTTP Observatory Scorecard:');
-const tests = [
-  { name: "Content Security Policy (CSP: default-src 'none', form-action 'self', zero unsafe)", points: +10, required: true },
-  { name: 'Cross-Origin Embedder Policy (COEP: credentialless)', points: +10, required: true },
-  { name: 'Cross-Origin Opener Policy (COOP: same-origin)', points: +10, required: true },
-  { name: 'Cross-Origin Resource Policy (CORP: same-origin)', points: +10, required: true },
-  { name: 'HTTP Strict Transport Security (HSTS: max-age >= 31536000, preload)', points: +5, required: true },
-  { name: 'Referrer-Policy (strict-origin-when-cross-origin)', points: +5, required: true },
-  { name: 'X-Frame-Options (SAMEORIGIN / frame-ancestors)', points: +5, required: true },
-  { name: 'X-Content-Type-Options (nosniff)', points: 0, required: true },
-  { name: 'Cookies (Secure, HttpOnly, SameSite)', points: 0, required: true },
-  { name: 'CORS (Restricted, no universal credentials)', points: 0, required: true },
-  { name: 'Redirection to HTTPS (direct to HTTPS)', points: 0, required: true },
-  { name: 'Subresource Integrity (secure origins)', points: 0, required: true }
-];
-
-let baseScore = 100;
-let bonusScore = 0;
-
-for (const test of tests) {
-  if (test.points > 0) {
-    bonusScore += test.points;
-    console.log(`   +${test.points.toString().padStart(2, ' ')} pts : ${test.name}`);
+    if (/riskScore:\s*0\.15,\s*acuteTriage:\s*['"]LOW['"]/.test(content)) {
+      reportViolation('src/server.ts Sidecar Outage Safety Violation', '/api/python outage returns HTTP 200 OK LOW triage fallback instead of 503 UNAVAILABLE.');
+    } else {
+      reportPass('src/server.ts Sidecar Outage Fail-Safe', 'Zero reassuring LOW triage fallback on sidecar outage.');
+    }
   }
 }
 
-// Observatory max score cap is 145
-const totalPredictedScore = violations === 0 ? Math.min(145, baseScore + bonusScore) : Math.max(0, baseScore - 25 * violations);
-const grade = totalPredictedScore >= 100 ? 'A+' : totalPredictedScore >= 90 ? 'A' : totalPredictedScore >= 85 ? 'A-' : totalPredictedScore >= 80 ? 'B+' : 'C';
+// 2. Audit Billing Portal for inline event handlers (blocked by script-src-attr 'none')
+const billingPortalPath = path.join(ROOT_DIR, 'src', 'server', 'billing-portal.ts');
+if (fs.existsSync(billingPortalPath)) {
+  const portalContent = fs.readFileSync(billingPortalPath, 'utf8');
+  if (/\b(onclick|onsubmit|oninput|onchange)\s*=/i.test(portalContent)) {
+    reportViolation('src/server/billing-portal.ts Inline Event Handlers', "Inline HTML event attributes violate production CSP3 script-src-attr 'none'.");
+  } else {
+    reportPass('src/server/billing-portal.ts CSP3 Clean', 'Zero inline onclick/onsubmit/oninput attributes.');
+  }
+}
 
-console.log(`\n   Base Score: 100 / 100`);
-console.log(`   Total Bonuses: +${bonusScore} (Capped at 145 max in Mozilla Observatory)`);
+// 3. Audit FastAPI Sidecar (pocketgull_api/main.py) & Sidecar Proxy (packages/sidecar-proxy/src/index.ts)
+const fastApiPath = path.join(ROOT_DIR, 'pocketgull_api', 'main.py');
+if (fs.existsSync(fastApiPath)) {
+  const pyContent = fs.readFileSync(fastApiPath, 'utf8');
+  if (!pyContent.includes('Origin-Agent-Cluster') || !pyContent.includes('Strict-Transport-Security')) {
+    reportViolation('pocketgull_api/main.py Missing Headers', 'FastAPI sidecar missing Observatory / WebMCP security headers.');
+  } else {
+    reportPass('pocketgull_api/main.py Headers', 'Observatory 125 + WebMCP headers present on FastAPI sidecar.');
+  }
+}
+
+const proxyPath = path.join(ROOT_DIR, 'packages', 'sidecar-proxy', 'src', 'index.ts');
+if (fs.existsSync(proxyPath)) {
+  const proxyContent = fs.readFileSync(proxyPath, 'utf8');
+  if (/for\s*\(\s*const\s*\[\s*k\s*,\s*v\s*\]\s*of\s*Object\.entries\s*\(\s*proxyRes\.headers\s*\)\s*\)\s*\{\s*if\s*\(\s*v\s*\)\s*res\.setHeader\s*\(\s*k\s*,\s*v\s*\)/.test(proxyContent)) {
+    reportViolation('packages/sidecar-proxy/src/index.ts Header Clobbering', 'Proxy blindly copies all upstream headers, clobbering Middleware #1 Observatory headers.');
+  } else {
+    reportPass('packages/sidecar-proxy/src/index.ts Header Allowlist', 'Upstream response headers strictly allowlisted; Middleware #1 preserved.');
+  }
+}
+
+// 4. Final Epistemic Verdict
+const predictedScore = violations === 0 ? 145 : Math.max(0, 100 - 20 * violations);
+const grade = violations === 0 ? 'A+' : predictedScore >= 90 ? 'A' : predictedScore >= 80 ? 'B+' : 'F';
+
+console.log('\n📊 Mozilla HTTP Observatory Ground-Truth Summary:');
 console.log(`   Penalties / Violations: ${violations}`);
-console.log(`   -------------------------------------------------`);
-console.log(`   🎯 Predicted Score: ${totalPredictedScore} / 100 (Grade ${grade})\n`);
+console.log(`   Predicted Observatory Score: ${predictedScore} / 100 (Grade ${grade})\n`);
 
-if (violations > 0 || totalPredictedScore < 125) {
-  console.error(`💥 FAILURE: Mozilla Observatory 125 Guard failed with ${violations} violation(s).`);
-  console.error(`   The current configuration does not reach the 125 / 100 threshold.`);
+if (violations > 0) {
+  console.error(`💥 FAILURE: Mozilla Observatory 125 Ground-Truth Guard failed with ${violations} violation(s).`);
   process.exit(1);
-} else {
-  console.log('🎉 SUCCESS: All Observatory 125 security invariants verified. Full 125 / 100 rating guaranteed!\n');
-  process.exit(0);
 }
+console.log('🎉 SUCCESS: All Mozilla Observatory 125 & WebMCP ground-truth invariants verified!\n');
+process.exit(0);

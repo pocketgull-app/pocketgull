@@ -2,6 +2,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { WebauthnPasskeyService, IPasskeyAttestationReceipt } from '../webauthn-passkey.service';
 import { NanoProvider } from '../ai/nano.provider';
 import { getSecureRandomHex } from '../../utils/security-helper';
+import { computeFipsSha256Hex } from '../clinical-defense-guard.service';
 
 /**
  * IEEE P2933™ TIPPSS Framework:
@@ -170,7 +171,9 @@ export class TippssIngestionGuardService {
 
   // --- 2. IDENTITY: Active Attestation & Patient Binding Nonces ---
   private activeChallenges = new Map<string, { nonce: string; expiresAtMs: number }>();
-  private deviceTelemetryState = new Map<string, { lastSeq: number; lastTimestampMs: number; lastValue: number }>();
+  private deviceSequenceState = new Map<string, { lastSeq: number; lastTimestampMs: number }>();
+  private deviceModalityValueState = new Map<string, { lastTimestampMs: number; lastValue: number }>();
+  readonly requirePayloadSignature = signal<boolean>(false);
 
   // --- 3. PRIVACY: Fine-Grained Modality Micro-Consents ---
   readonly microConsents = signal<ITelemetryMicroConsents>({
@@ -389,7 +392,8 @@ export class TippssIngestionGuardService {
     // -------------------------------------------------------------
     // STAGE 1: TRUST (Device Enrollment & IEEE ICAP Verification)
     // -------------------------------------------------------------
-    const enrolled = this.enrolledDevices().find(d => d.deviceId === frame.deviceId || frame.deviceId.includes(d.deviceId));
+    // Strict exact UDI equality — substring matching is strictly forbidden
+    const enrolled = this.enrolledDevices().find(d => d.deviceId === frame.deviceId);
     if (!enrolled) {
       violations.push('TRUST');
       return this.rejectFrame(frame, violations, `Device '${frame.deviceId}' is not enrolled in the IEEE ICAP trusted device registry.`);
@@ -403,9 +407,16 @@ export class TippssIngestionGuardService {
     // -------------------------------------------------------------
     // STAGE 2: IDENTITY (Non-Spoofable Attestation & Patient Binding)
     // -------------------------------------------------------------
-    if (enrolled.assignedPatientId !== frame.patientId && frame.patientId !== 'ANONYMOUS') {
+    // Reject ANONYMOUS or mismatched patientId on clinical patient-bound devices
+    if (!frame.patientId || frame.patientId === 'ANONYMOUS' || enrolled.assignedPatientId !== frame.patientId) {
       violations.push('IDENTITY');
-      return this.rejectFrame(frame, violations, `Patient binding mismatch: Device is bound to '${enrolled.assignedPatientId}', but received telemetry for '${frame.patientId}'.`);
+      return this.rejectFrame(
+        frame,
+        violations,
+        frame.patientId === 'ANONYMOUS'
+          ? `Anonymous telemetry rejected: Clinical device '${frame.deviceId}' requires authenticated patient binding ('${enrolled.assignedPatientId}').`
+          : `Patient binding mismatch: Device is bound to '${enrolled.assignedPatientId}', but received telemetry for '${frame.patientId}'.`
+      );
     }
 
     // -------------------------------------------------------------
@@ -427,13 +438,15 @@ export class TippssIngestionGuardService {
     // -------------------------------------------------------------
     // STAGE 4: PROTECTION (Anti-Replay Counter & Cryptographic Integrity)
     // -------------------------------------------------------------
-    const priorState = this.deviceTelemetryState.get(frame.deviceId);
+    const priorSeqState = this.deviceSequenceState.get(frame.deviceId);
+    const modalityKey = `${frame.deviceId}::${frame.modality}`;
+    const priorModalityState = this.deviceModalityValueState.get(modalityKey);
     const nowMs = Date.now();
 
     // Check 1: Monotonic Sequence Invariant
-    if (priorState && frame.sequenceNumber <= priorState.lastSeq) {
+    if (priorSeqState && frame.sequenceNumber <= priorSeqState.lastSeq) {
       violations.push('PROTECTION');
-      return this.rejectFrame(frame, violations, `Replay attack detected: Sequence number ${frame.sequenceNumber} <= prior ${priorState.lastSeq}.`);
+      return this.rejectFrame(frame, violations, `Replay attack detected: Sequence number ${frame.sequenceNumber} <= prior ${priorSeqState.lastSeq}.`);
     }
 
     // Check 2: Timestamp Drift Invariant (Max 10s packet age)
@@ -451,6 +464,32 @@ export class TippssIngestionGuardService {
         violations,
         `Proximity gate rejected: RSSI ${frame.rssiDbm} dBm is below proximity threshold ${this.rssiProximityThresholdDbm()} dBm (potential wireless relay attack or out-of-range sensor).`
       );
+    }
+
+    // Check 4: Payload Signature & Active Attestation Nonce Verification
+    const activeChallenge = this.activeChallenges.get(frame.deviceId);
+    if (activeChallenge) {
+      if (nowMs > activeChallenge.expiresAtMs) {
+        this.activeChallenges.delete(frame.deviceId);
+        violations.push('PROTECTION');
+        return this.rejectFrame(frame, violations, `Attestation challenge nonce expired for device '${frame.deviceId}'.`);
+      }
+      const expectedWithNonce = this.computeExpectedFrameSignature(frame, enrolled.bindingToken, activeChallenge.nonce);
+      if (!frame.payloadSignature || frame.payloadSignature !== expectedWithNonce) {
+        violations.push('PROTECTION');
+        return this.rejectFrame(frame, violations, `Payload signature verification failed against active challenge nonce for device '${frame.deviceId}'.`);
+      }
+      this.activeChallenges.delete(frame.deviceId);
+    } else if (this.requirePayloadSignature() || frame.payloadSignature !== undefined) {
+      const expectedBoundSig = this.computeExpectedFrameSignature(frame, enrolled.bindingToken);
+      const expectedPlainDigest = this.computeDigest(frame);
+      if (
+        !frame.payloadSignature ||
+        (frame.payloadSignature !== expectedBoundSig && frame.payloadSignature !== expectedPlainDigest)
+      ) {
+        violations.push('PROTECTION');
+        return this.rejectFrame(frame, violations, `Cryptographic payload signature verification failed for device '${frame.deviceId}'.`);
+      }
     }
 
     // -------------------------------------------------------------
@@ -477,11 +516,11 @@ export class TippssIngestionGuardService {
 
     const numVal = typeof frame.value === 'number' ? frame.value : parseFloat(String(frame.value));
     if (!isNaN(numVal)) {
-      // 1. Heart Rate Biophysical Boundaries: 30 - 220 bpm, max delta 25 bpm/sec
+      // 1. Heart Rate Biophysical Boundaries: 30 - 220 bpm, max delta 30 bpm/frame (same modality only)
       if (frame.modality === 'heart_rate') {
         if (numVal < 30 || numVal > 220) {
           violations.push('SAFETY');
-        } else if (priorState && Math.abs(numVal - priorState.lastValue) > 30) {
+        } else if (priorModalityState && Math.abs(numVal - priorModalityState.lastValue) > 30) {
           violations.push('SAFETY'); // Extreme unphysiological jump within 1-2s
         }
       }
@@ -516,23 +555,27 @@ export class TippssIngestionGuardService {
     // -------------------------------------------------------------
     // STAGE 6: SECURITY (Firmware Vulnerability & Operational Posture)
     // -------------------------------------------------------------
+    // Fail closed when device firmware carries known unpatched CVEs
     if (enrolled.knownVulnerabilities.length > 0) {
       violations.push('SECURITY');
-      this.recordAuditEntry({
-        deviceId: frame.deviceId,
-        patientId: frame.patientId,
-        modality: frame.modality,
-        action: 'SANITIZED',
-        reason: `Warning: Device firmware has known vulnerabilities (${enrolled.knownVulnerabilities.join(', ')}). Proceeding with enhanced telemetry isolation.`
-      });
+      return this.rejectFrame(
+        frame,
+        violations,
+        `Device firmware rejected (fail-closed): known unpatched vulnerabilities present (${enrolled.knownVulnerabilities.join(', ')}).`
+      );
     }
 
-    // --- SUCCESS: Update telemetry tracking state and produce seal ---
-    this.deviceTelemetryState.set(frame.deviceId, {
+    // --- SUCCESS: Update telemetry tracking state (keyed by deviceId::modality) and produce seal ---
+    this.deviceSequenceState.set(frame.deviceId, {
       lastSeq: frame.sequenceNumber,
-      lastTimestampMs: frame.timestampMs,
-      lastValue: isNaN(numVal) ? 0 : numVal
+      lastTimestampMs: frame.timestampMs
     });
+    if (!isNaN(numVal)) {
+      this.deviceModalityValueState.set(modalityKey, {
+        lastTimestampMs: frame.timestampMs,
+        lastValue: numVal
+      });
+    }
 
     const digest = this.computeDigest(frame);
     this.recordAuditEntry({
@@ -588,7 +631,12 @@ export class TippssIngestionGuardService {
    * Securely unpairs and zeroizes session state for a device.
    */
   zeroizeSession(deviceId: string): void {
-    this.deviceTelemetryState.delete(deviceId);
+    this.deviceSequenceState.delete(deviceId);
+    for (const key of Array.from(this.deviceModalityValueState.keys())) {
+      if (key.startsWith(`${deviceId}::`)) {
+        this.deviceModalityValueState.delete(key);
+      }
+    }
     this.activeChallenges.delete(deviceId);
     this.recordAuditEntry({
       deviceId,
@@ -597,6 +645,18 @@ export class TippssIngestionGuardService {
       action: 'INGESTED',
       reason: `Cryptographic zeroization executed for device ${deviceId}.`
     });
+  }
+
+  /**
+   * Computes expected FIPS 180-4 SHA-256 frame signature bound to device attestation token (and optional challenge nonce).
+   */
+  computeExpectedFrameSignature(
+    frame: ITippssTelemetryFrame,
+    bindingToken: string,
+    nonce?: string
+  ): string {
+    const preImage = `${frame.deviceId}|${frame.patientId}|${frame.sequenceNumber}|${frame.timestampMs}|${frame.modality}|${frame.value}|${bindingToken}|${nonce || ''}`;
+    return `sha256-tippss-${computeFipsSha256Hex(preImage)}`;
   }
 
   /**
@@ -635,8 +695,8 @@ export class TippssIngestionGuardService {
       });
 
       return { isAuthorized: true, receipt };
-    } catch (err: any) {
-      const msg = err?.message || 'Passkey verification failed or was cancelled.';
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Passkey verification failed or was cancelled.';
       this.recordAuditEntry({
         deviceId: 'PLATFORM-WEBAUTHN-TITAN-M2',
         patientId: params.patientId || 'PATIENT-SELF-01',
@@ -672,10 +732,10 @@ export class TippssIngestionGuardService {
           rationale = `Sub-acute heart rate excursion observed: HR ${numVal} bpm.`;
         }
       } else if (frame.modality === 'spo2') {
-        if (numVal < 88) {
+        if (numVal < 90) {
           acuity = 'STAT_EMERGENCY';
           anomalyScore = 0.98;
-          rationale = `Hypoxemic respiratory failure risk: SpO2 ${numVal}%.`;
+          rationale = `Hypoxemic respiratory failure risk (SpO2 < 90%): SpO2 ${numVal}%.`;
         } else if (numVal < 92) {
           acuity = 'URGENT';
           anomalyScore = 0.60;
@@ -694,20 +754,28 @@ export class TippssIngestionGuardService {
       }
     }
 
-    // Attempt Chrome Built-in AI Classifier if available
+    // Attempt Chrome Built-in AI Classifier if available — MONOTONIC ACUITY: AI may ONLY escalate, NEVER downgrade
+    const ACUITY_RANK: Record<'ROUTINE' | 'URGENT' | 'STAT_EMERGENCY', number> = {
+      ROUTINE: 0,
+      URGENT: 1,
+      STAT_EMERGENCY: 2
+    };
     let isEdgeComputed = true;
-    if (typeof window !== 'undefined' && typeof (window as any).ai !== 'undefined' && (window as any).ai?.classifier) {
+    const windowAi = typeof window !== 'undefined' ? window.ai : undefined;
+    if (windowAi?.classifier) {
       try {
-        const capabilities = await (window as any).ai.classifier.capabilities();
+        const capabilities = await windowAi.classifier.capabilities();
         if (capabilities.available !== 'no') {
-          const classifier = await (window as any).ai.classifier.create({
+          const classifier = await windowAi.classifier.create({
             categories: ['ROUTINE', 'URGENT', 'STAT_EMERGENCY']
           });
           const textContext = `Patient vitals frame: modality=${frame.modality}, value=${frame.value}, SQI=${frame.signalQualityIndex}%.`;
           const classification = await classifier.classify(textContext);
-          if (classification?.topCategory) {
-            acuity = classification.topCategory as any;
-            rationale = `Chrome Built-in AI Classifier classified as ${acuity}: ${rationale}`;
+          const aiCategory = classification?.topCategory as 'ROUTINE' | 'URGENT' | 'STAT_EMERGENCY' | undefined;
+          if (aiCategory && aiCategory in ACUITY_RANK && ACUITY_RANK[aiCategory] > ACUITY_RANK[acuity]) {
+            acuity = aiCategory;
+            anomalyScore = Math.max(anomalyScore, aiCategory === 'STAT_EMERGENCY' ? 0.95 : 0.65);
+            rationale = `Chrome Built-in AI Classifier escalated acuity to ${acuity}: ${rationale}`;
           }
         }
       } catch {
@@ -757,9 +825,9 @@ export class TippssIngestionGuardService {
     action: 'INGESTED' | 'SANITIZED' | 'REJECTED' | 'SAFE_HARBOR_TRIGGERED';
     reason?: string;
   }): void {
-    const seal = this.computeFnvDigest(`${entry.deviceId}:${entry.patientId}:${entry.modality}:${entry.action}:${Date.now()}`);
+    const seal = this.computeSha256Seal(`${entry.deviceId}:${entry.patientId}:${entry.modality}:${entry.action}:${Date.now()}`);
     const fullEntry: ITippssAuditEntry = {
-      auditId: `TIPPSS-AUDIT-${seal.slice(0, 10).toUpperCase()}`,
+      auditId: `TIPPSS-AUDIT-${seal.slice(14, 24).toUpperCase()}`,
       timestamp: new Date().toISOString(),
       deviceId: entry.deviceId,
       patientId: entry.patientId,
@@ -772,17 +840,23 @@ export class TippssIngestionGuardService {
     this.auditLog.update(log => [fullEntry, ...log.slice(0, 49)]); // Keep last 50 audit entries in memory
   }
 
-  private computeDigest(frame: ITippssTelemetryFrame): string {
-    const preImage = `${frame.deviceId}|${frame.patientId}|${frame.sequenceNumber}|${frame.timestampMs}|${frame.modality}|${frame.value}`;
-    return this.computeFnvDigest(preImage);
+  /**
+   * Computes the hardware-bound FIPS SHA-256 payload signature for an enrolled non-revoked device.
+   */
+  signFrameForEnrolledDevice(frame: ITippssTelemetryFrame): string | undefined {
+    const enrolled = this.enrolledDevices().find(d => d.deviceId === frame.deviceId && !d.isRevoked);
+    if (!enrolled) {
+      return undefined;
+    }
+    return this.computeExpectedFrameSignature(frame, enrolled.bindingToken);
   }
 
-  private computeFnvDigest(input: string): string {
-    let hash = 0x811c9dc5;
-    for (let i = 0; i < input.length; i++) {
-      hash ^= input.charCodeAt(i);
-      hash = (hash * 0x01000193) >>> 0;
-    }
-    return `sha256-tippss-${hash.toString(16).padStart(8, '0')}`;
+  private computeDigest(frame: ITippssTelemetryFrame): string {
+    const preImage = `${frame.deviceId}|${frame.patientId}|${frame.sequenceNumber}|${frame.timestampMs}|${frame.modality}|${frame.value}`;
+    return this.computeSha256Seal(preImage);
+  }
+
+  private computeSha256Seal(input: string): string {
+    return `sha256-tippss-${computeFipsSha256Hex(input)}`;
   }
 }

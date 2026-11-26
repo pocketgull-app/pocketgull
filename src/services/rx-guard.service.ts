@@ -249,12 +249,8 @@ export class RxGuardService {
       }
     }
 
-    // If none actively matched from input, provide active clinical reference set
-    if (detected.length === 0 && (medList.length > 0 || botList.length > 0)) {
-      return this.KNOWN_INTERACTIONS.slice(0, 3);
-    }
-
-    return detected.length > 0 ? detected : this.KNOWN_INTERACTIONS.slice(0, 3);
+    // Never fabricate or inject unmatched drug-herb interactions when zero conflicts exist
+    return detected;
   }
 
   /**
@@ -265,10 +261,7 @@ export class RxGuardService {
     const activeMeds = ((patient.medications || []) as (string | { name: string })[]).map(m => typeof m === 'string' ? m : m.name);
     const activeHerbs = ((patient.dietarySupplements || []) as (string | { name: string })[]).map(h => typeof h === 'string' ? h : h.name);
 
-    const safeMeds = activeMeds.length > 0 ? activeMeds : ['Lisinopril 20mg', 'Atorvastatin 40mg'];
-    const safeHerbs = activeHerbs.length > 0 ? activeHerbs : ['Ashwagandha 600mg', 'Curcumin BCM-95', 'Ginkgo Biloba 120mg'];
-
-    const interactions = this.evaluateInteractions(safeMeds, safeHerbs);
+    const interactions = this.evaluateInteractions(activeMeds, activeHerbs);
 
     // Compute Overall Risk Tier
     let overallRiskTier: RiskSeverity = 'SAFE';
@@ -307,7 +300,7 @@ export class RxGuardService {
     };
 
     // Calculate Financial Toxicity & Generic Savings Opportunities
-    const allTherapeutics = [...safeMeds, ...safeHerbs];
+    const allTherapeutics = [...activeMeds, ...activeHerbs];
     const financialToxicityAudits = allTherapeutics.map(item => {
       // Estimate baseline monthly cost based on medication profile
       let estCost = 25.00;

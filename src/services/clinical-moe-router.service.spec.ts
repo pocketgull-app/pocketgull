@@ -428,6 +428,22 @@ describe('ClinicalMoERouterService', () => {
 
       service.clearOverrides();
     });
+
+    it('triggers STAT Safety Shield on BE-FAST (arm weakness/vision loss), NSTEMI, and PHQ-9 Item 9 and overrides clinician pinnedId', () => {
+      service.pinExpert('steeep-quality-hud');
+      service.setTranscriptQuery('Sudden arm weakness and acute vision loss');
+      expect(service.activePerceptorState().redFlagDetected).toBe(true);
+      expect(service.activeSelectorDecision().safetyShieldActive).toBe(true);
+      expect(service.primaryUiExpert()?.expert.id).toBe('edge-ml-hud');
+
+      service.setTranscriptQuery('Suspected NSTEMI with elevated troponin');
+      expect(service.activePerceptorState().redFlagDetected).toBe(true);
+
+      service.setTranscriptQuery('PHQ-9 Item 9 positive for suicidal ideation');
+      expect(service.activePerceptorState().redFlagDetected).toBe(true);
+
+      service.clearOverrides();
+    });
   });
 });
 

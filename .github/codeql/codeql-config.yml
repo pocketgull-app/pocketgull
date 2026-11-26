@@ -1,11 +1,11 @@
 name: "Pocket Gull CodeQL Filtering"
 
-# Exclude non-production code, tests, build scripts, and documentation workspaces from security scanning
+# Exclude non-production test fixtures and research workspaces from security scanning
+# Note: scripts/** and public/** are intentionally scanned by CodeQL.
 paths-ignore:
   - '**/*.spec.ts'
   - 'tests/**'
   - 'e2e/**'
-  - 'scripts/**'
   - 'docs/**'
   - 'companion-apps/**'
   - 'contests/**'

@@ -40,6 +40,7 @@ import {
     categorizeWaterHardness
 } from '../models/watershed-cds-advisory.model';
 import { ClinicalDriftCalibratorService } from './interpretability/clinical-drift-calibrator.service';
+import { EmergencyRedFlagGuard, IEmergencyRedFlagEvaluation } from './emergency-red-flag.guard';
 
 
 export interface ITranscriptEntry {
@@ -90,6 +91,8 @@ export class ClinicalIntelligenceService {
     private skepticalService = inject(SkepticalEpistemologyService, { optional: true }) || new SkepticalEpistemologyService();
     readonly oknService = inject(OknKnowledgeGraphService, { optional: true }) || new OknKnowledgeGraphService();
     readonly driftCalibrator = inject(ClinicalDriftCalibratorService, { optional: true });
+    readonly emergencyGuard = inject(EmergencyRedFlagGuard, { optional: true }) || new EmergencyRedFlagGuard();
+    readonly lastEmergencyEvaluation = signal<IEmergencyRedFlagEvaluation | null>(null);
 
     readonly activeGroundedAssertion = signal<IGroundedClinicalAssertion | null>(createDefaultGroundedClinicalAssertion());
     readonly watershedCdsAdvisory = signal<IWatershedCdsAdvisory | null>(null);
@@ -217,10 +220,16 @@ export class ClinicalIntelligenceService {
         const cacheKey = await this.cache.generateKey([reportText, 'visual-metrics-v2']);
 
         try {
-            const cached = await this.cache.get<IClinicalMetrics>(cacheKey);
+            const cached = await this.cache.get<IClinicalMetrics | { metrics: IClinicalMetrics; _timestamp?: string }>(cacheKey);
             if (cached) {
-                this.analysisMetrics.set(cached);
-                return;
+                const resolvedMetrics: IClinicalMetrics | undefined =
+                    typeof (cached as { metrics?: IClinicalMetrics }).metrics === 'object' && (cached as { metrics?: IClinicalMetrics }).metrics !== null
+                        ? (cached as { metrics: IClinicalMetrics }).metrics
+                        : (typeof (cached as IClinicalMetrics).complexity === 'number' ? (cached as IClinicalMetrics) : undefined);
+                if (resolvedMetrics) {
+                    this.analysisMetrics.set(resolvedMetrics);
+                    return;
+                }
             }
 
             const validatedData = await this.ai.generateMetrics(reportText);
@@ -579,6 +588,43 @@ Recommends voluntary pre-conception carrier screening for autosomal recessive tr
     }
 
     async generateComprehensiveReport(patientData: string): Promise<Partial<Record<AnalysisLens, string>>> {
+        // 0. DETERMINISTIC EMERGENCY RED-FLAG PREEMPTION (executes BEFORE any AI call or demo/cache flow)
+        const liveVitals = typeof this.patientState.vitals === 'function' ? this.patientState.vitals() : undefined;
+        const phq9Item9 = typeof this.assessments?.phq9Item9Score === 'function' ? this.assessments.phq9Item9Score() : undefined;
+        const cssrsScore = typeof this.assessments?.cssrsScore === 'function' ? this.assessments.cssrsScore() : undefined;
+        const emergencyEval = this.emergencyGuard.evaluate({
+            text: patientData,
+            vitals: liveVitals
+                ? {
+                    spo2: liveVitals.spO2,
+                    bp: liveVitals.bp,
+                    glucose: liveVitals.fastingGlucoseMgDl,
+                    cgm: liveVitals.cgmGlucoseMgDl,
+                    hr: liveVitals.hr
+                }
+                : undefined,
+            phq9Item9Score: phq9Item9,
+            cssrsScore
+        });
+        this.lastEmergencyEvaluation.set(emergencyEval);
+
+        if (emergencyEval.isTriggered && emergencyEval.haltStochasticGeneration) {
+            const emergencyReport: Partial<Record<AnalysisLens, string>> = {
+                'Summary Overview': emergencyEval.deterministicProtocolMarkdown,
+                'Monitoring & Follow-up': emergencyEval.deterministicProtocolMarkdown
+            };
+            this.isLoading.set(false);
+            this.error.set(null);
+            this.analysisResults.set(emergencyReport);
+            this.analysisMetrics.set({ complexity: 10, stability: 1, certainty: 10 });
+            this.verificationResults.set({
+                'Summary Overview': { status: 'deterministic_emergency_override', issues: [] },
+                'Monitoring & Follow-up': { status: 'deterministic_emergency_override', issues: [] }
+            });
+            this.lastRefreshTime.set(new Date());
+            return emergencyReport;
+        }
+
         const isEmergency = this.patientState.isEmergencyMode();
         const currentPhilosophy = this.patientState.activePhilosophy();
 
@@ -769,13 +815,25 @@ CRITICAL EMERGENCY RULES:
                         console.warn(`Verification failed for ${lens}`, verifError);
                     }
                 } catch (e: any) {
-                    const patientName = this.patientState.patientName() || 'Patient';
                     const philKey = (currentPhilosophy === 'eastern' || currentPhilosophy === 'ayurvedic') ? currentPhilosophy : 'western';
-                    const localFallbackReport = this.generateDynamicMockReport(patientName, philKey);
-                    const fallbackContent = localFallbackReport[lens as keyof typeof localFallbackReport] || `### Local WebGPU Synthesis\nGenerated local off-grid zero-cloud care plan for ${lens}.`;
-                    newReport[lens] = `${fallbackContent}\n\n*⚡ Generated via Local On-Device WebGPU Zero-Cloud Inference Engine.*`;
+                    const localFallbackReport = this.generateDynamicMockReport('Safe Harbor Subject', philKey);
+                    const fallbackContent = localFallbackReport[lens as keyof typeof localFallbackReport] || `### Deterministic Offline Fallback Template\nLive model inference unavailable for ${lens}.`;
+                    newReport[lens] = `${fallbackContent}\n\n*⚠️ Deterministic Offline Fallback Template — live cloud/edge inference unavailable; unverified pending clinician review.*`;
                     this.analysisResults.update(all => ({ ...all, [lens]: newReport[lens] }));
-                    this.verificationResults.update(all => ({ ...all, [lens]: { isVerified: true, confidenceScore: 98, notes: 'WebGPU On-Device Verified' } }));
+                    this.verificationResults.update(all => ({
+                        ...all,
+                        [lens]: {
+                            status: 'fallback_unverified',
+                            issues: [
+                                {
+                                    severity: 'high',
+                                    message: 'Live AI generation failed; deterministic fallback template emitted without neural verification.',
+                                    claim: lens,
+                                    suggestedFix: 'Verify clinical recommendations directly with an attending clinician once connectivity is restored.'
+                                }
+                            ]
+                        }
+                    }));
                 }
             });
 
@@ -891,6 +949,30 @@ Feel free to reference their research areas and publications if it supports the 
 
     async sendChatMessage(message: string): Promise<string> {
         this.transcript.update(t => [...t, { role: 'user', text: message }]);
+
+        // 0. DETERMINISTIC EMERGENCY RED-FLAG PREEMPTION (halts stochastic AI generation immediately)
+        const liveVitals = typeof this.patientState.vitals === 'function' ? this.patientState.vitals() : undefined;
+        const phq9Item9 = typeof this.assessments?.phq9Item9Score === 'function' ? this.assessments.phq9Item9Score() : undefined;
+        const cssrsScore = typeof this.assessments?.cssrsScore === 'function' ? this.assessments.cssrsScore() : undefined;
+        const emergencyEval = this.emergencyGuard.evaluate({
+            text: message,
+            vitals: liveVitals
+                ? {
+                    spo2: liveVitals.spO2,
+                    bp: liveVitals.bp,
+                    glucose: liveVitals.fastingGlucoseMgDl,
+                    cgm: liveVitals.cgmGlucoseMgDl,
+                    hr: liveVitals.hr
+                }
+                : undefined,
+            phq9Item9Score: phq9Item9,
+            cssrsScore
+        });
+        this.lastEmergencyEvaluation.set(emergencyEval);
+        if (emergencyEval.isTriggered && emergencyEval.haltStochasticGeneration) {
+            this.transcript.update(t => [...t, { role: 'model', text: emergencyEval.deterministicProtocolMarkdown }]);
+            return emergencyEval.deterministicProtocolMarkdown;
+        }
 
         // ── Rules Engine: pre-send guard ────────────────────────────────────────
         const blocked = this.rules.evaluateOnMessage(message);
@@ -1216,11 +1298,12 @@ Feel free to reference their research areas and publications if it supports the 
         contextText: string
     ): Promise<IGroundedClinicalAssertion> {
         try {
-            const patientName = this.patientState.patientName() || 'Phil Gear';
-            const patientAge = this.patientState.patientAge() || 38;
-            const patientGender = this.patientState.patientGender() || 'Male';
+            const subjectToken = this.patientState.patientId() || 'SAFE-HARBOR-SUBJECT';
+            const rawAge = this.patientState.patientAge();
+            const safeAge = typeof rawAge === 'number' && rawAge > 89 ? '90+' : String(rawAge || 'Unknown');
+            const patientGender = this.patientState.patientGender() || 'Unspecified';
             const prompt = this.skepticalService.buildSystem2ThinkingPrompt(
-                `${patientName} (Age: ${patientAge}, Sex: ${patientGender})`,
+                `Subject ${subjectToken} (Age: ${safeAge}, Sex: ${patientGender})`,
                 `Lens: ${lens}. Symptoms & Context: ${contextText}`
             );
 
@@ -1240,9 +1323,9 @@ Feel free to reference their research areas and publications if it supports the 
                 return assertion;
             }
 
-            // If invalid or missing counter-hypotheses, generate a calibrated default anchored on patient state
+            // If invalid or missing counter-hypotheses, generate a calibrated default anchored on de-identified subject
             const fallback = createDefaultGroundedClinicalAssertion({
-                hypothesis: `${lens} formulation for ${patientName}`,
+                hypothesis: `${lens} formulation for Subject ${subjectToken}`,
                 nullHypothesisH0: `Observed findings in ${lens} are non-contributory or represent standard physiological variation.`,
                 attestationTimestamp: new Date().toISOString()
             });

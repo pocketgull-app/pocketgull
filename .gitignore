@@ -240,6 +240,9 @@ build_error*.txt
 logs/
 *.log
 *log.txt
+build_log_*.txt
+analyze*.txt
+*.iml
 deploy_log.txt
 firebase-debug.log
 firebase-debug.*.log
