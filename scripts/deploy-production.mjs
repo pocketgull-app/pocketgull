@@ -21,9 +21,10 @@ process.chdir(rootDir);
 
 const TARGET_PROJECT = process.env.GCP_PROJECT || 'gen-lang-client-0540208645';
 const SERVICE_NAME = 'pocket-gull';
+const IMAGE_NAME = 'pocketgull';
 const REGION = 'us-central1';
 const AR_REPO = 'cloud-run-source-deploy';
-const IMAGE_BASE = `${REGION}-docker.pkg.dev/${TARGET_PROJECT}/${AR_REPO}/${SERVICE_NAME}`;
+const IMAGE_BASE = `${REGION}-docker.pkg.dev/${TARGET_PROJECT}/${AR_REPO}/${IMAGE_NAME}`;
 const IMAGE_TAG = `${IMAGE_BASE}:latest`;
 
 console.log('==========================================================');

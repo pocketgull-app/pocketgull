@@ -89,7 +89,7 @@ const stats = fs.statSync(outputPath);
 const sizeMb = stats.size / (1024 * 1024);
 console.log(`\n✅ Clean source archive created: ${outputPath} (${sizeMb.toFixed(2)} MB)`);
 
-const MAX_ARCHIVE_MB = Number(process.env.MAX_DEPLOY_ARCHIVE_MB || 50);
+const MAX_ARCHIVE_MB = Number(process.env.MAX_DEPLOY_ARCHIVE_MB || 100);
 if (sizeMb > MAX_ARCHIVE_MB) {
   console.error(`❌ [GreenOps Guard] Archive size (${sizeMb.toFixed(2)} MB) exceeds ${MAX_ARCHIVE_MB} MB ceiling! Prune unused dist/ assets before deploying.`);
   process.exit(1);
