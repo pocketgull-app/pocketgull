@@ -242,7 +242,7 @@ ${sbar.recommendation}
 
 =====================================================
 Attestation: Signed keylessly via RFC 7523 system-to-system writeback.
-PocketGull Applied Clinical AI Consortium`;
+PocketGull LLC`;
 
     const base64Data = typeof btoa !== 'undefined'
       ? btoa(unescape(encodeURIComponent(sbarFullText)))

@@ -35,7 +35,7 @@ describe('PatentClaimsHudModalComponent', () => {
     component.activeTab.set('clauses');
     expect(component.filteredClauses().length).toBe(9);
 
-    component.searchQuery.set('Amazon');
+    component.searchQuery.set('FTC');
     expect(component.filteredClauses().length).toBe(1);
     expect(component.filteredClauses()[0].id).toBe('clause-ftc-affiliate-governance');
   });

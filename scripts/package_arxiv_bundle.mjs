@@ -60,7 +60,7 @@ console.log('----------------------------------------------------------------');
 console.log('Title:');
 console.log('  System and Method for Tri-Paradigm Consilience and Finite-Sample Conformal Clinical Intervals with Epistemic Abstention\n');
 console.log('Authors:');
-console.log('  Phil Gear, PocketGull Applied Clinical AI Consortium\n');
+console.log('  Phil Gear, PocketGull LLC\n');
 console.log('Primary Category:');
 console.log('  cs.AI (Artificial Intelligence)\n');
 console.log('Cross-List Categories:');

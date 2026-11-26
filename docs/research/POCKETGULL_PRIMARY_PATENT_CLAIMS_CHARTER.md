@@ -1,7 +1,7 @@
-# ⚖️ POCKET GULL PRIMARY PATENT CLAIMS CHARTER (USPTO / PCT PROVISIONAL APPLICATION SPECIFICATION)
+# ⚖️ POCKET GULL PRIMARY TECHNICAL DISCLOSURE & PATENT CLAIMS CHARTER (PRE-FILING DRAFT)
 **Title of Invention**: *Autonomous Multi-Paradigm Clinical Decision Support, Client-Side Zero-Egress Bio-Signal Extraction, Popperian Epistemological Verification, and Game-Theoretic Adherence Engines*
-**Inventors**: *PocketGull Applied Clinical AI & Biophysics Research Consortium*
-**Jurisdictions Targeted**: *United States Patent and Trademark Office (USPTO), European Patent Office (EPO), WIPO PCT*
+**Inventor**: *Phillip Gear (Sole Inventor — PocketGull LLC)*
+**Filing Status**: *Internal Pre-Filing Technical Disclosure Draft — Not Yet Filed With USPTO/EPO/PCT (No Patent Marking Asserted)*
 
 ---
 
@@ -1019,6 +1019,6 @@ The undersigned hereby attest and record that the foregoing 560 patent claims em
 
 For institutional IRB inquiries, multi-center research partnerships, or formal written covenant verification:
 
-* **Data Protection & IP Compliance Officer**: Phil Gear / Legal Team
+* **Data Protection & IP Compliance Contact**: Phillip Gear (PocketGull LLC)
 * **Email**: `dpo@pocketgull.app`
-* **Address**: PocketGull Health AI PBC, Portland, OR / Geneva, Switzerland
+* **Entity & Location**: PocketGull LLC (Oregon Domestic LLC, Registry No. 258869891), Portland, OR, USA

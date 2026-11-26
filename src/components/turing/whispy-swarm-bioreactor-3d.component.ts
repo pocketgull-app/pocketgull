@@ -36,7 +36,7 @@ import { ScaffoldExporterService } from '../../services/scaffold-exporter.servic
                 Acoustic Containment Bioreactor Tank
               </h3>
               <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest bg-emerald-900/60 border border-emerald-400/50 text-emerald-200">
-                PATENT PENDING
+                RESEARCH PROTOTYPE
               </span>
             </div>
             <p class="text-xs text-emerald-200/70 mt-0.5">

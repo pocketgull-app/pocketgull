@@ -8,6 +8,10 @@
 
 export const PRIVATE_KEY_RE = /-----BEGIN\s+(?:RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----/;
 export const BANNED_FOUNDRY_PATH_RE = /(?:pg2[\\/]+pocketgull|scratch[\\/]+fonts[\\/]+ofl[\\/]+pocketgull)/i;
+export const ADOBE_PRERELEASE_RE =
+  /(?:Adobe\s+(?:Illustrator|InDesign|Photoshop|Premiere|After Effects|Acrobat)[^\r\n"'`]*\((?:Prerelease|Beta)\)|Adobe_Insiders_Standard_PRA\.pdf|Adobe_Confidentiality_Agreement_Signed\.pdf)/i;
+export const CONFIDENTIAL_AGREEMENT_FILE_RE =
+  /(?:Confidentiality Agreement\.pdf|Adobe_Insiders_Standard_PRA\.pdf|Adobe_Confidentiality_Agreement_Signed\.pdf)/i;
 export const SECURITY_CRITICAL_PATH_RE =
   /(?:^|[\\/])src[\\/](?:server|guards|fhir|privacy|security)[\\/]|(?:security|auth|privacy|de-identification|crypto|token|csprng|fhir|guard|server)\.[^.]+$/i;
 
