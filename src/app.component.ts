@@ -2135,8 +2135,10 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
       @defer (on idle) {
         <app-collaboration-dock />
       }
-      @defer (on idle) {
-        <app-ui-self-repair-hud />
+      @if (navShell.developerMode()) {
+        @defer (on idle) {
+          <app-ui-self-repair-hud />
+        }
       }
     }
 

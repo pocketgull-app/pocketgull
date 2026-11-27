@@ -14,6 +14,7 @@ import { UiSelfRepairService } from '../services/ui-self-repair.service';
       <div class="fixed bottom-4 z-30 flex items-center gap-2" style="right: 5.5rem;">
         <button 
           type="button"
+          data-testid="ui-self-repair-pill"
           (click)="repairService.toggleHud()"
           class="group flex items-center gap-2 px-3 py-1.5 rounded-full border shadow-lg backdrop-blur-md transition-all duration-200 cursor-pointer"
           [class.bg-emerald-950]="metrics().healthScore >= 90"
@@ -28,12 +29,6 @@ import { UiSelfRepairService } from '../services/ui-self-repair.service';
           title="UI Self-Repair & Telemetry Monitor (Background Sentinel)"
         >
           <span class="relative flex h-2.5 w-2.5">
-            <span 
-              class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-              [class.bg-emerald-400]="metrics().healthScore >= 90"
-              [class.bg-amber-400]="metrics().healthScore >= 70 && metrics().healthScore < 90"
-              [class.bg-rose-400]="metrics().healthScore < 70"
-            ></span>
             <span 
               class="relative inline-flex rounded-full h-2.5 w-2.5"
               [class.bg-emerald-500]="metrics().healthScore >= 90"
@@ -58,6 +53,7 @@ import { UiSelfRepairService } from '../services/ui-self-repair.service';
     <!-- Diagnostic & Self-Repair Flyout Drawer -->
     @if (repairService.isHudOpen()) {
       <div 
+        data-testid="ui-self-repair-drawer"
         class="fixed inset-y-0 right-0 w-full sm:w-[480px] z-50 bg-[#0c0c10] border-l border-[#272732] shadow-2xl p-5 flex flex-col font-sans text-[#f4f4f5] animate-slide-left backdrop-blur-xl"
         role="dialog"
         aria-modal="true"
@@ -78,8 +74,9 @@ import { UiSelfRepairService } from '../services/ui-self-repair.service';
           </div>
           <button 
             type="button" 
+            aria-label="Close UI Self-Repair HUD"
             (click)="repairService.toggleHud()" 
-            class="text-zinc-400 hover:text-white p-1 rounded-md hover:bg-zinc-800 transition-colors cursor-pointer"
+            class="min-h-[36px] min-w-[36px] flex items-center justify-center text-zinc-400 hover:text-white p-1 rounded-md hover:bg-zinc-800 transition-colors cursor-pointer"
           >
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -119,24 +116,27 @@ import { UiSelfRepairService } from '../services/ui-self-repair.service';
         <div class="grid grid-cols-3 gap-2 mb-3">
           <button 
             type="button"
-            (click)="repairService.repairAllLensesAndFrames()"
-            class="px-2.5 py-2 rounded-lg bg-teal-950/80 hover:bg-teal-900 border border-teal-500/40 text-teal-200 text-xs font-semibold flex items-center justify-center gap-1 transition cursor-pointer"
+            data-testid="ui-self-repair-lenses-btn"
+            (click)="repairService.repairBiophysicalLenses()"
+            class="min-h-[38px] px-2.5 py-2 rounded-lg bg-teal-950/80 hover:bg-teal-900 border border-teal-500/40 text-teal-200 text-xs font-semibold flex items-center justify-center gap-1 transition cursor-pointer"
           >
             <span>🔬</span>
             <span>3D Lenses</span>
           </button>
           <button 
             type="button"
-            (click)="repairService.repairAllLensesAndFrames()"
-            class="px-2.5 py-2 rounded-lg bg-sky-950/80 hover:bg-sky-900 border border-sky-500/40 text-sky-200 text-xs font-semibold flex items-center justify-center gap-1 transition cursor-pointer"
+            data-testid="ui-self-repair-frames-btn"
+            (click)="repairService.repairAnalysisFrames()"
+            class="min-h-[38px] px-2.5 py-2 rounded-lg bg-sky-950/80 hover:bg-sky-900 border border-sky-500/40 text-sky-200 text-xs font-semibold flex items-center justify-center gap-1 transition cursor-pointer"
           >
             <span>📊</span>
             <span>Frames</span>
           </button>
           <button 
             type="button"
+            data-testid="ui-self-repair-symptoms-btn"
             (click)="repairService.repairPatientStateAndSymptoms()"
-            class="px-2.5 py-2 rounded-lg bg-purple-950/80 hover:bg-purple-900 border border-purple-500/40 text-purple-200 text-xs font-semibold flex items-center justify-center gap-1 transition cursor-pointer"
+            class="min-h-[38px] px-2.5 py-2 rounded-lg bg-purple-950/80 hover:bg-purple-900 border border-purple-500/40 text-purple-200 text-xs font-semibold flex items-center justify-center gap-1 transition cursor-pointer"
           >
             <span>🩺</span>
             <span>Symptoms</span>
@@ -172,6 +172,7 @@ import { UiSelfRepairService } from '../services/ui-self-repair.service';
           <div class="flex gap-1.5">
             <button 
               type="button" 
+              data-testid="ui-self-repair-audit-btn"
               (click)="repairService.runFullAudit()"
               [disabled]="repairService.isAuditing()"
               class="px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-mono text-[11px] flex items-center gap-1 cursor-pointer"
@@ -184,6 +185,7 @@ import { UiSelfRepairService } from '../services/ui-self-repair.service';
             </button>
             <button 
               type="button" 
+              data-testid="ui-self-repair-rollback-btn"
               (click)="repairService.revertAllPatches()"
               class="px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-400 hover:text-zinc-200 font-mono text-[11px] cursor-pointer"
               title="Flush and rollback all dynamic patches"

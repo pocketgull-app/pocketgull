@@ -414,14 +414,18 @@ export class AuthSsoService {
         role: string;
       } | null = null;
 
-      // 1. Attempt real browser FIDO2 / WebAuthn platform passkey when available
-      if (
+      // 1. Attempt real browser FIDO2 / WebAuthn platform passkey ONLY when a platform biometric authenticator (Windows Hello / Touch ID) is available
+      const hasPlatformAuthenticator =
         isPlatformBrowser(this.platformId) &&
         typeof window !== 'undefined' &&
         typeof window.PublicKeyCredential !== 'undefined' &&
         typeof navigator !== 'undefined' &&
-        Boolean(navigator.credentials?.get)
-      ) {
+        Boolean(navigator.credentials?.get) &&
+        typeof window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function'
+          ? await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(() => false)
+          : false;
+
+      if (hasPlatformAuthenticator) {
         const storedCredKey = 'pocketgull_webauthn_cred_id_v1';
         const storedCredId = localStorage.getItem(storedCredKey);
 

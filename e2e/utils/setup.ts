@@ -348,6 +348,13 @@ export async function enterDemoMode(page: Page) {
     }
   }
 
+  // Wait briefly for either the splash screen or authenticated workspace nav to render before polling
+  await page
+    .locator('.secure-splash-main, [data-testid="header-tab-analysis"], [data-testid="mobile-tab-analysis"]')
+    .first()
+    .waitFor({ state: 'visible', timeout: 10000 })
+    .catch(() => {});
+
   const startTime = Date.now();
   while (Date.now() - startTime < 30000) {
     // Dismiss consent modal if it overlays the screen
@@ -379,8 +386,11 @@ export async function enterDemoMode(page: Page) {
     // 2. Authenticate via 1-Click Passkey Login (primary splash auth after Demo Mode removal)
     const passkeyBtn = page.locator('button', { hasText: /1-Click Passkey Login/i }).first();
     if (await passkeyBtn.isVisible().catch(() => false)) {
-      await passkeyBtn.click().catch(() => {});
-      await page.waitForTimeout(600).catch(() => {});
+      const disabled = await passkeyBtn.isDisabled().catch(() => false);
+      if (!disabled) {
+        await passkeyBtn.click().catch(() => {});
+      }
+      await page.waitForTimeout(800).catch(() => {});
       continue;
     }
 
