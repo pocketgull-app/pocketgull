@@ -34,6 +34,9 @@ import { DirectIomtWearablesService } from './hardware/direct-iomt-wearables.ser
 import { MimicOmopBenchmarkService } from './research/mimic-omop-benchmark.service';
 import { EhrWritebackService } from './fhir/ehr-writeback.service';
 import { EdgeAutonomousVoiceAgentService } from './voice/edge-autonomous-voice-agent.service';
+import { CmsBlueButtonService } from './fhir/cms-blue-button.service';
+import { MedicaidContinuityGuardService } from './mdcp/medicaid-continuity-guard.service';
+import { StateRegionalCrosswalkService } from './mdcp/state-regional-crosswalk.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -372,17 +375,22 @@ mathematicalModel: Softmax T=0.85`;
         { provide: DirectIomtWearablesService, useValue: mockIomtService },
         { provide: MimicOmopBenchmarkService, useClass: MimicOmopBenchmarkService },
         { provide: EhrWritebackService, useClass: EhrWritebackService },
-        { provide: EdgeAutonomousVoiceAgentService, useClass: EdgeAutonomousVoiceAgentService }
+        { provide: EdgeAutonomousVoiceAgentService, useClass: EdgeAutonomousVoiceAgentService },
+        { provide: StateRegionalCrosswalkService, useClass: StateRegionalCrosswalkService },
+        { provide: CmsBlueButtonService, useClass: CmsBlueButtonService },
+        { provide: MedicaidContinuityGuardService, useClass: MedicaidContinuityGuardService }
       ]
     });
 
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 98 WebMCP agentic tools on modelContext', () => {
+  it('should register all 100 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(98);
+    expect(registeredTools.size).toBe(100);
+    expect(registeredTools.has('evaluate_medicaid_continuity_and_qmb_shield')).toBe(true);
+    expect(registeredTools.has('import_cms_blue_button_medicare_eob')).toBe(true);
     expect(registeredTools.has('evaluate_clinical_hypothesis_and_cohort')).toBe(true);
     expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
@@ -693,8 +701,32 @@ mathematicalModel: Softmax T=0.85`;
     const tool = registeredTools.get('evaluate_medicare_billing_and_gfe_eligibility');
 
     const result = await tool.execute({ annualRxCost: 3500, daysDeviceTransmitted: 18, clinicalMinutesLogged: 22, annualIncome: 25000 });
-    expect(result.content[0].text).toContain('Protected by Inflation Reduction Act');
+    expect(result.content[0].text).toContain('2026 Inflation Reduction Act $2,100 Part D cap');
     expect(result.content[0].text).toContain('100% Charity Care discount');
+    expect(result.content[0].text).toContain('G0557');
+  });
+
+  it('should execute evaluate_medicaid_continuity_and_qmb_shield tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_medicaid_continuity_and_qmb_shield');
+
+    const result = await tool.execute({
+      stateCode: 'WA',
+      isDualEligibleQmb: true,
+      providerBilledAmountUsd: 215,
+      providerBillingEntity: 'Cascade Clinic Billing'
+    });
+    expect(result.content[0].text).toContain('42 U.S.C. § 1396a(n)(3)(B)');
+    expect(result.content[0].text).toContain('Washington');
+  });
+
+  it('should execute import_cms_blue_button_medicare_eob tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('import_cms_blue_button_medicare_eob');
+
+    const result = await tool.execute({ mode: 'sandbox_import', planYear: 2026 });
+    expect(result.content[0].text).toContain('CMS_BLUE_BUTTON_SANDBOX_SYNTHETIC');
+    expect(result.content[0].text).toContain('Empagliflozin');
   });
 
   it('should execute evaluate_hedis_quality_measures_and_care_gaps tool', async () => {
@@ -894,10 +926,10 @@ mathematicalModel: Softmax T=0.85`;
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 98 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 100 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(98);
+    expect(registeredTools.size).toBe(100);
     expect(registeredTools.has('evaluate_clinical_hypothesis_and_cohort')).toBe(true);
     expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
@@ -1137,7 +1169,7 @@ mathematicalModel: Softmax T=0.85`;
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(98);
+    expect((service as any).mcpControllers.length).toBe(100);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);

@@ -397,5 +397,27 @@ describe('MdcpGovernanceHubComponent', () => {
     createObjectURLSpy.mockRestore();
     revokeObjectURLSpy.mockRestore();
   });
+
+  it('should activate Tab 7 Medicaid Continuity Guard, detect QMB unlawful balance bills, and import CMS Blue Button 2.0 Sandbox', () => {
+    component.activateContinuityTab();
+    fixture.detectChanges();
+    expect(component.activeTab()).toBe('continuity-guard');
+
+    component.continuityIsQmb.set(true);
+    component.qmbBilledAmountUsd.set(195);
+    fixture.detectChanges();
+
+    const pkg = component.continuityPackage();
+    expect(pkg.qmbShield.unlawfulBalanceDetected).toBe(true);
+    expect(pkg.qmbShield.ceaseBillingDemandLetter).toContain('42 U.S.C. § 1396a(n)(3)(B)');
+    expect(pkg.teaspoonChecklist.length).toBeLessThanOrEqual(4);
+
+    component.runBlueButtonSandboxImport();
+    component.generateBlueButtonPkceLaunch();
+    fixture.detectChanges();
+
+    expect(component.blueButtonSummary()?.partDMedications.length).toBe(3);
+    expect(component.blueButtonAuthRequest()?.authorizeUrl).toContain('api.bluebutton.cms.gov');
+  });
 });
 

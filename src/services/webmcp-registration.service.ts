@@ -8,7 +8,9 @@ import { GcpHealthcareApiService } from './fhir/gcp-healthcare-api.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import { IrmaaDecisionService } from './irmaa-decision.service';
-import { MedicareBillingBestPracticesService } from './medicare-billing-best-practices.service';
+import { MedicareBillingBestPracticesService, MedicarePlanYear } from './medicare-billing-best-practices.service';
+import { CmsBlueButtonService, BlueButtonEnvironment } from './fhir/cms-blue-button.service';
+import { MedicaidContinuityGuardService } from './mdcp/medicaid-continuity-guard.service';
 import { HedisStarRatingService } from './hedis-star-rating.service';
 import { FhirPriorAuthService } from './fhir-prior-auth.service';
 import { SnomedIcdCrosswalkService } from './snomed-icd-crosswalk.service';
@@ -71,6 +73,8 @@ export class WebMcpRegistrationService {
   private moeRouter = inject(ClinicalMoERouterService);
   private irmaaService = inject(IrmaaDecisionService, { optional: true });
   private medicareBillingService = inject(MedicareBillingBestPracticesService, { optional: true });
+  private cmsBlueButtonService = inject(CmsBlueButtonService, { optional: true });
+  private medicaidContinuityService = inject(MedicaidContinuityGuardService, { optional: true });
   private hedisService = inject(HedisStarRatingService, { optional: true });
   private priorAuthService = inject(FhirPriorAuthService, { optional: true });
   private snomedCrosswalkService = inject(SnomedIcdCrosswalkService, { optional: true });
@@ -815,38 +819,130 @@ export class WebMcpRegistrationService {
     const billingCtrl = new AbortController();
     const billingTool = {
       name: 'evaluate_medicare_billing_and_gfe_eligibility',
-      description: 'Evaluates Inflation Reduction Act $2,000 Part D prescription cap, MPPP monthly smoothing, RPM/CCM CPT compliance (CPT 99454/99457), No Surprises Act Good Faith Estimates, and IRS Section 501(r) Charity Care FPL eligibility.',
+      description: 'Evaluates CMS-indexed Inflation Reduction Act Part D prescription cap ($2,100 in 2026 / $2,400 in 2027), M3P monthly smoothing, 2026 Part D Extra Help (LIS) & MSP (QMB/SLMB/QI), APCM (G0556-G0558), G2211, Section 1115 Z-codes, RPM/CCM CPT compliance, No Surprises Act GFE, and IRS Section 501(r) Charity Care.',
       inputSchema: {
         type: 'object',
         properties: {
           annualRxCost: { type: 'number', description: 'Annual out-of-pocket prescription medication cost' },
+          planYear: { type: 'number', enum: [2025, 2026, 2027], description: 'Medicare plan year (default 2026)' },
+          remainingMonths: { type: 'number', description: 'Remaining months in calendar year for M3P smoothing (1-12)' },
           daysDeviceTransmitted: { type: 'number', description: 'Days of RPM physiological telemetry readings in 30-day period (16+ required)' },
           clinicalMinutesLogged: { type: 'number', description: 'Minutes of clinical staff management time in month (20+ required)' },
           annualIncome: { type: 'number', description: 'Patient household annual income in USD' },
-          householdSize: { type: 'number', description: 'Household size (default 1)' }
+          householdSize: { type: 'number', description: 'Household size (default 1)' },
+          countableResourcesUsd: { type: 'number', description: 'Optional countable resources USD for Extra Help / MSP screening' },
+          chronicConditionCount: { type: 'number', description: 'Qualifying chronic conditions count for APCM tiering' },
+          isQmbEnrolled: { type: 'boolean', description: 'Whether beneficiary holds QMB dual-eligible status' }
         },
         required: ['annualRxCost', 'annualIncome']
       },
       execute: async (params: any) => {
         const annualRxCost = Number(params.annualRxCost) || 0;
+        const planYear: MedicarePlanYear = [2025, 2026, 2027].includes(Number(params.planYear))
+          ? (Number(params.planYear) as MedicarePlanYear)
+          : 2026;
+        const remainingMonths = Number(params.remainingMonths) || 12;
         const daysDeviceTransmitted = Number(params.daysDeviceTransmitted) || 0;
         const clinicalMinutesLogged = Number(params.clinicalMinutesLogged) || 0;
         const annualIncome = Number(params.annualIncome) || 30000;
         const householdSize = Number(params.householdSize) || 1;
+        const countableResourcesUsd = params.countableResourcesUsd !== undefined ? Number(params.countableResourcesUsd) : null;
+        const chronicConditionCount = params.chronicConditionCount !== undefined ? Number(params.chronicConditionCount) : 2;
+        const isQmbEnrolled = typeof params.isQmbEnrolled === 'boolean' ? params.isQmbEnrolled : undefined;
 
         const svc = this.medicareBillingService || new MedicareBillingBestPracticesService();
         const res = svc.assessMedicareBilling({
           annualRxCost,
+          planYear,
+          remainingMonths,
           daysDeviceTransmitted,
           clinicalMinutesLogged,
           annualIncome,
-          householdSize
+          householdSize,
+          countableResourcesUsd,
+          chronicConditionCount,
+          isQmbEnrolled
         });
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
       }
     };
     try { modelContext.registerTool(billingTool, { signal: billingCtrl.signal }); } catch (e) { console.warn("Tool already registered:", billingTool.name); }
     this.mcpControllers.push({ name: billingTool.name, controller: billingCtrl });
+
+    // 22b. evaluate_medicaid_continuity_and_qmb_shield
+    const medicaidContinuityCtrl = new AbortController();
+    const medicaidContinuityTool = {
+      name: 'evaluate_medicaid_continuity_and_qmb_shield',
+      description: 'Evaluates Medicaid redetermination churn risk, Aid Paid Pending (42 C.F.R. § 431.230), 90-day procedural reinstatement (42 C.F.R. § 435.916), Federal QMB Illegal Balance-Billing Shield (42 U.S.C. § 1396a(n)(3)(B)), and 6th-grade Teaspoon checklists.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          stateCode: { type: 'string', description: '2-letter US state or territory code (e.g. WA, CA, TX)' },
+          renewalDueDateIso: { type: 'string', description: 'Medicaid renewal due date (YYYY-MM-DD)' },
+          effectiveTerminationDateIso: { type: 'string', description: 'Effective termination date if adverse notice received (YYYY-MM-DD)' },
+          isDualEligibleQmb: { type: 'boolean', description: 'Whether beneficiary holds Qualified Medicare Beneficiary (QMB) status' },
+          providerBilledAmountUsd: { type: 'number', description: 'Improperly billed Medicare copay/deductible amount in USD' },
+          providerBillingEntity: { type: 'string', description: 'Billing clinic or hospital name' }
+        },
+        required: ['stateCode']
+      },
+      execute: async (params: any) => {
+        const svc = this.medicaidContinuityService;
+        if (!svc) {
+          return { content: [{ type: 'text', text: 'MedicaidContinuityGuardService unavailable' }], isError: true };
+        }
+        const pkg = svc.evaluateContinuityAndQmbShield({
+          stateCode: String(params.stateCode || 'TX'),
+          renewalDueDateIso: params.renewalDueDateIso,
+          effectiveTerminationDateIso: params.effectiveTerminationDateIso,
+          isDualEligibleQmb: Boolean(params.isDualEligibleQmb),
+          providerBilledAmountUsd: Number(params.providerBilledAmountUsd) || 0,
+          providerBillingEntity: params.providerBillingEntity
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(pkg, null, 2) }] };
+      }
+    };
+    try { modelContext.registerTool(medicaidContinuityTool, { signal: medicaidContinuityCtrl.signal }); } catch (e) { console.warn("Tool already registered:", medicaidContinuityTool.name); }
+    this.mcpControllers.push({ name: medicaidContinuityTool.name, controller: medicaidContinuityCtrl });
+
+    // 22c. import_cms_blue_button_medicare_eob
+    const blueButtonCtrl = new AbortController();
+    const blueButtonTool = {
+      name: 'import_cms_blue_button_medicare_eob',
+      description: 'Generates RFC 7636 PKCE OAuth2 URLs for CMS Blue Button 2.0 (Medicare FHIR R4) or parses ExplanationOfBenefit/Coverage bundles into Part D medication reconciliation and YTD cap tracking.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          mode: { type: 'string', enum: ['authorize_url', 'sandbox_import', 'parse_bundle'], description: 'Operation mode (default sandbox_import)' },
+          environment: { type: 'string', enum: ['production', 'sandbox'], description: 'CMS Blue Button 2.0 environment' },
+          planYear: { type: 'number', enum: [2025, 2026, 2027], description: 'Medicare plan year (default 2026)' },
+          fhirBundle: { type: 'object', description: 'Optional FHIR R4 Bundle JSON when mode is parse_bundle' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.cmsBlueButtonService;
+        if (!svc) {
+          return { content: [{ type: 'text', text: 'CmsBlueButtonService unavailable' }], isError: true };
+        }
+        const mode = String(params.mode || 'sandbox_import');
+        const env: BlueButtonEnvironment = params.environment === 'production' ? 'production' : 'sandbox';
+        const planYear: MedicarePlanYear = [2025, 2026, 2027].includes(Number(params.planYear))
+          ? (Number(params.planYear) as MedicarePlanYear)
+          : 2026;
+        if (mode === 'authorize_url') {
+          const authReq = svc.buildAuthorizeRequest({ environment: env });
+          return { content: [{ type: 'text', text: JSON.stringify(authReq, null, 2) }] };
+        }
+        if (mode === 'parse_bundle' && params.fhirBundle) {
+          const parsed = svc.parseBlueButtonBundle(params.fhirBundle, 'PATIENT_UPLOADED_FHIR_R4', planYear);
+          return { content: [{ type: 'text', text: JSON.stringify(parsed, null, 2) }] };
+        }
+        const sandboxSummary = svc.loadSandboxMedicareBundle(planYear);
+        return { content: [{ type: 'text', text: JSON.stringify(sandboxSummary, null, 2) }] };
+      }
+    };
+    try { modelContext.registerTool(blueButtonTool, { signal: blueButtonCtrl.signal }); } catch (e) { console.warn("Tool already registered:", blueButtonTool.name); }
+    this.mcpControllers.push({ name: blueButtonTool.name, controller: blueButtonCtrl });
 
     // 23. evaluate_hedis_quality_measures_and_care_gaps
     const hedisCtrl = new AbortController();

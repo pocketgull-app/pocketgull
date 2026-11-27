@@ -11,11 +11,12 @@ describe('SmartOnFhirLauncherService Unit Suite', () => {
     service = runInInjectionContext(injector, () => new SmartOnFhirLauncherService());
   });
 
-  it('1. Initializes with supported EHR vendors', () => {
+  it('1. Initializes with supported EHR vendors including CMS Blue Button 2.0', () => {
     const vendors = service.supportedVendors();
-    expect(vendors.length).toBeGreaterThanOrEqual(3);
+    expect(vendors.length).toBeGreaterThanOrEqual(4);
     expect(vendors.some(v => v.id === 'epic')).toBe(true);
     expect(vendors.some(v => v.id === 'cerner')).toBe(true);
+    expect(vendors.some(v => v.id === 'cms_blue_button')).toBe(true);
   });
 
   it('2. Initiates SMART v2 launch flow with PKCE state and connects session', async () => {

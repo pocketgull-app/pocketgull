@@ -48,8 +48,17 @@ import {
   SchoolIepTransitionService,
   ISchoolIepPackage
 } from '../../services/mdcp/school-iep-transition.service';
+import {
+  MedicaidContinuityGuardService,
+  IMedicaidContinuityPackage
+} from '../../services/mdcp/medicaid-continuity-guard.service';
+import {
+  CmsBlueButtonService,
+  IBlueButtonImportSummary,
+  IBlueButtonAuthRequest
+} from '../../services/fhir/cms-blue-button.service';
 
-export type MdcpTab = 'pediatric-waiver' | 'hospital-careplan' | 'ieee11073-telemetry' | 'ita-standards' | 'regional-crosswalk' | 'epsdt-appeal';
+export type MdcpTab = 'pediatric-waiver' | 'hospital-careplan' | 'ieee11073-telemetry' | 'ita-standards' | 'regional-crosswalk' | 'epsdt-appeal' | 'continuity-guard';
 
 @Component({
   selector: 'app-mdcp-governance-hub',
@@ -191,6 +200,19 @@ export type MdcpTab = 'pediatric-waiver' | 'hospital-careplan' | 'ieee11073-tele
             <span>6. EPSDT Federal Appeal & Orders</span>
             <span class="px-1.5 py-0.2 text-[10px] rounded bg-rose-950 text-rose-300 font-mono border border-rose-800/60">
               42 U.S.C. § 1396d(r)
+            </span>
+          </button>
+
+          <button
+            type="button"
+            (click)="activateContinuityTab()"
+            [class.border-teal-400]="activeTab() === 'continuity-guard'"
+            [class.text-teal-300]="activeTab() === 'continuity-guard'"
+            [class.border-transparent]="activeTab() !== 'continuity-guard'"
+            class="py-3 px-4 border-b-2 font-medium transition-colors hover:text-zinc-100 whitespace-nowrap min-h-[44px] flex items-center gap-2">
+            <span>7. Medicaid Continuity, QMB Shield &amp; Blue Button</span>
+            <span class="px-1.5 py-0.2 text-[10px] rounded bg-emerald-950 text-emerald-300 font-mono border border-emerald-800/60">
+              QMB / BB2
             </span>
           </button>
         </nav>
@@ -1613,6 +1635,204 @@ export type MdcpTab = 'pediatric-waiver' | 'hospital-careplan' | 'ieee11073-tele
               </div>
             </section>
           }
+
+          <!-- TAB 7: MEDICAID REDETERMINATION, QMB BALANCE-BILLING SHIELD & CMS BLUE BUTTON 2.0 -->
+          @if (activeTab() === 'continuity-guard') {
+            @let pkg = continuityPackage();
+            @let bb = blueButtonSummary();
+            <section class="space-y-6" aria-labelledby="continuity-guard-heading">
+              <!-- 4-CARD TOP STATUS STRIP (4-SLOT COGNITIVE CEILING) -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 space-y-1.5">
+                  <div class="text-[10px] font-mono uppercase text-zinc-400">1. Redetermination Risk</div>
+                  <div class="text-base font-bold text-zinc-100 font-mono">
+                    {{ pkg.urgencyLevel }}
+                  </div>
+                  <div class="text-xs text-zinc-400">
+                    {{ pkg.stateName }} • Churn Risk: <strong class="text-amber-300">{{ pkg.churnRiskScore }}/100</strong>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 space-y-1.5">
+                  <div class="text-[10px] font-mono uppercase text-zinc-400">2. Statutory Continuity Window</div>
+                  <div class="text-base font-bold text-teal-300 font-mono">
+                    @if (pkg.aidPaidPendingEligible) {
+                      Aid Paid Pending
+                    } @else if (pkg.reinstatement90DayEligible) {
+                      90-Day Reinstatement
+                    } @else {
+                      Ex Parte Monitor
+                    }
+                  </div>
+                  <div class="text-xs text-zinc-400">
+                    @if (pkg.aidPaidPendingDeadlineIso) {
+                      Cutoff: <span class="font-mono text-zinc-200">{{ pkg.aidPaidPendingDeadlineIso }}</span>
+                    } @else {
+                      42 C.F.R. § 435.916 Active
+                    }
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 space-y-1.5">
+                  <div class="text-[10px] font-mono uppercase text-zinc-400">3. QMB Balance-Billing Shield</div>
+                  <div class="text-base font-bold font-mono" [class.text-rose-300]="pkg.qmbShield.unlawfulBalanceDetected" [class.text-emerald-300]="!pkg.qmbShield.unlawfulBalanceDetected">
+                    {{ pkg.qmbShield.unlawfulBalanceDetected ? 'UNLAWFUL BILL DETECTED' : (pkg.qmbShield.isProtectedQmb ? 'QMB SHIELD ARMED' : 'NOT QMB FLAGGED') }}
+                  </div>
+                  <div class="text-xs text-zinc-400">
+                    42 U.S.C. § 1396a(n)(3)(B) • {{ pkg.qmbShield.unlawfulBalanceDetected ? '$' + pkg.qmbShield.unlawfulBalanceAmountUsd.toFixed(2) + ' Refund Demand' : '$0 Cost-Sharing Protection' }}
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 space-y-1.5">
+                  <div class="text-[10px] font-mono uppercase text-zinc-400">4. CMS Blue Button 2.0 (FHIR R4)</div>
+                  <div class="text-base font-bold text-emerald-300 font-mono">
+                    {{ bb ? bb.partDMedications.length + ' Part D Rx Synced' : 'Ready to Connect' }}
+                  </div>
+                  <div class="text-xs text-zinc-400">
+                    @if (bb) {
+                      YTD OOP: <span class="font-mono text-zinc-200">\${{ bb.ytdPartDOutOfPocketUsd | number:'1.0-0' }} / \${{ bb.partDCapUsd | number }}</span>
+                    } @else {
+                      OAuth2 PKCE (S256) + EOB Parser
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- INTERACTIVE CONTROLS -->
+              <div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <h3 id="continuity-guard-heading" class="text-sm font-bold text-zinc-100">
+                    Medicaid Redetermination, Dual-Eligible QMB Shield &amp; CMS Blue Button 2.0
+                  </h3>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      (click)="runBlueButtonSandboxImport()"
+                      class="px-3 py-2 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-500 text-white transition-colors min-h-[44px] cursor-pointer">
+                      Import Blue Button 2.0 Sandbox Bundle
+                    </button>
+                    <button
+                      type="button"
+                      (click)="generateBlueButtonPkceLaunch()"
+                      class="px-3 py-2 text-xs font-medium rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition-colors min-h-[44px] cursor-pointer">
+                      Build OAuth2 PKCE Launch URL
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                  <label class="space-y-1 block">
+                    <span class="text-zinc-400 font-mono uppercase text-[10px]">Renewal Due Date</span>
+                    <input
+                      type="date"
+                      [ngModel]="continuityRenewalDate()"
+                      (ngModelChange)="continuityRenewalDate.set($event)"
+                      class="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-700 text-zinc-100 font-mono min-h-[44px]" />
+                  </label>
+                  <label class="space-y-1 block">
+                    <span class="text-zinc-400 font-mono uppercase text-[10px]">Adverse Termination Date (Optional)</span>
+                    <input
+                      type="date"
+                      [ngModel]="continuityTerminationDate()"
+                      (ngModelChange)="continuityTerminationDate.set($event)"
+                      class="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-700 text-zinc-100 font-mono min-h-[44px]" />
+                  </label>
+                  <label class="space-y-1 block">
+                    <span class="text-zinc-400 font-mono uppercase text-[10px]">Improper QMB Bill Amount ($)</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      [ngModel]="qmbBilledAmountUsd()"
+                      (ngModelChange)="qmbBilledAmountUsd.set(+$event || 0)"
+                      class="w-full px-3 py-2 rounded-lg bg-zinc-950 border border-zinc-700 text-zinc-100 font-mono min-h-[44px]" />
+                  </label>
+                  <div class="flex flex-col justify-center gap-2 pt-3">
+                    <label class="flex items-center gap-2 text-zinc-200 cursor-pointer">
+                      <input type="checkbox" [ngModel]="continuityIsQmb()" (ngModelChange)="continuityIsQmb.set(!!$event)" />
+                      <span>QMB Dual-Eligible Enrolled</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-zinc-200 cursor-pointer">
+                      <input type="checkbox" [ngModel]="continuityAddressChanged()" (ngModelChange)="continuityAddressChanged.set(!!$event)" />
+                      <span>Address Changed Recently</span>
+                    </label>
+                  </div>
+                </div>
+
+                @if (blueButtonAuthRequest()) {
+                  <div class="p-3 rounded-lg bg-zinc-950 border border-teal-800/60 text-xs font-mono text-teal-300 break-all">
+                    PKCE S256 Authorize URL Ready (State: {{ blueButtonAuthRequest()!.stateNonce }}): {{ blueButtonAuthRequest()!.authorizeUrl }}
+                  </div>
+                }
+              </div>
+
+              <!-- DOCUMENT SWITCHER & PREVIEW -->
+              <div class="rounded-xl bg-zinc-900/60 border border-zinc-800 overflow-hidden">
+                <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-zinc-800 bg-zinc-950/60">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      (click)="continuityActiveDoc.set('teaspoon')"
+                      [class.bg-teal-600]="continuityActiveDoc() === 'teaspoon'"
+                      [class.text-white]="continuityActiveDoc() === 'teaspoon'"
+                      class="px-3 py-2 rounded-lg text-xs font-medium bg-zinc-800 text-zinc-300 min-h-[44px] cursor-pointer">
+                      6th-Grade Teaspoon Checklist
+                    </button>
+                    <button
+                      type="button"
+                      (click)="continuityActiveDoc.set('notice')"
+                      [class.bg-teal-600]="continuityActiveDoc() === 'notice'"
+                      [class.text-white]="continuityActiveDoc() === 'notice'"
+                      class="px-3 py-2 rounded-lg text-xs font-medium bg-zinc-800 text-zinc-300 min-h-[44px] cursor-pointer">
+                      Fair Hearing / 90-Day Notice
+                    </button>
+                    <button
+                      type="button"
+                      (click)="continuityActiveDoc.set('qmb-letter')"
+                      [class.bg-teal-600]="continuityActiveDoc() === 'qmb-letter'"
+                      [class.text-white]="continuityActiveDoc() === 'qmb-letter'"
+                      class="px-3 py-2 rounded-lg text-xs font-medium bg-zinc-800 text-zinc-300 min-h-[44px] cursor-pointer">
+                      QMB Cease-Billing Demand
+                    </button>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      (click)="copyContinuityDocument()"
+                      class="px-3 py-2 rounded-lg text-xs font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 min-h-[44px] cursor-pointer">
+                      Copy Document
+                    </button>
+                    <button
+                      type="button"
+                      (click)="downloadContinuityPacket()"
+                      class="px-3 py-2 rounded-lg text-xs font-medium bg-teal-600 hover:bg-teal-500 text-white min-h-[44px] cursor-pointer">
+                      Download .md Packet
+                    </button>
+                  </div>
+                </div>
+
+                <div class="p-5 bg-zinc-950/80 font-mono text-xs leading-relaxed text-zinc-300 max-h-[450px] overflow-y-auto whitespace-pre-wrap select-text">
+                  @if (continuityActiveDoc() === 'teaspoon') {
+                    <div class="space-y-3 font-sans">
+                      <h4 class="text-xs font-bold uppercase tracking-wider text-teal-300 font-mono">
+                        Plain-Language Action Steps ({{ pkg.stateName }} • {{ pkg.administeringAgency }})
+                      </h4>
+                      <ul class="space-y-2 text-zinc-200">
+                        @for (step of pkg.teaspoonChecklist; track step) {
+                          <li class="p-3 rounded-lg bg-zinc-900/70 border border-zinc-800">{{ step }}</li>
+                        }
+                      </ul>
+                    </div>
+                  } @else if (continuityActiveDoc() === 'notice') {
+                    {{ pkg.fairHearingOrReinstatementNotice }}
+                  } @else {
+                    {{ pkg.qmbShield.ceaseBillingDemandLetter }}
+                  }
+                </div>
+              </div>
+            </section>
+          }
         </main>
 
         <!-- FOOTER -->
@@ -2098,6 +2318,96 @@ ${pkg.statutoryCitations.map(c => '- ' + c).join('\n')}
     if (pkg) {
       this.fhirExportStrategy.exportEpsdtAppealBundle(pt, pkg);
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // TAB 7: MEDICAID CONTINUITY, QMB SHIELD & CMS BLUE BUTTON 2.0
+  // ---------------------------------------------------------------------------
+  readonly continuityGuardService = inject(MedicaidContinuityGuardService);
+  readonly blueButtonService = inject(CmsBlueButtonService);
+
+  readonly continuityRenewalDate = signal<string>('2026-12-31');
+  readonly continuityTerminationDate = signal<string>('');
+  readonly continuityIsQmb = signal<boolean>(true);
+  readonly continuityAddressChanged = signal<boolean>(false);
+  readonly qmbBilledAmountUsd = signal<number>(0);
+  readonly continuityActiveDoc = signal<'teaspoon' | 'notice' | 'qmb-letter'>('teaspoon');
+
+  readonly blueButtonSummary = computed<IBlueButtonImportSummary | null>(() => this.blueButtonService.lastImportSummary());
+  readonly blueButtonAuthRequest = computed<IBlueButtonAuthRequest | null>(() => this.blueButtonService.lastAuthRequest());
+
+  readonly continuityPackage = computed<IMedicaidContinuityPackage>(() => {
+    const pt = this.patientMgmt?.selectedPatient();
+    return this.continuityGuardService.evaluateContinuityAndQmbShield({
+      stateCode: this.selectedStateWaiver(),
+      beneficiaryName: pt?.name || 'Medicaid / Dual-Eligible Beneficiary',
+      medicaidCaseId: pt?.id || 'CASE-PENDING',
+      renewalDueDateIso: this.continuityRenewalDate() || undefined,
+      effectiveTerminationDateIso: this.continuityTerminationDate() || undefined,
+      addressChangedRecently: this.continuityAddressChanged(),
+      isDualEligibleQmb: this.continuityIsQmb(),
+      providerBilledAmountUsd: this.qmbBilledAmountUsd()
+    });
+  });
+
+  public activateContinuityTab(): void {
+    this.activeTab.set('continuity-guard');
+  }
+
+  public runBlueButtonSandboxImport(): void {
+    const summary = this.blueButtonService.loadSandboxMedicareBundle(2026);
+    if (summary.coverage.isQmbFlagged) {
+      this.continuityIsQmb.set(true);
+    }
+  }
+
+  public generateBlueButtonPkceLaunch(): void {
+    this.blueButtonService.buildAuthorizeRequest({ environment: 'production' });
+  }
+
+  public copyContinuityDocument(): void {
+    const pkg = this.continuityPackage();
+    const doc = this.continuityActiveDoc();
+    const text =
+      doc === 'teaspoon'
+        ? pkg.teaspoonChecklist.join('\n')
+        : doc === 'notice'
+          ? pkg.fairHearingOrReinstatementNotice
+          : pkg.qmbShield.ceaseBillingDemandLetter;
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.copyNotification.set('Copied continuity packet to clipboard.');
+        setTimeout(() => this.copyNotification.set(null), 3000);
+      }).catch(() => {
+        this.copyNotification.set('Document ready for copy.');
+      });
+    }
+  }
+
+  public downloadContinuityPacket(): void {
+    const pkg = this.continuityPackage();
+    const md = [
+      `# MEDICAID CONTINUITY & QMB BALANCE-BILLING SHIELD (${pkg.stateCode} - ${pkg.stateName})`,
+      `Agency: ${pkg.administeringAgency} | Urgency: ${pkg.urgencyLevel} | Churn Risk: ${pkg.churnRiskScore}/100`,
+      `SHA-256 Integrity Digest: ${pkg.sha256IntegrityDigest}`,
+      ``,
+      `## Plain-Language 6th-Grade Checklist`,
+      ...pkg.teaspoonChecklist.map(s => `- ${s}`),
+      ``,
+      `## Statutory Continuity Notice`,
+      pkg.fairHearingOrReinstatementNotice,
+      ``,
+      `## Federal QMB Balance-Billing Shield`,
+      pkg.qmbShield.ceaseBillingDemandLetter
+    ].join('\n');
+
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Medicaid_Continuity_QMB_Shield_${pkg.stateCode}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   public closeModal(): void {

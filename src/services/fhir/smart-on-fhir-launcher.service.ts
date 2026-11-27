@@ -155,6 +155,15 @@ export class SmartOnFhirLauncherService {
       tokenUrl: 'https://sandbox-api.va.gov/oauth2/health/v1/v2/token',
       fhirBaseUrl: 'https://sandbox-api.va.gov/services/fhir/v1/r4',
       supportedScopes: ['launch', 'openid', 'profile', 'offline_access', 'patient/Patient.read']
+    },
+    {
+      id: 'cms_blue_button',
+      name: 'CMS Blue Button 2.0 (Medicare FHIR R4)',
+      logo: '🏛️',
+      authorizeUrl: 'https://api.bluebutton.cms.gov/v2/o/authorize/',
+      tokenUrl: 'https://api.bluebutton.cms.gov/v2/o/token/',
+      fhirBaseUrl: 'https://api.bluebutton.cms.gov/v2/fhir',
+      supportedScopes: ['profile', 'patient/Patient.read', 'patient/Coverage.read', 'patient/ExplanationOfBenefit.read']
     }
   ]);
 

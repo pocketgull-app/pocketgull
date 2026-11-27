@@ -53,9 +53,15 @@ describe('CostBenefitAnalysisComponent Unit Suite', () => {
     expect(component.compliancePricingMode()).toBe('cash');
   });
 
-  it('2. Computes Medicare financial eligibility based on patient age', () => {
+  it('2. Computes 2026 Medicare financial eligibility ($2,100 Part D cap = $175/mo) and APCM/G2211 sustainability', () => {
     expect(component.isMedicareEligible).toBe(true);
-    expect(component.monthlyMpppCapUsd).toBe(167);
+    expect(component.monthlyMpppCapUsd).toBe(175);
+    expect(component.billingData?.mppp.statutoryCapAmount).toBe(2100);
+    expect(component.billingData?.apcmSafetyNet.recommendedApcmCode?.hcpcsCode).toBe('G0557');
+
+    component.importBlueButtonSandbox();
+    expect(component.blueButtonSummary()?.partDMedications.length).toBe(3);
+    expect(component.billingData?.apcmSafetyNet.recommendedApcmCode?.hcpcsCode).toBe('G0558');
   });
 
   it('3. Identifies sentinel patient profile via computed signal', () => {

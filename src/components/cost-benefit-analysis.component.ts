@@ -6,6 +6,7 @@ import { ClinicalIntelligenceService } from '../services/clinical-intelligence.s
 import { IrmaaDecisionService } from '../services/irmaa-decision.service';
 import { HedisStarRatingService } from '../services/hedis-star-rating.service';
 import { MedicareBillingBestPracticesService } from '../services/medicare-billing-best-practices.service';
+import { CmsBlueButtonService } from '../services/fhir/cms-blue-button.service';
 import { SocraticJargonTooltipComponent } from './shared/socratic-jargon-tooltip.component';
 import { ThemeService } from '../services/theme.service';
 import { IFhirGenomicObservation } from '../services/patient.types';
@@ -170,19 +171,27 @@ interface ISentinelContainmentOption {
                 <span class="text-lg">🏛️</span>
                 <div>
                   <h4 class="text-xs font-bold text-gray-900 dark:text-zinc-100 uppercase tracking-wider">
-                    Medicare & Financial Navigation Matrix (<app-socratic-jargon-tooltip term="MPPP">IRA $2K Part D Cap</app-socratic-jargon-tooltip> + <app-socratic-jargon-tooltip term="SSA-44">SSA-44 Appeals</app-socratic-jargon-tooltip>)
+                    Medicare &amp; Medicaid Navigation Matrix (<app-socratic-jargon-tooltip term="MPPP">2026 IRA $2,100 Part D Cap</app-socratic-jargon-tooltip> + <app-socratic-jargon-tooltip term="APCM">APCM/G2211</app-socratic-jargon-tooltip>)
                   </h4>
                   <p class="text-[11px] text-gray-500 dark:text-zinc-400">
-                    Real-time <app-socratic-jargon-tooltip term="IRMAA">IRMAA Surcharge Tiering</app-socratic-jargon-tooltip>, <app-socratic-jargon-tooltip term="HEDIS">HEDIS Star Rating QBP Bonuses</app-socratic-jargon-tooltip> & Good Faith Estimate Protection
+                    Real-time <app-socratic-jargon-tooltip term="IRMAA">IRMAA</app-socratic-jargon-tooltip>, <app-socratic-jargon-tooltip term="LIS">Extra Help (LIS)</app-socratic-jargon-tooltip>, <app-socratic-jargon-tooltip term="QMB">QMB Shield</app-socratic-jargon-tooltip> &amp; <app-socratic-jargon-tooltip term="BLUE_BUTTON">CMS Blue Button 2.0</app-socratic-jargon-tooltip>
                   </p>
                 </div>
               </div>
-              <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 uppercase tracking-widest">
-                <app-socratic-jargon-tooltip term="CMS-0057-F">CMS-0057-F Active</app-socratic-jargon-tooltip>
-              </span>
+              <div class="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  (click)="importBlueButtonSandbox()"
+                  class="px-2.5 py-1.5 text-[10px] font-bold rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition-colors cursor-pointer shadow-sm">
+                  {{ blueButtonSummary() ? '✓ Blue Button Rx Imported (' + blueButtonSummary()!.partDMedications.length + ')' : '🏛️ Import CMS Blue Button 2.0' }}
+                </button>
+                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 uppercase tracking-widest">
+                  <app-socratic-jargon-tooltip term="CMS-0057-F">CMS-0057-F Active</app-socratic-jargon-tooltip>
+                </span>
+              </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
               <!-- 1. IRMAA Surcharge Card -->
               @if (irmaaData) {
                 <div class="bg-white/70 dark:bg-zinc-900/70 p-3 rounded-lg border border-indigo-500/20">
@@ -217,18 +226,38 @@ interface ISentinelContainmentOption {
                 </div>
               }
 
-              <!-- 3. Billing & GFE Protection Card -->
+              <!-- 3. 2026 IRA Part D Cap, Extra Help (LIS) & GFE Card -->
               @if (billingData) {
                 <div class="bg-white/70 dark:bg-zinc-900/70 p-3 rounded-lg border border-emerald-500/20">
                   <div class="flex items-center justify-between font-bold text-gray-800 dark:text-zinc-200 mb-1">
-                    <span>Inflation Reduction Act Cap</span>
-                    <span class="text-emerald-600 dark:text-emerald-400 font-bold">$2,000 Part D Cap</span>
+                    <span>{{ billingData.mppp.planYear }} IRA Part D Cap</span>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold">\${{ billingData.mppp.statutoryCapAmount | number }} Cap</span>
                   </div>
                   <p class="text-[11px] text-gray-600 dark:text-zinc-400 mb-1.5">
-                    <app-socratic-jargon-tooltip term="MPPP">MPPP Monthly Max</app-socratic-jargon-tooltip>: <strong class="text-emerald-600 dark:text-emerald-400">\${{ monthlyMpppCapUsd }}/mo</strong>
+                    <app-socratic-jargon-tooltip term="MPPP">M3P Monthly Max</app-socratic-jargon-tooltip>: <strong class="text-emerald-600 dark:text-emerald-400">\${{ monthlyMpppCapUsd }}/mo</strong> (2027: $2,400)
                   </p>
                   <div class="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 p-1.5 rounded font-medium border border-emerald-500/20">
-                    🛡️ NSA Dispute Threshold: \${{ billingData.gfe.disputeNoticeThreshold }} Protection
+                    🛡️ {{ billingData.extraHelpMsp.extraHelpEligible ? 'Extra Help (LIS) Eligible ($5.10/$12.65)' : 'NSA Dispute Threshold: $' + billingData.gfe.disputeNoticeThreshold }}
+                  </div>
+                </div>
+              }
+
+              <!-- 4. Safety-Net APCM (G0556-G0558) & G2211 Card -->
+              @if (billingData) {
+                <div class="bg-white/70 dark:bg-zinc-900/70 p-3 rounded-lg border border-sky-500/20">
+                  <div class="flex items-center justify-between font-bold text-gray-800 dark:text-zinc-200 mb-1">
+                    <span><app-socratic-jargon-tooltip term="APCM">Safety-Net APCM</app-socratic-jargon-tooltip> &amp; <app-socratic-jargon-tooltip term="G2211">G2211</app-socratic-jargon-tooltip></span>
+                    <span class="text-sky-600 dark:text-sky-400 font-mono font-bold">{{ billingData.apcmSafetyNet.recommendedApcmCode?.hcpcsCode || 'G0557' }}</span>
+                  </div>
+                  <p class="text-[11px] text-gray-600 dark:text-zinc-400 mb-1.5">
+                    Clinic Bundle: <strong class="text-sky-600 dark:text-sky-400">\${{ billingData.apcmSafetyNet.estimatedMonthlyClinicRevenueUsd | number:'1.2-2' }}/mo</strong> (No minute log)
+                  </p>
+                  <div class="text-[10px] bg-sky-500/10 text-sky-700 dark:text-sky-300 p-1.5 rounded font-medium border border-sky-500/20">
+                    @if (blueButtonSummary()) {
+                      🏛️ BB2 YTD Part D OOP: \${{ blueButtonSummary()!.ytdPartDOutOfPocketUsd | number:'1.0-0' }} / \${{ blueButtonSummary()!.partDCapUsd | number }}
+                    } @else {
+                      🏥 FQHC/RHC Ready • {{ billingData.apcmSafetyNet.g2211AddOn.isEligible ? 'G2211 (+$16.37) Active' : 'G2211 Guarded' }}
+                    }
                   </div>
                 </div>
               }
@@ -675,19 +704,25 @@ export class CostBenefitAnalysisComponent {
   irmaaService = inject(IrmaaDecisionService, { optional: true });
   hedisService = inject(HedisStarRatingService, { optional: true });
   medicareBillingService = inject(MedicareBillingBestPracticesService, { optional: true });
+  blueButtonService = inject(CmsBlueButtonService, { optional: true });
   themeService = inject(ThemeService);
 
   isPlainLanguage = computed(() => this.themeService.isPlainLanguageMode());
+  blueButtonSummary = computed(() => this.blueButtonService?.lastImportSummary() ?? null);
 
   medicareFinancialMatrix = computed(() => {
     const age = this.patientState.patientAge() || 68;
+    const bb = this.blueButtonSummary();
     const irmaa = this.irmaaService?.evaluateIrmaa(145000, 'single') || null;
     const hedis = this.hedisService?.generateOverallSummary('p010', { systolicBp: 125, diastolicBp: 80, hbA1c: 7.1 }) || null;
     const billing = this.medicareBillingService?.assessMedicareBilling({
-      annualRxCost: 3800,
+      annualRxCost: bb ? Math.max(3800, bb.ytdPartDOutOfPocketUsd) : 3800,
       daysDeviceTransmitted: 16,
       clinicalMinutesLogged: 22,
-      annualIncome: 28000
+      annualIncome: 28000,
+      planYear: 2026,
+      chronicConditionCount: 2,
+      isQmbEnrolled: bb?.coverage.isQmbFlagged ?? false
     }) || null;
 
     return {
@@ -695,9 +730,13 @@ export class CostBenefitAnalysisComponent {
       irmaa,
       hedis,
       billing,
-      monthlyMpppCapUsd: billing ? Math.round(billing.mppp.effectiveCapAmount / 12) : 167
+      monthlyMpppCapUsd: billing ? Math.round(billing.mppp.effectiveCapAmount / 12) : 175
     };
   });
+
+  importBlueButtonSandbox(): void {
+    this.blueButtonService?.loadSandboxMedicareBundle(2026);
+  }
 
   get irmaaData() { return this.medicareFinancialMatrix().irmaa; }
   get hedisData() { return this.medicareFinancialMatrix().hedis; }
