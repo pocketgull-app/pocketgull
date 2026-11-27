@@ -376,7 +376,15 @@ export async function enterDemoMode(page: Page) {
       continue;
     }
 
-    // 2. Demo Mode button
+    // 2. Authenticate via 1-Click Passkey Login (primary splash auth after Demo Mode removal)
+    const passkeyBtn = page.locator('button', { hasText: /1-Click Passkey Login/i }).first();
+    if (await passkeyBtn.isVisible().catch(() => false)) {
+      await passkeyBtn.click().catch(() => {});
+      await page.waitForTimeout(600).catch(() => {});
+      continue;
+    }
+
+    // Legacy fallback if Demo Mode button exists in a test variant
     const demoBtn = page.locator('button', { hasText: 'Demo Mode' });
     if (await demoBtn.isVisible().catch(() => false)) {
       await demoBtn.click().catch(() => {});

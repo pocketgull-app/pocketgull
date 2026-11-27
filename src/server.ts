@@ -201,10 +201,10 @@ app.use((req, res, next) => {
   res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
   res.setHeader('X-XSS-Protection', '1; mode=block');
 
-  // 9. Permissions Policy (Granular device & WebMCP tool permissions)
+  // 9. Permissions Policy (Granular device, FedCM & WebMCP tool permissions)
   res.setHeader(
     'Permissions-Policy',
-    'geolocation=(), microphone=(self), camera=(), payment=(self "https://pay.google.com"), tools=(self), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
+    'geolocation=(), microphone=(self), camera=(), payment=(self "https://pay.google.com"), identity-credentials-get=(self "https://accounts.google.com"), tools=(self), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
   );
 
   // 9b. ICRC Digital Emblem & Medical Sanctuary Header (Geneva Conventions / Tallinn Manual Rule 131)
@@ -215,20 +215,20 @@ app.use((req, res, next) => {
 
   // 10. Content Security Policy (Strict CSP3 with Nonce & Strict-Dynamic — Zero 'unsafe-inline' in script-src*)
   const scriptSrc = isProd
-    ? `'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval' https://apis.google.com https://cloud.google.com https://pay.google.com`
-    : `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://apis.google.com https://*.googleapis.com https://cloud.google.com https://pay.google.com`;
+    ? `'self' 'nonce-${nonce}' 'strict-dynamic' 'wasm-unsafe-eval' https://accounts.google.com/gsi/client https://apis.google.com https://cloud.google.com https://pay.google.com`
+    : `'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://accounts.google.com/gsi/client https://apis.google.com https://*.googleapis.com https://cloud.google.com https://pay.google.com`;
 
   const scriptSrcAttr = isProd ? `'none'` : `'unsafe-inline'`;
 
   const connectSrc = isProd
-    ? `'self' https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app https://*.pocketgull.app wss://*.pocketgull.app https://pocketgull.com`
-    : `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`;
+    ? `'self' https://accounts.google.com/gsi/ https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app https://*.pocketgull.app wss://*.pocketgull.app https://pocketgull.com`
+    : `'self' http: https: ws: wss: http://localhost:9399 http://localhost:4000 http://localhost:4200 http://localhost:8000 http://localhost:5000 http://127.0.0.1:9399 http://127.0.0.1:4000 ws://localhost:9399 ws://localhost:4000 ws://localhost:4200 https://accounts.google.com/gsi/ https://generativelanguage.googleapis.com https://commons.wikimedia.org https://eutils.ncbi.nlm.nih.gov wss://generativelanguage.googleapis.com https://*.aiplatform.googleapis.com wss://*.aiplatform.googleapis.com https://raw.githubusercontent.com https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://font.pocketgull.app`;
 
-  const styleSrc = `'self' 'unsafe-inline' https://fonts.googleapis.com https://font.pocketgull.app data:`;
+  const styleSrc = `'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://fonts.googleapis.com https://font.pocketgull.app data:`;
   const fontSrc = `'self' data: https://fonts.gstatic.com https://font.pocketgull.app`;
   const imgSrc = `'self' data: blob: https://upload.wikimedia.org https://phil.cdc.gov https://*.wikimedia.org https://images.unsplash.com https://pocketgull.app https://*.pocketgull.app`;
   const mediaSrc = `'self' blob: data: mediastream: https://*.pocketgull.app`;
-  const frameSrc = `'self' https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app https://pay.google.com`;
+  const frameSrc = `'self' https://accounts.google.com/gsi/ https://*.firebaseapp.com https://www.ncbi.nlm.nih.gov https://pubmed.ncbi.nlm.nih.gov https://insightspark-82c75.web.app https://pay.google.com`;
 
   const cspDirectives = [
     "default-src 'none'",

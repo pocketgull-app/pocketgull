@@ -99,6 +99,13 @@ console.log(`✅ Resolved immutable Artifact Registry target: ${deployTarget}`);
 
 // 4. Deploy to Google Cloud Run
 console.log('\n🚀 Step 4/5: Deploying immutable image to Google Cloud Run (Scale-to-Zero, Binary Authorization & Least-Privilege SA)...');
+const cloudRunEnvVars = [
+  'NODE_ENV=production',
+  'OTEL_SDK_DISABLED=true',
+  `GOOGLE_CLOUD_PROJECT=${TARGET_PROJECT}`,
+  ...(process.env.GOOGLE_CLIENT_ID?.trim() ? [`GOOGLE_CLIENT_ID=${process.env.GOOGLE_CLIENT_ID.trim()}`] : [])
+].join(',');
+
 const commonRunArgs = [
   `--image ${deployTarget}`,
   `--project=${TARGET_PROJECT}`,
@@ -113,7 +120,7 @@ const commonRunArgs = [
   '--min-instances 0',
   '--max-instances 4',
   '--set-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest',
-  `--update-env-vars=NODE_ENV=production,OTEL_SDK_DISABLED=true,GOOGLE_CLOUD_PROJECT=${TARGET_PROJECT}`,
+  `--update-env-vars=${cloudRunEnvVars}`,
   '--quiet'
 ].join(' ');
 

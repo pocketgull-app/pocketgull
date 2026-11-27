@@ -91,7 +91,9 @@ export function createAuthRouter(deps?: { oauthClient?: Pick<OAuth2Client, 'veri
    * Returns public SSO provider discovery metadata.
    */
   router.get('/sso/config', (_req: Request, res: Response) => {
-    const googleClientId = process.env['GOOGLE_CLIENT_ID'] || '793190615625-pocketgull-cloudrun.apps.googleusercontent.com';
+    const configuredGoogleClientId =
+      process.env['GOOGLE_CLIENT_ID']?.trim() || process.env['GOOGLE_HEALTH_CLIENT_ID']?.trim() || '';
+    const googleClientId = configuredGoogleClientId || '793190615625-pocketgull-cloudrun.apps.googleusercontent.com';
     const projectId = process.env['GOOGLE_CLOUD_PROJECT'] || 'gen-lang-client-0540208645';
 
     res.setHeader('Cache-Control', 'public, max-age=300');
@@ -100,6 +102,7 @@ export function createAuthRouter(deps?: { oauthClient?: Pick<OAuth2Client, 'veri
       projectId,
       google: {
         enabled: true,
+        configured: Boolean(configuredGoogleClientId),
         clientId: googleClientId,
         supportedScopes: ['openid', 'email', 'profile'],
         authUrl: 'https://accounts.google.com/o/oauth2/v2/auth'
@@ -147,7 +150,8 @@ export function createAuthRouter(deps?: { oauthClient?: Pick<OAuth2Client, 'veri
       }
 
       const googleClientId =
-        process.env['GOOGLE_CLIENT_ID'] ||
+        process.env['GOOGLE_CLIENT_ID']?.trim() ||
+        process.env['GOOGLE_HEALTH_CLIENT_ID']?.trim() ||
         '793190615625-pocketgull-cloudrun.apps.googleusercontent.com';
 
       let payload: Record<string, unknown> | undefined;

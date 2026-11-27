@@ -346,22 +346,14 @@ export interface IStatEmergencyBypassPayload {
                     <span class="px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[8px] font-bold">WILL 3.0</span>
                   </div>
 
-                  <!-- Gesture Pad Controls & Persona Partitioning (Demo Mode vs Clinical Signature) -->
+                  <!-- Gesture Pad Controls -->
                   <div class="flex items-center justify-center gap-2.5 mt-1 w-full max-w-[260px] z-30">
                     <button 
                       type="button"
                       (click)="clearDrawing()" 
                       [disabled]="isChecking() || isLockedOut() || (strokes.length === 0 && currentStroke.length === 0)"
-                      class="flex-1 min-h-[42px] px-3 py-2 text-[11px] uppercase font-bold tracking-widest bg-white/80 dark:bg-zinc-800/90 hover:bg-white dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 transition rounded-xl disabled:opacity-30 disabled:cursor-not-allowed shadow-xs flex items-center justify-center cursor-pointer">
+                      class="w-full min-h-[42px] px-3 py-2 text-[11px] uppercase font-bold tracking-widest bg-white/80 dark:bg-zinc-800/90 hover:bg-white dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 transition rounded-xl disabled:opacity-30 disabled:cursor-not-allowed shadow-xs flex items-center justify-center cursor-pointer">
                       Clear Pad
-                    </button>
-                    <button 
-                      type="button"
-                      (click)="enterDemoSandbox()" 
-                      class="flex-1 min-h-[42px] px-3 py-2 flex justify-center items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 transition-all rounded-xl shadow-xs active:scale-[0.98] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                      aria-label="Enter Synthetic Demo Sandbox without Clinical Credentials">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
-                      <span>Demo Mode</span>
                     </button>
                   </div>
 
@@ -494,16 +486,8 @@ export interface IStatEmergencyBypassPayload {
                      </div>
                    }
 
-                   <!-- 1-Click Synthetic Demo & Triaged Situation Entry (Zero-Drawing Ataxia Fast Path) -->
+                   <!-- Triaged Situation Direct Entry (Demo Mode Removed — Authenticated Passkey / Google OIDC Primary) -->
                    <div class="grid grid-cols-1 gap-1.5 pt-1">
-                     <button
-                       type="button"
-                       (click)="enterDemoSandbox()"
-                       class="w-full min-h-[44px] px-3 py-2 flex justify-center items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 transition-all rounded-xl shadow-xs active:scale-[0.98] cursor-pointer"
-                       aria-label="Enter Synthetic Demo Sandbox without Clinical Credentials">
-                       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-teal-600 dark:text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
-                       <span>Demo Mode</span>
-                     </button>
                      <button
                        type="button"
                        (click)="enterTriageCommand()"
@@ -1382,12 +1366,9 @@ export interface IStatEmergencyBypassPayload {
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-3 mb-3">
+              <div class="grid grid-cols-1 gap-3 mb-3">
                 <button type="button" class="w-full py-3 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-200 text-zinc-950 dark:text-zinc-400 text-[12px] uppercase tracking-[0.1em] rounded-xl transition-colors" (click)="handleAiStudio()">
                   AI Studio Key
-                </button>
-                <button type="button" class="w-full py-3 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-zinc-200 text-zinc-950 dark:text-zinc-400 text-[12px] uppercase tracking-[0.1em] rounded-xl transition-colors" (click)="handleDemo()">
-                  Demo Mode
                 </button>
               </div>
 
@@ -3482,6 +3463,7 @@ export class SecureSplashComponent implements OnInit {
    */
   async loginWithGoogleCloudIamSso() {
     this.isChecking.set(true);
+    this.errorMsg.set('');
     this.ssoProviderStatus.set('authenticating');
 
     try {
@@ -3498,8 +3480,6 @@ export class SecureSplashComponent implements OnInit {
       }
 
       await this.authSso.signInWithGoogle(this.selectedIamRole, {
-        email: 'clinician@pocketgull.app',
-        name: 'Dr. Gulliver (Attending Clinician)',
         zkpKineticHash
       });
       this.syncIamRoleToSmoePathway(this.selectedIamRole);
@@ -3515,8 +3495,12 @@ export class SecureSplashComponent implements OnInit {
         this.handleUnlockSession();
         this.isChecking.set(false);
       }, 400);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('[IAM SSO] Google Cloud IAM SSO error:', err);
+      const httpErr = err as { error?: { error?: string }; message?: string };
+      this.errorMsg.set(
+        httpErr?.error?.error || this.authSso.authError() || 'Google IAM sign-in failed. Use 1-Click Passkey or check OAuth Client ID.'
+      );
       this.isChecking.set(false);
       this.ssoProviderStatus.set('ready');
     }
@@ -3527,6 +3511,7 @@ export class SecureSplashComponent implements OnInit {
    */
   async loginWithSmartFhirSso(issuer?: string) {
     this.isChecking.set(true);
+    this.errorMsg.set('');
     this.ssoProviderStatus.set('authenticating');
 
     try {
@@ -3545,8 +3530,12 @@ export class SecureSplashComponent implements OnInit {
         this.handleUnlockSession();
         this.isChecking.set(false);
       }, 400);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('[SMART-on-FHIR SSO] Error:', err);
+      const httpErr = err as { error?: { error?: string }; message?: string };
+      this.errorMsg.set(
+        httpErr?.error?.error || this.authSso.authError() || 'SMART-on-FHIR requires an active EHR launch context. Use 1-Click Passkey above.'
+      );
       this.isChecking.set(false);
       this.ssoProviderStatus.set('ready');
     }
@@ -3579,7 +3568,7 @@ export class SecureSplashComponent implements OnInit {
       console.error('[Passkey SSO] Error:', err);
       const httpErr = err as { error?: { error?: string }; message?: string };
       this.errorMsg.set(
-        httpErr?.error?.error || this.authSso.authError() || 'Passkey sign-in failed. Please retry or use Demo Mode.'
+        httpErr?.error?.error || this.authSso.authError() || 'Passkey sign-in failed. Please retry.'
       );
       this.isChecking.set(false);
       this.ssoProviderStatus.set('ready');

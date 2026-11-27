@@ -24,6 +24,7 @@ export interface ISsoDiscoveryConfig {
   projectId: string;
   google: {
     enabled: boolean;
+    configured?: boolean;
     clientId: string;
     supportedScopes: string[];
     authUrl: string;
@@ -84,19 +85,142 @@ export class AuthSsoService {
     }
   }
 
+  private gisScriptPromise: Promise<void> | null = null;
+
   /**
-   * Google Cloud IAM & Workspace Single Sign-On
+   * Dynamically loads Google Identity Services (GIS) client under strict CSP3 'strict-dynamic'.
+   */
+  private loadGoogleIdentityScript(): Promise<void> {
+    if (!isPlatformBrowser(this.platformId) || typeof document === 'undefined') {
+      return Promise.reject(new Error('Google Identity Services requires a browser environment.'));
+    }
+    const win = window as unknown as { google?: { accounts?: { id?: unknown } } };
+    if (win.google?.accounts?.id) {
+      return Promise.resolve();
+    }
+    if (!this.gisScriptPromise) {
+      this.gisScriptPromise = new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => resolve();
+        script.onerror = () => {
+          this.gisScriptPromise = null;
+          reject(new Error('Could not load Google Identity Services (accounts.google.com/gsi/client).'));
+        };
+        document.head.appendChild(script);
+      });
+    }
+    return this.gisScriptPromise;
+  }
+
+  /**
+   * Acquires a genuine signed Google OIDC ID Token via Google Identity Services (FedCM-compatible under COOP: same-origin).
+   */
+  private async requestGoogleOidcIdToken(clientId: string): Promise<string> {
+    await this.loadGoogleIdentityScript();
+    const gsi = (
+      window as unknown as {
+        google?: {
+          accounts?: {
+            id?: {
+              initialize: (cfg: Record<string, unknown>) => void;
+              prompt: (
+                cb?: (n: {
+                  isNotDisplayed?: () => boolean;
+                  isSkippedMoment?: () => boolean;
+                  isDismissedMoment?: () => boolean;
+                  getNotDisplayedReason?: () => string;
+                  getSkippedReason?: () => string;
+                  getDismissedReason?: () => string;
+                }) => void
+              ) => void;
+              cancel?: () => void;
+            };
+          };
+        };
+      }
+    ).google?.accounts?.id;
+
+    if (!gsi) {
+      throw new Error('Google Identity Services failed to initialize in this browser.');
+    }
+
+    return new Promise<string>((resolve, reject) => {
+      let settled = false;
+      const timer = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          reject(new Error('Google Sign-In timed out. Check popup/FedCM permissions or use 1-Click Passkey.'));
+        }
+      }, 60_000);
+
+      gsi.initialize({
+        client_id: clientId,
+        use_fedcm_for_prompt: true,
+        auto_select: false,
+        cancel_on_tap_outside: true,
+        callback: (resp: { credential?: string }) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          if (resp?.credential) {
+            resolve(resp.credential);
+          } else {
+            reject(new Error('Google did not return a verified OIDC ID token.'));
+          }
+        }
+      });
+
+      gsi.prompt((notification) => {
+        if (settled) return;
+        if (notification.isNotDisplayed?.() || notification.isSkippedMoment?.() || notification.isDismissedMoment?.()) {
+          const reason =
+            notification.getNotDisplayedReason?.() ||
+            notification.getSkippedReason?.() ||
+            notification.getDismissedReason?.() ||
+            'cancelled';
+          settled = true;
+          clearTimeout(timer);
+          reject(
+            new Error(
+              `Google Sign-In prompt unavailable (${reason}). Verify Authorized JavaScript Origins for ${window.location.origin}, or use 1-Click Passkey.`
+            )
+          );
+        }
+      });
+    });
+  }
+
+  /**
+   * Google Cloud IAM & Workspace Single Sign-On (real Google Identity Services OIDC idToken).
    */
   async signInWithGoogle(
     role: string = 'roles/aiplatform.user',
-    profile?: { email?: string; name?: string; picture?: string; zkpKineticHash?: string }
+    profile?: { idToken?: string; email?: string; name?: string; picture?: string; zkpKineticHash?: string }
   ): Promise<IAuthenticatedUser> {
     this.isAuthenticating.set(true);
     this.authError.set(null);
 
     try {
-      const payload = {
+      let idToken = profile?.idToken?.trim() || '';
+
+      // If no explicit OIDC idToken was provided, acquire a real signed token via Google Identity Services (GIS)
+      if (!idToken && isPlatformBrowser(this.platformId) && typeof window !== 'undefined') {
+        const config = this.ssoConfig() || (await this.fetchSsoConfig());
+        if (config?.google?.configured && config.google.clientId) {
+          idToken = await this.requestGoogleOidcIdToken(config.google.clientId);
+        } else if (config && config.google && config.google.configured === false) {
+          throw new Error(
+            'Google IAM OIDC awaits GOOGLE_CLIENT_ID on Cloud Run — use 1-Click Passkey above for immediate verified sign-in.'
+          );
+        }
+      }
+
+      const payload: Record<string, unknown> = {
         role,
+        ...(idToken ? { idToken } : {}),
         email: profile?.email || 'clinician@pocketgull.app',
         name: profile?.name || 'Dr. Gulliver (Attending Clinician)',
         picture: profile?.picture,
@@ -113,7 +237,8 @@ export class AuthSsoService {
       }
       throw new Error('Invalid response from SSO server');
     } catch (err: unknown) {
-      const msg = (err as Error)?.message || 'Google SSO authentication failed';
+      const httpErr = err as { error?: { error?: string }; message?: string };
+      const msg = httpErr?.error?.error || httpErr?.message || 'Google SSO authentication failed';
       this.authError.set(msg);
       throw err;
     } finally {
