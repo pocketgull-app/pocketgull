@@ -448,3 +448,8 @@ casmi_output/
 /sbom.spdx.json
 
 
+
+# Generated SBOM artifacts (generated fresh in CI/Release; never commit stale snapshots)
+/sbom.cdx.json
+/sbom.prod.cdx.json
+/sbom.spdx.json
