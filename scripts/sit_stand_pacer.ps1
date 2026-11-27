@@ -1,12 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
 <#
 .SYNOPSIS
     PocketGull Sit-Stand Ergonomic Cadence Pacer for Ataxia & Deep Work.
-    Manages a clinical 45-minute seated / 15-minute standing rhythm with 
+    Manages a clinical 45-minute seated / 15-minute standing rhythm with
     gentle organic earcons and desktop toast notifications.
-
-.DESCRIPTION
-    - 45 min SEATED:  Focused craft work, grounded posture, zero motor fatigue.
-    - 15 min STANDING: Proprioceptive joint loading with light desk-edge contact.
 #>
 
 param(
@@ -18,13 +15,25 @@ param(
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-$soundDir = Join-Path $env:LOCALAPPDATA "PocketGull\Sounds"
+$createdNew = $false
+$pacerMutex = New-Object System.Threading.Mutex($true, "Local\PocketGull_SitStandPacer_Mutex", [ref]$createdNew)
+if (-not $createdNew) {
+    exit 0
+}
+
+$pwsh = (Get-Command pwsh.exe -ErrorAction SilentlyContinue).Source
+if (-not $pwsh) { $pwsh = "powershell.exe" }
+
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$repoDir   = Split-Path -Parent $scriptDir
+$iconCandidate = Join-Path $repoDir "public\icons\pocketgull.ico"
+$soundDir   = Join-Path $env:LOCALAPPDATA "PocketGull\Sounds"
 $chimeStand = Join-Path $soundDir "pocketgull_ceramic_chime.wav"
 $chimeSit   = Join-Path $soundDir "pocketgull_432hz_asterisk.wav"
 
 function Show-ErgoAlert {
     param([string]$title, [string]$message, [string]$wavFile)
-    
+
     if (Test-Path $wavFile) {
         try {
             $p = New-Object System.Media.SoundPlayer($wavFile)
@@ -33,45 +42,51 @@ function Show-ErgoAlert {
     }
 
     $notify = New-Object System.Windows.Forms.NotifyIcon
-    $notify.Icon = [System.Drawing.SystemIcons]::Information
+    $notify.Icon = if (Test-Path $iconCandidate) { New-Object System.Drawing.Icon($iconCandidate) } else { [System.Drawing.SystemIcons]::Information }
     $notify.Visible = $true
     $notify.ShowBalloonTip(5000, $title, $message, [System.Windows.Forms.ToolTipIcon]::Info)
     Start-Sleep -Seconds 5
     $notify.Dispose()
 }
 
-Write-Host "`n=== POCKETGULL SIT-STAND CADENCE PACER ACTIVE ===" -ForegroundColor Cyan
-Write-Host "  • Seated interval:   $SitMinutes minutes" -ForegroundColor White
-Write-Host "  • Standing interval: $StandMinutes minutes" -ForegroundColor White
-Write-Host "  • Earcons: Ceramic Kiln Bell (Stand) / 432 Hz Philocardia (Sit)" -ForegroundColor DarkGray
-Write-Host "Press Ctrl+C to stop pacing.`n"
+try {
+    Write-Host "`n=== POCKETGULL SIT-STAND CADENCE PACER ACTIVE ===" -ForegroundColor Cyan
+    Write-Host "  * Seated interval:   $SitMinutes minutes" -ForegroundColor White
+    Write-Host "  * Standing interval: $StandMinutes minutes" -ForegroundColor White
 
-while ($true) {
-    # ── Phase 1: Seated Focus ──
-    Write-Host "[$(Get-Date -Format 'HH:mm')] Starting SEATED craft period ($SitMinutes min)..." -ForegroundColor Green
-    Start-Sleep -Seconds ($SitMinutes * 60)
+    while ($true) {
+        # Phase 1: Seated Focus
+        Start-Sleep -Seconds ($SitMinutes * 60)
 
-    # ── Alert: Elevate Desk to Stand ──
-    Write-Host "[$(Get-Date -Format 'HH:mm')] Alerting: ELEVATE DESK TO STAND ($StandMinutes min)" -ForegroundColor Yellow
-    Show-ErgoAlert -title "🧍 PocketGull: Elevate Desk" `
-                   -message "Time to Stand (15 min): Raise desk. Keep light fingertip contact on desk edge for sensory stability." `
-                   -wavFile $chimeStand
+        # Alert: Elevate Desk to Stand
+        Show-ErgoAlert -title "PocketGull: Elevate Desk (15m)" `
+                       -message "Raise desk to standing height. Keep light fingertip contact on desk edge for proprioceptive stability." `
+                       -wavFile $chimeStand
 
-    # Auto-play 60 BPM Canoe Cadence for standing pacing
-    $pacerPath = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) "entrainment_engine.ps1"
-    if (Test-Path $pacerPath) {
-        Start-Process powershell.exe -ArgumentList "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$pacerPath`" -Preset canoe -DurationSec ($StandMinutes * 60)"
+        $pacerPath = Join-Path $scriptDir "entrainment_engine.ps1"
+        if (Test-Path $pacerPath) {
+            $psi = New-Object System.Diagnostics.ProcessStartInfo
+            $psi.FileName = $pwsh
+            $psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$pacerPath`" -Preset canoe -DurationSec $($StandMinutes * 60)"
+            $psi.WorkingDirectory = $repoDir
+            $psi.UseShellExecute = $false
+            $psi.CreateNoWindow = $true
+            [System.Diagnostics.Process]::Start($psi) | Out-Null
+        }
+
+        # Phase 2: Standing Proprioceptive Loading
+        Start-Sleep -Seconds ($StandMinutes * 60)
+
+        Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+            Where-Object { $_.CommandLine -like "*entrainment_engine.ps1*canoe*" } |
+            ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+
+        # Alert: Lower Desk to Sit
+        Show-ErgoAlert -title "PocketGull: Lower Desk (45m)" `
+                       -message "Lower desk to seated height. Relax shoulders, ground feet, and return to seated craft flow." `
+                       -wavFile $chimeSit
     }
-
-    # ── Phase 2: Standing Proprioceptive Loading ──
-    Start-Sleep -Seconds ($StandMinutes * 60)
-
-    # Stop standing cadence
-    Get-WmiObject Win32_Process -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like "*entrainment_engine.ps1*canoe*" } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
-
-    # ── Alert: Lower Desk to Sit ──
-    Write-Host "[$(Get-Date -Format 'HH:mm')] Alerting: LOWER DESK TO SIT ($SitMinutes min)" -ForegroundColor Cyan
-    Show-ErgoAlert -title "🧘 PocketGull: Lower Desk" `
-                   -message "Time to Sit (45 min): Lower desk. Relax shoulders, ground feet, and enter seated craft flow." `
-                   -wavFile $chimeSit
+} finally {
+    $pacerMutex.ReleaseMutex()
+    $pacerMutex.Dispose()
 }

@@ -41,8 +41,8 @@ describe('Google Cloud Billing Portal & Monetization Suite', () => {
     expect(Date.parse(receipt.issuedAt)).not.toBeNaN();
   });
 
-  it('renders checkout portal HTML with Google Pay button and corporate disclosures', () => {
-    const html = renderCheckoutPortalHtml('founder_lifetime');
+  it('renders checkout portal HTML with Google Pay button, zero inline event handlers, and nonce support', () => {
+    const html = renderCheckoutPortalHtml('founder_lifetime', { nonce: 'testNonce123' });
     expect(html).toContain('Lifetime Solo Founder Pass');
     expect(html).toContain('$299');
     expect(html).toContain('Buy with');
@@ -52,6 +52,8 @@ describe('Google Cloud Billing Portal & Monetization Suite', () => {
     expect(html).toContain('30-day no-questions-asked refund policy');
     expect(html).toContain('handleGPayCheckout');
     expect(html).toContain('handleFormCheckout');
+    expect(html).toContain('<script nonce="testNonce123">');
+    expect(html).not.toMatch(/\son(?:click|submit|input)=/i);
   });
 
   it('renders annual and clinic onboarding tiers correctly', () => {

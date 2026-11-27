@@ -3,7 +3,7 @@
 # PocketGull Automated Clinical LoRA Training Queue
 set -e
 
-REPO_DIR="/mnt/c/Users/philg/Pocketgull/pocketgull"
+REPO_DIR="~/Pocketgull/pocketgull"
 PYTHON_ENV="$HOME/ml_env/bin/python3"
 SCRIPT="$REPO_DIR/scripts/finetune_gemma_lora.py"
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import '@angular/compiler';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { UiSelfRepairService } from './ui-self-repair.service';
 import { PatientStateService } from './patient-state.service';
 import { runInInjectionContext, createEnvironmentInjector, EnvironmentInjector, PLATFORM_ID, NgZone, signal } from '@angular/core';
@@ -28,8 +28,8 @@ describe('UiSelfRepairService', () => {
         ]
       }),
       vitals: signal<any>({
-        hr: '-10', // invalid negative HR
-        spO2: '150%' // invalid SpO2 > 100%
+        hr: '-10', // physically impossible negative HR
+        spO2: '150%' // physically impossible SpO2 > 100%
       })
     };
 
@@ -44,12 +44,16 @@ describe('UiSelfRepairService', () => {
     });
   });
 
+  afterEach(() => {
+    service.ngOnDestroy();
+  });
+
   it('should initialize with default health and auto-repair active', () => {
     const metrics = service.healthMetrics();
     expect(metrics.isAutoRepairEnabled).toBe(true);
   });
 
-  it('should detect and auto-repair corrupted patient issues and symptoms', () => {
+  it('should quarantine physically impossible vitals to "--" without fabricating healthy numbers and preserve critical low vitals', () => {
     service.auditPatientStateAndSymptoms();
 
     // Verify sanitized issue
@@ -59,10 +63,16 @@ describe('UiSelfRepairService', () => {
     expect(repairedIssues['head'][0].symptoms.length).toBe(3);
     expect(repairedIssues['head'][0].symptoms[0]).toBe('Throbbing migraine');
 
-    // Verify sanitized vitals
+    // Clinical Safety: NEVER fabricate reassuring '72' or '98%'
     const repairedVitals = mockPatientState.vitals();
-    expect(repairedVitals.hr).toBe('72'); // restored from -10 to 72
-    expect(repairedVitals.spO2).toBe('98%'); // restored from 150% to 98%
+    expect(repairedVitals.hr).toBe('--');
+    expect(repairedVitals.spO2).toBe('--');
+
+    // Critical real emergencies (e.g. HR=0 asystole, SpO2=84% hypoxia) MUST remain untouched
+    mockPatientState.vitals.set({ hr: '0', spO2: '84%' });
+    service.auditPatientStateAndSymptoms();
+    expect(mockPatientState.vitals().hr).toBe('0');
+    expect(mockPatientState.vitals().spO2).toBe('84%');
 
     const metrics = service.healthMetrics();
     expect(metrics.patientStateRepairsExecuted).toBeGreaterThan(0);
@@ -78,11 +88,25 @@ describe('UiSelfRepairService', () => {
     expect(service.isAutoRepairEnabled()).toBe(false);
   });
 
-  it('should rollback patches on request', () => {
-    service.applyCssPatch('patch-1', '.selector-1', '.selector-1 { color: red; }', 'test patch');
+  it('should deduplicate identical CSS patches across repeat audits and rollback cleanly', () => {
+    service.applyCssPatch('patch-1', '.selector-1', '.selector-1 { color: #ede3d2; }', 'test patch');
+    // Repeat audit with different anomalyId but same selector + style MUST NOT duplicate patch
+    service.applyCssPatch('patch-2', '.selector-1', '.selector-1 { color: #ede3d2; }', 'test patch');
     expect(service.activePatches().length).toBe(1);
-    
+
     service.revertAllPatches();
     expect(service.activePatches()[0].status).toBe('reverted');
+  });
+
+  it('should not inject min-height blowup patches onto hidden or plain sparkline canvases', () => {
+    const hiddenWrap = document.createElement('div');
+    hiddenWrap.className = 'hidden';
+    const canvas = document.createElement('canvas');
+    hiddenWrap.appendChild(canvas);
+    document.body.appendChild(hiddenWrap);
+
+    service.repairBiophysicalLenses();
+    expect(service.activePatches().length).toBe(0);
+    document.body.removeChild(hiddenWrap);
   });
 });

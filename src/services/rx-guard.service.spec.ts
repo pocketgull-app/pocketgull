@@ -95,4 +95,18 @@ describe('RxGuardService - Precision PGx & Herb-Drug Matrix Suite', () => {
     expect(synergy.combinationIndex).toBeLessThanOrEqual(2.0);
     expect(['SYNERGISTIC', 'ADDITIVE', 'ANTAGONISTIC']).toContain(synergy.synergyType);
   });
+
+  it('8. Returns zero interactions and SAFE tier when no known herb-drug interaction exists (no fabricated default alerts)', () => {
+    const benignInteractions = service.evaluateInteractions(['Advair Diskus 250/50'], ['Magnesium L-Threonate']);
+    expect(benignInteractions).toEqual([]);
+
+    const safePatient: IPatient = {
+      ...mockPatient,
+      medications: [{ id: 'm-safe', name: 'Advair Diskus 250/50', value: '1 puff BID' }],
+      dietarySupplements: [{ id: 's-safe', name: 'Magnesium L-Threonate', value: '2000 mg' }]
+    };
+    const assessment = service.evaluatePatient(safePatient);
+    expect(assessment.interactions).toEqual([]);
+    expect(assessment.overallRiskTier).toBe('SAFE');
+  });
 });

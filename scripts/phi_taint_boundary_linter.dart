@@ -133,32 +133,45 @@ void main(List<String> args) {
     }
   }
 
-  // 3. Audit Angular Client Egress Calls to /api/python
+  // 3. Audit ALL Angular Client Egress Calls to /api/python (not just payloadSections[1])
   final tsBridgeFile = File('$rootDir/src/services/python-bridge.service.ts');
   if (tsBridgeFile.existsSync()) {
     final tsContent = tsBridgeFile.readAsStringSync();
-    // Verify that patientName or MRN is not bundled into risk-scoring or dataframe egress
     if (tsContent.contains('payload = {') || tsContent.contains('body: JSON.stringify')) {
       final payloadSections = tsContent.split('const payload = {');
-      if (payloadSections.length > 1) {
-        final payloadBlock = payloadSections[1].split('};')[0];
+      for (var idx = 1; idx < payloadSections.length; idx++) {
+        final payloadBlock = payloadSections[idx].split('};')[0];
         final match = prohibitedPhiRegex.firstMatch(payloadBlock);
         if (match != null) {
           final matchedTerm = match.group(0);
           violations.add(
-            '[TAINT VIOLATION] src/services/python-bridge.service.ts -> Egress payload block contains prohibited identifier "$matchedTerm"'
+            '[TAINT VIOLATION] src/services/python-bridge.service.ts (payload #$idx) -> Egress payload block contains prohibited identifier "$matchedTerm"'
           );
         }
       }
     }
   }
 
-  // 4. Verify HIPAA De-Identification Middleware Installation
+  // 4. Verify HIPAA De-Identification Middleware Installation & Hardening
   var hasDeidentifierMiddleware = false;
   if (mainPyFile.existsSync()) {
     final mainText = mainPyFile.readAsStringSync();
     if (mainText.contains('hipaa_deidentifier') || mainText.contains('sanitize_hipaa_payload') || mainText.contains('HIPAA')) {
       hasDeidentifierMiddleware = true;
+    }
+  }
+  final deidFile = File('${apiDir.path}/middleware/hipaa_deidentifier.py');
+  if (deidFile.existsSync()) {
+    final deidText = deidFile.readAsStringSync();
+    if (deidText.contains('POCKETGULL_SAFE_HARBOR_2026')) {
+      violations.add(
+        '[CRYPTO VIOLATION] pocketgull_api/middleware/hipaa_deidentifier.py -> Hardcoded static salt literal "POCKETGULL_SAFE_HARBOR_2026" found'
+      );
+    }
+    if (!deidText.contains('_body') && deidText.contains('await request.body()')) {
+      violations.add(
+        '[STARLETTE CACHE BUG] pocketgull_api/middleware/hipaa_deidentifier.py -> Reads request.body() without refreshing/clearing request._body after scrubbing'
+      );
     }
   }
 

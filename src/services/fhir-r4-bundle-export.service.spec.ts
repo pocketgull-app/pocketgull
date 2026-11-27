@@ -8,10 +8,10 @@ describe('FhirR4BundleExportService - Specialist CDS Bundles', () => {
     service = new FhirR4BundleExportService();
   });
 
-  it('1. should compute valid SHA-256 digital signature', () => {
+  it('1. should compute valid FIPS 180-4 SHA-256 digital signature', () => {
+    expect(service.computeSha256Signature('abc')).toBe('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad');
     const sig = service.computeSha256Signature('test clinical payload');
-    expect(sig).toBeTruthy();
-    expect(sig.length).toBe(64);
+    expect(sig).toMatch(/^[a-f0-9]{64}$/);
   });
 
   it('2. should generate structured Specialist CDS FHIR R4 document bundle', () => {
@@ -76,5 +76,31 @@ describe('FhirR4BundleExportService - Specialist CDS Bundles', () => {
     const prov = provEntry!.resource;
     expect(prov.signature[0].data).toBeDefined();
     expect(prov.target.some((t: any) => t.reference.includes('condition-grounded'))).toBe(true);
+
+    // HIPAA Safe Harbor: raw name stripped, no fabricated 48.5 ms HRV when unmeasured
+    expect(JSON.stringify(bundle)).not.toContain('Phil Gear');
+    const fabricatedHrv = bundle.entry.find(e => e.resource['id']?.startsWith('obs-hrv-'));
+    expect(fabricatedHrv).toBeUndefined();
+  });
+
+  it('4. caps age > 89 to 90+ and emits HRV Observation ONLY when genuine hrvRmssd is measured', () => {
+    const elderWithHrv = {
+      id: 'patient-elder-92',
+      name: 'Sensitive Name',
+      gender: 'female',
+      age: 92,
+      issues: {},
+      vitals: { bp: '122/78', hr: '68', temp: '36.7', spO2: '98%', weight: '62', height: '164', hrvRmssd: '54.2' }
+    } as any;
+
+    const bundle = service.generateFhirR4Bundle(elderWithHrv);
+    const patientRes = bundle.entry.find(e => e.resource['resourceType'] === 'Patient')?.resource;
+    expect(patientRes?.birthDate).toBeUndefined();
+    expect(JSON.stringify(patientRes)).not.toContain('Sensitive Name');
+    expect(patientRes?.extension?.some((ex: any) => ex.valueString === '90+')).toBe(true);
+
+    const hrvObs = bundle.entry.find(e => e.resource['id']?.startsWith('obs-hrv-'))?.resource;
+    expect(hrvObs).toBeDefined();
+    expect(hrvObs?.valueQuantity?.value).toBe(54.2);
   });
 });

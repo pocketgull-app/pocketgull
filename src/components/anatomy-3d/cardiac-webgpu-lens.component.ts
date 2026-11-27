@@ -119,7 +119,7 @@ export type GeometryDisplayMode =
                       [class.bg-teal-400]="mediLux() >= 25.0"
                       [class.animate-pulse]="mediLux() < 10.0"></span>
                 <span class="font-bold">mEDI: {{ mediLux() }} lx</span>
-                <span class="opacity-80 hidden sm:inline">({{ mediShieldStatus() }})</span>
+                <span class="opacity-80 inline">({{ mediShieldStatus() }})</span>
               </span>
               @if (circadianTone() > 0.3) {
                 <span class="px-2 py-0.5 rounded-full text-[9px] font-mono bg-amber-950/60 text-amber-300 border border-amber-800/60" title="Helmholtz Retinal Halation Compensation (-3.75% optical stroke dial-back, warm bone cream on peat obsidian)">
@@ -301,39 +301,42 @@ export type GeometryDisplayMode =
       <div class="relative w-full h-[450px] bg-zinc-950 overflow-hidden">
         <canvas #renderCanvas class="w-full h-full cursor-grab active:cursor-grabbing block"></canvas>
 
-        <!-- Floating Controls (Top Right) -->
-        <div class="absolute top-3 right-3 z-30 flex items-center gap-1.5 bg-zinc-900/80 backdrop-blur-md p-1.5 rounded-xl border border-zinc-800 text-xs">
-          <button (click)="togglePlay()" type="button"
-                  class="px-3 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 font-bold hover:bg-rose-500/30 transition cursor-pointer">
-            {{ isPlaying() ? '⏸ Pause' : '▶ Play' }}
-          </button>
-          <button (click)="toggleSpeed()" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer">
-            {{ flowSpeed() }}x Speed
-          </button>
-          <button (click)="resetCamera()" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer">
-            🎯 Reset
-          </button>
-          <button (click)="captureSnapshot()" type="button"
-                  class="px-2.5 py-1.5 rounded-lg bg-cyan-950/80 text-cyan-300 border border-cyan-800/60 font-bold hover:bg-cyan-900 transition cursor-pointer"
-                  title="Export High-Res PNG Attestation">
-            📸 Snapshot
-          </button>
-        </div>
-
-        <!-- Multi-Script Nomenclature Badge (Top Left) -->
-        <div class="absolute top-3 left-3 z-30 bg-zinc-900/85 backdrop-blur-md border border-zinc-800 px-3 py-2 rounded-xl text-[11px] shadow-lg flex flex-col gap-0.5">
-          <div class="text-cyan-400 font-bold tracking-wide uppercase flex items-center gap-1.5">
-            <span>{{ activeNomenclature().icon }}</span>
-            <span>{{ activeNomenclature().latin }}</span>
+        <!-- Responsive Non-Overlapping Top HUD Row (Stacks Nomenclature below Controls on Mobile, Side-by-Side on sm+) -->
+        <div class="absolute top-3 inset-x-3 z-30 flex flex-col-reverse sm:flex-row-reverse sm:items-start sm:justify-between gap-2 pointer-events-none">
+          <!-- Floating Controls (Top Right on sm+) -->
+          <div class="pointer-events-auto self-end sm:self-auto flex flex-wrap items-center gap-1.5 bg-zinc-900/80 backdrop-blur-md p-1.5 rounded-xl border border-zinc-800 text-xs">
+            <button (click)="togglePlay()" type="button"
+                    class="px-3 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 font-bold hover:bg-rose-500/30 transition cursor-pointer">
+              {{ isPlaying() ? '⏸ Pause' : '▶ Play' }}
+            </button>
+            <button (click)="toggleSpeed()" type="button"
+                    class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer">
+              {{ flowSpeed() }}x Speed
+            </button>
+            <button (click)="resetCamera()" type="button"
+                    class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition cursor-pointer">
+              🎯 Reset
+            </button>
+            <button (click)="captureSnapshot()" type="button"
+                    class="px-2.5 py-1.5 rounded-lg bg-cyan-950/80 text-cyan-300 border border-cyan-800/60 font-bold hover:bg-cyan-900 transition cursor-pointer"
+                    title="Export High-Res PNG Attestation">
+              📸 Snapshot
+            </button>
           </div>
-          <div class="text-zinc-400 text-[10px] flex items-center gap-2">
-            <span>JA: {{ activeNomenclature().japanese }}</span>
-            <span>•</span>
-            <span>ZH: {{ activeNomenclature().chinese }}</span>
-            <span>•</span>
-            <span>SA: {{ activeNomenclature().sanskrit }}</span>
+
+          <!-- Multi-Script Nomenclature Badge (Top Left on sm+) -->
+          <div class="pointer-events-auto self-start bg-zinc-900/85 backdrop-blur-md border border-zinc-800 px-3 py-2 rounded-xl text-[11px] shadow-lg flex flex-col gap-0.5">
+            <div class="text-cyan-400 font-bold tracking-wide uppercase flex items-center gap-1.5">
+              <span>{{ activeNomenclature().icon }}</span>
+              <span>{{ activeNomenclature().latin }}</span>
+            </div>
+            <div class="text-zinc-400 text-[10px] flex flex-wrap items-center gap-2">
+              <span>JA: {{ activeNomenclature().japanese }}</span>
+              <span>•</span>
+              <span>ZH: {{ activeNomenclature().chinese }}</span>
+              <span>•</span>
+              <span>SA: {{ activeNomenclature().sanskrit }}</span>
+            </div>
           </div>
         </div>
 

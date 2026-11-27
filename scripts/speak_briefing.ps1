@@ -25,7 +25,7 @@ if ($targetVoice) {
 }
 
 if ($EveningReflection) {
-    $journalFile = "C:\Users\philg\.gemini\acoustic_journal\resonance_$(Get-Date -Format 'yyyy-MM-dd').jsonl"
+    $journalFile = "$env:USERPROFILE\.gemini\acoustic_journal\resonance_$(Get-Date -Format 'yyyy-MM-dd').jsonl"
     if (Test-Path $journalFile) {
         $entries = @(Get-Content $journalFile -Encoding UTF8 | ForEach-Object { $_ | ConvertFrom-Json })
         $count = $entries.Count

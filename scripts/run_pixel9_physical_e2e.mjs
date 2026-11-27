@@ -18,14 +18,15 @@
 import { chromium } from '@playwright/test';
 import { spawn, execSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
-const ADB_BIN = 'C:\\Users\\philg\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb.exe';
+const ADB_BIN = process.env.ADB_BIN || path.join(os.homedir(), 'AppData', 'Local', 'Android', 'Sdk', 'platform-tools', 'adb.exe');
 const DEVICE_SERIAL = '4C041FDAP0050Z';
 const PORT = 4000;
 const CDP_PORT = 9229;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
-const ARTIFACT_DIR = 'C:\\Users\\philg\\.gemini\\antigravity\\brain\\2b1d97ec-2082-4ae0-a0ca-6fcf701eca74';
+const ARTIFACT_DIR = process.env.E2E_ARTIFACT_DIR || path.join(os.tmpdir(), 'pocketgull-pixel9-e2e');
 
 fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
 

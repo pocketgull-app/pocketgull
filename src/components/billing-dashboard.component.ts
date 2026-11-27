@@ -1,4 +1,4 @@
-import { Component, signal, Output, EventEmitter, inject } from '@angular/core';
+import { Component, signal, Input, Output, EventEmitter, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -23,9 +23,16 @@ import { ProceduralInvestmentMatrixComponent } from './procedural-investment-mat
             <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Billing & Subscription</h2>
             <p class="text-sm text-gray-500 mt-1">Manage your active plan, monitor usage, and configure philanthropic pledges.</p>
           </div>
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-green/10 text-brand-green border border-brand-green/20">
-            Clinical Pro Active
-          </span>
+          <div class="flex flex-col items-end gap-1">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-brand-green/10 text-brand-green border border-brand-green/20">
+              Clinical Pro Active
+            </span>
+            @if (!liveUsageLoaded()) {
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                [DEMO SIMULATION]
+              </span>
+            }
+          </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -59,17 +66,30 @@ import { ProceduralInvestmentMatrixComponent } from './procedural-investment-mat
           <!-- Usage Metrics -->
           <div class="p-5 bg-gray-50 dark:bg-zinc-800/50 rounded-xl border border-gray-100 dark:border-zinc-700 flex flex-col justify-between">
             <div>
-              <h3 class="text-sm font-medium text-gray-500 mb-1">API Usage (This Month)</h3>
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <h3 class="text-sm font-medium text-gray-500">API Usage (This Month)</h3>
+                @if (!liveUsageLoaded()) {
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                    [DEMO SIMULATION]
+                  </span>
+                }
+              </div>
               <div class="flex items-baseline gap-2 mb-2">
-                <span class="text-3xl font-semibold text-gray-900 dark:text-gray-100">4,281</span>
-                <span class="text-sm font-medium text-gray-500">/ 10,000 queries</span>
+                <span class="text-3xl font-semibold text-gray-900 dark:text-gray-100">{{ queriesUsed() | number }}</span>
+                <span class="text-sm font-medium text-gray-500">/ {{ queryQuota() | number }} queries</span>
               </div>
               
               <!-- Progress Bar -->
               <div class="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2.5 mb-2 mt-4">
-                <div class="bg-brand-green h-2.5 rounded-full" style="width: 42%"></div>
+                <div class="bg-brand-green h-2.5 rounded-full" [style.width.%]="Math.min(100, Math.round((queriesUsed() / queryQuota()) * 100))"></div>
               </div>
-              <p class="text-xs text-gray-500 mt-2">Resets on Sept 1, 2026</p>
+              <p class="text-xs text-gray-500 mt-2">
+                @if (!liveUsageLoaded()) {
+                  Sample preview telemetry — connect authenticated tenant billing for live metering.
+                } @else {
+                  Resets on next billing cycle
+                }
+              </p>
             </div>
           </div>
         </div>
@@ -216,11 +236,11 @@ import { ProceduralInvestmentMatrixComponent } from './procedural-investment-mat
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Revenue Split Allocation</label>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Revenue Split Allocation (ASC 958 Covenant)</label>
               <select [(ngModel)]="selectedSplit" class="w-full text-xs p-2 bg-white dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-gray-900 dark:text-gray-100">
-                <option value="50-30-20">50% Founder Living / 30% Endowment / 20% Infra</option>
-                <option value="70-10-20">70% Founder Living / 10% Endowment / 20% Infra</option>
-                <option value="0-80-20">0% Founder / 80% Endowment / 20% Infra</option>
+                <option value="85-10-5">85% Clinical Ops &amp; Infra / 10% Alumni Endowment / 5% Open Commons (ASC 958)</option>
+                <option value="70-20-10">70% Clinical Ops &amp; Infra / 20% Alumni Endowment / 10% Open Commons</option>
+                <option value="50-30-20">50% Founder &amp; Ops / 30% Endowment / 20% Infra</option>
               </select>
             </div>
           </div>
@@ -267,13 +287,19 @@ import { ProceduralInvestmentMatrixComponent } from './procedural-investment-mat
     </div>
   `
 })
-export class BillingDashboardComponent {
+export class BillingDashboardComponent implements OnInit, OnDestroy {
+  @Input() customerEmail?: string;
   @Output() close = new EventEmitter<void>();
+  protected readonly Math = Math;
+
   isLoadingCheckout = signal(false);
   isLoadingPortal = signal(false);
+  liveUsageLoaded = signal(false);
+  queriesUsed = signal(4281);
+  queryQuota = signal(10000);
 
   selectedEndowment = 'Alumni Health & Research Endowment';
-  selectedSplit = '50-30-20';
+  selectedSplit = '85-10-5';
   newInstitutionDomain = '';
 
   readonly customInstitutions = signal([
@@ -284,6 +310,34 @@ export class BillingDashboardComponent {
   ]);
 
   private http = inject(HttpClient);
+  private hadAvsActive = false;
+  private hadPhilocardiaActive = false;
+
+  ngOnInit(): void {
+    // Ethical Motion Quarantine (WCAG 2.2 §2.3.3): suspend ambient rhythmic classes on billing surfaces
+    if (typeof document !== 'undefined') {
+      this.hadAvsActive = document.body?.classList?.contains('avs-active') ?? false;
+      this.hadPhilocardiaActive = document.documentElement?.classList?.contains('philocardia-active') ?? false;
+      document.body?.classList?.remove('avs-active');
+      document.documentElement?.classList?.remove('philocardia-active');
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (typeof document !== 'undefined') {
+      if (this.hadAvsActive) {
+        document.body?.classList?.add('avs-active');
+      }
+      if (this.hadPhilocardiaActive) {
+        document.documentElement?.classList?.add('philocardia-active');
+      }
+    }
+  }
+
+  private withCustomerEmail<T extends Record<string, unknown>>(payload: T): T & { customerEmail?: string } {
+    const email = this.customerEmail?.trim();
+    return email ? { ...payload, customerEmail: email } : payload;
+  }
 
   addInstitution(): void {
     const domain = this.newInstitutionDomain.trim();
@@ -303,14 +357,13 @@ export class BillingDashboardComponent {
 
   checkoutPackage(priceId: string, packageName: string): void {
     this.isLoadingCheckout.set(true);
-    this.http.post<{ url: string }>('/api/billing/checkout', {
+    this.http.post<{ url: string }>('/api/billing/checkout', this.withCustomerEmail({
       priceId,
-      customerEmail: 'admin@demo-tenant.com',
       itemType: 'career_health_package',
       packageName,
       endowmentFund: this.selectedEndowment,
       revenueSplit: this.selectedSplit
-    }).subscribe({
+    })).subscribe({
       next: (res) => {
         if (res.url && typeof window !== 'undefined') window.location.href = res.url;
       },
@@ -323,11 +376,10 @@ export class BillingDashboardComponent {
 
   purchaseInstitutionSlot(): void {
     this.isLoadingCheckout.set(true);
-    this.http.post<{ url: string }>('/api/billing/checkout', {
+    this.http.post<{ url: string }>('/api/billing/checkout', this.withCustomerEmail({
       priceId: 'price_institutional_search_slot',
-      customerEmail: 'admin@demo-tenant.com',
       itemType: 'institutional_search_slot'
-    }).subscribe({
+    })).subscribe({
       next: (res) => {
         if (res.url) window.location.href = res.url;
       },
@@ -341,12 +393,11 @@ export class BillingDashboardComponent {
   openCheckout() {
     this.isLoadingCheckout.set(true);
     
-    this.http.post<{ url: string }>('/api/billing/checkout', {
+    this.http.post<{ url: string }>('/api/billing/checkout', this.withCustomerEmail({
       priceId: 'price_1U3KRiBK1Sz8xlZGqjW4dJfp',
-      customerEmail: 'admin@demo-tenant.com',
       endowmentFund: this.selectedEndowment,
       revenueSplit: this.selectedSplit
-    }).subscribe({
+    })).subscribe({
       next: (res) => {
         if (res.url) {
           window.location.href = res.url;
@@ -362,9 +413,7 @@ export class BillingDashboardComponent {
   openPortal() {
     this.isLoadingPortal.set(true);
     
-    this.http.post<{ url: string }>('/api/billing/portal', {
-      customerEmail: 'admin@demo-tenant.com'
-    }).subscribe({
+    this.http.post<{ url: string }>('/api/billing/portal', this.withCustomerEmail({})).subscribe({
       next: (res) => {
         if (res.url) {
           window.location.href = res.url;

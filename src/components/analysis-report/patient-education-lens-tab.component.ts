@@ -6,6 +6,7 @@ import { DailyActionChecklistComponent } from '../daily-action-checklist.compone
 import { SymptomHabitJournalComponent } from '../symptom-habit-journal.component';
 import { CaregiverBridgeModalComponent } from '../modals/caregiver-bridge-modal.component';
 import { ISocraticChallenge } from '../../services/skeptical-epistemology.service';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 const DEFAULT_SOCRATIC_CHALLENGE: ISocraticChallenge = {
   id: 'chal-001',
@@ -32,7 +33,8 @@ const DEFAULT_SOCRATIC_CHALLENGE: ISocraticChallenge = {
     PocketGullBadgeComponent,
     DailyActionChecklistComponent,
     SymptomHabitJournalComponent,
-    CaregiverBridgeModalComponent
+    CaregiverBridgeModalComponent,
+    PgTranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -43,10 +45,10 @@ const DEFAULT_SOCRATIC_CHALLENGE: ISocraticChallenge = {
           <span class="text-xl">📖</span>
           <div>
             <h3 class="text-sm font-extrabold text-slate-900 dark:text-gray-100 uppercase tracking-wide">
-              Patient Education & Self-Care Empowerment
+              {{ 'Patient Education & Self-Care Empowerment' | pgT:'lens07.edu_title' }}
             </h3>
             <p class="text-xs text-slate-500 dark:text-zinc-400">
-              Personalized micro-habits, symptom journals, and caregiver family sharing.
+              {{ 'Personalized micro-habits, symptom journals, and caregiver family sharing.' | pgT:'lens07.edu_subtitle' }}
             </p>
           </div>
         </div>
@@ -57,7 +59,7 @@ const DEFAULT_SOCRATIC_CHALLENGE: ISocraticChallenge = {
             (click)="showCaregiverBridge.set(true)"
           >
             <span>🤝</span>
-            <span>Share with Caregiver</span>
+            <span>{{ 'Share with Caregiver' | pgT:'lens07.share_caregiver' }}</span>
           </button>
           <pocket-gull-badge label="HEALTH LITERACY" severity="info"></pocket-gull-badge>
         </div>

@@ -26,9 +26,9 @@ import { CommonModule } from '@angular/common';
       </div>
       
       <div class="mt-4 flex items-baseline gap-2">
-        <!-- The main value -->
-        <span class="text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 select-all">{{ displayValue() }}</span>
-        <span class="text-xs font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest">{{ unit() }}</span>
+        <!-- The main value (wrapped in LTR bdi for ISMP RTL numeric safety) -->
+        <bdi dir="ltr" class="text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 select-all">{{ displayValue() }}</bdi>
+        <bdi dir="ltr" class="text-xs font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest">{{ unit() }}</bdi>
       </div>
       
       <!-- Trend / Info line -->

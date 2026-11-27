@@ -19,17 +19,30 @@ Endpoints:
 from __future__ import annotations
 
 import asyncio
+from collections import OrderedDict
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 import hashlib
 import json
+import logging
 import os
 import re
+import secrets
 import sys
+from pathlib import Path
+from urllib.parse import quote
+
+# Ensure pocketgull_api directory is importable whether launched from repo root or pocketgull_api/
+_POCKETGULL_API_DIR = str(Path(__file__).resolve().parent)
+if _POCKETGULL_API_DIR not in sys.path:
+    sys.path.insert(0, _POCKETGULL_API_DIR)
+
 sys.modules['numexpr'] = None  # type: ignore
+import threading
 import time
 
-from pathlib import Path
+logger = logging.getLogger("pocketgull_api")
+
 from typing import Any, AsyncGenerator, Optional
 
 import numpy as np
@@ -154,16 +167,155 @@ from services.botanical_synergy_service import (
 )
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ML: CLINICAL RISK SCORING (joblib / scikit-learn & JAX / Flax NNX)
+# ML: CLINICAL RISK SCORING (Lazy LRU joblib / scikit-learn & JAX / Flax NNX)
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Model loaded once at startup — never per-request, never sent to the client.
+import hmac
+
+_MODELS_DIR = Path(__file__).parent / "models"
+_MODEL_PATH = _MODELS_DIR / "clinical_risk_v2.joblib"
+_METADATA_PATH = _MODELS_DIR / "clinical_risk_v2.metadata.json"
+
 _risk_model: Any = None
 _safety_threshold: float = 0.50
-_contest_models: dict[str, Any] = {}
-_clinical_models: dict[str, Any] = {}
-_MODEL_PATH = Path(__file__).parent / "models" / "clinical_risk_v2.joblib"
-_METADATA_PATH = Path(__file__).parent / "models" / "clinical_risk_v2.metadata.json"
+_integrity_registry: dict[str, Any] = {}
+_integrity_registry_loaded: bool = False
+
+
+def _get_integrity_registry() -> dict[str, Any]:
+    """Lazily loads the hermetic SHA-256 model integrity registry from disk."""
+    global _integrity_registry, _integrity_registry_loaded
+    if not _integrity_registry_loaded:
+        registry_path = Path(__file__).parent / "exported_onnx" / "model_integrity_registry.json"
+        if registry_path.exists():
+            try:
+                with registry_path.open("r", encoding="utf-8") as rf:
+                    _integrity_registry = json.load(rf)
+            except Exception as reg_exc:
+                logger.warning("Could not read model integrity registry: %s", reg_exc)
+        _integrity_registry_loaded = True
+    return _integrity_registry
+
+
+def _verify_model_sha256(model_path: Path, registry: Optional[dict[str, Any]] = None) -> bool:
+    """Verifies model file SHA-256 digest against the hermetic model integrity registry (fail-closed)."""
+    active_registry = registry if registry else _get_integrity_registry()
+    base_name = model_path.stem
+    entry = active_registry.get(base_name)
+    # Fail CLOSED: any model absent from the integrity registry or lacking a SHA-256 digest is rejected
+    if not entry or "sha256" not in entry or not model_path.exists():
+        logger.warning("Model integrity fail-closed: '%s' missing from verified SHA-256 registry.", model_path.name)
+        return False
+    h = hashlib.sha256()
+    with model_path.open("rb") as f:
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+    return hmac.compare_digest(h.hexdigest(), str(entry["sha256"]))
+
+
+class LazyBoundedModelMap(dict[str, Any]):
+    """On-demand SHA-256 verified joblib loader with bounded LRU memory retention.
+
+    Avoids deserializing all 36+ specialty/contest `.joblib` models during startup
+    lifespan while remaining 100% drop-in compatible with `dict.get(key)`.
+    """
+
+    def __init__(
+        self,
+        models_dir: Path,
+        allowed_keys: set[str],
+        suffix: str = ".joblib",
+        max_cached: int = 12,
+    ) -> None:
+        super().__init__()
+        self._models_dir = models_dir
+        self._allowed_keys = allowed_keys
+        self._suffix = suffix
+        self._max_cached = max_cached
+        self._lru: OrderedDict[str, Any] = OrderedDict()
+        self._missing_keys: set[str] = set()
+        self._lock = threading.Lock()
+
+    def get(self, key: str, default: Any = None) -> Any:  # type: ignore[override]
+        with self._lock:
+            if key in self._lru:
+                self._lru.move_to_end(key)
+                return self._lru[key]
+            if key in super().keys():
+                return super().__getitem__(key)
+            if key not in self._allowed_keys or key in self._missing_keys:
+                return default
+
+            model_file = self._models_dir / f"{key}{self._suffix}"
+            if not model_file.exists():
+                self._missing_keys.add(key)
+                return default
+
+            try:
+                import joblib
+
+                if not _verify_model_sha256(model_file, _get_integrity_registry()):
+                    raise ValueError(f"SHA-256 digest mismatch for {model_file.name}")
+                loaded = joblib.load(model_file)
+                self._lru[key] = loaded
+                while len(self._lru) > self._max_cached:
+                    self._lru.popitem(last=False)
+                logger.info("Lazy-loaded verified ML model '%s' from %s", key, model_file.name)
+                return loaded
+            except Exception as exc:
+                logger.warning("Could not lazy-load model '%s': %s", key, exc)
+                self._missing_keys.add(key)
+                return default
+
+    @property
+    def cached_count(self) -> int:
+        return len(self._lru)
+
+
+_CONTEST_MODEL_KEYS = {f"physionet_{yr}" for yr in ("2022", "2023", "2024", "2025", "2026")} | {
+    "readmission_risk"
+}
+
+_CLINICAL_MODEL_KEYS = {
+    "african_pharmacogenomic_risk_model",
+    "anticholinergic_delirium_model",
+    "ayurvedic_dosha_agni_model",
+    "biological_age_acceleration_model",
+    "biomarker_velocity_model",
+    "causal_treatment_optimizer",
+    "cgm_glycemic_excursion_model",
+    "cvsq_asthenopia_model",
+    "cyp_phenoconversion_model",
+    "drug_nutrient_synergy_model",
+    "dysautonomia_pem_risk_model",
+    "endotoxin_sibi_spike_model",
+    "icu_mortality_model",
+    "knee_recovery_risk_model",
+    "mbi_burnout_model",
+    "monk_skintone_ppg_debiasing_model",
+    "ms_pira_velocity_model",
+    "ms_progression_risk_model",
+    "neurocognitive_moca_model",
+    "oncology_cachexia_risk_model",
+    "outbreak_risk_model",
+    "periodontal_systemic_risk_model",
+    "readmission_risk_model",
+    "sarcopenia_frailty_model",
+    "seven_generations_protocol_model",
+    "survival_ckd_decompensation_model",
+    "tcm_zangfu_disharmony_model",
+    "tri_paradigm_synergy_model",
+    "vagal_coherence_model",
+    "who_hearts_cvd_risk_model",
+    "who_sdg_cardiometabolic_model",
+}
+
+_contest_models: LazyBoundedModelMap = LazyBoundedModelMap(
+    _MODELS_DIR, _CONTEST_MODEL_KEYS, suffix="_model.joblib", max_cached=6
+)
+_clinical_models: LazyBoundedModelMap = LazyBoundedModelMap(
+    _MODELS_DIR, _CLINICAL_MODEL_KEYS, suffix=".joblib", max_cached=12
+)
 
 
 class JAXMLState:
@@ -173,117 +325,42 @@ class JAXMLState:
 jax_ml_state = JAXMLState()
 
 
-import hmac
-
-
-def _verify_model_sha256(model_path: Path, registry: dict[str, Any]) -> bool:
-    """Verifies model file SHA-256 digest against the hermetic model integrity registry."""
-    base_name = model_path.stem
-    entry = registry.get(base_name)
-    if not entry or "sha256" not in entry:
-        return True
-    h = hashlib.sha256()
-    with model_path.open("rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
-            h.update(chunk)
-    return hmac.compare_digest(h.hexdigest(), str(entry["sha256"]))
-
-
 async def _load_ml_model() -> None:
-    global _risk_model, _safety_threshold, _contest_models, _clinical_models
-    registry_path = Path(__file__).parent / "exported_onnx" / "model_integrity_registry.json"
-    integrity_registry: dict[str, Any] = {}
-    if registry_path.exists():
-        try:
-            with registry_path.open("r", encoding="utf-8") as rf:
-                integrity_registry = json.load(rf)
-        except Exception as reg_exc:
-            print(f"[ML] Warning: could not read model integrity registry ({reg_exc}).")
+    """Loads integrity registry and primary clinical_risk_v2 model; specialty models lazy-load."""
+    global _risk_model, _safety_threshold, _integrity_registry, _integrity_registry_loaded
+    _integrity_registry_loaded = False
+    registry = _get_integrity_registry()
 
     if _MODEL_PATH.exists():
         try:
             import joblib
-            if not _verify_model_sha256(_MODEL_PATH, integrity_registry):
+
+            if not _verify_model_sha256(_MODEL_PATH, registry):
                 raise ValueError(f"SHA-256 digest mismatch for {_MODEL_PATH.name}")
             _risk_model = joblib.load(_MODEL_PATH)
-            print(f"[ML] Loaded clinical risk model from {_MODEL_PATH}")
+            logger.info("Loaded primary clinical risk model from %s", _MODEL_PATH.name)
             if _METADATA_PATH.exists():
                 try:
                     with _METADATA_PATH.open("r", encoding="utf-8") as f:
                         meta = json.load(f)
                     _safety_threshold = meta.get("optimal_safety_threshold", 0.50)
-                    print(f"[ML] Loaded optimal safety decision threshold: {_safety_threshold:.3f}")
+                    logger.info("Loaded optimal safety decision threshold: %.3f", _safety_threshold)
                 except Exception as meta_exc:
-                    print(f"[ML] Warning: could not parse metadata card ({meta_exc}). Using default threshold.")
+                    logger.warning("Could not parse metadata card (%s). Using default threshold.", meta_exc)
         except Exception as exc:
-            print(f"[ML] Warning: could not load model ({exc}). Risk scoring will be unavailable.")
+            logger.warning("Could not load primary risk model (%s). Demo fallback active.", exc)
     else:
-        print(f"[ML] No model found at {_MODEL_PATH}. Risk scoring endpoint returns demo data.")
+        logger.info("Primary model not present at %s; deterministic/ONNX fallback active.", _MODEL_PATH.name)
 
-    # Load PhysioNet Challenge Models (2022 - 2026)
-    models_dir = Path(__file__).parent / "models"
-    for year in ["2022", "2023", "2024", "2025", "2026"]:
-        contest_key = f"physionet_{year}"
-        model_file = models_dir / f"{contest_key}_model.joblib"
-        if model_file.exists():
-            try:
-                import joblib
-                if not _verify_model_sha256(model_file, integrity_registry):
-                    raise ValueError(f"SHA-256 digest mismatch for {model_file.name}")
-                _contest_models[contest_key] = joblib.load(model_file)
-                print(f"[ML] Loaded contest model {contest_key} from {model_file}")
-            except Exception as e:
-                print(f"[ML] Warning: could not load contest model {contest_key} ({e})")
-
-    # Load all 31 Specialty Clinical Platinum Models
-    for model_key in [
-        "african_pharmacogenomic_risk_model",
-        "anticholinergic_delirium_model",
-        "ayurvedic_dosha_agni_model",
-        "biological_age_acceleration_model",
-        "biomarker_velocity_model",
-        "causal_treatment_optimizer",
-        "cgm_glycemic_excursion_model",
-        "cvsq_asthenopia_model",
-        "cyp_phenoconversion_model",
-        "drug_nutrient_synergy_model",
-        "dysautonomia_pem_risk_model",
-        "endotoxin_sibi_spike_model",
-        "icu_mortality_model",
-        "knee_recovery_risk_model",
-        "mbi_burnout_model",
-        "monk_skintone_ppg_debiasing_model",
-        "ms_pira_velocity_model",
-        "ms_progression_risk_model",
-        "neurocognitive_moca_model",
-        "oncology_cachexia_risk_model",
-        "outbreak_risk_model",
-        "periodontal_systemic_risk_model",
-        "readmission_risk_model",
-        "sarcopenia_frailty_model",
-        "seven_generations_protocol_model",
-        "survival_ckd_decompensation_model",
-        "tcm_zangfu_disharmony_model",
-        "tri_paradigm_synergy_model",
-        "vagal_coherence_model",
-        "who_hearts_cvd_risk_model",
-        "who_sdg_cardiometabolic_model",
-    ]:
-        model_file = models_dir / f"{model_key}.joblib"
-        if model_file.exists():
-            try:
-                import joblib
-                if not _verify_model_sha256(model_file, integrity_registry):
-                    raise ValueError(f"SHA-256 digest mismatch for {model_file.name}")
-                _clinical_models[model_key] = joblib.load(model_file)
-                print(f"[ML] Loaded clinical model {model_key} from {model_file}")
-            except Exception as e:
-                print(f"[ML] Warning: could not load clinical model {model_key} ({e})")
+    logger.info(
+        "Registered %d contest and %d specialty clinical models for lazy LRU loading.",
+        len(_CONTEST_MODEL_KEYS),
+        len(_CLINICAL_MODEL_KEYS),
+    )
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load scikit-learn ML models at startup
     await _load_ml_model()
 
     # Initialize and pre-compile JAX XLA kernels on startup
@@ -291,22 +368,22 @@ async def lifespan(app: FastAPI):
         ckpt_dir = str((Path(__file__).parent / "checkpoints" / "clinical_model").resolve())
         jax_ml_state.engine = JAXInferenceEngine(in_features=32, hidden_dim=64, checkpoint_dir=ckpt_dir)
         jax_ml_state.engine.warmup(in_features=32)
-        print("[JAX Engine] [OK] JAX Inference Engine initialized and XLA graph pre-warmed.")
+        logger.info("JAX Inference Engine initialized and XLA graph pre-warmed.")
     except Exception as jax_exc:
-        print(f"[JAX Engine] Warning: JAX engine warmup fallback ({jax_exc}). Initializing CPU fallback.")
+        logger.warning("JAX engine warmup fallback (%s). Initializing CPU fallback.", jax_exc)
         try:
             jax_ml_state.engine = JAXInferenceEngine(in_features=32, hidden_dim=64)
             jax_ml_state.engine.warmup(in_features=32)
         except Exception as fallback_exc:
-            print(f"[JAX Engine] Fatal: Could not initialize JAX engine ({fallback_exc})")
+            logger.error("Could not initialize JAX engine: %s", fallback_exc)
 
     # Cloud SQL Proxy v2.22.0 Unix Domain Socket readiness check
     conn_name = os.getenv("INSTANCE_CONNECTION_NAME")
     if conn_name:
         socket_path = f"/cloudsql/{conn_name}"
-        print(f"[Cloud SQL v2.22] Unix domain socket configured at {socket_path}")
+        logger.info("Cloud SQL v2.22 Unix domain socket configured at %s", socket_path)
     else:
-        print("[Cloud SQL v2.22] Operating in local memory/emulated database mode.")
+        logger.info("Cloud SQL v2.22 operating in local memory/emulated database mode.")
     yield
 
 
@@ -336,65 +413,120 @@ try:
     from middleware.hipaa_deidentifier import HipaaDeidentificationMiddleware
     app.add_middleware(HipaaDeidentificationMiddleware)
 except Exception as _mw_err:
-    print(f"[Middleware] Warning: Could not initialize HIPAA middleware ({_mw_err})")
+    logger.warning("Could not initialize HIPAA middleware: %s", _mw_err)
 
 try:
     from services.telemetry import setup_opentelemetry
     setup_opentelemetry(app)
 except Exception as _otel_err:
-    print(f"[Telemetry] Warning: Could not initialize OpenTelemetry ({_otel_err})")
+    logger.warning("Could not initialize OpenTelemetry: %s", _otel_err)
 
 
 
 # ── Security Middleware & Exception Handler ───────────────────────────────────
 
-@app.middleware("http")
-async def security_middleware(request: Request, call_next):
-    # 1. Payload Size Guard (10MB limit)
-    content_length = request.headers.get("content-length")
-    if content_length and int(content_length) > 10 * 1024 * 1024:
-        return JSONResponse(
-            status_code=413,
-            content={"error": "Payload Too Large", "message": "Request body exceeds 10MB limit"}
-        )
-
-    # 2. Optional Internal API Key Header Verification (Constant-Time HMAC Guard)
-    internal_key = os.getenv("INTERNAL_SIDECAR_API_KEY")
-    if internal_key and request.url.path not in ["/health", "/docs", "/openapi.json"]:
-        client_key = request.headers.get("X-Internal-API-Key")
-        if not client_key or not hmac.compare_digest(client_key.encode("utf-8"), internal_key.encode("utf-8")):
-            return JSONResponse(
-                status_code=401,
-                content={"error": "Unauthorized", "message": "Invalid or missing X-Internal-API-Key"}
-            )
-
-    response = await call_next(request)
-
-    # 3. Inject OWASP & Mozilla HTTP Observatory 125 Security Headers
+def _apply_observatory_security_headers(response: Any) -> Any:
+    """Stamps Mozilla HTTP Observatory 125+ & WebMCP headers on EVERY response (including 4xx/5xx)."""
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=(), tools=(self)"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
     response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
     response.headers["Cross-Origin-Embedder-Policy"] = "credentialless"
+    response.headers["Origin-Agent-Cluster"] = "?1"
     response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'; base-uri 'none';"
     return response
+
+
+def _is_production_sidecar_env() -> bool:
+    return (
+        os.getenv("NODE_ENV", "").lower() == "production"
+        or os.getenv("POCKETGULL_ENV", "").lower() == "production"
+        or bool(os.getenv("K_SERVICE"))
+    )
+
+
+@app.middleware("http")
+async def security_middleware(request: Request, call_next):
+    # 1. Payload Size Guard (10MB limit) with safe int parsing
+    content_length = request.headers.get("content-length")
+    if content_length is not None:
+        try:
+            parsed_len = int(content_length)
+            if parsed_len < 0:
+                raise ValueError("Negative content-length")
+        except ValueError:
+            return _apply_observatory_security_headers(
+                JSONResponse(
+                    status_code=400,
+                    content={"error": "Bad Request", "message": "Invalid Content-Length header"},
+                )
+            )
+        if parsed_len > 10 * 1024 * 1024:
+            return _apply_observatory_security_headers(
+                JSONResponse(
+                    status_code=413,
+                    content={"error": "Payload Too Large", "message": "Request body exceeds 10MB limit"},
+                )
+            )
+
+    # 2. Internal API Key Header Verification (Constant-Time HMAC Guard; mandatory in production)
+    internal_key = (os.getenv("INTERNAL_SIDECAR_API_KEY") or "").strip()
+    is_public_probe = request.url.path in ("/health", "/docs", "/openapi.json")
+    if not is_public_probe:
+        if _is_production_sidecar_env() and not internal_key:
+            return _apply_observatory_security_headers(
+                JSONResponse(
+                    status_code=503,
+                    content={"error": "Service Misconfigured", "message": "INTERNAL_SIDECAR_API_KEY is required in production"},
+                )
+            )
+        if internal_key:
+            client_key = request.headers.get("X-Internal-API-Key")
+            if not client_key or not hmac.compare_digest(client_key.encode("utf-8"), internal_key.encode("utf-8")):
+                return _apply_observatory_security_headers(
+                    JSONResponse(
+                        status_code=401,
+                        content={"error": "Unauthorized", "message": "Invalid or missing X-Internal-API-Key"},
+                    )
+                )
+
+    try:
+        response = await call_next(request)
+    except Exception as exc:
+        safe_path = re.sub(r"[\r\n\t]", "_", request.url.path)[:128]
+        logger.error("Unhandled sidecar exception on %s: %s", safe_path, type(exc).__name__)
+        return _apply_observatory_security_headers(
+            JSONResponse(
+                status_code=500,
+                content={
+                    "error": "Internal Processing Error",
+                    "code": "ERR_INTERNAL_SIDECAR",
+                    "message": "An internal error occurred. Request details logged securely.",
+                },
+            )
+        )
+
+    return _apply_observatory_security_headers(response)
 
 
 @app.exception_handler(Exception)
 async def hipaa_zero_leak_exception_handler(request: Request, exc: Exception):
     """Sanitizes HTTP 500 error responses to prevent internal stack trace & system path leaks."""
-    print(f"[SECURITY] Internal Sidecar Exception on {request.url.path}: {exc}")
-    return JSONResponse(
-        status_code=500,
-        content={
-            "error": "Internal Processing Error",
-            "code": "ERR_INTERNAL_SIDECAR",
-            "message": "An internal error occurred. Request details logged securely."
-        }
+    safe_path = re.sub(r"[\r\n\t]", "_", request.url.path)[:128]
+    logger.error("Internal Sidecar Exception on %s: %s", safe_path, type(exc).__name__)
+    return _apply_observatory_security_headers(
+        JSONResponse(
+            status_code=500,
+            content={
+                "error": "Internal Processing Error",
+                "code": "ERR_INTERNAL_SIDECAR",
+                "message": "An internal error occurred. Request details logged securely.",
+            },
+        )
     )
 
 
@@ -411,6 +543,7 @@ async def health() -> dict[str, Any]:
         "service": "pocket-gull-python-bridge",
         "engine": "JAX / OpenXLA",
         "accelerator": str(is_accel),
+        "lazyCachedModels": _clinical_models.cached_count + _contest_models.cached_count,
     }
 
 
@@ -459,9 +592,10 @@ async def score_patient(payload: VitalsPayload) -> JaxRiskScoreResponse:
     try:
         score = jax_ml_state.engine.predict(payload.features)
     except Exception as exc:
+        logger.error("JAX inference execution failed: %s", type(exc).__name__)
         raise HTTPException(
             status_code=500,
-            detail=f"Inference execution failed: {str(exc)}",
+            detail="Inference execution failed.",
         )
     latency_ms = (time.perf_counter() - t0) * 1000.0
     return JaxRiskScoreResponse(
@@ -798,51 +932,79 @@ async def ingest_dataframe(payload: DataFrameIngestRequest) -> PatientVitalsResp
         )
 
     except ImportError:
-        raise HTTPException(status_code=503, detail="pandas not installed. Run: pip install pandas")
+        raise HTTPException(status_code=503, detail="Required tabular analytics runtime unavailable.")
     except Exception as exc:
-        raise HTTPException(status_code=422, detail=f"DataFrame parsing error: {exc}")
+        logger.warning("DataFrame ingest failed: %s", type(exc).__name__)
+        raise HTTPException(status_code=422, detail="Invalid DataFrame payload.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
 # INGEST: FHIR BUNDLE VALIDATION GATEWAY
 # ══════════════════════════════════════════════════════════════════════════════
 
+_ALLOWED_STANDARD_FHIR_TYPES = frozenset({
+    "Patient",
+    "Observation",
+    "Condition",
+    "MedicationRequest",
+    "MedicationStatement",
+    "CarePlan",
+    "DiagnosticReport",
+    "Encounter",
+    "AllergyIntolerance",
+    "Procedure",
+    "DocumentReference",
+    "Claim",
+    "ClaimResponse",
+    "Consent",
+    "Practitioner",
+    "Organization",
+    "ResearchSubject",
+    "Bundle",
+    "Immunization",
+    "ServiceRequest",
+    "Goal",
+})
+
+
 @app.post("/ingest/fhir-bundle", tags=["Ingest"])
 async def ingest_fhir_bundle(bundle_json: dict[str, Any]) -> dict[str, Any]:
     """
     Validate a FHIR Bundle. Supports a hybrid validation model for R6:
-    - Standard resources (Patient, Observation, Condition, etc.) are validated via fhir.resources.
+    - Strictly allowlisted standard resources (Patient, Observation, Condition, etc.) are validated via fhir.resources.
     - Draft/R6-specific resources (Evidence, Device, DeviceDefinition) are validated structurally.
     """
     try:
         if bundle_json.get("resourceType") != "Bundle":
             raise HTTPException(status_code=422, detail="Resource is not a FHIR Bundle")
-            
+
         entries = bundle_json.get("entry", [])
         if not isinstance(entries, list):
             raise HTTPException(status_code=422, detail="Bundle entries must be a list")
 
         validated_entries = []
         r6_resource_types = {"Evidence", "Device", "DeviceDefinition", "ArtifactAssessment", "SubscriptionTopic"}
-        
+
         for entry in entries:
             if not isinstance(entry, dict) or "resource" not in entry:
                 validated_entries.append(entry)
                 continue
-                
+
             resource = entry["resource"]
             if not isinstance(resource, dict) or "resourceType" not in resource:
                 raise HTTPException(status_code=422, detail="Entry resource must have a resourceType")
-                
+
             res_type = resource["resourceType"]
-            
+            if not isinstance(res_type, str) or not re.fullmatch(r"[A-Za-z]{2,40}", res_type):
+                raise HTTPException(status_code=422, detail="Invalid FHIR resourceType format")
+
             # If it's a draft R6-specific resource, do a structural schema check
             if res_type in r6_resource_types:
                 if "id" not in resource:
                     raise HTTPException(status_code=422, detail=f"R6 Draft Resource {res_type} missing 'id'")
                 validated_entries.append(entry)
-            else:
-                # Standard resource: validate using fhir.resources dynamically
+            elif res_type in _ALLOWED_STANDARD_FHIR_TYPES:
+                # Standard allowlisted resource: validate using fhir.resources dynamically
                 try:
                     module_name = res_type.lower()
                     try:
@@ -853,19 +1015,24 @@ async def ingest_fhir_bundle(bundle_json: dict[str, Any]) -> dict[str, Any]:
                         entry_copy["resource"] = validated_res.model_dump(mode="json", exclude_none=True)
                         validated_entries.append(entry_copy)
                     except (ImportError, AttributeError):
-                        # Fallback for unrecognized classes/modules
                         validated_entries.append(entry)
                 except Exception as e:
-                    raise HTTPException(status_code=422, detail=f"Invalid standard FHIR resource {res_type}: {e}")
+                    logger.warning("FHIR resource validation failed for %s: %s", res_type, type(e).__name__)
+                    raise HTTPException(status_code=422, detail=f"Invalid standard FHIR resource: {res_type}")
+            else:
+                raise HTTPException(status_code=422, detail="Unsupported or disallowed FHIR resourceType")
 
         validated_bundle = dict(bundle_json)
         validated_bundle["entry"] = validated_entries
         return validated_bundle
 
+    except HTTPException:
+        raise
     except ImportError:
-        raise HTTPException(status_code=503, detail="fhir.resources not installed. Run: pip install fhir.resources")
+        raise HTTPException(status_code=503, detail="FHIR validation library unavailable.")
     except Exception as exc:
-        raise HTTPException(status_code=422, detail=f"Invalid FHIR Bundle: {exc}")
+        logger.warning("FHIR bundle validation failed: %s", type(exc).__name__)
+        raise HTTPException(status_code=422, detail="Invalid FHIR Bundle payload.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1082,8 +1249,9 @@ async def ml_risk_score(req: RiskScoreRequest) -> Bundle:
             score, latency_ms = await onnx_engine.predict_proba_async(np.array(features), fallback_model=_risk_model)
             note = f"ML model inference (ONNX FP16 / ThreadPool: {latency_ms}ms)"
         except Exception as exc:
+            logger.warning("Risk model inference error: %s", type(exc).__name__)
             score = 0.0
-            note = f"Model error: {exc}"
+            note = "Model inference fallback active."
     else:
         # Rule-based heuristic fallback for development
         score = 0.0
@@ -1172,7 +1340,8 @@ async def predict_physionet_2022(req: PhysioNet2022Request) -> Bundle:
             score = float(model.predict_proba([features])[0][1])
             note = "PhysioNet 2022 Heart Murmur Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model execution error: {e}"
+            logger.warning("Contest model execution error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, (req.murmur_intensity / 5.0) * 0.7 + (req.pcg_spike_freq / 3.0) * 0.3)
         note = "PhysioNet 2022 Heuristic Fallback"
@@ -1197,7 +1366,8 @@ async def predict_physionet_2023(req: PhysioNet2023Request) -> Bundle:
             score = float(model.predict_proba([features])[0][1])
             note = "PhysioNet 2023 Neurological Outcome Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model execution error: {e}"
+            logger.warning("Contest model execution error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, req.burst_suppression_ratio * 0.6 + (6 - req.gcs_motor) * 0.08 + (1.0 / req.eeg_alpha_theta) * 0.1)
         note = "PhysioNet 2023 Heuristic Fallback"
@@ -1223,7 +1393,8 @@ async def predict_physionet_2024(req: PhysioNet2024Request) -> Bundle:
             score = float(model.predict_proba([features])[0][1])
             note = "PhysioNet 2024 ECG Event Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model execution error: {e}"
+            logger.warning("Contest model execution error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, (req.st_elevation / 2.0) * 0.5 + max(0.0, (req.qtc - 440) / 100) * 0.3)
         note = "PhysioNet 2024 Heuristic Fallback"
@@ -1250,7 +1421,8 @@ async def predict_physionet_2025(req: PhysioNet2025Request) -> Bundle:
             score = float(model.predict_proba([features])[0][1])
             note = "PhysioNet 2025 Multimodal Sepsis Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model execution error: {e}"
+            logger.warning("Contest model execution error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, (req.lactate / 4.0) * 0.4 + (req.wbc / 20.0) * 0.3 + (shock_index / 1.2) * 0.3)
         note = "PhysioNet 2025 Heuristic Fallback"
@@ -1276,7 +1448,8 @@ async def predict_physionet_2026(req: PhysioNet2026Request) -> Bundle:
             score = float(model.predict_proba([features])[0][1])
             note = "PhysioNet 2026 PSG Signal Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model execution error: {e}"
+            logger.warning("Contest model execution error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0, (98.0 - req.spo2) * 0.05) + max(0.0, (req.hr - 75) * 0.01))
         note = "PhysioNet 2026 Heuristic Fallback"
@@ -1329,8 +1502,9 @@ async def predict_readmission_risk(req: ReadmissionRiskRequest) -> Bundle:
             readmission_prob = float(model.predict_proba([features])[0][1])
             note = "ML 30-Day Readmission Risk Model inference"
         except Exception as e:
+            logger.warning("Readmission model execution error: %s", type(e).__name__)
             readmission_prob = 0.25
-            note = f"Model execution error: {e}"
+            note = "Model inference fallback active."
     else:
         # Calibrated clinical risk heuristic model
         base_risk = 0.10
@@ -1411,7 +1585,8 @@ async def predict_knee_recovery(req: KneeRecoveryPredictRequest) -> Bundle:
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum ML Knee Recovery Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             ((50.0 - req.koos_pain_score) / 50.0) * 0.35 +
@@ -1471,7 +1646,8 @@ async def predict_biological_age(req: BiologicalAgePredictRequest) -> Bundle:
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum Levine PhenoAge Acceleration Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (req.hs_crp_mg_l / 10.0) * 0.30 +
@@ -1523,7 +1699,8 @@ async def predict_periodontal_risk(req: PeriodontalSystemicPredictRequest) -> Bu
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum Teledentistry Periodontal-Systemic Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (req.deep_pocket_count_ppd_ge_5mm / 12.0) * 0.35 +
@@ -1577,7 +1754,8 @@ async def predict_ms_progression(req: MsProgressionPredictRequest) -> Bundle:
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum NMSS Neuro-Axonal Progression Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (req.serum_nfl_pg_ml / 25.0) * 0.35 +
@@ -1632,7 +1810,8 @@ async def predict_who_hearts_cvd(req: WhoHeartsCvdPredictRequest) -> Bundle:
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum WHO HEARTS Non-Lab CVD Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (max(0.0, req.systolic_bp_mmhg - 110.0) / 70.0) * 0.35 +
@@ -1685,7 +1864,8 @@ async def predict_dysautonomia_pem(req: DysautonomiaPemPredictRequest) -> Bundle
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum NIH Dysautonomia PEM Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (req.orthostatic_hr_delta_bpm / 40.0) * 0.30 +
@@ -1735,7 +1915,8 @@ async def predict_oncology_cachexia(req: OncologyCachexiaPredictRequest) -> Bund
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum NIH NCI Cachexia Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (req.weight_loss_pct_6mo / 10.0) * 0.35 +
@@ -1789,7 +1970,8 @@ async def predict_ayurvedic_dosha_agni(req: AyurvedicDoshaAgniPredictRequest) ->
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum Ayurvedic Dosha-Agni Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (max(0.0, 45.0 - req.autonomic_rmssd_ms) / 35.0) * 0.25 +
@@ -1843,7 +2025,8 @@ async def predict_tcm_zangfu_disharmony(req: TcmZangfuDisharmonyPredictRequest) 
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum TCM Zang-Fu Disharmony Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (req.orthostatic_drop_bpm / 25.0) * 0.25 +
@@ -1896,7 +2079,8 @@ async def predict_tri_paradigm_synergy(req: TriParadigmSynergyPredictRequest) ->
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum Tri-Paradigm Synergy Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             req.cyp3a4_inhibition_risk * 0.35 +
@@ -1954,7 +2138,8 @@ async def predict_cyp_phenoconversion(req: CypPhenoconversionPredictRequest) -> 
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum CYP Phenoconversion Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             req.potent_inhibitor_count * 0.45 +
@@ -2012,7 +2197,8 @@ async def predict_anticholinergic_delirium(req: AnticholinergicDeliriumPredictRe
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum Anticholinergic Delirium/Fall Risk Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (req.anticholinergic_cognitive_burden_acb / 6.0) * 0.40 +
@@ -2075,7 +2261,8 @@ async def predict_ms_pira_velocity(req: MsPiraVelocityPredictRequest) -> Bundle:
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum MS PIRA Velocity Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (max(0.0, req.baseline_snfl_pg_ml - 10.0) / 25.0) * 0.40 +
@@ -2136,7 +2323,8 @@ async def predict_endotoxin_sibi_spike(req: EndotoxinSibiSpikePredictRequest) ->
             score = float(model.predict_proba(features)[0, 1])
             note = "Platinum Periodontal Endotoxin SIBI Model inference"
         except Exception as e:
-            score, note = 0.0, f"Model error: {e}"
+            logger.warning("Clinical model inference error: %s", type(e).__name__)
+            score, note = 0.0, "Model inference fallback active."
     else:
         score = min(1.0, max(0.0,
             (max(0.0, req.max_periodontal_pocket_depth_mm - 4.0) / 4.0) * 0.40 +
@@ -2279,7 +2467,8 @@ async def read_hdf5_segment(
     except HTTPException:
         raise
     except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"HDF5 read error: {exc}")
+        logger.error("HDF5 read error: %s", type(exc).__name__)
+        raise HTTPException(status_code=500, detail="Failed to read HDF5 biosignal segment.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -2556,10 +2745,10 @@ async def predict_rsna_knee_abnormalities(payload: RsnaKneePredictInput) -> Rsna
         ]
         MDeBERTaTextExtractor = None
 
-    # Compute base seeded probabilities
-    seed = abs(hash(payload.study_id)) % (2**32 - 1)
-    np.random.seed(seed)
-    raw_probs = np.random.uniform(0.08, 0.38, size=12)
+    # Compute base seeded probabilities using local Generator (never mutate global np.random state)
+    seed = int(hashlib.sha256(payload.study_id.encode("utf-8")).hexdigest()[:8], 16)
+    rng = np.random.default_rng(seed)
+    raw_probs = rng.uniform(0.08, 0.38, size=12)
 
     # Multilingual Report Prior Fusion
     if payload.report_text and MDeBERTaTextExtractor is not None:
@@ -2638,8 +2827,8 @@ async def predict_survival_curve(payload: SurvivalCurveRequest) -> SurvivalCurve
     """Predict dynamic multi-horizon time-to-event survival curves using Breslow baseline estimation."""
     from survival_analysis_engine import CoxSurvivalEstimator
     
-    model_path = os.path.join(os.path.dirname(__file__), 'models', 'survival_ckd_decompensation_model.joblib')
-    if os.path.exists(model_path):
+    model_path = Path(__file__).parent / "models" / "survival_ckd_decompensation_model.joblib"
+    if model_path.exists() and _verify_model_sha256(model_path, _get_integrity_registry()):
         import joblib
         model: CoxSurvivalEstimator = joblib.load(model_path)
     else:
@@ -2683,8 +2872,8 @@ async def predict_causal_treatment_effect(payload: CausalTreatmentRequest) -> Ca
     """Predict counterfactual heterogeneous treatment effects with conformal 95% uncertainty bounds."""
     from causal_treatment_engine import XLearnerCausalEstimator
     
-    model_path = os.path.join(os.path.dirname(__file__), 'models', 'causal_treatment_optimizer.joblib')
-    if os.path.exists(model_path):
+    model_path = Path(__file__).parent / "models" / "causal_treatment_optimizer.joblib"
+    if model_path.exists() and _verify_model_sha256(model_path, _get_integrity_registry()):
         import joblib
         model: XLearnerCausalEstimator = joblib.load(model_path)
     else:
@@ -2780,8 +2969,8 @@ async def smart_ehr_launch(
 ) -> SmartLaunchResponse:
     """Initiate SMART-on-FHIR OAuth2 launch sequence from Epic Hyperspace or Cerner iframe."""
     ehr_vendor = "Epic Systems" if "epic" in iss.lower() else ("Oracle Cerner" if "cerner" in iss.lower() else "Generic FHIR R4")
-    state_token = f"pg_state_{hashlib.sha256(launch.encode()).hexdigest()[:16]}"
-    redirect_url = f"{iss}/oauth2/authorize?response_type=code&client_id=pocketgull_ehr_client&redirect_uri=/api/fhir/smart/callback&launch={launch}&scope=launch/patient+patient/*.read+patient/*.write+openid+fhirUser&state={state_token}&aud={iss}"
+    state_token = f"pg_state_{secrets.token_urlsafe(32)}"
+    redirect_url = f"{iss}/oauth2/authorize?response_type=code&client_id=pocketgull_ehr_client&redirect_uri=/api/fhir/smart/callback&launch={quote(launch, safe='')}&scope=launch/patient+patient/*.read+patient/*.write+openid+fhirUser&state={state_token}&aud={quote(iss, safe='')}"
 
     return SmartLaunchResponse(
         launch_id=launch,
@@ -2839,12 +3028,13 @@ async def smart_careplan_export(payload: SmartCarePlanExportRequest) -> dict[str
 
 @app.get("/api/stream/telemetry", tags=["Live Biosignal Telemetry"])
 async def stream_live_telemetry(
-    sessions_seconds: int = Query(default=10, description="Duration to stream telemetry in seconds")
+    sessions_seconds: int = Query(default=10, ge=1, le=60, description="Duration to stream telemetry in seconds (1-60)")
 ) -> StreamingResponse:
     """Stream continuous 1-second interval live biosignals (HRV RMSSD, 1D-CNN Rhythm, and Vagal Coherence) via SSE."""
     async def event_generator() -> AsyncGenerator[str, None]:
         from waveform_1d_cnn import Waveform1DCNNClassifier
         clf = Waveform1DCNNClassifier()
+        rng = np.random.default_rng()
 
         for sec in range(sessions_seconds):
             await asyncio.sleep(1.0)
@@ -2861,7 +3051,7 @@ async def stream_live_telemetry(
                 "rmssd_ms": classified["telemetry"]["rmssd_ms"],
                 "rhythm": classified["predicted_rhythm"],
                 "vagal_coherence_lock": classified["telemetry"]["rmssd_ms"] > 40.0,
-                "signal_quality_snr_db": round(24.5 + np.random.normal(0, 0.5), 1)
+                "signal_quality_snr_db": round(24.5 + float(rng.normal(0, 0.5)), 1)
             }
             yield f"data: {json.dumps(event_data)}\n\n"
 
@@ -3055,9 +3245,11 @@ async def predict_seven_generations_longevity(payload: SevenGenerationsModelPred
     """Execute 5-Fold GroupKFold Calibrated Model Inference with Decision Curve Analysis."""
     import joblib
 
-    model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "seven_generations_protocol_model.joblib")
-    if not os.path.exists(model_path):
+    model_path = Path(__file__).resolve().parent / "models" / "seven_generations_protocol_model.joblib"
+    if not model_path.exists():
         raise HTTPException(status_code=404, detail="Seven Generations Protocol model weights not found.")
+    if not _verify_model_sha256(model_path, _get_integrity_registry()):
+        raise HTTPException(status_code=503, detail="Seven Generations Protocol model integrity verification failed.")
 
     model = joblib.load(model_path)
 
@@ -3454,7 +3646,7 @@ async def calibrate_clinical_uncertainty(payload: CalibrationRequest) -> Calibra
 # ══════════════════════════════════════════════════════════════════════════════
 
 class SyntheticCohortRequest(BaseModel):
-    num_samples: int = Field(default=10000, description="Number of synthetic patient feature profiles to generate")
+    num_samples: int = Field(default=10000, ge=10, le=50000, description="Number of synthetic patient feature profiles to generate (10-50000)")
     seed: int = Field(default=42, description="PRNG seed for reproducible generation")
     mechanism_balance: bool = Field(default=True, description="Enforce equal distribution across the 4 trauma vectors")
 

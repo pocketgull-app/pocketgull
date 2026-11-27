@@ -15,6 +15,10 @@ on:
       - 'scratch/**'
       - '.agents/**'
       - 'packages/pocketgull-theme/**'
+      - 'contests/**'
+      - 'datasets/**'
+      - 'arxiv/**'
+      - 'companion-apps/**'
   workflow_dispatch:
 
 permissions:
@@ -44,24 +48,52 @@ jobs:
           node-version: '24'
           cache: 'npm'
           
+      - name: Setup Dart SDK (TIPPSS & PHI Taint Pre-Flight)
+        uses: dart-lang/setup-dart@e630b99d28a3b71860378cafdc2a067c71107f94 # v1.7.0
+        with:
+          sdk: stable
+
       - name: Install Dependencies
         run: npm ci --legacy-peer-deps
-        
-      - name: Security Audit
-        run: npm audit --json > audit.json || true
+
+      - name: Security Audit (High/Critical Fail-Closed)
+        run: npm audit --audit-level=high --json > audit.json
 
       - name: Upload audit report
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: npm-audit-report
           path: audit.json
-        
-      # Ensure code quality for clinical safety
-      - name: Run Linters
-        run: npm run lint --if-present
 
-      - name: Sentinel Network & Egress Security Guard
+      # Mandatory 8-Gate Pre-Flight (Gates 1-7; Gate 8 gcp:audit runs with WIF in build-and-deploy)
+      - name: Gate 1 — TypeScript Strict Typecheck (tsc --noEmit)
+        run: npm run lint
+
+      - name: Gate 2 — Unit & Clinical Safety Tests (Vitest)
+        run: npx vitest run
+
+      - name: Gate 3 — Sentinel Security & Log Injection Guard
         run: npm run sentinel:audit
+
+      - name: Gate 4 — CycloneDX 1.6 SBOM Generation
+        run: npm run sbom
+
+      - name: Gate 5 — Mozilla HTTP Observatory 125+ Header Audit
+        run: npm run observatory:audit
+
+      - name: Gate 6 — IEEE P2933 TIPPSS Schema Parity Audit
+        run: npm run tippss:audit
+
+      - name: Gate 7 — PHI Taint Boundary & Static Taint Audit
+        run: |
+          npm run taint:audit
+          npm run taint:scan
+
+      - name: Gate 7b — Master Epistemic Ground-Truth & Porter Deployment Audit
+        run: |
+          npm run audit:epistemic
+          npm run porter:audit
 
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
@@ -79,11 +111,7 @@ jobs:
       - name: Run Python Dependency Audit
         run: |
           pip install pip-audit
-          pip-audit -r pocketgull_api/requirements.txt --local || true 
-
-      # Run unit tests (safety red-team + service logic)
-      - name: Run Unit Tests
-        run: npx vitest run
+          pip-audit -r pocketgull_api/requirements.txt --local
 
   test-e2e:
     needs: security-and-lint
@@ -107,7 +135,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: npm ci --legacy-peer-deps
 
       - name: Cache Playwright Browsers
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -160,8 +188,15 @@ jobs:
           cat /tmp/server.log || true
           exit 1
 
-      - name: Run E2E Tests
-        run: npm run test:e2e
+      - name: Run E2E Tests (All 6 Institutional Thin-Client Viewports — Real CSP)
+        run: >
+          npm run test:e2e --
+          --project=desktop-chrome
+          --project=mobile-chrome
+          --project=mobile-iphone
+          --project=tablet-ipad-exam-room
+          --project=chromebook-school-library
+          --project=clinical-cow-workstation
         env:
           CI: true
           PORT: '4000'
@@ -216,15 +251,34 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
 
-      - name: Build Preview Image
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install Dependencies & Build Production Dist
         run: |
-          gcloud auth configure-docker gcr.io
-          IMAGE_PATH=gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull
+          npm ci --legacy-peer-deps
+          npm run build
+        env:
+          CI: true
+          NODE_ENV: 'production'
+          GEMINI_API_KEY: 'placeholder-key-for-build'
+          SKIP_HEALTHCARE_PROVISION: 'true'
+          ASTRO_TELEMETRY_DISABLED: '1'
+
+      - name: Build Preview Image
+        env:
+          DOCKER_BUILDKIT: '1'
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+          IMAGE_PATH=us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull
           docker build -t $IMAGE_PATH:pr-${{ github.event.number }} .
 
       - name: Push Preview Image
         run: |
-          IMAGE_PATH=gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull
+          IMAGE_PATH=us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull
           docker push $IMAGE_PATH:pr-${{ github.event.number }}
 
       - name: Deploy Preview to Cloud Run
@@ -233,7 +287,7 @@ jobs:
         with:
           service: 'pocket-gull'
           region: 'us-central1'
-          image: 'gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull:pr-${{ github.event.number }}'
+          image: 'us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull:pr-${{ github.event.number }}'
           tag: 'pr-${{ github.event.number }}'
           no_traffic: true  # Don't shift production traffic
           env_vars: |
@@ -303,12 +357,47 @@ jobs:
           
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
-          
-      - name: Build Docker Image
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Setup Dart SDK (Pre-Flight Parity Gates)
+        uses: dart-lang/setup-dart@e630b99d28a3b71860378cafdc2a067c71107f94 # v1.7.0
+        with:
+          sdk: stable
+
+      - name: Install Dependencies & Run 8-Gate Pre-Flight + Production Build
         run: |
-          gcloud auth configure-docker gcr.io
-          IMAGE_PATH=gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull
-          
+          npm ci --legacy-peer-deps
+          npm run lint
+          npx vitest run
+          npm run sentinel:audit
+          npm run sbom
+          npm run observatory:audit
+          npm run tippss:audit
+          npm run taint:audit
+          npm run audit:epistemic
+          npm run porter:audit
+          npm run gcp:audit
+          npm run build
+        env:
+          CI: true
+          NODE_ENV: 'production'
+          GEMINI_API_KEY: 'placeholder-key-for-build'
+          SKIP_HEALTHCARE_PROVISION: 'true'
+          ASTRO_TELEMETRY_DISABLED: '1'
+          GOOGLE_CLOUD_PROJECT: 'gen-lang-client-0540208645'
+
+      - name: Build Docker Image
+        env:
+          DOCKER_BUILDKIT: '1'
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+          IMAGE_PATH=us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull
+
           # Docker caching for faster builds
           docker pull $IMAGE_PATH:latest || true
           docker build \
@@ -319,7 +408,7 @@ jobs:
       - name: Push Docker Image
         id: push-image
         run: |
-          IMAGE_PATH=gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull
+          IMAGE_PATH=us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull
           docker push $IMAGE_PATH:${{ github.sha }}
           docker push $IMAGE_PATH:latest
 
@@ -333,7 +422,7 @@ jobs:
       - name: Attest Build Provenance
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-name: "gcr.io/${{ secrets.GCP_PROJECT_ID }}/pocket-gull"
+          subject-name: "us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull"
           subject-digest: "${{ steps.push-image.outputs.digest }}"
           push-to-registry: false
           

@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
 import { RolePathwayDocsService, ClinicalRolePathway } from './role-pathway-docs.service';
+import { ClinicalMoERouterService, IRoleSmoePreview } from './clinical-moe-router.service';
 import { MOCK_PATIENTS } from '../mock-patients';
 
 export interface IRoleDemoScenario {
@@ -14,6 +15,7 @@ export interface IRoleDemoScenario {
   highlightedModules: string[];
   initialActiveTab: string;
   clinicalNarrative: string;
+  smoePreview?: IRoleSmoePreview;
 }
 
 @Injectable({
@@ -22,10 +24,23 @@ export interface IRoleDemoScenario {
 export class RoleDemoLauncherService {
   private patientState?: PatientStateService | null;
   private docsService: RolePathwayDocsService;
+  private moeRouter?: ClinicalMoERouterService | null;
 
-  constructor(patientState?: PatientStateService | null, docsService?: RolePathwayDocsService | null) {
-    this.patientState = patientState !== undefined ? patientState : inject(PatientStateService, { optional: true });
-    this.docsService = docsService || (typeof inject === 'function' ? (inject(RolePathwayDocsService, { optional: true }) || new RolePathwayDocsService()) : new RolePathwayDocsService());
+  constructor(
+    patientState?: PatientStateService | null,
+    docsService?: RolePathwayDocsService | null,
+    moeRouter?: ClinicalMoERouterService | null
+  ) {
+    this.patientState = patientState !== undefined
+      ? patientState
+      : (() => { try { return inject(PatientStateService, { optional: true }); } catch { return null; } })();
+    this.docsService = docsService || (() => {
+      try { return inject(RolePathwayDocsService, { optional: true }) || new RolePathwayDocsService(); }
+      catch { return new RolePathwayDocsService(); }
+    })();
+    this.moeRouter = moeRouter !== undefined
+      ? moeRouter
+      : (() => { try { return inject(ClinicalMoERouterService, { optional: true }); } catch { return null; } })();
   }
 
   readonly scenarios: Record<ClinicalRolePathway, IRoleDemoScenario> = {
@@ -114,8 +129,12 @@ export class RoleDemoLauncherService {
   public launchRoleDemo(roleId: ClinicalRolePathway): IRoleDemoScenario {
     const scenario = this.scenarios[roleId] || this.scenarios.clinician;
     
-    // 1. Set the active role pathway
+    // 1. Set the active role pathway & synchronize Autonomous SMoE Role Priors / Top-k / Density
     this.docsService.setPathway(roleId);
+    const smoePreview = this.moeRouter
+      ? this.moeRouter.applyClinicalRolePathway(roleId)
+      : this.computeFallbackSmoePreview(roleId);
+    this.moeRouter?.activeTranscriptQuery?.set(scenario.chiefComplaint);
 
     // 2. Set demo mode in state
     if (this.patientState) {
@@ -141,10 +160,21 @@ export class RoleDemoLauncherService {
       }
     }
 
-    return scenario;
+    return {
+      ...scenario,
+      smoePreview
+    };
   }
 
   public getScenarios(): IRoleDemoScenario[] {
-    return Object.values(this.scenarios);
+    return Object.values(this.scenarios).map(s => ({
+      ...s,
+      smoePreview: this.moeRouter?.getRoleSmoePreview?.(s.roleId) || this.computeFallbackSmoePreview(s.roleId)
+    }));
+  }
+
+  private computeFallbackSmoePreview(roleId: ClinicalRolePathway): IRoleSmoePreview {
+    const fallbackRouter = new ClinicalMoERouterService();
+    return fallbackRouter.getRoleSmoePreview(roleId);
   }
 }

@@ -1,5 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
 import { Router, Request, Response } from 'express';
 import crypto from 'node:crypto';
+import {
+  requireAuth,
+  timingSafeStringEqual,
+  isStrictProductionEnv
+} from '../middleware/auth-guard';
 
 export interface IFhirSubscriptionNotification {
   id: string;
@@ -7,11 +13,10 @@ export interface IFhirSubscriptionNotification {
   topic: string;
   eventType: 'ADT_ADMISSION' | 'ADT_DISCHARGE' | 'ADT_TRANSFER' | 'VITAL_SIGNS_UPDATE' | 'LAB_RESULT' | 'HANDSHAKE';
   timestamp: string;
-  patientId: string;
-  patientMrn: string;
+  patientIdPseudonym: string;
+  patientMrnPseudonym: string;
   encounterId?: string;
   resourceType: 'Encounter' | 'Observation' | 'Bundle';
-  rawPayload: any;
   securityAttestation: {
     sha256Digest: string;
     verifiedSignature: boolean;
@@ -36,7 +41,7 @@ export interface IFhirSubscriptionEndpointStatus {
 
 export const fhirSubscriptionRouter = Router();
 
-// In-memory rolling buffer of the last 50 subscription events
+// In-memory rolling buffer of the last 50 de-identified subscription events (zero raw PHI/rawPayload stored)
 const MAX_BUFFER_SIZE = 50;
 const subscriptionEventBuffer: IFhirSubscriptionNotification[] = [];
 let totalEventsCount = 0;
@@ -49,11 +54,65 @@ const SUPPORTED_TOPICS = [
   'http://pocketgull.app/fhir/subscription/sepsis-conformal-alert'
 ];
 
+let _ephemeralSubSalt: string | null = null;
+function getPseudonymSalt(): string {
+  const configured = process.env['FHIR_SUBSCRIPTION_SALT']?.trim() || process.env['API_KEY_SALT']?.trim();
+  if (configured && configured.length >= 16) return configured;
+  if (!_ephemeralSubSalt) {
+    _ephemeralSubSalt = crypto.randomBytes(32).toString('hex');
+  }
+  return _ephemeralSubSalt;
+}
+
+function pseudonymizeIdentifier(prefix: string, raw: string): string {
+  const hash = crypto.createHmac('sha256', getPseudonymSalt()).update(raw, 'utf8').digest('hex').slice(0, 12);
+  return `${prefix}_${hash}`;
+}
+
+/**
+ * Verifies HMAC-SHA256 webhook signature (`X-Subscription-Signature` or `X-Hub-Signature-256`)
+ * using `crypto.timingSafeEqual`. Fails closed when secret is invalid or missing.
+ */
+export function verifyFhirWebhookHmac(req: Request, payloadString: string): boolean {
+  const webhookSecret = process.env['FHIR_SUBSCRIPTION_WEBHOOK_SECRET']?.trim();
+  const headers = (req.headers || {}) as Record<string, unknown>;
+  const getHeader = (name: string): string => {
+    if (typeof req.header === 'function') {
+      return String(req.header(name) || '').trim();
+    }
+    const val = headers[name.toLowerCase()];
+    return typeof val === 'string' ? val.trim() : '';
+  };
+
+  const sigHeader = getHeader('X-Subscription-Signature') || getHeader('X-Hub-Signature-256');
+
+  if (!webhookSecret) {
+    // Fail closed in production or whenever a secret is expected
+    return !isStrictProductionEnv() && process.env['NODE_ENV'] === 'test' && process.env['ALLOW_UNAUTH_LOCAL_DEMO'] === 'true';
+  }
+
+  if (!sigHeader) {
+    return false;
+  }
+
+  const providedHex = sigHeader.replace(/^sha256=/i, '').trim().toLowerCase();
+  if (!/^[a-f0-9]{64}$/.test(providedHex)) {
+    return false;
+  }
+
+  const expectedHex = crypto
+    .createHmac('sha256', webhookSecret)
+    .update(payloadString, 'utf8')
+    .digest('hex');
+
+  return timingSafeStringEqual(providedHex, expectedHex);
+}
+
 /**
  * GET /api/fhir/subscription/status
  * Returns current health, supported topics, and reception metrics.
  */
-fhirSubscriptionRouter.get('/status', (req: Request, res: Response) => {
+fhirSubscriptionRouter.get('/status', (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
 
@@ -73,9 +132,10 @@ fhirSubscriptionRouter.get('/status', (req: Request, res: Response) => {
 
 /**
  * GET /api/fhir/subscription/history
- * Returns the rolling buffer of recent FHIR subscription notifications.
+ * Returns the rolling buffer of HIPAA Safe Harbor de-identified FHIR subscription notifications.
+ * Strictly gated behind clinician authentication; never leaks raw MRN or rawPayload.
  */
-fhirSubscriptionRouter.get('/history', (req: Request, res: Response) => {
+fhirSubscriptionRouter.get('/history', requireAuth(['CLINICIAN']), (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
   res.status(200).json({
@@ -87,39 +147,50 @@ fhirSubscriptionRouter.get('/history', (req: Request, res: Response) => {
 
 /**
  * GET /api/fhir/subscription/jwks
- * Returns the public JSON Web Key Set (RFC 7517) for Epic/Cerner RFC 7523 token verification.
+ * Returns configured RFC 7517 public JSON Web Key Set from `FHIR_JWKS_PUBLIC_JSON`.
+ * Never returns fabricated placeholder RSA moduli or false `ACTIVE_CERTIFIED` claims.
  */
-fhirSubscriptionRouter.get('/jwks', (req: Request, res: Response) => {
+fhirSubscriptionRouter.get('/jwks', (_req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'public, max-age=3600');
-  res.status(200).json({
-    keys: [
-      {
-        kty: 'RSA',
-        alg: 'RS384',
-        use: 'sig',
-        kid: 'pg-key-2026-rsa384',
-        n: 'uR2Z8xK9mP_EXAMPLE_RSA_PUBLIC_MODULUS_FOR_EPIC_ORCHARD_CONNECTIVITY_2026_POCKETGULL_HEALTH_AI',
-        e: 'AQAB',
-        issuer: 'pocketgull-bi-directional-writeback-client-v1',
-        status: 'ACTIVE_CERTIFIED'
+
+  const configuredJwks = process.env['FHIR_JWKS_PUBLIC_JSON']?.trim();
+  if (configuredJwks) {
+    try {
+      const parsed = JSON.parse(configuredJwks) as { keys?: unknown[] };
+      if (parsed && Array.isArray(parsed.keys)) {
+        return res.status(200).json({ keys: parsed.keys });
       }
-    ]
+    } catch {
+      console.warn('[FHIR JWKS] Failed to parse FHIR_JWKS_PUBLIC_JSON environment variable.');
+    }
+  }
+
+  return res.status(200).json({
+    keys: [],
+    status: 'UNCONFIGURED',
+    message: 'No production RFC 7517 JWK signing key is currently configured on this instance.'
   });
 });
 
 /**
  * POST /api/fhir/subscription
  * Primary webhook receiver for EHR FHIR R4 Subscription notifications.
- * Handles ADT admission/discharge events and triggers conformal CDS evaluation.
+ * Strictly enforces HMAC-SHA256 signature verification (fails closed on missing/invalid signature).
  */
 fhirSubscriptionRouter.post('/', (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/json');
 
   const payload = req.body || {};
-  const secretHeader = (typeof req.header === 'function'
-    ? (req.header('X-Subscription-Secret') || req.header('Authorization'))
-    : (req.headers?.['x-subscription-secret'] || req.headers?.['authorization'])) || '';
+  const payloadString = JSON.stringify(payload);
+
+  // Verify HMAC-SHA256 webhook signature (fail closed)
+  const signatureVerified = verifyFhirWebhookHmac(req, payloadString);
+  if (!signatureVerified) {
+    return res.status(401).json({
+      error: 'Unauthorized: Missing or invalid FHIR subscription HMAC-SHA256 webhook signature.'
+    });
+  }
 
   // Verify handshake ping if type is handshake
   if (payload.type === 'handshake' || payload.subscriptionStatus === 'requested') {
@@ -136,13 +207,13 @@ fhirSubscriptionRouter.post('/', (req: Request, res: Response) => {
   const resource = payload.resource || payload;
   const resourceType = resource.resourceType || 'Bundle';
   let eventType: IFhirSubscriptionNotification['eventType'] = 'ADT_ADMISSION';
-  let patientId = 'PAT-EHR-UNKNOWN';
-  let patientMrn = 'MRN-UNKNOWN';
+  let rawPatientId = 'PAT-EHR-UNKNOWN';
+  let rawPatientMrn = 'MRN-UNKNOWN';
   let encounterId: string | undefined = undefined;
 
   if (resourceType === 'Encounter') {
-    patientId = resource.subject?.reference?.replace('Patient/', '') || resource.subject?.id || 'PAT-EHR-8821';
-    patientMrn = resource.identifier?.[0]?.value || 'MRN-784920';
+    rawPatientId = resource.subject?.reference?.replace('Patient/', '') || resource.subject?.id || 'PAT-EHR-8821';
+    rawPatientMrn = resource.identifier?.[0]?.value || 'MRN-784920';
     encounterId = resource.id || 'ENC-' + Date.now();
     if (resource.status === 'finished') {
       eventType = 'ADT_DISCHARGE';
@@ -151,45 +222,44 @@ fhirSubscriptionRouter.post('/', (req: Request, res: Response) => {
     }
   } else if (resourceType === 'Observation') {
     eventType = 'VITAL_SIGNS_UPDATE';
-    patientId = resource.subject?.reference?.replace('Patient/', '') || 'PAT-EHR-8821';
-    patientMrn = resource.identifier?.[0]?.value || 'MRN-784920';
+    rawPatientId = resource.subject?.reference?.replace('Patient/', '') || 'PAT-EHR-8821';
+    rawPatientMrn = resource.identifier?.[0]?.value || 'MRN-784920';
   } else if (payload.eventType) {
     eventType = payload.eventType;
-    patientId = payload.patientId || patientId;
-    patientMrn = payload.patientMrn || patientMrn;
+    rawPatientId = payload.patientId || rawPatientId;
+    rawPatientMrn = payload.patientMrn || rawPatientMrn;
     encounterId = payload.encounterId;
   }
 
-  const payloadString = JSON.stringify(payload);
   const sha256Digest = crypto.createHash('sha256').update(payloadString).digest('hex');
   const now = new Date().toISOString();
+  const patientIdPseudonym = pseudonymizeIdentifier('anon_pt', String(rawPatientId));
+  const patientMrnPseudonym = pseudonymizeIdentifier('anon_mrn', String(rawPatientMrn));
 
-  // Construct structured notification object
+  // Construct Safe-Harbor sanitized notification object (zero raw MRN, zero rawPayload stored)
   const notification: IFhirSubscriptionNotification = {
     id: 'sub-evt-' + crypto.randomBytes(8).toString('hex'),
     subscriptionId: payload.subscriptionId || 'sub-epic-adt-prod-01',
     topic: payload.topic || 'http://hl7.org/fhir/us/core/SubscriptionTopic/encounter-start',
     eventType,
     timestamp: now,
-    patientId,
-    patientMrn,
+    patientIdPseudonym,
+    patientMrnPseudonym,
     encounterId,
     resourceType,
-    rawPayload: payload,
     securityAttestation: {
       sha256Digest,
-      verifiedSignature: Boolean(secretHeader)
+      verifiedSignature: true
     },
     clinicalDecisionTriggered: {
       conformalEvaluationQueued: true,
       epistemicAbstentionEvaluated: true,
       actionSummary: eventType === 'ADT_ADMISSION'
-        ? `Ingested EHR Admission for Patient ${patientMrn}. Queued 95% Conformal Sepsis screening and initialized Tri-Paradigm care baseline.`
+        ? `Ingested EHR Admission for ${patientMrnPseudonym}. Queued 95% Conformal Sepsis screening and initialized Tri-Paradigm care baseline.`
         : `Ingested ${eventType} event. Synchronized longitudinal chart telemetry with zero cloud egress.`
     }
   };
 
-  // Add to rolling ring buffer
   subscriptionEventBuffer.unshift(notification);
   if (subscriptionEventBuffer.length > MAX_BUFFER_SIZE) {
     subscriptionEventBuffer.pop();
@@ -201,7 +271,7 @@ fhirSubscriptionRouter.post('/', (req: Request, res: Response) => {
     status: 'RECEIVED_AND_QUEUED',
     notificationId: notification.id,
     eventType: notification.eventType,
-    patientMrn: notification.patientMrn,
+    patientMrnPseudonym: notification.patientMrnPseudonym,
     timestamp: notification.timestamp,
     conformalEvaluationQueued: true,
     sha256Digest: notification.securityAttestation.sha256Digest
@@ -210,11 +280,11 @@ fhirSubscriptionRouter.post('/', (req: Request, res: Response) => {
 
 /**
  * POST /api/fhir/subscription/simulate
- * Simulates an incoming EHR ADT Admission or Vitals Event for testing.
+ * Simulates an incoming EHR ADT Admission or Vitals Event for authenticated clinician testing.
  */
-fhirSubscriptionRouter.post('/simulate', (req: Request, res: Response) => {
+fhirSubscriptionRouter.post('/simulate', requireAuth(['CLINICIAN']), (req: Request, res: Response) => {
   const type = req.body?.type || 'ADT_ADMISSION';
-  const mrn = req.body?.mrn || 'MRN-784920';
+  const mrn = String(req.body?.mrn || 'MRN-784920');
 
   const simulatedPayload = {
     resourceType: 'Encounter',
@@ -229,26 +299,15 @@ fhirSubscriptionRouter.post('/simulate', (req: Request, res: Response) => {
       reference: 'Patient/pat-sim-01',
       display: 'Simulated Emergency Inpatient'
     },
-    identifier: [
-      { system: 'http://hospital.epic.org/mrn', value: mrn }
-    ],
     period: {
       start: new Date().toISOString()
-    },
-    reasonCode: [
-      {
-        coding: [
-          { system: 'http://snomed.info/sct', code: '409586006', display: 'Complaint of fever and tachycardia' }
-        ]
-      }
-    ]
+    }
   };
 
-  req.body = simulatedPayload;
-  // Forward to main handler logic
   const fakeEventId = 'sub-sim-' + crypto.randomBytes(6).toString('hex');
   const now = new Date().toISOString();
   const sha256Digest = crypto.createHash('sha256').update(JSON.stringify(simulatedPayload)).digest('hex');
+  const patientMrnPseudonym = pseudonymizeIdentifier('anon_mrn', mrn);
 
   const notification: IFhirSubscriptionNotification = {
     id: fakeEventId,
@@ -256,11 +315,10 @@ fhirSubscriptionRouter.post('/simulate', (req: Request, res: Response) => {
     topic: 'http://hl7.org/fhir/us/core/SubscriptionTopic/encounter-start',
     eventType: type,
     timestamp: now,
-    patientId: 'pat-sim-01',
-    patientMrn: mrn,
+    patientIdPseudonym: pseudonymizeIdentifier('anon_pt', 'pat-sim-01'),
+    patientMrnPseudonym,
     encounterId: simulatedPayload.id,
     resourceType: 'Encounter',
-    rawPayload: simulatedPayload,
     securityAttestation: {
       sha256Digest,
       verifiedSignature: true
@@ -268,7 +326,7 @@ fhirSubscriptionRouter.post('/simulate', (req: Request, res: Response) => {
     clinicalDecisionTriggered: {
       conformalEvaluationQueued: true,
       epistemicAbstentionEvaluated: true,
-      actionSummary: `Simulated ${type} event processed. 95% Conformal Sepsis Interval recomputed with epistemic abstention.`
+      actionSummary: `Simulated ${type} event processed for ${patientMrnPseudonym}. 95% Conformal Sepsis Interval recomputed with epistemic abstention.`
     }
   };
 
@@ -283,7 +341,7 @@ fhirSubscriptionRouter.post('/simulate', (req: Request, res: Response) => {
     status: 'SIMULATED_EVENT_QUEUED',
     notificationId: notification.id,
     eventType: notification.eventType,
-    patientMrn: notification.patientMrn,
+    patientMrnPseudonym: notification.patientMrnPseudonym,
     sha256Digest: notification.securityAttestation.sha256Digest
   });
 });

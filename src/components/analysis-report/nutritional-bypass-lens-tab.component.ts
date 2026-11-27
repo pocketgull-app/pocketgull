@@ -4,6 +4,7 @@ import { EmergencyNutritionalBypassComponent } from '../emergency-nutritional-by
 import { DietaryAllergyShieldComponent } from '../dietary-allergy-shield.component';
 import { PocketGullCardComponent } from '../shared/pocket-gull-card.component';
 import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-nutritional-bypass-lens-tab',
@@ -13,7 +14,8 @@ import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component'
     EmergencyNutritionalBypassComponent,
     DietaryAllergyShieldComponent,
     PocketGullCardComponent,
-    PocketGullBadgeComponent
+    PocketGullBadgeComponent,
+    PgTranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -25,14 +27,14 @@ import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component'
             <span class="text-2xl">🥗</span>
             <div>
               <h3 class="font-extrabold text-sm uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
-                Nutritional Bypass & Immunological Allergy Shield
+                {{ 'Nutritional Bypass & Immunological Allergy Shield' | pgT:'lens03.nutri_title' }}
               </h3>
               <p class="text-xs text-gray-600 dark:text-zinc-400 mt-0.5">
-                Real-time screening of dietary protocols, histamine triggers, IgG4 sensitivities, and emergency bypass nutrition.
+                {{ 'Real-time screening of dietary protocols, histamine triggers, IgG4 sensitivities, and emergency bypass nutrition.' | pgT:'lens03.nutri_subtitle' }}
               </p>
             </div>
           </div>
-          <pocket-gull-badge label="Nutritional Safety Active" severity="success"></pocket-gull-badge>
+          <pocket-gull-badge [label]="'Nutritional Safety Active' | pgT:'lens03.nutri_badge'" severity="success"></pocket-gull-badge>
         </div>
       </pocket-gull-card>
 

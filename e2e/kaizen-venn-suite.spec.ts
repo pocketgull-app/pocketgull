@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
+import { setupE2ePage, enterDemoMode, selectPatientByName, switchToAnalysisLens } from './utils/setup';
 
 test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -14,19 +14,8 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     // 2. Select patient Homo Sapiens
     await selectPatientByName(page, 'Homo Sapiens');
 
-    // Switch to Analysis panel if on mobile/tablet viewports
-    const reportTab = page.locator('button', { hasText: 'Analysis' }).first();
-    if (await reportTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await reportTab.click({ force: true });
-      await page.waitForTimeout(500);
-    }
-
     // 3. Switch to ASSESSMENTS lens tab
-    const assessmentsBtn = page.getByTestId('tab-assessments');
-    await assessmentsBtn.scrollIntoViewIfNeeded();
-    await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.dispatchEvent('click');
-    await page.waitForTimeout(500);
+    await switchToAnalysisLens(page, 'tab-assessments');
 
     // 5. Select Venn Consensus sub-tab
     const vennTab = page.getByTestId('tab-venn-matrix');
@@ -57,19 +46,8 @@ test.describe('Multi-Paradigm Venn Diagram & Kaizen Optimization Suite E2E Tests
     // 1. Enter Demo Mode
     await enterDemoMode(page);
 
-    // Switch to Analysis panel if on mobile/tablet viewports
-    const reportTab = page.locator('button', { hasText: 'Analysis' }).first();
-    if (await reportTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await reportTab.click({ force: true });
-      await page.waitForTimeout(500);
-    }
-
     // 2. Switch to ASSESSMENTS lens tab
-    const assessmentsBtn = page.getByTestId('tab-assessments');
-    await assessmentsBtn.scrollIntoViewIfNeeded();
-    await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.dispatchEvent('click');
-    await page.waitForTimeout(500);
+    await switchToAnalysisLens(page, 'tab-assessments');
 
     // 3. Select Kaizen Optimization sub-tab
     const kaizenTab = page.getByTestId('tab-kaizen-suite');

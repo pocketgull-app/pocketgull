@@ -1,7 +1,7 @@
-# ⚖️ POCKET GULL PRIMARY PATENT CLAIMS CHARTER (USPTO / PCT PROVISIONAL APPLICATION SPECIFICATION)
+# ⚖️ POCKET GULL PRIMARY TECHNICAL DISCLOSURE & PATENT CLAIMS CHARTER (PRE-FILING DRAFT)
 **Title of Invention**: *Autonomous Multi-Paradigm Clinical Decision Support, Client-Side Zero-Egress Bio-Signal Extraction, Popperian Epistemological Verification, and Game-Theoretic Adherence Engines*
-**Inventors**: *PocketGull Applied Clinical AI & Biophysics Research Consortium*
-**Jurisdictions Targeted**: *United States Patent and Trademark Office (USPTO), European Patent Office (EPO), WIPO PCT*
+**Inventor**: *Phillip Gear (Sole Inventor — PocketGull LLC)*
+**Filing Status**: *Internal Pre-Filing Technical Disclosure Draft — Not Yet Filed With USPTO/EPO/PCT (No Patent Marking Asserted)*
 
 ---
 
@@ -30,7 +30,15 @@
    - *Cluster 18: IEEE P2933™ TIPPSS Trust Ingestion Guard & Circular IoMT Hardware Lifecycle Architecture*
    - *Cluster 19: Cross-Agency Environmental Exposome & Hydrological Watershed Lineage Engine (NSF OKN)*
    - *Cluster 20: Transgenerational Epigenetics & 150-Year Multi-Generational Longevity Simulator*
-5. [Complete Staked Patent Claims Set (Claims 1 – 400)](#5-complete-staked-patent-claims-set)
+   - *Cluster 21: J++ Mechanistic Interpretability Lens & 12-Pole Clinical Activation Steering Calibrator*
+   - *Cluster 22: PG3D Custom OpenType SFNT 3D Binary Table & Scotopic Psychophysics Typefoundry Engine*
+   - *Cluster 23: Autonomous Sparse Mixture-of-Experts (SMoE) UI Self-Repair & Zero-Secret gVisor Substrate Checkpointing*
+   - *Cluster 24: NECSI Multiscale Variety Matching, Critical Slowing Down Early-Warning & Hermetic Rust WASM Int8 Kernel*
+   - *Cluster 25: Tri-Modal Wearable Asymmetric Clinical Gain ("Doing / Feeling / Not Doing") & Monk Skin Tone (MST 1–10) Optical PPG Debiasing*
+   - *Cluster 26: Ataxia Sanctuary Low-Level OS Neuro-Motor Input Shield & Reversible Registry Baseline Vault*
+   - *Cluster 27: Autonomous Clinical SOAR Orchestrator, Honeytoken Canary Tripwire & NIST SP 2400-102 Adversarial AML Quarantine*
+   - *Cluster 28: Zero-Knowledge Local Sovereign Clinical Vault, OPFS Ambulatory Holter Streaming & Idempotent Offline Outbox*
+5. [Complete Staked Patent Claims Set (Claims 1 – 560)](#5-complete-staked-patent-claims-set)
 6. [Declaration of Novelty & Prior Art Demarcation](#6-declaration-of-novelty--prior-art-demarcation)
 7. [Contact & Institutional Verification](#7-contact--institutional-verification)
 
@@ -554,7 +562,7 @@ The present disclosure overcomes the aforementioned deficiencies through ten int
 320. The medium of claim 316, integrated into a unified audio-visual stimulation (AVS) companion application and registered as an agentic Model Context Protocol tool for clinical automation.
 
 ### Cluster 17: Tri-Paradigm Consilience and Finite-Sample Conformal Clinical Intervals with Epistemic Abstention (Claims 321–340)
-*Primary Specification*: [`docs/patents/USPTO_PROVISIONAL_TRI_PARADIGM_CONFORMAL_SEPSIS.md`](file:///c:/Users/philg/Pocketgull/pocketgull/docs/patents/USPTO_PROVISIONAL_TRI_PARADIGM_CONFORMAL_SEPSIS.md)  
+*Primary Specification*: [`docs/patents/USPTO_PROVISIONAL_TRI_PARADIGM_CONFORMAL_SEPSIS.md`](../patents/USPTO_PROVISIONAL_TRI_PARADIGM_CONFORMAL_SEPSIS.md)  
 *USPTO Docket*: `PG-PAT-2026-CONF-001`
 
 321. **A clinical decision support system for tri-paradigm consilience and finite-sample conformal prediction with epistemic abstention**, comprising:
@@ -603,7 +611,7 @@ The present disclosure overcomes the aforementioned deficiencies through ten int
 340. The non-transitory computer-readable storage medium of claim 339, wherein said instructions are packaged as an open-standard WebMCP agent tool executable inside an electronic health record web container without cloud video or biometric data egress.
 
 ### Cluster 18: IEEE P2933™ TIPPSS Trust Ingestion Guard & Circular IoMT Hardware Lifecycle Architecture (Claims 341–360)
-*Primary Code Artifacts*: [`src/services/hardware/tippss-ingestion-guard.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/hardware/tippss-ingestion-guard.service.ts), [`src/services/hardware/hardware-lifecycle-sentinel.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/hardware/hardware-lifecycle-sentinel.service.ts)  
+*Primary Code Artifacts*: [`src/services/hardware/tippss-ingestion-guard.service.ts`](../../src/services/hardware/tippss-ingestion-guard.service.ts), [`src/services/hardware/hardware-lifecycle-sentinel.service.ts`](../../src/services/hardware/hardware-lifecycle-sentinel.service.ts)  
 *USPTO Docket*: `PG-PAT-2026-TIPPSS-001`
 
 341. **An Internet of Medical Things (IoMT) trust verification and circular hardware lifecycle apparatus conforming to IEEE P2933™**, comprising:
@@ -645,7 +653,7 @@ The present disclosure overcomes the aforementioned deficiencies through ten int
 360. The medium of claim 356, managing multi-tenant medical device fleets across institutional hospital networks.
 
 ### Cluster 19: Cross-Agency Environmental Exposome & Hydrological Watershed Lineage Engine (Claims 361–380)
-*Primary Code Artifacts*: [`src/services/okn-knowledge-graph.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/okn-knowledge-graph.service.ts), [`src/components/shared/watershed-exposome-lineage-card.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/shared/watershed-exposome-lineage-card.component.ts)  
+*Primary Code Artifacts*: [`src/services/okn-knowledge-graph.service.ts`](../../src/services/okn-knowledge-graph.service.ts), [`src/components/shared/watershed-exposome-lineage-card.component.ts`](../../src/components/shared/watershed-exposome-lineage-card.component.ts)  
 *USPTO Docket*: `PG-PAT-2026-EXPOSOME-001`
 
 361. **A cross-agency clinical decision support and exposome lineage system**, comprising:
@@ -684,7 +692,7 @@ The present disclosure overcomes the aforementioned deficiencies through ten int
 380. The medium of claim 376, enforcing HIPAA Safe Harbor geographic de-identification by perturbing coordinates beyond 3-digit ZIP code thresholds.
 
 ### Cluster 20: Transgenerational Epigenetics & 150-Year Multi-Generational Longevity Simulator (Claims 381–400)
-*Primary Code Artifacts*: [`pocketgull_api/engines/transgenerational_stewardship_engine.py`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_api/engines/transgenerational_stewardship_engine.py), [`src/components/analysis-report/seven-generations-stewardship-lens-tab.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/seven-generations-stewardship-lens-tab.component.ts)  
+*Primary Code Artifacts*: [`pocketgull_api/engines/transgenerational_stewardship_engine.py`](../../pocketgull_api/engines/transgenerational_stewardship_engine.py), [`src/components/analysis-report/seven-generations-stewardship-lens-tab.component.ts`](../../src/components/analysis-report/seven-generations-stewardship-lens-tab.component.ts)  
 *USPTO Docket*: `PG-PAT-2026-SEVEN-GEN-001`
 
 381. **A non-reductionist biological simulation system for transgenerational epigenetic inheritance and lineage longevity**, comprising:
@@ -722,13 +730,287 @@ The present disclosure overcomes the aforementioned deficiencies through ten int
 399. The medium of claim 396, applying differential privacy noise injection to ancestral genetic and genealogical identifiers.
 400. The medium of claim 396, integrated into a sovereign indigenous health data repository under tribal institutional review board (IRB) governance.
 
+### Cluster 21: J++ Mechanistic Interpretability Lens & 12-Pole Clinical Activation Steering Calibrator (Claims 401–420)
+*Primary Code Artifacts*: [`src/services/interpretability/clinical-drift-calibrator.service.ts`](../../src/services/interpretability/clinical-drift-calibrator.service.ts), [`src/components/modals/clinical-drift-calibrator-hud.component.ts`](../../src/components/clinical/clinical-drift-calibrator-hud.component.ts), [`scripts/preflight_drift_self_heal_gate.mjs`](../../scripts/preflight_drift_self_heal_gate.mjs)  
+*USPTO Docket*: `PG-PAT-2026-DRIFT-001`
+
+401. **A computer-implemented mechanistic interpretability and conversational drift mitigation system for clinical artificial intelligence**, comprising:
+   a multi-turn clinical dialogue ingestion interface capturing consecutive user prompts and language model responses;
+   a contrastive behavioral axis calibration engine storing multi-sentence positive and negative exemplar corpora across six orthogonal clinical behavior axes defining twelve radial behavioral poles;
+   a Difference-in-Means vector constructor computing orthogonal directional vectors $v_{\text{axis}} = \mu(H_{\text{healthy}}) - \mu(H_{\text{drift}})$ within an embedding latent space;
+   a Jacobian-projected (J++) layer lens evaluator configured to unembed intermediate transformer residual stream representations while decoupling Jacobian gradient nonlinearities; and
+   an autonomous activation steering controller configured to apply a linear combination of contrastive steering vectors $h' = h - \alpha \cdot \hat{v}_{\text{drift}} + \beta \cdot \hat{v}_{\text{healthy}}$ upon detecting that a turn-to-turn behavioral swing or drift centroid cosine similarity exceeds a safety threshold.
+402. The system of claim 401, wherein said six orthogonal clinical behavior axes comprise Epistemic Rigor versus Sycophancy, Hypothesis Exploration versus Diagnostic Anchoring, Salutogenic Calm versus Alarmist Catastrophizing, 4-Slot Chunking versus Cognitive Overload, Empathetic Kinship versus Cold Bureaucratic Detachment, and Scope Humility versus Unlicensed Prescription Authority.
+403. The system of claim 401, wherein said autonomous activation steering controller selects among pre-calibrated steering profiles comprising ICU & Polypharmacy Guard ($\alpha = 0.72, \beta = 0.58$), Living Room Kinship Balance ($\alpha = 0.65, \beta = 0.50$), and Project Ataxia 4-Slot Pacing ($\alpha = 0.68, \beta = 0.62$).
+404. The system of claim 401, wherein said J++ layer lens evaluator measures Joint Effective Volume (JEV) across early, middle, and late transformer blocks to detect covert sycophantic compliance prior to final token emission.
+405. The system of claim 401, further comprising a radial 12-pole bivariate polygon visualizer rendering healthy and drift trajectory rings across multi-turn clinical transcripts.
+406. The system of claim 401, wherein said autonomous activation steering controller automatically rewrites drifted clinical responses to enforce Popperian null-hypothesis verification and CYP450 interaction warnings.
+407. The system of claim 401, further comprising a continuous integration pre-deployment gate that blocks production deployment if any adversarial sycophancy prompt fails autonomous self-healing verification.
+408. The system of claim 401, wherein embedding projections execute locally via an on-device sovereign model endpoint (`nomic-embed-text`) with deterministic 256-dimensional trigram hashing fallback.
+409. The system of claim 401, further comprising an explicit context-cache prefix isolation guard that pins static clinical constitutions in top-level `systemInstruction` memory while restricting multi-turn history to append-only `contents` arrays.
+410. The system of claim 401, generating an FDA 21 CFR Part 11 SHA-256 cryptographic audit log of every detected behavioral drift event and applied steering vector.
+411. **A computer-implemented method for detecting and self-healing behavioral drift in multi-turn clinical AI consultations**, comprising:
+   embedding each conversational turn into a normalized high-dimensional semantic vector;
+   projecting said semantic vector onto six pre-calibrated Difference-in-Means behavioral axes spanning twelve radial poles;
+   calculating turn-over-turn axis delta magnitudes and cosine similarity to a drift hazard centroid;
+   identifying a drift hazard when sycophantic premise acceptance or cognitive overload exceeds a predetermined threshold; and
+   autonomously applying a contrastive activation steering vector to restore epistemic rigor and working-memory pacing.
+412. The method of claim 411, wherein projecting onto Difference-in-Means behavioral axes normalizes scores via temperature-scaled softmax across healthy and drift anchor centroids.
+413. The method of claim 411, wherein evaluating J++ layer projections compares standard Logit Lens token rankings against Jacobian-decoupled J++ clinical token rankings across layers L8, L16, L24, and L32.
+414. The method of claim 411, wherein autonomous self-healing injects an idempotent clinical safety directive without mutating the cached system instruction prefix.
+415. The method of claim 411, exposing said drift calibration telemetry as a client-side Model Context Protocol (WebMCP) diagnostic tool.
+416. **A non-transitory computer-readable storage medium** storing instructions that, when executed by one or more processors, cause the processors to perform the method of claims 411 to 415.
+417. The medium of claim 416, operating with zero patient-identifiable data egress to external third-party telemetry servers.
+418. The medium of claim 416, preserving sub-50ms deterministic fallback latency when local neural embedding servers are offline.
+419. The medium of claim 416, auditing session transcripts for KV-cache prefix boundary drops across multi-turn clinical encounters.
+420. The medium of claim 416, integrated into an ambient voice consultation and care plan synthesis workbench.
+
+### Cluster 22: PG3D Custom OpenType SFNT 3D Binary Table & Scotopic Psychophysics Typefoundry Engine (Claims 421–440)
+*Primary Code Artifacts*: [`src/engine/typography/pg3d-sfnt-table.ts`](../../src/engine/typography/pg3d-sfnt-table.ts), [`src/engine/typography/pocketgull-clinical.fea`](../../src/engine/typography/pocketgull-clinical.fea), [`adapters/pocketgull-core/src/glyph_3d.rs`](adapters/pocketgull-core/src/glyph_3d.rs), [`packages/pocketgull-go/internal/glyph3d/glyph3d.go`](../../packages/pocketgull-go/internal/glyph3d/glyph3d.go), [`adapters/pocketgull-apple/Sources/PocketGullApple/PocketGullGlyph3D.swift`](adapters/pocketgull-apple/Sources/PocketGullApple/PocketGullGlyph3D.swift)  
+*USPTO Docket*: `PG-PAT-2026-PG3D-001`
+
+421. **A digital typefoundry and 3D biophysical glyph rendering system embedding clinical safety invariants directly within an OpenType font binary**, comprising:
+   an OpenType font container structured on a 1,000 Units-Per-Em (UPM) coordinate grid;
+   a Glyph Substitution (`GSUB`) contextual error trap table configured to intercept Institute for Safe Medication Practices (ISMP) high-risk dosage syntax at the font-shaping layer, automatically substituting naked decimal expressions (`.5 mg`) with leading-zero disambiguated glyphs (`0.5 mg`) and flagging trailing-zero dosage expressions (`5.0 mg`);
+   a Variable Font (`fvar` / `gvar`) optical irradiation compensation axis (`GRAD`) configured to attenuate glyph stroke weights by $-3.75\%$ in scotopic dark-mode environments while locking horizontal advance widths (`HVAR`) to guarantee zero layout reflow; and
+   a custom 4-byte SFNT binary table (`PG3D`, tag `0x50473344`) embedded inside the font binary, packing pre-triangulated ear-clipped 3D GPU vertex and index buffers, SNOMED-CT and LOINC clinical ontology bindings, and an FDA 21 CFR Part 11 SHA-256 integrity digest.
+422. The system of claim 421, further comprising a 16-point ACR/NEMA DICOM Part 14 Grayscale Standard Display Function (GSDF) lookup table embedded in the `PG3D` psychophysics header to linearize Barten Contrast Sensitivity Function (CSF) Just-Noticeable-Difference (JND) luminance steps.
+423. The system of claim 421, wherein said `PG3D` psychophysics header specifies a Mach-band second-derivative edge-softening sigma of $12.5\text{ UPM}$ and a scotopic dilated-pupil ($7\text{ mm}$) ink-trap excavation depth of $36\text{ UPM}$.
+424. The system of claim 421, wherein said `PG3D` psychophysics header enforces CIELAB $L^* = 74.0$ isoluminant chromaticity across `COLR`v1 / `CPAL` palettes to eliminate $1.8\text{ Diopter}$ longitudinal chromatic aberration (chromostereopsis).
+425. The system of claim 421, further comprising a Variable Font Bouma peripheral crowding axis (`BOUM`) enforcing critical inter-letter spacing $\Delta x \ge 0.5 \cdot \phi_{\text{eccentricity}}$ for eccentric bedside monitor viewing.
+426. The system of claim 421, further comprising a polyglot 1,000-UPM 3D extrusion engine maintaining bit-exact geometric parity across TypeScript, Rust, Go, Python, Dart/Flutter, and Swift/Metal runtimes.
+427. The system of claim 421, wherein said polyglot extrusion engine modulates stroke width according to a parametric chisel nib angle $\theta_{\text{nib}}$: $w(t) = w_{\text{base}} \cdot \max(0.35, |\sin(\alpha_{\text{tangent}}(t) - \theta_{\text{nib}})|)$.
+428. The system of claim 421, wherein Private Use Area (PUA) codepoints `U+E101` through `U+E110` bind directly to 16 anatomical organ glyph contours with pre-computed 3D bevel extrusions (`ZDEP` axis $0\text{--}1000\text{ UPM}$).
+429. The system of claim 421, further comprising a $0.5\%$ microsaccadic contrast refresh pulse synchronized to a $0.1\text{ Hz}$ Mayer wave respiratory cycle to prevent Troxler peripheral visual fading during surgical or ICU monitoring.
+430. The system of claim 421, wherein said `PG3D` binary table is validated prior to disk or GPU upload via big-endian magic byte verification (`0x50 0x47 0x33 0x44`) and SHA-256 digest matching.
+431. **A computer-implemented method for zero-reflow scotopic clinical typography and hardware-accelerated 3D anatomical glyph rendering**, comprising:
+   parsing an OpenType font binary containing a `PG3D` (`0x50473344`) SFNT table;
+   verifying an embedded FDA 21 CFR Part 11 SHA-256 cryptographic digest across the `PG3D` binary payload;
+   executing `GSUB` contextual substitution rules to trap naked decimal and trailing-zero medication dosage strings;
+   applying a $-3.75\%$ `GRAD` stroke-weight reduction upon transitioning to scotopic night mode while preserving identical horizontal advance widths; and
+   uploading pre-triangulated 1,000-UPM vertex and index buffers from the `PG3D` table directly to a GPU rendering pipeline.
+432. The method of claim 431, wherein clinical severity telemetry dynamically interpolates `COLR`v1 / `CPAL` palette entries between Allopathic, TCM, Ayurvedic, Scotopic Red ($670\text{ nm}$, $\text{mEDI} = 0.0\text{ lx}$), and DICOM Part 14 GSDF modes.
+433. The method of claim 431, whereinLouise Sloan 5:1 optotype stroke proportions are preserved at LogMAR 0.0 visual acuity thresholds across all variable axis interpolations.
+434. The method of claim 431, wherein quadratic and cubic Bezier glyph contours are flattened on an integer-snapped 1,000-UPM grid to eliminate floating-point drift across heterogeneous CPU and GPU architectures.
+435. The method of claim 431, binding clicked 3D extruded glyph meshes directly to their embedded SNOMED-CT and LOINC clinical codes.
+436. **A non-transitory computer-readable storage medium** storing font binary structures and executable instructions performing the method of claims 431 to 435.
+437. The medium of claim 436, wherein WOFF2 compressed web fonts are served via an edge CDN while excluding uncompressed TTF masters from container images.
+438. The medium of claim 436, enforcing bi-directional `<bdi dir="ltr">` isolation around numeric dosage strings in right-to-left (RTL) scripts.
+439. The medium of claim 436, verified against 34 OpenType Sanitizer (OTS) and Google Fonts Fontbakery structural compliance checks.
+440. The medium of claim 436, providing native C-ABI (`pocketgull_core.h`), Ruby FFI, and Apple Swift Package Manager bindings from a single canonical 1,000-UPM specification.
+
+### Cluster 23: Autonomous Sparse Mixture-of-Experts (SMoE) UI Self-Repair & Zero-Secret gVisor Substrate Checkpointing (Claims 441–460)
+*Primary Code Artifacts*: [`src/services/ui-self-repair.service.ts`](../../src/services/ui-self-repair.service.ts), [`src/server/substrate-checkpoint.ts`](../../src/server/substrate-checkpoint.ts), [`src/components/ui-self-repair-hud.component.ts`](../../src/components/ui-self-repair-hud.component.ts)  
+*USPTO Docket*: `PG-PAT-2026-SMOE-001`
+
+441. **An autonomous self-healing clinical user interface and cryptographic actor hibernation system**, comprising:
+   a DOM and rendering telemetry observer continuously auditing viewport overflow, WCAG AAA luminance contrast ($\ge 7:1$), Fitts's Law minimum touch target geometry ($44\times 44\text{ px}$), WebGL 3D canvas context integrity, and patient state signal consistency;
+   a Top-$k$ Sparse Mixture-of-Experts (SMoE) fault routing network configured to project a multi-dimensional UI anomaly feature vector onto specialized repair experts and select the top $k=2$ highest-scoring repair experts with load-balancing auxiliary loss regularization;
+   a live style and state patch injector configured to autonomously apply CSS containment rules, high-contrast token overrides, WebGL context restoration handlers, and patient symptom stream deduplication without page reload; and
+   a zero-secret gVisor substrate checkpointing engine configured to serialize clinical actor state into an immutable envelope bound to a SPIFFE X.509 workload identity, an FDA 21 CFR Part 11 SHA-256 digest, and an $M$-of-$N$ WebAuthn FIDO2 dual-custody restoration gate.
+442. The system of claim 441, wherein said SMoE fault routing network routes across six specialized domain experts comprising Layout Containment Expert, WCAG Contrast Expert, Fitts Touch-Target Expert, WebGL Context-Recovery Expert, Patient-State Sanitizer Expert, and Cognitive-Slot Pruner Expert.
+443. The system of claim 441, wherein said Cognitive-Slot Pruner Expert enforces a hard working-memory ceiling of 4 concurrent focal items (`WM_SLOT_MAX = 4`) per role-scoped clinical view.
+444. The system of claim 441, wherein said substrate checkpointing engine enforces `zeroCredentialsInSandbox: true`, stripping all API keys, OAuth tokens, and private keys prior to memory or volume snapshot serialization.
+445. The system of claim 441, wherein restoring a hibernated clinical actor state during an active STAT emergency or high-impact trajectory transition requires cryptographic verification of at least $M$ distinct FIDO2 WebAuthn clinician signatures across orthogonal clinical roles.
+446. The system of claim 441, wherein timing-safe byte comparison (`timingSafeEqual`) is enforced during SHA-256 checkpoint integrity verification to prevent side-channel timing attacks.
+447. The system of claim 441, further comprising a stealth diagnostic Heads-Up Display (HUD) that remains visually dormant when interface health equals $100\%$ and surfaces automatically upon executing an autonomous self-repair patch.
+448. The system of claim 441, wherein patient state self-repair automatically clamps out-of-bounds severity indices to $[1, 10]$, prunes NaN coordinate vectors, and reconciles desynchronized anatomical part identifiers.
+449. The system of claim 441, further comprising role-scoped visit snapshot lenses tailored to Patient Advocate, Attending Physician, Clinical Pharmacist, Neuro-Ophthalmologist, Systemic Teledentist, and Sovereign DPO roles.
+450. The system of claim 441, aligned with Kubernetes `ate.dev/v1alpha1` (`atespace`) actor templates running inside isolated `gvisor` runtime sandboxes.
+451. **A computer-implemented method for autonomous clinical UI self-repair and zero-secret actor checkpointing**, comprising:
+   monitoring a clinical application DOM tree, 3D rendering canvas, and reactive patient state graph for structural or perceptual anomalies;
+   encoding detected anomalies into a feature vector and routing said vector through a Top-2 Sparse Mixture-of-Experts gating network;
+   executing deterministic DOM/CSS and state repair patches generated by the selected experts;
+   serializing the repaired clinical session state into a zero-secret gVisor substrate checkpoint envelope sealed with a NIST CSPRNG nonce and SHA-256 digest; and
+   verifying $M$-of-$N$ FIDO2 WebAuthn dual-custody signatures prior to rehydrating said checkpoint envelope.
+452. The method of claim 451, wherein computing the SMoE gating distribution comprises evaluating $G(x) = \text{Softmax}(\text{TopK}(x \cdot W_g, k=2))$ and tracking expert utilization variance to prevent expert collapse.
+453. The method of claim 451, wherein repairing an `analysis-frame-collapse` anomaly injects dynamic `min-height`, `box-sizing: border-box`, and `overflow-wrap: anywhere` containment rules into an isolated patch stylesheet.
+454. The method of claim 451, wherein role-scoped snapshot generation deterministically truncates working-memory slots to $\le 4$ items while preserving full underlying FHIR R4 provenance.
+455. The method of claim 451, rejecting any checkpoint restoration attempt if the recomputed SHA-256 payload digest diverges by a single bit from the sealed envelope digest.
+456. **A non-transitory computer-readable storage medium** storing instructions that, when executed by one or more processors, cause the processors to perform the method of claims 451 to 455.
+457. The medium of claim 456, scheduling background DOM audits outside the Angular change-detection zone (`NgZone.runOutsideAngular`) to guarantee zero main-thread frame drops.
+458. The medium of claim 456, automatically pausing background audit timers when `document.visibilityState` transitions to hidden to conserve mobile and thin-client battery life.
+459. The medium of claim 456, exposing self-repair health telemetry and manual audit triggers via WebMCP agent tools.
+460. The medium of claim 456, maintaining 100% deterministic restoration fidelity across memory, volume, and rootfs snapshot tiers.
+
+### Cluster 24: NECSI Multiscale Variety Matching, Critical Slowing Down Early-Warning & Hermetic Rust WASM Int8 Kernel (Claims 461–480)
+*Primary Code Artifacts*: [`src/services/necsi-complex-systems.service.ts`](../../src/services/necsi-complex-systems.service.ts), [`src/services/ai/rust-wasm-compute.service.ts`](../../src/services/ai/rust-wasm-compute.service.ts), [`packages/pocketgull-wasm-kernel/src/lib.rs`](../../packages/pocketgull-wasm-kernel/src/lib.rs)  
+*USPTO Docket*: `PG-PAT-2026-NECSI-001`
+
+461. **A complex-systems clinical resilience and edge-accelerated early-warning apparatus**, comprising:
+   a multiscale complexity profiler configured to evaluate generalized Ashby requisite variety across four hierarchical care scales (Subsecond Autonomic Biofeedback, Household Caregiver Loop, Clinical Outpatient Team, and Tertiary Emergency Escalation) by comparing environmental clinical demand bits $V_{\text{acuity}}(s)$ against available care capacity bits $V_{\text{care}}(s)$;
+   a Critical Slowing Down (CSD) phase-transition detector configured to analyze longitudinal physiological time-series telemetry by computing lag-1 autocorrelation $\rho_1$, variance $\sigma^2$, and autonomic recovery rate $\lambda = -\ln(\max(\epsilon, |\rho_1|))$, flagging pre-decompensation tipping points when $\rho_1 \ge 0.70$ alongside a Bartlett two-tailed $p$-value against a white-noise null hypothesis $H_0$;
+   a physiological network percolation analyzer configured to compute mean network degree $\langle k \rangle$ and critical percolation threshold $p_c = 1 / (\langle k \rangle - 1)$ across coupled organ and polypharmacy hubs, determining a minimum number of orthogonal disconfirming physical exams required to act as a diagnostic firebreak; and
+   a hermetic Rust WebAssembly (`wasm32-unknown-unknown`) compute kernel executing symmetric Int8 quantized dot products, integer Newton-Raphson square roots, 1,000-UPM Bezier glyph tessellation, and 32-bit FNV-1a Part 11 integrity digests in client memory with zero native `.node` host binary dependencies.
+462. The apparatus of claim 461, wherein upon detecting a scale-mismatch bottleneck where $V_{\text{care}}(s) < V_{\text{acuity}}(s)$, said multiscale complexity profiler automatically routes intervention tasks to the nearest scale band possessing positive variety surplus bits.
+463. The apparatus of claim 461, wherein said CSD phase-transition detector maps tipping-point alerts directly onto a Three-Act clinical trajectory (Act I Days 0–30 Metabolic Bridge, Act II Weeks 2–12 Glymphatic & Autonomic Pacing, and Act III Months 6+ Stepped-Care Resilience).
+464. The apparatus of claim 461, wherein said physiological network percolation analyzer models cross-talk between oral-systemic periodontal inflammation (SIBI), HbA1c glycemic trajectory, vascular endothelial shear stress, and CYP450 polypharmacy load.
+465. The apparatus of claim 461, wherein said hermetic Rust WebAssembly kernel is assembled directly in memory from verified WASM bytecode sections without external network fetches or OS-specific dynamic link libraries.
+466. The apparatus of claim 461, wherein said Rust WebAssembly kernel computes Int8 cosine similarity $\text{Cos}_{i8}(A, B) = (A \cdot B) / \sqrt{\|A\|^2 \cdot \|B\|^2}$ across 256-dimensional clinical embeddings with $4\times$ memory compression over Float32 vectors.
+467. The apparatus of claim 461, wherein every CSD early-warning report is stamped with an FNV-1a and SHA-256 integrity seal and badged `[EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC]`.
+468. The apparatus of claim 461, wherein Bartlett standard error $\text{SE}(\rho_1) = 1 / \sqrt{N}$ is used to compute the two-tailed normal test statistic $z = |\rho_1| \cdot \sqrt{N}$ prior to asserting loss of autonomic resilience.
+469. The apparatus of claim 461, further comprising a deterministic TypeScript fallback engine that guarantees identical integer-snapped outputs if WebAssembly instantiation is restricted by browser policy.
+470. The apparatus of claim 461, wherein said multiscale complexity integral is computed via trapezoidal quadrature across log-spaced temporal scales from $10^{-1}\text{ seconds}$ to $10^{7}\text{ seconds}$.
+471. **A computer-implemented method for forecasting clinical phase transitions and enforcing multiscale requisite variety**, comprising:
+   ingesting a longitudinal physiological biomarker or heart-rate variability time series;
+   calculating lag-1 autocorrelation $\rho_1$, variance $\sigma^2$, and recovery rate $\lambda = -\ln(\max(\epsilon, |\rho_1|))$ to detect Critical Slowing Down prior to acute clinical decompensation;
+   evaluating two-tailed statistical significance against a null hypothesis of zero temporal autocorrelation ($H_0: \rho_1 = 0$);
+   computing environmental acuity demand versus care capacity across four hierarchical temporal scales to identify requisite variety bottlenecks; and
+   calculating a critical percolation threshold $p_c = 1 / (\langle k \rangle - 1)$ across a patient comorbidity graph to prescribe orthogonal physical exam firebreaks that sever supercritical diagnostic cascades.
+472. The method of claim 471, wherein Int8 quantized vector similarity and integrity hashing are executed inside an isolated client-side Rust WebAssembly linear memory arena.
+473. The method of claim 471, wherein supercritical cascade risk is flagged when active coupling density $p$ exceeds $p_c$, prompting immediate bedside verification of the highest-degree physiological hub.
+474. The method of claim 471, wherein care guidance is synthesized using a low-arousal Salutogenic Quiet Workshop Voice constrained to $\le 4$ working-memory slots.
+475. The method of claim 471, serializing multiscale variety profiles and CSD early-warning metrics into HL7 FHIR R4 Observation and RiskAssessment resources.
+476. **A non-transitory computer-readable storage medium** storing instructions and WebAssembly bytecode that, when executed by one or more processors, cause the processors to perform the method of claims 471 to 475.
+477. The medium of claim 476, operating in Windows, Linux, macOS, Android, and iOS environments without triggering native binary antivirus false positives.
+478. The medium of claim 476, bounding WebAssembly linear memory between 1 page ($64\text{ KiB}$) and 4 pages ($256\text{ KiB}$) for predictable thin-client memory footprint.
+479. The medium of claim 476, executing integer-snapped 1,000-UPM glyph mesh extrusion and Int8 semantic retrieval in sub-millisecond latency.
+480. The medium of claim 476, integrated into an autonomous clinical decision support and salutogenic care planning platform.
+
+### Cluster 25: Tri-Modal Wearable Asymmetric Clinical Gain ("Doing / Feeling / Not Doing") & Monk Skin Tone (MST 1–10) Optical PPG Debiasing (Claims 481–500)
+*Primary Code Artifacts*: [`src/services/wearable-asymmetric-gain.service.ts`](../../src/services/wearable-asymmetric-gain.service.ts), [`src/components/wearable-asymmetric-gain-card.component.ts`](../../src/components/wearable-asymmetric-gain-card.component.ts), [`src/tests/asymmetric-gain-wearable.spec.ts`](../../src/tests/asymmetric-gain-wearable.spec.ts)  
+*USPTO Docket*: `PG-PAT-2026-AGC-001`
+
+481. **A wearable biotelemetry synthesis and Post-Exertional Malaise (PEM) crash-prevention system**, comprising:
+   a wearable sensor ingestion interface receiving optical photoplethysmography ($\text{PPG}$), root-mean-square of successive RR-interval differences ($\text{RMSSD}$), nocturnal wrist skin temperature delta ($\Delta T_{\text{wrist}}$), and orthostatic heart-rate transition delta ($\Delta\text{HR}_{\text{ortho}}$) from a wrist-worn physiological monitor;
+   a Monk Skin Tone (MST 1–10) melanin absorption debiasing calibrator configured to correct raw optical blood-oxygen saturation ($\text{SpO}_{2,\text{raw}}$) according to $\text{SpO}_{2,\text{MST}} = \min(100, \text{SpO}_{2,\text{raw}} - \max(0, \text{MST} - 5) \cdot 0.35)$ to prevent occult hypoxemia under-estimation across darker epidermal phenotypes; and
+   a Tri-Modal Asymmetric Clinical Gain evaluator configured to compute a composite readiness dividend across three orthogonal behavioral pillars: Doing (hormetic $0.1\text{ Hz}$ vagal recruitment and post-prandial glycemic clearance walks), Feeling (interoceptive somatic Visual Analog Scale concordance with autonomic wrist thermoregulation and HRV), and Not Doing (strategic activity cessation prior to autonomic exhaustion, blue-light circadian cutoff, and polypharmacy restraint).
+482. The system of claim 481, wherein said Not Doing pillar awards positive asymmetric readiness points when a patient halts physical exertion prior to crossing an individualized anaerobic or orthostatic heart-rate ceiling ($\Delta\text{HR}_{\text{ortho}} \le 18\text{ bpm}$).
+483. The system of claim 481, wherein said Tri-Modal Asymmetric Clinical Gain evaluator calculates estimated Post-Exertional Malaise (PEM) crash hours prevented ($\text{HoursSaved}_{\text{PEM}}$) based on strategic pacing restraint and vagal recovery metrics.
+484. The system of claim 481, wherein said Feeling pillar quantifies interoceptive calibration accuracy by comparing subjective energy and brain-fog VAS ratings against objective $\text{RMSSD}$ and nocturnal $\Delta T_{\text{wrist}}$ deviations.
+485. The system of claim 481, further comprising a Seligman 3 Ps (Permanence, Pervasiveness, Personalization) explanatory-style coaching synthesizer that translates dip events into transient, specific, external biophysical feedback strings.
+486. The system of claim 481, supporting dual native synchronization with Apple Watch HealthKit and Android Wear OS Health Connect telemetry schemas.
+487. The system of claim 481, wherein said Doing pillar weights $0.1\text{ Hz}$ resonant paced breathing ($6\text{ breaths/min}$) and 10–15 minute post-meal GLUT4 glucose-clearance walks without penalizing low total daily step counts.
+488. The system of claim 481, wherein said Not Doing pillar incorporates CYP450 polypharmacy restraint metrics tracking avoided unnecessary PRN medication escalations.
+489. The system of claim 481, further comprising a direct Bluetooth Low Energy (BLE) and IEEE P2933™ TIPPSS hardware bridge (`DirectIomtWearablesService`) that streams live $\text{HRV}$ and $\text{SpO}_2$ samples into the Tri-Modal evaluator.
+490. The system of claim 481, rendering a high-contrast 4-slot neuro-ergonomic telemetry card displaying MST-calibrated $\text{SpO}_2$, Doing/Feeling/Not-Doing pillar bars, and PEM crash hours saved.
+491. **A computer-implemented method for preventing Post-Exertional Malaise (PEM) and debiasing optical wearable oximetry**, comprising:
+   receiving raw optical $\text{SpO}_2$, $\text{HRV RMSSD}$, wrist temperature delta, and orthostatic heart-rate delta from a wearable device;
+   applying a Monk Skin Tone (MST 1–10) melanin correction factor to said raw optical $\text{SpO}_2$ reading;
+   computing a Doing hormetic vagal gain score from paced breathing and post-prandial walking duration;
+   computing a Feeling interoceptive calibration score from subjective somatic ratings versus objective autonomic biomarkers;
+   computing a Not Doing strategic restraint score rewarding activity termination prior to autonomic exhaustion; and
+   synthesizing a composite readiness score and PEM crash-hours-saved estimate.
+492. The method of claim 491, wherein applying the Monk Skin Tone melanin correction subtracts $0.35\%$ per MST unit above scale level 5 to unmask occult arterial desaturation.
+493. The method of claim 491, wherein strategic restraint scoring positively reinforces pre-emptive rest breaks in patients diagnosed with cerebellar ataxia, POTS, Long COVID, or ME/CFS.
+494. The method of claim 491, wherein circadian blue-light screen cutoff at least 45 minutes prior to sleep onset increases the Not Doing glymphatic protection score.
+495. The method of claim 491, exporting the MST-calibrated $\text{SpO}_2$ and Tri-Modal readiness evaluation as an HL7 FHIR R4 Observation resource.
+496. **A non-transitory computer-readable storage medium** storing instructions that, when executed by one or more processors, cause the processors to perform the method of claims 491 to 495.
+497. The medium of claim 496, executing entirely on-device with zero transmission of raw biometric streams to third-party advertising or cloud broker endpoints.
+498. The medium of claim 496, dynamically adjusting Act II (Weeks 2–12 Autonomic & Glymphatic Pacing) care plan targets based on the Not Doing restraint score.
+499. The medium of claim 496, exposing Tri-Modal wearable gain evaluation via a client-side WebMCP tool interface.
+500. The medium of claim 496, integrated into a salutogenic chronic care and neuro-rehabilitation platform.
+
+### Cluster 26: Ataxia Sanctuary Low-Level OS Neuro-Motor Input Shield & Reversible Registry Baseline Vault (Claims 501–520)
+*Primary Code Artifacts*: [`packages/ataxia-sanctuary/src/InputShieldEngine.cs`](../../packages/ataxia-sanctuary/src/InputShieldEngine.cs), [`packages/ataxia-sanctuary/src/BaselineVault.cs`](../../packages/ataxia-sanctuary/src/BaselineVault.cs), [`packages/ataxia-sanctuary/src/AssetFoundry.cs`](../../packages/ataxia-sanctuary/src/AssetFoundry.cs), [`scripts/MouseAssist.cs`](../../scripts/MouseAssist.cs)  
+*USPTO Docket*: `PG-PAT-2026-SANC-001`
+
+501. **A kernel-adjacent operating system neuro-motor input stabilization and reversible environmental ergonomics apparatus**, comprising:
+   a low-level mouse hook engine (`WH_MOUSE_LL`) intercepting hardware button-down and button-up packets prior to application message-queue dispatch;
+   an intention-tremor bounce suppression filter configured to measure elapsed tick intervals ($\Delta t = t_{\text{down}} - t_{\text{last\_up}}$) between consecutive button transitions and suppress involuntary secondary click-down and paired click-up events occurring within a configurable refractory window ($\Delta t_{\text{bounce}} \in [20, 250]\text{ ms}$);
+   a chord-free auxiliary button synthesizer configured to intercept single-button side-mouse presses (`XBUTTON1` / `XBUTTON2`) and synthesize multi-key OS voice dictation (`Win+H`) or window-close keystrokes via `SendInput` without requiring multi-finger motor chord coordination; and
+   a reversible OS baseline snapshot vault (`BaselineVault`) coupled to a low-level keyboard hook (`WH_KEYBOARD_LL`) that monitors for three consecutive `VK_ESCAPE` presses within $1,200\text{ ms}$ to trigger an immediate atomic rollback of all cursor, DPI, and registry modifications.
+502. The apparatus of claim 501, wherein said intention-tremor bounce suppression filter maintains independent state machines (`_suppressNextLeftUp`, `_suppressNextRightUp`) for primary and secondary mouse buttons so that suppressing a tremor-induced `WM_LBUTTONDOWN` automatically swallows its paired `WM_LBUTTONUP` without breaking drag-and-drop state.
+503. The apparatus of claim 501, wherein said low-level mouse hook engine inspects `LLMHF_INJECTED` and `LLKHF_INJECTED` flags to bypass synthetic accessibility events and prevent recursive hook feedback loops.
+504. The apparatus of claim 501, further comprising a procedural vector cursor foundry (`AssetFoundry`) that generates high-contrast oversized Windows `.cur` binary files with custom hotspot coordinates and gold/obsidian/crimson outlines directly on disk without external image dependencies.
+505. The apparatus of claim 501, wherein said reversible OS baseline snapshot vault serializes pre-activation `HKCU\Control Panel\Cursors`, `MouseSensitivity`, `DoubleClickSpeed`, `ClickLock`, and `CaretWidth` values into a local JSON vault prior to applying neuro-ergonomic profiles.
+506. The apparatus of claim 501, further comprising a dynamic cursor velocity damper and sticky-latch drag helper (`MouseAssist`) that attenuates ballistic dysmetria overshoot near interactive UI controls.
+507. The apparatus of claim 501, further comprising a scotopic circadian display filter and 4-slot neuro-ergonomic control deck (`ControlDeckForm`) enforcing $56\times 56\text{ px}$ minimum interactive button geometries.
+508. The apparatus of claim 501, wherein invoking the triple-`ESC` panic revert executes `SystemParametersInfo(SPI_SETCURSORS)` and broadcasts `WM_SETTINGCHANGE` across all desktop windows in under $100\text{ ms}$.
+509. The apparatus of claim 501, packaged as a self-contained zero-dependency native executable with automated Mozilla Add-ons (AMO) JWT extension signing integration (`sign_firefox_amo.mjs`).
+510. The apparatus of claim 501, wherein said refractory bounce threshold $\Delta t_{\text{bounce}}$ is dynamically adjustable in real time via a thread-safe `volatile` memory register without unhooking or restarting the OS input loop.
+511. **A computer-implemented method for stabilizing neuro-motor input tremor at the operating-system hook layer**, comprising:
+   capturing pre-existing operating system cursor, mouse dynamics, and accessibility registry parameters into a persistent local baseline snapshot vault;
+   installing low-level OS mouse (`WH_MOUSE_LL`) and keyboard (`WH_KEYBOARD_LL`) hooks;
+   intercepting hardware mouse button-down transitions and suppressing transitions occurring within a configurable tremor bounce window $\Delta t_{\text{bounce}}$ following a preceding button-up transition;
+   translating single-switch auxiliary mouse button presses into synthesized multi-key OS voice dictation commands; and
+   atomically restoring the baseline snapshot vault upon detecting three consecutive Escape key presses within $1,200\text{ ms}$.
+512. The method of claim 511, wherein suppressing a tremor-induced button-down transition sets a per-button latch that intercepts and discards the corresponding button-up transition.
+513. The method of claim 511, further comprising procedurally rendering high-visibility Windows `.cur` cursor binaries with embedded DIB headers, XOR/AND masks, and precision hotspot offsets.
+514. The method of claim 511, wherein synthesizing OS voice dictation dispatches `VK_LWIN` down, `VK_H` down, `VK_H` up, and `VK_LWIN` up input structures in a single atomic `SendInput` transaction.
+515. The method of claim 511, marshaling panic-revert events back to the UI synchronization context to update visual status indicators while restoring native OS cursors.
+516. **A non-transitory computer-readable storage medium** storing executable instructions that, when executed by one or more processors, cause the processors to perform the method of claims 511 to 515.
+517. The medium of claim 516, operating with zero network egress and zero third-party runtime dependencies.
+518. The medium of claim 516, preserving complete user agency over desktop customization via one-click and triple-`ESC` full registry restoration.
+519. The medium of claim 516, synchronized with 26 circadian and low-vision browser theme extensions across Chrome, Edge, and Firefox.
+520. The medium of claim 516, engineered specifically for individuals with cerebellar ataxia, Parkinsonian tremor, essential tremor, and motor dysmetria.
+
+### Cluster 27: Autonomous Clinical SOAR Orchestrator, Honeytoken Canary Tripwire & NIST SP 2400-102 Adversarial AML Quarantine (Claims 521–540)
+*Primary Code Artifacts*: [`src/server/services/soar-orchestrator.service.ts`](../../src/server/services/soar-orchestrator.service.ts), [`src/server/routes/soar.routes.ts`](../../src/server/routes/soar.routes.ts), [`src/server/services/active-defense-tarpit.service.ts`](../../src/server/services/active-defense-tarpit.service.ts), [`scripts/organizational_risk_audit.mjs`](../../scripts/organizational_risk_audit.mjs)  
+*USPTO Docket*: `PG-PAT-2026-SOAR-001`
+
+521. **An autonomous clinical Security Orchestration, Automation, and Response (SOAR) and adversarial machine learning (AML) containment system**, comprising:
+   a multi-source security telemetry ingestion router receiving real-time alert events from BigQuery SIEM audit logs, synthetic FHIR canary honeypot endpoints, Cloud Monitoring Pub/Sub sinks, and runtime Model Armor prompt-injection classifiers;
+   a deterministic playbook execution engine storing pre-verified incident containment playbooks (`PB-01_COMPROMISED_CREDENTIAL`, `PB-02_ADVERSARIAL_PROMPT_INJECTION`, `PB-03_PHI_TAINT_BOUNDARY_LEAK`, and `PB-04_INFRASTRUCTURE_DOS_HONEYPOT`);
+   an $M$-of-$N$ dual-custody authorization verifier configured to require distinct requestor and authorizer role attestations (`requestorRole !== authorizerRole`) prior to executing destructive containment actions in production mode;
+   an active defense reconnaissance tarpit configured to inject bounded exponential latency jitter and synthetic decoy responses upon detecting canary honeypot probing; and
+   a cryptographic forensic receipt generator configured to seal every executed playbook step, NIST SP 800-61 Rev. 2 alignment tag, and HIPAA §164.402 four-factor Safe Harbor breach-exemption assessment into an FDA 21 CFR Part 11 SHA-256 execution receipt.
+522. The system of claim 521, wherein `PB-02_ADVERSARIAL_PROMPT_INJECTION` enforces NIST AI 2400-102 and OWASP 2026 Top 10 for Agentic Applications (`ASI01` Agent Goal Hijack through `ASI10` Rogue Agents) by isolating the offending session, purging tainted context-cache prefixes, and quarantining the source IP address.
+523. The system of claim 521, wherein `PB-03_PHI_TAINT_BOUNDARY_LEAK` automatically executes a four-factor HIPAA §164.402 risk assessment verifying that all 18 Safe Harbor §164.514 identifiers were stripped prior to egress (`hipaaFourFactorSafeHarborConfirmed: true`).
+524. The system of claim 521, wherein `PB-01_COMPROMISED_CREDENTIAL` atomically revokes compromised API keys in `ApiKeyService`, rotates ephemeral session signing secrets, and blocks the offending IP subnet in `IpBlocklistService`.
+525. The system of claim 521, wherein synthetic FHIR canary honeypot endpoints serve watermarked decoy patient records that trigger `PB-04_INFRASTRUCTURE_DOS_HONEYPOT` upon any unauthorized read or enumeration attempt.
+526. The system of claim 521, supporting both non-disruptive `DRY_RUN` simulation mode for continuous CI/CD readiness auditing (`audit_soar_playbooks.ts`) and live `AUTOMATED_CONTAINMENT` mode.
+527. The system of claim 521, further comprising an automated organizational risk auditor (`organizational_risk_audit.mjs`) verifying 22 continuous compliance gates across NIST RMF, HITRUST CSF v11, OWASP Top 10:2025, OWASP LLM 2025, OWASP Agentic 2026, and NIST SP 2400-102.
+528. The system of claim 521, wherein destructive containment actions requested without valid dual-custody role separation are automatically downgraded to `BLOCKED_DUAL_CUSTODY` status to prevent adversarial self-denial-of-service.
+529. The system of claim 521, wherein every `ISoarExecutionReceipt` is retained in an immutable ring buffer and indexed by `executionId`, `alertId`, and `sha256EvidenceDigest`.
+530. The system of claim 521, further comprising a live Clinical Defense Guard HUD card allowing authorized security officers to trigger dry-run or dual-custody containment playbooks and inspect SHA-256 forensic receipts.
+531. **A computer-implemented method for autonomous clinical security incident containment and adversarial AI quarantine**, comprising:
+   detecting a clinical cybersecurity or adversarial ML anomaly across SIEM, canary honeypot, or prompt-injection telemetry streams;
+   mapping the anomaly to a deterministic SOAR playbook (`PB-01` through `PB-04`);
+   verifying $M$-of-$N$ dual-custody role separation between the requesting and authorizing security principals when destructive containment is required;
+   executing automated IP blocklisting, credential revocation, taint-boundary quarantine, or active-defense tarpitting; and
+   computing an FDA 21 CFR Part 11 SHA-256 cryptographic receipt attesting to each containment step and HIPAA Safe Harbor four-factor outcome.
+532. The method of claim 531, wherein detecting a canary probe surge automatically engages an active-defense tarpit that delays attacker socket responses while preserving normal latency for authenticated clinical sessions.
+533. The method of claim 531, wherein prompt-injection containment verifies that static `systemInstruction` memory remained unmutated by untrusted user directives.
+534. The method of claim 531, wherein pre-deployment CI pipelines execute all four SOAR playbooks in `DRY_RUN` mode and fail the build if any playbook exceeds its sub-second SLA target.
+535. The method of claim 531, authenticating incoming Cloud Monitoring Pub/Sub push webhooks via Google-signed OIDC bearer token verification prior to playbook dispatch.
+536. **A non-transitory computer-readable storage medium** storing instructions that, when executed by one or more processors, cause the processors to perform the method of claims 531 to 535.
+537. The medium of claim 536, enforcing zero static service-account keys via Workload Identity Federation (WIF) and Secret Manager integration.
+538. The medium of claim 536, scrubbing all local filesystem paths and PII from forensic receipts prior to log persistence.
+539. The medium of claim 536, providing real-time SOAR readiness metrics to an institutional compliance dashboard.
+540. The medium of claim 536, integrated into a zero-trust healthcare cloud and edge clinical AI platform.
+
+### Cluster 28: Zero-Knowledge Local Sovereign Clinical Vault, OPFS Ambulatory Holter Streaming & Idempotent Offline Outbox (Claims 541–560)
+*Primary Code Artifacts*: [`src/services/storage/local-sovereign-vault.service.ts`](../../src/services/storage/local-sovereign-vault.service.ts), [`src/services/storage.service.ts`](../../src/services/storage.service.ts), [`docs/compliance/BUSINESS_CONTINUITY_RECOVERY_PLAN.md`](../compliance/BUSINESS_CONTINUITY_RECOVERY_PLAN.md)  
+*USPTO Docket*: `PG-PAT-2026-VAULT-001`
+
+541. **An anti-cloud-bricking local-first clinical storage and zero-RPO offline synchronization system**, comprising:
+   a persistent client-side IndexedDB clinical vault (`pocketgull-sovereign-vault`) storing longitudinal care plans, TIPPSS hardware audits, and vital summaries sealed with individual FDA 21 CFR Part 11 SHA-256 integrity digests (`sha256Seal`);
+   an Origin Private File System (OPFS) high-throughput binary stream writer configured to append continuous ambulatory Holter ECG and PPG waveform samples directly to local device storage without main-thread serialization stalls;
+   a transactional offline mutation outbox (`sovereign-outbox`) configured to queue local clinical state mutations alongside deterministic idempotency keys (`idempotencyKey`) whenever external cloud or EHR endpoints are unreachable; and
+   a cryptographic bundle rehydration engine configured to verify every record's SHA-256 Part 11 seal prior to importing or reconciling offline clinical bundles.
+542. The system of claim 541, wherein said local-first clinical storage system invokes `navigator.storage.persist()` at initialization to lock browser storage against automatic OS cache eviction.
+543. The system of claim 541, further comprising an automatic schema migration backup guard (`MIGRATION_BACKUP_KEY`) that snapshots existing sovereign records prior to IndexedDB version upgrades and auto-recovers records if a browser migration is interrupted.
+544. The system of claim 541, wherein every offline clinical mutation in `StorageService` is dual-written to `localStorage` and the IndexedDB transactional outbox (`enqueueOfflineOutboxMutation`) and automatically drained upon `window.online` connectivity restoration.
+545. The system of claim 541, wherein said cryptographic bundle rehydration engine skips corrupted or tampered records whose recomputed SHA-256 payload digest fails to match `sha256Seal` while reporting exact `importedCount`, `skippedCount`, and `verifiedSeals` telemetry.
+546. The system of claim 541, wherein said OPFS ambulatory Holter stream writer falls back transparently to an in-memory typed ring buffer when running in restricted thin-client environments lacking OPFS support.
+547. The system of claim 541, guaranteeing a local Recovery Point Objective of zero milliseconds ($\text{RPO} = 0\text{ ms}$) and a Recovery Time Objective under five seconds ($\text{RTO} < 5\text{ s}$) during total cloud, DNS, or hospital WAN outages.
+548. The system of claim 541, wherein every exported Sovereign JSON/FHIR backup bundle encapsulates both the active clinical records and pending offline outbox mutations under a master bundle SHA-256 digest.
+549. The system of claim 541, further comprising a live storage quota estimator (`navigator.storage.estimate()`) monitoring byte utilization and available megabytes across 500+ MB ambulatory telemetry sessions.
+550. The system of claim 541, operating with `isCloudIndependent: true` so that full care plan synthesis, ISMP posology checking, and local edge AI consults remain 100% functional indefinitely if upstream cloud servers are decommissioned.
+551. **A computer-implemented method for zero-RPO offline clinical data sovereignty and cryptographic outbox synchronization**, comprising:
+   computing an FDA 21 CFR Part 11 SHA-256 cryptographic seal over a clinical record payload and metadata header;
+   persisting said sealed clinical record into a persistent client-side IndexedDB store while simultaneously enqueuing an idempotent mutation descriptor in a transactional offline outbox store;
+   streaming high-frequency ambulatory physiological waveforms into an Origin Private File System (OPFS) file handle;
+   detecting restoration of network connectivity and draining queued outbox mutations using their deterministic idempotency keys to prevent duplicate EHR writes; and
+   rehydrating exported sovereign clinical bundles by recomputing and verifying each record's SHA-256 seal prior to state commit.
+552. The method of claim 551, wherein draining an outbox mutation atomically removes the corresponding `ISovereignOutboxMutation` entry only after receiving a verified commit acknowledgment.
+553. The method of claim 551, wherein closing an ambulatory Holter session computes a cumulative Part 11 SHA-256 seal (`sha256Part11Seal`) across all streamed waveform samples.
+554. The method of claim 551, wherein schema upgrades automatically serialize a pre-upgrade recovery snapshot and set `schemaMigrationStatus` to `'MIGRATED'` or `'RECOVERED_FROM_BACKUP'`.
+555. The method of claim 551, exposing vault health, OPFS byte counters, and pending outbox depth via reactive Angular signals for real-time clinician visibility.
+556. **A non-transitory computer-readable storage medium** storing instructions that, when executed by one or more processors, cause the processors to perform the method of claims 551 to 555.
+557. The medium of claim 556, preventing vendor lock-in and cloud bricking for rural, disaster-response, maritime, and air-gapped clinical deployments.
+558. The medium of claim 556, enforcing zero unsealed record imports during cross-device peer-to-peer or USB air-gapped bundle transfers.
+559. The medium of claim 556, aligned with HIPAA §164.308(a)(7) Contingency Plan and Data Backup requirements.
+560. The medium of claim 556, integrated into a local-first clinical decision support and sovereign patient health record platform.
+
 ---
 
 ## 🏛️ 6. Declaration of Novelty & Prior Art Demarcation
 
-The undersigned hereby attest and record that the foregoing 400 patent claims embody non-obvious, novel technological inventions resulting from the multi-year engineering and clinical architecture of the PocketGull project. All rights, title, and interest in and to said inventions, and all domestic and international patent applications issuing therefrom, are fully reserved and staked.
+The undersigned hereby attest and record that the foregoing 560 patent claims embody non-obvious, novel technological inventions resulting from the multi-year engineering and clinical architecture of the PocketGull project. All rights, title, and interest in and to said inventions, and all domestic and international patent applications issuing therefrom, are fully reserved and staked.
 
-*Date of Attestation*: October 9, 2026  
+*Date of Attestation*: November 16, 2026  
 *Cryptographic SHA-256 Commit Anchor*: Git Repository `pocketgull-app/pocketgull`
 
 ---
@@ -737,6 +1019,6 @@ The undersigned hereby attest and record that the foregoing 400 patent claims em
 
 For institutional IRB inquiries, multi-center research partnerships, or formal written covenant verification:
 
-* **Data Protection & IP Compliance Officer**: Phil Gear / Legal Team
+* **Data Protection & IP Compliance Contact**: Phillip Gear (PocketGull LLC)
 * **Email**: `dpo@pocketgull.app`
-* **Address**: PocketGull Health AI PBC, Portland, OR / Geneva, Switzerland
+* **Entity & Location**: PocketGull LLC (Oregon Domestic LLC, Registry No. 258869891), Portland, OR, USA

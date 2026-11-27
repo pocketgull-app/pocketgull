@@ -14,6 +14,7 @@ import { SeverityParticleService } from '../../services/severity-particle.servic
 import { SpatialLesionMarkupService } from '../../services/spatial-lesion-markup.service';
 import { ClinicalSpecialtyRiskSuiteService } from '../../services/clinical-specialty-risk-suite.service';
 import { KinesiologyBiomechanicsService } from '../../services/kinesiology-biomechanics.service';
+import { ClinicalMoERouterService } from '../../services/clinical-moe-router.service';
 
 // Mock Angular effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
 vi.mock('@angular/core', async (importOriginal) => {
@@ -441,5 +442,74 @@ describe('Body3DViewerComponent Signal & Spatial Anatomy Behavioral Suite', () =
     // Test velocity setting
     viewer.setNutriVelocity(2.0);
     expect(viewer.nutriVelocity()).toBe(2.0);
+  });
+
+  it('20. Integrates with ClinicalMoERouterService for Autonomous Camera/Shader Policy, 3D Organ Synapse Pulses, Off-Frustum Whispers, and Spatial Exam Receipts', () => {
+    const mockPatientState = {
+      issues: signal({}),
+      conditions: signal([]),
+      occupation: signal('Polymath'),
+      occupationalProfile: signal({ professionTitle: 'Polymath', socCode: '11-1021-POLY', snomedCode: '417893002', snomedDisplay: 'Cognitive' }),
+      activeRehabCondition: signal('lumbar_pelvic_alignment'),
+      activeRehabProgress: signal(0),
+      activeRehabCutawayRadius: signal(2.5),
+      activeWoodCutType: signal('camaieu_auto'),
+      activeSurfaceStyle: signal('ecorche_cast'),
+      activeShadingProfile: signal('atelier'),
+      anatomyViewMode: signal('skin'),
+      selectedPartId: signal<string | null>(null),
+      selectedPartName: signal<string | null>(null),
+      selectedNutrigenomicLigand: signal('all'),
+      selectPart: vi.fn((id: string) => mockPatientState.selectedPartId.set(id))
+    };
+
+    const injector = Injector.create({
+      providers: [
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: PatientStateService, useValue: mockPatientState },
+        { provide: PatientManagementService, useValue: { selectedPatientId: signal('p001'), selectedPatient: signal({ preexistingConditions: [] }) } },
+        { provide: ClinicalSpecialtyRiskSuiteService, useValue: { computeUhthoffThermalReserve: () => 0.45 } },
+        { provide: KinesiologyBiomechanicsService, useClass: KinesiologyBiomechanicsService },
+        { provide: ThemeService, useValue: { isDarkMode: signal(true) } },
+        { provide: EnvironmentalTelemetryService, useValue: {} },
+        { provide: BodyMeshFactoryService, useValue: {} },
+        { provide: RaycastSelectionService, useValue: {} },
+        { provide: SeverityParticleService, useValue: {} },
+        { provide: AdobeFireflyTextureService, useValue: {} },
+        { provide: SpatialLesionMarkupService, useClass: SpatialLesionMarkupService },
+        { provide: NgZone, useValue: { runOutsideAngular: (fn: any) => fn() } },
+        { provide: ClinicalMoERouterService, useClass: ClinicalMoERouterService }
+      ]
+    });
+
+    const moeRouter = injector.get(ClinicalMoERouterService);
+    const viewer = runInInjectionContext(injector, () => new Body3DViewerComponent());
+
+    // 1. Autonomous Spatial Sub-Selector applies STAT visceral camera & freezes spin
+    viewer.toggleAutoSpin();
+    expect(viewer.isAutoSpinning()).toBe(true);
+    moeRouter.setLabVitalsOverride({ spO2Percent: 88 });
+    viewer.applyAutonomousSpatialPolicy();
+    expect(viewer.activeCameraPreset()).toBe('visceral');
+    expect(viewer.isAutoSpinning()).toBe(false);
+    expect(viewer.isExploratoryCollapsed()).toBe(true);
+    expect(viewer.suppressHeavyBloom()).toBe(true);
+
+    // 2. Off-Frustum Whisper appears when zoomed into 'cranial' while SpO2 is 91%
+    moeRouter.setLabVitalsOverride({ spO2Percent: 91 });
+    viewer.setCameraPreset('cranial');
+    expect(viewer.offFrustumWhispers().length).toBeGreaterThan(0);
+    expect(viewer.offFrustumWhispers()[0].partId).toBe('lungs');
+
+    // 3. Bidirectional 3D Organ <-> Clinical Synapse pulse
+    viewer.emitOrganSynapsePulse('kidneys', 'Kidneys & Renal System');
+    expect(moeRouter.activeSynapsePulse()?.token).toBe('glycemic-renal-coupling');
+    expect(viewer.activeSynapseOrganBadge()?.partId).toBe('kidneys');
+
+    // 4. Spatial Exam Receipt attestation
+    viewer.attestAndRetireSpatialExam();
+    expect(moeRouter.completedSkillReceipts().some(r => r.expertId === 'spatial-body-twin')).toBe(true);
+
+    moeRouter.clearOverrides();
   });
 });

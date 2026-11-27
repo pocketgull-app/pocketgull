@@ -630,7 +630,7 @@ export type PatentHudTab = 'inventions' | 'clauses' | 'math' | 'charter' | 'prov
           <div class="flex items-center gap-2 text-[11px] text-zinc-500">
             <span class="font-pocketgull-brand text-xs font-bold text-zinc-800 dark:text-zinc-200">PocketGull</span>
             <span>•</span>
-            <span>Copyright © 2026 Applied Clinical AI Consortium. All Rights Reserved.</span>
+            <span>Copyright © 2026 PocketGull LLC &amp; Phillip Gear. All Rights Reserved.</span>
           </div>
 
           <div class="flex items-center gap-2 text-[10px] font-mono text-zinc-400">
@@ -735,7 +735,7 @@ export class PatentClaimsHudModalComponent {
 
   readonly academicBibtex = `@misc{pocketgull2026conformal,
   title={System and Method for Tri-Paradigm Consilience and Finite-Sample Conformal Clinical Intervals with Epistemic Abstention},
-  author={Gear, Phil and PocketGull Applied Clinical AI Consortium},
+  author={Gear, Phillip and PocketGull LLC},
   year={2026},
   month={October},
   howpublished={USPTO Provisional Patent Application Specification, Docket PG-PAT-2026-CONF-001},

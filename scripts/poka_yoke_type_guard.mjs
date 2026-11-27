@@ -1,17 +1,18 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: Apache-2.0
 /**
- * PocketGull Compile-Time Poka-Yoke Type Guard (Issue #276)
+ * PocketGull Compile-Time Poka-Yoke Type Guard (Issue #276 — Expanded Epistemic Edition)
  *
- * Enforces zero-tolerance safety-critical typing across all Clinical Posology
- * and Vital Signs calculations. Uses the TypeScript compiler AST to strictly ban:
- *  1. `as any` type assertions
- *  2. `<any>` type assertions
- *  3. `: any` variable, parameter, or property type declarations
- *  4. `@ts-ignore` / `@ts-nocheck` suppression directives
+ * Enforces zero-tolerance safety-critical typing across ALL Clinical Posology,
+ * Vital Signs, Emergency Red-Flag, Cryptography, Safe Harbor, ISMP, and TIPPSS services.
+ * Uses the TypeScript compiler AST to strictly ban:
+ *  1. `as any` / `<any>` type assertions
+ *  2. `: any` variable, parameter, property, and return type declarations
+ *  3. `[key: string]: any` index signatures
+ *  4. Nested `any` inside generics (`Record<string, any>`, `any[]`, `signal<any>`)
+ *  5. `@ts-ignore` / `@ts-nocheck` / `@ts-expect-error` directives
  *
- * In clinical healthcare software (FDA CDS & ISMP safety standards), untyped
- * `any` casts in posology or vital sign services risk catastrophic dosage
- * miscalculations, unit conversions errors, and silent runtime corruption.
+ * Includes a Popperian Falsification Self-Check proving every rule rejects bad TypeScript.
  *
  * @module scripts/poka_yoke_type_guard
  */
@@ -25,7 +26,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const workspaceRoot = path.resolve(__dirname, '..');
 
-// Safety-critical clinical services subject to strict Poka-Yoke AST validation
+// Safety-critical clinical & cryptographic services subject to strict Poka-Yoke AST validation
 const POKA_YOKE_TARGET_PATTERNS = [
   /clinical-posology/i,
   /exposome-posology/i,
@@ -35,12 +36,16 @@ const POKA_YOKE_TARGET_PATTERNS = [
   /vitals-stream/i,
   /cardio-vitals/i,
   /physionet-acoustic/i,
-  /clinical-vagal-resonant-pacing/i
+  /clinical-vagal-resonant-pacing/i,
+  /emergency-red-flag\.guard\.ts$/i,
+  /ismp-safety-guard\.service\.ts$/i,
+  /de-identification-engine\.service\.ts$/i,
+  /tippss-ingestion-guard\.service\.ts$/i,
+  /clinical-defense-guard\.service\.ts$/i,
+  /patient\.types\.ts$/i,
+  /phq9\.assessment\.ts$/i,
 ];
 
-/**
- * Recursively collects all TypeScript source files under src/services matching safety-critical criteria
- */
 function collectTargetFiles(dir) {
   const results = [];
   if (!fs.existsSync(dir)) return results;
@@ -52,8 +57,7 @@ function collectTargetFiles(dir) {
       results.push(...collectTargetFiles(fullPath));
     } else if (entry.isFile() && entry.name.endsWith('.ts') && !entry.name.endsWith('.spec.ts')) {
       const relPath = path.relative(workspaceRoot, fullPath).replace(/\\/g, '/');
-      const isTarget = POKA_YOKE_TARGET_PATTERNS.some(pat => pat.test(relPath));
-      if (isTarget) {
+      if (POKA_YOKE_TARGET_PATTERNS.some(pat => pat.test(relPath))) {
         results.push(fullPath);
       }
     }
@@ -61,18 +65,8 @@ function collectTargetFiles(dir) {
   return results;
 }
 
-/**
- * Audits a single TypeScript source file using AST traversal
- */
-export function auditFileForPokaYoke(filePath) {
-  const content = fs.readFileSync(filePath, 'utf8');
-  const sourceFile = ts.createSourceFile(
-    filePath,
-    content,
-    ts.ScriptTarget.Latest,
-    true
-  );
-
+export function auditSourceTextForPokaYoke(content, filePath = '<inline.ts>') {
+  const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
   const violations = [];
 
   function getLineCol(pos) {
@@ -80,74 +74,52 @@ export function auditFileForPokaYoke(filePath) {
     return { line: line + 1, col: character + 1 };
   }
 
-  // 1. Check for @ts-ignore or @ts-nocheck in comments
-  const commentRanges = ts.getLeadingCommentRanges(content, 0) || [];
-  // Also scan content for inline suppression directives
+  // 1. Check for @ts-ignore / @ts-nocheck / @ts-expect-error in comments
   const lines = content.split('\n');
   lines.forEach((lineText, idx) => {
-    if (/@ts-ignore|@ts-nocheck/i.test(lineText)) {
+    if (/@ts-ignore|@ts-nocheck|@ts-expect-error/i.test(lineText)) {
       violations.push({
         file: filePath,
         line: idx + 1,
         col: 1,
-        rule: 'no-ts-suppression-in-posology',
+        rule: 'no-ts-suppression-in-clinical',
         snippet: lineText.trim(),
-        message: 'Compiler suppression directive (@ts-ignore / @ts-nocheck) strictly prohibited in clinical posology/vitals code.'
+        message: 'Compiler suppression directive (@ts-ignore / @ts-nocheck / @ts-expect-error) prohibited in clinical/safety code.'
       });
     }
   });
 
-  // 2. AST Visitor to catch 'any' type casts and annotations
+  // 2. AST Visitor covering ALL `AnyKeyword` occurrences in casts, annotations, return types, index signatures & generics
   function visit(node) {
-    // Check: expr as any
-    if (ts.isAsExpression(node)) {
-      if (node.type && node.type.kind === ts.SyntaxKind.AnyKeyword) {
-        const { line, col } = getLineCol(node.getStart(sourceFile));
-        violations.push({
-          file: filePath,
-          line,
-          col,
-          rule: 'no-explicit-any-cast',
-          snippet: node.getText(sourceFile),
-          message: `Untyped 'as any' cast detected. Clinical posology and vitals require explicit domain interfaces.`
-        });
-      }
-    }
+    if (node.kind === ts.SyntaxKind.AnyKeyword) {
+      const parent = node.parent;
+      const { line, col } = getLineCol(node.getStart(sourceFile));
+      let rule = 'no-explicit-any';
+      let snippet = parent ? parent.getText(sourceFile).slice(0, 100) : 'any';
 
-    // Check: <any>expr
-    if (ts.isTypeAssertionExpression(node)) {
-      if (node.type && node.type.kind === ts.SyntaxKind.AnyKeyword) {
-        const { line, col } = getLineCol(node.getStart(sourceFile));
-        violations.push({
-          file: filePath,
-          line,
-          col,
-          rule: 'no-angle-bracket-any-cast',
-          snippet: node.getText(sourceFile),
-          message: `Untyped '<any>' assertion detected. Clinical calculations require explicit typing.`
-        });
+      if (parent && ts.isAsExpression(parent)) {
+        rule = 'no-explicit-any-cast';
+      } else if (parent && ts.isTypeAssertionExpression(parent)) {
+        rule = 'no-angle-bracket-any-cast';
+      } else if (parent && ts.isIndexSignatureDeclaration(parent)) {
+        rule = 'no-any-index-signature';
+      } else if (parent && (ts.isFunctionDeclaration(parent) || ts.isMethodDeclaration(parent) || ts.isArrowFunction(parent))) {
+        rule = 'no-any-return-type';
+      } else if (parent && (ts.isTypeReferenceNode(parent) || ts.isArrayTypeNode(parent))) {
+        rule = 'no-any-generic-or-array';
+      } else {
+        rule = 'no-explicit-any-annotation';
       }
-    }
 
-    // Check: x: any (Variable, Parameter, PropertyDeclaration)
-    if (
-      ts.isVariableDeclaration(node) ||
-      ts.isParameter(node) ||
-      ts.isPropertyDeclaration(node)
-    ) {
-      if (node.type && node.type.kind === ts.SyntaxKind.AnyKeyword) {
-        const { line, col } = getLineCol(node.getStart(sourceFile));
-        violations.push({
-          file: filePath,
-          line,
-          col,
-          rule: 'no-explicit-any-annotation',
-          snippet: node.getText(sourceFile),
-          message: `Declaration annotated with untyped ': any'. Use strict union or domain interface.`
-        });
-      }
+      violations.push({
+        file: filePath,
+        line,
+        col,
+        rule,
+        snippet,
+        message: `Untyped 'any' (${rule}) detected. Clinical & safety-critical services require explicit domain types.`
+      });
     }
-
     ts.forEachChild(node, visit);
   }
 
@@ -155,15 +127,36 @@ export function auditFileForPokaYoke(filePath) {
   return violations;
 }
 
-/**
- * Runs the full Poka-Yoke Type Guard audit across all safety-critical services
- */
+export function auditFileForPokaYoke(filePath) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  return auditSourceTextForPokaYoke(content, filePath);
+}
+
+function runFalsificationSelfCheck() {
+  const poisoned = `
+    // @ts-ignore
+    interface Bad { [key: string]: any; }
+    function badFn(x: Record<string, any>): any { return x as any; }
+  `;
+  const found = auditSourceTextForPokaYoke(poisoned, '<falsification-control.ts>');
+  const rules = new Set(found.map(v => v.rule));
+  const required = ['no-ts-suppression-in-clinical', 'no-any-index-signature', 'no-any-generic-or-array', 'no-any-return-type', 'no-explicit-any-cast'];
+  const missing = required.filter(r => !rules.has(r));
+  if (missing.length > 0) {
+    console.error(`❌ [FALSIFICATION CONTROL FAILED] Poka-Yoke AST missed: ${missing.join(', ')}`);
+    return false;
+  }
+  console.log(`✅ [Falsification Control] AST rejected all ${required.length}/${required.length} synthetic 'any'/suppression hazards.`);
+  return true;
+}
+
 export function runPokaYokeGuard() {
   const servicesDir = path.join(workspaceRoot, 'src', 'services');
   const targetFiles = collectTargetFiles(servicesDir);
 
-  console.log('🛡️  Running Compile-Time Poka-Yoke Type Guards (Issue #276)...');
-  console.log(`📋 Scanning ${targetFiles.length} safety-critical clinical posology and vital sign services:\n`);
+  console.log('🛡️  Running Compile-Time Poka-Yoke Type Guards (Expanded AST Suite)...');
+  if (!runFalsificationSelfCheck()) return false;
+  console.log(`📋 Scanning ${targetFiles.length} safety-critical clinical & cryptographic services:\n`);
 
   const allViolations = [];
 
@@ -185,15 +178,13 @@ export function runPokaYokeGuard() {
   console.log('\n─────────────────────────────────────────────────────────────────');
   if (allViolations.length > 0) {
     console.error(`❌ Poka-Yoke Type Guard FAILED: ${allViolations.length} safety-critical violation(s) detected.`);
-    console.error(`⚠️  Untyped 'any' casts and suppression comments are strictly banned in clinical posology & vitals.`);
     return false;
   }
 
-  console.log(`✅ Compile-Time Poka-Yoke Type Guards PASSED: 0 untyped 'any' casts across all ${targetFiles.length} clinical services.\n`);
+  console.log(`✅ Compile-Time Poka-Yoke Type Guards PASSED: 0 untyped 'any' casts/annotations across all ${targetFiles.length} clinical services.\n`);
   return true;
 }
 
-// Direct execution entrypoint
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename)) {
   const passed = runPokaYokeGuard();
   process.exit(passed ? 0 : 1);

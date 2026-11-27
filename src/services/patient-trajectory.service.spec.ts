@@ -58,30 +58,35 @@ describe('PatientTrajectoryService Suite', () => {
     expect(service.dailyAdherenceScore()).toBe(67);
   });
 
-  it('4. Act 3: Initializes 30, 60, and 90-day Horizon Milestones', () => {
+  it('4. Act 3: Initializes Three Acts aligned horizons (Act I Days 0-30, Act II Weeks 2-12, Act III Months 6+)', () => {
     const milestones = service.horizonMilestones();
     expect(milestones.length).toBe(3);
     expect(milestones[0].dayTarget).toBe(30);
+    expect(milestones[0].phaseTitle).toContain('Act I (Days 0–30)');
     expect(milestones[1].dayTarget).toBe(60);
+    expect(milestones[1].phaseTitle).toContain('Act II (Weeks 2–12)');
     expect(milestones[2].dayTarget).toBe(90);
+    expect(milestones[2].phaseTitle).toContain('Act III (Months 6+)');
   });
 
-  it('5. Act 3: Generates official FDA 21 CFR Part 11 Vitality Certificate with SHA-256 seal', () => {
+  it('5. Act 3: Generates official FDA 21 CFR Part 11 Vitality Certificate with FIPS SHA-256 seal', () => {
     const cert = service.generateVitalityCertificate('Charles Darwin');
     expect(cert.patientName).toBe('Charles Darwin');
     expect(cert.certificateId).toContain('PG-VIT-');
     expect(cert.clinicalAchievements.length).toBe(4);
-    expect(cert.sha256IntegritySeal).toContain('SHA-256:');
+    expect(cert.sha256IntegritySeal).toMatch(/^SHA-256:\s+[a-f0-9]{64}\b/);
     expect(cert.regulatoryAttestation).toContain('HL7 FHIR R4');
     expect(service.vitalityCertificate()).toEqual(cert);
   });
 
-  it('6. Edge Scribe: Zero-egress consult maps back symptom note to L4-L5 anatomy', async () => {
+  it('6. Edge Scribe: Zero-egress consult truthfully labels Deterministic Fallback when nanoProvider does not execute', async () => {
     const consult = await service.consultEdgeScribe('My lower back feels tight after sitting today');
     expect(consult.anatomicalLinkage).toContain('L4-L5');
     expect(consult.teaspoonInsight).toContain('disc cushion');
     expect(consult.recommendedImmediateAction).toContain('lumbar extension');
     expect(consult.egressAuditedZeroEgress).toBe(true);
+    expect(consult.source).toBe('Deterministic Local Fallback');
+    expect(consult.source).not.toContain('Gemma 4 Edge');
   });
 
   it('7. Edge Scribe: Maps ocular screen fatigue to ciliary muscle and 670nm light bath', async () => {

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Injectable, signal, computed, inject, PLATFORM_ID, NgZone, OnDestroy } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { 
-  IUiAnomaly, 
-  IUiRepairPatch, 
-  IUiHealthMetrics, 
-  AnomalyCategory, 
-  AnomalySeverity 
+import {
+  IUiAnomaly,
+  IUiRepairPatch,
+  IUiHealthMetrics
 } from '../models/ui-self-repair.types';
 import { PatientStateService } from './patient-state.service';
-import { IBodyPartIssue, IPatientSymptom, BODY_PART_NAMES } from './patient.types';
+import { IBodyPartIssue, BODY_PART_NAMES } from './patient.types';
+
+const PLACEHOLDER_VITAL_VALUES = new Set(['', '--', 'n/a', 'na', 'pending', 'unknown', 'unverified']);
 
 @Injectable({
   providedIn: 'root'
@@ -27,29 +27,32 @@ export class UiSelfRepairService implements OnDestroy {
   readonly activePatches = signal<IUiRepairPatch[]>([]);
   readonly lastAuditTimestamp = signal<number>(Date.now());
   readonly isHudOpen = signal<boolean>(false);
-  readonly stealthMode = signal<boolean>(true); // When true, pill is only visible if health < 100 or repair count > 0
+  readonly stealthMode = signal<boolean>(false);
 
   // Dynamic Injected Style Element for Layout, Lens & Contrast Repairs
   private dynamicPatchStyleEl: HTMLStyleElement | null = null;
-  private auditIntervalHandle: any = null;
+  private auditIntervalHandle: ReturnType<typeof setInterval> | null = null;
+  private initialAuditTimeoutHandle: ReturnType<typeof setTimeout> | null = null;
   private visibilityChangeHandler: (() => void) | null = null;
+  private boundErrorHandler: ((event: ErrorEvent) => void) | null = null;
+  private boundRejectionHandler: ((event: PromiseRejectionEvent) => void) | null = null;
 
   // Computed Metrics
   readonly healthMetrics = computed<IUiHealthMetrics>(() => {
     const all = this.anomalies();
-    const active = all.filter(a => !a.repairAction || !a.repairAction.applied);
-    const criticalCount = active.filter(a => a.severity === 'critical').length;
-    const warnCount = active.filter(a => a.severity === 'warning').length;
-    const infoCount = active.filter(a => a.severity === 'info').length;
+    const active = all.filter((a) => !a.repairAction || !a.repairAction.applied);
+    const criticalCount = active.filter((a) => a.severity === 'critical').length;
+    const warnCount = active.filter((a) => a.severity === 'warning').length;
+    const infoCount = active.filter((a) => a.severity === 'info').length;
 
     let score = 100 - (criticalCount * 25 + warnCount * 10 + infoCount * 2);
     if (score < 0) score = 0;
 
-    const patches = this.activePatches().filter(p => p.status === 'applied');
-    const lensRepairs = all.filter(a => a.category === 'lens-canvas-fault' && a.repairAction?.applied).length;
-    const frameRepairs = all.filter(a => a.category === 'analysis-frame-collapse' && a.repairAction?.applied).length;
+    const patches = this.activePatches().filter((p) => p.status === 'applied');
+    const lensRepairs = all.filter((a) => a.category === 'lens-canvas-fault' && a.repairAction?.applied).length;
+    const frameRepairs = all.filter((a) => a.category === 'analysis-frame-collapse' && a.repairAction?.applied).length;
     const patientStateRepairs = all.filter(
-      a => (a.category === 'patient-state-corruption' || a.category === 'symptom-stream-fault') && a.repairAction?.applied
+      (a) => (a.category === 'patient-state-corruption' || a.category === 'symptom-stream-fault') && a.repairAction?.applied
     ).length;
 
     return {
@@ -78,26 +81,55 @@ export class UiSelfRepairService implements OnDestroy {
       clearInterval(this.auditIntervalHandle);
       this.auditIntervalHandle = null;
     }
+    if (this.initialAuditTimeoutHandle) {
+      clearTimeout(this.initialAuditTimeoutHandle);
+      this.initialAuditTimeoutHandle = null;
+    }
     if (this.visibilityChangeHandler && typeof document !== 'undefined') {
       document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+      this.visibilityChangeHandler = null;
+    }
+    if (typeof window !== 'undefined') {
+      if (this.boundErrorHandler) {
+        window.removeEventListener('error', this.boundErrorHandler);
+        this.boundErrorHandler = null;
+      }
+      if (this.boundRejectionHandler) {
+        window.removeEventListener('unhandledrejection', this.boundRejectionHandler);
+        this.boundRejectionHandler = null;
+      }
     }
   }
 
   toggleHud(): void {
-    this.isHudOpen.update(v => !v);
+    this.isHudOpen.update((v) => !v);
   }
 
   toggleAutoRepair(): void {
-    this.isAutoRepairEnabled.update(v => !v);
+    this.isAutoRepairEnabled.update((v) => !v);
   }
 
   toggleStealthMode(): void {
-    this.stealthMode.update(v => !v);
+    this.stealthMode.update((v) => !v);
+  }
+
+  private generateSecureSuffix(): string {
+    const bytes = new Uint8Array(4);
+    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+      globalThis.crypto.getRandomValues(bytes);
+    } else {
+      const now = Date.now();
+      bytes[0] = now & 0xff;
+      bytes[1] = (now >> 8) & 0xff;
+      bytes[2] = (now >> 16) & 0xff;
+      bytes[3] = (now >> 24) & 0xff;
+    }
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
   }
 
   private initPatchContainer(): void {
-    if (!this.isBrowser) return;
-    let el = document.getElementById('pocketgull-self-repair-styles') as HTMLStyleElement;
+    if (!this.isBrowser || typeof document === 'undefined') return;
+    let el = document.getElementById('pocketgull-self-repair-styles') as HTMLStyleElement | null;
     if (!el) {
       el = document.createElement('style');
       el.id = 'pocketgull-self-repair-styles';
@@ -110,15 +142,13 @@ export class UiSelfRepairService implements OnDestroy {
   private initBackgroundAuditScheduler(): void {
     if (!this.isBrowser) return;
 
-    // Autonomous background audit: runs every 20s outside Angular, throttled by requestIdleCallback
     this.ngZone.runOutsideAngular(() => {
       this.auditIntervalHandle = setInterval(() => {
-        // Pause audits if tab is hidden to save CPU/GPU cycles
         if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
           return;
         }
         this.scheduleIdleAudit();
-      }, 20000);
+      }, 30_000);
 
       this.visibilityChangeHandler = () => {
         if (document.visibilityState === 'visible') {
@@ -128,15 +158,11 @@ export class UiSelfRepairService implements OnDestroy {
       document.addEventListener('visibilitychange', this.visibilityChangeHandler);
     });
 
-    // Run initial idle audit after initial DOM load
-    setTimeout(() => {
+    this.initialAuditTimeoutHandle = setTimeout(() => {
       this.scheduleIdleAudit();
-    }, 2000);
+    }, 2500);
   }
 
-  /**
-   * Schedules an audit inside requestIdleCallback when available, falling back to setTimeout.
-   */
   scheduleIdleAudit(): void {
     if (!this.isBrowser) return;
 
@@ -144,17 +170,19 @@ export class UiSelfRepairService implements OnDestroy {
       this.runFullAudit();
     };
 
-    if (typeof (window as any).requestIdleCallback === 'function') {
-      (window as any).requestIdleCallback(() => run(), { timeout: 3000 });
+    const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => void })
+      .requestIdleCallback;
+    if (typeof ric === 'function') {
+      ric(() => run(), { timeout: 3000 });
     } else {
       setTimeout(run, 50);
     }
   }
 
   private hookGlobalErrorInterception(): void {
-    if (!this.isBrowser) return;
+    if (!this.isBrowser || typeof window === 'undefined') return;
 
-    window.addEventListener('error', (event: ErrorEvent) => {
+    this.boundErrorHandler = (event: ErrorEvent) => {
       this.recordAnomaly({
         category: 'runtime-exception',
         severity: 'critical',
@@ -164,9 +192,9 @@ export class UiSelfRepairService implements OnDestroy {
           errorMessage: `${event.message} at line ${event.lineno}:${event.colno}`
         }
       });
-    });
+    };
 
-    window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
+    this.boundRejectionHandler = (event: PromiseRejectionEvent) => {
       this.recordAnomaly({
         category: 'runtime-exception',
         severity: 'warning',
@@ -176,12 +204,12 @@ export class UiSelfRepairService implements OnDestroy {
           errorMessage: String(event.reason)
         }
       });
-    });
+    };
+
+    window.addEventListener('error', this.boundErrorHandler);
+    window.addEventListener('unhandledrejection', this.boundRejectionHandler);
   }
 
-  /**
-   * Performs an autonomous multi-tier audit across active DOM, lenses, frames, and patient symptom streams.
-   */
   runFullAudit(): void {
     if (!this.isBrowser || this.isAuditing()) return;
 
@@ -201,7 +229,11 @@ export class UiSelfRepairService implements OnDestroy {
   }
 
   /**
-   * 1. Patient State & Symptoms Auditor & Auto-Healer
+   * 1. Patient State & Symptoms Auditor & Safe Sanitizer
+   * Clinical Safety Invariant: NEVER fabricates reassuring healthy vitals (e.g. '72' / '98%')
+   * and NEVER overwrites critical low/zero values (e.g. HR=0 asystole or SpO2=84% hypoxia).
+   * Physically impossible strings (< 0, > physiological ceiling, or non-numeric garbage) are
+   * quarantined explicitly to '--' (unverified).
    */
   auditPatientStateAndSymptoms(): void {
     if (!this.patientState) return;
@@ -233,7 +265,7 @@ export class UiSelfRepairService implements OnDestroy {
         issueList.forEach((issue, idx) => {
           let issueNeedsFix = false;
           let pain = typeof issue.painLevel === 'number' ? issue.painLevel : parseInt(String(issue.painLevel), 10);
-          
+
           if (isNaN(pain) || pain < 1 || pain > 10) {
             pain = isNaN(pain) ? 5 : Math.max(1, Math.min(10, Math.round(pain)));
             issueNeedsFix = true;
@@ -245,13 +277,19 @@ export class UiSelfRepairService implements OnDestroy {
             issueNeedsFix = true;
           }
 
-          const sanitizedSymptoms = rawSymptoms.map(sym => {
+          const sanitizedSymptoms = rawSymptoms.map((sym) => {
             if (typeof sym === 'string') {
               const trimmed = sym.trim();
-              return trimmed ? trimmed : 'Unspecified Symptom';
+              if (!trimmed) {
+                issueNeedsFix = true;
+                return 'Unspecified Symptom';
+              }
+              return trimmed;
             } else if (sym && typeof sym === 'object') {
+              const name = sym.name?.trim();
+              if (!name) issueNeedsFix = true;
               return {
-                name: sym.name || 'Unspecified Symptom',
+                name: name || 'Unspecified Symptom',
                 type: sym.type || 'symptom',
                 verified: sym.verified !== false,
                 timeline: sym.timeline || 'Present'
@@ -267,7 +305,7 @@ export class UiSelfRepairService implements OnDestroy {
               category: 'symptom-stream-fault',
               severity: 'warning',
               selector: `PatientState.issues['${bodyPartId}'][${idx}]`,
-              description: `Malformed symptom/pain metadata for issue '${issue.name || bodyPartId}'. Auto-healing pain bounds & symptom contracts.`,
+              description: `Malformed symptom/pain metadata for issue '${issue.name || bodyPartId}'. Clamped pain bounds & sanitized symptom list.`,
               evidence: {
                 corruptedKey: `${bodyPartId}[${idx}]`,
                 corruptedValue: { originalPain: issue.painLevel, rawSymptoms: issue.symptoms }
@@ -301,39 +339,47 @@ export class UiSelfRepairService implements OnDestroy {
       }
     }
 
-    // B. Audit Vitals Physiological Bounds
+    // B. Audit Vitals for Physically Impossible Corruption (NEVER fabricate healthy defaults!)
     const vitals = this.patientState.vitals();
     if (vitals) {
       let vitalsNeedRepair = false;
       const cleanVitals = { ...vitals };
 
-      if (vitals.hr) {
-        const hrNum = parseFloat(String(vitals.hr));
-        if (isNaN(hrNum) || hrNum <= 0 || hrNum > 300) {
-          cleanVitals.hr = '72';
-          vitalsNeedRepair = true;
-          this.recordAnomaly({
-            category: 'patient-state-corruption',
-            severity: 'warning',
-            selector: 'PatientState.vitals.hr',
-            description: `Physiologically invalid heart rate detected: '${vitals.hr}'. Restored to baseline 72 bpm.`,
-            evidence: { corruptedKey: 'hr', corruptedValue: vitals.hr }
-          });
+      if (vitals.hr !== undefined && vitals.hr !== null) {
+        const rawHr = String(vitals.hr).trim();
+        if (!PLACEHOLDER_VITAL_VALUES.has(rawHr.toLowerCase())) {
+          const hrNum = parseFloat(rawHr);
+          // Preserve 0 bpm (potential emergency/asystole) and valid physiological range 0..300; quarantine only impossible values
+          if (isNaN(hrNum) || hrNum < 0 || hrNum > 300) {
+            cleanVitals.hr = '--';
+            vitalsNeedRepair = true;
+            this.recordAnomaly({
+              category: 'patient-state-corruption',
+              severity: 'warning',
+              selector: 'PatientState.vitals.hr',
+              description: `Physically impossible heart rate string '${vitals.hr}' quarantined to '--' (unverified; never fabricated).`,
+              evidence: { corruptedKey: 'hr', corruptedValue: vitals.hr }
+            });
+          }
         }
       }
 
-      if (vitals.spO2) {
-        const spo2Num = parseFloat(String(vitals.spO2).replace('%', ''));
-        if (isNaN(spo2Num) || spo2Num <= 0 || spo2Num > 100) {
-          cleanVitals.spO2 = '98%';
-          vitalsNeedRepair = true;
-          this.recordAnomaly({
-            category: 'patient-state-corruption',
-            severity: 'warning',
-            selector: 'PatientState.vitals.spO2',
-            description: `Physiologically invalid SpO2 detected: '${vitals.spO2}'. Restored to baseline 98%.`,
-            evidence: { corruptedKey: 'spO2', corruptedValue: vitals.spO2 }
-          });
+      if (vitals.spO2 !== undefined && vitals.spO2 !== null) {
+        const rawSpo2 = String(vitals.spO2).trim();
+        if (!PLACEHOLDER_VITAL_VALUES.has(rawSpo2.toLowerCase())) {
+          const spo2Num = parseFloat(rawSpo2.replace('%', ''));
+          // Preserve critical low SpO2 (0..100%) untouched; quarantine only impossible values (<0, >100, NaN)
+          if (isNaN(spo2Num) || spo2Num < 0 || spo2Num > 100) {
+            cleanVitals.spO2 = '--';
+            vitalsNeedRepair = true;
+            this.recordAnomaly({
+              category: 'patient-state-corruption',
+              severity: 'warning',
+              selector: 'PatientState.vitals.spO2',
+              description: `Physically impossible SpO2 string '${vitals.spO2}' quarantined to '--' (unverified; never fabricated).`,
+              evidence: { corruptedKey: 'spO2', corruptedValue: vitals.spO2 }
+            });
+          }
         }
       }
 
@@ -342,14 +388,33 @@ export class UiSelfRepairService implements OnDestroy {
         this.applyStateResetPatch(
           'state-repair-vitals',
           'PatientState.vitals',
-          'Sanitized corrupted vital bounds back into valid physiological ranges.'
+          'Quarantined physically impossible vital strings to unverified ("--") without fabricating clinical data.'
         );
       }
     }
   }
 
   /**
+   * Returns true only when an element and all its ancestors are actively rendered in layout.
+   */
+  private isElementVisibleInLayout(el: HTMLElement): boolean {
+    if (!el.isConnected) return false;
+    let cur: HTMLElement | null = el;
+    while (cur && cur !== document.documentElement) {
+      if (cur.hasAttribute('hidden') || cur.classList.contains('hidden')) return false;
+      const st = window.getComputedStyle(cur);
+      if (st.display === 'none' || st.visibility === 'hidden' || st.opacity === '0') {
+        return false;
+      }
+      cur = cur.parentElement;
+    }
+    return true;
+  }
+
+  /**
    * 2. 3D Biophysical Lenses Diagnostic & Auto-Repair
+   * Inspects ONLY explicit 3D lens host elements (never wildcarding sparkline/icon <canvas> elements
+   * or hidden/off-tab DOM subtrees).
    */
   private auditBiophysicalLenses(): void {
     const lensSelectors = [
@@ -365,55 +430,45 @@ export class UiSelfRepairService implements OnDestroy {
       'app-nutrigenomics-3d-lens',
       'app-knee-hologram-hud',
       'app-lens-biomolecular-physics',
-      'app-lens-physical-genomics',
-      'canvas'
+      'app-lens-physical-genomics'
     ];
 
     const elements = document.querySelectorAll<HTMLElement>(lensSelectors.join(','));
 
     elements.forEach((el, index) => {
-      const rect = el.getBoundingClientRect();
+      if (!this.isElementVisibleInLayout(el)) return;
+
       const clientH = el.clientHeight;
       const clientW = el.clientWidth;
       const tagName = el.tagName.toLowerCase();
+      const innerCanvas = el.querySelector<HTMLCanvasElement>('canvas');
+      const canvasContextLost = Boolean(innerCanvas && (innerCanvas.width === 0 || innerCanvas.height === 0));
+      const isCollapsed = clientW > 0 && clientH < 40;
 
-      const isCollapsed = clientH < 40 && !el.classList.contains('hidden');
-      const isZeroDimension = clientW === 0 || clientH === 0;
-
-      let canvasContextLost = false;
-      if (tagName === 'canvas') {
-        const canvas = el as HTMLCanvasElement;
-        if (canvas.width === 0 || canvas.height === 0) {
-          canvasContextLost = true;
-        }
-      }
-
-      if (isCollapsed || isZeroDimension || canvasContextLost) {
+      if (isCollapsed || canvasContextLost) {
         const uniqueClass = this.ensureElementIdentifier(el, `pg-lens-repair-${index}`);
         const selector = `.${uniqueClass}`;
+        const anomalyId = `lens-fault:${selector}`;
 
-        const anomaly: IUiAnomaly = {
-          id: `lens-fault-${Date.now()}-${index}`,
-          timestamp: Date.now(),
+        this.recordAnomaly({
+          id: anomalyId,
           category: 'lens-canvas-fault',
           severity: 'critical',
           selector,
-          description: `3D Lens / Canvas collapsed or unrendered (${tagName}: ${Math.round(clientW)}x${Math.round(clientH)}px, contextLost: ${canvasContextLost})`,
+          description: `3D Lens viewport collapsed or unrendered (${tagName}: ${Math.round(clientW)}x${Math.round(clientH)}px, contextLost: ${canvasContextLost})`,
           evidence: {
             clientWidth: clientW,
             clientHeight: clientH,
             canvasContext: canvasContextLost ? 'lost' : 'active'
           }
-        };
-
-        this.recordAnomaly(anomaly);
+        });
 
         if (this.isAutoRepairEnabled()) {
           this.applyCssPatch(
-            anomaly.id,
+            anomalyId,
             selector,
-            `${selector} { min-height: 420px !important; width: 100% !important; display: block !important; position: relative !important; } ${selector} canvas { min-height: 420px !important; width: 100% !important; display: block !important; }`,
-            'Restored 3D lens viewport geometry (min-height: 420px) and triggered render pipeline recalculation.'
+            `${selector} { min-height: 360px !important; width: 100% !important; display: block !important; position: relative !important; }`,
+            'Restored visible 3D lens viewport geometry (min-height: 360px) and triggered resize.'
           );
 
           this.ngZone.runOutsideAngular(() => {
@@ -428,6 +483,7 @@ export class UiSelfRepairService implements OnDestroy {
 
   /**
    * 3. Analysis Frames & Research Panel Diagnostic & Auto-Repair
+   * Skips hidden/collapsed panels; repairs ONLY visibly mounted frames trapping overflowing scroll.
    */
   private auditAnalysisFrames(): void {
     const frameSelectors = [
@@ -443,39 +499,39 @@ export class UiSelfRepairService implements OnDestroy {
     const frames = document.querySelectorAll<HTMLElement>(frameSelectors.join(','));
 
     frames.forEach((el, index) => {
+      if (!this.isElementVisibleInLayout(el)) return;
+
       const scrollH = el.scrollHeight;
       const clientH = el.clientHeight;
-      const rect = el.getBoundingClientRect();
+      if (clientH === 0 || el.clientWidth === 0) return;
 
-      const isTrapped = (clientH < 60 && scrollH > 150) || (rect.height < 60 && !el.classList.contains('hidden'));
       const style = window.getComputedStyle(el);
-      const isClippingWithoutScroll = (style.overflow === 'hidden' || style.overflowY === 'hidden') && scrollH > clientH + 20;
+      const isClippingWithoutScroll =
+        (style.overflow === 'hidden' || style.overflowY === 'hidden') && scrollH > clientH + 32;
 
-      if (isTrapped || isClippingWithoutScroll) {
+      if (isClippingWithoutScroll) {
         const uniqueClass = this.ensureElementIdentifier(el, `pg-frame-repair-${index}`);
         const selector = `.${uniqueClass}`;
+        const anomalyId = `frame-fault:${selector}`;
 
-        const anomaly: IUiAnomaly = {
-          id: `frame-fault-${Date.now()}-${index}`,
-          timestamp: Date.now(),
+        this.recordAnomaly({
+          id: anomalyId,
           category: 'analysis-frame-collapse',
           severity: 'warning',
           selector,
-          description: `Analysis Frame container clipping or trapped scroll (clientHeight: ${clientH}px, scrollHeight: ${scrollH}px, overflow: ${style.overflow})`,
+          description: `Analysis Frame container clipping overflowing content (clientHeight: ${clientH}px, scrollHeight: ${scrollH}px, overflow: ${style.overflow})`,
           evidence: {
             clientHeight: clientH,
             scrollHeight: scrollH
           }
-        };
-
-        this.recordAnomaly(anomaly);
+        });
 
         if (this.isAutoRepairEnabled()) {
           this.applyCssPatch(
-            anomaly.id,
+            anomalyId,
             selector,
-            `${selector} { min-height: 280px !important; max-height: 100% !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }`,
-            'Repaired analysis frame viewport constraints and unlocked fluid internal vertical scrolling.'
+            `${selector} { overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; }`,
+            'Unlocked vertical scrolling on visibly clipped analysis frame.'
           );
         }
       }
@@ -489,38 +545,42 @@ export class UiSelfRepairService implements OnDestroy {
     const docWidth = document.documentElement.clientWidth;
     const bodyWidth = document.body.clientWidth;
     const maxAllowedWidth = Math.max(docWidth, bodyWidth);
+    if (maxAllowedWidth === 0) return;
 
     const candidates = document.querySelectorAll<HTMLElement>(
-      'main, section, article, div.container, div[class*="content"], div[class*="wrapper"], table, pre, code'
+      'main, section, article, table'
     );
 
     candidates.forEach((el, index) => {
+      if (!this.isElementVisibleInLayout(el)) return;
       const rect = el.getBoundingClientRect();
       const scrollW = el.scrollWidth;
       const clientW = el.clientWidth;
+      if (clientW === 0) return;
 
-      if (rect.right > maxAllowedWidth + 5 || (scrollW > clientW + 8 && clientW > 0 && el.tagName !== 'PRE' && el.tagName !== 'CODE')) {
+      const style = window.getComputedStyle(el);
+      if (style.overflowX === 'auto' || style.overflowX === 'scroll') return;
+
+      if (rect.right > maxAllowedWidth + 8) {
         const uniqueClass = this.ensureElementIdentifier(el, `pg-overflow-target-${index}`);
         const selector = `.${uniqueClass}`;
+        const anomalyId = `overflow:${selector}`;
 
-        const anomaly: IUiAnomaly = {
-          id: `overflow-${Date.now()}-${index}`,
-          timestamp: Date.now(),
+        this.recordAnomaly({
+          id: anomalyId,
           category: 'layout-overflow',
           severity: 'warning',
           selector,
-          description: `Element causes horizontal layout blowout (scrollWidth: ${scrollW}px, clientWidth: ${clientW}px)`,
+          description: `Element extends past viewport edge (scrollWidth: ${scrollW}px, clientWidth: ${clientW}px)`,
           evidence: {
             clientWidth: clientW,
             scrollWidth: scrollW
           }
-        };
-
-        this.recordAnomaly(anomaly);
+        });
 
         if (this.isAutoRepairEnabled()) {
           this.applyCssPatch(
-            anomaly.id,
+            anomalyId,
             selector,
             `${selector} { max-width: 100% !important; overflow-x: auto !important; box-sizing: border-box !important; }`,
             'Enforced max-width 100% containment and fluid horizontal scroll boundary.'
@@ -531,53 +591,61 @@ export class UiSelfRepairService implements OnDestroy {
   }
 
   /**
-   * 5. Legibility & Contrast Sentinel
+   * 5. Legibility & Contrast Sentinel (Ancestor-Background-Aware)
+   * Inspects the element's actual nearest opaque background instead of assuming body theme,
+   * so dark text on light badges inside dark mode is NEVER painted white-on-white.
    */
   private auditA11yContrastAndLegibility(): void {
-    const textNodes = document.querySelectorAll<HTMLElement>('p, span, h1, h2, h3, h4, label, button, a');
-    const sampled = Array.from(textNodes).slice(0, 100);
+    const primaryMainNodes = Array.from(
+      document.querySelectorAll<HTMLElement>('main p, main h1, main h2, main h3, main h4, main label')
+    );
+    const generalNodes = Array.from(
+      document.querySelectorAll<HTMLElement>('p, h1, h2, h3, h4, label, button, a')
+    );
+    const seen = new Set<HTMLElement>();
+    const sampled: HTMLElement[] = [];
+    for (const el of [...primaryMainNodes, ...generalNodes]) {
+      if (seen.has(el)) continue;
+      seen.add(el);
+      sampled.push(el);
+      if (sampled.length >= 250) break;
+    }
 
     sampled.forEach((el, index) => {
+      if (!this.isElementVisibleInLayout(el)) return;
       const style = window.getComputedStyle(el);
-      const color = style.color;
-      const fontSize = parseFloat(style.fontSize) || 16;
-      
-      if (style.opacity === '0' || style.visibility === 'hidden') return;
+      const fgRgb = this.parseRgb(style.color);
+      const bgRgb = this.resolveEffectiveBackgroundRgb(el);
+      if (!fgRgb || !bgRgb) return;
 
-      const rgb = this.parseRgb(color);
-      if (!rgb) return;
+      const fgLum = this.relativeLuminance(fgRgb);
+      const bgLum = this.relativeLuminance(bgRgb);
+      const contrastRatio = (Math.max(fgLum, bgLum) + 0.05) / (Math.min(fgLum, bgLum) + 0.05);
 
-      const lum = (0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255;
-      
-      const isDarkTheme = document.body.classList.contains('dark') || 
-                          window.getComputedStyle(document.body).backgroundColor.includes('rgb(9') ||
-                          window.getComputedStyle(document.body).backgroundColor.includes('rgb(0');
-
-      if (isDarkTheme && lum < 0.15 && fontSize < 24) {
+      // Only intervene on genuinely unreadable dark-on-dark (< 2.5:1) text
+      if (bgLum < 0.12 && fgLum < 0.12 && contrastRatio < 2.5) {
         const uniqueClass = this.ensureElementIdentifier(el, `pg-contrast-target-${index}`);
         const selector = `.${uniqueClass}`;
+        const anomalyId = `contrast:${selector}`;
 
-        const anomaly: IUiAnomaly = {
-          id: `contrast-${Date.now()}-${index}`,
-          timestamp: Date.now(),
+        this.recordAnomaly({
+          id: anomalyId,
           category: 'wcag-contrast',
           severity: 'warning',
           selector,
-          description: `Low text contrast detected on dark canvas (Luminance: ${lum.toFixed(2)}, Color: ${color})`,
+          description: `Low dark-on-dark contrast detected (ratio ${contrastRatio.toFixed(2)}:1, fg ${style.color})`,
           evidence: {
-            computedColor: color,
-            contrastRatio: lum
+            computedColor: style.color,
+            contrastRatio
           }
-        };
-
-        this.recordAnomaly(anomaly);
+        });
 
         if (this.isAutoRepairEnabled()) {
           this.applyCssPatch(
-            anomaly.id,
+            anomalyId,
             selector,
-            `${selector} { color: #f4f4f5 !important; }`,
-            'Repaired text color to high-contrast bone cream (#f4f4f5) for WCAG AAA compliance.'
+            `${selector} { color: #ede3d2 !important; }`,
+            'Repaired dark-on-dark text color to warm bone cream (#ede3d2) for WCAG AAA contrast.'
           );
         }
       }
@@ -589,35 +657,35 @@ export class UiSelfRepairService implements OnDestroy {
    */
   private auditInteractiveTargets(): void {
     const interactives = document.querySelectorAll<HTMLElement>('button, a[href], [role="button"]');
-    
+
     interactives.forEach((el, index) => {
+      if (!this.isElementVisibleInLayout(el)) return;
       const rect = el.getBoundingClientRect();
-      if (rect.width === 0 && rect.height === 0) return;
+      if (rect.width === 0 || rect.height === 0) return;
 
       if (rect.width < 24 || rect.height < 24) {
         const uniqueClass = this.ensureElementIdentifier(el, `pg-target-size-${index}`);
         const selector = `.${uniqueClass}`;
+        const anomalyId = `target-size:${selector}`;
 
-        const anomaly: IUiAnomaly = {
-          id: `target-size-${Date.now()}-${index}`,
-          timestamp: Date.now(),
+        this.recordAnomaly({
+          id: anomalyId,
           category: 'unresponsive-target',
           severity: 'info',
           selector,
-          description: `Interactive touch target is below minimum accessible dimensions (${Math.round(rect.width)}x${Math.round(rect.height)}px)`,
+          description: `Interactive touch target below minimum accessible dimensions (${Math.round(rect.width)}x${Math.round(rect.height)}px)`,
           evidence: {
-            clientWidth: rect.width
+            clientWidth: rect.width,
+            clientHeight: rect.height
           }
-        };
-
-        this.recordAnomaly(anomaly);
+        });
 
         if (this.isAutoRepairEnabled()) {
           this.applyCssPatch(
-            anomaly.id,
+            anomalyId,
             selector,
-            `${selector} { min-width: 32px !important; min-height: 32px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; }`,
-            'Expanded touch padding to ensure reliable motor-accessible interaction.'
+            `${selector} { min-width: 32px !important; min-height: 32px !important; }`,
+            'Expanded minimum touch dimensions to 32px for accessible interaction.'
           );
         }
       }
@@ -625,19 +693,24 @@ export class UiSelfRepairService implements OnDestroy {
   }
 
   /**
-   * Applies an autonomous CSS patch and updates the live style container.
+   * Applies an autonomous CSS patch deduplicated strictly by `(selector, appliedStyle)` so periodic
+   * background audits never inflate activePatches or duplicate rules in <style>.
    */
   applyCssPatch(anomalyId: string, selector: string, cssRule: string, description: string): void {
     if (!this.dynamicPatchStyleEl) return;
 
-    const existing = this.activePatches().find(p => p.anomalyId === anomalyId);
-    if (existing && existing.status === 'applied') return;
+    const existing = this.activePatches().find(
+      (p) =>
+        p.status === 'applied' &&
+        (p.anomalyId === anomalyId || (p.selector === selector && p.appliedStyle === cssRule))
+    );
+    if (existing) return;
 
     try {
       this.dynamicPatchStyleEl.appendChild(document.createTextNode(`\n${cssRule}`));
 
       const patch: IUiRepairPatch = {
-        id: `patch-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        id: `patch-${Date.now()}-${this.generateSecureSuffix()}`,
         anomalyId,
         timestamp: Date.now(),
         selector,
@@ -646,89 +719,107 @@ export class UiSelfRepairService implements OnDestroy {
         status: 'applied'
       };
 
-      this.activePatches.update(list => [...list, patch]);
+      this.activePatches.update((list) => [...list, patch]);
 
-      this.anomalies.update(list => 
-        list.map(a => a.id === anomalyId ? {
-          ...a,
-          repairAction: {
-            patchId: patch.id,
-            description,
-            applied: true
-          }
-        } : a)
+      this.anomalies.update((list) =>
+        list.map((a) =>
+          a.id === anomalyId || a.selector === selector
+            ? {
+                ...a,
+                repairAction: {
+                  patchId: patch.id,
+                  description,
+                  applied: true
+                }
+              }
+            : a
+        )
       );
     } catch (err) {
       console.warn('[UiSelfRepairService] Failed to inject patch rule:', err);
     }
   }
 
-  /**
-   * Applies a state-reset patch for repaired patient state or symptoms.
-   */
   applyStateResetPatch(anomalyId: string, selector: string, description: string): void {
-    const patch: IUiRepairPatch = {
-      id: `state-patch-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      anomalyId,
-      timestamp: Date.now(),
-      selector,
-      patchType: 'state-reset',
-      status: 'applied'
-    };
+    const existing = this.activePatches().find(
+      (p) => p.status === 'applied' && p.patchType === 'state-reset' && p.selector === selector
+    );
 
-    this.activePatches.update(list => [...list, patch]);
+    const patchId = existing?.id || `state-patch-${Date.now()}-${this.generateSecureSuffix()}`;
+    if (!existing) {
+      const patch: IUiRepairPatch = {
+        id: patchId,
+        anomalyId,
+        timestamp: Date.now(),
+        selector,
+        patchType: 'state-reset',
+        status: 'applied'
+      };
+      this.activePatches.update((list) => [...list, patch]);
+    }
 
-    this.anomalies.update(list =>
-      list.map(a => (a.selector === selector || a.selector.startsWith(selector)) ? {
-        ...a,
-        repairAction: {
-          patchId: patch.id,
-          description,
-          applied: true
-        }
-      } : a)
+    this.anomalies.update((list) =>
+      list.map((a) =>
+        a.selector === selector || a.selector.startsWith(selector)
+          ? {
+              ...a,
+              repairAction: {
+                patchId,
+                description,
+                applied: true
+              }
+            }
+          : a
+      )
     );
   }
 
-  /**
-   * Manually trigger targeted repair for all lenses and analysis frames.
-   */
-  repairAllLensesAndFrames(): void {
+  /** Targeted repair for 3D biophysical lenses only. */
+  repairBiophysicalLenses(): void {
+    if (!this.isBrowser) return;
     this.auditBiophysicalLenses();
-    this.auditAnalysisFrames();
+    this.lastAuditTimestamp.set(Date.now());
   }
 
-  /**
-   * Manually trigger targeted repair for patient state and symptoms.
-   */
+  /** Targeted repair for analysis frames only. */
+  repairAnalysisFrames(): void {
+    if (!this.isBrowser) return;
+    this.auditAnalysisFrames();
+    this.lastAuditTimestamp.set(Date.now());
+  }
+
+  /** Backward-compatible combined repair for lenses and analysis frames. */
+  repairAllLensesAndFrames(): void {
+    this.repairBiophysicalLenses();
+    this.repairAnalysisFrames();
+  }
+
+  /** Targeted repair for patient state and symptoms. */
   repairPatientStateAndSymptoms(): void {
     this.auditPatientStateAndSymptoms();
+    this.lastAuditTimestamp.set(Date.now());
   }
 
-  /**
-   * Reverts all applied patches and flushes dynamic styles.
-   */
   revertAllPatches(): void {
     if (this.dynamicPatchStyleEl) {
       this.dynamicPatchStyleEl.textContent = '';
     }
-    this.activePatches.update(list => list.map(p => ({ ...p, status: 'reverted' })));
-    this.anomalies.update(list => list.map(a => ({
-      ...a,
-      repairAction: a.repairAction ? { ...a.repairAction, applied: false } : undefined
-    })));
+    this.activePatches.update((list) => list.map((p) => ({ ...p, status: 'reverted' })));
+    this.anomalies.update((list) =>
+      list.map((a) => ({
+        ...a,
+        repairAction: a.repairAction ? { ...a.repairAction, applied: false } : undefined
+      }))
+    );
   }
 
-  /**
-   * Clears anomaly log history.
-   */
   clearAnomalies(): void {
     this.anomalies.set([]);
   }
 
   private recordAnomaly(anomaly: Omit<IUiAnomaly, 'id' | 'timestamp'> & { id?: string; timestamp?: number }): void {
     const fullAnomaly: IUiAnomaly = {
-      id: anomaly.id || `anom-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      id: anomaly.id || `anom-${Date.now()}-${this.generateSecureSuffix()}`,
       timestamp: anomaly.timestamp || Date.now(),
       category: anomaly.category,
       severity: anomaly.severity,
@@ -739,11 +830,11 @@ export class UiSelfRepairService implements OnDestroy {
     };
 
     const isDup = this.anomalies().some(
-      a => a.selector === fullAnomaly.selector && a.category === fullAnomaly.category
+      (a) => a.selector === fullAnomaly.selector && a.category === fullAnomaly.category
     );
 
     if (!isDup) {
-      this.anomalies.update(list => [fullAnomaly, ...list.slice(0, 49)]);
+      this.anomalies.update((list) => [fullAnomaly, ...list.slice(0, 49)]);
     }
   }
 
@@ -753,18 +844,39 @@ export class UiSelfRepairService implements OnDestroy {
         return el.classList[i];
       }
     }
-    const generated = `${prefix}-${Math.random().toString(36).substring(2, 6)}`;
+    const generated = `${prefix}-${this.generateSecureSuffix()}`;
     el.classList.add(generated);
     return generated;
   }
 
-  private parseRgb(colorStr: string): { r: number; g: number; b: number } | null {
-    const match = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  private parseRgb(colorStr: string): { r: number; g: number; b: number; a: number } | null {
+    const match = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?/);
     if (!match) return null;
     return {
       r: parseInt(match[1], 10),
       g: parseInt(match[2], 10),
-      b: parseInt(match[3], 10)
+      b: parseInt(match[3], 10),
+      a: match[4] !== undefined ? parseFloat(match[4]) : 1
     };
+  }
+
+  private resolveEffectiveBackgroundRgb(el: HTMLElement): { r: number; g: number; b: number } | null {
+    let cur: HTMLElement | null = el;
+    while (cur) {
+      const parsed = this.parseRgb(window.getComputedStyle(cur).backgroundColor);
+      if (parsed && parsed.a > 0.1) {
+        return { r: parsed.r, g: parsed.g, b: parsed.b };
+      }
+      cur = cur.parentElement;
+    }
+    return null;
+  }
+
+  private relativeLuminance(rgb: { r: number; g: number; b: number }): number {
+    const lin = (c: number) => {
+      const s = c / 255;
+      return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * lin(rgb.r) + 0.7152 * lin(rgb.g) + 0.0722 * lin(rgb.b);
   }
 }

@@ -21,22 +21,22 @@ describe('WhoNihHealingAlignmentHubComponent Unit Suite', () => {
     fixture.detectChanges();
   });
 
-  it('1. Initializes and computes the strategic summary', () => {
+  it('1. Initializes and computes the Top 10 WHO + Top 10 NIH strategic summary', () => {
     expect(component).toBeTruthy();
     const summary = component.strategicSummary();
     expect(summary.overallStrategicFulfillmentScore).toBeGreaterThanOrEqual(85);
-    expect(summary.activeStrategicGoals.length).toBe(6);
+    expect(summary.activeStrategicGoals.length).toBe(20);
   });
 
-  it('2. Filters strategic goals by governing body', () => {
+  it('2. Filters strategic goals by governing body (10 WHO, 10 NIH)', () => {
     component.activeFilter.set('who');
     fixture.detectChanges();
-    expect(component.filteredGoals().length).toBe(3);
+    expect(component.filteredGoals().length).toBe(10);
     expect(component.filteredGoals().every(g => g.governingBody === 'WHO')).toBe(true);
 
     component.activeFilter.set('nih');
     fixture.detectChanges();
-    expect(component.filteredGoals().length).toBe(3);
+    expect(component.filteredGoals().length).toBe(10);
     expect(component.filteredGoals().every(g => g.governingBody === 'NIH')).toBe(true);
   });
 

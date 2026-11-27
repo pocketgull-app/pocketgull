@@ -6,6 +6,7 @@ import { MultiParadigmVennComponent } from '../multi-paradigm-venn.component';
 import { KaizenQualitySuiteComponent } from '../kaizen-quality-suite.component';
 import { TeledentistrySystemicLensComponent } from './teledentistry-systemic-lens.component';
 import { IntimacyRelationshipVitalityComponent } from '../intimacy-relationship-vitality.component';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentistry' | 'intimacy' | 'suggestions';
 
@@ -19,7 +20,8 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
     MultiParadigmVennComponent,
     KaizenQualitySuiteComponent,
     TeledentistrySystemicLensComponent,
-    IntimacyRelationshipVitalityComponent
+    IntimacyRelationshipVitalityComponent,
+    PgTranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -30,56 +32,56 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
           data-testid="tab-ybocs-screener"
           [class.bg-white]="screenerTab() === 'ybocs'"
           [class.dark:bg-zinc-800]="screenerTab() === 'ybocs'"
-          [class.text-indigo-650]="screenerTab() === 'ybocs'"
+          [class.text-indigo-600]="screenerTab() === 'ybocs'"
           [class.dark:text-indigo-400]="screenerTab() === 'ybocs'"
           [class.text-zinc-500]="screenerTab() !== 'ybocs'"
           [class.shadow-xs]="screenerTab() === 'ybocs'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          ⚡ Y-BOCs OCD
+          ⚡ {{ 'Y-BOCs OCD' | pgT:'lens04.ybocs' }}
         </button>
         <button type="button" (click)="setScreenerTab('suite')"
           data-testid="tab-clinical-suite"
           [class.bg-white]="screenerTab() === 'suite'"
           [class.dark:bg-zinc-800]="screenerTab() === 'suite'"
-          [class.text-indigo-650]="screenerTab() === 'suite'"
+          [class.text-indigo-600]="screenerTab() === 'suite'"
           [class.dark:text-indigo-400]="screenerTab() === 'suite'"
           [class.text-zinc-500]="screenerTab() !== 'suite'"
           [class.shadow-xs]="screenerTab() === 'suite'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          📋 Clinical Suite
+          📋 {{ 'Clinical Suite' | pgT:'lens04.clinical_suite' }}
         </button>
         <button type="button" (click)="setScreenerTab('venn')"
           data-testid="tab-venn-matrix"
           [class.bg-white]="screenerTab() === 'venn'"
           [class.dark:bg-zinc-800]="screenerTab() === 'venn'"
-          [class.text-indigo-650]="screenerTab() === 'venn'"
+          [class.text-indigo-600]="screenerTab() === 'venn'"
           [class.dark:text-indigo-400]="screenerTab() === 'venn'"
           [class.text-zinc-500]="screenerTab() !== 'venn'"
           [class.shadow-xs]="screenerTab() === 'venn'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          ⭕ Venn Consensus (W∩F∩E)
+          ⭕ {{ 'Venn Consensus (W∩F∩E)' | pgT:'lens04.venn_consensus' }}
         </button>
         <button type="button" (click)="setScreenerTab('kaizen')"
           data-testid="tab-kaizen-suite"
           [class.bg-white]="screenerTab() === 'kaizen'"
           [class.dark:bg-zinc-800]="screenerTab() === 'kaizen'"
-          [class.text-indigo-650]="screenerTab() === 'kaizen'"
+          [class.text-indigo-600]="screenerTab() === 'kaizen'"
           [class.dark:text-indigo-400]="screenerTab() === 'kaizen'"
           [class.text-zinc-500]="screenerTab() !== 'kaizen'"
           [class.shadow-xs]="screenerTab() === 'kaizen'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          📈 Kaizen Optimization (SPC/Pareto)
+          📈 {{ 'Kaizen Optimization (SPC/Pareto)' | pgT:'lens04.kaizen' }}
         </button>
         <button type="button" (click)="setScreenerTab('teledentistry')"
           data-testid="tab-teledentistry"
           [class.bg-white]="screenerTab() === 'teledentistry'"
           [class.dark:bg-zinc-800]="screenerTab() === 'teledentistry'"
-          [class.text-indigo-650]="screenerTab() === 'teledentistry'"
+          [class.text-indigo-600]="screenerTab() === 'teledentistry'"
           [class.dark:text-indigo-400]="screenerTab() === 'teledentistry'"
           [class.text-zinc-500]="screenerTab() !== 'teledentistry'"
           [class.shadow-xs]="screenerTab() === 'teledentistry'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          🦷 Teledentistry (32-Tooth)
+          🦷 {{ 'Teledentistry (32-Tooth)' | pgT:'lens04.teledentistry' }}
         </button>
         <button type="button" (click)="setScreenerTab('intimacy')"
           data-testid="tab-intimacy-vitality"
@@ -90,17 +92,17 @@ export type ScreenerSubTab = 'ybocs' | 'suite' | 'venn' | 'kaizen' | 'teledentis
           [class.text-zinc-500]="screenerTab() !== 'intimacy'"
           [class.shadow-xs]="screenerTab() === 'intimacy'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          ❤️ Intimacy Vitality (Princeton III)
+          ❤️ {{ 'Intimacy Vitality (Princeton III)' | pgT:'lens04.intimacy' }}
         </button>
         <button type="button" (click)="setScreenerTab('suggestions')"
           [class.bg-white]="screenerTab() === 'suggestions'"
           [class.dark:bg-zinc-800]="screenerTab() === 'suggestions'"
-          [class.text-indigo-650]="screenerTab() === 'suggestions'"
+          [class.text-indigo-600]="screenerTab() === 'suggestions'"
           [class.dark:text-indigo-400]="screenerTab() === 'suggestions'"
           [class.text-zinc-500]="screenerTab() !== 'suggestions'"
           [class.shadow-xs]="screenerTab() === 'suggestions'"
           class="py-1.5 px-3 text-xs font-bold uppercase tracking-wider rounded-lg transition cursor-pointer active:scale-95 border-0 whitespace-nowrap">
-          💡 Intake & Interviewing
+          💡 {{ 'Intake & Interviewing' | pgT:'lens04.intake_interview' }}
         </button>
       </div>
 

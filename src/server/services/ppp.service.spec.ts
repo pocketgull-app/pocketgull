@@ -37,7 +37,7 @@ describe('PppPricingService', () => {
     expect(ph.countryName).toBe('Philippines');
   });
 
-  it('should return Tier 4 (0.25x, 75% discount) for IN, PK, NG, KE, GH', () => {
+  it('should return Tier 4 (0.25x, 75% discount) for IN, PK, NG, KE, GH, SY', () => {
     const india = pppPricingService.resolvePppInfo('IN');
     expect(india.tier).toBe(4);
     expect(india.multiplier).toBe(0.25);
@@ -46,6 +46,12 @@ describe('PppPricingService', () => {
 
     const nigeria = pppPricingService.resolvePppInfo('NG');
     expect(nigeria.tier).toBe(4);
+
+    const syria = pppPricingService.resolvePppInfo('SY');
+    expect(syria.tier).toBe(4);
+    expect(syria.multiplier).toBe(0.25);
+    expect(syria.discountPercent).toBe(75);
+    expect(syria.countryName).toBe('Syria');
   });
 
   it('should correctly calculate adjusted cents for a $49.00 subscription', () => {

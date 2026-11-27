@@ -73,14 +73,21 @@ describe('BioAdaptiveTypographyService Unit Suite', () => {
     expect(heightAt110).toBeGreaterThan(heightAt55);
   });
 
-  it('should compile valid 203 DPI thermal label and Zebra ZPL II payload', () => {
-    const payload = service.thermalLabelPayload();
-    expect(payload.patientName).toContain('SAPIENS');
-    expect(payload.mrn).toBe('#9842-01');
-    expect(payload.dosageSchedule).toContain('⌀18G IV');
-    expect(payload.zplCode).toContain('^XA');
-    expect(payload.zplCode).toContain('^CI28');
-    expect(payload.zplCode).toContain('^XZ');
+  it('should compile valid 203 DPI thermal label with [SAMPLE / NON-CLINICAL] badge when unloaded and reactively bind live patient data', () => {
+    const samplePayload = service.thermalLabelPayload();
+    expect(samplePayload.patientName).toContain('[SAMPLE / NON-CLINICAL]');
+    expect(samplePayload.patientName).not.toContain('SAPIENS');
+    expect(samplePayload.zplCode).toContain('^XA');
+    expect(samplePayload.zplCode).toContain('^CI28');
+    expect(samplePayload.zplCode).toContain('^XZ');
+
+    patientState.patientName.set('Jane Doe');
+    patientState.patientId.set('PT-8841');
+    patientState.medications.set([{ id: 'm1', name: 'Metformin', value: '500 mg PO BID' }]);
+    const livePayload = service.thermalLabelPayload();
+    expect(livePayload.patientName).toContain('JANE DOE');
+    expect(livePayload.mrn).toBe('#PT-8841');
+    expect(livePayload.primaryRx).toContain('METFORMIN');
   });
 
   it('should safely clamp distance and lux bounds', () => {

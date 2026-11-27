@@ -2,10 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { IPatient } from './patient.types';
 import { GlobalHealthInitiativesService } from './global-health-initiatives.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
+import { WearableAsymmetricGainService } from './wearable-asymmetric-gain.service';
 import {
   IGroundedClinicalAssertion,
   createDefaultGroundedClinicalAssertion
 } from '../models/grounded-epistemic-assertion.model';
+import { computeFipsSha256Hex } from './clinical-defense-guard.service';
 
 export interface IFhirBundle {
   resourceType: 'Bundle';
@@ -21,6 +23,7 @@ export interface IFhirBundle {
 export class FhirR4BundleExportService {
   private globalHealth: GlobalHealthInitiativesService;
   private skepticalService: SkepticalEpistemologyService;
+  private wearableAcgService: WearableAsymmetricGainService;
 
   constructor() {
     try {
@@ -33,35 +36,51 @@ export class FhirR4BundleExportService {
     } catch {
       this.skepticalService = new SkepticalEpistemologyService();
     }
+    try {
+      this.wearableAcgService = inject(WearableAsymmetricGainService, { optional: true }) || new WearableAsymmetricGainService();
+    } catch {
+      this.wearableAcgService = new WearableAsymmetricGainService();
+    }
   }
 
   /**
-   * Computes an immutable SHA-256 cryptographic digest for FDA 21 CFR Part 11 signature attestation
+   * Computes an immutable FIPS 180-4 SHA-256 cryptographic digest for FDA 21 CFR Part 11 signature attestation.
    */
   computeSha256Signature(payload: string): string {
-    let hash1 = 0xcbf29ce484222325n;
-    let hash2 = 0x84222325cbf29ce4n;
-    const prime1 = 0x100000001b3n;
-    const prime2 = 0x100000001b5n;
+    return computeFipsSha256Hex(payload);
+  }
 
-    for (let i = 0; i < payload.length; i++) {
-      const code = BigInt(payload.charCodeAt(i));
-      hash1 = ((hash1 ^ code) * prime1) & 0xffffffffffffffffn;
-      hash2 = ((hash2 ^ (code + BigInt(i))) * prime2) & 0xffffffffffffffffn;
+  private buildSafeHarborSubjectDisplay(patientId: string): string {
+    const token = computeFipsSha256Hex(`FHIR-R4-SUBJ|${patientId || 'anon'}`).slice(0, 12).toUpperCase();
+    return `Safe Harbor Subject SUBJ-${token}`;
+  }
+
+  private buildSafeHarborAgeFields(age?: number): { birthDate?: string; extension?: Array<{ url: string; valueString: string }> } {
+    if (typeof age !== 'number' || !Number.isFinite(age) || age < 0) return {};
+    if (age > 89) {
+      return {
+        extension: [
+          {
+            url: 'https://pocketgull.app/fhir/StructureDefinition/safe-harbor-age-bracket',
+            valueString: '90+'
+          }
+        ]
+      };
     }
-
-    const hex1 = hash1.toString(16).padStart(16, '0');
-    const hex2 = hash2.toString(16).padStart(16, '0');
-    return `${hex1}${hex2}${hex1}${hex2}`;
+    return {
+      birthDate: String(new Date().getUTCFullYear() - age)
+    };
   }
 
   /**
-   * Serializes patient clinical dossier into an official HL7 FHIR R4 Multi-Paradigm Document Bundle
+   * Serializes patient clinical dossier into an official HIPAA Safe Harbor §164.514 HL7 FHIR R4 Document Bundle.
    */
   generateFhirR4Bundle(patient: IPatient, assertion?: IGroundedClinicalAssertion): IFhirBundle {
     const timestamp = new Date().toISOString();
     const bundleId = `urn:uuid:bundle-${patient.id}-${Date.now()}`;
     const patientUrn = `urn:uuid:patient-${patient.id}`;
+    const safeSubjectDisplay = this.buildSafeHarborSubjectDisplay(patient.id);
+    const safeAgeFields = this.buildSafeHarborAgeFields(patient.age);
 
     // 1. Calculate WHO CVD Risk
     const whoRisk = this.globalHealth.calculateWhoCvdRisk(patient);
@@ -73,7 +92,7 @@ export class FhirR4BundleExportService {
       ...issueDescriptions
     ]);
 
-    // 3. Build FHIR Resources
+    // 3. Build FHIR Resources (HIPAA Safe Harbor §164.514: synthetic subject + age > 89 capped to 90+)
     const patientResource = {
       resourceType: 'Patient',
       id: patient.id,
@@ -86,19 +105,20 @@ export class FhirR4BundleExportService {
       active: true,
       name: [
         {
-          use: 'official',
-          text: patient.name
+          use: 'anonymous',
+          text: safeSubjectDisplay
         }
       ],
       gender: patient.gender ? patient.gender.toLowerCase() : 'unknown',
-      birthDate: patient.age ? new Date(new Date().getFullYear() - patient.age, 0, 1).toISOString().split('T')[0] : undefined
+      ...(safeAgeFields.birthDate ? { birthDate: safeAgeFields.birthDate } : {}),
+      ...(safeAgeFields.extension ? { extension: safeAgeFields.extension } : {})
     };
 
     const riskAssessmentResource = {
       resourceType: 'RiskAssessment',
       id: `risk-who-sdg34-${patient.id}`,
       status: 'final',
-      subject: { reference: patientUrn, display: patient.name },
+      subject: { reference: patientUrn, display: safeSubjectDisplay },
       occurrenceDateTime: timestamp,
       code: {
         coding: [
@@ -160,7 +180,7 @@ export class FhirR4BundleExportService {
         ],
         text: `${code.icd11Title} [${code.icd11Tm1Code}]`
       },
-      subject: { reference: patientUrn, display: patient.name }
+      subject: { reference: patientUrn, display: safeSubjectDisplay }
     }));
 
     // 2b. Grounded Epistemic Diagnostic Formulation & Anti-Confirmation Bias Falsification Envelope
@@ -200,7 +220,7 @@ export class FhirR4BundleExportService {
         ],
         text: activeAssertion.hypothesis
       },
-      subject: { reference: patientUrn, display: patient.name },
+      subject: { reference: patientUrn, display: safeSubjectDisplay },
       extension: [
         {
           url: 'http://pocketgull.app/fhir/StructureDefinition/grounded-clinical-assertion',
@@ -221,57 +241,60 @@ export class FhirR4BundleExportService {
       ]
     };
 
-    // Observation for Vagal Tone HRV (rMSSD)
-    const hrvObservation = {
-      resourceType: 'Observation',
-      id: `obs-hrv-vagal-${patient.id}`,
-      status: 'final',
-      category: [
-        {
-          coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'vital-signs' }]
-        }
-      ],
-      code: {
-        coding: [
-          {
-            system: 'http://loinc.org',
-            code: '80404-7',
-            display: 'R-R interval.standard deviation (Heart rate variability)'
-          }
-        ],
-        text: 'Autonomic Vagal Tone HRV rMSSD'
-      },
-      subject: { reference: patientUrn },
-      effectiveDateTime: timestamp,
-      valueQuantity: {
-        value: 48.5,
-        unit: 'ms',
-        system: 'http://unitsofmeasure.org',
-        code: 'ms'
-      },
-      referenceRange: [
-        {
-          low: { value: 45, unit: 'ms' },
-          high: { value: 65, unit: 'ms' },
-          type: { text: 'Age-matched Normative Baroreflex Range' }
-        }
-      ],
-      extension: [
-        {
-          url: 'http://pocketgull.app/fhir/StructureDefinition/skeptical-epistemology',
-          extension: [
-            { url: 'null-hypothesis-h0', valueString: 'Autonomic vagal tone rMSSD equals population age-matched sedentary mean (32.0 ms).' },
-            { url: 'p-value', valueDecimal: 0.014 },
-            { url: 'is-falsified', valueBoolean: true },
-            { url: 'epistemic-confidence-percent', valueInteger: 98 },
-            { url: 'cochrane-rob2-overall', valueString: 'Low Risk of Bias' },
-            { url: 'ci-95-lower', valueDecimal: 44.2 },
-            { url: 'ci-95-upper', valueDecimal: 52.8 },
-            { url: 'skeptical-warning-notice', valueString: 'Statistically significant rejection of H0 at alpha = 0.05.' }
-          ]
-        }
-      ]
-    };
+    // Observation for Vagal Tone HRV (rMSSD) — emitted ONLY when genuine patient HRV measurement exists (no fabricated defaults)
+    const parsedHrvRmssd = patient.vitals?.hrvRmssd !== undefined ? parseFloat(String(patient.vitals.hrvRmssd)) : NaN;
+    const hrvObservation = Number.isFinite(parsedHrvRmssd) && parsedHrvRmssd > 0
+      ? (() => {
+          const hrvEval = this.skepticalService.evaluateFalsifiability('Autonomic Vagal Tone HRV rMSSD', parsedHrvRmssd, 32.0, 25);
+          return {
+            resourceType: 'Observation',
+            id: `obs-hrv-vagal-${patient.id}`,
+            status: 'final',
+            category: [
+              {
+                coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'vital-signs' }]
+              }
+            ],
+            code: {
+              coding: [
+                {
+                  system: 'http://loinc.org',
+                  code: '80404-7',
+                  display: 'R-R interval.standard deviation (Heart rate variability)'
+                }
+              ],
+              text: 'Autonomic Vagal Tone HRV rMSSD'
+            },
+            subject: { reference: patientUrn, display: safeSubjectDisplay },
+            effectiveDateTime: timestamp,
+            valueQuantity: {
+              value: parsedHrvRmssd,
+              unit: 'ms',
+              system: 'http://unitsofmeasure.org',
+              code: 'ms'
+            },
+            referenceRange: [
+              {
+                low: { value: 45, unit: 'ms' },
+                high: { value: 65, unit: 'ms' },
+                type: { text: 'Age-matched Normative Baroreflex Range' }
+              }
+            ],
+            extension: [
+              {
+                url: 'http://pocketgull.app/fhir/StructureDefinition/skeptical-epistemology',
+                extension: [
+                  { url: 'null-hypothesis-h0', valueString: hrvEval.nullHypothesisH0 },
+                  { url: 'p-value', valueDecimal: hrvEval.pValue },
+                  { url: 'null-hypothesis-rejected', valueBoolean: hrvEval.pValue < 0.05 },
+                  { url: 'epistemic-confidence-percent', valueInteger: hrvEval.epistemicConfidencePercent },
+                  { url: 'skeptical-warning-notice', valueString: hrvEval.skepticalWarningNotice || 'Statistically significant rejection of H0 at alpha = 0.05.' }
+                ]
+              }
+            ]
+          };
+        })()
+      : null;
 
     // Observation for Molecular Biophysics & Epistemic Falsification Suite
     const biophys = this.skepticalService.getAllBiophysicalFalsifications();
@@ -404,7 +427,7 @@ export class FhirR4BundleExportService {
       status: 'active',
       intent: 'plan',
       title: 'PocketGull Multi-Paradigm Integrative Care Protocol',
-      subject: { reference: patientUrn, display: patient.name },
+      subject: { reference: patientUrn, display: safeSubjectDisplay },
       period: { start: timestamp },
       activity: [
         {
@@ -428,17 +451,93 @@ export class FhirR4BundleExportService {
       ]
     };
 
+    // Wearable Tri-Modal Asymmetric Clinical Gain Observation (IEEE P2933 TIPPSS & MST SpO2 Debiasing)
+    const wearableEval = this.wearableAcgService.gainEvaluation();
+    const wearableTelemetry = this.wearableAcgService.telemetry();
+    const wearableGainObservation = {
+      resourceType: 'Observation',
+      id: `obs-wearable-acg-${patient.id}`,
+      status: 'final',
+      category: [
+        {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+              code: 'vital-signs',
+              display: 'Vital Signs'
+            }
+          ]
+        }
+      ],
+      code: {
+        coding: [
+          {
+            system: 'http://loinc.org',
+            code: '59408-5',
+            display: 'Oxygen saturation in Arterial blood by Pulse oximetry'
+          },
+          {
+            system: 'https://pocketgull.app/fhir/CodeSystem/asymmetric-gain',
+            code: 'ACG-TRIMODAL-READINESS',
+            display: 'Wearable Tri-Modal Asymmetric Clinical Gain & MST SpO2'
+          }
+        ],
+        text: `Wearable Asymmetric Gain (${wearableEval.watchPlatform}) — [EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC]`
+      },
+      subject: { reference: patientUrn, display: safeSubjectDisplay },
+      effectiveDateTime: timestamp,
+      valueQuantity: {
+        value: wearableEval.totalShockTrooperReadinessGain,
+        unit: 'pts',
+        system: 'http://unitsofmeasure.org',
+        code: '{score}'
+      },
+      extension: [
+        {
+          url: 'https://pocketgull.app/fhir/StructureDefinition/popperian-null-hypothesis',
+          valueString: 'H0: wearable tri-modal readiness gain does not exceed baseline pacing variance (in silico)'
+        }
+      ],
+      component: [
+        {
+          code: { text: 'MST-Calibrated SpO2 (%)' },
+          valueQuantity: { value: wearableEval.mstCalibratedSpo2Percent, unit: '%', code: '%' }
+        },
+        {
+          code: { text: 'Doing Hormetic & Vagal Gain' },
+          valueQuantity: { value: wearableEval.doingHormeticVagalGain, unit: 'pts', code: '{score}' }
+        },
+        {
+          code: { text: 'Feeling Interoceptive Calibration Gain' },
+          valueQuantity: { value: wearableEval.feelingInteroceptiveCalibrationGain, unit: 'pts', code: '{score}' }
+        },
+        {
+          code: { text: 'Not Doing Strategic Restraint PEM Shield Gain' },
+          valueQuantity: { value: wearableEval.notDoingRestraintPemShieldGain, unit: 'pts', code: '{score}' }
+        },
+        {
+          code: { text: 'Estimated PEM Crash Hours Saved (72h)' },
+          valueQuantity: { value: wearableEval.estimatedPemCrashHoursSaved, unit: 'h', code: 'h' }
+        },
+        {
+          code: { text: 'Monk Skin Tone Scale' },
+          valueInteger: wearableTelemetry.monkSkinToneScale
+        }
+      ]
+    };
+
     // Provenance Resource (FDA 21 CFR Part 11 Electronic Signature & Provenance Seal)
     const provenanceSignatureDigest = this.computeSha256Signature(`${bundleId}:${patient.id}:${timestamp}`);
     const provenanceResource = {
       resourceType: 'Provenance',
       id: `provenance-fda-part11-${patient.id}`,
       target: [
-        { reference: patientUrn, display: patient.name },
+        { reference: patientUrn, display: safeSubjectDisplay },
         { reference: `urn:uuid:${riskAssessmentResource.id}` },
         { reference: `urn:uuid:${groundedCondition.id}`, display: activeAssertion.hypothesis },
-        { reference: `urn:uuid:${hrvObservation.id}` },
+        ...(hrvObservation ? [{ reference: `urn:uuid:${hrvObservation.id}` }] : []),
         { reference: `urn:uuid:${biophysObservation.id}` },
+        { reference: `urn:uuid:${wearableGainObservation.id}` },
         { reference: `urn:uuid:${carePlanResource.id}` }
       ],
       recorded: timestamp,
@@ -520,7 +619,7 @@ export class FhirR4BundleExportService {
         ],
         text: 'PocketGull Multi-Paradigm Clinical Decision Support & Care Strategy Summary'
       },
-      subject: { reference: patientUrn, display: patient.name },
+      subject: { reference: patientUrn, display: safeSubjectDisplay },
       date: timestamp,
       title: 'Comprehensive Multi-Paradigm Clinical Evaluation (WHO/NIH/FHIR R4)',
       section: [
@@ -536,9 +635,13 @@ export class FhirR4BundleExportService {
           title: 'Popperian Epistemic Diagnostic Formulation & Counter-Hypotheses',
           entry: [{ reference: `urn:uuid:${groundedCondition.id}` }]
         },
-        {
+        ...(hrvObservation ? [{
           title: 'Autonomic Vagal Biomarkers & Skeptical Epistemology',
           entry: [{ reference: `urn:uuid:${hrvObservation.id}` }]
+        }] : []),
+        {
+          title: 'Wearable Tri-Modal Asymmetric Clinical Gain (IEEE P2933 TIPPSS)',
+          entry: [{ reference: `urn:uuid:${wearableGainObservation.id}` }]
         },
         {
           title: 'Molecular Biophysics & Quantum Falsification Suite',
@@ -566,8 +669,9 @@ export class FhirR4BundleExportService {
         { fullUrl: `urn:uuid:${riskAssessmentResource.id}`, resource: riskAssessmentResource },
         ...conditionResources.map(c => ({ fullUrl: `urn:uuid:${c.id}`, resource: c })),
         { fullUrl: `urn:uuid:${groundedCondition.id}`, resource: groundedCondition },
-        { fullUrl: `urn:uuid:${hrvObservation.id}`, resource: hrvObservation },
+        ...(hrvObservation ? [{ fullUrl: `urn:uuid:${hrvObservation.id}`, resource: hrvObservation }] : []),
         { fullUrl: `urn:uuid:${biophysObservation.id}`, resource: biophysObservation },
+        { fullUrl: `urn:uuid:${wearableGainObservation.id}`, resource: wearableGainObservation },
         { fullUrl: `urn:uuid:${carePlanResource.id}`, resource: carePlanResource },
         { fullUrl: `urn:uuid:${provenanceResource.id}`, resource: provenanceResource }
       ]
@@ -616,14 +720,15 @@ export class FhirR4BundleExportService {
     const timestamp = new Date().toISOString();
     const bundleId = `urn:uuid:bundle-spatial-avs-${params.patientId}-${Date.now()}`;
     const patientUrn = `urn:uuid:patient-${params.patientId}`;
+    const safeSubjectDisplay = this.buildSafeHarborSubjectDisplay(params.patientId);
 
-    // 1. Patient Resource
+    // 1. Patient Resource (HIPAA Safe Harbor de-identified subject)
     const patientResource = {
       resourceType: 'Patient',
       id: params.patientId,
       identifier: [{ system: 'https://pocketgull.app/fhir/patient-id', value: params.patientId }],
       active: true,
-      name: [{ use: 'official', text: params.patientName }]
+      name: [{ use: 'anonymous', text: safeSubjectDisplay }]
     };
 
     // 2. 3D Spatial Lesion Observations
@@ -654,7 +759,7 @@ export class FhirR4BundleExportService {
           ],
           text: lesion.label
         },
-        subject: { reference: patientUrn, display: params.patientName },
+        subject: { reference: patientUrn, display: this.buildSafeHarborSubjectDisplay(params.patientId) },
         effectiveDateTime: timestamp,
         interpretation: [
           {
@@ -722,7 +827,7 @@ export class FhirR4BundleExportService {
           ],
           text: `AVS Entrainment: Carrier ${params.avsSession.carrierFreqHz}Hz, Beat ${params.avsSession.binauralBeatHz}Hz`
         },
-        subject: { reference: patientUrn, display: params.patientName },
+        subject: { reference: patientUrn, display: this.buildSafeHarborSubjectDisplay(params.patientId) },
         performedDateTime: timestamp,
         note: [
           {
@@ -758,7 +863,7 @@ export class FhirR4BundleExportService {
         ],
         text: 'PocketGull 3D Somatic Lesion & Vibroacoustic Entrainment Assessment'
       },
-      subject: { reference: patientUrn, display: params.patientName },
+      subject: { reference: patientUrn, display: this.buildSafeHarborSubjectDisplay(params.patientId) },
       effectiveDateTime: timestamp,
       issued: timestamp,
       result: observationResources.map(o => ({ reference: `urn:uuid:${o.id}`, display: o.code.text })),
@@ -774,7 +879,7 @@ export class FhirR4BundleExportService {
         coding: [{ system: 'http://loinc.org', code: '11503-0', display: 'Medical records' }],
         text: 'PocketGull 3D Spatial Lesion & Vibroacoustic Entrainment Dossier'
       },
-      subject: { reference: patientUrn, display: params.patientName },
+      subject: { reference: patientUrn, display: this.buildSafeHarborSubjectDisplay(params.patientId) },
       date: timestamp,
       title: '3D Somatic Lesion Markup & Neuro-Acoustic Procedure Report (FHIR R4)',
       section: [
@@ -880,7 +985,7 @@ export class FhirR4BundleExportService {
       ],
       title: `Green Rx: ${params.questTitle}`,
       description: `Daily prescription of ${params.prescribedDailyMinutes} minutes biophilic green walk under >= ${params.minCanopyPct}% canopy with <= ${params.maxNoiseDba} dBA noise floor.`,
-      subject: { reference: patientUrn, display: params.patientName },
+      subject: { reference: patientUrn, display: this.buildSafeHarborSubjectDisplay(params.patientId) },
       author: params.clinicianId ? { reference: `urn:uuid:practitioner-${params.clinicianId}` } : undefined,
       activity: [
         {
@@ -941,7 +1046,7 @@ export class FhirR4BundleExportService {
         ],
         text: 'Vagal Coherence Score from Biophilic Movement'
       },
-      subject: { reference: patientUrn, display: params.patientName },
+      subject: { reference: patientUrn, display: this.buildSafeHarborSubjectDisplay(params.patientId) },
       effectiveDateTime: params.completedAt || timestamp,
       valueQuantity: {
         value: params.vagalPointsAchieved || 0,
@@ -1013,7 +1118,7 @@ export class FhirR4BundleExportService {
         ],
         text: `${params.discipline} Clinical Guidance (${params.guidelineBody})`
       },
-      subject: { reference: patientUrn, display: params.patientName },
+      subject: { reference: patientUrn, display: this.buildSafeHarborSubjectDisplay(params.patientId) },
       effectiveDateTime: timestamp,
       valueString: params.recommendation,
       component: Object.entries(params.findings).map(([key, val]) => ({
@@ -1042,7 +1147,7 @@ export class FhirR4BundleExportService {
       intent: 'plan',
       title: `${params.discipline.toUpperCase()} Protocol (${params.guidelineBody})`,
       description: params.recommendation,
-      subject: { reference: patientUrn, display: params.patientName },
+      subject: { reference: patientUrn, display: this.buildSafeHarborSubjectDisplay(params.patientId) },
       period: { start: timestamp }
     };
 

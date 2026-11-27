@@ -11,13 +11,13 @@ The `AvsTherapyComponent` is currently a monolithic component (~1240 lines) hand
 
 ### [Component] Constants & Types
 Move common definitions to a shared location.
-- [NEW] [avs.constants.ts](file:///C:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/avs.constants.ts)
+- [NEW] [avs.constants.ts](companion-apps/avs-therapy/src/app/components/avs.constants.ts)
 
 ### [Component] AvsTherapy (Container)
 Refactor the main component to act as an orchestrator.
-- [MODIFY] [avs-therapy.component.ts](file:///C:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/avs-therapy.component.ts)
-- [NEW] [avs-therapy.component.html](file:///C:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/avs-therapy.component.html)
-- [NEW] [avs-therapy.component.css](file:///C:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/avs-therapy.component.css)
+- [MODIFY] [avs-therapy.component.ts](companion-apps/avs-therapy/src/app/components/avs-therapy.component.ts)
+- [NEW] [avs-therapy.component.html](companion-apps/avs-therapy/src/app/components/avs-therapy.component.html)
+- [NEW] [avs-therapy.component.css](companion-apps/avs-therapy/src/app/components/avs-therapy.component.css)
 
 ### [Component] Presentation Sub-components
 New standalone components to handle specific UI sections.

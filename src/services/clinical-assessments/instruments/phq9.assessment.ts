@@ -38,6 +38,38 @@ export const PHQ9_TIERS: ISeverityTier[] = [
   { min: 20, max: 27, label: 'Severe Depression', colorClass: 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30', recommendation: 'Immediate clinical assessment and multidisciplinary care plan required.' }
 ];
 
+export const PHQ9_ITEM_9_ID = 9;
+
+export const PHQ9_STAT_CRISIS_TIER: ISeverityTier = {
+  min: 1,
+  max: 27,
+  label: 'STAT Suicide Safety Escalation (PHQ-9 Item 9 Positive)',
+  colorClass: 'bg-red-600/25 text-red-800 dark:text-red-200 border-red-600/60 font-bold',
+  recommendation:
+    'IMMEDIATE STAT ESCALATION REQUIRED regardless of total PHQ-9 score: Positive response on Question 9 (thoughts of death or self-harm). Initiate C-SSRS suicide-safety protocol immediately and connect to 988 (US/CA), NHS 111 / 999 (UK), 13 11 14 / 000 (AU), or 1737 / 111 (NZ).'
+};
+
+export function hasPhq9Item9SuicidalIdeation(answers: Record<number, number>): boolean {
+  return Number(answers?.[PHQ9_ITEM_9_ID]) >= 1;
+}
+
+export function resolvePhq9SeverityTier(
+  answers: Record<number, number>,
+  totalScore: number,
+  dispatchOverride?: { emergencyNumber: string; crisisNumber: string; crisisServiceName: string }
+): ISeverityTier {
+  if (hasPhq9Item9SuicidalIdeation(answers)) {
+    const dispatchText = dispatchOverride
+      ? `Contact ${dispatchOverride.crisisServiceName} (${dispatchOverride.crisisNumber}) or Emergency Services (${dispatchOverride.emergencyNumber}) immediately.`
+      : 'Connect immediately to 988 (US/CA), NHS 111 / 999 (UK), 13 11 14 / 000 (AU), or 1737 / 111 (NZ).';
+    return {
+      ...PHQ9_STAT_CRISIS_TIER,
+      recommendation: `IMMEDIATE STAT SUICIDE-SAFETY ESCALATION (PHQ-9 Item 9 = ${Number(answers[PHQ9_ITEM_9_ID])}, Total PHQ-9 = ${totalScore}/27): Initiate formal C-SSRS suicide risk assessment immediately regardless of total PHQ-9 score. ${dispatchText}`
+    };
+  }
+  return PHQ9_TIERS.find(t => totalScore >= t.min && totalScore <= t.max) || PHQ9_TIERS[0];
+}
+
 export const Phq9Assessment: IAssessmentDefinition = {
   id: 'phq9',
   title: 'PHQ-9 (Patient Health Questionnaire-9)',
@@ -50,8 +82,11 @@ export const Phq9Assessment: IAssessmentDefinition = {
   maxScore: 27,
   questions: PHQ9_QUESTIONS,
   tiers: PHQ9_TIERS,
-  calculateScore: (answers) => Object.values(answers).reduce((a: number, b: any) => a + (Number(b) || 0), 0),
-  mapToAnatomyPart: (qId, val) => val >= 2 ? 'brain' : null,
-  motivationalPrompt: (score, tier) => `I notice your PHQ-9 score is ${score}/27 (${tier.label}). What shifts have you noticed in your day-to-day energy, sleep, or mood recently?`,
-  patientEducation: 'The PHQ-9 is a standardized 9-question instrument used worldwide by clinicians to understand depressive symptoms and track progress over time.'
+  calculateScore: (answers) => Object.values(answers).reduce((a: number, b: number | string) => a + (Number(b) || 0), 0),
+  mapToAnatomyPart: (qId, val) => (qId === PHQ9_ITEM_9_ID && val >= 1) || val >= 2 ? 'brain' : null,
+  motivationalPrompt: (score, tier) =>
+    tier.label.includes('STAT')
+      ? `STAT SAFETY PROTOCOL ACTIVE: Positive PHQ-9 Question 9 screen (Total ${score}/27). ${tier.recommendation}`
+      : `I notice your PHQ-9 score is ${score}/27 (${tier.label}). What shifts have you noticed in your day-to-day energy, sleep, or mood recently?`,
+  patientEducation: 'The PHQ-9 is a standardized 9-question instrument used worldwide by clinicians to understand depressive symptoms and track progress over time. Any non-zero answer to Question 9 triggers an immediate suicide-safety C-SSRS escalation regardless of total score.'
 };

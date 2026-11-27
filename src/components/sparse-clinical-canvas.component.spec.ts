@@ -93,4 +93,19 @@ describe('SparseClinicalCanvasComponent Unit Suite', () => {
     expect(patientState.isLiveAgentActive()).toBe(true);
     expect(patientState.liveAgentInput()).toContain('sc01');
   });
+
+  it('7. Renders Latent Whisper Chips, toggles Micro-Skill Density, and retires completed Slot 1 skill into receipt strip', () => {
+    expect(component.whisperChips().length).toBeGreaterThan(0);
+
+    moeRouter.setMicroSkillDensityOverride('stat-focused');
+    expect(moeRouter.microSkillDisplayPolicy().densityMode).toBe('stat-focused');
+
+    const slot1Id = component.primaryExpert()!.expert.id;
+    moeRouter.completeAndRetireSkillGoal(slot1Id, 'Slot 1 Clinical Attestation Complete');
+    expect(moeRouter.completedSkillReceipts().length).toBe(1);
+    expect(component.primaryExpert()?.expert.id).not.toBe(slot1Id);
+
+    moeRouter.reopenRetiredSkillGoal(slot1Id);
+    expect(moeRouter.completedSkillReceipts().length).toBe(0);
+  });
 });

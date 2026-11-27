@@ -1,6 +1,12 @@
 import '@angular/compiler';
 import { Injector, runInInjectionContext, signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { MainHeaderNavComponent } from './main-header-nav.component';
+import { FrontlineVernacularVoiceService } from '../services/frontline-vernacular-voice.service';
+import { SocraticMultilingualTranslatorService } from '../services/socratic-multilingual-translator.service';
+import { UiI18nService } from '../services/ui-i18n.service';
+import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
+import { NavigationShellService } from '../services/navigation-shell.service';
 import { NetworkStateService } from '../services/network-state.service';
 import { PatientStateService } from '../services/patient-state.service';
 import { ThemeService } from '../services/theme.service';
@@ -130,6 +136,48 @@ describe('MainHeaderNavComponent', () => {
     expect(component.isFrontlineLanguage('ar')).toBe(true);
     expect(component.isFrontlineLanguage('fr')).toBe(false);
     expect(component.isFrontlineLanguage('de')).toBe(false);
+  });
+
+  it('preserves non-frontline script beacons (chr, iu) when switching away from frontline languages (es, ar)', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        SocraticMultilingualTranslatorService,
+        FrontlineVernacularVoiceService,
+        UiI18nService,
+        { provide: NetworkStateService, useValue: mockNetwork },
+        { provide: PatientStateService, useValue: mockPatientState },
+        { provide: ThemeService, useValue: mockTheme },
+        { provide: HardwareTelemetryService, useValue: mockHardware },
+        { provide: GamificationService, useValue: mockGame },
+        { provide: WalkthroughTourService, useValue: mockTour },
+        { provide: SessionStateService, useValue: mockSession },
+        { provide: AmbientFlowSoundscapeService, useValue: mockSoundscape },
+        { provide: BionicReadingService, useValue: { isBionicReadingEnabled: signal(false), toggleBionicReading: vi.fn() } },
+        { provide: CmsRpmSuperbillService, useValue: null },
+        { provide: NavigationShellService, useValue: null },
+      ],
+    });
+
+    const nav = TestBed.runInInjectionContext(() => new MainHeaderNavComponent());
+    const uiI18n = TestBed.inject(UiI18nService);
+    const voice = TestBed.inject(FrontlineVernacularVoiceService);
+    TestBed.flushEffects();
+
+    nav.selectAppLanguage('es');
+    TestBed.flushEffects();
+    expect(uiI18n.activeLanguageCode()).toBe('es');
+    expect(voice.activeLanguageCode()).toBe('es');
+
+    nav.selectAppLanguage('chr');
+    TestBed.flushEffects();
+    expect(uiI18n.activeLanguageCode()).toBe('chr');
+    expect(document.documentElement.lang).toBe('chr');
+    expect(voice.activeLanguageCode()).toBe('en');
+
+    nav.selectAppLanguage('iu');
+    TestBed.flushEffects();
+    expect(uiI18n.activeLanguageCode()).toBe('iu');
+    expect(document.documentElement.lang).toBe('iu');
   });
 });
 

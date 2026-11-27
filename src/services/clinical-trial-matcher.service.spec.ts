@@ -22,4 +22,12 @@ describe('ClinicalTrialMatcherService Unit Suite', () => {
     expect(trials[0].condition).toBe('Glioblastoma Multiforme');
     expect(trials[0].nctId).toContain('NCT0');
   });
+
+  it('3. Matches non-opioid neuropathic pain & dysautonomia protocols by symptom tokens', () => {
+    const painTrials = service.searchClinicalTrials({ conditionName: 'Neuropathic Pain' });
+    expect(painTrials.some(t => t.nctId === 'NCT05841920')).toBe(true);
+
+    const vagalTrials = service.searchClinicalTrials({ conditionName: 'Gastroparesis Dysautonomia' });
+    expect(vagalTrials.some(t => t.nctId === 'NCT05783104')).toBe(true);
+  });
 });

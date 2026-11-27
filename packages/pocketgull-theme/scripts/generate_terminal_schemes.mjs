@@ -206,7 +206,7 @@ const wtFragment = {
     source: 'PocketGull.Theme',
     colorScheme: p.scheme,
     font: {
-      face: 'Pocket Gull Mono',
+      face: 'PocketGull Mono',
       size: 11
     },
     cursorShape: 'vintage',

@@ -116,29 +116,122 @@ export class ClinicalTrialsMatcherService {
       contactEmail: 'nia-adrd-tracking@nih.gov',
       contactPhone: '+1 (800) 555-0177',
       locationFacility: 'Brain Health & Memory Institute'
+    },
+    {
+      nctId: 'NCT06210944',
+      briefTitle: 'Non-Opioid Selective NaV1.8 & Mirror Graded Motor Imagery Pain Trial',
+      officialTitle: 'Phase 3 NIH HEAL Initiative Trial Evaluating Peripheral NaV1.8 Blockade with Somatic Mirror Retraining for Neuropathic & Opioid-Sparing Pain Relief',
+      phase: 'Phase 3',
+      status: 'RECRUITING',
+      conditions: ['Neuropathic Pain', 'Central Sensitization', 'Chronic Lower Back Pain', 'Phantom Limb Pain', 'Allodynia'],
+      interventions: ['Suzetrigine (VX-548) Non-Opioid NaV1.8 Inhibitor + Graded Motor Imagery'],
+      sponsor: 'NIH Helping to End Addiction Long-term (HEAL) Network',
+      distanceMiles: 11.4,
+      matchConfidenceScore: 95,
+      keyInclusionSummary: 'Adults age 18-80y with chronic neuropathic or musculoskeletal pain (DN4 >= 4 or VAS >= 5), opioid-sparing rehabilitation priority.',
+      keyExclusionSummary: 'Known severe hepatic CYP3A4 failure or unstable acute spinal cord transection.',
+      contactEmail: 'nih-heal-pain@nih.gov',
+      contactPhone: '+1 (800) 555-0162',
+      locationFacility: 'Center for Translational Pain & Neuromodulation'
+    },
+    {
+      nctId: 'NCT06187420',
+      briefTitle: 'HLA-DRB1 / MTHFR Pharmacogenomic Remyelination & Fatigue Protocol',
+      officialTitle: 'Phase 2 Biomarker-Guided Trial of Clemastine Fumarate, L-Methylfolate, and CoQ10 in CYP2D6/MTHFR Stratified Multiple Sclerosis',
+      phase: 'Phase 2',
+      status: 'RECRUITING',
+      conditions: ['Multiple Sclerosis', 'Neurological & Methylation', 'MTHFR Deficiency', 'Demyelinating Neuropathy'],
+      interventions: ['L-Methylfolate + Clemastine Fumarate + Ubiquinol CoQ10 Precision Titration'],
+      sponsor: 'National Institute of Neurological Disorders and Stroke (NINDS)',
+      distanceMiles: 16.0,
+      matchConfidenceScore: 94,
+      keyInclusionSummary: 'Confirmed HLA-DRB1*15:01 or MTHFR C677T variant, homocysteine > 12 umol/L, neuropathic fatigue or sensory paresthesia.',
+      keyExclusionSummary: 'Concurrent strong anticholinergic burden or pregnancy.',
+      contactEmail: 'ninds-remyelination@nih.gov',
+      contactPhone: '+1 (800) 555-0155',
+      locationFacility: 'Neuroimmunology & Pharmacogenomics Unit'
+    },
+    {
+      nctId: 'NCT05992014',
+      briefTitle: 'Wildfire PM2.5 Exposome Shielding & Airway Biologic De-Escalation',
+      officialTitle: 'Phase 3 Randomized Pragmatic Study of Biologic IL-4Ralpha Blockade Plus Indoor HEPA Mitigation in Environmental Eosinophilic Asthma',
+      phase: 'Phase 3',
+      status: 'RECRUITING',
+      conditions: ['Asthma', 'Bronchial Hyperreactivity', 'Environmental Exposomics', 'Wildfire Smoke Exposure'],
+      interventions: ['Dupilumab 300mg Q2W + Smart Indoor PM2.5 Closed-Loop HEPA'],
+      sponsor: 'National Institute of Environmental Health Sciences (NIEHS)',
+      distanceMiles: 19.3,
+      matchConfidenceScore: 92,
+      keyInclusionSummary: 'Age 18-75y with persistent asthma or post-PM2.5 airway hyperreactivity and elevated eosinophils or FeNO >= 25 ppb.',
+      keyExclusionSummary: 'Untreated systemic helminth infection.',
+      contactEmail: 'niehs-airway-shield@nih.gov',
+      contactPhone: '+1 (800) 555-0131',
+      locationFacility: 'Pulmonary & Environmental Exposomics Pavilion'
+    },
+    {
+      nctId: 'NCT06077315',
+      briefTitle: 'Non-Invasive Cervical Radiculopathy Decompression & Fascial Mechanobiology',
+      officialTitle: 'Phase 2 Randomized Controlled Study of Ergonomic Traction Decompression and 40Hz Vibro-Tactile Pain Desensitization in Radiculopathy',
+      phase: 'Phase 2',
+      status: 'RECRUITING',
+      conditions: ['Cervical Radiculopathy', 'Spinal Biomechanics', 'Osteoarthritis', 'Radicular Pain'],
+      interventions: ['Decompression Physiotherapy + 40Hz Somatosensory Pain Gate Entrainment'],
+      sponsor: 'National Institute of Arthritis and Musculoskeletal and Skin Diseases (NIAMS)',
+      distanceMiles: 12.8,
+      matchConfidenceScore: 90,
+      keyInclusionSummary: 'Adults with cervical or lumbar nerve root compression, dermatomal pain/paresthesia, or refractory joint stiffness.',
+      keyExclusionSummary: 'Cauda equina syndrome or progressive acute myelopathy requiring emergency surgery.',
+      contactEmail: 'niams-biomechanics@nih.gov',
+      contactPhone: '+1 (800) 555-0124',
+      locationFacility: 'Spine Biomechanics & Rehabilitation Laboratory'
     }
   ];
 
   /**
-   * Matches candidate clinical trials for a patient
+   * Matches candidate clinical trials for a patient across conditions, active symptoms, body-part issues, and goals
    */
   public matchTrialsForPatient(patient: IPatient, maxDistanceMiles = 50): ITrialMatcherReport {
     const age = patient.age || 50;
     const gender = patient.gender || 'Male';
-    const conditions = (patient.preexistingConditions || []).join(' ').toLowerCase();
+    const conditionText = (patient.preexistingConditions || []).join(' ').toLowerCase();
+    const symptomText = (patient.symptoms || []).map(s => s.name || '').join(' ').toLowerCase();
+    const flatIssues = Object.values(patient.issues || {}).flat();
+    const issueText = flatIssues
+      .map(issue => {
+        const subSymptoms = (issue.symptoms || [])
+          .map(s => (typeof s === 'string' ? s : s.name || ''))
+          .join(' ');
+        return `${issue.name || ''} ${issue.description || ''} ${subSymptoms}`;
+      })
+      .join(' ')
+      .toLowerCase();
+    const clinicalCorpus = `${conditionText} ${symptomText} ${issueText} ${(patient.patientGoals || '').toLowerCase()} ${(patient.name || '').toLowerCase()}`;
 
     // Filter and score matches
     const scoredMatches = this.CLINICAL_TRIALS_CATALOG.filter(trial => {
       return trial.distanceMiles <= maxDistanceMiles;
     }).map(trial => {
-      let score = 75;
+      let score = 70;
 
-      // Condition match bonus
-      const matchesCond = trial.conditions.some(c => conditions.includes(c.toLowerCase().split(' ')[0]));
-      if (matchesCond) score += 20;
+      // Exact/phrase match against condition catalog and symptom/pain corpus
+      const matchedConditions = trial.conditions.filter(c => {
+        const cLower = c.toLowerCase();
+        const keywords = cLower.split(/[\s/,&-]+/).filter(w => w.length >= 4);
+        return clinicalCorpus.includes(cLower) || keywords.some(kw => clinicalCorpus.includes(kw));
+      });
+
+      if (matchedConditions.length > 0) {
+        score += 18 + Math.min(8, matchedConditions.length * 3);
+      }
+
+      // Bonus for explicit pain / neurological distress alignment when pain burden is present
+      const hasHighPainIssue = flatIssues.some(i => (i.painLevel || 0) >= 6);
+      if (hasHighPainIssue && trial.conditions.some(c => c.toLowerCase().includes('pain'))) {
+        score += 6;
+      }
 
       // Age eligibility heuristic
-      if (age >= 18 && age <= 80) score += 5;
+      if (age >= 18 && age <= 85) score += 4;
 
       return {
         ...trial,

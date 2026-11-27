@@ -3,27 +3,27 @@
   "version": "1.0.0",
   "description": "Zero-dependency browser-native Web Audio API bio-entrainment synthesizer, Solfeggio resonance, 432Hz Persian Dastgah modal soundscapes, 0.1Hz parasympathetic breathing pacing, and Chladni cymatics visualizer.",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
     "./audio": {
       "types": "./dist/audio-engine.d.ts",
-      "import": "./dist/audio-engine.mjs",
+      "import": "./dist/audio-engine.js",
       "require": "./dist/audio-engine.js"
     },
     "./cymatics": {
       "types": "./dist/cymatics-renderer.d.ts",
-      "import": "./dist/cymatics-renderer.mjs",
+      "import": "./dist/cymatics-renderer.js",
       "require": "./dist/cymatics-renderer.js"
     },
     "./catalogs": {
       "types": "./dist/catalogs.d.ts",
-      "import": "./dist/catalogs.mjs",
+      "import": "./dist/catalogs.js",
       "require": "./dist/catalogs.js"
     }
   },

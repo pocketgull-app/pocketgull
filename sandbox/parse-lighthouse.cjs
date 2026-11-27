@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const jsonPath = path.join(process.cwd(), 'lighthouse_report.report.json');
-const outputPath = 'C:\\Users\\philg\\.gemini\\antigravity\\brain\\fb64f501-3837-4534-bc28-915042fe80c9\\lighthouse_audit_report.md';
+const outputPath = process.env.LIGHTHOUSE_REPORT_OUT || path.join(process.cwd(), 'lighthouse_audit_report.md');
 
 const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 const categories = data.categories;

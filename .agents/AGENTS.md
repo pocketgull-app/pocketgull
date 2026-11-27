@@ -1,12 +1,7 @@
 # Pocket Gull Workspace & Engineering Operations Rules
 
 ## 1. Runtime, Build & Monorepo Overrides
-- **Node.js Version**: Strictly use **Node.js v24.x** (`.node-version`, `.nvmrc`, `package.json`).
-- **Default Commands (Explicit Node Paths)**:
-  - **TypeScript Typecheck**: `node c:\Users\philg\Pocketgull\pocketgull\node_modules\typescript\lib\tsc.js -p c:\Users\philg\Pocketgull\pocketgull\tsconfig.json --noEmit`
-  - **Angular Build**: `node c:\Users\philg\Pocketgull\pocketgull\node_modules\@angular\cli\bin\ng.js build`
-  - **Unit Tests**: `npm test -- --run`
-  - **GCP Security Audit**: `npm run gcp:audit`
+- **Node.js Version**: Strictly use **Node.js v24.x** (`.node-version`, `.nvmrc`, `package.json`). See [GEMINI.md](file:///C:/Users/philg/Pocketgull/pocketgull/GEMINI.md) for explicit `tsc`, `ng build`, and 8-gate pre-flight commands.
 - **esbuild Overrides**: Global `esbuild` is pinned to `0.27.2`; `@angular/build` & `@angular-devkit/build-angular` override `esbuild` to `0.28.1`; `astro` & `@astrojs/mdx` live in root `devDependencies`. Keep sub-workspace `overrides` (`companion-apps/avs-therapy`, `pocketgull_api`) synced with root `package.json`.
 
 ## 2. Language & Companion Standards

@@ -2,6 +2,11 @@ import { Router, Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import crypto from 'node:crypto';
 import { sanitizeLogInput } from '../../utils/security-helper';
+import {
+  signSessionToken,
+  requireScimAuth,
+  isStrictProductionEnv
+} from '../middleware/auth-guard';
 
 export interface IScimServerUser {
   schemas: string[];
@@ -179,19 +184,22 @@ function recordServerAudit(
 export function createEnterpriseIdentityRouter(): Router {
   const router = Router();
 
-  const isTestingEnv = Boolean(
-    process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test'
-  );
+  const isTestingEnv =
+    !isStrictProductionEnv() &&
+    Boolean(process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test' || process.env['VITEST']);
 
   const identityLimiter = rateLimit({
     windowMs: 60_000,
-    max: isTestingEnv || process.env['NODE_ENV'] !== 'production' ? 10_000 : 300,
+    max: isTestingEnv ? 10_000 : 300,
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { trustProxy: false },
     message: { error: 'Too many identity requests. Please wait 1 minute.' }
   });
 
   router.use(identityLimiter);
+  // Gate ALL SCIM 2.0 provisioning & audit routes behind constant-time Bearer token authentication
+  router.use('/scim/v2', requireScimAuth());
 
   // ──────────────────────────────────────────────────────────────────────────
   // SAML 2.0 Endpoints
@@ -266,6 +274,79 @@ export function createEnterpriseIdentityRouter(): Router {
       // Check Success status
       if (!rawXml.includes('urn:oasis:names:tc:SAML:2.0:status:Success')) {
         return res.status(401).json({ error: 'SAML Authentication rejected by Identity Provider' });
+      }
+
+      // Fail-closed XML Digital Signature Verification against configured IdP X.509 certificate
+      const idpCertPem = process.env['SAML_IDP_CERT']?.trim();
+      if (!idpCertPem) {
+        return res.status(501).json({
+          error: 'SAML 2.0 Identity Provider X.509 certificate (SAML_IDP_CERT) is not configured; unsigned SAML assertions are rejected.'
+        });
+      }
+
+      const hasXmlSignature =
+        (rawXml.includes('<ds:Signature') || rawXml.includes('<Signature')) &&
+        (rawXml.includes('SignatureValue>') || rawXml.includes(':SignatureValue>')) &&
+        (rawXml.includes('SignedInfo>') || rawXml.includes(':SignedInfo>'));
+
+      if (!hasXmlSignature) {
+        return res.status(401).json({
+          error: 'Unauthorized: SAML 2.0 assertion is missing mandatory XML Digital Signature (<ds:Signature>).'
+        });
+      }
+
+      const extractSignedInfoBlock = (xml: string): string | null => {
+        const start = xml.indexOf('<ds:SignedInfo');
+        const altStart = start === -1 ? xml.indexOf('<SignedInfo') : start;
+        if (altStart === -1) return null;
+        const endTag = start !== -1 ? '</ds:SignedInfo>' : '</SignedInfo>';
+        const end = xml.indexOf(endTag, altStart);
+        if (end === -1) return null;
+        return xml.slice(altStart, end + endTag.length);
+      };
+
+      const extractSignatureValue = (xml: string): string | null => {
+        const startTag = xml.includes('<ds:SignatureValue') ? '<ds:SignatureValue' : '<SignatureValue';
+        const openIdx = xml.indexOf(startTag);
+        if (openIdx === -1) return null;
+        const gtIdx = xml.indexOf('>', openIdx);
+        const closeIdx = xml.indexOf('</', gtIdx);
+        if (gtIdx === -1 || closeIdx === -1) return null;
+        return xml.slice(gtIdx + 1, closeIdx).replace(/\s+/g, '');
+      };
+
+      const signedInfoXml = extractSignedInfoBlock(rawXml);
+      const signatureB64 = extractSignatureValue(rawXml);
+      if (!signedInfoXml || !signatureB64) {
+        return res.status(401).json({
+          error: 'Unauthorized: Malformed XML Digital Signature in SAML assertion.'
+        });
+      }
+
+      // Verify cryptographic RSA/ECDSA signature over <SignedInfo> using configured IdP public certificate
+      const normalizedCert = idpCertPem.includes('BEGIN CERTIFICATE') || idpCertPem.includes('BEGIN PUBLIC KEY')
+        ? idpCertPem
+        : `-----BEGIN CERTIFICATE-----\n${idpCertPem.replace(/\s+/g, '')}\n-----END CERTIFICATE-----`;
+
+      let signatureValid = false;
+      for (const alg of ['RSA-SHA256', 'RSA-SHA384', 'RSA-SHA512', 'sha256'] as const) {
+        try {
+          const verifier = crypto.createVerify(alg);
+          verifier.update(signedInfoXml, 'utf8');
+          verifier.end();
+          if (verifier.verify(normalizedCert, Buffer.from(signatureB64, 'base64'))) {
+            signatureValid = true;
+            break;
+          }
+        } catch {
+          // Try next supported signature algorithm
+        }
+      }
+
+      if (!signatureValid) {
+        return res.status(401).json({
+          error: 'Unauthorized: SAML 2.0 XML Digital Signature verification failed against configured IdP certificate.'
+        });
       }
 
       // Extract Claims (CodeQL alerts #3001-#3005: eliminate polynomial backtracking regexes via pure substring indexing)
@@ -349,8 +430,16 @@ export function createEnterpriseIdentityRouter(): Router {
         : 'roles/aiplatform.user';
 
       const now = Date.now();
-      const sessionToken = 'tok_saml_' + crypto.randomBytes(24).toString('hex');
       const uid = 'usr_saml_' + crypto.createHash('sha256').update(userEmail).digest('hex').substring(0, 16);
+      const ttlSeconds = 12 * 3600;
+      const sessionToken = signSessionToken({
+        sub: uid,
+        email: userEmail,
+        tenantId,
+        role: validRole,
+        roles: validRole === 'roles/healthcare.datasetAdmin' ? [validRole, 'ADMIN', 'CLINICIAN'] : [validRole, 'CLINICIAN'],
+        ttlSeconds
+      });
 
       const session = {
         uid,
@@ -361,7 +450,7 @@ export function createEnterpriseIdentityRouter(): Router {
         roleTitle: 'Hospital Enterprise SAML Authenticated',
         tenantId,
         issuedAt: now,
-        expiresAt: now + (12 * 60 * 60 * 1000), // 12-hour clinical shift
+        expiresAt: now + ttlSeconds * 1000, // 12-hour clinical shift
         sessionToken
       };
 

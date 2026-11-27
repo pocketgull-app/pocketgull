@@ -50,5 +50,5 @@
 
 - **TypeScript Compilation (`tsc --noEmit`)**: **0 Errors**.
 - **Vitest Full Codebase Test Suite**: **338 test suites passed**, **1,243 individual unit tests passed (100% clean exit code 0)**.
-- **Changelog**: Updated [CHANGELOG.md](file:///c:/Users/philg/Pocketgull/pocketgull/CHANGELOG.md) with comprehensive `v1.26.0` release notes.
+- **Changelog**: Updated [CHANGELOG.md](CHANGELOG.md) with comprehensive `v1.26.0` release notes.
 - **Package Version**: Bumped `package.json` to `1.26.0`.

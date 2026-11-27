@@ -179,7 +179,7 @@ export class CircadianSleepinessService {
   getCircadianContext(now: Date): ICircadianContext {
     const h = now.getHours() + now.getMinutes() / 60;
 
-    if (h >= 5 && h < 8) return {
+    if (h >= 6 && h < 8) return {
       phase: 'early-morning', hour: Math.floor(h),
       phaseLabel: 'Early Morning — Cortisol Surge',
       phaseEmoji: '🌅',
@@ -240,11 +240,11 @@ export class CircadianSleepinessService {
       recommendation: 'Melatonin is rising. Cognitive flexibility decreasing. '
         + 'Theta entrainment supports a natural wind-down. Avoid scheduling high-complexity cases.',
       avsWave: 'theta', avsBpm: 5.0,
-      colorHsl: 'hsl(320, 60%, 45%)',
-      colorHslData: { h: 320, s: 60, l: 45 },
+      colorHsl: 'hsl(24, 72%, 42%)',
+      colorHslData: { h: 24, s: 72, l: 42 },
     };
 
-    if (h >= 21 || h < 0) return {
+    if (h >= 21) return {
       phase: 'night', hour: Math.floor(h),
       phaseLabel: 'Night Shift — Impairment Risk',
       phaseEmoji: '🌙',
@@ -253,11 +253,11 @@ export class CircadianSleepinessService {
       recommendation: 'Circadian misalignment with social sleep pressure. Error rate comparable to 0.05% BAC. '
         + 'Beta AVS reset every 2 hours is strongly recommended. Caffeine + 10-min AVS nap more effective than caffeine alone.',
       avsWave: 'beta', avsBpm: 7.0,
-      colorHsl: 'hsl(240, 50%, 30%)',
-      colorHslData: { h: 240, s: 50, l: 30 },
+      colorHsl: 'hsl(14, 78%, 32%)',
+      colorHslData: { h: 14, s: 78, l: 32 },
     };
 
-    return { // graveyard
+    return { // graveyard (00:00–06:00, 650nm scotopic deep red, zero blue light)
       phase: 'graveyard', hour: Math.floor(h),
       phaseLabel: 'Graveyard Hours — Maximum Impairment',
       phaseEmoji: '🌑',
@@ -267,8 +267,8 @@ export class CircadianSleepinessService {
         + 'Cognitive performance equivalent to 24h total sleep deprivation. '
         + 'Strategic beta AVS reset is critical. Consider peer-check for all clinical decisions.',
       avsWave: 'beta', avsBpm: 7.5,
-      colorHsl: 'hsl(240, 40%, 20%)',
-      colorHslData: { h: 240, s: 40, l: 20 },
+      colorHsl: 'hsl(6, 82%, 26%)',
+      colorHslData: { h: 6, s: 82, l: 26 },
     };
   }
 

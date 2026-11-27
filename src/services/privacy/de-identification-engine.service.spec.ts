@@ -90,11 +90,12 @@ describe('DeIdentificationEngineService', () => {
 
       const result = service.deIdentifyPatientRecord(comprehensiveRawRecord);
 
-      expect(result.studySubjectId).toMatch(/^SUBJ-[0-9a-f]{8}$/);
+      expect(result.studySubjectId).toMatch(/^SUBJ-[0-9a-f]{16}$/);
       expect(result.gender).toBe('F');
       expect(result.stateCode).toBe('MA');
       expect(result.ageBracket).toBe('30-49');
       expect(result.studyDayOffset).toBeGreaterThan(0);
+      expect(result.kAnonymityPassed).toBe(false);
       expect(result.strippedAttributesCount).toBeGreaterThanOrEqual(18);
       expect(result.strippedIdentifiersList).toContain('name');
       expect(result.strippedIdentifiersList).toContain('ssn');
@@ -125,6 +126,16 @@ describe('DeIdentificationEngineService', () => {
 
       const deidentified = service.deIdentifyPatientRecord(pediatricRecord);
       expect(deidentified.ageBracket).toBe('<18');
+    });
+
+    it('should bracket 70-89 correctly, handle invalid dates as UNKNOWN (never 90+), and never default missing state to OR', () => {
+      const senior = service.deIdentifyPatientRecord({ name: 'Senior', birthDate: '1950-04-01', state: 'WA' });
+      expect(senior.ageBracket).toBe('70-89');
+
+      const badDate = service.deIdentifyPatientRecord({ name: 'Malformed', birthDate: 'not-a-valid-date' });
+      expect(badDate.ageBracket).toBe('UNKNOWN');
+      expect(badDate.stateCode).toBe('UNKNOWN');
+      expect(badDate.kAnonymityPassed).toBe(false);
     });
   });
 

@@ -45,7 +45,7 @@ Pocket-Gull is architecturally wired to three global public health standards:
 
 ### 2.1 World Health Organization (WHO) Targets
 * **WHO SDG Target 3.4 (NCD Mortality Reduction by One-Third by 2030)**:
-  * Implemented via [`GlobalHealthInitiativesService.calculateWhoCvdRisk()`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/global-health-initiatives.service.ts), predicting 10-year fatal/non-fatal cardiovascular disease risk using non-laboratory physiological indicators (age, sex, SBP, smoking, diabetes).
+  * Implemented via [`GlobalHealthInitiativesService.calculateWhoCvdRisk()`](src/services/global-health-initiatives.service.ts), predicting 10-year fatal/non-fatal cardiovascular disease risk using non-laboratory physiological indicators (age, sex, SBP, smoking, diabetes).
   * Automatically stratifies patients into low ($<10\%$), moderate ($10\text{--}20\%$), high ($20\text{--}30\%$), or critical ($\ge 30\%$) risk tiers.
 * **WHO ICD-11 Chapter 26 (Traditional Medicine Module 1 - TM1)**:
   * Dual-codes holistic syndromes (TCM & Ayurveda) alongside Western ICD-10/11 diagnoses (`SF50`, `SE20`, `SF72`, `SG14`, `SD45`), bridging cultural medicine into reimbursable, interoperable EHR workflows.
@@ -54,13 +54,13 @@ Pocket-Gull is architecturally wired to three global public health standards:
 
 ### 2.2 National Institutes of Health (NIH) Research Benchmarks
 * **NIH All of Us & Geroscience Initiative**:
-  * Implemented via [`assessNihGeroscienceAndVagalTone()`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/global-health-initiatives.service.ts), estimating biological age deltas and autonomic vagal tone using Gompertz-Makeham physiological proxies and pulse pressure telemetry.
+  * Implemented via [`assessNihGeroscienceAndVagalTone()`](src/services/global-health-initiatives.service.ts), estimating biological age deltas and autonomic vagal tone using Gompertz-Makeham physiological proxies and pulse pressure telemetry.
 * **NIH RECOVER Initiative (PASC / Long COVID)**:
   * Employs the NIH RECOVER weighted symptom scoring rubric (threshold $\ge 12$) to identify post-acute sequelae and prescribe tailored pacing cadences.
 
 ### 2.3 NSF Open Knowledge Network (NSF OKN)
 * **Federated Cross-Agency Traversal**:
-  * Implemented via [`OknKnowledgeGraphService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/okn-knowledge-graph.service.ts), linking 43 federal knowledge graphs across NIH, USGS, and EPA to uncover root environmental/molecular causes (e.g. alluvial aquifer PFAS triggering hepatic steatosis).
+  * Implemented via [`OknKnowledgeGraphService`](src/services/okn-knowledge-graph.service.ts), linking 43 federal knowledge graphs across NIH, USGS, and EPA to uncover root environmental/molecular causes (e.g. alluvial aquifer PFAS triggering hepatic steatosis).
 * **FDA 21 CFR Part 11 Electronic Records Integrity**:
   * Stamps every clinical recommendation with an immutable SHA-256 digital attestation seal, protecting the hospital against AI malpractice disputes.
 
@@ -142,7 +142,7 @@ For a standard 5-physician independent practice or community clinic:
 
 ### Phase 1: Deployment & Integration (Days 1–30)
 * Deployed Pocket-Gull as a lightweight, zero-footprint web application with FHIR R4 EHR bidirectional sync.
-* Activated Socratic intake and the **Care Plan Print Studio** ([`care-plan-print-preview.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/care-plan-print-preview.component.ts)) with automated **WHO SDG 3.4 CVD Risk** calculations.
+* Activated Socratic intake and the **Care Plan Print Studio** ([`care-plan-print-preview.component.ts`](src/components/care-plan-print-preview.component.ts)) with automated **WHO SDG 3.4 CVD Risk** calculations.
 
 ### Phase 2: Clinical Discovery & Intervention (Days 31–90)
 * In a cluster of 412 patients presenting with chronic dyspepsia and atypical liver panels, Pocket-Gull's `OknKnowledgeGraphService` flagged that 78% lived in a municipal district serviced by an unconfined alluvial aquifer with elevated EPA PFAS runoff.

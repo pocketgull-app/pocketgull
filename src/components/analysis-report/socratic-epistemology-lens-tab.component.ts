@@ -4,6 +4,7 @@ import { SkepticalEpistemologyService } from '../../services/skeptical-epistemol
 import { SocraticChallengeCardComponent } from '../socratic-challenge-card.component';
 import { PocketGullCardComponent } from '../shared/pocket-gull-card.component';
 import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-socratic-epistemology-lens-tab',
@@ -12,7 +13,8 @@ import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component'
     CommonModule,
     SocraticChallengeCardComponent,
     PocketGullCardComponent,
-    PocketGullBadgeComponent
+    PocketGullBadgeComponent,
+    PgTranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -24,14 +26,14 @@ import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component'
             <span class="text-2xl">🧠</span>
             <div>
               <h3 class="font-extrabold text-sm uppercase tracking-wider text-purple-700 dark:text-purple-300">
-                Skeptical Epistemology & Socratic Challenge Matrix
+                {{ 'Skeptical Epistemology & Socratic Challenge Matrix' | pgT:'lens08.socratic_title' }}
               </h3>
               <p class="text-xs text-gray-600 dark:text-zinc-400 mt-0.5">
-                Stress-testing clinical hypotheses against cognitive bias, diagnostic premature closure, and empirical counter-evidence.
+                {{ 'Stress-testing clinical hypotheses against cognitive bias, diagnostic premature closure, and empirical counter-evidence.' | pgT:'lens08.socratic_subtitle' }}
               </p>
             </div>
           </div>
-          <pocket-gull-badge label="Epistemology Verified" severity="info"></pocket-gull-badge>
+          <pocket-gull-badge [label]="'Epistemology Verified' | pgT:'lens08.epistemology_verified'" severity="info"></pocket-gull-badge>
         </div>
       </pocket-gull-card>
 

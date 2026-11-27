@@ -19,11 +19,12 @@ import {
   VIGILANCE_LETTER_SEQUENCE
 } from '../../services/moca/moca-assessment.service';
 import { MocaDomainId, ITrailNode } from '../../services/moca/moca.types';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-moca-suite',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="w-full max-w-5xl mx-auto rounded-3xl border border-teal-500/30 bg-zinc-950/95 backdrop-blur-2xl p-4 sm:p-6 shadow-2xl text-zinc-100 font-sans space-y-6">
@@ -37,17 +38,17 @@ import { MocaDomainId, ITrailNode } from '../../services/moca/moca.types';
           <div>
             <div class="flex items-center gap-2 flex-wrap">
               <h2 class="text-base sm:text-lg font-black text-white tracking-tight">
-                Montreal Cognitive Assessment (MoCA)
+                {{ 'Montreal Cognitive Assessment (MoCA)' | pgT:'moca.title' }}
               </h2>
               <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                30-Point Standard Battery
+                {{ '30-Point Standard Battery' | pgT:'moca.badge' }}
               </span>
               <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
                 LOINC 72106-8
               </span>
             </div>
             <p class="text-xs text-zinc-400 font-mono mt-0.5">
-              Standardized Neurocognitive Screener &bull; Version 8.1 &bull; Nasreddine et al. (2005)
+              {{ 'Standardized Neurocognitive Screener • Version 8.1 • Nasreddine et al. (2005)' | pgT:'moca.subtitle' }}
             </p>
           </div>
         </div>
@@ -100,7 +101,7 @@ import { MocaDomainId, ITrailNode } from '../../services/moca/moca.types';
             [class.border-zinc-800]="activeStepId() !== step.id"
             class="px-3 py-2 rounded-xl border transition flex items-center gap-1.5 whitespace-nowrap cursor-pointer hover:border-zinc-600">
             <span class="opacity-70">{{ i + 1 }}.</span>
-            <span>{{ step.label }}</span>
+            <span>{{ step.label | pgT:step.key }}</span>
             <span class="text-[10px] opacity-80 font-bold">({{ step.getScore() }}/{{ step.maxScore }})</span>
           </button>
         }
@@ -1043,7 +1044,7 @@ import { MocaDomainId, ITrailNode } from '../../services/moca/moca.types';
 
             <!-- Domain Breakdown Bar Grid -->
             <div class="space-y-3 pt-2">
-              <span class="text-xs font-mono uppercase font-bold text-zinc-400">Domain Performance Breakdown:</span>
+              <span class="text-xs font-mono uppercase font-bold text-zinc-400">{{ 'Domain Performance Breakdown:' | pgT:'moca.breakdown' }}</span>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
                 @for (d of mocaSvc.summaryResult().domainBreakdown; track d.domainId) {
                   <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-between">
@@ -1066,7 +1067,7 @@ import { MocaDomainId, ITrailNode } from '../../services/moca/moca.types';
 
             <!-- Recommendations -->
             <div class="p-4 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-2">
-              <span class="text-xs font-mono uppercase font-bold text-teal-400">Evidence-Grounded Recommendations:</span>
+              <span class="text-xs font-mono uppercase font-bold text-teal-400">{{ 'Evidence-Grounded Recommendations:' | pgT:'moca.recommendations' }}</span>
               <ul class="space-y-1.5 text-xs text-zinc-300 list-disc list-inside">
                 @for (rec of mocaSvc.summaryResult().recommendations; track rec) {
                   <li>{{ rec }}</li>
@@ -1080,21 +1081,21 @@ import { MocaDomainId, ITrailNode } from '../../services/moca/moca.types';
                 type="button"
                 (click)="exportFhirBundle()"
                 class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-mono font-bold text-xs uppercase tracking-wider transition cursor-pointer shadow-lg active:scale-95">
-                <span>📋 Export FHIR R4 Bundle (LOINC 72106-8)</span>
+                <span>📋 {{ 'Export FHIR R4 Bundle (LOINC 72106-8)' | pgT:'moca.export_fhir' }}</span>
               </button>
 
               <button 
                 type="button"
                 (click)="commitToPatientRecord()"
                 class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-mono font-bold text-xs uppercase tracking-wider transition cursor-pointer shadow-lg active:scale-95">
-                <span>💾 Append to Patient Medical Chart</span>
+                <span>💾 {{ 'Append to Patient Medical Chart' | pgT:'moca.append_chart' }}</span>
               </button>
 
               <button 
                 type="button"
                 (click)="mocaSvc.resetSession()"
                 class="px-4 py-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white font-mono font-bold text-xs uppercase tracking-wider border border-zinc-800 transition cursor-pointer">
-                ↺ Reset All
+                ↺ {{ 'Reset All' | pgT:'moca.reset_all' }}
               </button>
             </div>
 
@@ -1131,15 +1132,15 @@ export class MocaSuiteComponent {
 
   // Navigation steps
   readonly steps = [
-    { id: 'visuospatial', label: 'Visuospatial', maxScore: 5, getScore: () => this.mocaSvc.visuospatialScore() },
-    { id: 'naming', label: 'Naming', maxScore: 3, getScore: () => this.mocaSvc.namingScore() },
-    { id: 'memory_registration', label: 'Memory Reg', maxScore: 0, getScore: () => 0 },
-    { id: 'attention', label: 'Attention', maxScore: 6, getScore: () => this.mocaSvc.attentionScore() },
-    { id: 'language', label: 'Language', maxScore: 3, getScore: () => this.mocaSvc.languageScore() },
-    { id: 'abstraction', label: 'Abstraction', maxScore: 2, getScore: () => this.mocaSvc.abstractionScore() },
-    { id: 'delayed_recall', label: 'Delayed Recall', maxScore: 5, getScore: () => this.mocaSvc.delayedRecallScore() },
-    { id: 'orientation', label: 'Orientation', maxScore: 6, getScore: () => this.mocaSvc.orientationScore() },
-    { id: 'summary', label: 'Summary & FHIR', maxScore: 30, getScore: () => this.mocaSvc.totalAdjustedScore() }
+    { id: 'visuospatial', key: 'moca.step_visuospatial', label: 'Visuospatial', maxScore: 5, getScore: () => this.mocaSvc.visuospatialScore() },
+    { id: 'naming', key: 'moca.step_naming', label: 'Naming', maxScore: 3, getScore: () => this.mocaSvc.namingScore() },
+    { id: 'memory_registration', key: 'moca.step_memory', label: 'Memory Reg', maxScore: 0, getScore: () => 0 },
+    { id: 'attention', key: 'moca.step_attention', label: 'Attention', maxScore: 6, getScore: () => this.mocaSvc.attentionScore() },
+    { id: 'language', key: 'moca.step_language', label: 'Language', maxScore: 3, getScore: () => this.mocaSvc.languageScore() },
+    { id: 'abstraction', key: 'moca.step_abstraction', label: 'Abstraction', maxScore: 2, getScore: () => this.mocaSvc.abstractionScore() },
+    { id: 'delayed_recall', key: 'moca.step_recall', label: 'Delayed Recall', maxScore: 5, getScore: () => this.mocaSvc.delayedRecallScore() },
+    { id: 'orientation', key: 'moca.step_orientation', label: 'Orientation', maxScore: 6, getScore: () => this.mocaSvc.orientationScore() },
+    { id: 'summary', key: 'moca.step_summary', label: 'Summary & FHIR', maxScore: 30, getScore: () => this.mocaSvc.totalAdjustedScore() }
   ];
 
   readonly activeStepId = signal<string>('visuospatial');

@@ -119,6 +119,255 @@ import { ClinicalMoERouterService, IPatientDecisionFlow, SHIFT_CARE_PLAN_ROSTER 
               </div>
             </div>
 
+            <!-- Composable Machine Teaching Control Strip (Perceptor -> Selector -> Safety Shield) -->
+            @if (moeRouter.activeSelectorDecision(); as selector) {
+              <div
+                class="p-3.5 rounded-2xl border flex flex-col lg:flex-row lg:items-center justify-between gap-3 text-xs font-mono"
+                [class.bg-rose-950\/40]="selector.safetyShieldActive"
+                [class.border-rose-500\/50]="selector.safetyShieldActive"
+                [class.bg-zinc-900\/80]="!selector.safetyShieldActive"
+                [class.border-zinc-800]="!selector.safetyShieldActive"
+              >
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
+                      🧭 Selector Regime: {{ selector.regime }}
+                    </span>
+                    <span
+                      class="px-2 py-0.5 rounded text-[10px] font-bold uppercase"
+                      [class.bg-rose-900\/70]="selector.safetyShieldActive"
+                      [class.text-rose-200]="selector.safetyShieldActive"
+                      [class.border-rose-500\/40]="selector.safetyShieldActive"
+                      [class.bg-emerald-950\/70]="!selector.safetyShieldActive"
+                      [class.text-emerald-300]="!selector.safetyShieldActive"
+                      [class.border-emerald-500\/30]="!selector.safetyShieldActive"
+                    >
+                      🛡️ Safety Shield: {{ selector.safetyShieldActive ? ('PREEMPTED (' + selector.maskedExpertIds.length + ' Masked)') : 'Nominal' }}
+                    </span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-950 border border-zinc-800 text-zinc-300">
+                      🔒 Hysteresis ±{{ (selector.hysteresisMargin * 100) | number:'1.0-0' }}%: {{ selector.hysteresisApplied ? 'LOCKED' : 'Tracking' }}
+                    </span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-zinc-950 border border-zinc-800 text-purple-300">
+                      🧠 WM Slots: {{ selector.activeSlotCount }}/{{ selector.workingMemoryBudgetMax }}
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-zinc-400">
+                    {{ selector.selectorRationale }}
+                  </p>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0 flex-wrap">
+                  <button
+                    type="button"
+                    (click)="toggleAblationLab()"
+                    class="px-3 py-1.5 min-h-[44px] rounded-xl border text-[11px] font-bold transition cursor-pointer"
+                    [class.bg-purple-600]="isAblationLabOpen()"
+                    [class.border-purple-400]="isAblationLabOpen()"
+                    [class.text-white]="isAblationLabOpen()"
+                    [class.bg-zinc-950]="!isAblationLabOpen()"
+                    [class.border-zinc-700]="!isAblationLabOpen()"
+                    [class.text-purple-300]="!isAblationLabOpen()"
+                  >
+                    🧪 {{ isAblationLabOpen() ? 'Hide Curriculum Lab' : 'Curriculum & Ablation Lab' }}
+                  </button>
+                  <button
+                    type="button"
+                    (click)="toggleHysteresisLock()"
+                    class="px-3 py-1.5 min-h-[44px] rounded-xl border text-[11px] font-bold transition cursor-pointer"
+                    [class.bg-amber-600\/20]="moeRouter.committedPrimaryExpertId() !== null"
+                    [class.border-amber-500\/50]="moeRouter.committedPrimaryExpertId() !== null"
+                    [class.text-amber-200]="moeRouter.committedPrimaryExpertId() !== null"
+                    [class.bg-zinc-950]="moeRouter.committedPrimaryExpertId() === null"
+                    [class.border-zinc-700]="moeRouter.committedPrimaryExpertId() === null"
+                    [class.text-zinc-300]="moeRouter.committedPrimaryExpertId() === null"
+                  >
+                    {{ moeRouter.committedPrimaryExpertId() ? '🔓 Release Skill Lock' : '🔒 Commit Primary Skill' }}
+                  </button>
+                  <button
+                    type="button"
+                    (click)="toggleRedFlagSimulation()"
+                    class="px-3 py-1.5 min-h-[44px] rounded-xl border text-[11px] font-bold transition cursor-pointer"
+                    [class.bg-rose-600]="moeRouter.manualRedFlagOverride()"
+                    [class.border-rose-400]="moeRouter.manualRedFlagOverride()"
+                    [class.text-white]="moeRouter.manualRedFlagOverride()"
+                    [class.bg-zinc-950]="!moeRouter.manualRedFlagOverride()"
+                    [class.border-zinc-700]="!moeRouter.manualRedFlagOverride()"
+                    [class.text-zinc-300]="!moeRouter.manualRedFlagOverride()"
+                  >
+                    {{ moeRouter.manualRedFlagOverride() ? '🚨 Clear STAT Shield Sim' : '🛡️ Test STAT Safety Shield' }}
+                  </button>
+                </div>
+              </div>
+            }
+
+            <!-- Interactive Curriculum & Ablation Lab Drawer (Kence Anderson Machine Teaching vs. H0 Softmax Control) -->
+            @if (isAblationLabOpen()) {
+              @if (moeRouter.activeAblationComparison(); as ablation) {
+                <div
+                  class="p-4 rounded-2xl bg-zinc-900/90 border border-purple-500/40 shadow-xl space-y-4 font-mono text-xs"
+                  role="region"
+                  aria-label="Curriculum and Ablation Laboratory"
+                >
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
+                    <div>
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <span class="px-2 py-0.5 rounded bg-purple-500/20 border border-purple-500/40 text-purple-200 text-[10px] font-bold uppercase">
+                          EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC
+                        </span>
+                        <span class="text-zinc-200 font-bold">
+                          Machine Teaching Curriculum & Popperian H₀ Ablation Lab
+                        </span>
+                      </div>
+                      <p class="text-[11px] text-zinc-400 mt-1">
+                        {{ ablation.divergenceReason }}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      (click)="resetLabControls()"
+                      class="px-3 py-1.5 min-h-[44px] rounded-xl bg-zinc-950 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 text-[11px] font-bold transition cursor-pointer shrink-0"
+                    >
+                      ↺ Reset Lab Perturbations
+                    </button>
+                  </div>
+
+                  <!-- 4-Slot Control Scrubbers -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <!-- Slot 1: SpO2 Perceptor Scrubber -->
+                    <label class="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800 space-y-1.5 block">
+                      <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-zinc-400">🫁 SpO₂ Perceptor</span>
+                        <span class="font-bold" [class.text-rose-400]="moeRouter.activePerceptorState().spO2Percent < 90" [class.text-emerald-300]="moeRouter.activePerceptorState().spO2Percent >= 90">
+                          {{ moeRouter.activePerceptorState().spO2Percent }}%
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="82"
+                        max="100"
+                        step="1"
+                        [value]="moeRouter.activePerceptorState().spO2Percent"
+                        (input)="onSpO2Input($event)"
+                        aria-label="SpO2 Perceptor Percentage"
+                        class="w-full accent-purple-500 cursor-pointer"
+                      />
+                      <span class="text-[10px] text-zinc-500 block">STAT Shield cliff: &lt; 90%</span>
+                    </label>
+
+                    <!-- Slot 2: Systolic BP Perceptor Scrubber -->
+                    <label class="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800 space-y-1.5 block">
+                      <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-zinc-400">❤️ Systolic BP</span>
+                        <span class="font-bold" [class.text-rose-400]="moeRouter.activePerceptorState().systolicBpMmHg <= 85 || moeRouter.activePerceptorState().systolicBpMmHg >= 220" [class.text-emerald-300]="moeRouter.activePerceptorState().systolicBpMmHg > 85 && moeRouter.activePerceptorState().systolicBpMmHg < 220">
+                          {{ moeRouter.activePerceptorState().systolicBpMmHg }} mmHg
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="70"
+                        max="235"
+                        step="1"
+                        [value]="moeRouter.activePerceptorState().systolicBpMmHg"
+                        (input)="onSystolicBpInput($event)"
+                        aria-label="Systolic Blood Pressure mmHg"
+                        class="w-full accent-purple-500 cursor-pointer"
+                      />
+                      <span class="text-[10px] text-zinc-500 block">STAT Shield cliffs: ≤ 85 / ≥ 220</span>
+                    </label>
+
+                    <!-- Slot 3: CGM Glucose Perceptor Scrubber -->
+                    <label class="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800 space-y-1.5 block">
+                      <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-zinc-400">🩸 CGM Glucose</span>
+                        <span class="font-bold" [class.text-rose-400]="moeRouter.activePerceptorState().cgmGlucoseMgDl < 54" [class.text-emerald-300]="moeRouter.activePerceptorState().cgmGlucoseMgDl >= 54">
+                          {{ moeRouter.activePerceptorState().cgmGlucoseMgDl }} mg/dL
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="42"
+                        max="260"
+                        step="2"
+                        [value]="moeRouter.activePerceptorState().cgmGlucoseMgDl"
+                        (input)="onCgmInput($event)"
+                        aria-label="CGM Glucose mg per dL"
+                        class="w-full accent-purple-500 cursor-pointer"
+                      />
+                      <span class="text-[10px] text-zinc-500 block">Level 2 Hypo cliff: &lt; 54 mg/dL</span>
+                    </label>
+
+                    <!-- Slot 4: Selector Hysteresis Deadband Scrubber -->
+                    <label class="p-3 rounded-xl bg-zinc-950/80 border border-zinc-800 space-y-1.5 block">
+                      <div class="flex items-center justify-between text-[11px]">
+                        <span class="text-zinc-400">🔒 Hysteresis Band</span>
+                        <span class="font-bold text-amber-300">
+                          ±{{ (moeRouter.hysteresisMargin() * 100) | number:'1.0-0' }}%
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="25"
+                        step="1"
+                        [value]="moeRouter.hysteresisMargin() * 100"
+                        (input)="onHysteresisInput($event)"
+                        aria-label="Selector Hysteresis Deadband Percent"
+                        class="w-full accent-amber-500 cursor-pointer"
+                      />
+                      <span class="text-[10px] text-zinc-500 block">0% = raw argmax • 25% = sticky</span>
+                    </label>
+                  </div>
+
+                  <!-- Adversarial Curriculum Preset Injectors & H0 vs Treatment Readout -->
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 pt-1">
+                    <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 flex flex-wrap items-center gap-2">
+                      <span class="text-[10px] uppercase font-bold text-zinc-400 w-full">Adversarial Curriculum Probes:</span>
+                      <button
+                        type="button"
+                        (click)="injectAdversarialDistractorProbe()"
+                        class="px-2.5 py-1.5 min-h-[44px] rounded-lg bg-rose-950/60 hover:bg-rose-900/70 border border-rose-500/40 text-rose-200 text-[11px] font-bold transition cursor-pointer"
+                      >
+                        ⚡ STEMI + 5 SDOH Distractors
+                      </button>
+                      <button
+                        type="button"
+                        (click)="injectJitterProbe()"
+                        class="px-2.5 py-1.5 min-h-[44px] rounded-lg bg-amber-950/60 hover:bg-amber-900/70 border border-amber-500/40 text-amber-200 text-[11px] font-bold transition cursor-pointer"
+                      >
+                        🌊 Lock + Jitter Probe
+                      </button>
+                      <button
+                        type="button"
+                        (click)="moeRouter.setSafetyShieldEnabled(!moeRouter.isSafetyShieldEnabled())"
+                        class="px-2.5 py-1.5 min-h-[44px] rounded-lg border text-[11px] font-bold transition cursor-pointer"
+                        [class.bg-emerald-950\/60]="moeRouter.isSafetyShieldEnabled()"
+                        [class.border-emerald-500\/40]="moeRouter.isSafetyShieldEnabled()"
+                        [class.text-emerald-200]="moeRouter.isSafetyShieldEnabled()"
+                        [class.bg-zinc-900]="!moeRouter.isSafetyShieldEnabled()"
+                        [class.border-zinc-700]="!moeRouter.isSafetyShieldEnabled()"
+                        [class.text-zinc-400]="!moeRouter.isSafetyShieldEnabled()"
+                      >
+                        🛡️ Shield: {{ moeRouter.isSafetyShieldEnabled() ? 'ARMED' : 'BYPASSED (H₀)' }}
+                      </button>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-zinc-950 border border-zinc-800 grid grid-cols-2 gap-3">
+                      <div>
+                        <span class="text-[10px] uppercase text-zinc-500 block">Baseline Control (H₀ Flat Softmax)</span>
+                        <span class="text-xs font-bold text-zinc-200 block mt-0.5">{{ ablation.controlPrimaryLabel }}</span>
+                        <span class="text-[11px] text-zinc-400">{{ ablation.controlPrimaryWeightPercent }}% weight</span>
+                      </div>
+                      <div class="border-l border-zinc-800 pl-3">
+                        <span class="text-[10px] uppercase text-purple-300 block">Treatment (Composable SMoE)</span>
+                        <span class="text-xs font-bold text-emerald-300 block mt-0.5">{{ ablation.treatmentPrimaryLabel }}</span>
+                        <span class="text-[11px] text-zinc-400">{{ ablation.treatmentPrimaryWeightPercent }}% • {{ ablation.treatmentModality }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+
             <!-- 4-Stage Visual DAG Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
               
@@ -368,6 +617,7 @@ export class SmoeDecisionFlowExplorerComponent {
 
   public readonly shiftRoster = SHIFT_CARE_PLAN_ROSTER;
   public readonly localSelectedPatientId = signal<string | null>(null);
+  public readonly isAblationLabOpen = signal<boolean>(false);
 
   public readonly selectedPatientId = computed<string>(() => {
     return this.localSelectedPatientId() || this.patientId() || this.moeRouter.activeShiftPatientId() || 'p001';
@@ -389,5 +639,74 @@ export class SmoeDecisionFlowExplorerComponent {
 
   public askAiExplanation(patientId: string): void {
     this.askAi.emit(patientId);
+  }
+
+  public toggleHysteresisLock(): void {
+    if (this.moeRouter.committedPrimaryExpertId()) {
+      this.moeRouter.releaseCommittedPrimarySkill();
+    } else {
+      this.moeRouter.commitCurrentPrimarySkill();
+    }
+  }
+
+  public toggleRedFlagSimulation(): void {
+    this.moeRouter.setManualRedFlagOverride(!this.moeRouter.manualRedFlagOverride());
+  }
+
+  public toggleAblationLab(): void {
+    this.isAblationLabOpen.update(v => !v);
+  }
+
+  public onSpO2Input(event: Event): void {
+    const val = parseFloat((event.target as HTMLInputElement).value);
+    if (Number.isFinite(val)) {
+      this.moeRouter.setLabVitalsOverride({ spO2Percent: val });
+    }
+  }
+
+  public onSystolicBpInput(event: Event): void {
+    const val = parseInt((event.target as HTMLInputElement).value, 10);
+    if (Number.isFinite(val)) {
+      this.moeRouter.setLabVitalsOverride({ systolicBpMmHg: val });
+    }
+  }
+
+  public onCgmInput(event: Event): void {
+    const val = parseFloat((event.target as HTMLInputElement).value);
+    if (Number.isFinite(val)) {
+      this.moeRouter.setLabVitalsOverride({ cgmGlucoseMgDl: val });
+    }
+  }
+
+  public onHysteresisInput(event: Event): void {
+    const pct = parseFloat((event.target as HTMLInputElement).value);
+    if (Number.isFinite(pct)) {
+      this.moeRouter.setHysteresisMargin(pct / 100);
+    }
+  }
+
+  public injectAdversarialDistractorProbe(): void {
+    this.moeRouter.pinExpert(null);
+    this.moeRouter.setSafetyShieldEnabled(true);
+    this.moeRouter.setTranscriptQuery(
+      'crushing chest pain stemi housing food insecurity snap copay community health navigator'
+    );
+  }
+
+  public injectJitterProbe(): void {
+    this.moeRouter.pinExpert(null);
+    this.moeRouter.setHysteresisMargin(0.20);
+    this.moeRouter.setTranscriptQuery('');
+    this.moeRouter.commitCurrentPrimarySkill();
+    this.moeRouter.setTranscriptQuery('what-if scenario projection');
+  }
+
+  public resetLabControls(): void {
+    this.moeRouter.resetLabVitalsOverride();
+    this.moeRouter.releaseCommittedPrimarySkill();
+    this.moeRouter.setManualRedFlagOverride(false);
+    this.moeRouter.setSafetyShieldEnabled(true);
+    this.moeRouter.setHysteresisMargin(0.04);
+    this.moeRouter.setTranscriptQuery('');
   }
 }

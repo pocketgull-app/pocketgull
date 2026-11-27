@@ -23,6 +23,7 @@ import { AvsEngineService } from '../services/avs-engine.service';
 import { BleWearablesService } from '../services/hardware/ble-wearables.service';
 import { VibroacousticHapticService } from '../services/hardware/vibroacoustic-haptic.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 describe('SecureSplashComponent Sensory Suite', () => {
   const createComponent = () => {
@@ -113,7 +114,8 @@ describe('SecureSplashComponent Sensory Suite', () => {
           }
         },
         { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: BionicReadingService, useValue: { isBionicReadingEnabled: signal(false), toggleBionicReading: vi.fn() } }
+        { provide: BionicReadingService, useValue: { isBionicReadingEnabled: signal(false), toggleBionicReading: vi.fn() } },
+        { provide: ClinicalMoERouterService, useClass: ClinicalMoERouterService }
       ]
     });
     const comp = runInInjectionContext(injector, () => new SecureSplashComponent());
@@ -291,5 +293,25 @@ describe('SecureSplashComponent Sensory Suite', () => {
     component.confirmStatEmergencyOverride();
     expect(emergencyEmitted).toBe(true);
     expect(component.session.isLocked()).toBe(false);
+  });
+
+  it('13. Evaluates SMoE Splash Gate Policy across locked biometric, STAT hold, and recommended SSO skill switch', () => {
+    const component = createComponent();
+    const policy = component.activeSplashGatePolicy();
+    expect(policy).not.toBeNull();
+    expect(policy?.regime).toBe('Rapid Bedside Biometric Re-Auth Gate');
+
+    component.applyRecommendedSplashSkill();
+    expect(component.authGatewayTab()).toBe('sso');
+    expect(component.selectedSsoProvider()).toBe('webauthn');
+
+    component.isHoldingEmergency.set(true);
+    expect(component.activeSplashGatePolicy()?.regime).toBe('STAT Good Samaritan Emergency Gate');
+  });
+
+  it('14. Defaults to Ataxia-safe 1-click Passkey/SSO gateway with opt-in Gesture Pad', () => {
+    const component = createComponent();
+    expect(component.authGatewayTab()).toBe('sso');
+    expect(component.selectedSsoProvider()).toBe('webauthn');
   });
 });

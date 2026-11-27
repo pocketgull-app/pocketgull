@@ -17,8 +17,8 @@
 import { Router, Request, json } from 'express';
 import crypto from 'node:crypto';
 import { createWriteStream, mkdirSync, existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { sanitizeLogInput, securePathResolve } from '../utils/security-helper';
+import { requireAuth } from './middleware/auth-guard';
 
 export const fitbitRouter = Router();
 fitbitRouter.use(json());
@@ -160,9 +160,19 @@ function getRedirectUri(req: Request): string {
   );
 }
 
-/** Hash an IP address for logging without storing the raw value. */
+let _ephemeralFitbitLogSalt: string | null = null;
+function getFitbitHashSalt(): string {
+  const configured = process.env['FITBIT_LOG_SALT']?.trim() || process.env['API_KEY_SALT']?.trim();
+  if (configured && configured.length >= 16) return configured;
+  if (!_ephemeralFitbitLogSalt) {
+    _ephemeralFitbitLogSalt = crypto.randomBytes(32).toString('hex');
+  }
+  return _ephemeralFitbitLogSalt;
+}
+
+/** Hash an IP address for logging without storing the raw value (ephemeral/env CSPRNG salt). */
 function hashIp(ip: string): string {
-  return crypto.createHash('sha256').update(ip + 'pocketgull-salt').digest('hex').slice(0, 16);
+  return crypto.createHmac('sha256', getFitbitHashSalt()).update(ip, 'utf8').digest('hex').slice(0, 16);
 }
 
 // ── Token refresh ─────────────────────────────────────────────────────────────
@@ -172,8 +182,8 @@ async function refreshTokenIfNeeded(patientId: string): Promise<IGoogleHealthTok
   if (Date.now() < token.expiresAt - 60_000) return token;
 
   const patientIdLogRef = crypto
-    .createHash('sha256')
-    .update(String(patientId ?? '') + 'pocketgull-patient-log-salt')
+    .createHmac('sha256', getFitbitHashSalt())
+    .update(String(patientId ?? ''), 'utf8')
     .digest('hex')
     .slice(0, 16);
   console.log('[GoogleHealth] Refreshing token for patient ref=%s...', patientIdLogRef);
@@ -410,8 +420,8 @@ fitbitRouter.get('/consent-info', (_req, res) => {
 // Route 6 — Sync (data minimization enforced)
 // POST /api/fitbit/sync/:patientId
 // ─────────────────────────────────────────────────────────────────────────────
-fitbitRouter.post('/sync/:patientId', async (req, res) => {
-  const { patientId } = req.params;
+fitbitRouter.post('/sync/:patientId', requireAuth(['CLINICIAN']), async (req, res) => {
+  const patientId = String(req.params['patientId'] || '');
 
   // Verify consent is on record before any data fetch
   if (!consentStore.has(patientId) && !tokenStore.has(patientId)) {
@@ -530,16 +540,20 @@ fitbitRouter.post('/sync/:patientId', async (req, res) => {
 // When purgeData=true this removes their token, consent record, and instructs
 // the frontend to clear all synced biometric entries from patient state.
 // ─────────────────────────────────────────────────────────────────────────────
-fitbitRouter.post('/revoke', async (req, res) => {
+fitbitRouter.post('/revoke', requireAuth(['CLINICIAN']), async (req, res) => {
   const { patientId, purgeData = false } = req.body ?? {};
   if (!patientId) return res.status(400).json({ error: 'patientId is required.' });
 
   const token = tokenStore.get(patientId);
 
-  // Revoke token at Google's endpoint
+  // Revoke token at Google's endpoint via POST form body (never in URL query string)
   if (token?.accessToken) {
     try {
-      await fetch(`${GOOGLE_REVOKE_URL}?token=${token.accessToken}`, { method: 'POST' });
+      await fetch(GOOGLE_REVOKE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ token: token.accessToken }).toString()
+      });
     } catch (e: any) {
       console.warn('[GoogleHealth] Remote revoke failed (token may already be expired):', e.message);
     }

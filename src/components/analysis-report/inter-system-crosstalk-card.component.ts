@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@a
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
 import { PharmacogenomicsService } from '../../services/pharmacogenomics.service';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 interface ISystemsAxis {
   id: string;
@@ -17,7 +18,7 @@ interface ISystemsAxis {
 @Component({
   selector: 'app-inter-system-crosstalk-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-5 rounded-2xl bg-zinc-950 border border-zinc-800 text-zinc-200 font-mono shadow-2xl space-y-5">
@@ -26,31 +27,31 @@ interface ISystemsAxis {
       <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-zinc-800">
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-base font-black text-teal-400">⥯ Inter-Organ Dynamical Cross-Talk</span>
+            <span class="text-base font-black text-teal-400">⥯ {{ 'Inter-Organ Dynamical Cross-Talk' | pgT:'systems.crosstalk_title' }}</span>
             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-950 text-teal-300 border border-teal-800">
               Donella Meadows Systems Model
             </span>
           </div>
           <p class="text-xs text-zinc-400 font-sans mt-0.5">
-            Non-linear biophysical feedback loops coupling oral, autonomic, endothelial, and metabolic subsystems.
+            {{ 'Non-linear biophysical feedback loops coupling oral, autonomic, endothelial, and metabolic subsystems.' | pgT:'systems.crosstalk_subtitle' }}
           </p>
         </div>
 
         <div class="flex items-center gap-2 text-xs">
-          <span class="text-zinc-500 font-bold uppercase text-[10px]">Filter Axis:</span>
+          <span class="text-zinc-500 font-bold uppercase text-[10px]">{{ 'Filter Axis:' | pgT:'systems.filter_axis' }}</span>
           <button type="button"
                   (click)="selectedAxisFilter.set('all')"
                   [class.bg-zinc-800]="selectedAxisFilter() === 'all'"
                   [class.text-white]="selectedAxisFilter() === 'all'"
                   class="px-2 py-1 rounded-md text-[11px] font-bold text-zinc-400 hover:text-zinc-200 transition cursor-pointer">
-            All (4)
+            {{ 'All (4)' | pgT:'systems.filter_all' }}
           </button>
           <button type="button"
                   (click)="selectedAxisFilter.set('stressed')"
                   [class.bg-rose-900/60]="selectedAxisFilter() === 'stressed'"
                   [class.text-rose-200]="selectedAxisFilter() === 'stressed'"
                   class="px-2 py-1 rounded-md text-[11px] font-bold text-zinc-400 hover:text-zinc-200 transition cursor-pointer">
-            Stressed
+            {{ 'Stressed' | pgT:'systems.filter_stressed' }}
           </button>
         </div>
       </div>
@@ -85,7 +86,7 @@ interface ISystemsAxis {
 
             <!-- Meadows Leverage Point Footer -->
             <div class="pt-2 border-t border-zinc-800/60 flex items-center justify-between text-[10px]">
-              <span class="text-zinc-500 font-bold uppercase">Meadows Leverage Point:</span>
+              <span class="text-zinc-500 font-bold uppercase">{{ 'Meadows Leverage Point:' | pgT:'systems.leverage_point' }}</span>
               <span class="text-teal-400 font-extrabold">{{ axis.leverageRank }}</span>
             </div>
 

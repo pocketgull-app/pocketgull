@@ -1,14 +1,16 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, ensureAnalysisViewVisible } from './utils/setup';
 
 test.describe('10-Dimensional Domain Suites E2E Verification', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(90000);
     await page.addInitScript(() => {
-      window.localStorage.setItem('pg_tour_seen', '1');
-      window.localStorage.setItem('pg_data_consent_v1', 'true');
-      window.localStorage.setItem('pocketgull_pin_unlocked', 'true');
-      window.localStorage.setItem('pg_splash_dismissed', 'true');
+      try {
+        window.localStorage.setItem('pg_tour_seen', '1');
+        window.localStorage.setItem('pg_data_consent_v1', 'true');
+        window.localStorage.setItem('pocketgull_pin_unlocked', 'true');
+        window.localStorage.setItem('pg_splash_dismissed', 'true');
+      } catch {}
     });
     await setupE2ePage(page);
   });
@@ -18,11 +20,7 @@ test.describe('10-Dimensional Domain Suites E2E Verification', () => {
     await enterDemoMode(page);
 
     // Switch to Analysis panel if on mobile/tablet viewports
-    const reportTab = page.locator('button', { hasText: 'Analysis' }).first();
-    if (await reportTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await reportTab.click({ force: true });
-      await page.waitForTimeout(500);
-    }
+    await ensureAnalysisViewVisible(page);
 
     // Toggle viewMode to 'suites' in AnalysisContainerComponent
     const domainSuitesToggle = page.getByTestId('toggle-suites').or(page.locator('button').filter({ hasText: /Domain Suites|SUITES/i })).first();

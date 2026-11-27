@@ -7,7 +7,7 @@ param(
     [switch]$Stop
 )
 
-$pidFile = "C:\Users\philg\.gemini\acoustic_journal\sanctuary_drone.pid"
+$pidFile = "$env:USERPROFILE\.gemini\acoustic_journal\sanctuary_drone.pid"
 
 if ($Stop) {
     if (Test-Path $pidFile) {
@@ -29,7 +29,7 @@ if (Test-Path $pidFile) {
     }
 }
 
-$soundsDir = "C:\Users\philg\AppData\Local\PocketGull\Sounds\Entrainment"
+$soundsDir = "$env:LOCALAPPDATA\PocketGull\Sounds\Entrainment"
 $droneMap = @{
     'schumann' = Join-Path $soundsDir "entrainment_schumann.wav"
     'canoe'    = Join-Path $soundsDir "entrainment_canoe.wav"

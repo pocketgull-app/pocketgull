@@ -19,6 +19,9 @@ export class ThemeService {
   public isDyslexiaFontEnabled = signal<boolean>(false);
   public isHighContrastEnabled = signal<boolean>(false);
   public isPhilocardiaEnabled = signal<boolean>(false);
+  /** Acoustic sensitivity guard: UI click chimes are strictly opt-in (off by default). */
+  public uiAudioChimesEnabled = signal<boolean>(false);
+  private audioCtx: AudioContext | null = null;
   private platformId = (() => {
     try { return inject(PLATFORM_ID); } catch (e) { return 'server'; }
   })();
@@ -178,6 +181,11 @@ export class ThemeService {
       this.isPhilocardiaEnabled.set(true);
     }
 
+    const savedUiAudioChimes = this.storage.getItem('pocket_gull_ui_audio_chimes');
+    if (savedUiAudioChimes === 'true') {
+      this.uiAudioChimesEnabled.set(true);
+    }
+
     const ALL_THEMES: AppTheme[] = [
       'light', 'dark', 'system', 'spark', 'papercraft', 'pocketgull-geararts', 'hemp', 'rice', 'construction',
       'white-marble', 'black-marble', 'papyrus', 'pool', 'mandala', 'curie', 'cern', 'scotopic', 'epaper',
@@ -246,6 +254,7 @@ export class ThemeService {
       'theme-dolphins-1972', 'theme-yankees-1927', 'theme-arsenal-invincibles',
       'theme-canadiens-1977', 'theme-brazil-1970', 'theme-all-blacks-2013',
       'papercraft-mode', 'papercraft-hemp', 'papercraft-rice', 'papercraft-construction',
+      'papercraft-pocketgull-geararts',
       'theme-white-marble', 'theme-black-marble', 'theme-papyrus',
       'theme-pool', 'theme-pool-light', 'theme-pool-dark',
       'theme-mandala', 'theme-curie', 'theme-cern',
@@ -254,7 +263,13 @@ export class ThemeService {
     document.documentElement.setAttribute('data-theme', this.currentTheme());
 
     const theme = this.currentTheme();
-    if (theme === 'cern') {
+    if (theme === 'pocketgull-geararts') {
+      document.documentElement.classList.add('dark', 'papercraft-mode', 'papercraft-pocketgull-geararts');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', '#0d090b');
+      }
+    } else if (theme === 'cern') {
       document.documentElement.classList.add('theme-cern');
       const metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (metaThemeColor) {
@@ -407,17 +422,39 @@ export class ThemeService {
   }
 
   /**
+   * Lazily initializes and reuses a single AudioContext instance to prevent browser AudioContext pool exhaustion.
+   */
+  private getOrCreateAudioContext(): AudioContext | null {
+    if (!isPlatformBrowser(this.platformId) || typeof window === 'undefined') return null;
+    if (this.audioCtx && this.audioCtx.state !== 'closed') {
+      return this.audioCtx;
+    }
+    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (!AudioCtx) return null;
+    this.audioCtx = new AudioCtx();
+    return this.audioCtx;
+  }
+
+  public setUiAudioChimesEnabled(enabled: boolean): void {
+    this.uiAudioChimesEnabled.set(enabled);
+    if (isPlatformBrowser(this.platformId)) {
+      this.storage.setItem('pocket_gull_ui_audio_chimes', enabled ? 'true' : 'false');
+    }
+  }
+
+  /**
    * Synthesizes Web Audio API acoustic UI feedback with frequency harmonics matched to active theme, paradigm & gesture interactions.
+   * Opt-in only (`uiAudioChimesEnabled() === true`) to honor acoustic sensitivity and workstation audio routing.
    */
   public playThemeUiAudioFx(actionType: 'click' | 'double-click' | 'flip' | 'state-cycle' | 'long-press' | 'toggle' | 'theme-change' | 'modal-open' | 'success' = 'click') {
-    if (!isPlatformBrowser(this.platformId)) return;
+    if (!isPlatformBrowser(this.platformId) || !this.uiAudioChimesEnabled()) return;
 
     try {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (!AudioCtx) return;
-
-      const ctx = new AudioCtx();
-      if (ctx.state === 'suspended') ctx.resume();
+      const ctx = this.getOrCreateAudioContext();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') {
+        void ctx.resume();
+      }
 
       // Resolve base harmonic frequency from clinical paradigm & theme
       const paradigm = this.activeParadigm();

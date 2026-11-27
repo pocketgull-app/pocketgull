@@ -1,13 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
 <#
 .SYNOPSIS
     PocketGull Assistive Technology, Circadian Themes & Sanctuary Audio One-Click Installer.
 .DESCRIPTION
-    Self-contained, zero-dependency installation package for Windows workstations:
-    - Registers PocketGull in Start Menu & Windows Startup
-    - Provisions local AppData directories (Sounds, Wallpapers, Cursors, Hue)
-    - Installs 432Hz/528Hz Solfeggio sound assets
-    - Calibrates PowerToys Mouse Highlighter & Ataxia tremor damping
-    - Sets up Antigravity completion chimes and acoustic journaling
+    Registers Start Menu & Startup entries anchored to the canonical PocketGull scripts
+    directory, deploys MouseAssist to %LOCALAPPDATA%\PocketGull\bin, and starts the daemon.
 #>
 
 param(
@@ -15,24 +12,31 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$sourceRepo = Split-Path -Parent $scriptDir
+$pwsh = (Get-Command pwsh.exe -ErrorAction SilentlyContinue).Source
+if (-not $pwsh) { $pwsh = "powershell.exe" }
 
-$appName = "PocketGull Assistive Sanctuary"
+$appName     = "PocketGull Assistive Sanctuary"
 $installRoot = "$env:LOCALAPPDATA\PocketGull"
-$appDataDir = "$installRoot\Bin"
-$soundsDir  = "$installRoot\Sounds"
-$scriptsDir = "$installRoot\Scripts"
+$binDir      = "$installRoot\bin"
+$soundsDir   = "$installRoot\Sounds"
 $programsDir = [Environment]::GetFolderPath('Programs')
 $startupDir  = [Environment]::GetFolderPath('Startup')
 
 $startMenuShortcut = Join-Path $programsDir "$appName.lnk"
-$startupShortcut   = Join-Path $startupDir "$appName.lnk"
+$startupShortcut   = Join-Path $startupDir "PocketGull Assistive Tray.lnk"
+$mouseShortcut     = Join-Path $startupDir "PocketGull Mouse Assist.lnk"
 
 if ($Uninstall) {
     Write-Host "`n[+] Uninstalling $appName..." -ForegroundColor Yellow
-    Get-Process | Where-Object { $_.CommandLine -like "*pocketgull_tray.ps1*" } | Stop-Process -Force -ErrorAction SilentlyContinue
-    if (Test-Path $startMenuShortcut) { Remove-Item $startMenuShortcut -Force }
-    if (Test-Path $startupShortcut) { Remove-Item $startupShortcut -Force }
-    Write-Host "[OK] $appName shortcuts removed from Start Menu and Startup." -ForegroundColor Green
+    Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -match 'pocketgull_tray\.ps1|Start-MouseAssist\.ps1|sit_stand_pacer\.ps1' } |
+        ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+    foreach ($lnk in @($startMenuShortcut, $startupShortcut, $mouseShortcut, (Join-Path $startupDir "$appName.lnk"))) {
+        if (Test-Path $lnk) { Remove-Item $lnk -Force }
+    }
+    Write-Host "[OK] $appName shortcuts and daemons stopped." -ForegroundColor Green
     return
 }
 
@@ -40,50 +44,45 @@ Write-Host "`n========================================================" -Foregro
 Write-Host "   $appName - Workstation Installer" -ForegroundColor Cyan
 Write-Host "========================================================" -ForegroundColor Cyan
 
-# 1. Provision Directories
-Write-Host "[1/4] Provisioning application directories..." -ForegroundColor Yellow
-@($installRoot, $appDataDir, $soundsDir, $scriptsDir) | ForEach-Object {
+@($installRoot, $binDir, $soundsDir) | ForEach-Object {
     if (-not (Test-Path $_)) { New-Item -ItemType Directory -Path $_ -Force | Out-Null }
 }
 
-# 2. Deploy Tray & Controller Scripts
-Write-Host "[2/4] Deploying runtime scripts and sound assets..." -ForegroundColor Yellow
-$sourceRepo = "C:\Users\philg\Pocketgull\pocketgull"
-$trayScript = Join-Path $scriptsDir "pocketgull_tray.ps1"
+Copy-Item (Join-Path $scriptDir "MouseAssist.cs"), (Join-Path $scriptDir "Start-MouseAssist.ps1") -Destination $binDir -Force
 
-if (Test-Path "$sourceRepo\scripts\pocketgull_tray.ps1") {
-    Copy-Item "$sourceRepo\scripts\pocketgull_tray.ps1" $trayScript -Force
-}
-
-# 3. Create High-Accessibility Windows Shortcuts
-Write-Host "[3/4] Registering Start Menu and Windows Startup shortcuts..." -ForegroundColor Yellow
+$conhostExe    = "$env:SystemRoot\System32\conhost.exe"
+$trayScript    = Join-Path $scriptDir "pocketgull_tray.ps1"
+$iconCandidate = Join-Path $sourceRepo "public\icons\pocketgull.ico"
 $wsh = New-Object -ComObject WScript.Shell
 
-# Start Menu
-$sc = $wsh.CreateShortcut($startMenuShortcut)
-$sc.TargetPath = "pwsh.exe"
-$sc.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$trayScript`""
-$sc.WorkingDirectory = $scriptsDir
-$iconCandidate = "$sourceRepo\public\icons\pocketgull.ico"
-if (Test-Path $iconCandidate) { $sc.IconLocation = "$iconCandidate,0" }
-$sc.Description = "PocketGull Assistive Technology, Circadian Themes & Sanctuary Audio"
-$sc.Save()
+foreach ($targetLnk in @($startMenuShortcut, $startupShortcut)) {
+    $sc = $wsh.CreateShortcut($targetLnk)
+    $sc.TargetPath = $conhostExe
+    $sc.Arguments = "--headless `"$pwsh`" -NoProfile -ExecutionPolicy Bypass -File `"$trayScript`""
+    $sc.WorkingDirectory = $sourceRepo
+    if (Test-Path $iconCandidate) { $sc.IconLocation = "$iconCandidate,0" }
+    $sc.Description = "PocketGull Assistive Technology, Circadian Themes & 4-Slot Control Deck"
+    $sc.Save()
+}
 
-# Windows Startup (Auto-launch on logon)
-$scStartup = $wsh.CreateShortcut($startupShortcut)
-$scStartup.TargetPath = "pwsh.exe"
-$scStartup.Arguments = "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$trayScript`""
-$scStartup.WorkingDirectory = $scriptsDir
-if (Test-Path $iconCandidate) { $scStartup.IconLocation = "$iconCandidate,0" }
-$scStartup.Description = "PocketGull Assistive Sanctuary (Resident Daemon)"
-$scStartup.Save()
+$scMouse = $wsh.CreateShortcut($mouseShortcut)
+$scMouse.TargetPath = $conhostExe
+$scMouse.Arguments = "--headless `"$pwsh`" -NoProfile -ExecutionPolicy Bypass -File `"$binDir\Start-MouseAssist.ps1`""
+$scMouse.WorkingDirectory = $binDir
+if (Test-Path $iconCandidate) { $scMouse.IconLocation = "$iconCandidate,0" }
+$scMouse.Description = "PocketGull Mouse Side-Button Chords & Ataxia Bounce Filter"
+$scMouse.Save()
 
-# 4. Launch Resident Instance Now
-Write-Host "[4/4] Launching resident PocketGull Assistive daemon..." -ForegroundColor Yellow
-Get-Process | Where-Object { $_.CommandLine -like "*pocketgull_tray.ps1*" } | Stop-Process -Force -ErrorAction SilentlyContinue
-Start-Process pwsh.exe -ArgumentList "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$trayScript`""
+Get-CimInstance Win32_Process -ErrorAction SilentlyContinue |
+    Where-Object { $_.CommandLine -match 'pocketgull_tray\.ps1|Start-MouseAssist\.ps1' } |
+    ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
 
-Write-Host "`n[SUCCESS] $appName is successfully installed!" -ForegroundColor Green
-Write-Host "  • Start Menu entry: Installed and searchable in Windows Start" -ForegroundColor White
-Write-Host "  • Windows Startup: Configured for automatic logon startup" -ForegroundColor White
-Write-Host "  • Notification Area: Live resident tray icon active`n" -ForegroundColor White
+$psiM = New-Object System.Diagnostics.ProcessStartInfo($pwsh, "-NoProfile -ExecutionPolicy Bypass -File `"$binDir\Start-MouseAssist.ps1`"")
+$psiM.WorkingDirectory = $binDir; $psiM.UseShellExecute = $false; $psiM.CreateNoWindow = $true
+[System.Diagnostics.Process]::Start($psiM) | Out-Null
+
+$psiT = New-Object System.Diagnostics.ProcessStartInfo($pwsh, "-NoProfile -ExecutionPolicy Bypass -File `"$trayScript`"")
+$psiT.WorkingDirectory = $sourceRepo; $psiT.UseShellExecute = $false; $psiT.CreateNoWindow = $true
+[System.Diagnostics.Process]::Start($psiT) | Out-Null
+
+Write-Host "`n[SUCCESS] $appName is live (Tray + 4-Slot Deck + MouseAssist Hook)!`n" -ForegroundColor Green

@@ -18,7 +18,10 @@ def main() -> None:
 
     # Copy cover image if generated artifact exists
     artifact_img = os.path.join(
-        "C:\\Users\\philg\\.gemini\\antigravity\\brain",
+        os.path.expanduser("~"),
+        ".gemini",
+        "antigravity",
+        "brain",
         "c2f1c8c6-ff7e-405b-83e1-ea9a699e757a",
         "med_skeptic_dataset_cover_1786756293629.jpg"
     )

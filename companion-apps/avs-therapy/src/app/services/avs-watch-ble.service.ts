@@ -15,9 +15,9 @@ export class AvsWatchBleService {
   private readonly zone = inject(NgZone);
 
   // Service & Characteristic UUIDs matching Wear OS GATT Server
-  readonly SERVICE_UUID = '0000avs0-0000-1000-8000-00805f9b34fb';
+  readonly SERVICE_UUID = '0000a750-0000-1000-8000-00805f9b34fb';
   readonly CEDA_CHAR_UUID = '0000ceda-0000-1000-8000-00805f9b34fb';
-  readonly HAPTIC_CHAR_UUID = '0000hapt-0000-1000-8000-00805f9b34fb';
+  readonly HAPTIC_CHAR_UUID = '0000a470-0000-1000-8000-00805f9b34fb';
 
   // Reactive State Signals
   readonly isConnected = signal(false);

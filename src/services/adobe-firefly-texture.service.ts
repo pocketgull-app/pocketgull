@@ -86,14 +86,14 @@ export class AdobeFireflyTextureService {
     }
   };
 
+  private readonly failedUrls = new Set<string>();
+
   constructor() {
-    // Register cached static PNG texture assets generated via Firefly AI
-    this.imageCache.set('skin', 'assets/textures/firefly_skin.png');
-    this.imageCache.set('muscle', 'assets/textures/firefly_muscle.png');
-    this.imageCache.set('skeleton', 'assets/textures/firefly_skeleton.png');
-    this.imageCache.set('organs', 'assets/textures/firefly_organs.png');
-    this.imageCache.set('cellular', 'assets/textures/firefly_cellular.png');
-    this.imageCache.set('typographic', 'assets/textures/firefly_typographic.png');
+    // Register cached static PNG texture assets generated via Firefly AI (cellular & typographic use procedural CanvasTextures)
+    this.imageCache.set('skin', '/assets/textures/firefly_skin.png');
+    this.imageCache.set('muscle', '/assets/textures/firefly_muscle.png');
+    this.imageCache.set('skeleton', '/assets/textures/firefly_skeleton.png');
+    this.imageCache.set('organs', '/assets/textures/firefly_organs.png');
   }
 
   /**
@@ -105,7 +105,7 @@ export class AdobeFireflyTextureService {
     }
 
     const imageUrl = this.imageCache.get(type);
-    if (imageUrl && typeof window !== 'undefined') {
+    if (imageUrl && !this.failedUrls.has(imageUrl) && typeof window !== 'undefined') {
       try {
         const loadedTexture = this.textureLoader.load(
           imageUrl,
@@ -117,7 +117,8 @@ export class AdobeFireflyTextureService {
           },
           undefined,
           () => {
-            // Fall back to procedural canvas texture on load error
+            // Cache failed URL to prevent repeat failing fetches and fall back to procedural canvas texture
+            this.failedUrls.add(imageUrl);
             const fallback = this.generateProceduralCanvasTexture(type);
             this.textureCache.set(type, fallback);
           }
@@ -130,6 +131,7 @@ export class AdobeFireflyTextureService {
         this.textureCache.set(type, loadedTexture);
         return loadedTexture;
       } catch (e) {
+        this.failedUrls.add(imageUrl);
         console.debug('[AdobeFireflyTexture] Texture load fallback to procedural:', (e as Error)?.message);
       }
     }
@@ -143,6 +145,7 @@ export class AdobeFireflyTextureService {
    * Dynamically updates or swaps a cached texture asset at runtime.
    */
   public updateCachedTextureImage(type: FireflyTextureType, newImageUrl: string) {
+    this.failedUrls.delete(newImageUrl);
     this.imageCache.set(type, newImageUrl);
     this.textureCache.delete(type);
     return this.getFireflyTexture(type);

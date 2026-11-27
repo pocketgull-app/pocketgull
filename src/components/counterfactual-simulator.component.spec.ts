@@ -2,24 +2,28 @@ import '@angular/compiler';
 import { TestBed } from '@angular/core/testing';
 import { CounterfactualSimulatorComponent } from './counterfactual-simulator.component';
 import { CounterfactualSimulationService } from '../services/counterfactual-simulation.service';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 describe('CounterfactualSimulatorComponent Unit Suite', () => {
   let component: CounterfactualSimulatorComponent;
   let simService: CounterfactualSimulationService;
+  let moeRouter: ClinicalMoERouterService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [CounterfactualSimulatorComponent],
-      providers: [CounterfactualSimulationService]
+      providers: [CounterfactualSimulationService, ClinicalMoERouterService]
     }).compileComponents();
 
     const fixture = TestBed.createComponent(CounterfactualSimulatorComponent);
     component = fixture.componentInstance;
     simService = TestBed.inject(CounterfactualSimulationService);
+    moeRouter = TestBed.inject(ClinicalMoERouterService);
   });
 
   afterEach(() => {
     simService.resetDeltas();
+    moeRouter.clearOverrides();
   });
 
   it('1. Instantiates successfully with scenarios tab and default cards unflipped', () => {
@@ -68,5 +72,18 @@ describe('CounterfactualSimulatorComponent Unit Suite', () => {
       simService.resetDeltas();
       expect(simService.hasActiveSimulation()).toBe(false);
     }
+  });
+
+  it('7. Responds to SMoE Micro-Skill Sparsity, Synapse Signal Pulses, and Goal Completion Auto-Demotion', () => {
+    expect(component.isExploratoryCollapsed()).toBe(false);
+    moeRouter.setMicroSkillDensityOverride('stat-focused');
+    expect(component.isExploratoryCollapsed()).toBe(true);
+
+    component.onHbA1cDeltaInput({ target: { value: '-1.1' } } as unknown as Event);
+    expect(component.isGlycemicSynapseActive()).toBe(true);
+    expect(moeRouter.activeSynapsePulse()?.parameterValue).toBe('5.7%');
+
+    component.applyAndRetireSimulation();
+    expect(moeRouter.completedSkillReceipts().some(r => r.expertId === 'counterfactual-simulator')).toBe(true);
   });
 });

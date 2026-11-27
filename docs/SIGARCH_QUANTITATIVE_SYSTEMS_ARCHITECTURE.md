@@ -74,7 +74,7 @@ graph TD
 
 ## Technical Implementations Reference
 
-- **Pathways MoE Router**: [src/services/clinical-moe-router.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/clinical-moe-router.service.ts)
-- **Zero-Copy PCM Streamer**: [src/services/ai/adk-live.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ai/adk-live.service.ts)
-- **ONNX FP16 Acceleration**: [pocketgull_api/services/onnx_engine.py](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_api/services/onnx_engine.py)
-- **GCP Lifecycle Script**: [scripts/apply-gcp-lifecycle-policies.mjs](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/apply-gcp-lifecycle-policies.mjs)
+- **Pathways MoE Router**: [src/services/clinical-moe-router.service.ts](src/services/clinical-moe-router.service.ts)
+- **Zero-Copy PCM Streamer**: [src/services/ai/adk-live.service.ts](src/services/ai/adk-live.service.ts)
+- **ONNX FP16 Acceleration**: [pocketgull_api/services/onnx_engine.py](pocketgull_api/services/onnx_engine.py)
+- **GCP Lifecycle Script**: [scripts/apply-gcp-lifecycle-policies.mjs](scripts/apply-gcp-lifecycle-policies.mjs)

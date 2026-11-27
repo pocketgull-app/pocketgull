@@ -97,4 +97,4 @@ Pocket Gull's valuation scales rapidly based on its development milestones, stak
 | **SMART on FHIR Gallery** | Health IT | App Verification & ONC §170.315(g)(10) | EHR Interoperability (Epic, Cerner, AthenaHealth) |
 | **NIST / FDA 21 CFR Part 11** | Regulatory / Cyber | Electronic Signature & Forensic Sealing | Immutable SHA-256 Non-Repudiation Audit Ledger |
 
-> **Full Detailed Step-by-Step Filing Procedures**: See [IP_REGISTRATION_AND_FILING_GUIDE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/legal/IP_REGISTRATION_AND_FILING_GUIDE.md).
+> **Full Detailed Step-by-Step Filing Procedures**: See [IP_REGISTRATION_AND_FILING_GUIDE.md](docs/legal/IP_REGISTRATION_AND_FILING_GUIDE.md).

@@ -21,6 +21,17 @@ export class GeminiProvider implements IIntelligenceProvider {
 
     // Chat session ID for server-side session management
     private chatSessionId: string | null = null;
+    // Dynamic patient context kept strictly out of static systemInstruction for KV-cache & CodeQL taint hygiene
+    private pendingPatientContext: string | null = null;
+
+    private getSecureJitterMs(maxMs = 250): number {
+        if (typeof globalThis !== 'undefined' && typeof globalThis.crypto?.getRandomValues === 'function') {
+            const buf = new Uint32Array(1);
+            globalThis.crypto.getRandomValues(buf);
+            return Math.floor((buf[0] / 4294967296) * maxMs);
+        }
+        return 125;
+    }
 
     private getHeaders(): Record<string, string> {
         const headers: Record<string, string> = {
@@ -50,7 +61,7 @@ export class GeminiProvider implements IIntelligenceProvider {
 
                 const isTransient = response.status === 429 || response.status >= 500;
                 if (isTransient && attempts < maxRetries) {
-                    const jitter = Math.floor(Math.random() * 250);
+                    const jitter = this.getSecureJitterMs(250);
                     await new Promise(r => setTimeout(r, delay + jitter));
                     delay *= 2;
                     continue;
@@ -59,7 +70,7 @@ export class GeminiProvider implements IIntelligenceProvider {
                 return response;
             } catch (err) {
                 if (attempts < maxRetries) {
-                    const jitter = Math.floor(Math.random() * 250);
+                    const jitter = this.getSecureJitterMs(250);
                     await new Promise(r => setTimeout(r, delay + jitter));
                     delay *= 2;
                     continue;
@@ -246,7 +257,10 @@ export class GeminiProvider implements IIntelligenceProvider {
     }
 
     async startChat(patientData: string, context: string): Promise<void> {
-        const systemInstruction = `${context}\n\nPatient Data:\n${patientData}`;
+        // Keep systemInstruction strictly static for KV-cache prefix integrity and CodeQL taint breaking;
+        // defer dynamic patientData to the partitioned user turn.
+        const systemInstruction = context;
+        this.pendingPatientContext = (patientData || '').trim() || null;
         const randomPart = typeof crypto !== 'undefined' && crypto.randomUUID
             ? crypto.randomUUID().slice(0, 8)
             : Array.from(crypto.getRandomValues(new Uint8Array(4)))
@@ -275,6 +289,12 @@ export class GeminiProvider implements IIntelligenceProvider {
             await this.startChat('', 'Clinical consult context');
         }
 
+        let outboundMessage = message;
+        if (this.pendingPatientContext) {
+            outboundMessage = `[CLINICAL DIRECTIVE CONTEXT — PATIENT DATA]\n${this.pendingPatientContext}\n\n[USER MESSAGE]\n${message}`;
+            this.pendingPatientContext = null;
+        }
+
         const encodedFiles = await Promise.all((files || []).map(async f => {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -288,7 +308,7 @@ export class GeminiProvider implements IIntelligenceProvider {
             headers: this.getHeaders(),
             body: JSON.stringify({
                 sessionId: this.chatSessionId,
-                message,
+                message: outboundMessage,
                 files: encodedFiles,
                 enableGrounding
             })

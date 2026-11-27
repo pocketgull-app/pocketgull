@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import type { Request, Response } from 'express';
 import { createAiRouter } from './ai.routes';
 import { vertexAgentRouter } from './vertex-agent.routes';
 import { FALLBACK_SEED_ARTICLES } from '../../services/wordpress-articles.service';
+import { SoarOrchestratorService } from '../services/soar-orchestrator.service';
 
 function createMockReqRes(body: any = {}, method = 'POST') {
   const req = {
@@ -42,7 +43,12 @@ describe('AI App Builder (Vertex AI Search & Agent Builder) Resilient Endpoints'
 
   const aiRouter = createAiRouter(mockDeps);
   const vertexSearchHandler = (aiRouter.stack.find((layer: any) => layer.route?.path === '/vertex-search')?.route?.stack[0] as any)?.handle;
+  const streamHandler = (aiRouter.stack.find((layer: any) => layer.route?.path === '/stream')?.route?.stack[0] as any)?.handle;
   const agentBuilderHandler = (vertexAgentRouter.stack.find((layer: any) => layer.route?.path === '/search')?.route?.stack[0] as any)?.handle;
+
+  afterEach(() => {
+    SoarOrchestratorService.setContainmentActive(false);
+  });
 
   it('1. POST /api/ai/vertex-search rejects missing or blank query with 400', async () => {
     const { req, res } = createMockReqRes({ query: '' });
@@ -102,5 +108,18 @@ describe('AI App Builder (Vertex AI Search & Agent Builder) Resilient Endpoints'
       expect(article.slug).toBeTruthy();
       expect(article.contentHtml).toBeTruthy();
     }
+  });
+
+  it('6. POST /api/ai/stream halts stochastic LLM streaming with HTTP 503 when SOAR Containment Mode is active', async () => {
+    SoarOrchestratorService.setContainmentActive(true);
+    const { req, res } = createMockReqRes({
+      patientData: 'HR 88, BP 122/78',
+      model: 'gemini-3.8-flash'
+    });
+    await streamHandler(req, res);
+
+    expect(res.getStatus()).toBe(503);
+    expect(res.getJson().containmentModeActive).toBe(true);
+    expect(res.getJson().playbookId).toBe('PB-02_ADVERSARIAL_PROMPT_INJECTION');
   });
 });

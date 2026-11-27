@@ -3,15 +3,20 @@ import { signal } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BystanderActionSuiteComponent } from './bystander-action-suite.component';
 import { PatientStateService } from '../services/patient-state.service';
+import { IEmergencyProtocolDescriptor, resolveEmergencyProtocolDescriptor } from '../services/emergency-protocol';
 
 describe('BystanderActionSuiteComponent', () => {
   let component: BystanderActionSuiteComponent;
   let fixture: ComponentFixture<BystanderActionSuiteComponent>;
   let clinicalNotesSignal: ReturnType<typeof signal<Array<{ id: string; text: string; date: string; sourceLens?: string }>>>;
+  let emergencyProtocolSignal: ReturnType<typeof signal<IEmergencyProtocolDescriptor>>;
   let addClinicalNoteSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     clinicalNotesSignal = signal<Array<{ id: string; text: string; date: string; sourceLens?: string }>>([]);
+    emergencyProtocolSignal = signal<IEmergencyProtocolDescriptor>(
+      resolveEmergencyProtocolDescriptor('STAT_CODE_BLUE')
+    );
     addClinicalNoteSpy = vi.fn().mockImplementation((note) => {
       clinicalNotesSignal.update(notes => [...notes, note]);
     });
@@ -23,6 +28,7 @@ describe('BystanderActionSuiteComponent', () => {
           provide: PatientStateService,
           useValue: {
             clinicalNotes: clinicalNotesSignal,
+            emergencyProtocol: emergencyProtocolSignal,
             addClinicalNote: addClinicalNoteSpy
           }
         }
@@ -92,5 +98,15 @@ describe('BystanderActionSuiteComponent', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('AED Arrived & Shock Delivered');
+  });
+
+  it('should adapt Step 1 banner and role cards dynamically for BYSTANDER_OPIOID_OVERDOSE', () => {
+    emergencyProtocolSignal.set(resolveEmergencyProtocolDescriptor('BYSTANDER_OPIOID_OVERDOSE'));
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Step 1: Call 911 & Give Naloxone Now');
+    expect(compiled.textContent).toContain('Bystander 2: Naloxone (Narcan) Rescuer');
+    expect(component.protocol().defaultFirstAidGuide).toBe('overdose');
   });
 });

@@ -8,6 +8,7 @@ import { EnvironmentalHeatPosologyService, IHeatPosologyAssessment } from '../se
 import { CmsRpmSuperbillService } from '../services/cms-rpm-superbill.service';
 import { DeprescribingDepuratorService } from '../services/deprescribing-depurator.service';
 import { NavigationShellService } from '../services/navigation-shell.service';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 import {
   ComplexAdaptiveSystemsService,
   IWbeAllometricScalingResult,
@@ -64,6 +65,12 @@ export interface IPosology3ActTrajectory {
             <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
               ISMP &amp; AGS Beers Compliant
             </span>
+            @if (isExploratoryCollapsed()) {
+              <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-md bg-amber-500/20 text-amber-200 border border-amber-400/40"
+                    title="Intra-Component Micro-Skill Sparsity active: Exploratory WBGT/SFI tabs and raw FHIR/code actions collapsed to preserve 4-slot working memory.">
+                ⚡ Focused Density
+              </span>
+            }
           </div>
           <p class="text-xs text-slate-300 font-mono">
             Fried's Rule • Young's / Clark's Rules • Mosteller BSA • Holliday-Segar 4-2-1 • Cockcroft-Gault CrCl • Live Dosage Spellcheck
@@ -96,18 +103,20 @@ export interface IPosology3ActTrajectory {
                   class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
             <span>🧓</span> Elder (65+y)
           </button>
-          <button (click)="selectAgeTier('environmental_heat')"
-                  [class.bg-orange-600]="activeAgeTier() === 'environmental_heat'"
-                  [class.text-white]="activeAgeTier() === 'environmental_heat'"
-                  class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
-            <span>☀️</span> Heat &amp; WBGT (ASU)
-          </button>
-          <button (click)="selectAgeTier('sfi_complex_adaptive')"
-                  [class.bg-teal-600]="activeAgeTier() === 'sfi_complex_adaptive'"
-                  [class.text-white]="activeAgeTier() === 'sfi_complex_adaptive'"
-                  class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
-            <span>🧬</span> SFI Allometry &amp; CSD
-          </button>
+          @if (!isExploratoryCollapsed()) {
+            <button (click)="selectAgeTier('environmental_heat')"
+                    [class.bg-orange-600]="activeAgeTier() === 'environmental_heat'"
+                    [class.text-white]="activeAgeTier() === 'environmental_heat'"
+                    class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
+              <span>☀️</span> Heat &amp; WBGT (ASU)
+            </button>
+            <button (click)="selectAgeTier('sfi_complex_adaptive')"
+                    [class.bg-teal-600]="activeAgeTier() === 'sfi_complex_adaptive'"
+                    [class.text-white]="activeAgeTier() === 'sfi_complex_adaptive'"
+                    class="px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer flex items-center gap-1 text-slate-300 hover:text-white">
+              <span>🧬</span> SFI Allometry &amp; CSD
+            </button>
+          }
         </div>
       </div>
 
@@ -166,19 +175,32 @@ export interface IPosology3ActTrajectory {
           <div class="space-y-1">
             <div class="flex justify-between text-xs font-mono">
               <span class="text-slate-600 dark:text-zinc-400">Adult Reference Dose:</span>
-              <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ adultReferenceDoseMg() }} mg</span>
+              <span class="font-bold text-emerald-600 dark:text-emerald-400"><bdi dir="ltr">{{ adultReferenceDoseMg() }} mg</bdi></span>
             </div>
             <input type="range" min="50" max="1000" step="25" [ngModel]="adultReferenceDoseMg()" (ngModelChange)="adultReferenceDoseMg.set($event)" class="w-full accent-emerald-500" />
           </div>
 
           <!-- Parameter 5: Serum Creatinine (for CrCl) -->
           @if (activeAgeTier() === 'geriatric_elder' || activeAgeTier() === 'adult') {
-            <div class="pt-2 border-t border-slate-100 dark:border-zinc-800/80 space-y-1">
-              <div class="flex justify-between text-xs font-mono">
-                <span class="text-slate-600 dark:text-zinc-400">Serum Creatinine:</span>
-                <span class="font-bold text-purple-600 dark:text-purple-400">{{ serumCreatinineMgDl() }} mg/dL</span>
+            <div class="pt-2 border-t border-slate-100 dark:border-zinc-800/80 space-y-1 transition-all"
+                 [class.ring-2]="isRenalSynapseActive()"
+                 [class.ring-emerald-400/70]="isRenalSynapseActive()"
+                 [class.bg-emerald-500/5]="isRenalSynapseActive()"
+                 [class.rounded-xl]="isRenalSynapseActive()"
+                 [class.p-2.5]="isRenalSynapseActive()">
+              <div class="flex justify-between items-center text-xs font-mono">
+                <span class="text-slate-600 dark:text-zinc-400 flex items-center gap-1.5">
+                  <span>Serum Creatinine:</span>
+                  @if (isRenalSynapseActive()) {
+                    <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/40 text-[9px] font-bold"
+                          title="Cross-Component Synapse Active: Coupled with Counterfactual Simulator / Edge Telemetry">
+                      ⚡ Synapse
+                    </span>
+                  }
+                </span>
+                <span class="font-bold text-purple-600 dark:text-purple-400"><bdi dir="ltr">{{ formatIsmpDose(serumCreatinineMgDl(), 1) }} mg/dL</bdi></span>
               </div>
-              <input type="range" min="0.5" max="3.5" step="0.1" [ngModel]="serumCreatinineMgDl()" (ngModelChange)="serumCreatinineMgDl.set($event)" class="w-full accent-purple-500" />
+              <input type="range" min="0.5" max="3.5" step="0.1" [ngModel]="serumCreatinineMgDl()" (ngModelChange)="onSerumCreatinineChange($event)" class="w-full accent-purple-500" />
               <div class="flex items-center gap-3 text-xs pt-1">
                 <label class="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-zinc-300 font-mono">
                   <input type="radio" name="gender" [checked]="!isFemale()" (change)="isFemale.set(false)" /> Male
@@ -218,13 +240,13 @@ export interface IPosology3ActTrajectory {
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-rose-200 dark:border-rose-900/40 space-y-1.5">
                   <span class="text-[11px] font-bold text-rose-900 dark:text-rose-300 block">Microbore Syringe Resolution:</span>
                   <div class="flex items-baseline gap-2 font-mono">
-                    <span class="text-xl font-black text-rose-600 dark:text-rose-400">
-                      {{ friedResult().microboreSyringeVolumeMl.toFixed(2) }} mL
-                    </span>
-                    <span class="text-[10px] text-slate-500 font-bold uppercase">(Leading Zero Enforced)</span>
+                    <bdi dir="ltr" class="text-xl font-black text-rose-600 dark:text-rose-400">
+                      {{ formatIsmpDose(friedResult().microboreSyringeVolumeMl, 2) }} mL
+                    </bdi>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase">(Leading Zero Enforced • No Trailing Zeros)</span>
                   </div>
                   <div class="text-[10px] font-mono text-slate-600 dark:text-zinc-400">
-                    Microdrip Infusion: <strong class="text-rose-600 dark:text-rose-400">{{ friedResult().microdripGttMin }} gtt/min</strong> (60 gtt/mL IV set)
+                    Microdrip Infusion: <bdi dir="ltr"><strong class="text-rose-600 dark:text-rose-400">{{ friedResult().microdripGttMin }} gtt/min</strong></bdi> (60 gtt/mL IV set)
                   </div>
                 </div>
               </div>
@@ -262,7 +284,7 @@ export interface IPosology3ActTrajectory {
                   <div class="posology-formula text-xs text-amber-700 dark:text-amber-300">
                     {{ youngResult().formulaString }}
                   </div>
-                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Calculated Dose: <strong>{{ youngResult().calculatedDoseMg }} mg</strong></span>
+                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Calculated Dose: <bdi dir="ltr"><strong>{{ formatIsmpDose(youngResult().calculatedDoseMg, 1) }} mg</strong></bdi></span>
                 </div>
 
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-amber-200 dark:border-amber-900/40">
@@ -270,7 +292,7 @@ export interface IPosology3ActTrajectory {
                   <div class="posology-formula text-xs text-amber-700 dark:text-amber-300">
                     {{ clarkResult().formulaString }}
                   </div>
-                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Calculated Dose: <strong>{{ clarkResult().calculatedDoseMg }} mg</strong></span>
+                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Calculated Dose: <bdi dir="ltr"><strong>{{ formatIsmpDose(clarkResult().calculatedDoseMg, 1) }} mg</strong></bdi></span>
                 </div>
               </div>
 
@@ -281,18 +303,18 @@ export interface IPosology3ActTrajectory {
                   <div class="text-xs font-mono text-slate-800 dark:text-zinc-200">
                     {{ mostellerResult().formulaString }}
                   </div>
-                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Pediatric BSA: <strong>{{ mostellerResult().bsaM2 }} m²</strong></span>
+                  <span class="text-[10px] font-mono text-slate-500 block mt-1">Pediatric BSA: <bdi dir="ltr"><strong>{{ formatIsmpDose(mostellerResult().bsaM2, 2) }} m²</strong></bdi></span>
                 </div>
 
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-amber-200 dark:border-amber-900/40">
                   <span class="text-[11px] font-bold text-amber-900 dark:text-amber-300 block mb-1">Holliday-Segar 4-2-1 Maintenance IV Fluid:</span>
                   <div class="pediatric-fluid-421 text-xs">
-                    <span>1st 10kg: {{ fluidResult().breakdown.first10kgMlHr }} mL/h</span>
-                    <span>2nd 10kg: {{ fluidResult().breakdown.second10kgMlHr }} mL/h</span>
-                    <span>>20kg: {{ fluidResult().breakdown.remainingKgMlHr }} mL/h</span>
+                    <span>1st 10kg: <bdi dir="ltr">{{ fluidResult().breakdown.first10kgMlHr }} mL/h</bdi></span>
+                    <span>2nd 10kg: <bdi dir="ltr">{{ fluidResult().breakdown.second10kgMlHr }} mL/h</bdi></span>
+                    <span>>20kg: <bdi dir="ltr">{{ fluidResult().breakdown.remainingKgMlHr }} mL/h</bdi></span>
                   </div>
                   <div class="mt-1 text-xs font-bold text-cyan-600 dark:text-cyan-400 font-mono">
-                    {{ fluidResult().telemetryDisplay }}
+                    <bdi dir="ltr">{{ fluidResult().telemetryDisplay }}</bdi>
                   </div>
                 </div>
               </div>
@@ -301,12 +323,12 @@ export interface IPosology3ActTrajectory {
               <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-amber-200 dark:border-amber-900/40">
                 <span class="text-[11px] font-bold text-amber-900 dark:text-amber-300 block mb-2">Oral Syringe Volumetric Snapping Chips:</span>
                 <div class="flex flex-wrap gap-2 font-mono text-xs">
-                  @for (chip of [0.5, 1.0, 2.5, 5.0, 10.0]; track chip) {
+                  @for (chip of [0.5, 1, 2.5, 5, 10]; track chip) {
                     <button (click)="selectedOralSyringeVol.set(chip)"
                             [class.bg-amber-500]="selectedOralSyringeVol() === chip"
                             [class.text-white]="selectedOralSyringeVol() === chip"
                             class="px-2.5 py-1 rounded-lg border border-amber-400/60 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 font-bold cursor-pointer transition">
-                      {{ chip }} mL Syringe
+                      <bdi dir="ltr">{{ formatIsmpDose(chip, 1) }} mL</bdi> Syringe
                     </button>
                   }
                 </div>
@@ -328,7 +350,7 @@ export interface IPosology3ActTrajectory {
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-emerald-200 dark:border-emerald-900/40">
                   <span class="text-[11px] font-bold text-emerald-900 dark:text-emerald-300 block mb-1">Standard Adult Dose:</span>
                   <div class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                    {{ adultReferenceDoseMg() }} mg
+                    <bdi dir="ltr">{{ formatIsmpDose(adultReferenceDoseMg(), 2) }} mg</bdi>
                   </div>
                   <span class="text-[10px] text-slate-500 font-mono">100% Reference Dosage</span>
                 </div>
@@ -336,15 +358,15 @@ export interface IPosology3ActTrajectory {
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-emerald-200 dark:border-emerald-900/40">
                   <span class="text-[11px] font-bold text-emerald-900 dark:text-emerald-300 block mb-1">Adult BSA Clearance:</span>
                   <div class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                    {{ mostellerResult().bsaM2 }} m²
+                    <bdi dir="ltr">{{ formatIsmpDose(mostellerResult().bsaM2, 2) }} m²</bdi>
                   </div>
-                  <span class="text-[10px] text-slate-500 font-mono">Based on {{ patientHeightCm() }}cm / {{ patientWeightKg() }}kg</span>
+                  <span class="text-[10px] text-slate-500 font-mono">Based on <bdi dir="ltr">{{ patientHeightCm() }}cm / {{ patientWeightKg() }}kg</bdi></span>
                 </div>
 
                 <div class="p-3 rounded-lg bg-white/70 dark:bg-zinc-900/70 border border-emerald-200 dark:border-emerald-900/40">
                   <span class="text-[11px] font-bold text-emerald-900 dark:text-emerald-300 block mb-1">Estimated CrCl:</span>
                   <div class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-                    {{ cockcroftResult().crClMlMin }} mL/min
+                    <bdi dir="ltr">{{ formatIsmpDose(cockcroftResult().crClMlMin, 1) }} mL/min</bdi>
                   </div>
                   <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-mono font-bold">{{ cockcroftResult().renalDosingTier }}</span>
                 </div>
@@ -372,7 +394,7 @@ export interface IPosology3ActTrajectory {
                   <div class="flex items-center justify-between mb-1">
                     <span class="text-[11px] font-bold text-purple-900 dark:text-purple-300">Cockcroft-Gault CrCl:</span>
                     <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-950 text-purple-800 dark:text-purple-200">
-                      {{ cockcroftResult().crClMlMin }} mL/min
+                      <bdi dir="ltr">{{ formatIsmpDose(cockcroftResult().crClMlMin, 1) }} mL/min</bdi>
                     </span>
                   </div>
                   <div class="posology-formula text-xs text-purple-700 dark:text-purple-300">
@@ -1093,29 +1115,31 @@ export interface IPosology3ActTrajectory {
                 <span>🖨️</span> Print Family Handout (AVS)
               </button>
 
-              <!-- Action 3: Copy EHR SOAP Note -->
-              <button
-                type="button"
-                (click)="copyEhrSoapSnippet()"
-                class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
-                <span>📝</span> Copy EHR SOAP Note
-              </button>
+              @if (!isRawFhirCollapsed()) {
+                <!-- Action 3: Copy EHR SOAP Note -->
+                <button
+                  type="button"
+                  (click)="copyEhrSoapSnippet()"
+                  class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
+                  <span>📝</span> Copy EHR SOAP Note
+                </button>
 
-              <!-- Action 4: Copy FHIR R4 MedicationStatement -->
-              <button
-                type="button"
-                (click)="copyFhirMedicationStatement()"
-                class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
-                <span>📄</span> Copy FHIR R4 JSON
-              </button>
+                <!-- Action 4: Copy FHIR R4 MedicationStatement -->
+                <button
+                  type="button"
+                  (click)="copyFhirMedicationStatement()"
+                  class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
+                  <span>📄</span> Copy FHIR R4 JSON
+                </button>
 
-              <!-- Action 5: Copy ASU / SFI Python Code -->
-              <button
-                type="button"
-                (click)="copyAsuSandboxSnippet()"
-                class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
-                <span>📓</span> Copy ASU / SFI Code
-              </button>
+                <!-- Action 5: Copy ASU / SFI Python Code -->
+                <button
+                  type="button"
+                  (click)="copyAsuSandboxSnippet()"
+                  class="px-3.5 py-2 text-xs font-bold font-mono uppercase tracking-wider rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 shadow-md transition-all cursor-pointer active:scale-95 flex items-center gap-2">
+                  <span>📓</span> Copy ASU / SFI Code
+                </button>
+              }
             </div>
 
             <!-- Feedback Toasts / Luster Badges -->
@@ -1970,6 +1994,22 @@ export class ClinicalPosologyCalculatorComponent {
   readonly superbillService = inject(CmsRpmSuperbillService, { optional: true });
   readonly deprescribing = inject(DeprescribingDepuratorService, { optional: true });
   readonly navShell = inject(NavigationShellService, { optional: true });
+  readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
+
+  /** Innovation 1: Intra-component Micro-Skill Sparsity policies */
+  readonly isExploratoryCollapsed = computed(() =>
+    Boolean(this.moeRouter?.microSkillDisplayPolicy().collapseExploratorySubViews)
+  );
+
+  readonly isRawFhirCollapsed = computed(() =>
+    Boolean(this.moeRouter?.microSkillDisplayPolicy().collapseRawFhirTables)
+  );
+
+  /** Innovation 3: Cross-Component Synapse Highlighting for Renal/Posology coupling */
+  readonly isRenalSynapseActive = computed(() => {
+    const token = this.moeRouter?.activeSynapseToken();
+    return token === 'glycemic-renal-coupling' || token === 'hemodynamic-posology-coupling';
+  });
 
   readonly lastLinkedMedication = signal<string | null>(null);
   readonly linkedRpmToast = signal<string | null>(null);
@@ -2542,6 +2582,18 @@ Attestation: Verified with ClinicalPosologyService & ISMP Disambiguation Standar
     setTimeout(() => this.showCopiedEhrToast.set(false), 3500);
   }
 
+  onSerumCreatinineChange(val: number): void {
+    const numericVal = Number(val);
+    this.serumCreatinineMgDl.set(numericVal);
+    this.moeRouter?.emitSynapseSignalPulse(
+      'glycemic-renal-coupling',
+      'ismp-posology',
+      'counterfactual-simulator',
+      'Serum Creatinine (CrCl)',
+      `${numericVal.toFixed(1)} mg/dL (${this.cockcroftResult().crClMlMin} mL/min)`
+    );
+  }
+
   applyToCarePlan(): void {
     const traj = this.posologyTrajectory();
     this.patientState.addChecklistItem({
@@ -2561,6 +2613,10 @@ Attestation: Verified with ClinicalPosologyService & ISMP Disambiguation Standar
         `${this.soapNoteService.plan()}\n• Calibrated Dose: ${traj.act2WhereYouStandToday.calibratedDosage} | Hydration: ${traj.act2WhereYouStandToday.hydrationTarget}\n• Surveillance: ${traj.act3WhereYoureGoing.actionGuidance}`
       );
     }
+    this.moeRouter?.completeAndRetireSkillGoal(
+      'ismp-posology',
+      `Posology calibrated: ${traj.act2WhereYouStandToday.calibratedDosage}`
+    );
     this.showAppliedToast.set(true);
     setTimeout(() => this.showAppliedToast.set(false), 3500);
   }
@@ -2714,6 +2770,13 @@ if __name__ == "__main__":
         this.linkedRpmToast.set(null);
       }
     }, 4500);
+  }
+
+  /**
+   * Formats clinical dosages without ISMP-prohibited trailing zeros (e.g. 1.00 -> 1, 0.50 -> 0.5).
+   */
+  formatIsmpDose(value: number, maxDecimals = 2): string {
+    return this.posology.formatIsmpCleanNumber(value, maxDecimals);
   }
 
   openRpmSuperbill(): void {

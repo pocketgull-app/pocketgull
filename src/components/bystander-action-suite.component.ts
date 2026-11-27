@@ -1,8 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { PocketGullBadgeComponent } from './shared/pocket-gull-badge.component';
 import { EmergencySupplyFinderComponent } from './emergency-supply-finder.component';
+import { resolveEmergencyProtocolDescriptor } from '../services/emergency-protocol';
+import { getSecureRandomId } from '../utils/security-helper';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 export interface IBystanderTask {
   id: string;
@@ -15,68 +18,76 @@ export interface IBystanderTask {
 @Component({
   selector: 'app-bystander-action-suite',
   standalone: true,
-  imports: [CommonModule, PocketGullBadgeComponent, EmergencySupplyFinderComponent],
+  imports: [CommonModule, PocketGullBadgeComponent, EmergencySupplyFinderComponent, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="w-full p-6 rounded-3xl bg-gradient-to-b from-red-950/60 via-zinc-950/90 to-zinc-950 border-2 border-red-700/80 backdrop-blur-md shadow-2xl font-pocketgull-inter text-zinc-100 mb-6">
+    <div class="w-full p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-red-950/60 via-zinc-950/90 to-zinc-950 border-2 border-red-700/80 backdrop-blur-md shadow-2xl font-pocketgull-inter text-zinc-100 mb-6">
       
       <!-- Call 911 Primary Action Banner -->
-      <div class="p-5 rounded-2xl bg-gradient-to-r from-red-700 via-red-600 to-rose-700 border-2 border-red-400/60 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+      <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-red-700 via-red-600 to-rose-700 border-2 border-red-400/60 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-5">
         <div class="flex items-center gap-3.5 text-center sm:text-left">
-          <span class="text-4xl animate-bounce shrink-0">🚨</span>
+          <span class="text-3xl sm:text-4xl shrink-0" aria-hidden="true">🚨</span>
           <div>
             <div class="flex items-center justify-center sm:justify-start gap-2 mb-1">
-              <span class="text-xs font-pocketgull-mono font-bold uppercase tracking-widest text-red-200">First Priority Protocol</span>
-              <pocket-gull-badge label="911 Emergency Dispatch" severity="warning"></pocket-gull-badge>
+              <span class="text-xs font-pocketgull-mono font-bold uppercase tracking-widest text-red-100">{{ 'First Priority Protocol' | pgT:'emergency.first_priority' }}</span>
+              <pocket-gull-badge [label]="protocol().shortBadge" severity="warning"></pocket-gull-badge>
             </div>
-            <h3 class="text-lg sm:text-xl font-pocketgull font-black text-white tracking-tight">Step 1: Call 911 Immediately</h3>
+            <h3 class="text-lg sm:text-xl font-pocketgull font-black text-white tracking-tight">{{ protocol().step1Headline }}</h3>
             <p class="text-xs sm:text-sm text-red-100 font-sans mt-0.5 leading-relaxed">
-              Assign a dedicated bystander to call 911 and place the phone on speakerphone next to the patient.
+              {{ protocol().step1Subtitle }}
             </p>
           </div>
         </div>
 
         <a href="tel:911"
-           class="px-6 py-3.5 rounded-2xl bg-white hover:bg-red-50 text-red-950 font-pocketgull font-black text-base uppercase tracking-wider transition border-2 border-white shadow-2xl flex items-center gap-2.5 shrink-0 active:scale-95 no-underline cursor-pointer min-h-[48px]">
-          <span class="animate-pulse">📞</span> CALL 911 NOW
+           class="px-5 sm:px-6 py-3.5 rounded-2xl bg-white hover:bg-red-50 text-red-950 font-pocketgull font-black text-sm sm:text-base uppercase tracking-wider transition border-2 border-white shadow-2xl flex items-center gap-2.5 shrink-0 active:scale-95 no-underline cursor-pointer min-h-[48px]">
+          <span aria-hidden="true">📞</span> <span><bdi dir="ltr">{{ 'CALL 911 NOW' | pgT:'emergency.call_911_now' }}</bdi></span>
         </a>
       </div>
 
       <!-- 911 Dispatch Speakerphone Script -->
-      <div class="p-5 rounded-2xl bg-zinc-950/90 border border-red-900/50 mb-6 font-pocketgull-mono shadow-inner">
+      <div class="p-4 sm:p-5 rounded-2xl bg-zinc-950/90 border border-red-900/50 mb-5 font-pocketgull-mono shadow-inner">
         <h4 class="text-xs sm:text-sm font-pocketgull font-black uppercase tracking-wider text-red-400 mb-2.5 flex items-center gap-2">
           <span>📢</span> What to Tell 911 Dispatch:
         </h4>
         <ul class="text-xs sm:text-sm text-zinc-300 font-pocketgull-inter space-y-2 list-disc list-inside leading-relaxed">
           <li><strong class="text-white font-pocketgull">Location:</strong> State exact street address, floor number, or nearest landmark.</li>
-          <li><strong class="text-white font-pocketgull">Status:</strong> Tell operator: <em>"Unresponsive patient, CPR in progress."</em> or <em>"Severe trauma/choking."</em></li>
+          <li><strong class="text-white font-pocketgull">Status:</strong> Tell operator: <em>{{ protocol().dispatchStatusHint }}</em></li>
           <li><strong class="text-white font-pocketgull">Speakerphone:</strong> Keep line open. Dispatchers provide real-time CPR beat coaching over speaker.</li>
         </ul>
       </div>
 
       <!-- Bystander Role Assignments & Task Checklist -->
-      <div class="mb-6 font-pocketgull-mono">
-        <h4 class="text-xs sm:text-sm font-pocketgull font-black uppercase tracking-wider text-zinc-200 mb-3.5 flex items-center justify-between">
+      <div class="mb-5 font-pocketgull-mono">
+        <h4 class="text-xs sm:text-sm font-pocketgull font-black uppercase tracking-wider text-zinc-200 mb-3.5 flex flex-wrap items-center justify-between gap-2">
           <span class="flex items-center gap-2"><span>👥</span> Immediate Bystander Role Checklist</span>
-          <span class="text-[11px] text-zinc-400 font-normal">Check off completed actions</span>
+          <span class="text-[11px] text-zinc-400 font-normal">Tap to mark completed actions</span>
         </h4>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           @for (task of tasks(); track task.id) {
-            <div role="button" tabindex="0" (keydown.enter)="toggleTask(task.id)" (keydown.space)="$event.preventDefault(); toggleTask(task.id)" (click)="toggleTask(task.id)"
-                 class="p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-3.5 min-h-[48px]"
-                 [class.bg-emerald-950\/40]="task.completed"
-                 [class.border-emerald-500\/50]="task.completed"
-                 [class.bg-zinc-900\/90]="!task.completed"
-                 [class.border-zinc-800]="!task.completed">
+            <button type="button"
+                    (click)="toggleTask(task.id)"
+                    [attr.aria-pressed]="task.completed"
+                    class="w-full text-left p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-3.5 min-h-[48px] focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none"
+                    [class.bg-emerald-950\/40]="task.completed"
+                    [class.border-emerald-500\/50]="task.completed"
+                    [class.bg-zinc-900\/90]="!task.completed"
+                    [class.border-zinc-800]="!task.completed">
               
-              <input type="checkbox"
-                     [checked]="task.completed"
-                     class="mt-1 w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-emerald-500 focus:ring-emerald-500 cursor-pointer" />
+              <span aria-hidden="true"
+                    class="mt-0.5 w-5 h-5 rounded border flex items-center justify-center text-xs font-black shrink-0"
+                    [class.bg-emerald-500]="task.completed"
+                    [class.border-emerald-400]="task.completed"
+                    [class.text-zinc-950]="task.completed"
+                    [class.border-zinc-600]="!task.completed"
+                    [class.bg-zinc-800]="!task.completed">
+                @if (task.completed) { ✓ }
+              </span>
 
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2">
-                  <span class="text-lg">{{ task.icon }}</span>
+                  <span class="text-lg" aria-hidden="true">{{ task.icon }}</span>
                   <span class="text-xs sm:text-sm font-pocketgull font-bold uppercase tracking-wider"
                         [class.text-emerald-400]="task.completed"
                         [class.text-white]="!task.completed">
@@ -89,7 +100,7 @@ export interface IBystanderTask {
                   {{ task.assignedAction }}
                 </p>
               </div>
-            </div>
+            </button>
           }
         </div>
       </div>
@@ -97,7 +108,7 @@ export interface IBystanderTask {
       <!-- Emergency Medical Supply & Geolocation Telemetry Radar Toggle -->
       <div class="mb-4">
         <button type="button" (click)="showSupplyRadar.set(!showSupplyRadar())"
-          class="w-full py-3 px-4 rounded-2xl bg-zinc-900 hover:bg-zinc-850 text-amber-300 border border-amber-500/40 text-xs font-pocketgull font-bold uppercase tracking-wider transition flex items-center justify-between shadow-md cursor-pointer min-h-[44px]">
+          class="w-full py-3 px-4 rounded-2xl bg-zinc-900 hover:bg-zinc-800 text-amber-300 border border-amber-500/40 text-xs font-pocketgull font-bold uppercase tracking-wider transition flex items-center justify-between shadow-md cursor-pointer min-h-[44px]">
           <span class="flex items-center gap-2">
             <span>⚡</span>
             <span>{{ showSupplyRadar() ? 'Hide Nearest AED & Emergency Supply Radar' : 'Locate Nearest AED & Critical Medical Supplies (GPS Radar)' }}</span>
@@ -163,62 +174,44 @@ export interface IBystanderTask {
 export class BystanderActionSuiteComponent {
   state = inject(PatientStateService);
   showSupplyRadar = signal<boolean>(false);
+  private readonly completedTaskIds = signal<ReadonlySet<string>>(new Set());
 
-  tasks = signal<IBystanderTask[]>([
-    {
-      id: 'task_caller',
-      role: 'Bystander 1: 911 Caller',
-      assignedAction: 'Dial 911, state location, put phone on speakerphone, report patient status.',
-      icon: '📞',
-      completed: false
-    },
-    {
-      id: 'task_aed',
-      role: 'Bystander 2: AED & First Aid',
-      assignedAction: 'Locate & retrieve nearest AED (Defibrillator) and Emergency First Aid kit.',
-      icon: '⚡',
-      completed: false
-    },
-    {
-      id: 'task_cpr',
-      role: 'Bystander 3: CPR Rescuer',
-      assignedAction: 'Position patient flat on back and start 110 BPM chest compressions immediately.',
-      icon: '❤️',
-      completed: false
-    },
-    {
-      id: 'task_guide',
-      role: 'Bystander 4: Paramedic Guide',
-      assignedAction: 'Go to street entrance or lobby to guide arriving paramedics directly to scene.',
-      icon: '🚪',
-      completed: false
-    }
-  ]);
+  readonly protocol = computed(() =>
+    this.state.emergencyProtocol?.() ?? resolveEmergencyProtocolDescriptor('STAT_CODE_BLUE')
+  );
+
+  readonly tasks = computed<IBystanderTask[]>(() => {
+    const done = this.completedTaskIds();
+    return this.protocol().priorityTasks.map((t) => ({
+      ...t,
+      completed: done.has(t.id)
+    }));
+  });
 
   toggleTask(taskId: string) {
-    this.tasks.update(list =>
-      list.map(t => {
-        if (t.id === taskId) {
-          const nextState = !t.completed;
-          if (nextState) {
-            this.state.addClinicalNote({
-              id: 'task_' + Date.now(),
-              text: `[Bystander Role Completed]: ${t.role} — ${t.assignedAction}`,
-              date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-              sourceLens: 'EMT Handoff'
-            });
-          }
-          return { ...t, completed: nextState };
-        }
-        return t;
-      })
-    );
+    const wasCompleted = this.completedTaskIds().has(taskId);
+    const nextDone = new Set(this.completedTaskIds());
+    if (wasCompleted) {
+      nextDone.delete(taskId);
+    } else {
+      nextDone.add(taskId);
+      const task = this.tasks().find((t) => t.id === taskId);
+      if (task) {
+        this.state.addClinicalNote({
+          id: 'task_' + getSecureRandomId(),
+          text: `[Bystander Role Completed]: ${task.role} — ${task.assignedAction}`,
+          date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+          sourceLens: 'EMT Handoff'
+        });
+      }
+    }
+    this.completedTaskIds.set(nextDone);
   }
 
   logEvent(actionText: string) {
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     this.state.addClinicalNote({
-      id: 'event_' + Date.now(),
+      id: 'event_' + getSecureRandomId(),
       text: `[Emergency Timeline]: ${actionText}`,
       date: timestamp,
       sourceLens: 'EMT Handoff'

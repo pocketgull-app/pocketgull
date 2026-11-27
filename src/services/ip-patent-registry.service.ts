@@ -333,6 +333,110 @@ export class IpPatentRegistryService {
       mathematicalFormulation: 'Δℰ_{g+1} = T_germ · ℰ_g + η_EDC · X_env - γ_manage · R_folate;  Heteroplasmy_{g+1} = Heteroplasmy_g · (1 + λ_ROS) · e^{-ΔG/RT}',
       filingTier: 'Provisional Ready',
       targetAgencies: ['USPTO', 'WIPO PCT', 'NIH NIEHS']
+    },
+    {
+      id: 'cluster-21-jpp-drift-calibrator',
+      clusterNumber: 21,
+      title: 'J++ Mechanistic Interpretability Lens & 12-Pole Clinical Activation Steering Calibrator',
+      claimRange: 'Claims 401 – 420',
+      totalClaims: 20,
+      inventors: ['PocketGull Mechanistic Interpretability & Clinical AI Safety Lab'],
+      primaryServicePath: 'src/services/interpretability/clinical-drift-calibrator.service.ts',
+      abstract: 'Real-time mechanistic interpretability and conversational drift mitigation engine projecting multi-turn LLM hidden states onto 6 contrastive behavioral axes (12 radial poles) via Difference-in-Means steering vectors, detecting sycophantic premise acceptance or diagnostic anchoring, and autonomously applying corrective activation steering.',
+      mathematicalFormulation: 'v_axis = μ(H_healthy) - μ(H_drift);  h\' = h - α·v̂_drift + β·v̂_healthy;  CosSim(u_t, c_drift) ≥ τ ⟹ SelfHeal(α, β)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'FDA CDRH']
+    },
+    {
+      id: 'cluster-22-pg3d-sfnt-scotopic-typefoundry',
+      clusterNumber: 22,
+      title: 'PG3D Custom OpenType SFNT 3D Binary Table & Scotopic Psychophysics Typefoundry Engine',
+      claimRange: 'Claims 421 – 440',
+      totalClaims: 20,
+      inventors: ['PocketGull Ophthalmic Typography & Biophysical Rendering Group'],
+      primaryServicePath: 'src/engine/typography/pg3d-sfnt-table.ts',
+      abstract: 'Font-embedded clinical safety and 3D anatomical glyph architecture packing a custom 4-byte OpenType SFNT binary table (PG3D, 0x50473344) with pre-triangulated 1000-UPM ear-clipped index buffers, GSUB ISMP contextual decimal traps, DICOM Part 14 GSDF luminance LUTs, and Helmholtz -3.75% GRAD scotopic irradiation compensation with zero HVAR layout reflow.',
+      mathematicalFormulation: 'Tag_PG3D = 0x50473344;  w_scotopic = w_photopic · (1 - 0.0375), ΔHVAR = 0;  Δx_Bouma ≥ 0.5 · φ_eccentricity',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'EPO', 'U.S. Copyright Office']
+    },
+    {
+      id: 'cluster-23-smoe-ui-self-repair-substrate',
+      clusterNumber: 23,
+      title: 'Autonomous Sparse Mixture-of-Experts (SMoE) UI Self-Repair & Zero-Secret gVisor Substrate Checkpointing',
+      claimRange: 'Claims 441 – 460',
+      totalClaims: 20,
+      inventors: ['PocketGull Resilient Systems & Autonomous Interface Group'],
+      primaryServicePath: 'src/services/ui-self-repair.service.ts',
+      abstract: 'Self-healing clinical user interface and actor hibernation architecture utilizing a Top-k Sparse Mixture-of-Experts (SMoE) fault router to autonomously patch WCAG AAA contrast, 44x44px Fitts target geometries, and 3D WebGL context losses, coupled with SPIFFE X.509 gVisor zero-secret substrate checkpoints and M-of-N WebAuthn dual-custody restoration.',
+      mathematicalFormulation: 'G(x) = Softmax(TopK(x · W_g, k=2));  Health = 100 - (25·N_crit + 10·N_warn + 2·N_info);  Seal = SHA256(SPIFFE || Nonce || State)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'NIST Cybersecurity']
+    },
+    {
+      id: 'cluster-24-necsi-multiscale-variety-wasm',
+      clusterNumber: 24,
+      title: 'NECSI Multiscale Variety Matching, Critical Slowing Down Early-Warning & Hermetic Rust WASM Int8 Kernel',
+      claimRange: 'Claims 461 – 480',
+      totalClaims: 20,
+      inventors: ['PocketGull Complex Systems & Edge Compute Architecture Group'],
+      primaryServicePath: 'src/services/necsi-complex-systems.service.ts',
+      abstract: 'Complex systems clinical resilience engine evaluating generalized Ashby multiscale requisite variety (V_care(s) >= V_acuity(s)), lag-1 autocorrelation Critical Slowing Down (CSD) tipping-point warnings, and diagnostic percolation firebreaks (p_c = 1/(k_mean - 1)), accelerated by a zero-addon wasm32 Int8 symmetric cosine similarity and FNV-1a Part 11 digest kernel.',
+      mathematicalFormulation: 'V_care(s) ≥ V_acuity(s);  λ_recovery = -ln(max(ε, |ρ_1|));  p_c = 1/(⟨k⟩ - 1);  Cos_i8(A, B) = (A·B) / √(‖A‖²·‖B‖²)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'NIH NIGMS']
+    },
+    {
+      id: 'cluster-25-wearable-asymmetric-gain-mst',
+      clusterNumber: 25,
+      title: 'Tri-Modal Wearable Asymmetric Clinical Gain ("Doing / Feeling / Not Doing") & Monk Skin Tone (MST 1–10) Optical PPG Debiasing',
+      claimRange: 'Claims 481 – 500',
+      totalClaims: 20,
+      inventors: ['PocketGull Neuro-Ergonomics & Wearable Biotelemetry Lab'],
+      primaryServicePath: 'src/services/wearable-asymmetric-gain.service.ts',
+      abstract: 'Wearable biotelemetry synthesis and Post-Exertional Malaise (PEM) crash-prevention engine replacing linear step counters with a Tri-Modal Asymmetric Gain objective function across Doing (0.1 Hz vagal pacing), Feeling (interoceptive somatic VAS vs. wrist temperature delta), and Not Doing (strategic restraint before autonomic exhaustion), paired with Monk Skin Tone (MST 1–10) melanin absorption debiasing for optical SpO2 oximetry.',
+      mathematicalFormulation: 'SpO2_MST = min(100, SpO2_raw - max(0, MST - 5)·0.35);  Gain_total = 0.35·Doing + 0.30·Feeling + 0.35·NotDoing',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'FDA CDRH']
+    },
+    {
+      id: 'cluster-26-ataxia-sanctuary-input-shield',
+      clusterNumber: 26,
+      title: 'Ataxia Sanctuary Low-Level OS Neuro-Motor Input Shield & Reversible Registry Baseline Vault',
+      claimRange: 'Claims 501 – 520',
+      totalClaims: 20,
+      inventors: ['PocketGull Assistive Neuro-Motor & Desktop Sanctuary Group'],
+      primaryServicePath: 'packages/ataxia-sanctuary/src/InputShieldEngine.cs',
+      abstract: 'Kernel-adjacent WH_MOUSE_LL and WH_KEYBOARD_LL operating system hook engine filtering involuntary intention-tremor click bounce within a configurable refractory window (20–250 ms), synthesizing chord-free OS voice dictation (Win+H) from single-switch auxiliary mouse buttons, and enforcing a triple-ESC (<1200 ms) atomic rollback to a pre-activation registry and cursor baseline vault.',
+      mathematicalFormulation: 'Δt_click = t_down - t_last_up < Δt_bounce ⟹ Suppress(Down ∧ PairedUp);  3×VK_ESCAPE ≤ 1200ms ⟹ Restore(BaselineVault)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'EPO', 'NIDILRR Assistive Tech']
+    },
+    {
+      id: 'cluster-27-autonomous-clinical-soar-canary',
+      clusterNumber: 27,
+      title: 'Autonomous Clinical SOAR Orchestrator, Honeytoken Canary Tripwire & NIST SP 2400-102 Adversarial AML Quarantine',
+      claimRange: 'Claims 521 – 540',
+      totalClaims: 20,
+      inventors: ['PocketGull Clinical Cybersecurity & Active Defense Group'],
+      primaryServicePath: 'src/server/services/soar-orchestrator.service.ts',
+      abstract: 'Deterministic serverless Security Orchestration, Automation, and Response (SOAR) engine bridging BigQuery SIEM audit logs, synthetic FHIR canary honeypots, and NIST SP 2400-102 / OWASP 2026 Agentic AML classifiers to sub-second containment playbooks (PB-01..04) with M-of-N dual-custody gates, active-defense tarpitting, and HIPAA §164.402 four-factor Safe Harbor breach-exemption proofs.',
+      mathematicalFormulation: 'DualCustody = (Role_req ≠ Role_auth);  Seal_Part11 = SHA256(ExecId || AlertId || PlaybookId || Steps)',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'NIST Cybersecurity', 'HHS OCR']
+    },
+    {
+      id: 'cluster-28-local-sovereign-vault-opfs-outbox',
+      clusterNumber: 28,
+      title: 'Zero-Knowledge Local Sovereign Clinical Vault, OPFS Ambulatory Holter Streaming & Idempotent Offline Outbox',
+      claimRange: 'Claims 541 – 560',
+      totalClaims: 20,
+      inventors: ['PocketGull Sovereign Data Architecture & Disaster Resilience Group'],
+      primaryServicePath: 'src/services/storage/local-sovereign-vault.service.ts',
+      abstract: 'Anti-cloud-bricking local-first clinical storage engine combining persistent IndexedDB SHA-256 Part 11 sealed records, Origin Private File System (OPFS) high-frequency ambulatory Holter waveform streaming, and a transactional offline mutation outbox with deterministic idempotency keys guaranteeing RPO = 0 ms during cloud or hospital WAN blackouts.',
+      mathematicalFormulation: 'Seal_rec = SHA256(Id || Category || Patient || CreatedAt || Payload);  RPO_local = 0 ms, RTO < 5 s',
+      filingTier: 'Provisional Ready',
+      targetAgencies: ['USPTO', 'WIPO PCT', 'ONC Health IT']
     }
   ]);
 
@@ -343,7 +447,7 @@ export class IpPatentRegistryService {
       section: 'Section 1.01',
       title: 'Universal Statutory Copyright Assertion',
       summary: 'Protects all source code, WebGPU shaders, 3D biophysical models, and UI assets under 17 U.S.C. §101 and the Berne Convention.',
-      fullText: 'All text, computational source code, WebGPU Shading Language (WGSL) shaders, Three.js 3D biophysical mesh procedural generators, interactive SVG telemetry gauges, typography design files, clinical prompt architectures, and graphical user interfaces comprising PocketGull are protected under the United States Copyright Act of 1976 (17 U.S.C. § 101 et seq.), the Berne Convention, the Universal Copyright Convention, and the WIPO Copyright Treaty. Copyright © 2026 PocketGull Applied Clinical AI Consortium. All Rights Reserved.',
+      fullText: 'All text, computational source code, WebGPU Shading Language (WGSL) shaders, Three.js 3D biophysical mesh procedural generators, interactive SVG telemetry gauges, typography design files, clinical prompt architectures, and graphical user interfaces comprising PocketGull are protected under the United States Copyright Act of 1976 (17 U.S.C. § 101 et seq.), the Berne Convention, the Universal Copyright Convention, and the WIPO Copyright Treaty. Copyright © 2026 PocketGull LLC & Phil Gear. All Rights Reserved.',
       governingLaw: '17 U.S.C. § 101 et seq. / Berne Convention'
     },
     {
@@ -359,10 +463,10 @@ export class IpPatentRegistryService {
       id: 'clause-invention-reservation',
       article: 'Article II',
       section: 'Section 2.01',
-      title: 'Statutory Invention Reservation & Patent Notice',
-      summary: 'Formally reserves patent rights under 35 U.S.C. §101 et seq. for 20 core algorithm clusters across 400 staked patent claims.',
-      fullText: 'Notice is hereby given that the computational algorithms, data pipelines, WebGPU shaders, and hardware integration architectures disclosed herein represent proprietary inventions subject to pending domestic and international patent applications under 35 U.S.C. § 101 et seq. and the Patent Cooperation Treaty (PCT), spanning 400 formal patent claims across 20 distinct invention clusters.',
-      governingLaw: '35 U.S.C. § 101, 102, 103 / PCT'
+      title: 'Proprietary Technical Disclosures & Pre-Filing Notice',
+      summary: 'Documents 28 core algorithm clusters across 560 pre-filing draft claims for PocketGull LLC (no patent-pending marking asserted prior to formal filing).',
+      fullText: 'The computational algorithms, data pipelines, WebGPU shaders, and hardware integration architectures disclosed herein represent proprietary technical disclosures documented by PocketGull LLC and Phil Gear for patentability evaluation (spanning 560 draft claims across 28 clusters). No USPTO or PCT patent-pending marking is asserted prior to formal filing, in compliance with 35 U.S.C. § 292.',
+      governingLaw: '35 U.S.C. § 101, 102, 103, 292'
     },
     {
       id: 'clause-open-core-dual-licensing',
@@ -370,16 +474,16 @@ export class IpPatentRegistryService {
       section: 'Section 3.01',
       title: 'Open-Core vs. Proprietary Dual Licensing Demarcation',
       summary: 'Public client SDK and FHIR interfaces are licensed under Apache 2.0; clinical AI shaders and optimization solvers remain proprietary.',
-      fullText: 'The public interface definitions, FHIR R4 Bundle serializers, client-side WebMCP agent registration hooks, and UI component stubs contained within @pocketgull/core-sdk are licensed under the Apache License, Version 2.0. The proprietary inference orchestration engines, WGSL bio-signal compute shaders, Stackelberg equilibrium solvers, and dual-custody cryptographic gatekeepers are proprietary trade secrets and patented technologies.',
+      fullText: 'The public interface definitions, FHIR R4 Bundle serializers, client-side WebMCP agent registration hooks, and UI component stubs contained within @pocketgull/core-sdk are licensed under the Apache License, Version 2.0. The proprietary inference orchestration engines, WGSL bio-signal compute shaders, Stackelberg equilibrium solvers, and dual-custody cryptographic gatekeepers are proprietary trade secrets and technical disclosures owned by PocketGull LLC.',
       governingLaw: 'Apache 2.0 / Commercial Trade Secret'
     },
     {
       id: 'clause-ftc-affiliate-governance',
       article: 'Article IV',
       section: 'Section 4.01',
-      title: 'Mandatory FTC & Affiliate Governance Clause',
-      summary: 'Mandates clear FTC affiliate disclosures and strictly prohibits patient PHI in outbound affiliate URLs or SMS messages.',
-      fullText: 'Every product recommendation, medical supply listing, or assistive hardware reference card generated by the system MUST prominently display the statutory FTC disclosure: "As an Amazon Associate and verified healthcare affiliate partner, PocketGull earns from qualifying purchases. Product recommendations are supportive evidence-grounded adjuncts and do not constitute direct medical prescriptions." Affiliate links must never contain patient identifiers, diagnoses, or condition codes.',
+      title: 'Mandatory FTC & Commercial Disclosure Governance Clause',
+      summary: 'Mandates accurate FTC 16 CFR Part 255 disclosures whenever a cleared commercial affiliate program is active and prohibits PHI in outbound links.',
+      fullText: 'If and only if PocketGull LLC formally enrolls in and activates a policy-compliant commercial affiliate program, any product or assistive hardware card earning referral compensation MUST display an accurate FTC 16 CFR Part 255 disclosure stating that recommendations are supportive evidence-grounded adjuncts and not medical prescriptions. No third-party or employer-affiliated associate program is claimed without active enrollment and written compliance clearance. Outbound links must never contain patient identifiers, diagnoses, or condition codes.',
       governingLaw: '16 CFR Part 255 (FTC Endorsement Guides)'
     },
     {
@@ -405,8 +509,8 @@ export class IpPatentRegistryService {
       article: 'Article VII',
       section: 'Section 7.01',
       title: 'Open Patent Research Pledge & Academic Laboratory Covenant',
-      summary: 'Grants a royalty-free, perpetual license to academic laboratories and non-commercial researchers to test, validate, and benchmark all 17 invention clusters, subject to a defensive termination clause against patent aggression.',
-      fullText: 'PocketGull hereby declares an Open Patent Research Pledge and Non-Assertion Covenant. All academic medical centers, university laboratories, non-profit institutions, and independent scientific researchers are granted a non-exclusive, royalty-free, worldwide, perpetual license under any patents or patent applications owned or controlled by PocketGull or Phil Gear to make, have made, use, and practice the inventions across all 17 invention clusters solely for research, academic benchmarking, peer-reviewed clinical validation, and open scientific inquiry. Defensive Termination Condition: Any license or covenant granted under this pledge shall immediately and automatically terminate with respect to any entity that initiates, asserts, or financially sponsors any patent infringement claim or other intellectual property litigation against PocketGull, Phil Gear, or their open-source contributors.',
+      summary: 'Grants a royalty-free, perpetual license to academic laboratories and non-commercial researchers to test, validate, and benchmark all 28 invention clusters, subject to a defensive termination clause against patent aggression.',
+      fullText: 'PocketGull hereby declares an Open Patent Research Pledge and Non-Assertion Covenant. All academic medical centers, university laboratories, non-profit institutions, and independent scientific researchers are granted a non-exclusive, royalty-free, worldwide, perpetual license under any patents or patent applications owned or controlled by PocketGull or Phil Gear to make, have made, use, and practice the inventions across all 28 invention clusters solely for research, academic benchmarking, peer-reviewed clinical validation, and open scientific inquiry. Defensive Termination Condition: Any license or covenant granted under this pledge shall immediately and automatically terminate with respect to any entity that initiates, asserts, or financially sponsors any patent infringement claim or other intellectual property litigation against PocketGull, Phil Gear, or their open-source contributors.',
       governingLaw: 'Open Patent Non-Assertion Covenant / 35 U.S.C. § 271'
     },
     {
@@ -439,7 +543,7 @@ export class IpPatentRegistryService {
       charterDocumentPath: 'docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md',
       clausesDocumentPath: 'docs/legal/INVENTION_ASSIGNMENT_AND_COPYRIGHT_CLAUSES.md',
       pledgeDocumentPath: 'docs/patents/OPEN_PATENT_PLEDGE_AND_RESEARCH_COVENANT.md',
-      lastUpdated: '2026-10-09',
+      lastUpdated: '2026-11-16',
       clusters: this.claimClusters(),
       statutoryClauses: this.statutoryClauses()
     };
@@ -813,14 +917,10 @@ export class IpPatentRegistryService {
       docketNumber: 'PG-PAT-2026-CONF-001',
       title: 'System and Method for Tri-Paradigm Consilience and Finite-Sample Conformal Clinical Intervals with Epistemic Abstention',
       abstract: 'A computer-implemented clinical decision support system and method reconciling disparate medical ontologies while providing finite-sample statistical coverage guarantees against acute clinical deterioration. The system ingests multimodal patient telemetry and solves a constrained multi-objective optimization problem mapping Allopathic, Traditional Chinese Medicine, and Ayurvedic clinical trajectories into an orthogonal biophysical latent state subject to CYP450 metabolic interaction bounds. Concurrently, a Mondrian Inductive Conformal Prediction engine calculates nonconformity scores over exchangeable calibration cohorts to generate prediction sets guaranteeing marginal coverage probability 1 - α ≥ 0.95. When elevated epistemic uncertainty yields an ambiguous prediction set {0, 1}, an epistemic abstention controller automatically suppresses interruptive audible and visual alerts, increases telemetry sampling frequency, and orders targeted confirmatory biomarkers. Singleton positive sets {1} trigger immediate clinical intervention, reducing alarm fatigue by over 80% relative to uncalibrated point-probability classifiers.',
-      inventors: [
-        'PocketGull Applied Clinical AI Consortium',
-        'PocketGull Biophysical Signal Processing Group',
-        'PocketGull Integrative Epistemology Consortium'
-      ],
-      assignee: 'PocketGull Health AI PBC (dpo@pocketgull.app)',
-      filingDate: '2026-10-03',
-      jurisdiction: 'United States Patent and Trademark Office (USPTO) / WIPO PCT',
+      inventors: ['Phil Gear (PocketGull LLC)'],
+      assignee: 'PocketGull LLC (Oregon Registry #258869891 · dpo@pocketgull.app)',
+      filingDate: '2026-10-03 (Pre-Filing Draft)',
+      jurisdiction: 'United States Patent and Trademark Office (USPTO) — Pre-Filing Draft',
       fieldOfInvention: 'Medical informatics, clinical decision support systems (CDSS), biometric signal processing, and statistical machine learning for acute physiological deterioration screening and multi-ontology metabolic care planning.',
       priorArtDemarcation: 'Overcomes the severe deficiencies of uncalibrated scalar point-probability classifiers, specifically the Epic Sepsis Model (ESM; Wong et al. 2021 JAMA Intern Med, AUROC 0.63, 88% false alarm rate, severe alarm fatigue) through finite-sample Mondrian Inductive Conformal Prediction with Epistemic Abstention and cross-paradigm CYP450 metabolic interaction gates.',
       summaryOfInvention: 'Two co-operating inventive pillars: (A) Tri-Paradigm Consilience solving multi-objective loss min_C Σ w_k D(C, P_k) + λ Ω(C) s.t. CYP450(C) ≤ τ; and (B) Mondrian ICP generating prediction sets Γ^α(x) guaranteeing coverage 1-α ≥ 0.95, paired with an Epistemic Abstention Controller that suppresses interruptive alarms when Γ^α={0, 1}, accelerates telemetry, and orders confirmatory biomarkers.',
@@ -834,10 +934,11 @@ export class IpPatentRegistryService {
   exportUsptoProvisionalMarkdown(): string {
     const claims = this.getProvisionalClaims();
     const figures = this.getProvisionalFigures();
-    return `# ⚖️ USPTO PROVISIONAL PATENT APPLICATION: DOCKET PG-PAT-2026-CONF-001
+    return `# ⚖️ POCKETGULL PRE-FILING PROVISIONAL DRAFT: DOCKET PG-PAT-2026-CONF-001
 **Title**: System and Method for Tri-Paradigm Consilience and Finite-Sample Conformal Clinical Intervals with Epistemic Abstention
-**Assignee**: PocketGull Health AI PBC (dpo@pocketgull.app)
-**Date**: October 3, 2026
+**Inventor**: Phil Gear (Natural Person — 35 U.S.C. § 100(f))
+**Proposed Assignee**: PocketGull LLC (Oregon Registry #258869891 · dpo@pocketgull.app)
+**Draft Date**: October 3, 2026 (Not Yet Filed With USPTO)
 
 ## Abstract
 A computer-implemented clinical decision support system and method reconciling disparate medical ontologies while providing finite-sample statistical coverage guarantees against acute clinical deterioration. The system ingests multimodal patient telemetry and solves a constrained multi-objective optimization problem mapping Allopathic, Traditional Chinese Medicine, and Ayurvedic clinical trajectories into an orthogonal biophysical latent state subject to CYP450 metabolic interaction bounds. Concurrently, a Mondrian Inductive Conformal Prediction engine calculates nonconformity scores over exchangeable calibration cohorts to generate prediction sets guaranteeing marginal coverage probability 1 - α ≥ 0.95. When elevated epistemic uncertainty yields an ambiguous prediction set {0, 1}, an epistemic abstention controller automatically suppresses interruptive audible and visual alerts, increases telemetry sampling frequency, and orders targeted confirmatory biomarkers. Singleton positive sets {1} trigger immediate clinical intervention, reducing alarm fatigue by over 80% relative to uncalibrated point-probability classifiers.
@@ -852,12 +953,12 @@ ${figures.map(f => `### ${f.title}\n${f.description}\n\`\`\`\n${f.asciiArt}\n\`\
 
   exportOpenPatentPledgeMarkdown(): string {
     return `# ⚖️ POCKETGULL OPEN PATENT PLEDGE & ACADEMIC RESEARCH COVENANT
-**Assignee & Licensor**: PocketGull Health AI PBC & Phil Gear (dpo@pocketgull.app)
+**Assignee & Licensor**: PocketGull LLC & Phil Gear (dpo@pocketgull.app)
 **Date**: October 4, 2026
 **Governing Statutory Frameworks**: 35 U.S.C. § 101 et seq., 35 U.S.C. § 102(a)(1), 35 U.S.C. § 122(e), 37 CFR 1.290
 
 ## 1. Open Patent Research Grant & Non-Assertion Covenant
-Subject to the defensive conditions herein, PocketGull and Phil Gear irrevocably covenant not to assert any patent, patent application, or exclusive rights (spanning all 20 Invention Clusters, Claims 1–400, and Provisional Specification Docket PG-PAT-2026-CONF-001) against any academic medical center, university laboratory, hospital, or non-profit research institute for:
+Subject to the defensive conditions herein, PocketGull and Phil Gear irrevocably covenant not to assert any patent, patent application, or exclusive rights (spanning all 28 Invention Clusters, Claims 1–560, and Provisional Specification Docket PG-PAT-2026-CONF-001) against any academic medical center, university laboratory, hospital, or non-profit research institute for:
 - Academic bench trial benchmarking and algorithmic reproduction
 - Observational clinical validation studies (MIMIC-IV, eICU, OMOP cohorts)
 - Peer-reviewed scientific publication and open educational use

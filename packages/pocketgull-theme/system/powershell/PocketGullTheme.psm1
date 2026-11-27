@@ -1,4 +1,4 @@
-# ─── POCKETGULL THEME ENGINE FOR POWERSHELL ─────────────────────────────
+﻿# ─── POCKETGULL THEME ENGINE FOR POWERSHELL ─────────────────────────────
 # Synchronizes PowerShell 7+ syntax highlighting (PSReadLine) and ANSI styling ($PSStyle)
 # with the PocketGull Clinical, Tactile & Sensory IDE Theme Suite.
 
@@ -229,8 +229,7 @@ function Set-PocketGullTheme {
         if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
             $rootLocations = @(
                 "$PSScriptRoot\..\shell-prompts\$($t.OmpFile)",
-                "$PSScriptRoot\..\..\..\public\brand\terminal\$($t.OmpFile)",
-                "C:\Users\philg\Pocketgull\pocketgull\public\brand\terminal\$($t.OmpFile)"
+                "$PSScriptRoot\..\..\..\public\brand\terminal\$($t.OmpFile)"
             )
             foreach ($loc in $rootLocations) {
                 if (Test-Path $loc) {
@@ -271,8 +270,9 @@ function Set-PocketGullTheme {
 
 function Get-PocketGullCircadianTheme {
     # Inspect VS Code settings if active in workspace
-    $wsSettings = "C:\Users\philg\Pocketgull\pocketgull\.vscode\settings.json"
-    if (Test-Path $wsSettings) {
+    $wsRoot = Resolve-Path "$PSScriptRoot\..\..\..\.." -ErrorAction SilentlyContinue
+    $wsSettings = if ($wsRoot) { Join-Path $wsRoot.Path ".vscode\settings.json" } else { "" }
+    if ($wsSettings -and (Test-Path $wsSettings)) {
         try {
             $json = Get-Content $wsSettings -Raw | ConvertFrom-Json
             if ($json.'workbench.colorTheme') {
@@ -314,14 +314,16 @@ function Install-PocketGullBrowserTheme {
         [string]$Theme = "",
         [ValidateSet('All', 'Chrome', 'Canary', 'Edge', 'Firefox', 'Portal')]
         [string]$Browser = "All",
-        [switch]$OpenPortal
+        [switch]$OpenPortal,
+        [switch]$Silent
     )
-    $script = "C:\Users\philg\Pocketgull\pocketgull\packages\pocketgull-theme\scripts\install_browser_theme.ps1"
+    $script = Join-Path $PSScriptRoot "..\..\scripts\install_browser_theme.ps1"
     if (Test-Path $script) {
         $params = @{}
         if ($Theme) { $params['Theme'] = $Theme }
         if ($Browser) { $params['Browser'] = $Browser }
         if ($OpenPortal) { $params['OpenPortal'] = $true }
+        if ($Silent) { $params['Silent'] = $true }
         & $script @params
     } else {
         Write-Warning "Browser theme installer script not found at $script"

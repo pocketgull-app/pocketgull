@@ -1,11 +1,27 @@
 import { Router } from 'express';
-import { GoogleAuth } from 'google-auth-library';
+import { GoogleAuth, OAuth2Client } from 'google-auth-library';
 import { rateLimit } from 'express-rate-limit';
 import express from 'express';
+import { requireAuth, isStrictProductionEnv } from './middleware/auth-guard';
 
 export const healthcareRouter = Router();
 
-const isTestingEnv = Boolean(process.env['CI'] || process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] !== 'production');
+const ALLOWED_FHIR_RESOURCE_TYPES = new Set([
+  'Patient',
+  'Observation',
+  'Condition',
+  'MedicationRequest',
+  'CarePlan',
+  'DiagnosticReport',
+  'Encounter',
+  'AllergyIntolerance',
+  'Procedure',
+  'DocumentReference'
+]);
+
+const isTestingEnv =
+  !isStrictProductionEnv() &&
+  Boolean(process.env['PLAYWRIGHT_TESTING'] || process.env['NODE_ENV'] === 'test' || process.env['VITEST']);
 
 // Rate limiting: 30 requests per minute per IP for all Healthcare API proxy routes
 healthcareRouter.use(rateLimit({
@@ -131,7 +147,7 @@ export async function ensureHealthcareStoresExist() {
  * POST /api/healthcare/fhir/export
  * Receives the full PocketGull patient JSON payload and uploads it to the GCP Healthcare FHIR Store.
  */
-healthcareRouter.post('/fhir/export', express.json({ limit: '50mb' }), async (req, res) => {
+healthcareRouter.post('/fhir/export', requireAuth(['CLINICIAN']), express.json({ limit: '50mb' }), async (req, res) => {
    try {
      const payload = req.body;
      const projectId = await getProjectId();
@@ -146,31 +162,41 @@ healthcareRouter.post('/fhir/export', express.json({ limit: '50mb' }), async (re
      }
      const fhirPatientId = `pocket-gull-${patientId}`;
 
-     // 1. Map patient demographics to standard FHIR R4 Patient
+     // 1. Map patient demographics strictly under HIPAA Safe Harbor §164.514 (zero raw name, birthDate, or exact visit dates)
+     const numericAge = typeof payload.age === 'number' && Number.isFinite(payload.age) ? payload.age : undefined;
+     const safeAgeBracket =
+       numericAge === undefined
+         ? undefined
+         : numericAge >= 90
+           ? '90+'
+           : `${Math.floor(Math.max(0, numericAge) / 5) * 5}-${Math.floor(Math.max(0, numericAge) / 5) * 5 + 4}y`;
+
      const fhirPatient = {
          resourceType: "Patient",
          id: fhirPatientId,
          active: true,
-         name: payload.name ? [
-             {
-                 use: "official",
-                 text: payload.name,
-                 family: payload.name.split(' ').pop(),
-                 given: payload.name.split(' ').slice(0, -1)
-             }
-         ] : undefined,
          gender: payload.gender ? (
              payload.gender === 'Male' ? 'male' : 
              payload.gender === 'Female' ? 'female' : 
              payload.gender === 'Non-binary' ? 'other' : 'unknown'
          ) : 'unknown',
-         birthDate: payload.age ? `${new Date().getFullYear() - payload.age}-01-01` : undefined,
-         extension: [
-             {
-                 url: 'http://pocketgull.app/fhir/StructureDefinition/last-visit',
-                 valueString: payload.lastVisit || new Date().toISOString().split('T')[0]
-             }
-         ]
+         meta: {
+             security: [
+                 {
+                     system: 'http://terminology.hl7.org/CodeSystem/v3-ObservationValue',
+                     code: 'PSEUDED',
+                     display: 'HIPAA Safe Harbor §164.514 De-Identified'
+                 }
+             ]
+         },
+         ...(safeAgeBracket ? {
+             extension: [
+                 {
+                     url: 'http://pocketgull.app/fhir/StructureDefinition/safe-harbor-age-bracket',
+                     valueString: safeAgeBracket
+                 }
+             ]
+         } : {})
      };
 
      // 2. Map preexisting conditions to standard FHIR R4 Conditions
@@ -420,7 +446,7 @@ healthcareRouter.post('/fhir/export', express.json({ limit: '50mb' }), async (re
  * GET /api/healthcare/fhir/import/:id
  * Fetches patient, conditions, and observations from the GCP Healthcare FHIR Store and maps them back to PocketGull Patient format.
  */
-healthcareRouter.get('/fhir/import/:id', async (req, res) => {
+healthcareRouter.get('/fhir/import/:id', requireAuth(['CLINICIAN']), async (req, res) => {
    try {
      const patientId = req.params.id;
      if (typeof patientId !== 'string' || !/^[a-zA-Z0-9_\-]+$/.test(patientId)) {
@@ -610,7 +636,7 @@ function sanitizeLocalPayloadPHI(payload: unknown): unknown {
  * POST /api/healthcare/nlp/analyze
  * Analyzes unstructured clinical text using Google Cloud Healthcare Natural Language API.
  */
-healthcareRouter.post('/nlp/analyze', express.json({ limit: '10mb' }), async (req, res) => {
+healthcareRouter.post('/nlp/analyze', requireAuth(['CLINICIAN']), express.json({ limit: '10mb' }), async (req, res) => {
   try {
     const { text } = req.body;
     if (!text || typeof text !== 'string') {
@@ -661,7 +687,7 @@ healthcareRouter.post('/nlp/analyze', express.json({ limit: '10mb' }), async (re
  * POST /api/healthcare/deidentify
  * De-identifies text or FHIR payloads according to HIPAA Safe Harbor PII/PHI rules.
  */
-healthcareRouter.post('/deidentify', express.json({ limit: '10mb' }), async (req, res) => {
+healthcareRouter.post('/deidentify', requireAuth(['CLINICIAN']), express.json({ limit: '10mb' }), async (req, res) => {
   try {
     const { text, payload } = req.body;
     if (!text && !payload) {
@@ -720,7 +746,7 @@ healthcareRouter.post('/deidentify', express.json({ limit: '10mb' }), async (req
  * POST /api/healthcare/fhir/export-to-bigquery
  * Triggers asynchronous export of FHIR store data into BigQuery analytics tables.
  */
-healthcareRouter.post('/fhir/export-to-bigquery', express.json(), async (req, res) => {
+healthcareRouter.post('/fhir/export-to-bigquery', requireAuth(['ADMIN']), express.json(), async (req, res) => {
   try {
     const projectId = await getProjectId();
     const bqDatasetId = req.body.datasetId || 'pocketgull_fhir_analytics';
@@ -768,6 +794,56 @@ healthcareRouter.post('/fhir/export-to-bigquery', express.json(), async (req, re
   }
 });
 
+const pubsubOAuth2Client = new OAuth2Client();
+
+/**
+ * Verifies Google Cloud Pub/Sub OIDC push token when running in production.
+ * Prevents unauthenticated external callers from spoofing FHIR Store webhook events.
+ */
+async function verifyPubSubOidcToken(req: express.Request): Promise<boolean> {
+  const isProd = isStrictProductionEnv();
+  if (!isProd) {
+    return true;
+  }
+  const expectedAudience = process.env['PUBSUB_WEBHOOK_AUDIENCE']?.trim();
+  const expectedServiceAccount = (
+    process.env['PUBSUB_PUSH_SERVICE_ACCOUNT'] ||
+    process.env['HEALTHCARE_PUBSUB_SA_EMAIL'] ||
+    'pocketgull-run@gen-lang-client-0540208645.iam.gserviceaccount.com'
+  ).trim().toLowerCase();
+
+  // Fail closed in production when audience is not pinned
+  if (!expectedAudience) {
+    console.warn('[Healthcare Pub/Sub Auth] Rejecting push request: PUBSUB_WEBHOOK_AUDIENCE is not configured.');
+    return false;
+  }
+
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return false;
+  }
+  const idToken = authHeader.slice('Bearer '.length).trim();
+  if (!idToken) {
+    return false;
+  }
+  try {
+    const ticket = await pubsubOAuth2Client.verifyIdToken({
+      idToken,
+      audience: expectedAudience
+    });
+    const payload = ticket.getPayload();
+    return Boolean(
+      payload &&
+      payload.email_verified &&
+      typeof payload.email === 'string' &&
+      payload.email.toLowerCase() === expectedServiceAccount
+    );
+  } catch (err: unknown) {
+    console.warn('[Healthcare Pub/Sub Auth] OIDC token verification failed:', (err as Error)?.message);
+    return false;
+  }
+}
+
 /**
  * POST /api/healthcare/pubsub/webhook
  * Receives Cloud Pub/Sub push notifications for FHIR Store resource mutations
@@ -775,6 +851,11 @@ healthcareRouter.post('/fhir/export-to-bigquery', express.json(), async (req, re
  */
 healthcareRouter.post('/pubsub/webhook', express.json(), async (req, res) => {
   try {
+    const isAuthorized = await verifyPubSubOidcToken(req);
+    if (!isAuthorized) {
+      return res.status(401).json({ error: 'Unauthorized: Missing or invalid Google Cloud Pub/Sub OIDC token.' });
+    }
+
     const pubsubMessage = req.body.message;
     if (!pubsubMessage || !pubsubMessage.data) {
       return res.status(400).json({ error: 'Invalid Pub/Sub payload structure.' });
@@ -817,18 +898,22 @@ healthcareRouter.post('/pubsub/webhook', express.json(), async (req, res) => {
  * POST /api/healthcare/search
  * Grounded clinical search across FHIR store resources and unstructured clinical docs.
  */
-healthcareRouter.post('/search', express.json(), async (req, res) => {
+healthcareRouter.post('/search', requireAuth(['CLINICIAN']), express.json(), async (req, res) => {
   try {
     const { query, resourceType } = req.body;
     if (!query || typeof query !== 'string') {
       return res.status(400).json({ error: 'Search query string is required.' });
     }
 
+    const targetType = typeof resourceType === 'string' && resourceType.trim() ? resourceType.trim() : 'Observation';
+    if (!ALLOWED_FHIR_RESOURCE_TYPES.has(targetType)) {
+      return res.status(400).json({ error: 'Unsupported or disallowed FHIR resourceType.' });
+    }
+
     const projectId = await getProjectId();
     const client = await getAuth().getClient();
     const token = await client.getAccessToken();
 
-    const targetType = resourceType || 'Observation';
     const searchUrl = `https://healthcare.googleapis.com/v1/projects/${projectId}/locations/${defaultLocation}/datasets/${defaultDatasetId}/fhirStores/${fhirStoreId}/fhir/${targetType}?_content=${encodeURIComponent(query)}`;
 
     const response = await fetch(sanitizeUrl(searchUrl), {

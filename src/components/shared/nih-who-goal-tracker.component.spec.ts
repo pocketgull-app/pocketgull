@@ -26,23 +26,25 @@ describe('NihWhoGoalTrackerComponent Unit Suite', () => {
     return runInInjectionContext(injector, () => new NihWhoGoalTrackerComponent());
   };
 
-  it('1. Initializes with 6 comprehensive NIH/WHO goals and computes fulfillment', () => {
+  it('1. Initializes with Top 10 NIH and Top 10 WHO goals (20 total) and computes fulfillment', () => {
     const component = createComponent();
-    expect(component.goals().length).toBe(6);
+    expect(component.goals().length).toBe(20);
+    expect(component.whoGoalsCount()).toBe(10);
+    expect(component.nihGoalsCount()).toBe(10);
     expect(component.overallFulfillmentScore()).toBeGreaterThan(0);
     expect(component.activeGoalsCount()).toBeGreaterThan(0);
   });
 
   it('2. Filters goals by agency tab (all, who, nih)', () => {
     const component = createComponent();
-    expect(component.filteredGoals().length).toBe(6);
+    expect(component.filteredGoals().length).toBe(20);
 
     component.activeTab.set('who');
-    expect(component.filteredGoals().length).toBe(3);
+    expect(component.filteredGoals().length).toBe(10);
     expect(component.filteredGoals().every(g => g.agency === 'WHO')).toBe(true);
 
     component.activeTab.set('nih');
-    expect(component.filteredGoals().length).toBe(3);
+    expect(component.filteredGoals().length).toBe(10);
     expect(component.filteredGoals().every(g => g.agency === 'NIH')).toBe(true);
   });
 

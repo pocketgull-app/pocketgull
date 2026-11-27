@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AiConfidenceCalibrationService, IAiConfidenceMetrics } from '../services/ai-confidence-calibration.service';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-ai-confidence-hud',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-4 sm:p-5 rounded-2xl bg-zinc-950/90 border border-indigo-500/30 text-zinc-100 shadow-xl backdrop-blur-md font-mono space-y-4">
@@ -19,7 +20,7 @@ import { AiConfidenceCalibrationService, IAiConfidenceMetrics } from '../service
           <div>
             <div class="flex items-center gap-2">
               <h3 class="text-xs sm:text-sm font-black uppercase tracking-wider text-indigo-200">
-                Cognitive Confidence Calibration HUD
+                {{ 'Cognitive Confidence Calibration HUD' | pgT:'analysis.ai_confidence' }}
               </h3>
               <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-widest border"
                     [class]="calibrationService.confidenceBadgeClass()">

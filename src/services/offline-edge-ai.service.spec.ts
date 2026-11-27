@@ -50,10 +50,10 @@ describe('OfflineEdgeAiService', () => {
 
   it('3. Synthesizes offline SBAR clinical care plan report with zero network transit', async () => {
     const report = await service.synthesizeOfflineClinicalReport('Assess patient lumbar pain');
-    expect(report).toContain('LOCAL WEBGPU / WASM EDGE INFERENCE');
+    expect(report).toContain('DETERMINISTIC OFFLINE SBAR TEMPLATE');
     expect(report).toContain('HR 74 bpm');
     expect(report).toContain('BP 118/76 mmHg');
-    expect(service.lastInferenceLatencyMs()).toBeGreaterThan(0);
+    expect(service.lastInferenceLatencyMs()).toBeGreaterThanOrEqual(0);
   });
 
   it('4. Classifies acute clinical narrative (STAT_EMERGENCY, URGENT, ROUTINE) deterministically', async () => {
@@ -104,5 +104,24 @@ describe('OfflineEdgeAiService', () => {
     expect(res.category).toBe('STAT_EMERGENCY');
     expect(res.modelEngine).toBe('chrome-builtin-ai-classifier');
     expect(res.confidence).toBe(0.98);
+  });
+
+  it('7. Enforces monotonic acuity: window.ai.classifier can NEVER downgrade deterministic BE-FAST/SpO2<90%/C-SSRS STAT emergencies', async () => {
+    (globalThis as any).ai = {
+      classifier: {
+        create: vi.fn().mockResolvedValue({
+          classify: vi.fn().mockResolvedValue({ topCategory: 'ROUTINE', confidence: 0.99 })
+        })
+      }
+    };
+
+    const strokeRes = await service.classifyAcuity('Acute facial droop and left arm weakness');
+    expect(strokeRes.category).toBe('STAT_EMERGENCY');
+
+    const hypoxiaRes = await service.classifyAcuity('Oxygen saturation SpO2 89% at rest');
+    expect(hypoxiaRes.category).toBe('STAT_EMERGENCY');
+
+    const suicideRes = await service.classifyAcuity('Patient reports suicidal ideation with a plan (PHQ-9 Item 9)');
+    expect(suicideRes.category).toBe('STAT_EMERGENCY');
   });
 });

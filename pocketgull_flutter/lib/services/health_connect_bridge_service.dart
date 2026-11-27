@@ -101,6 +101,7 @@ class HealthConnectBridgeService {
       final granted = await channel.invokeMethod<bool>('requestPermissions', {
         'permissions': [
           'android.permission.health.READ_HEART_RATE',
+          'android.permission.health.READ_HEART_RATE_VARIABILITY',
           'android.permission.health.READ_STEPS',
           'android.permission.health.READ_OXYGEN_SATURATION',
           'android.permission.health.READ_SLEEP',

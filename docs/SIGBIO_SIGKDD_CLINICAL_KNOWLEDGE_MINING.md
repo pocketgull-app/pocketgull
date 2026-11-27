@@ -28,7 +28,7 @@ graph TD
 ### 1. Multi-Paradigm Heterogeneous Knowledge Graph
 * **SIGBIO Principle**: Clinical entities (symptoms, meridians, dosages, biomarkers) must be represented as nodes in a heterogeneous graph $G = (V, E, T_v, T_e)$ to support multi-hop clinical inference.
 * **Pocket-Gull Application**:
-  - Unifies Allopathic ICD-11/SNOMED-CT codes with TCM Zang-Fu meridians and Ayurvedic Tridosha doshas in [ClinicalIntelligenceService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/clinical-intelligence.service.ts).
+  - Unifies Allopathic ICD-11/SNOMED-CT codes with TCM Zang-Fu meridians and Ayurvedic Tridosha doshas in [ClinicalIntelligenceService](src/services/clinical-intelligence.service.ts).
   - Enables cross-paradigm queries (e.g., mapping oral mucosal inflammation → TCM Stomach Fire → Systemic Inflammatory Burden Index / SIBI).
 
 ---
@@ -60,7 +60,7 @@ graph TD
 ### 5. Temporal Vital Trajectory Signal Mining
 * **SIGKDD Principle**: Longitudinal symptom progression is governed by time-series trajectory vectors, not static point-in-time snapshots.
 * **Pocket-Gull Application**:
-  - [PatientStateService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts) maintains a rolling temporal window of vitals (HR, SpO2, SIBI) to compute trend differentials $\Delta v / \Delta t$ for instant triage escalation.
+  - [PatientStateService](src/services/patient-state.service.ts) maintains a rolling temporal window of vitals (HR, SpO2, SIBI) to compute trend differentials $\Delta v / \Delta t$ for instant triage escalation.
 
 ---
 
@@ -76,6 +76,6 @@ graph TD
 
 ## Technical Reference Links
 
-- **Clinical Strategy Engine**: [src/services/clinical-intelligence.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/clinical-intelligence.service.ts)
-- **ONNX ML Inference**: [pocketgull_api/services/onnx_engine.py](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_api/services/onnx_engine.py)
-- **Patient State Central**: [src/services/patient-state.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts)
+- **Clinical Strategy Engine**: [src/services/clinical-intelligence.service.ts](src/services/clinical-intelligence.service.ts)
+- **ONNX ML Inference**: [pocketgull_api/services/onnx_engine.py](pocketgull_api/services/onnx_engine.py)
+- **Patient State Central**: [src/services/patient-state.service.ts](src/services/patient-state.service.ts)

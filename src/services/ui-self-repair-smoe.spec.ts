@@ -91,8 +91,8 @@ describe('UiSelfRepairService SMoE Patient Cohort Test Suite', () => {
     expect(repairedIssues['abdomen'][0].symptoms[2]).toBe('Unspecified Symptom');
 
     const repairedVitals = mockPatientState.vitals();
-    expect(repairedVitals.hr).toBe('72');
-    expect(repairedVitals.spO2).toBe('98%');
+    expect(repairedVitals.hr).toBe('--');
+    expect(repairedVitals.spO2).toBe('--');
 
     const metrics = service.healthMetrics();
     expect(metrics.patientStateRepairsExecuted).toBeGreaterThan(0);

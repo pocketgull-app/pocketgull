@@ -374,5 +374,29 @@ describe('ClinicalIntelligenceService - Philosophy Modes', () => {
       expect(response).toBe('Response');
     });
   });
+
+  describe('Deterministic STAT Emergency Red-Flag Interception', () => {
+    it('halts stochastic AI generation in generateComprehensiveReport on BE-FAST / ACS / SpO2 < 90% red flags', async () => {
+      await runInInjectionContext(injector, async () => {
+        const report = await service.generateComprehensiveReport(
+          'Patient presents with acute facial droop, left arm weakness, and slurred speech'
+        );
+
+        expect(mockIntelligenceProvider.generateReportStream$).not.toHaveBeenCalled();
+        expect(report['Summary Overview']).toContain('STAT DETERMINISTIC EMERGENCY INTERCEPTION');
+        expect(report['Summary Overview']).toContain('911');
+      });
+    });
+
+    it('halts stochastic AI chat in sendChatMessage on C-SSRS / PHQ-9 Item 9 suicidal ideation', async () => {
+      await runInInjectionContext(injector, async () => {
+        const response = await service.sendChatMessage('Patient reports suicidal ideation with a plan (PHQ-9 Item 9 = 2)');
+
+        expect(mockIntelligenceProvider.sendMessage).not.toHaveBeenCalled();
+        expect(response).toContain('STAT DETERMINISTIC EMERGENCY INTERCEPTION');
+        expect(response).toContain('988');
+      });
+    });
+  });
 });
 

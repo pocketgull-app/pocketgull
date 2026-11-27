@@ -6,8 +6,10 @@
 
 import readline from 'readline';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const logFile = 'C:\\Users\\philg\\Pocketgull\\pocketgull\\scripts\\adobe-mcp.log';
+const logFile = path.join(path.dirname(fileURLToPath(import.meta.url)), 'adobe-mcp.log');
 function log(msg) {
   try {
     fs.appendFileSync(logFile, `[${new Date().toISOString()}] ${msg}\n`);

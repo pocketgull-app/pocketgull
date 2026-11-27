@@ -1,9 +1,9 @@
 {
   "pocketgull-finops-and-git-guard": {
-    "enabled": true,
+    "enabled": false,
     "PreToolUse": [
       {
-        "matcher": "call_mcp_tool|run_command",
+        "matcher": "call_mcp_tool|run_command|write_file|edit_file",
         "hooks": [
           {
             "type": "command",

@@ -61,13 +61,13 @@ PocketGull is an open-source clinical intelligence ecosystem designed to bridge 
 
 ## 🧩 2. Core Subsystems & Components
 
-### 2.1 Frontend Client Layer (`src/app`)
-* **Framework**: Angular 22 utilizing standalone components and native **Angular Signals** (`signal`, `computed`, `effect`) for fine-grained reactive state without overhead.
-* **Patient State**: Centrally coordinated via `PatientStateService`, maintaining active biometrics, symptom graphs, active rooms, and clinical questionnaires.
-* **3D Procedural Anatomy (GullRenderEngine)**: Zero-dependency direct WebGL2 / WebGPU engine (`src/rendering/gull-render.engine.ts`, `src/engine/core/webgl2-backend.ts`) replacing Three.js. Delivers $O(1)$ offscreen color picking, zero garbage-collection allocations in `requestAnimationFrame`, and sub-10KB runtime weight.
-* **Accessibility & Sensory Dynamics**: WCAG AAA certified high-contrast scotopic obsidian theme (`#09090b`), optotypic typography (LogMAR 0.0 legibility), and 0.1 Hz parasympathetic vagal pacing visualizers.
+### 2.1 Frontend Client Layer (`src/`)
+* **Framework**: Angular 22 utilizing standalone components (`src/components/`, `src/services/`, `src/app.component.ts`) and native **Angular Signals** (`signal`, `computed`, `effect`) for fine-grained reactive state without overhead.
+* **Patient State**: Centrally coordinated via `PatientStateService` (`src/services/patient-state.service.ts`), maintaining active biometrics, symptom graphs, active rooms, and clinical questionnaires.
+* **3D Procedural Anatomy (Active `GullRenderEngine` Migration + Three.js)**: Incremental migration to the direct WebGL2 / WebGPU `GullRenderEngine` (`src/rendering/gull-render.engine.ts`, `src/engine/core/webgl2-backend.ts`, `src/rendering/direct-cardiac.renderer.ts`) delivering $O(1)$ offscreen color picking and low-allocation frame loops, operating alongside Three.js anatomical/spatial viewers (`src/components/body-3d-viewer/`, `src/components/shared/clinical-holodeck-viewer.component.ts`, `knee-hologram-hud`) while remaining 3D views migrate incrementally.
+* **Accessibility & Sensory Dynamics**: WCAG AAA certified high-contrast peat-obsidian nocturnal defaults (`#0d090b` / `#ede3d2`), Helmholtz dark-mode weight compensation (`font-weight: 385`), optotypic typography via `@pocketgull/font` v4.0.0 (LogMAR 0.0 legibility), and 0.1 Hz parasympathetic vagal pacing strictly quarantined to therapeutic/research views.
 
-### 2.2 Offline Edge AI Engine (`src/app/services/offline-edge-ai.service.ts`)
+### 2.2 Offline Edge AI Engine (`src/services/offline-edge-ai.service.ts`)
 * **Local On-Device Inference**: Leverages Chrome Built-in AI Prompt API (`window.ai`), WebLLM, and ONNX Runtime Web for local summarization, triage acuity classification, and vector embeddings.
 * **Zero Network Egress**: Sensitive clinical intake scribing can execute completely locally on the device without transmitting any data over the network.
 * **Graceful Degradation**: Fallbacks to deterministic local TypeScript heuristics when experimental browser flags or hardware accelerators are unavailable.
@@ -109,10 +109,10 @@ PocketGull is an open-source clinical intelligence ecosystem designed to bridge 
 * **Audiovisual Stimulation PWA (`companion-apps/avs-therapy`)**:
   * **Responsive Entrainment**: Low-latency Audio-Visual Stimulation (AVS) brainwave entrainment (40 Hz Gamma, 18 Hz Beta, 14 Hz SMR) accessible from any browser or home screen.
 
-### 2.7 Direct WebGL2 & WebGPU Engine (`GullRenderEngine`)
-* **Complete Three.js Removal**: Three.js was completely purged from the codebase (`src/rendering/gull-render.engine.ts`, `src/engine/core/webgl2-backend.ts`, `src/rendering/direct-cardiac.renderer.ts`) to eliminate ~650 KB of bundle overhead.
-* **Zero-Allocation Rendering Loop**: Custom GLSL 3.0 ES and WebGPU shaders run inside `requestAnimationFrame` with zero heap allocations, eliminating GC frame stutter.
-* **O(1) Offscreen Picking**: GPU-accelerated offscreen color framebuffers enable instantaneous anatomical hotspot identification and touch targeting without CPU raycasting.
+### 2.7 Direct WebGL2 & WebGPU Engine (`GullRenderEngine` — Active Migration)
+* **Incremental Migration Alongside Three.js**: `GullRenderEngine` (`src/rendering/gull-render.engine.ts`, `src/engine/core/webgl2-backend.ts`, `src/rendering/direct-cardiac.renderer.ts`) powers lightweight direct WebGL2/WebGPU rendering surfaces, while procedural skeletal and holodeck views (`body-3d-viewer`, `clinical-holodeck-viewer`, `knee-hologram-hud`, `molecular-docking-viewer`) continue to use `three` during the incremental migration.
+* **Low-Allocation Rendering Loop**: Custom GLSL 3.0 ES and WebGPU shaders minimize per-frame heap allocations inside `requestAnimationFrame` to reduce GC frame stutter.
+* **O(1) Offscreen Picking**: GPU-accelerated offscreen color framebuffers enable instantaneous anatomical hotspot identification and touch targeting on `GullRenderEngine` viewports without CPU raycasting.
 
 ### 2.8 High-Frequency Telemetry Bus
 * **Separation of Concerns**: High-frequency real-time signals (60 FPS WebGL2 spatial coordinates from `GullRenderEngine`, 0.10 Hz continuous BLE pulse streams from `WearApp`) are decoupled from the clinical state store.

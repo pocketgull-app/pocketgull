@@ -5,6 +5,7 @@ import { PatientStateService } from '../../services/patient-state.service';
 import { PatientManagementService } from '../../services/patient-management.service';
 import { ThemeService } from '../../services/theme.service';
 import { TypographicAnatomyService } from '../../services/typographic-anatomy.service';
+import { ClinicalMoERouterService } from '../../services/clinical-moe-router.service';
 
 // Mock Angular effect to avoid ChangeDetectionScheduler requirement in headless Vitest tests
 vi.mock('@angular/core', async (importOriginal) => {
@@ -278,5 +279,29 @@ describe('BodyViewerComponent Signal & Typographic Anatomy Suite', () => {
 
     mockPatientState.selectedPartId.set('kidneys');
     expect(viewer.selectedPartName()).toBe('Kidneys & Renal System');
+  });
+
+  it('should collapse exploratory tabs under SMoE Focused Density and emit Synapse pulses on 2D organ selection', () => {
+    const moeInjector = Injector.create({
+      providers: [
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: PatientStateService, useValue: mockPatientState },
+        { provide: PatientManagementService, useValue: {} },
+        { provide: ThemeService, useValue: { isDarkMode: signal(true) } },
+        TypographicAnatomyService,
+        ClinicalMoERouterService
+      ]
+    });
+    const moeRouter = moeInjector.get(ClinicalMoERouterService);
+    const moeViewer = runInInjectionContext(moeInjector, () => new BodyViewerComponent());
+
+    expect(moeViewer.isExploratoryCollapsed()).toBe(false);
+    moeRouter.setMicroSkillDensityOverride('stat-focused');
+    expect(moeViewer.isExploratoryCollapsed()).toBe(true);
+
+    moeViewer.select('kidneys', 'Kidneys & Renal System');
+    expect(moeRouter.activeSynapsePulse()?.token).toBe('glycemic-renal-coupling');
+
+    moeRouter.clearOverrides();
   });
 });

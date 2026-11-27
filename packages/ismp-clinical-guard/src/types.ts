@@ -70,6 +70,7 @@ export interface IIsmpSafetyAudit {
   sanitizedText: string;
   hasViolations: boolean;
   violations: IIsmpViolation[];
+  violationsCount?: number;
   tallManApplied: string[];
   isSafe: boolean;
 }

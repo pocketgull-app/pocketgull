@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { OshaWorkplaceSafetyService } from '../services/osha-workplace-safety.service';
 import { DiscordActivityService } from '../services/discord-activity.service';
 import { APP_VERSION } from '../version';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 export interface IGreenRoomReflection {
   id: string;
@@ -16,7 +17,7 @@ export interface IGreenRoomReflection {
 @Component({
   selector: 'app-green-room-lounge',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="fixed inset-0 z-[1200] bg-black/80 backdrop-blur-3xl p-6 sm:p-10 flex flex-col justify-between overflow-y-auto font-mono text-zinc-100 animate-in fade-in duration-300">
@@ -29,17 +30,17 @@ export interface IGreenRoomReflection {
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <span class="text-xs font-mono font-bold uppercase tracking-widest text-orange-400">Green Room Clinician & Patient Lounge</span>
-              <span class="text-[9.5px] font-bold px-2 py-0.5 rounded bg-zinc-900 text-zinc-300 border border-zinc-800 uppercase">Restorative Debrief</span>
+              <span class="text-xs font-mono font-bold uppercase tracking-widest text-orange-400">{{ 'Green Room Clinician & Patient Lounge' | pgT:'groom.subtitle' }}</span>
+              <span class="text-[9.5px] font-bold px-2 py-0.5 rounded bg-zinc-900 text-zinc-300 border border-zinc-800 uppercase">{{ 'Restorative Debrief' | pgT:'groom.badge' }}</span>
             </div>
-            <h2 class="text-base font-black uppercase text-zinc-100 tracking-wide mt-0.5">The Green Room — Written Reflections</h2>
+            <h2 class="text-base font-black uppercase text-zinc-100 tracking-wide mt-0.5">{{ 'The Green Room — Written Reflections' | pgT:'groom.title' }}</h2>
           </div>
         </div>
 
         <div class="flex items-center gap-3 font-mono">
           <button (click)="openGleeAlbum.emit()"
             class="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-bold text-xs uppercase tracking-wider transition cursor-pointer border border-orange-400/50">
-            🎵 Acoustic Duet
+            🎵 {{ 'Acoustic Duet' | pgT:'groom.duet_btn' }}
           </button>
 
           <button (click)="closeModal.emit()"
@@ -52,7 +53,7 @@ export interface IGreenRoomReflection {
       <!-- OSHA Compliance Banner -->
       <div class="my-6 p-4 rounded-2xl bg-zinc-900 border border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
         <div class="flex items-center gap-2 text-zinc-300">
-          <span>👷 OSHA Worker & Patient Safety Index:</span>
+          <span>👷 {{ 'OSHA Worker & Patient Safety Index:' | pgT:'groom.osha_label' }}</span>
           <span class="font-bold text-orange-400">{{ osha().oshaComplianceScorePercent }}% Compliant</span>
           <span>(KSS Level {{ osha().currentKssLevel }}/9 — {{ osha().clinicianFatigueCapOk ? 'Shift Fatigue Safe' : 'Rest Advised' }})</span>
         </div>
@@ -88,14 +89,14 @@ export interface IGreenRoomReflection {
       <!-- Add New Written Reflection Note -->
       <div class="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 my-4 font-mono">
         <h4 class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-3 flex items-center gap-2">
-          <span>✍️</span> Add a Written Reflection Card to the Green Room Wall
+          <span>✍️</span> {{ 'Add a Written Reflection Card to the Green Room Wall' | pgT:'groom.add_heading' }}
         </h4>
         <div class="flex flex-col sm:flex-row gap-3">
-          <input #reflectionInput type="text" placeholder="Write a message of gratitude, shift encouragement, or patient hero reflection..."
+          <input #reflectionInput type="text" [placeholder]="'Write a message of gratitude, shift encouragement, or patient hero reflection...' | pgT:'groom.placeholder'"
             class="flex-1 py-3 px-4 rounded-xl bg-zinc-950 border border-zinc-800 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-orange-500/50 font-sans">
           <button (click)="addReflection(reflectionInput.value); reflectionInput.value=''"
             class="px-5 py-3 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-bold text-xs uppercase tracking-wider transition cursor-pointer border border-orange-400/50 shrink-0">
-            Publish Reflection 🌿
+            {{ 'Publish Reflection' | pgT:'groom.publish' }} 🌿
           </button>
         </div>
       </div>

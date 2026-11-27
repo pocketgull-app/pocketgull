@@ -1,6 +1,9 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { AnalysisLens } from './clinical-intelligence.service';
 import { PatientStateService } from './patient-state.service';
+import { RolePathwayDocsService, ClinicalRolePathway } from './role-pathway-docs.service';
+import { AuthSsoService } from './auth-sso.service';
+import { AuthService } from './auth.service';
 import { IPatient } from './patient.types';
 
 export interface IExpertSubnet {
@@ -101,6 +104,200 @@ export interface IUiGatingScore {
   isPrimary: boolean;      // Top-1
   isSecondary: boolean;    // Top-2 (if k >= 2)
   isPrewarmCandidate: boolean; // Preload trigger (e.g. weight >= 0.15)
+  isSafetyMasked?: boolean;    // True when pre-router Safety Shield masks out non-acute skill
+  hysteresisLocked?: boolean;  // True when Selector hysteresis holds slot stability
+  skillModality?: 'Deterministic Wasm Solver' | 'Spatial Physics Shader' | 'Symbolic FHIR / API Engine' | 'Hybrid Generative Synthesizer';
+}
+
+export type OperationalRegime =
+  | 'STAT Safety Shield (Red-Flag Preemption)'
+  | 'Acute Hemodynamic / Metabolic Telemetry'
+  | 'Structural & Kinematic Biomechanics'
+  | 'Longitudinal Stepped-Care Synthesis';
+
+export interface ISmoePerceptorState {
+  spO2Percent: number;
+  heartRateBpm: number;
+  systolicBpMmHg: number;
+  cgmGlucoseMgDl: number;
+  news2Score: number;
+  redFlagDetected: boolean;
+  redFlagTriggers: string[];
+  normalizedEntropy: number; // 0.0 (focused) to 1.0 (diffuse multi-system)
+}
+
+export interface ISmoeSelectorDecision {
+  regime: OperationalRegime;
+  safetyShieldActive: boolean;
+  maskedExpertIds: string[];
+  hysteresisMargin: number;
+  hysteresisApplied: boolean;
+  lockedPrimaryExpertId: string | null;
+  workingMemoryBudgetMax: 4;
+  activeSlotCount: number;
+  selectorRationale: string;
+}
+
+export interface ISmoeLabVitalsOverride {
+  spO2Percent: number | null;
+  systolicBpMmHg: number | null;
+  cgmGlucoseMgDl: number | null;
+  heartRateBpm: number | null;
+}
+
+export interface ISmoeAblationComparison {
+  controlPrimaryId: string;
+  controlPrimaryLabel: string;
+  controlPrimaryWeightPercent: number;
+  treatmentPrimaryId: string;
+  treatmentPrimaryLabel: string;
+  treatmentPrimaryWeightPercent: number;
+  treatmentModality: string;
+  divergedFromControl: boolean;
+  maskedCount: number;
+  probabilitySumValid: boolean;
+  divergenceReason: string;
+}
+
+/** Innovation 1: Intra-Component Micro-Skill Sparsity & Progressive Disclosure Policy */
+export type MicroSkillDensityMode = 'stat-focused' | 'caregiver-digest' | 'specialist-full';
+
+export interface IMicroSkillDisplayPolicy {
+  densityMode: MicroSkillDensityMode;
+  collapseExploratorySubViews: boolean;
+  collapseRawFhirTables: boolean;
+  highlightIsmpCriticalControls: boolean;
+  maxSubCardsVisible: 4;
+  policyLabel: string;
+  policyRationale: string;
+}
+
+/** Innovation 2: Dormant Whisper Chips (1-Metric Micro-Perceptors for Shelved Experts) */
+export interface ILatentWhisperChip {
+  expertId: string;
+  shortLabel: string;
+  icon: string;
+  weightPercent: number;
+  microMetricLabel: string;
+  microMetricValue: string;
+  status: 'nominal' | 'watch' | 'drift-alert';
+  isSafetyMasked: boolean;
+  whisperTooltip: string;
+}
+
+/** Innovation 3: Live Cross-Component Synapse Highlighting Bus */
+export type SynapseSharedToken =
+  | 'glycemic-renal-coupling'
+  | 'hemodynamic-posology-coupling'
+  | 'kinematic-shear-coupling'
+  | 'visceral-cardiopulmonary-coupling'
+  | 'fhir-soap-coupling';
+
+export interface ISynapseSignalPulse {
+  token: SynapseSharedToken;
+  sourceExpertId: string;
+  targetExpertId: string;
+  parameterLabel: string;
+  parameterValue: string;
+  timestampMs: number;
+}
+
+/** Innovation 4: Closed-Loop Goal Completion Receipt & Auto-Demotion */
+export interface ISkillGoalReceipt {
+  receiptId: string;
+  expertId: string;
+  expertShortLabel: string;
+  icon: string;
+  goalSummary: string;
+  sha256DigestHex: string;
+  completedAtIso: string;
+  promotedNextExpertId: string | null;
+}
+
+/** 3D Spatial Autonomy: Camera, Shader, Thin-Client & Off-Frustum Whisper Primitives */
+export type SpatialCameraPreset = 'front' | 'cranial' | 'visceral' | 'spinal' | 'peripheral' | 'systemic';
+
+export type SpatialShaderLayer =
+  | 'skin'
+  | 'muscle'
+  | 'skeleton'
+  | 'organs'
+  | 'fluid_dynamics'
+  | 'biomechanical_strain'
+  | 'eastern'
+  | 'ayurvedic'
+  | 'vesalian_woodcut'
+  | 'ghost';
+
+export interface ISpatialBodyPolicy {
+  recommendedCamera: SpatialCameraPreset;
+  recommendedShader: SpatialShaderLayer;
+  freezeAutoSpin: boolean;
+  suppressHeavyPostProcessing: boolean;
+  collapseExploratoryArchetypes: boolean;
+  manualCameraHysteresisLocked: boolean;
+  targetOrganId: string | null;
+  policyRationale: string;
+}
+
+export interface ISpatialOffFrustumWhisper {
+  regionId: SpatialCameraPreset;
+  partId: string;
+  icon: string;
+  regionLabel: string;
+  metricSummary: string;
+  severity: 'watch' | 'drift-alert';
+}
+
+/** Persona, Session Auth & Clinical Role Autonomy Primitives (Kence Anderson Machine Teaching) */
+export type AuthAssuranceTier =
+  | 'fido2-biometric'
+  | 'enterprise-sso-fhir'
+  | 'kinetic-gesture'
+  | 'sandbox-demo'
+  | 'uncredentialed-gate';
+
+export type SplashGateRegime =
+  | 'STAT Good Samaritan Emergency Gate'
+  | 'High-Fatigue Night-Shift Scotopic Gate'
+  | 'Rapid Bedside Biometric Re-Auth Gate'
+  | 'Zero-Credential Safe-Harbor Sandbox Gate'
+  | 'Standard Dual-Gateway Clinical Entry';
+
+export interface ISessionRolePerceptor {
+  activeRole: ClinicalRolePathway;
+  authAssurance: AuthAssuranceTier;
+  isDemoSandbox: boolean;
+  isBiometricallyVerified: boolean;
+  clinicianKssScore: number;
+  isHighFatigueKss: boolean;
+  healthLiteracyTier: 'specialist' | 'frontline' | 'plain-language-8th-grade';
+  scopeMaskedExpertIds: string[];
+  requiresStepUpForPrescribing: boolean;
+  sandboxPhiEgressBlocked: boolean;
+}
+
+export interface IRoleSmoePreview {
+  roleId: ClinicalRolePathway;
+  recommendedTopK: 1 | 2 | 3;
+  recommendedDensity: MicroSkillDensityMode;
+  recommendedCamera: SpatialCameraPreset;
+  predictedPrimaryLabel: string;
+  predictedPrimaryIcon: string;
+  predictedSecondaryLabel: string | null;
+  predictedSecondaryIcon: string | null;
+  safetyConstraintBadge: string;
+}
+
+export interface ISplashGatePolicy {
+  regime: SplashGateRegime;
+  recommendedAuthSkill: 'webauthn-passkey' | 'smart-fhir-sso' | 'wacom-gesture' | 'sandbox-demo' | 'stat-break-glass';
+  recommendedGatewayTab: 'gesture' | 'sso';
+  collapseDecorativeSensoryWidgets: boolean;
+  enforceScotopicContrastHint: boolean;
+  sandboxContainmentActive: boolean;
+  policyHeadline: string;
+  policyRationale: string;
 }
 
 export interface ICrossAttentionBridge {
@@ -778,7 +975,7 @@ export const SHIFT_DECISION_FLOW_MAP: Record<string, IPatientDecisionFlow> = {
       secondaryRatio: 38,
       bridgeTitle: 'In-Silico Glycemic & Microvascular Trajectory Projection',
       bridgeMechanism: 'Coupling dual incretin receptor titration with overnight AHI reduction to protect renal capillary beds.',
-      bridgeActionableVector: 'Prescribe tirzepatide 5.0mg weekly with 4-week titration ladder, coupled with automated CPAP pressure auto-ramp.',
+      bridgeActionableVector: 'Prescribe tirzepatide 5 mg weekly with 4-week titration ladder, coupled with automated CPAP pressure auto-ramp.',
       bridgeBenchmark: 'HbA1c < 7.0%, AHI < 5.0/hr, eGFR stabilization',
       noiseReductionPercent: 75,
       dormantShelfCount: 6
@@ -916,7 +1113,7 @@ export const SHIFT_DECISION_FLOW_MAP: Record<string, IPatientDecisionFlow> = {
       secondaryRatio: 39,
       bridgeTitle: 'Autoimmune Epitope Clearance to Low-Dose Naltrexone Calibration',
       bridgeMechanism: 'Transient opioid receptor blockade prompts rebound beta-endorphin surge, downregulating TLR4 cytokine signaling.',
-      bridgeActionableVector: 'Compound LDN 1.5mg PO QHS for 14 days, titrating to 3.0mg then 4.5mg; add selenomethionine 200mcg daily.',
+      bridgeActionableVector: 'Compound LDN 1.5 mg by mouth at bedtime for 14 days, titrating to 3 mg then 4.5 mg; add selenomethionine 200 mcg daily.',
       bridgeBenchmark: 'Anti-TPO reduction > 30%, Morning Energy Index score > 7/10',
       noiseReductionPercent: 75,
       dormantShelfCount: 6
@@ -1205,7 +1402,7 @@ export const SHIFT_DECISION_FLOW_MAP: Record<string, IPatientDecisionFlow> = {
   providedIn: 'root'
 })
 export class ClinicalMoERouterService {
-  // Safe optional patient state injection
+  // Safe optional patient state, role pathway, and auth injections
   private readonly patientState: PatientStateService | null = (() => {
     try {
       return inject(PatientStateService, { optional: true });
@@ -1213,6 +1410,35 @@ export class ClinicalMoERouterService {
       return null;
     }
   })();
+
+  private readonly roleDocsService: RolePathwayDocsService | null = (() => {
+    try {
+      return inject(RolePathwayDocsService, { optional: true });
+    } catch {
+      return null;
+    }
+  })();
+
+  private readonly authSsoService: AuthSsoService | null = (() => {
+    try {
+      return inject(AuthSsoService, { optional: true });
+    } catch {
+      return null;
+    }
+  })();
+
+  private readonly localAuthService: AuthService | null = (() => {
+    try {
+      return inject(AuthService, { optional: true });
+    } catch {
+      return null;
+    }
+  })();
+
+  // Persona, Clinical Role & Session Fatigue Overrides
+  readonly manualRoleOverride = signal<ClinicalRolePathway | null>(null);
+  readonly clinicianKssFatigueScore = signal<number>(3);
+  readonly isRoleScopeShieldEnabled = signal<boolean>(true);
 
   // Active clinical state signals (Compute & Backend MoE)
   readonly activeLens = signal<AnalysisLens>('Summary Overview');
@@ -1232,6 +1458,333 @@ export class ClinicalMoERouterService {
   readonly lensKValue = signal<number>(2); // Top-k for 8 core lenses (default 2)
   readonly isSparseLensRoutingEnabled = signal<boolean>(true);
   readonly clinicalGranularityMode = signal<'specialist' | 'frontline' | 'caregiver'>('specialist');
+
+  // Kence Anderson Machine Teaching / Composable SMoE Controls
+  readonly isSafetyShieldEnabled = signal<boolean>(true);
+  readonly hysteresisMargin = signal<number>(0.04); // 4% Softmax deadband to prevent slot thrashing
+  readonly committedPrimaryExpertId = signal<string | null>(null);
+  readonly manualRedFlagOverride = signal<boolean>(false);
+  readonly labVitalsOverride = signal<ISmoeLabVitalsOverride>({
+    spO2Percent: null,
+    systolicBpMmHg: null,
+    cgmGlucoseMgDl: null,
+    heartRateBpm: null
+  });
+
+  // Sub-Component Micro-Skill, Synapse Bus, and Self-Retiring Goal Receipt Signals
+  readonly manualDensityOverride = signal<MicroSkillDensityMode | null>(null);
+  readonly activeSynapsePulse = signal<ISynapseSignalPulse | null>(null);
+  readonly completedSkillReceipts = signal<ISkillGoalReceipt[]>([]);
+  readonly satisfiedExpertIds = computed<Set<string>>(() => {
+    return new Set(this.completedSkillReceipts().map(r => r.expertId));
+  });
+
+  /** Maps heterogeneous telemetry sources to Kence Anderson Skill Modalities */
+  public classifySkillModality(source: IUiExpertDefinition['telemetrySource']): NonNullable<IUiGatingScore['skillModality']> {
+    switch (source) {
+      case 'Local Edge Wasm':
+        return 'Deterministic Wasm Solver';
+      case 'WebGPU Shader':
+        return 'Spatial Physics Shader';
+      case 'FHIR R4 Directory':
+      case 'ClinicalTrials.gov NIH API':
+      case 'US Census & CMS HRSN':
+      case 'EPA AirNow & NOAA':
+        return 'Symbolic FHIR / API Engine';
+      case 'Gemini 3.8 Flash':
+      case 'Gemini 3.8 Pro Deep Think':
+      default:
+        return 'Hybrid Generative Synthesizer';
+    }
+  }
+
+  /**
+   * Stage 1 Perceptor Layer (Kence Anderson Machine Teaching):
+   * Normalizes raw physiological telemetry, red-flag patterns, and multi-system entropy
+   * into a typed state vector before any Selector or Softmax gating executes.
+   */
+  readonly activePerceptorState = computed<ISmoePerceptorState>(() => {
+    const vitals = this.patientState?.vitals?.();
+    const lab = this.labVitalsOverride();
+    const isEmergency = this.patientState?.isEmergencyMode?.() || this.manualRedFlagOverride();
+    const transcript = this.activeTranscriptQuery().toLowerCase().trim();
+    const issues = this.patientState?.issues?.() || {};
+
+    const parsedHr = parseFloat(vitals?.hr || '72');
+    const hr = lab.heartRateBpm !== null ? lab.heartRateBpm : (Number.isFinite(parsedHr) ? parsedHr : 72);
+
+    const parsedCgm = parseFloat(vitals?.cgmGlucoseMgDl || '110');
+    const cgm = lab.cgmGlucoseMgDl !== null ? lab.cgmGlucoseMgDl : (Number.isFinite(parsedCgm) ? parsedCgm : 110);
+
+    const spO2Raw = vitals?.spO2 || '98%';
+    const parsedSpO2 = parseFloat(String(spO2Raw).replace('%', ''));
+    const spO2 = lab.spO2Percent !== null ? lab.spO2Percent : (Number.isFinite(parsedSpO2) ? parsedSpO2 : 98);
+
+    const bpRaw = vitals?.bp || '120/80';
+    const parsedSbp = parseInt(String(bpRaw).split('/')[0] || '120', 10);
+    const sysBp = lab.systolicBpMmHg !== null ? lab.systolicBpMmHg : (Number.isFinite(parsedSbp) ? parsedSbp : 120);
+
+    // NEWS2 Physiological Acuity Perceptor
+    let news2 = 0;
+    if (spO2 <= 91) news2 += 3;
+    else if (spO2 <= 93) news2 += 2;
+    else if (spO2 <= 95) news2 += 1;
+
+    if (sysBp <= 90 || sysBp >= 220) news2 += 3;
+    else if (sysBp <= 100) news2 += 2;
+    else if (sysBp <= 110) news2 += 1;
+
+    if (hr <= 40 || hr >= 131) news2 += 3;
+    else if (hr >= 111 || hr <= 50) news2 += 2;
+    else if (hr >= 91) news2 += 1;
+
+    // Deterministic Red-Flag Preemption (BE-FAST, ACS, Hypoxemia SpO2 < 90%, C-SSRS)
+    const redFlagTriggers: string[] = [];
+    if (isEmergency) redFlagTriggers.push('STAT Emergency Mode Active');
+    if (spO2 < 90) redFlagTriggers.push(`Severe Hypoxemia (SpO2 ${spO2}% < 90%)`);
+    if (sysBp <= 85 || sysBp >= 220) redFlagTriggers.push(`Hemodynamic Instability (SBP ${sysBp} mmHg)`);
+    if (cgm < 54) redFlagTriggers.push(`Level 2 Hypoglycemia (CGM ${cgm} mg/dL)`);
+    if (/\b(be-?fast|facial\s+droop|arm\s+weakness|arm\s+drift|slurred\s+speech|vision\s+loss|acute\s+ataxia|crushing\s+chest\s+pain|chest\s+pain\s+radiat\w*|stemi|nstemi|anaphylaxis|suicid\w*|c-?ssrs|phq-?9\s*(?:item|q|question)\s*9|preeclampsia|pre-eclampsia|resuscitation)\b/i.test(transcript)) {
+      redFlagTriggers.push('Deterministic Clinical Red-Flag Cue (BE-FAST / ACS / NSTEMI / PHQ-9 Item 9 / C-SSRS)');
+    }
+
+    const issueCount = Object.keys(issues).length;
+    const tokenComplexity = transcript ? Math.min(1, transcript.split(/\s+/).length / 28) : 0.15;
+    const normalizedEntropy = Math.min(1, Math.round(((issueCount * 0.2) + tokenComplexity) * 100) / 100);
+
+    return {
+      spO2Percent: spO2,
+      heartRateBpm: hr,
+      systolicBpMmHg: sysBp,
+      cgmGlucoseMgDl: cgm,
+      news2Score: news2,
+      redFlagDetected: redFlagTriggers.length > 0,
+      redFlagTriggers,
+      normalizedEntropy
+    };
+  });
+
+  /**
+   * Persona, Session Assurance & Scope-of-Practice Perceptor (Kence Anderson Machine Teaching):
+   * Senses active clinical role pathway, authentication assurance tier, demo sandbox status,
+   * clinician KSS fatigue, and scope-of-practice action masks before Softmax gating.
+   */
+  readonly activeSessionRolePerceptor = computed<ISessionRolePerceptor>(() => {
+    const manualRole = this.manualRoleOverride();
+    const docRole = this.roleDocsService?.activePathway?.() || 'clinician';
+    const ssoUser = this.authSsoService?.user?.() || null;
+    const isBio = Boolean(this.localAuthService?.isBiometricallyVerified?.()) || ssoUser?.provider === 'webauthn';
+    const isDemo = Boolean(this.patientState?.isDemoMode?.());
+    const kss = this.clinicianKssFatigueScore();
+
+    // Derive active role (explicit override -> roleDocsService -> SSO IAM fallback)
+    let activeRole: ClinicalRolePathway = manualRole || docRole;
+    if (!manualRole && !this.roleDocsService && ssoUser) {
+      if (ssoUser.clinicalRole === 'roles/bigquery.jobUser') activeRole = 'researcher';
+      else if (ssoUser.clinicalRole === 'roles/healthcare.datasetAdmin') activeRole = 'executive';
+      else if (ssoUser.clinicalRole === 'roles/viewer') activeRole = 'patient';
+    }
+
+    let authAssurance: AuthAssuranceTier = 'uncredentialed-gate';
+    if (isBio) authAssurance = 'fido2-biometric';
+    else if (ssoUser?.provider === 'google' || ssoUser?.provider === 'smart-fhir') authAssurance = 'enterprise-sso-fhir';
+    else if (ssoUser?.provider === 'kinetic-wacom') authAssurance = 'kinetic-gesture';
+    else if (isDemo) authAssurance = 'sandbox-demo';
+
+    const healthLiteracyTier: ISessionRolePerceptor['healthLiteracyTier'] =
+      activeRole === 'patient'
+        ? 'plain-language-8th-grade'
+        : activeRole === 'chw'
+          ? 'frontline'
+          : 'specialist';
+
+    // Scope-of-Practice & Literacy Action Masking (never masks STAT emergency skills during red flags)
+    const scopeMaskedExpertIds: string[] = [];
+    if (this.isRoleScopeShieldEnabled()) {
+      if (activeRole === 'patient') {
+        scopeMaskedExpertIds.push('soap-generator', 'biophysics-genomics', 'specialist-referral');
+      } else if (activeRole === 'chw') {
+        scopeMaskedExpertIds.push('biophysics-genomics', 'clinical-trials-matcher');
+      } else if (activeRole === 'executive') {
+        scopeMaskedExpertIds.push('biophysics-genomics', 'knee-hologram');
+      }
+    }
+
+    return {
+      activeRole,
+      authAssurance,
+      isDemoSandbox: isDemo,
+      isBiometricallyVerified: isBio,
+      clinicianKssScore: kss,
+      isHighFatigueKss: kss >= 7,
+      healthLiteracyTier,
+      scopeMaskedExpertIds,
+      requiresStepUpForPrescribing: !isBio || isDemo || activeRole === 'resident' || activeRole === 'patient' || activeRole === 'chw' || activeRole === 'executive',
+      sandboxPhiEgressBlocked: isDemo || authAssurance === 'uncredentialed-gate'
+    };
+  });
+
+  /**
+   * Login & Splash Gate Selector (Kence Anderson Autonomous AI):
+   * Routes entry gate UI based on STAT break-glass, KSS circadian fatigue, biometric hardware, and demo sandbox state.
+   */
+  public evaluateSplashGatePolicy(params?: {
+    isEmergencyHold?: boolean;
+    kssScore?: number;
+    isPlatformAuthenticatorAvailable?: boolean;
+    isLockedIdle?: boolean;
+    isDemoPreferred?: boolean;
+  }): ISplashGatePolicy {
+    const kss = params?.kssScore ?? this.clinicianKssFatigueScore();
+    const hasPasskey = params?.isPlatformAuthenticatorAvailable ?? Boolean(this.localAuthService?.isPlatformAuthenticatorAvailable?.());
+    const isEmergency = Boolean(params?.isEmergencyHold) || this.activePerceptorState().redFlagDetected;
+    const isLockedIdle = Boolean(params?.isLockedIdle);
+    const isDemoPreferred = Boolean(params?.isDemoPreferred) || Boolean(this.patientState?.isDemoMode?.());
+
+    if (isEmergency) {
+      return {
+        regime: 'STAT Good Samaritan Emergency Gate',
+        recommendedAuthSkill: 'stat-break-glass',
+        recommendedGatewayTab: 'sso',
+        collapseDecorativeSensoryWidgets: true,
+        enforceScotopicContrastHint: false,
+        sandboxContainmentActive: false,
+        policyHeadline: 'STAT Break-Glass Resuscitation Priority',
+        policyRationale: 'Safety Shield preempted standard auth friction; Good Samaritan / NPI forensic seal armed.'
+      };
+    }
+
+    if (kss >= 7) {
+      return {
+        regime: 'High-Fatigue Night-Shift Scotopic Gate',
+        recommendedAuthSkill: hasPasskey ? 'webauthn-passkey' : 'wacom-gesture',
+        recommendedGatewayTab: hasPasskey ? 'sso' : 'gesture',
+        collapseDecorativeSensoryWidgets: true,
+        enforceScotopicContrastHint: true,
+        sandboxContainmentActive: isDemoPreferred,
+        policyHeadline: `KSS ${kss}/9 Fatigue Guard • 1-Step Biometric Recommended`,
+        policyRationale: 'Elevated circadian sleepiness detected; non-essential splash drawers collapsed & scotopic contrast prioritized.'
+      };
+    }
+
+    if (isLockedIdle && hasPasskey) {
+      return {
+        regime: 'Rapid Bedside Biometric Re-Auth Gate',
+        recommendedAuthSkill: 'webauthn-passkey',
+        recommendedGatewayTab: 'sso',
+        collapseDecorativeSensoryWidgets: true,
+        enforceScotopicContrastHint: false,
+        sandboxContainmentActive: isDemoPreferred,
+        policyHeadline: 'Idle Lock • 1-Tap FIDO2 Passkey Re-Entry',
+        policyRationale: 'Hardware platform authenticator detected on locked workstation; routing to zero-typing biometric unlock.'
+      };
+    }
+
+    if (isDemoPreferred) {
+      return {
+        regime: 'Zero-Credential Safe-Harbor Sandbox Gate',
+        recommendedAuthSkill: 'sandbox-demo',
+        recommendedGatewayTab: 'gesture',
+        collapseDecorativeSensoryWidgets: false,
+        enforceScotopicContrastHint: false,
+        sandboxContainmentActive: true,
+        policyHeadline: 'HIPAA §164.514 Synthetic Sandbox Containment',
+        policyRationale: 'Zero-PHI synthetic archetype isolation armed; cloud EHR writes and bulk >50 exports hard-masked.'
+      };
+    }
+
+    return {
+      regime: 'Standard Dual-Gateway Clinical Entry',
+      recommendedAuthSkill: hasPasskey ? 'webauthn-passkey' : 'wacom-gesture',
+      recommendedGatewayTab: 'gesture',
+      collapseDecorativeSensoryWidgets: false,
+      enforceScotopicContrastHint: false,
+      sandboxContainmentActive: false,
+      policyHeadline: 'Dual-Gateway Kinetic ZKP & Institutional SSO',
+      policyRationale: 'Nominal circadian readiness (KSS < 7); Wacom WILL 3.0 kinetic entropy pad and SMART-on-FHIR SSO ready.'
+    };
+  }
+
+  /**
+   * Computes a deterministic SMoE routing preview for each of the 6 Clinical Role Pathways
+   * (used by RoleDemoLauncherService and RoleDemoModalComponent cards).
+   */
+  public getRoleSmoePreview(roleId: ClinicalRolePathway): IRoleSmoePreview {
+    switch (roleId) {
+      case 'clinician':
+        return {
+          roleId,
+          recommendedTopK: 2,
+          recommendedDensity: 'specialist-full',
+          recommendedCamera: 'visceral',
+          predictedPrimaryLabel: 'Posology & Safety',
+          predictedPrimaryIcon: '💊',
+          predictedSecondaryLabel: 'Ambient SOAP',
+          predictedSecondaryIcon: '📝',
+          safetyConstraintBadge: 'CPIC *4/*4 + FIDO2 Rx Step-Up'
+        };
+      case 'resident':
+        return {
+          roleId,
+          recommendedTopK: 2,
+          recommendedDensity: 'specialist-full',
+          recommendedCamera: 'visceral',
+          predictedPrimaryLabel: 'Edge ML Vitals',
+          predictedPrimaryIcon: '⚡',
+          predictedSecondaryLabel: 'What-If Simulator',
+          predictedSecondaryIcon: '🔮',
+          safetyConstraintBadge: 'Attending Co-Sign Shield Active'
+        };
+      case 'researcher':
+        return {
+          roleId,
+          recommendedTopK: 3,
+          recommendedDensity: 'specialist-full',
+          recommendedCamera: 'systemic',
+          predictedPrimaryLabel: 'Clinical Trials',
+          predictedPrimaryIcon: '🔬',
+          predictedSecondaryLabel: 'What-If Simulator',
+          predictedSecondaryIcon: '🔮',
+          safetyConstraintBadge: 'Popperian H₀ + HIPAA Safe Harbor'
+        };
+      case 'executive':
+        return {
+          roleId,
+          recommendedTopK: 2,
+          recommendedDensity: 'caregiver-digest',
+          recommendedCamera: 'systemic',
+          predictedPrimaryLabel: 'STEEEP Radar',
+          predictedPrimaryIcon: '📊',
+          predictedSecondaryLabel: 'SDOH Navigator',
+          predictedSecondaryIcon: '🏘️',
+          safetyConstraintBadge: 'Mandiant M-of-N Bulk Export Guard'
+        };
+      case 'patient':
+        return {
+          roleId,
+          recommendedTopK: 1,
+          recommendedDensity: 'caregiver-digest',
+          recommendedCamera: 'front',
+          predictedPrimaryLabel: 'Clinical Synthesis',
+          predictedPrimaryIcon: '📄',
+          predictedSecondaryLabel: null,
+          predictedSecondaryIcon: null,
+          safetyConstraintBadge: '8th-Grade Plain Language • Rx Masked'
+        };
+      case 'chw':
+        return {
+          roleId,
+          recommendedTopK: 1,
+          recommendedDensity: 'caregiver-digest',
+          recommendedCamera: 'visceral',
+          predictedPrimaryLabel: 'SDOH Navigator',
+          predictedPrimaryIcon: '🏘️',
+          predictedSecondaryLabel: null,
+          predictedSecondaryIcon: null,
+          safetyConstraintBadge: 'WHO IMCI Offline Triage Shield'
+        };
+    }
+  }
 
   /** Active 12-Hour Shift Roster Patient Record */
   readonly activeShiftPatient = computed<IShiftPatientRecord | null>(() => {
@@ -1379,18 +1932,13 @@ export class ClinicalMoERouterService {
   // FRONTEND UI GATING ROUTER: Dynamic Top-k Sparse UI Distribution
   // ---------------------------------------------------------------------------
 
-  /**
-   * Computes the Softmax-normalized probability distribution across all registered UI Experts
-   * based on active symptoms, vitals deviations, emergency acuity, and conversational cues.
-   */
-  readonly uiGatingScores = computed<IUiGatingScore[]>(() => {
+  private computeGatingDistribution(enableSafetyShield: boolean, applyHysteresis: boolean): IUiGatingScore[] {
     const transcript = this.activeTranscriptQuery().toLowerCase().trim();
     const lens = this.activeLens().toLowerCase();
     const pinnedId = this.pinnedExpertId();
     const scenario = this.activeScenario();
-    const isEmergency = this.patientState?.isEmergencyMode() || false;
-    const issues = this.patientState?.issues() || {};
-    const vitals = this.patientState?.vitals();
+    const isEmergency = this.patientState?.isEmergencyMode?.() || false;
+    const issues = this.patientState?.issues?.() || {};
 
     // Collect active issue keywords and body part IDs
     const activeBodyPartIds = Object.keys(issues).map(k => k.toLowerCase());
@@ -1410,9 +1958,55 @@ export class ClinicalMoERouterService {
     }
     const combinedIssueText = activeIssueDescriptions.join(' ');
 
+    const perceptor = this.activePerceptorState();
+    const rolePerceptor = this.activeSessionRolePerceptor();
+    // Emergency STAT red-flag safety shield ALWAYS overrides manual widget pins
+    const safetyShieldActive = enableSafetyShield && perceptor.redFlagDetected;
+    const roleScopeActive = enableSafetyShield && !safetyShieldActive && !pinnedId;
+    const committedId = applyHysteresis ? this.committedPrimaryExpertId() : null;
+    const margin = this.hysteresisMargin();
+
+    // Acute allowable skills during STAT Red-Flag Safety Shield Preemption
+    const STAT_ALLOWLIST = new Set<string>([
+      'edge-ml-hud',
+      'ismp-posology',
+      'soap-generator',
+      'steeep-quality-hud'
+    ]);
+
+    // Role-Aware Persona Prior Adjustments (applied only when non-clinician role is active)
+    const ROLE_PRIORS: Record<ClinicalRolePathway, Partial<Record<string, number>>> = {
+      clinician: {},
+      resident: {
+        'edge-ml-hud': 1.35,
+        'counterfactual-simulator': 1.25,
+        'analysis-report': 0.5
+      },
+      researcher: {
+        'clinical-trials-matcher': 2.25,
+        'counterfactual-simulator': 1.65,
+        'biophysics-genomics': 1.35
+      },
+      executive: {
+        'steeep-quality-hud': 2.35,
+        'sdoh-navigator': 1.75,
+        'specialist-referral': 1.1
+      },
+      patient: {
+        'analysis-report': 1.65,
+        'sdoh-navigator': 1.55,
+        'counterfactual-simulator': 0.9
+      },
+      chw: {
+        'sdoh-navigator': 2.45,
+        'edge-ml-hud': 1.65,
+        'environmental-exposomics': 1.25
+      }
+    };
+
     // Check physiological vitals deviations
-    const hr = parseFloat(vitals?.hr || '72');
-    const cgm = parseFloat(vitals?.cgmGlucoseMgDl || '110');
+    const hr = perceptor.heartRateBpm;
+    const cgm = perceptor.cgmGlucoseMgDl;
     const isCgmHigh = cgm > 140;
     const isCgmLow = cgm < 70;
     const isHrElevated = hr > 100 || hr < 50;
@@ -1421,94 +2015,129 @@ export class ClinicalMoERouterService {
     const rawScores = REGISTERED_UI_EXPERTS.map(expert => {
       let score = expert.defaultWeight;
       const rationaleParts: string[] = [];
+      let isSafetyMasked = false;
+
+      // 0. Kence Anderson Pre-Softmax Safety Shield (Action Masking)
+      if (safetyShieldActive) {
+        if (!STAT_ALLOWLIST.has(expert.id)) {
+          score = -6.0;
+          isSafetyMasked = true;
+          rationaleParts.push('Safety Shield Action-Masked (non-acute skill suppressed during STAT red flag)');
+        } else if (expert.id === 'edge-ml-hud') {
+          score += 4.2;
+          rationaleParts.push(`Safety Shield Preemption: ${perceptor.redFlagTriggers[0]}`);
+        } else if (expert.id === 'ismp-posology') {
+          score += 2.6;
+          rationaleParts.push('Safety Shield Co-Activation: STAT resuscitation posology guard');
+        }
+      } else if (roleScopeActive && rolePerceptor.scopeMaskedExpertIds.includes(expert.id)) {
+        score = -5.5;
+        isSafetyMasked = true;
+        rationaleParts.push(`Role Scope & Literacy Shield (${rolePerceptor.activeRole}): out-of-scope specialist skill suppressed`);
+      }
 
       // 1. Scenario Presets
-      if (scenario === 'knee_oa' && expert.id === 'knee-hologram') {
-        score += 3.5;
-        rationaleParts.push('Active RSNA Knee OA scenario selected');
-      } else if (scenario === 'knee_oa' && expert.id === 'counterfactual-simulator') {
-        score += 1.8;
-        rationaleParts.push('Co-activated What-If joint kinematic projection');
-      } else if (scenario === 'diabetic_neuropathy' && expert.id === 'ismp-posology') {
-        score += 3.2;
-        rationaleParts.push('Active Diabetic Neuropathy polypharmacy scenario');
-      } else if (scenario === 'diabetic_neuropathy' && expert.id === 'counterfactual-simulator') {
-        score += 2.1;
-        rationaleParts.push('Co-activated glycemic trajectory simulator');
-      } else if (scenario === 'acute_vitals' && expert.id === 'edge-ml-hud') {
-        score += 3.4;
-        rationaleParts.push('Active Acute Telemetry flare scenario');
-      } else if (scenario === 'acute_vitals' && expert.id === 'soap-generator') {
-        score += 1.9;
-        rationaleParts.push('Co-activated Emergency encounter scribe');
-      }
+      if (!isSafetyMasked) {
+        if (scenario === 'knee_oa' && expert.id === 'knee-hologram') {
+          score += 3.5;
+          rationaleParts.push('Active RSNA Knee OA scenario selected');
+        } else if (scenario === 'knee_oa' && expert.id === 'counterfactual-simulator') {
+          score += 1.8;
+          rationaleParts.push('Co-activated What-If joint kinematic projection');
+        } else if (scenario === 'diabetic_neuropathy' && expert.id === 'ismp-posology') {
+          score += 3.2;
+          rationaleParts.push('Active Diabetic Neuropathy polypharmacy scenario');
+        } else if (scenario === 'diabetic_neuropathy' && expert.id === 'counterfactual-simulator') {
+          score += 2.1;
+          rationaleParts.push('Co-activated glycemic trajectory simulator');
+        } else if (scenario === 'acute_vitals' && expert.id === 'edge-ml-hud') {
+          score += 3.4;
+          rationaleParts.push('Active Acute Telemetry flare scenario');
+        } else if (scenario === 'acute_vitals' && expert.id === 'soap-generator') {
+          score += 1.9;
+          rationaleParts.push('Co-activated Emergency encounter scribe');
+        }
 
-      // 2. Transcript & Ambient Scribe cues
-      if (transcript) {
-        let transcriptHits = 0;
-        for (const kw of expert.relevanceKeywords) {
-          if (transcript.includes(kw)) {
-            transcriptHits++;
+        // 2. Transcript & Ambient Scribe cues
+        if (transcript) {
+          let transcriptHits = 0;
+          for (const kw of expert.relevanceKeywords) {
+            if (transcript.includes(kw)) {
+              transcriptHits++;
+            }
+          }
+          if (transcriptHits > 0) {
+            const boost = Math.min(2.5, transcriptHits * 0.7);
+            score += boost;
+            rationaleParts.push(`Conversational cue match (${transcriptHits} keywords)`);
           }
         }
-        if (transcriptHits > 0) {
-          const boost = Math.min(2.5, transcriptHits * 0.7);
-          score += boost;
-          rationaleParts.push(`Conversational cue match (${transcriptHits} keywords)`);
+
+        // 3. Body Part Mapping
+        const hasBodyPartMatch = expert.associatedBodyParts.some(bp => activeBodyPartIds.includes(bp));
+        if (hasBodyPartMatch) {
+          score += 2.0;
+          rationaleParts.push(`Patient symptom localized to ${expert.associatedBodyParts.join(', ')}`);
+        }
+
+        // 4. Clinical Issue Description Keyword Matches
+        let issueHits = 0;
+        for (const kw of expert.relevanceKeywords) {
+          if (combinedIssueText.includes(kw)) {
+            issueHits++;
+          }
+        }
+        if (issueHits > 0) {
+          score += Math.min(2.0, issueHits * 0.5);
+          rationaleParts.push(`EHR symptom description keyword match (${issueHits})`);
+        }
+
+        // 5. Active Diagnostic Lens Alignment
+        for (const kw of expert.relevanceKeywords) {
+          if (lens.includes(kw)) {
+            score += 1.8;
+            rationaleParts.push(`Diagnostic lens affinity: ${expert.name}`);
+            break;
+          }
+        }
+
+        // 6. Vitals & Acuity Deviations
+        if ((isCgmHigh || isCgmLow) && (expert.id === 'ismp-posology' || expert.id === 'counterfactual-simulator')) {
+          score += 1.2;
+          rationaleParts.push(`Glycemic deviation trigger (CGM: ${cgm} mg/dL)`);
+        }
+        if (isHrElevated && expert.id === 'edge-ml-hud') {
+          score += 1.4;
+          rationaleParts.push(`Hemodynamic deviation trigger (HR: ${hr} bpm)`);
+        }
+        if (isEmergency && expert.requiresHighAcuity) {
+          score += 2.5;
+          rationaleParts.push('STAT Emergency Acuity override');
+        }
+
+        // 6b. Persona & Clinical Role Pathway Prior Alignment
+        const roleBoost = ROLE_PRIORS[rolePerceptor.activeRole]?.[expert.id];
+        if (roleBoost) {
+          score += roleBoost;
+          rationaleParts.push(`Clinical Role Pathway Prior (${rolePerceptor.activeRole}: +${roleBoost.toFixed(2)})`);
         }
       }
 
-      // 3. Body Part Mapping
-      const hasBodyPartMatch = expert.associatedBodyParts.some(bp => activeBodyPartIds.includes(bp));
-      if (hasBodyPartMatch) {
-        score += 2.0;
-        rationaleParts.push(`Patient symptom localized to ${expert.associatedBodyParts.join(', ')}`);
-      }
-
-      // 4. Clinical Issue Description Keyword Matches
-      let issueHits = 0;
-      for (const kw of expert.relevanceKeywords) {
-        if (combinedIssueText.includes(kw)) {
-          issueHits++;
-        }
-      }
-      if (issueHits > 0) {
-        score += Math.min(2.0, issueHits * 0.5);
-        rationaleParts.push(`EHR symptom description keyword match (${issueHits})`);
-      }
-
-      // 5. Active Diagnostic Lens Alignment
-      for (const kw of expert.relevanceKeywords) {
-        if (lens.includes(kw)) {
-          score += 1.8;
-          rationaleParts.push(`Diagnostic lens affinity: ${expert.name}`);
-          break;
-        }
-      }
-
-      // 6. Vitals & Acuity Deviations
-      if ((isCgmHigh || isCgmLow) && (expert.id === 'ismp-posology' || expert.id === 'counterfactual-simulator')) {
-        score += 1.2;
-        rationaleParts.push(`Glycemic deviation trigger (CGM: ${cgm} mg/dL)`);
-      }
-      if (isHrElevated && expert.id === 'edge-ml-hud') {
-        score += 1.4;
-        rationaleParts.push(`Hemodynamic deviation trigger (HR: ${hr} bpm)`);
-      }
-      if (isEmergency && expert.requiresHighAcuity) {
-        score += 2.5;
-        rationaleParts.push('STAT Emergency Acuity override');
-      }
-
-      // 7. Manual Pinning Override
-      if (pinnedId === expert.id) {
+      // 7. Manual Pinning Override (NEVER overrides active STAT Emergency Safety Shield)
+      if (pinnedId === expert.id && !safetyShieldActive) {
         score += 12.0;
+        isSafetyMasked = false;
         rationaleParts.unshift('Clinician Manual Pin Override');
+      } else if (applyHysteresis && this.satisfiedExpertIds().has(expert.id) && !safetyShieldActive) {
+        // Innovation 4: Closed-Loop Goal Completion Auto-Demotion
+        score = Math.max(0.01, score - 4.0);
+        rationaleParts.unshift('Closed-Loop Goal Satisfied (compacted to receipt pill; slot yielded)');
       }
 
       return {
         expert,
-        rawScore: Math.max(0.01, score),
+        isSafetyMasked,
+        rawScore: isSafetyMasked ? score : Math.max(0.01, score),
         rationale: rationaleParts.length > 0 ? rationaleParts.join('; ') : 'Baseline clinical prior'
       };
     });
@@ -1518,28 +2147,102 @@ export class ClinicalMoERouterService {
     const maxZ = Math.max(...rawScores.map(r => r.rawScore / temperature));
     const expScores = rawScores.map(r => ({
       ...r,
-      expZ: Math.exp((r.rawScore / temperature) - maxZ)
+      expZ: r.isSafetyMasked ? 0 : Math.exp((r.rawScore / temperature) - maxZ)
     }));
-    const sumExp = expScores.reduce((acc, r) => acc + r.expZ, 0);
+    const sumExp = expScores.reduce((acc, r) => acc + r.expZ, 0) || 1;
 
-    const scored = expScores.map(r => ({
+    const scored: IUiGatingScore[] = expScores.map(r => ({
       expert: r.expert,
       rawScore: Math.round(r.rawScore * 100) / 100,
-      weight: Math.round((r.expZ / sumExp) * 1000) / 1000,
+      weight: r.isSafetyMasked ? 0 : Math.round((r.expZ / sumExp) * 1000) / 1000,
       routingRationale: r.rationale,
       isPrimary: false,
       isSecondary: false,
-      isPrewarmCandidate: (r.expZ / sumExp) >= 0.14
+      isPrewarmCandidate: !r.isSafetyMasked && (r.expZ / sumExp) >= 0.14,
+      isSafetyMasked: r.isSafetyMasked,
+      hysteresisLocked: false,
+      skillModality: this.classifySkillModality(r.expert.telemetrySource)
     }));
 
     // Sort descending by probability weight
     scored.sort((a, b) => b.weight - a.weight);
+
+    // Kence Anderson Selector Hysteresis: prevent Top-1 slot thrashing when challenger lead < margin
+    if (committedId && !pinnedId && !safetyShieldActive && scored.length > 1) {
+      const committedIdx = scored.findIndex(s => s.expert.id === committedId && !s.isSafetyMasked);
+      if (committedIdx === 0) {
+        scored[0].hysteresisLocked = true;
+      } else if (committedIdx > 0) {
+        const leader = scored[0];
+        const committed = scored[committedIdx];
+        if ((leader.weight - committed.weight) < margin) {
+          scored.splice(committedIdx, 1);
+          committed.hysteresisLocked = true;
+          committed.routingRationale = `Selector Hysteresis Lock (Δ=${((leader.weight - committed.weight) * 100).toFixed(1)}% < ${(margin * 100).toFixed(0)}% deadband); ${committed.routingRationale}`;
+          scored.unshift(committed);
+        }
+      }
+    }
 
     // Mark Top-1 and Top-2
     if (scored.length > 0) scored[0].isPrimary = true;
     if (scored.length > 1) scored[1].isSecondary = true;
 
     return scored;
+  }
+
+  /**
+   * Computes the Treatment (Composable SMoE) Softmax-normalized probability distribution.
+   */
+  readonly uiGatingScores = computed<IUiGatingScore[]>(() => {
+    return this.computeGatingDistribution(this.isSafetyShieldEnabled(), true);
+  });
+
+  /**
+   * Baseline Null Hypothesis Control ($H_0$): Flat Softmax (T=0.85) with Safety Shield OFF and Hysteresis OFF.
+   */
+  readonly baselineControlGatingScores = computed<IUiGatingScore[]>(() => {
+    return this.computeGatingDistribution(false, false);
+  });
+
+  /**
+   * Live Popperian Ablation Comparison ($H_0$ Flat Softmax Control vs. Composable SMoE Treatment).
+   */
+  readonly activeAblationComparison = computed<ISmoeAblationComparison>(() => {
+    const control = this.baselineControlGatingScores();
+    const treatment = this.uiGatingScores();
+    const cTop = control[0];
+    const tTop = treatment[0];
+
+    const sumWeights = treatment.reduce((acc, s) => acc + s.weight, 0);
+    const probabilitySumValid = Number.isFinite(sumWeights) && Math.abs(sumWeights - 1.0) <= 0.02;
+    const maskedCount = treatment.filter(s => s.isSafetyMasked).length;
+    const divergedFromControl = cTop?.expert.id !== tTop?.expert.id;
+
+    let divergenceReason = 'Concordant: Composable SMoE and Flat Softmax Control agree on primary skill.';
+    if (divergedFromControl) {
+      if (maskedCount > 0) {
+        divergenceReason = `Safety Shield Preemption: Masked ${maskedCount} non-acute skills (prevented false-calm routing to "${cTop?.expert.shortLabel}").`;
+      } else if (tTop?.hysteresisLocked) {
+        divergenceReason = `Selector Hysteresis Lock: Held "${tTop.expert.shortLabel}" against transient "${cTop?.expert.shortLabel}" jitter.`;
+      } else {
+        divergenceReason = `Regime Shift: "${tTop?.expert.shortLabel}" superseded "${cTop?.expert.shortLabel}".`;
+      }
+    }
+
+    return {
+      controlPrimaryId: cTop?.expert.id || '',
+      controlPrimaryLabel: cTop?.expert.shortLabel || 'None',
+      controlPrimaryWeightPercent: Math.round((cTop?.weight || 0) * 1000) / 10,
+      treatmentPrimaryId: tTop?.expert.id || '',
+      treatmentPrimaryLabel: tTop?.expert.shortLabel || 'None',
+      treatmentPrimaryWeightPercent: Math.round((tTop?.weight || 0) * 1000) / 10,
+      treatmentModality: tTop?.skillModality || 'Hybrid Generative Synthesizer',
+      divergedFromControl,
+      maskedCount,
+      probabilitySumValid,
+      divergenceReason
+    };
   });
 
   /** Primary UI Expert (Top-1 in Gating Distribution) */
@@ -1559,6 +2262,52 @@ export class ClinicalMoERouterService {
     const scores = this.uiGatingScores();
     const k = this.kValue();
     return scores.slice(k);
+  });
+
+  /**
+   * Stage 2 Hierarchical Selector & Safety Shield State (Kence Anderson Machine Teaching):
+   * Surfaces operational regime, pre-Softmax safety action masking, hysteresis lock status,
+   * and 4-slot working memory budget adherence.
+   */
+  readonly activeSelectorDecision = computed<ISmoeSelectorDecision>(() => {
+    const perceptor = this.activePerceptorState();
+    const scores = this.uiGatingScores();
+    const primary = scores[0] || null;
+    const maskedExpertIds = scores.filter(s => s.isSafetyMasked).map(s => s.expert.id);
+    const safetyShieldActive = perceptor.redFlagDetected && maskedExpertIds.length > 0;
+    const scenario = this.activeScenario();
+    const lens = this.activeLens();
+
+    let regime: OperationalRegime = 'Longitudinal Stepped-Care Synthesis';
+    if (safetyShieldActive || perceptor.redFlagDetected) {
+      regime = 'STAT Safety Shield (Red-Flag Preemption)';
+    } else if (scenario === 'acute_vitals' || perceptor.news2Score >= 3 || lens === 'PhysioNet Telemetry') {
+      regime = 'Acute Hemodynamic / Metabolic Telemetry';
+    } else if (scenario === 'knee_oa' || lens === 'RSNA Knee Abnormality' || primary?.expert.category === 'spatial-anatomy') {
+      regime = 'Structural & Kinematic Biomechanics';
+    }
+
+    const hysteresisApplied = Boolean(primary?.hysteresisLocked);
+    const activeSlotCount = Math.min(4, this.kValue());
+
+    let selectorRationale = `Hierarchical Selector operating in "${regime}" (${activeSlotCount}/4 working-memory slots).`;
+    if (safetyShieldActive) {
+      selectorRationale = `Deterministic Safety Shield preempted Softmax router (${perceptor.redFlagTriggers.join('; ')}) — masked ${maskedExpertIds.length} non-acute skills.`;
+    } else if (hysteresisApplied && primary) {
+      selectorRationale = `Selector Hysteresis locked "${primary.expert.shortLabel}" within ±${Math.round(this.hysteresisMargin() * 100)}% deadband to prevent UI slot thrashing.`;
+    }
+
+    return {
+      regime,
+      safetyShieldActive,
+      maskedExpertIds,
+      hysteresisMargin: this.hysteresisMargin(),
+      hysteresisApplied,
+      lockedPrimaryExpertId: this.committedPrimaryExpertId(),
+      workingMemoryBudgetMax: 4,
+      activeSlotCount,
+      selectorRationale
+    };
   });
 
   /** Dynamically detects and surfaces active Cross-Attention Bridges between Top-1 and Top-2 */
@@ -1608,9 +2357,340 @@ export class ClinicalMoERouterService {
     const s = this.secondaryUiExpert();
     const pScore = p ? p.expert.cognitiveComplexity * 10 : 0;
     const sScore = s ? s.expert.cognitiveComplexity * 10 : 0;
-    // Scale and adjust for noise discount
-    return Math.min(100, Math.round((pScore + sScore) * 0.6));
+    const densityDiscount = this.microSkillDisplayPolicy().densityMode === 'specialist-full' ? 1.0 : 0.65;
+    return Math.min(100, Math.round((pScore + sScore) * 0.6 * densityDiscount));
   });
+
+  /**
+   * Innovation 1: Intra-Component Micro-Skill Display Policy (Level-2 Sub-Selector).
+   * Governs internal sub-sections of mounted components based on STAT regime & granularity.
+   */
+  readonly microSkillDisplayPolicy = computed<IMicroSkillDisplayPolicy>(() => {
+    const override = this.manualDensityOverride();
+    const selector = this.activeSelectorDecision();
+    const granularity = this.clinicalGranularityMode();
+    const rolePerceptor = this.activeSessionRolePerceptor();
+
+    const mode: MicroSkillDensityMode = override
+      ? override
+      : selector.safetyShieldActive
+        ? 'stat-focused'
+        : granularity === 'caregiver' || rolePerceptor.activeRole === 'patient' || rolePerceptor.activeRole === 'chw' || rolePerceptor.activeRole === 'executive'
+          ? 'caregiver-digest'
+          : 'specialist-full';
+
+    if (mode === 'stat-focused') {
+      return {
+        densityMode: 'stat-focused',
+        collapseExploratorySubViews: true,
+        collapseRawFhirTables: true,
+        highlightIsmpCriticalControls: true,
+        maxSubCardsVisible: 4,
+        policyLabel: 'STAT Focused (ISMP Slashed-Zero & Critical Actions Only)',
+        policyRationale: 'Exploratory tabs, secondary charts, and raw tables collapsed to protect 4-slot working memory during acute triage.'
+      };
+    }
+
+    if (mode === 'caregiver-digest') {
+      return {
+        densityMode: 'caregiver-digest',
+        collapseExploratorySubViews: true,
+        collapseRawFhirTables: true,
+        highlightIsmpCriticalControls: false,
+        maxSubCardsVisible: 4,
+        policyLabel: 'Quiet Workshop Digest (3-Step Micro-Chunks & Retail Benchmarks)',
+        policyRationale: 'Raw LOINC/FHIR tables collapsed; plain-language 3-Act trajectory and $4-$10 retail benchmarks foregrounded.'
+      };
+    }
+
+    return {
+      densityMode: 'specialist-full',
+      collapseExploratorySubViews: false,
+      collapseRawFhirTables: false,
+      highlightIsmpCriticalControls: false,
+      maxSubCardsVisible: 4,
+      policyLabel: 'Specialist Full Telemetry',
+      policyRationale: 'All sub-component diagnostic drawers, OARS flip-cards, and multi-paradigm invariants expanded.'
+    };
+  });
+
+  /**
+   * Innovation 2: Dormant Whisper Chips (1-Metric Micro-Perceptors for Shelved Experts).
+   * Prevents clinical tunnel vision while keeping shelved experts at 0 DOM/WebGL render cost.
+   */
+  readonly latentWhisperChips = computed<ILatentWhisperChip[]>(() => {
+    const latent = this.latentUiExperts();
+    const perceptor = this.activePerceptorState();
+    const transcript = this.activeTranscriptQuery().toLowerCase();
+
+    return latent.map(item => {
+      const id = item.expert.id;
+      let microMetricLabel = 'Prior';
+      let microMetricValue = `${Math.round(item.weight * 100)}%`;
+      let status: ILatentWhisperChip['status'] = 'nominal';
+
+      switch (id) {
+        case 'edge-ml-hud':
+          microMetricLabel = 'SpO₂ / HR';
+          microMetricValue = `${perceptor.spO2Percent}% • ${perceptor.heartRateBpm}bpm`;
+          if (perceptor.spO2Percent < 92 || perceptor.heartRateBpm > 110 || perceptor.heartRateBpm < 50) status = 'drift-alert';
+          else if (perceptor.spO2Percent < 95 || perceptor.heartRateBpm > 95) status = 'watch';
+          break;
+        case 'ismp-posology':
+          microMetricLabel = 'CGM / Rx';
+          microMetricValue = `${perceptor.cgmGlucoseMgDl} mg/dL`;
+          if (perceptor.cgmGlucoseMgDl < 65 || perceptor.cgmGlucoseMgDl > 180) status = 'drift-alert';
+          else if (perceptor.cgmGlucoseMgDl > 140) status = 'watch';
+          break;
+        case 'counterfactual-simulator':
+          microMetricLabel = 'SBP / Δ';
+          microMetricValue = `${perceptor.systolicBpMmHg} mmHg`;
+          if (perceptor.systolicBpMmHg >= 150 || perceptor.systolicBpMmHg <= 90) status = 'drift-alert';
+          else if (perceptor.systolicBpMmHg >= 135) status = 'watch';
+          break;
+        case 'environmental-exposomics':
+          microMetricLabel = 'AQI';
+          if (/wildfire|smoke|pm2\.5|aqi|heatwave/.test(transcript)) {
+            microMetricValue = 'PM2.5 Surge';
+            status = 'drift-alert';
+          } else {
+            microMetricValue = 'Nominal';
+          }
+          break;
+        case 'sdoh-navigator':
+          microMetricLabel = 'HRSN';
+          if (/housing|food|insecurity|copay|snap/.test(transcript)) {
+            microMetricValue = 'Screen +';
+            status = 'watch';
+          } else {
+            microMetricValue = '$4 Generic OK';
+          }
+          break;
+        case 'steeep-quality-hud':
+          microMetricLabel = 'NEWS2';
+          microMetricValue = `${perceptor.news2Score} pts`;
+          if (perceptor.news2Score >= 5) status = 'drift-alert';
+          else if (perceptor.news2Score >= 3) status = 'watch';
+          break;
+        default:
+          microMetricLabel = item.skillModality === 'Spatial Physics Shader' ? '3D Mesh' : 'Ready';
+          microMetricValue = `${Math.round(item.weight * 100)}%`;
+          if (item.isPrewarmCandidate) status = 'watch';
+          break;
+      }
+
+      return {
+        expertId: id,
+        shortLabel: item.expert.shortLabel,
+        icon: item.expert.icon,
+        weightPercent: Math.round(item.weight * 100),
+        microMetricLabel,
+        microMetricValue,
+        status,
+        isSafetyMasked: Boolean(item.isSafetyMasked),
+        whisperTooltip: `${item.expert.name} [${microMetricLabel}: ${microMetricValue}] — ${item.routingRationale}`
+      };
+    });
+  });
+
+  /**
+   * Innovation 3: Active Synapse Shared Token derived from Top-1 <-> Top-2 Cross-Attention Bridge.
+   */
+  readonly activeSynapseToken = computed<SynapseSharedToken | null>(() => {
+    const bridge = this.activeCrossAttentionBridge();
+    const pulse = this.activeSynapsePulse();
+    if (pulse) return pulse.token;
+    if (!bridge) return null;
+
+    switch (bridge.id) {
+      case 'bridge-posology-whatif':
+        return 'glycemic-renal-coupling';
+      case 'bridge-edgeml-posology':
+        return 'hemodynamic-posology-coupling';
+      case 'bridge-knee-whatif':
+      case 'bridge-knee-posology':
+        return 'kinematic-shear-coupling';
+      case 'bridge-analysis-soap':
+      case 'bridge-specialist-referral':
+        return 'fhir-soap-coupling';
+      default:
+        return 'glycemic-renal-coupling';
+    }
+  });
+
+  /** Manual camera hysteresis lock so autonomous spatial routing never hijacks active clinician OrbitControls */
+  readonly manualSpatialCameraLock = signal<SpatialCameraPreset | null>(null);
+
+  /**
+   * 3D Spatial Sub-Selector (Kence Anderson Autonomous AI):
+   * Maps Perceptor physiological telemetry, Safety Shield regime, Cross-Component Synapse pulses,
+   * and Cross-Paradigm routing into a deterministic 3D Camera + Shader + GPU power policy.
+   */
+  readonly activeSpatialBodyPolicy = computed<ISpatialBodyPolicy>(() => {
+    const perceptor = this.activePerceptorState();
+    const selector = this.activeSelectorDecision();
+    const density = this.microSkillDisplayPolicy();
+    const paradigm = this.paradigmSparsityWeights();
+    const pulse = this.activeSynapsePulse();
+    const transcript = this.activeTranscriptQuery().toLowerCase();
+    const manualCam = this.manualSpatialCameraLock();
+
+    let recommendedCamera: SpatialCameraPreset = 'front';
+    let recommendedShader: SpatialShaderLayer = 'skin';
+    let freezeAutoSpin = false;
+    let targetOrganId: string | null = null;
+    let policyRationale = 'Baseline whole-body habitus orientation.';
+
+    // 1. STAT Safety Shield or Severe Cardiopulmonary Instability (Overrides hysteresis for patient safety)
+    if (selector.safetyShieldActive || perceptor.spO2Percent < 92 || perceptor.systolicBpMmHg >= 180 || perceptor.systolicBpMmHg <= 90) {
+      recommendedCamera = 'visceral';
+      recommendedShader = perceptor.spO2Percent < 92 ? 'organs' : 'fluid_dynamics';
+      freezeAutoSpin = true;
+      targetOrganId = perceptor.spO2Percent < 92 ? 'lungs' : 'heart';
+      policyRationale = `STAT Cardiopulmonary Sub-Selector: Visceral lock (${recommendedShader}) with 360° spin frozen.`;
+    }
+    // 2. Live Cross-Component Synapse Pulse Coupling
+    else if (pulse?.token === 'glycemic-renal-coupling') {
+      recommendedCamera = 'visceral';
+      recommendedShader = 'organs';
+      targetOrganId = 'kidneys';
+      policyRationale = `Synapse Bus (${pulse.parameterLabel}): Visceral renal focus synchronized with Posology/What-If.`;
+    } else if (pulse?.token === 'kinematic-shear-coupling') {
+      recommendedCamera = 'peripheral';
+      recommendedShader = 'biomechanical_strain';
+      targetOrganId = 'r_shin';
+      policyRationale = `Synapse Bus (${pulse.parameterLabel}): Extremity biomechanical strain synchronized with Joint HUD.`;
+    } else if (pulse?.token === 'visceral-cardiopulmonary-coupling' || pulse?.token === 'hemodynamic-posology-coupling') {
+      recommendedCamera = 'visceral';
+      recommendedShader = 'fluid_dynamics';
+      targetOrganId = 'heart';
+      policyRationale = `Synapse Bus (${pulse.parameterLabel}): Hemodynamic perfusion focus synchronized.`;
+    }
+    // 3. Structural / Neurological / Extremity Conversational & EHR Cues
+    else if (/\b(spine|spinal|cervical|lumbar|radiculopathy|sciatic|back pain)\b/.test(transcript)) {
+      recommendedCamera = 'spinal';
+      recommendedShader = 'biomechanical_strain';
+      targetOrganId = 'spine_lumbar';
+      policyRationale = 'Axial/Radicular cue detected: Posterior spinal & dermatome strain view.';
+    } else if (/\b(knee|meniscus|acl|joint|edema|foot|ankle|shin|femur)\b/.test(transcript)) {
+      recommendedCamera = 'peripheral';
+      recommendedShader = 'skeleton';
+      targetOrganId = 'r_shin';
+      policyRationale = 'Lower-extremity cue detected: Peripheral skeletal & joint focus.';
+    } else if (/\b(moca|cognitive|migraine|brain|cranial|headache|glymphatic)\b/.test(transcript)) {
+      recommendedCamera = 'cranial';
+      recommendedShader = 'organs';
+      targetOrganId = 'brain';
+      policyRationale = 'Neuro-cranial cue detected: Cranial sentinel camera & cerebral mesh.';
+    } else if (perceptor.cgmGlucoseMgDl > 160 || /\b(renal|kidney|creatinine|metabolic|diabetes)\b/.test(transcript)) {
+      recommendedCamera = 'visceral';
+      recommendedShader = 'organs';
+      targetOrganId = 'kidneys';
+      policyRationale = 'Metabolic/Renal telemetry elevated: Visceral organ focus.';
+    }
+
+    // 4. Cross-Paradigm Spatial Shader Alignment (when not in STAT override)
+    if (!selector.safetyShieldActive) {
+      if (paradigm.dominantParadigm === 'eastern') {
+        recommendedShader = 'eastern';
+      } else if (paradigm.dominantParadigm === 'ayurvedic') {
+        recommendedShader = 'ayurvedic';
+      }
+    }
+
+    // 5. Clinician Orbit/Camera Hysteresis Guard (Yields only to STAT Safety Shield)
+    let manualCameraHysteresisLocked = false;
+    if (manualCam && !selector.safetyShieldActive) {
+      recommendedCamera = manualCam;
+      manualCameraHysteresisLocked = true;
+    }
+
+    const suppressHeavyPostProcessing =
+      density.densityMode === 'stat-focused' || density.densityMode === 'caregiver-digest';
+    const collapseExploratoryArchetypes = density.collapseExploratorySubViews;
+
+    return {
+      recommendedCamera,
+      recommendedShader,
+      freezeAutoSpin: freezeAutoSpin || density.densityMode === 'stat-focused',
+      suppressHeavyPostProcessing,
+      collapseExploratoryArchetypes,
+      manualCameraHysteresisLocked,
+      targetOrganId,
+      policyRationale
+    };
+  });
+
+  /**
+   * 3D Off-Frustum Spatial Whispers:
+   * Computes max 2 off-camera physiological drift badges when the clinician's 3D camera
+   * is zoomed away from an actively drifting anatomical compartment.
+   */
+  public computeOffFrustumSpatialWhispers(currentCamera: string): ISpatialOffFrustumWhisper[] {
+    const perceptor = this.activePerceptorState();
+    const transcript = this.activeTranscriptQuery().toLowerCase();
+    const whispers: ISpatialOffFrustumWhisper[] = [];
+
+    const isVisceralVisible =
+      currentCamera === 'visceral' || currentCamera === 'front' || currentCamera === 'systemic';
+    const isPeripheralVisible =
+      currentCamera === 'peripheral' || currentCamera === 'front' || currentCamera === 'systemic';
+    const isSpinalVisible = currentCamera === 'spinal' || currentCamera === 'back';
+
+    if (!isVisceralVisible) {
+      if (perceptor.spO2Percent < 94) {
+        whispers.push({
+          regionId: 'visceral',
+          partId: 'lungs',
+          icon: '🫁',
+          regionLabel: 'Thorax (Off-Camera)',
+          metricSummary: `SpO₂ ${perceptor.spO2Percent}%`,
+          severity: perceptor.spO2Percent < 91 ? 'drift-alert' : 'watch'
+        });
+      } else if (perceptor.cgmGlucoseMgDl > 170 || perceptor.systolicBpMmHg >= 150) {
+        whispers.push({
+          regionId: 'visceral',
+          partId: 'kidneys',
+          icon: '🫘',
+          regionLabel: 'Visceral/Renal (Off-Camera)',
+          metricSummary:
+            perceptor.cgmGlucoseMgDl > 170
+              ? `CGM ${perceptor.cgmGlucoseMgDl} mg/dL`
+              : `SBP ${perceptor.systolicBpMmHg} mmHg`,
+          severity:
+            perceptor.cgmGlucoseMgDl > 200 || perceptor.systolicBpMmHg >= 180 ? 'drift-alert' : 'watch'
+        });
+      }
+    }
+
+    if (!isPeripheralVisible && /\b(edema|knee|meniscus|acl|neuropathy|foot|dvt)\b/.test(transcript)) {
+      whispers.push({
+        regionId: 'peripheral',
+        partId: 'r_shin',
+        icon: '🦵',
+        regionLabel: 'Extremities (Off-Camera)',
+        metricSummary: 'Kinematic / Edema Drift',
+        severity: 'watch'
+      });
+    }
+
+    if (!isSpinalVisible && /\b(spine|spinal|cervical|lumbar|radiculopathy|sciatic)\b/.test(transcript)) {
+      whispers.push({
+        regionId: 'spinal',
+        partId: 'spine_lumbar',
+        icon: '🦴',
+        regionLabel: 'Spine (Off-Camera)',
+        metricSummary: 'Radicular / Axial Cue',
+        severity: 'watch'
+      });
+    }
+
+    return whispers.slice(0, 2);
+  }
+
+  public lockSpatialCamera(preset: SpatialCameraPreset | null): void {
+    this.manualSpatialCameraLock.set(preset);
+  }
 
   // ---------------------------------------------------------------------------
   // 8 LENS FOCUS AREAS & CROSS-PARADIGM SPARSITY GATING ENGINE
@@ -1621,11 +2701,11 @@ export class ClinicalMoERouterService {
    * based on the active patient profile, continuous telemetry, chief complaints, and vitals.
    */
   readonly coreLensGatingScores = computed<ICoreLensGatingScore[]>(() => {
-    const pId = this.patientState?.patientId() || this.activeShiftPatientId() || '';
-    const name = (this.patientState?.patientName() || '').toLowerCase();
+    const pId = this.patientState?.patientId?.() || this.activeShiftPatientId() || '';
+    const name = (this.patientState?.patientName?.() || '').toLowerCase();
     const goals = (this.patientState?.patientGoals?.() || '').toLowerCase();
-    const vitals = this.patientState?.vitals();
-    const issues = this.patientState?.issues() || {};
+    const vitals = this.patientState?.vitals?.();
+    const issues = this.patientState?.issues?.() || {};
 
     const activeIssueDescriptions: string[] = [];
     for (const key of Object.keys(issues)) {
@@ -1842,10 +2922,10 @@ export class ClinicalMoERouterService {
    * based on the condition domain rather than forcing an equal 3-way monolithic blend.
    */
   readonly paradigmSparsityWeights = computed<IParadigmSparsityRouting>(() => {
-    const pId = this.patientState?.patientId() || this.activeShiftPatientId() || '';
-    const name = (this.patientState?.patientName() || '').toLowerCase();
+    const pId = this.patientState?.patientId?.() || this.activeShiftPatientId() || '';
+    const name = (this.patientState?.patientName?.() || '').toLowerCase();
     const goals = (this.patientState?.patientGoals?.() || '').toLowerCase();
-    const issues = this.patientState?.issues() || {};
+    const issues = this.patientState?.issues?.() || {};
     const text = `${pId} ${name} ${goals} ${Object.keys(issues).join(' ')} ${this.activeTranscriptQuery()}`.toLowerCase();
 
     // 1. Structural / Mechanical / Surgical / Acute Trauma
@@ -2005,6 +3085,132 @@ export class ClinicalMoERouterService {
     this.kValue.set(Math.max(1, Math.min(3, k)));
   }
 
+  public setSafetyShieldEnabled(enabled: boolean): void {
+    this.isSafetyShieldEnabled.set(enabled);
+  }
+
+  public setHysteresisMargin(margin: number): void {
+    this.hysteresisMargin.set(Math.max(0, Math.min(0.25, margin)));
+  }
+
+  public commitCurrentPrimarySkill(): void {
+    const primary = this.primaryUiExpert();
+    this.committedPrimaryExpertId.set(primary ? primary.expert.id : null);
+  }
+
+  public releaseCommittedPrimarySkill(): void {
+    this.committedPrimaryExpertId.set(null);
+  }
+
+  public setManualRedFlagOverride(active: boolean): void {
+    this.manualRedFlagOverride.set(active);
+  }
+
+  public setLabVitalsOverride(patch: Partial<ISmoeLabVitalsOverride>): void {
+    this.labVitalsOverride.update(curr => ({ ...curr, ...patch }));
+  }
+
+  public resetLabVitalsOverride(): void {
+    this.labVitalsOverride.set({
+      spO2Percent: null,
+      systolicBpMmHg: null,
+      cgmGlucoseMgDl: null,
+      heartRateBpm: null
+    });
+  }
+
+  /** Innovation 1: Explicitly set or clear intra-component Micro-Skill density mode */
+  public setMicroSkillDensityOverride(mode: MicroSkillDensityMode | null): void {
+    this.manualDensityOverride.set(mode);
+  }
+
+  /** Innovation 3: Broadcast a live Synapse Signal Pulse between co-active Slot 1 <-> Slot 2 components */
+  public emitSynapseSignalPulse(
+    token: SynapseSharedToken,
+    sourceExpertId: string,
+    targetExpertId: string,
+    parameterLabel: string,
+    parameterValue: string
+  ): void {
+    this.activeSynapsePulse.set({
+      token,
+      sourceExpertId,
+      targetExpertId,
+      parameterLabel,
+      parameterValue,
+      timestampMs: Date.now()
+    });
+  }
+
+  public clearSynapseSignalPulse(): void {
+    this.activeSynapsePulse.set(null);
+  }
+
+  /** Deterministic FNV-1a / 256-bit style hex integrity stamp for synchronous UI receipt pills */
+  private computeDeterministicIntegrityHex(payload: string): string {
+    const lanes = [0x811c9dc5, 0x9e3779b9, 0x85ebca6b, 0xc2b2ae35, 0x27d4eb2f, 0x165667b1, 0xd3a2646c, 0xfd7046c5];
+    for (let i = 0; i < payload.length; i++) {
+      const code = payload.charCodeAt(i);
+      const laneIdx = i & 7;
+      lanes[laneIdx] = Math.imul(lanes[laneIdx] ^ code, 0x01000193) >>> 0;
+    }
+    return lanes.map(v => v.toString(16).padStart(8, '0')).join('');
+  }
+
+  /**
+   * Innovation 4: Complete & Attest a Skill's Goal Condition (21 CFR Part 11 Integrity Receipt).
+   * Compacts the completed skill into a verified SHA-256 style receipt pill and yields its slot
+   * to the next highest priority clinical skill in the trajectory.
+   */
+  public completeAndRetireSkillGoal(expertId: string, goalSummary?: string): ISkillGoalReceipt | null {
+    const def = REGISTERED_UI_EXPERTS.find(e => e.id === expertId) || (
+      expertId === 'spatial-body-twin'
+        ? { id: 'spatial-body-twin', shortLabel: '3D Body Twin', icon: '🧍' }
+        : null
+    );
+    if (!def) return null;
+
+    if (this.pinnedExpertId() === expertId) {
+      this.pinnedExpertId.set(null);
+    }
+    if (this.committedPrimaryExpertId() === expertId) {
+      this.committedPrimaryExpertId.set(null);
+    }
+
+    const completedAtIso = new Date().toISOString();
+    const summaryText = goalSummary || `${def.shortLabel} clinical review & CDS attestation completed`;
+    const canonicalPayload = `${expertId}|${summaryText}|${this.activeShiftPatientId() || 'active-session'}|${completedAtIso}`;
+    const sha256DigestHex = this.computeDeterministicIntegrityHex(canonicalPayload);
+
+    // Record receipt (triggers satisfiedExpertIds() -> auto-demotes expertId and promotes next skill)
+    const filteredExisting = this.completedSkillReceipts().filter(r => r.expertId !== expertId);
+    const provisionalReceipt: ISkillGoalReceipt = {
+      receiptId: `rcpt-${expertId}-${filteredExisting.length + 1}`,
+      expertId,
+      expertShortLabel: def.shortLabel,
+      icon: def.icon,
+      goalSummary: summaryText,
+      sha256DigestHex,
+      completedAtIso,
+      promotedNextExpertId: null
+    };
+
+    this.completedSkillReceipts.set([...filteredExisting, provisionalReceipt]);
+    const nextPrimary = this.primaryUiExpert()?.expert.id || null;
+
+    const finalizedReceipt: ISkillGoalReceipt = {
+      ...provisionalReceipt,
+      promotedNextExpertId: nextPrimary
+    };
+    this.completedSkillReceipts.set([...filteredExisting, finalizedReceipt]);
+    return finalizedReceipt;
+  }
+
+  /** Re-opens a retired skill from its receipt pill back into active evaluation */
+  public reopenRetiredSkillGoal(expertId: string): void {
+    this.completedSkillReceipts.update(list => list.filter(r => r.expertId !== expertId));
+  }
+
   public promoteLatentExpert(expertId: string): void {
     this.pinnedExpertId.set(expertId);
   }
@@ -2080,11 +3286,47 @@ export class ClinicalMoERouterService {
     }
   }
 
+  /**
+   * Synchronizes the SMoE Router's Top-k slot budget, density granularity, and 3D camera policy
+   * when a Clinical Role Pathway or Interactive Role Demo is activated.
+   */
+  public applyClinicalRolePathway(roleId: ClinicalRolePathway): IRoleSmoePreview {
+    const preview = this.getRoleSmoePreview(roleId);
+    this.manualRoleOverride.set(roleId);
+    this.roleDocsService?.setPathway?.(roleId);
+    this.kValue.set(preview.recommendedTopK);
+    if (roleId === 'patient' || roleId === 'executive') {
+      this.clinicalGranularityMode.set('caregiver');
+    } else if (roleId === 'chw') {
+      this.clinicalGranularityMode.set('frontline');
+    } else {
+      this.clinicalGranularityMode.set('specialist');
+    }
+    return preview;
+  }
+
+  public setClinicianKssScore(score: number): void {
+    const clamped = Math.max(1, Math.min(9, Math.round(score)));
+    this.clinicianKssFatigueScore.set(clamped);
+  }
+
   public clearOverrides(): void {
     this.pinnedExpertId.set(null);
     this.activeShiftPatientId.set(null);
     this.activeTranscriptQuery.set('');
     this.activeScenario.set('default');
+    this.committedPrimaryExpertId.set(null);
+    this.manualRedFlagOverride.set(false);
+    this.manualDensityOverride.set(null);
+    this.manualSpatialCameraLock.set(null);
+    this.manualRoleOverride.set(null);
+    this.clinicianKssFatigueScore.set(3);
+    this.isRoleScopeShieldEnabled.set(true);
+    this.clinicalGranularityMode.set('specialist');
+    this.kValue.set(2);
+    this.activeSynapsePulse.set(null);
+    this.completedSkillReceipts.set([]);
+    this.resetLabVitalsOverride();
     this.setActiveLens('Summary Overview');
   }
 

@@ -2,7 +2,7 @@
 // Copyright (c) 2026 PocketGull LLC & Phillip Gear
 /// Project-by-Project Intellectual Property, License & Trade Secret Guard (Dart)
 ///
-/// Audits all repositories across `c:\Users\philg\Pocketgull\*` one project at a time:
+/// Audits all repositories across `..\*` one project at a time:
 /// 1. License & Copyright Sovereignty: Verifies LICENSE presence and commercial-safe regime
 ///    (`Apache-2.0`, `SIL OFL-1.1` with Reserved Font Name `PocketGull`, or `CC0/Public Domain` for USWDS)
 /// 2. Non-Commercial / Viral License Taint Check: Scans manifests for prohibited `CC-BY-NC`, `GPL-3.0`, or `AGPL` taint

@@ -1,8 +1,14 @@
 {
+  "inherits": [
+    {
+      "path": "~/.gemini/config/skills/shared-constitution.json"
+    }
+  ],
   "entries": [
     {
       "path": ".agents/skills",
       "include_only": [
+        "agentic-training-orchestrator",
         "antigravity_swe_google",
         "audit_and_optimize",
         "caslon_type_design",

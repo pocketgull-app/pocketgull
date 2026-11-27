@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/patient_types.dart';
+import 'health_connect_bridge_service.dart';
+import 'capacity_signal_service.dart';
 
 /// Firestore sync — Firebase Auth + Firestore patient vault.
 ///
@@ -221,6 +223,34 @@ class FirestoreSyncNotifier extends Notifier<FirestoreSyncState> {
       debugPrint('[FirestoreSync] Synced ${patient.id} to cloud vault.');
     } catch (e) {
       debugPrint('[FirestoreSync] Sync failed: $e');
+    }
+  }
+
+  /// Merges live Health Connect biometrics (and optional zero-PHI capacity)
+  /// into the authenticated clinician's patient document.
+  Future<void> syncBiometricsToCloud(
+    String patientId,
+    HealthConnectBiometrics biometrics, {
+    CapacitySignal? capacity,
+  }) async {
+    final uid = state.currentUser;
+    if (uid == null || uid == 'mock-google-clinician') return;
+    try {
+      final docRef = FirebaseFirestore.instance
+          .collection('clinicians')
+          .doc(uid)
+          .collection('patients')
+          .doc(patientId);
+
+      await docRef.set({
+        'healthConnectBiometrics': biometrics.toMap(),
+        if (capacity != null) 'capacitySignal': capacity.toJson(),
+        'biometricsUpdatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      debugPrint('[FirestoreSync] Synced Health Connect biometrics for $patientId.');
+    } catch (e) {
+      debugPrint('[FirestoreSync] Biometrics sync failed: $e');
     }
   }
 

@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, computed, signal, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RolePathwayDocsService, ClinicalRolePathway, IPathwayDocumentation, IClinicalWorkflowStage } from '../services/role-pathway-docs.service';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 @Component({
   selector: 'app-role-pathway-documentation-hub',
@@ -75,6 +76,28 @@ import { RolePathwayDocsService, ClinicalRolePathway, IPathwayDocumentation, ICl
         <p class="text-xs text-zinc-300 leading-relaxed font-sans">
           {{ currentPathwayDoc().tagline }}
         </p>
+
+        @if (activeRoleSmoePreview(); as smoe) {
+          <div class="pt-2 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono">
+            <div class="flex flex-wrap items-center gap-2 text-teal-300">
+              <span class="px-2 py-0.5 rounded-md bg-teal-500/15 border border-teal-500/30 font-bold">
+                ⚡ SMoE Top-{{ smoe.recommendedTopK }} • {{ smoe.recommendedDensity }}
+              </span>
+              <span class="text-zinc-300">
+                {{ smoe.predictedPrimaryIcon }} {{ smoe.predictedPrimaryLabel }}
+                @if (smoe.predictedSecondaryLabel) {
+                  <span class="text-zinc-500">+</span> {{ smoe.predictedSecondaryIcon }} {{ smoe.predictedSecondaryLabel }}
+                }
+              </span>
+              <span class="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+                🧭 3D: {{ smoe.recommendedCamera }}
+              </span>
+            </div>
+            <span class="px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-300">
+              🛡️ {{ smoe.safetyConstraintBadge }}
+            </span>
+          </div>
+        }
       </div>
 
       <!-- 🌟 Continuous 5-Stage Step-by-Step Clinical Journey Stepper -->
@@ -308,12 +331,14 @@ import { RolePathwayDocsService, ClinicalRolePathway, IPathwayDocumentation, ICl
 })
 export class RolePathwayDocumentationHubComponent {
   private docsService = inject(RolePathwayDocsService);
+  private moeRouter = inject(ClinicalMoERouterService, { optional: true });
 
   readonly navigateToTab = output<string>();
 
   activePathwayId = computed(() => this.docsService.activePathway());
   allPathways = computed(() => this.docsService.getAllPathways());
   currentPathwayDoc = computed<IPathwayDocumentation>(() => this.docsService.getPathway(this.activePathwayId()));
+  activeRoleSmoePreview = computed(() => this.moeRouter?.getRoleSmoePreview(this.activePathwayId()) || null);
 
   readonly selectedStageNumber = signal<number>(1);
 
@@ -325,6 +350,7 @@ export class RolePathwayDocumentationHubComponent {
 
   selectPathway(id: ClinicalRolePathway): void {
     this.docsService.setPathway(id);
+    this.moeRouter?.applyClinicalRolePathway(id);
     this.selectedStageNumber.set(1);
   }
 

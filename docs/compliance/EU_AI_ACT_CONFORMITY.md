@@ -30,7 +30,7 @@ While PocketGull qualifies as a Non-Device Clinical Decision Support tool in the
 * **Bias & Mitigation**: Asymmetric Loss (ASL) with $\gamma_- = 4.0, \gamma_+ = 1.0$ is utilized to address severe clinical class imbalance without biasing against rare pathology.
 
 ### Article 11: Technical Documentation & Software Provenance
-* **Comprehensive Technical Dossier**: Documented across [ARCHITECTURE.md](file:///c:/Users/philg/Pocketgull/pocketgull/ARCHITECTURE.md), [THREAT_MODEL.md](file:///c:/Users/philg/Pocketgull/pocketgull/THREAT_MODEL.md), and [COMPLIANCE.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/compliance/COMPLIANCE.md).
+* **Comprehensive Technical Dossier**: Documented across [ARCHITECTURE.md](ARCHITECTURE.md), [THREAT_MODEL.md](THREAT_MODEL.md), and [COMPLIANCE.md](docs/compliance/COMPLIANCE.md).
 * **Supply Chain Provenance**: Automated **CycloneDX 1.6** and SPDX 2.3 SBOM manifests track all dependencies. Container images carry cryptographic build provenance attestations under SLSA Level 3 (`actions/attest-build-provenance`).
 
 ### Article 12: Record-Keeping & Event Logging

@@ -25,7 +25,7 @@ public class NativeMethods {
 }
 "@
 
-$PythonExe = "C:\Users\philg\anaconda3\python.exe"
+$PythonExe = "$env:USERPROFILE\anaconda3\python.exe"
 $StatusScript = Join-Path $PSScriptRoot "get_rsna_status.py"
 $global:CurrentHIcon = [IntPtr]::Zero
 $global:LastJsonRaw = ""

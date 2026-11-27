@@ -177,11 +177,11 @@ import { GlyphForgeStudioComponent } from './glyph-forge-studio.component';
                 </p>
               </div>
               <div class="flex items-center gap-2">
-                <a href="/brand/terminal/pocketgull-washi.omp.json" download class="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-xs font-mono font-bold hover:bg-amber-500/20 transition">
-                  ⬇️ Washi Theme (.json)
+                <a href="https://github.com/pocketgull-app/pocketgull/tree/main/packages/pocketgull-theme" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-xs font-mono font-bold hover:bg-amber-500/20 transition">
+                  📦 PocketGull Theme Package (GitHub)
                 </a>
-                <a href="/brand/terminal/pocketgull-ophthalmic.omp.json" download class="px-3 py-1.5 rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-500/30 text-xs font-mono font-bold hover:bg-teal-500/20 transition">
-                  ⬇️ Ophthalmic Theme (.json)
+                <a href="https://font.pocketgull.app" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-500/30 text-xs font-mono font-bold hover:bg-teal-500/20 transition">
+                  🌐 Font CDN &amp; Specimen
                 </a>
               </div>
             </div>
@@ -258,16 +258,15 @@ import { GlyphForgeStudioComponent } from './glyph-forge-studio.component';
                 <span class="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">✓ Zero-Tofu Guaranteed</span>
               </div>
               <p class="text-xs text-zinc-500 dark:text-zinc-400">
-                Compatible with both Windows PowerShell 5.1 and PowerShell 7 (pwsh). Uses your local PocketGull installation assets.
+                Compatible with both Windows PowerShell 5.1 and PowerShell 7 (pwsh) using the &#64;pocketgull/font v4.0.0 npm package and PocketGull theme suite.
               </p>
-              <pre class="p-4 rounded-xl bg-zinc-950 text-zinc-200 text-xs font-mono overflow-x-auto border border-zinc-800"><code># Add to $PROFILE
+              <pre class="p-4 rounded-xl bg-zinc-950 text-zinc-200 text-xs font-mono overflow-x-auto border border-zinc-800"><code># Install PocketGull v4.0.0 core webfont &amp; terminal theme package
+npm install &#64;pocketgull/font
+
+# Add circadian Oh My Posh initialization to your $PROFILE
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) &#123;
     $shellType = if ($PSVersionTable.PSVersion.Major -ge 6) &#123; 'pwsh' &#125; else &#123; 'powershell' &#125;
-    $h = (Get-Date).Hour
-    $washiTheme = "$HOME&#92;Pocketgull&#92;pocketgull&#92;public&#92;brand&#92;terminal&#92;pocketgull-washi.omp.json"
-    $ophthalmicTheme = "$HOME&#92;Pocketgull&#92;pocketgull&#92;public&#92;brand&#92;terminal&#92;pocketgull-ophthalmic.omp.json"
-    $cfg = if ($h -ge 7 -and $h -lt 18 -and (Test-Path $washiTheme)) &#123; $washiTheme &#125; elseif (Test-Path $ophthalmicTheme) &#123; $ophthalmicTheme &#125; else &#123; $null &#125;
-    if ($cfg) &#123; oh-my-posh init $shellType --config $cfg | Invoke-Expression &#125; else &#123; oh-my-posh init $shellType | Invoke-Expression &#125;
+    oh-my-posh init $shellType | Invoke-Expression
 &#125;</code></pre>
             </div>
           </div>

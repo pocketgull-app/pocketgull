@@ -150,9 +150,9 @@ The mathematical models, physiological algorithms, and cognitive frameworks util
 2. **Tracey, K. J. (2002)**. The inflammatory reflex. *Nature*, 420(6917), 853–859. DOI: [10.1038/nature01321](https://doi.org/10.1038/nature01321).  
    *Operationalization*: Vagal cholinergic anti-inflammatory signaling and bioelectronic modulation of TNF-α via splenic $\alpha7\text{nAChR}$ receptors in Case Studies #02 & #05.
 3. **Pan, J., & Tompkins, W. J. (1985)**. A real-time QRS detection algorithm. *IEEE Transactions on Biomedical Engineering*, BME-32(3), 230–236. DOI: [10.1109/TBME.1985.325532](https://doi.org/10.1109/TBME.1985.325532).  
-   *Operationalization*: Real-time ECG/PPG bandpass filtering, squaring, and moving-window integration for $0.1\text{ Hz}$ Mayer-wave spectral power in [`waveform-dsp-engine.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/waveform-dsp-engine.service.ts).
+   *Operationalization*: Real-time ECG/PPG bandpass filtering, squaring, and moving-window integration for $0.1\text{ Hz}$ Mayer-wave spectral power in [`waveform-dsp-engine.service.ts`](src/services/waveform-dsp-engine.service.ts).
 4. **Cockcroft, D. W., & Gault, M. H. (1976)**. Prediction of creatinine clearance from serum creatinine. *Nephron*, 16(1), 31–41. DOI: [10.1159/000180580](https://doi.org/10.1159/000180580).  
-   *Operationalization*: Deterministic renal clearance calculation ($CrCl$) preventing clinical nephrotoxicity and guiding medication posology in [`clinical-posology.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/clinical-posology.service.ts).
+   *Operationalization*: Deterministic renal clearance calculation ($CrCl$) preventing clinical nephrotoxicity and guiding medication posology in [`clinical-posology.service.ts`](src/services/clinical-posology.service.ts).
 5. **Mosteller, R. D. (1987)**. Simplified calculation of body-surface area. *New England Journal of Medicine*, 317(17), 1098. DOI: [10.1056/NEJM198710223171717](https://doi.org/10.1056/NEJM198710223171717).  
    *Operationalization*: Metric body surface area calculation ($BSA = \sqrt{\frac{W \times H}{3600}}$) for pediatric and adult index scaling.
 6. **Antonovsky, A. (1979)**. *Health, Stress, and Coping*. San Francisco: Jossey-Bass. ISBN: 978-0875894126.  
@@ -168,7 +168,7 @@ The mathematical models, physiological algorithms, and cognitive frameworks util
 11. **Runge, C. (1895) & Kutta, W. (1901)**. Über die numerische Auflösung von Differentialgleichungen. *Zeitschrift für Mathematik und Physik*, 46, 435–453.  
     *Operationalization*: 4th-order Runge-Kutta numerical ODE integration for real-time biophysical radar trajectory simulation ($\vec{v} \in [0.0, 1.0]^6$).
 12. **Porter, M. E. (2008)**. The five competitive forces that shape strategy. *Harvard Business Review*, 86(1), 78–93.  
-    *Operationalization*: Structural healthcare industry analysis, open-standards defensibility, and enterprise EHR sidecar positioning in [`docs/PORTERS_FIVE_FORCES.md`](file:///c:/Users/philg/Pocketgull/pocketgull/docs/PORTERS_FIVE_FORCES.md).
+    *Operationalization*: Structural healthcare industry analysis, open-standards defensibility, and enterprise EHR sidecar positioning in [`docs/PORTERS_FIVE_FORCES.md`](docs/PORTERS_FIVE_FORCES.md).
 13. **Hamilton, M. T., Hamilton, D. G., & Zderic, T. W. (2022)**. A potent physiological method to magnify and sustain soleus oxidative metabolism improves glucose and lipid regulation. *iScience*, 25(9), 104869. DOI: [10.1016/j.isci.2022.104869](https://doi.org/10.1016/j.isci.2022.104869).  
     *Operationalization*: Non-insulin-mediated GLUT4 translocation via rhythmic seated soleus pushup (SPU) plantarflexion in Case Study #03, strictly demarcating 4.5h laboratory protocol limits from 10–15m acute postprandial clinical pacing.
 14. **Richter, E. A., & Hargreaves, M. (2013)**. Exercise, GLUT4, and skeletal muscle glucose uptake. *Physiological Reviews*, 93(3), 993–1017. DOI: [10.1152/physrev.00038.2012](https://doi.org/10.1152/physrev.00038.2012).  

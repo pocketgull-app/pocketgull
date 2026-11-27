@@ -10,10 +10,12 @@ test.describe('Good Samaritan Emergency Mode E2E Flow', () => {
   test('should bypass authentication, trigger CPR metronome pacing, and return to lock screen on exit', async ({ page }) => {
     // 1. Setup & Navigate to lock screen with cleared session but acknowledged consent
     await page.addInitScript(() => {
-      window.sessionStorage.clear();
-      window.localStorage.clear();
-      window.localStorage.setItem('pg_data_consent_v1', 'true');
-      window.sessionStorage.setItem('pg_session_locked', 'true');
+      try {
+        window.sessionStorage.clear();
+        window.localStorage.clear();
+        window.localStorage.setItem('pg_data_consent_v1', 'true');
+        window.sessionStorage.setItem('pg_session_locked', 'true');
+      } catch {}
     });
     await page.goto('/');
     await page.setViewportSize({ width: 1440, height: 900 });

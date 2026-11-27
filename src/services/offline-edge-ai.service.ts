@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
 import { IsmpSafetyGuardService, IIsmpSafetyAudit } from './ismp-safety-guard.service';
+import { EmergencyRedFlagGuard } from './emergency-red-flag.guard';
 
 export interface ITriageAcuityClassification {
   category: 'STAT_EMERGENCY' | 'URGENT' | 'ROUTINE';
@@ -42,6 +43,7 @@ export interface IEdgeModelStatus {
 export class OfflineEdgeAiService {
   private patientState = inject(PatientStateService);
   private ismpGuard = inject(IsmpSafetyGuardService);
+  private emergencyGuard = inject(EmergencyRedFlagGuard, { optional: true }) || new EmergencyRedFlagGuard();
 
   readonly lastTriageResult = signal<ITriageAcuityClassification | null>(null);
   readonly lastSoapResult = signal<ISoapStructuringResult | null>(null);
@@ -133,36 +135,43 @@ export class OfflineEdgeAiService {
   }
 
   /**
-   * Synthesizes offline SBAR clinical care plan report using local WebGPU / WebAssembly edge engine.
+   * Synthesizes an offline SBAR clinical care plan report using a deterministic local template
+   * (zero network PHI transit; never mislabeled as WebGPU neural inference).
    */
   async synthesizeOfflineClinicalReport(userPrompt: string): Promise<string> {
     const startTime = Date.now();
     const vitals = this.patientState.vitals();
     const issues = this.patientState.issues();
 
-    // Simulated high-speed WebGPU / WASM local tokenization & inference tick
-    await new Promise(r => setTimeout(r, 220));
+    const redFlagEval = this.emergencyGuard.evaluate({
+      text: userPrompt,
+      vitals: { spo2: vitals.spO2, bp: vitals.bp, hr: vitals.hr }
+    });
+    if (redFlagEval.isTriggered) {
+      this.lastInferenceLatencyMs.set(Date.now() - startTime);
+      return redFlagEval.deterministicProtocolMarkdown;
+    }
 
     const hr = vitals.hr || '72';
     const bp = vitals.bp || '120/80';
     const spO2 = vitals.spO2 || '98%';
 
     const report = `
-[⚡ LOCAL WEBGPU / WASM EDGE INFERENCE - ZERO NETWORK PHI PAYLOAD]
-Engine: ${this.selectedModelId()} | Latency: ${Date.now() - startTime}ms | Privacy: HIPAA Safe Harbor Sealed
+[DETERMINISTIC OFFLINE SBAR TEMPLATE - ZERO NETWORK PHI PAYLOAD]
+Engine: deterministic-offline-sbar-template (Configured model: ${this.selectedModelId()}) | Latency: ${Date.now() - startTime}ms | Privacy: HIPAA Safe Harbor Sealed
 
 SITUATION:
 Patient presenting for clinical evaluation. Vitals: HR ${hr} bpm, BP ${bp} mmHg, SpO2 ${spO2}.
 
 BACKGROUND:
-Local edge AI parsed patient history and anatomical issues (${Object.keys(issues).length} active regions). Zero external network transit engaged.
+Deterministic local SBAR engine parsed patient history and anatomical issues (${Object.keys(issues).length} active regions). Zero external network transit engaged.
 
 ASSESSMENT:
-Autonomic tone stable. Systemic inflammatory risk within baseline. Recommended lifestyle and vagal co-regulation protocols active.
+Autonomic tone stable based on captured baseline vitals. No deterministic STAT red flags detected in offline inputs.
 
 RECOMMENDATION:
-1. Maintain hydration and 6 breath/min vagal HRV entrainment.
-2. Re-assess vitals in 24 hours.
+1. Maintain hydration and 6 breath/min vagal HRV entrainment if clinically appropriate.
+2. Re-assess vitals in 24 hours or sooner if symptoms worsen.
 3. Sync FHIR R4 telemetry bundle when network connectivity resumes.
 `.trim();
 
@@ -171,67 +180,73 @@ RECOMMENDATION:
   }
 
   /**
-   * Evaluates patient narrative acuity on-device via Chrome Built-in AI Classifier
-   * or high-speed deterministic clinical keyword engine.
+   * Evaluates patient narrative acuity on-device via deterministic emergency rules FIRST,
+   * followed by optional Chrome Built-in AI Classifier under strict monotonic acuity
+   * (classifier may ONLY escalate acuity, NEVER downgrade deterministic STAT/URGENT triggers).
    */
   async classifyAcuity(narrative: string): Promise<ITriageAcuityClassification> {
     const startTime = Date.now();
     const cleanText = (narrative || '').trim();
+    const ACUITY_RANK: Record<'ROUTINE' | 'URGENT' | 'STAT_EMERGENCY', number> = {
+      ROUTINE: 0,
+      URGENT: 1,
+      STAT_EMERGENCY: 2
+    };
+
     let category: 'STAT_EMERGENCY' | 'URGENT' | 'ROUTINE' = 'ROUTINE';
-    let confidence = 0.95;
-    let rationale = 'Routine presentation within non-emergent parameters.';
+    let confidence = 0.88;
+    let rationale = 'Routine presentation: stable vitals and non-emergent outpatient clinical concern.';
     let engine = 'deterministic-clinical-matcher';
 
-    // 1. Check Chrome Built-in AI Classifier API if available
+    // 1. Deterministic Emergency Red-Flag Interception FIRST (BE-FAST, ACS, SpO2 < 90%, C-SSRS/PHQ-9 Item 9, etc.)
+    const redFlagEval = this.emergencyGuard.evaluate({ text: cleanText });
+    const lower = cleanText.toLowerCase();
+    if (
+      redFlagEval.isTriggered ||
+      lower.includes('crushing chest pain') ||
+      lower.includes('anaphylaxis') ||
+      lower.includes('unresponsive') ||
+      lower.includes('arterial hemorrhage') ||
+      lower.includes('stridor') ||
+      lower.includes('respiratory arrest') ||
+      lower.includes('stroke') ||
+      lower.includes('flail chest')
+    ) {
+      category = 'STAT_EMERGENCY';
+      confidence = 0.99;
+      rationale = redFlagEval.isTriggered
+        ? `STAT Emergency deterministic guard triggered: ${redFlagEval.matches.map(m => m.triggerSummary).join('; ')}.`
+        : 'STAT Emergency criteria met: life-threatening airway, breathing, or hemodynamic compromise.';
+    } else if (
+      lower.includes('severe pain') ||
+      lower.includes('fracture') ||
+      lower.includes('fever') ||
+      lower.includes('asthma') ||
+      lower.includes('burn') ||
+      lower.includes('tachycardia') ||
+      lower.includes('dehydration')
+    ) {
+      category = 'URGENT';
+      confidence = 0.92;
+      rationale = 'Urgent acuity: high potential for rapid deterioration or severe distress requiring immediate evaluation.';
+    }
+
+    // 2. Optional Chrome Built-in AI Classifier — strictly MONOTONIC (can only escalate, NEVER downgrade)
     if (typeof window !== 'undefined' && (window as any).ai?.classifier) {
       try {
         const classifier = await (window as any).ai.classifier.create({
           categories: ['STAT_EMERGENCY', 'URGENT', 'ROUTINE']
         });
         const res = await classifier.classify(cleanText);
-        if (res?.topCategory) {
-          category = res.topCategory as any;
+        const aiCategory = res?.topCategory as 'STAT_EMERGENCY' | 'URGENT' | 'ROUTINE' | undefined;
+        if (aiCategory && aiCategory in ACUITY_RANK && ACUITY_RANK[aiCategory] > ACUITY_RANK[category]) {
+          category = aiCategory;
           confidence = res.confidence || 0.92;
           engine = 'chrome-builtin-ai-classifier';
-          rationale = `Classified via on-device Chrome Built-in AI classifier with ${(confidence * 100).toFixed(0)}% confidence.`;
+          rationale = `Escalated via on-device Chrome Built-in AI classifier to ${category} with ${(confidence * 100).toFixed(0)}% confidence.`;
         }
       } catch (_e) {
-        // Fall back to rule-based engine below
-      }
-    }
-
-    // 2. Deterministic rule-based clinical fallbacks if not using Chrome classifier
-    if (engine === 'deterministic-clinical-matcher') {
-      const lower = cleanText.toLowerCase();
-      if (
-        lower.includes('crushing chest pain') ||
-        lower.includes('anaphylaxis') ||
-        lower.includes('unresponsive') ||
-        lower.includes('arterial hemorrhage') ||
-        lower.includes('stridor') ||
-        lower.includes('respiratory arrest') ||
-        lower.includes('stroke') ||
-        lower.includes('flail chest')
-      ) {
-        category = 'STAT_EMERGENCY';
-        confidence = 0.99;
-        rationale = 'STAT Emergency criteria met: life-threatening airway, breathing, or hemodynamic compromise.';
-      } else if (
-        lower.includes('severe pain') ||
-        lower.includes('fracture') ||
-        lower.includes('fever') ||
-        lower.includes('asthma') ||
-        lower.includes('burn') ||
-        lower.includes('tachycardia') ||
-        lower.includes('dehydration')
-      ) {
-        category = 'URGENT';
-        confidence = 0.92;
-        rationale = 'Urgent acuity: high potential for rapid deterioration or severe distress requiring immediate evaluation.';
-      } else {
-        category = 'ROUTINE';
-        confidence = 0.88;
-        rationale = 'Routine presentation: stable vitals and non-emergent outpatient clinical concern.';
+        // Retain deterministic classification
       }
     }
 

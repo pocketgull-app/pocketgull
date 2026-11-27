@@ -111,4 +111,16 @@ describe('VertexAgentBuilderService', () => {
     const req = httpMock.expectOne('/api/v1/agent-builder/search');
     req.error(new ProgressEvent('Offline test'));
   });
+
+  it('should provide domain-specific neuropathic pain citations in offline fallback mode', () => {
+    service.queryGroundedLiterature('neuropathic pain allodynia mirror therapy').subscribe((res) => {
+      expect(res.isSimulated).toBe(true);
+      expect(res.citations.length).toBe(2);
+      expect(res.citations[0].title).toContain('NaV1.8');
+      expect(res.citations[1].title).toContain('Neuropathic Pain');
+    });
+
+    const req = httpMock.expectOne('/api/v1/agent-builder/search');
+    req.error(new ProgressEvent('Offline pain query'));
+  });
 });

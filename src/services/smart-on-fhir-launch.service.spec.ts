@@ -1,5 +1,6 @@
 import '@angular/compiler';
 import { SmartOnFhirLaunchService } from './smart-on-fhir-launch.service';
+import { computeFipsSha256Bytes } from './clinical-defense-guard.service';
 
 describe('SmartOnFhirLaunchService Unit Suite', () => {
   let service: SmartOnFhirLaunchService;
@@ -45,5 +46,24 @@ describe('SmartOnFhirLaunchService Unit Suite', () => {
 
     expect(params.iss).toBe('https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4');
     expect(params.launch).toBe('token_xyz_123');
+  });
+
+  it('4. Computes genuine RFC 7636 Base64URL SHA-256 PKCE code_challenge (never plaintext S256_ prefix)', () => {
+    const result = service.buildAuthorizationUrl({
+      vendor: 'EPIC',
+      fhirBaseUrl: 'https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4',
+      clientId: 'epic-client-123',
+      redirectUri: 'https://pocketgull.app/launch/callback'
+    });
+
+    expect(result.codeChallenge.startsWith('S256_')).toBe(false);
+    expect(result.codeChallenge).not.toContain(result.codeVerifier);
+    expect(result.codeChallenge).toMatch(/^[A-Za-z0-9_-]{43}$/);
+
+    const digest = computeFipsSha256Bytes(result.codeVerifier);
+    let bin = '';
+    for (let i = 0; i < digest.length; i++) bin += String.fromCharCode(digest[i]);
+    const expected = btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    expect(result.codeChallenge).toBe(expected);
   });
 });

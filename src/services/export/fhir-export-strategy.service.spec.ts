@@ -32,20 +32,33 @@ describe('FhirExportStrategyService Suite', () => {
     expect(cleanStr).not.toContain('<script>');
   });
 
-  it('generates a valid FHIR R4 collection bundle with Practitioner NPI provenance', () => {
+  it('generates a valid Safe Harbor FHIR R4 collection bundle with institutional provenance and Observation.code', () => {
     const bundle = service.generateFhirBundle(mockPatient);
     expect(bundle.resourceType).toBe('Bundle');
     expect(bundle.type).toBe('collection');
     expect(bundle.entry.length).toBeGreaterThan(1);
 
-    const patientResource = bundle.entry[0].resource;
+    const patientResource = bundle.entry[0].resource as any;
     expect(patientResource.resourceType).toBe('Patient');
     expect(patientResource.gender).toBe('female');
+    expect(JSON.stringify(patientResource)).not.toContain('Ada Lovelace');
+    expect(patientResource.name?.[0]?.use).toBe('anonymous');
 
     const practitionerResource = bundle.entry.find(e => e.resource.resourceType === 'Practitioner')?.resource;
     expect(practitionerResource).toBeDefined();
-    expect((practitionerResource?.identifier as any)?.[0]?.value).toBe('1487569752');
-    expect((practitionerResource?.name as any)?.[0]?.family).toBe('Gear');
+    expect((practitionerResource?.identifier as any)?.[0]?.value).toBe('POCKETGULL-CDS-SYSTEM');
+    expect(JSON.stringify(practitionerResource)).not.toContain('1487569752');
+    expect(JSON.stringify(practitionerResource)).not.toContain('Gear');
+
+    const vitalsObs = bundle.entry.find(e => e.resource.resourceType === 'Observation')?.resource as any;
+    expect(vitalsObs).toBeDefined();
+    expect(vitalsObs.code?.coding?.[0]?.code).toBe('85353-1');
+
+    // Age > 89 capped to 90+ with zero birthDate
+    const elderBundle = service.generateFhirBundle({ ...mockPatient, id: 'pt-elder-94', age: 94 });
+    const elderPatient = elderBundle.entry[0].resource as any;
+    expect(elderPatient.birthDate).toBeUndefined();
+    expect(elderPatient.extension?.some((ex: any) => ex.valueString === '90+')).toBe(true);
   });
 
   it('generates a compliant HL7 FHIR R4 EPSDT Appeal Bundle with ServiceRequest and SHA-256 DocumentReference', () => {

@@ -15,7 +15,7 @@ describe('ClinicalPosologyService', () => {
       const res = service.calculateFriedRule(6, 500, 10);
       expect(res.calculatedDoseMg).toBe(20);
       expect(res.microboreSyringeVolumeMl).toBe(2);
-      expect(res.formulaString).toContain('(6 mo / 150) × 500 mg = 20.00 mg');
+      expect(res.formulaString).toContain('(6 mo / 150) × 500 mg = 20 mg');
       expect(res.microdripGttMin).toBe(2);
     });
 
@@ -164,6 +164,30 @@ describe('ClinicalPosologyService', () => {
 
       const homeopathic = service.auditDosageText('Arnica Montana 30C sublingual pellets');
       expect(homeopathic.multiParadigmFontClass).toBe('font-paradigm-homeopathic');
+    });
+
+    it('detects fractional trailing zeros (5.50 mg), IU/QHS/HS/cc, avoids false adult <=1 mg warning, and avoids IU in MSF Vitamin A', () => {
+      const fracAudit = service.auditDosageText('Warfarin 5.50 mg PO QHS + Vitamin D 2000 IU + 5 cc syrup', 45);
+      expect(fracAudit.isCompliant).toBe(false);
+      expect(fracAudit.violations.some(v => v.type === 'TRAILING_ZERO' && v.correctedSnippet === '5.5 mg')).toBe(true);
+      expect(fracAudit.violations.some(v => v.type === 'PROHIBITED_ABBREVIATION' && v.originalSnippet.toUpperCase().includes('QHS'))).toBe(true);
+      expect(fracAudit.violations.some(v => v.type === 'PROHIBITED_ABBREVIATION' && v.originalSnippet.toUpperCase().includes('IU'))).toBe(true);
+      expect(fracAudit.violations.some(v => v.type === 'PROHIBITED_ABBREVIATION' && v.originalSnippet.toLowerCase().includes('cc'))).toBe(true);
+      expect(fracAudit.sanitizedText).toContain('5.5 mg');
+      expect(fracAudit.sanitizedText).toContain('at bedtime');
+      expect(fracAudit.sanitizedText).toContain('units');
+      expect(fracAudit.sanitizedText).toContain('mL');
+
+      // Low-milligram potent adult medications (e.g. Digoxin 0.125 mg) must NOT trigger a drug-agnostic subtherapeutic mismatch
+      const digoxinAudit = service.auditDosageText('Digoxin 0.125 mg oral tablet daily', 68);
+      expect(digoxinAudit.violations.some(v => v.type === 'AGE_MISMATCH')).toBe(false);
+
+      // MSF Vitamin A protocol avoids ISMP-prohibited IU abbreviation in schedule & presentation
+      const vitA = service.calculateMsfMeaslesVitaminA(18);
+      expect(vitA).toBeDefined();
+      expect(vitA.presentation).not.toMatch(/\bIU\b/);
+      expect(vitA.schedule).not.toMatch(/\bIU\b/);
+      expect(vitA.schedule).toContain('International Units (units)');
     });
   });
 });

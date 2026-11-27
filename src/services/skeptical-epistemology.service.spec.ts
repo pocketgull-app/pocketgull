@@ -194,7 +194,8 @@ describe('SkepticalEpistemologyService', () => {
     };
 
     const evaluation = service.evaluateGroundedAssertion(validAssertion);
-    expect(evaluation.isFalsified).toBe(false);
+    expect(evaluation.nullHypothesisRejected).toBe(true);
+    expect(evaluation.isFalsified).toBe(true);
     expect(evaluation.pValue).toBe(0.004);
     expect(evaluation.skepticalWarningNotice).toBeNull();
     expect(evaluation.epistemicConfidencePercent).toBe(91);
@@ -205,7 +206,8 @@ describe('SkepticalEpistemologyService', () => {
       pValueNullRejection: 0.12
     };
     const nonSigEval = service.evaluateGroundedAssertion(nonSigAssertion);
-    expect(nonSigEval.isFalsified).toBe(true);
+    expect(nonSigEval.nullHypothesisRejected).toBe(false);
+    expect(nonSigEval.isFalsified).toBe(false);
     expect(nonSigEval.skepticalWarningNotice).toContain('H0 Null Hypothesis cannot be rejected');
   });
 
@@ -407,6 +409,28 @@ describe('SkepticalEpistemologyService', () => {
     expect(alarmist.salutogenicScore).toBeLessThan(70);
     expect(alarmist.clinicalGuidance).toContain('IATROGENIC RISK');
     expect(alarmist.recommendedAntonovskyRemedy).toContain('NSF-53 certified activated carbon block gravity filter');
+  });
+
+  it('26. Uses metric-specific physiological stdDev, rejects fabricated DOIs/PUBMED IDs, and flags UNVERIFIED_EXTERNAL_CIT', () => {
+    // HbA1c change of 0.8% (sigma = 1.2, n = 25 -> SE = 0.24 -> z = 3.33 -> p < 0.001)
+    const a1cEval = service.evaluateFalsifiability('HbA1c', 6.5, 7.3, 25);
+    expect(a1cEval.nullHypothesisRejected).toBe(true);
+    expect(a1cEval.pValue).toBeLessThan(0.01);
+
+    // Explicit populationStdDev override
+    const customSigma = service.evaluateFalsifiability('Serum Sodium', 141, 140, 16, 2.0);
+    expect(customSigma.pValue).toBeCloseTo(0.0455, 2);
+
+    // Unverified external citation returns honest UNVERIFIED_EXTERNAL_CIT instead of fabricated low-bias stub
+    const unknownBias = service.evaluateCochraneRiskOfBias('unknown_external_ref_2026');
+    expect(unknownBias.verificationStatus).toBe('UNVERIFIED_EXTERNAL_CIT');
+    expect(unknownBias.overallRiskOfBias).toBe('Some Concerns');
+
+    // CDS compliance & biophysical models never fabricate NEJM 2025 DOIs or fake PUBMED- IDs
+    const cds = service.evaluateCdsCompliance('Cardiology', 2);
+    expect(JSON.stringify(cds)).not.toContain('10.1056/NEJMra240');
+    const bio = service.getAllBiophysicalFalsifications();
+    expect(JSON.stringify(bio)).not.toMatch(/PUBMED-38\d{6}/);
   });
 });
 

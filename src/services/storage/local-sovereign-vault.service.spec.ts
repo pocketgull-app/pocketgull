@@ -76,4 +76,95 @@ describe('LocalSovereignVaultService (Anti-Cloud Bricking & Local Data Sovereign
     expect(summary.totalBytes).toBe(36);
     expect(summary.sha256Part11Seal).toContain('sha256-opfs-holter-HOLTER-SESSION-001-36');
   });
+
+  it('5. Requests persistent storage (navigator.storage.persist) to block OS/browser quota eviction', async () => {
+    const originalStorage = navigator.storage;
+    const persistMock = async () => true;
+    const persistedMock = async () => false;
+
+    Object.defineProperty(navigator, 'storage', {
+      configurable: true,
+      value: {
+        ...originalStorage,
+        persisted: persistedMock,
+        persist: persistMock
+      }
+    });
+
+    try {
+      const granted = await service.requestStoragePersistence();
+      expect(granted).toBe(true);
+      expect(service.isStoragePersisted()).toBe(true);
+    } finally {
+      Object.defineProperty(navigator, 'storage', {
+        configurable: true,
+        value: originalStorage
+      });
+    }
+  });
+
+  it('6. Recovers clinical records from emergency migration snapshot if IndexedDB schema upgrade fails', () => {
+    window.localStorage.removeItem('pocketgull_sovereign_migration_backup_v2');
+    service.saveEmergencyMigrationSnapshot([
+      {
+        recordId: 'REC-MIGRATION-SAFE-01',
+        category: 'VITALS_SUMMARY',
+        patientId: 'PATIENT-SELF-01',
+        createdAt: '2026-11-11T17:00:00.000Z',
+        payload: { hr: 68 },
+        sha256Seal: 'sha256-sovereign-part11-deadbeefab89ef12',
+        isCloudIndependent: true
+      }
+    ]);
+
+    const restored = service.recoverFromEmergencyMigrationSnapshot();
+    expect(restored).toBe(1);
+    expect(service.schemaMigrationStatus()).toBe('RECOVERED_FROM_BACKUP');
+    window.localStorage.removeItem('pocketgull_sovereign_migration_backup_v2');
+  });
+
+  it('7. Queues idempotent outbox mutations and rehydrates FHIR R4 Bundle snapshots without duplicate writes', async () => {
+    await service.saveSovereignRecord({
+      recordId: 'REC-REHYDRATE-01',
+      category: 'CARE_PLAN',
+      patientId: 'PATIENT-SELF-01',
+      createdAt: '2026-11-11T17:30:00.000Z',
+      payload: { act: 'Act I Metabolic Bridge' }
+    });
+
+    const outboxBefore = await service.getPendingOutboxMutations();
+    expect(outboxBefore.length).toBeGreaterThanOrEqual(1);
+    await service.acknowledgeOutboxMutation(outboxBefore[0].mutationId);
+
+    const exportedBundle = await service.exportSovereignPatientBundle('PATIENT-SELF-01');
+
+    // Re-importing when record already exists should be idempotent (skippedCount >= 1)
+    const duplicateImport = await service.importSovereignPatientBundle(exportedBundle);
+    expect(duplicateImport.skippedCount).toBeGreaterThanOrEqual(1);
+
+    // Importing a new record from an external disaster-recovery FHIR snapshot
+    const externalSnapshot = JSON.stringify({
+      resourceType: 'Bundle',
+      id: 'SOVEREIGN-BUNDLE-DR-RESTORE',
+      type: 'collection',
+      timestamp: '2026-11-11T17:35:00.000Z',
+      entry: [
+        {
+          fullUrl: 'urn:uuid:REC-DR-RESTORED-99',
+          resource: {
+            resourceType: 'Basic',
+            id: 'REC-DR-RESTORED-99',
+            code: { text: 'CARE_PLAN' },
+            data: { act: 'Act II Autonomic Pacing' },
+            provenanceSeal: 'sha256-sovereign-part11-12345678ab89ef12'
+          }
+        }
+      ]
+    });
+
+    const restoredResult = await service.importSovereignPatientBundle(externalSnapshot);
+    expect(restoredResult.importedCount).toBe(1);
+    expect(restoredResult.verifiedSeals).toBe(1);
+    expect(restoredResult.bundleId).toBe('SOVEREIGN-BUNDLE-DR-RESTORE');
+  });
 });

@@ -1,6 +1,13 @@
 """
 Unit tests for Pocket Gull Agronomic, Soil Science & Grocery Stocking Models
 """
+import sys
+from pathlib import Path
+
+_API_DIR = str(Path(__file__).resolve().parent)
+if _API_DIR not in sys.path:
+    sys.path.insert(0, _API_DIR)
+
 from services.agronomic_nutrition_service import (
     SoilHealthInput,
     evaluate_soil_health_model,

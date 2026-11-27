@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -11,6 +11,7 @@ import {
 } from '../services/wordpress-articles.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
 import { SocraticMultilingualTranslatorService } from '../services/socratic-multilingual-translator.service';
+import { UiI18nService } from '../services/ui-i18n.service';
 import { DocDrillService } from '../services/doc-drill.service';
 import { HtmlExportStrategyService } from '../services/export/html-export-strategy.service';
 import { LongitudinalOrganSliderComponent } from './shared/longitudinal-organ-slider.component';
@@ -826,8 +827,23 @@ export class ArticlesReaderComponent implements OnInit {
   private articlesService = inject(ClinicalArticlesService);
   private bionicReading = inject(BionicReadingService);
   public multilingualService = inject(SocraticMultilingualTranslatorService);
+  private uiI18n = inject(UiI18nService, { optional: true });
   private docDrill = inject(DocDrillService);
   private htmlExport = inject(HtmlExportStrategyService);
+  private lastSyncedCount = 0;
+
+  constructor() {
+    effect(() => {
+      const count = this.uiI18n?.explicitSelectionCount() ?? 0;
+      const code = this.uiI18n?.activeLanguageCode();
+      if (count > this.lastSyncedCount && code) {
+        this.lastSyncedCount = count;
+        untracked(() => {
+          void this.onLanguageSelect(code);
+        });
+      }
+    });
+  }
 
   readonly posts = computed(() => this.articlesService.allPosts());
   readonly isLoading = computed(() => this.articlesService.isLoading());

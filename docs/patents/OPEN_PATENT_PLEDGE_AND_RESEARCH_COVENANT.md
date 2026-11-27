@@ -1,8 +1,8 @@
 # ⚖️ POCKETGULL OPEN PATENT PLEDGE & ACADEMIC RESEARCH COVENANT
 
 **Effective Date**: October 4, 2026  
-**Assignee & Licensor**: PocketGull Health AI PBC & Phil Gear (`dpo@pocketgull.app`)  
-**Scope**: Inventions and patent clusters cataloged under Docket `PG-PAT-2026-PRIMARY` and Provisional Application `PG-PAT-2026-CONF-001`  
+**Assignee & Licensor**: PocketGull LLC & Phillip Gear (`dpo@pocketgull.app`)  
+**Scope**: Inventions and technical disclosure clusters cataloged under Internal Docket `PG-PAT-2026-PRIMARY` and Pre-Filing Draft `PG-PAT-2026-CONF-001`  
 **Governing Statutory Frameworks**: 35 U.S.C. § 101 et seq., 35 U.S.C. § 102(a)(1), 35 U.S.C. § 122(e), 37 CFR 1.290, and the America Invents Act (AIA)
 
 ---
@@ -78,11 +78,11 @@ Academic medical centers and researchers utilizing this codebase or patent speci
 ```bibtex
 @misc{pocketgull2026conformal,
   title={System and Method for Tri-Paradigm Consilience and Finite-Sample Conformal Clinical Intervals with Epistemic Abstention},
-  author={Gear, Phil and PocketGull Applied Clinical AI Consortium},
+  author={Gear, Phillip and PocketGull LLC},
   year={2026},
   month={October},
-  howpublished={USPTO Provisional Patent Application Specification, Docket PG-PAT-2026-CONF-001},
-  url={https://github.com/pocketgull/pocketgull/blob/main/docs/patents/USPTO_PROVISIONAL_TRI_PARADIGM_CONFORMAL_SEPSIS.md},
+  howpublished={PocketGull Technical Disclosure Specification (Internal Draft Docket PG-PAT-2026-CONF-001)},
+  url={https://github.com/pocketgull-app/pocketgull/blob/main/docs/patents/OPEN_PATENT_PLEDGE_AND_RESEARCH_COVENANT.md},
   note={Open Patent Research Pledge under 35 U.S.C. § 102 Prior Art Bar}
 }
 ```
@@ -93,6 +93,6 @@ Academic medical centers and researchers utilizing this codebase or patent speci
 
 For institutional IRB inquiries, multi-center research partnerships, or formal written covenant verification:
 
-* **Data Protection & IP Compliance Officer**: Phil Gear / Legal Team
+* **Data Protection & IP Compliance Contact**: Phillip Gear (PocketGull LLC)
 * **Email**: `dpo@pocketgull.app`
-* **Address**: PocketGull Health AI PBC, Portland, OR / Geneva, Switzerland
+* **Entity & Location**: PocketGull LLC (Oregon Domestic LLC, Registry No. 258869891), Portland, OR, USA

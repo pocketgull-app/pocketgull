@@ -324,8 +324,7 @@
     }
     .care-plan-body blockquote p { margin: 0; font-size: 9pt; color: #374151; }
 
-    /* ─── Translation Matrix Layout ──────────────────── */
-        /* ─── Biomarker Matrix Export Styles ─────────────── */
+    /* ─── Biomarker Matrix Export Styles ─────────────── */
     .biomarker-matrix-export {
       margin: 14px 0 20px;
       border: 1px solid var(--border);
@@ -368,6 +367,7 @@
     .chip-optimal { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .chip-high { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
 
+    /* ─── Translation Matrix Layout ──────────────────── */
     .matrix-container {
       display: grid;
       gap: 20px;
@@ -464,7 +464,7 @@
       p, li, tr { page-break-inside: avoid; break-inside: avoid; }
       
       /* Preserve background colors and borders in PDF and paper output */
-      .vital-chip, .condition-tag, .care-plan-section, .care-plan-header, .matrix-analysis, blockquote {
+      .vital-chip, .condition-tag, .care-plan-section, .care-plan-header, .matrix-analysis, blockquote, .biomarker-matrix-export, .biomarker-chip {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
@@ -472,10 +472,7 @@
       .care-plan-body h3, .care-plan-body h4, .brand-tagline {
         letter-spacing: 0.02em !important;
       }
-      .biomarker-matrix-export, .biomarker-chip {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
+
       @page {
         size: letter portrait;
         margin: 0.75in 0.75in 1in 0.75in;
@@ -543,10 +540,6 @@
     <div class="print-bar-actions">
       <button class="btn-close" id="carePlanBtnClose">Close</button>
       <button class="btn-print" id="carePlanBtnPrint">Save as PDF / Print</button>
-      <script>
-        document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
-        document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
-      </script>
     </div>
   </div>
 
@@ -571,7 +564,7 @@
           </div>
         </div>
         <div class="report-meta">
-          <div><strong>Generated</strong> September 30, 2026 at 09:03 PM</div>
+          <div><strong>Generated</strong> November 16, 2026 at 01:00 PM</div>
           <div><strong>Report Type</strong> Care Plan &amp; Visit Summary</div>
           <div><strong>Classification</strong> Confidential – Clinical Use Only</div>
         </div>
@@ -588,7 +581,7 @@
         </div>
         <div class="patient-field">
           <div class="patient-field-label">Visit Date</div>
-          <div class="patient-field-value">September 30, 2026</div>
+          <div class="patient-field-value">November 16, 2026</div>
         </div>
         <div class="patient-field">
           <div class="patient-field-label">Prepared By</div>
@@ -599,9 +592,9 @@
       
         <div class="vitals-row">
             <div class="vital-chip"><span class="vital-label">BP</span><span class="vital-value">118/72</span></div>
-            <div class="vital-chip"><span class="vital-label">HR</span><span class="vital-value">76 <small>bpm</small></span></div>
-            <div class="vital-chip"><span class="vital-label">Temp</span><span class="vital-value">98.2°F</span></div>
-            <div class="vital-chip"><span class="vital-label">SpO2</span><span class="vital-value">99%</span></div>
+            <div class="vital-chip"><span class="vital-label">HR</span><span class="vital-value">61 <small>bpm</small></span></div>
+            <div class="vital-chip"><span class="vital-label">Temp</span><span class="vital-value">36.4°F</span></div>
+            <div class="vital-chip"><span class="vital-label">SpO2</span><span class="vital-value">98.3%</span></div>
             <div class="vital-chip"><span class="vital-label">Weight</span><span class="vital-value">145 lbs</span></div>
         </div>
       
@@ -620,7 +613,7 @@
         </div>
         <div class="care-plan-body">
           <h3>Clinical Assessment</h3>
-<p>Sarah Jenkins is a 42-year-old female presenting with chronic lower back pain (L4-L5 radiculopathy), opioid use disorder in sustained remission, and co-morbid depression. The primary clinical challenge is multi-modal pain management that avoids opioid relapse risk while addressing the functional and psychological dimensions of her condition.</p>
+<p>Homo Sapiens (Female, Lumbar Radiculopathy &amp; Remission, 42y) is a 42-year-old female presenting with chronic lower back pain (L4-L5 radiculopathy), opioid use disorder in sustained remission, and co-morbid depression. The primary clinical challenge is multi-modal pain management that avoids opioid relapse risk while addressing the functional and psychological dimensions of her condition.</p>
 <h3>Priority List</h3>
 <ul>
 <li><strong>Opioid Relapse Prevention</strong>: Highest-risk factor; pain management strategy must explicitly exclude opioid analgesics.</li>
@@ -932,14 +925,84 @@
 </ul>
 <h3>Biochemical &amp; Biomarker Matrix</h3>
 <p>The patient exhibits moderate systemic stress combined with suboptimal cellular energy production cofactors. Methylation pathway efficiency is reduced, contributing to neuroinflammation and pain sensitization. Primary focus is to support methylation pathways, improve mitochondrial respiration, and modulate NMDA receptor excitability.</p>
-<pre><code class="language-json">[
-  { "name": "Magnesium", "level": "Sub-optimal", "pathway": "ATP Synthesis / NMDA" },
-  { "name": "Vitamin D3", "level": "Sub-optimal", "pathway": "Immune / Bone" },
-  { "name": "Vitamin B12", "level": "Optimal", "pathway": "Methylation" },
-  { "name": "Zinc", "level": "Sub-optimal", "pathway": "Immune / Hormones" }
-]
-</code></pre>
-<h3>Detected Deficiencies</h3>
+<div class="biomarker-matrix-export">
+  <div class="biomarker-chart-summary">
+    <div class="biomarker-chart-title">🔬 Biochemical &amp; Biomarker Telemetry</div>
+    <div class="biomarker-chart-subtitle">Orthomolecular Spectrum &amp; Physiological Pathways</div>
+  </div>
+  <pre><code>        &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;Magnesium&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;span class="biomarker-chip chip-low"&gt;SUB-OPTIMAL&lt;/span&gt;&lt;/td&gt;
+          &lt;td&gt;ATP Synthesis / NMDA&lt;/td&gt;
+          &lt;td style="vertical-align: middle;"&gt;
+            &lt;svg width="100" height="14" viewBox="0 0 100 14" style="display:block;"&gt;
+              &lt;rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" /&gt;
+              &lt;rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" /&gt;
+              &lt;rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" /&gt;
+              &lt;rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" /&gt;
+              &lt;line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" /&gt;
+              &lt;circle cx="37.5" cy="7" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="1.2" /&gt;
+            &lt;/svg&gt;
+          &lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;Vitamin D3&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;span class="biomarker-chip chip-low"&gt;SUB-OPTIMAL&lt;/span&gt;&lt;/td&gt;
+          &lt;td&gt;Immune / Bone&lt;/td&gt;
+          &lt;td style="vertical-align: middle;"&gt;
+            &lt;svg width="100" height="14" viewBox="0 0 100 14" style="display:block;"&gt;
+              &lt;rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" /&gt;
+              &lt;rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" /&gt;
+              &lt;rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" /&gt;
+              &lt;rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" /&gt;
+              &lt;line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" /&gt;
+              &lt;circle cx="37.5" cy="7" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="1.2" /&gt;
+            &lt;/svg&gt;
+          &lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;Vitamin B12&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;span class="biomarker-chip chip-optimal"&gt;OPTIMAL&lt;/span&gt;&lt;/td&gt;
+          &lt;td&gt;Methylation&lt;/td&gt;
+          &lt;td style="vertical-align: middle;"&gt;
+            &lt;svg width="100" height="14" viewBox="0 0 100 14" style="display:block;"&gt;
+              &lt;rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" /&gt;
+              &lt;rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" /&gt;
+              &lt;rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" /&gt;
+              &lt;rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" /&gt;
+              &lt;line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" /&gt;
+              &lt;circle cx="62.5" cy="7" r="4.5" fill="#059669" stroke="#FFFFFF" stroke-width="1.2" /&gt;
+            &lt;/svg&gt;
+          &lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;Zinc&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;span class="biomarker-chip chip-low"&gt;SUB-OPTIMAL&lt;/span&gt;&lt;/td&gt;
+          &lt;td&gt;Immune / Hormones&lt;/td&gt;
+          &lt;td style="vertical-align: middle;"&gt;
+            &lt;svg width="100" height="14" viewBox="0 0 100 14" style="display:block;"&gt;
+              &lt;rect x="0" y="3" width="25" height="8" rx="2" fill="#FEE2E2" /&gt;
+              &lt;rect x="25" y="3" width="25" height="8" rx="0" fill="#FEF3C7" /&gt;
+              &lt;rect x="50" y="3" width="25" height="8" rx="0" fill="#DCFCE7" /&gt;
+              &lt;rect x="75" y="3" width="25" height="8" rx="2" fill="#F3E8FF" /&gt;
+              &lt;line x1="62.5" y1="1" x2="62.5" y2="13" stroke="#059669" stroke-width="1.5" stroke-dasharray="2,1" /&gt;
+              &lt;circle cx="37.5" cy="7" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="1.2" /&gt;
+            &lt;/svg&gt;
+          &lt;/td&gt;
+        &lt;/tr&gt;
+&lt;/tbody&gt;
+</code></pre><table class="biomarker-table" style="width:100%; border-collapse:collapse; margin:0;">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Biomarker</th>
+        <th style="width: 20%;">Clinical Status</th>
+        <th style="width: 35%;">Targeted Pathway</th>
+        <th style="width: 20%;">Telemetry</th>
+      </tr>
+    </thead>
+    <tbody>
+  </tbody></table>
+</div><h3>Detected Deficiencies</h3>
 <ul>
 <li><strong>Magnesium (Sub-optimal)</strong>: Consistent with chronic pain sensitization. Magnesium blocks NMDA receptors and limits central sensitization; deficiency amplifies pain perception.</li>
 <li><strong>Vitamin D3 (Sub-optimal)</strong>: Reduced levels associated with increased musculoskeletal pain, depression severity, and immune dysregulation.</li>
@@ -996,7 +1059,7 @@
 </ul>
 <h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Care Plan Instructions</h3>
 <ul>
-<li><input disabled="" type="checkbox"> [Goal]: Establish asthma action plan, consider biologic dupilumab initiation, and deploy HEPA environmental filtration.</li>
+<li><input disabled="" type="checkbox"> [Goal]: Implement non-opioid pain modulation, avoid opioid relapse triggers, establish asthma action plan, and deploy HEPA environmental filtration.</li>
 </ul>
 <h3><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#689F38]"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg> Oxidative Stress Markers</h3>
 <ul>
@@ -1042,11 +1105,11 @@
     </div>
   </div>
   <script>
+    document.getElementById('carePlanBtnClose')?.addEventListener('click', function() { window.close(); });
+    document.getElementById('carePlanBtnPrint')?.addEventListener('click', function() { window.print(); });
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         window.print();
       }, 400);
     });
-  </script>
-
-</body></html>
+  </script></body></html>

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode, selectPatientByName } from './utils/setup';
+import { setupE2ePage, enterDemoMode, selectPatientByName, switchToAnalysisLens } from './utils/setup';
 
 test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -15,19 +15,8 @@ test.describe('Y-BOCs Diagnostic Screener E2E Tests', () => {
     // Select Alexander Vance using shared utility (avoids flaky raw locator)
     await selectPatientByName(page, 'Alexander Vance');
 
-    // Switch to Analysis panel if on mobile/tablet viewports
-    const reportTab = page.locator('button', { hasText: 'Analysis' }).first();
-    if (await reportTab.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await reportTab.dispatchEvent('click');
-      await page.waitForTimeout(500);
-    }
-
     // Switch to ASSESSMENTS lens tab
-    const assessmentsBtn = page.getByTestId('tab-assessments');
-    await assessmentsBtn.scrollIntoViewIfNeeded();
-    await expect(assessmentsBtn).toBeVisible({ timeout: 15000 });
-    await assessmentsBtn.dispatchEvent('click');
-    await page.waitForTimeout(500);
+    await switchToAnalysisLens(page, 'tab-assessments');
 
     // 3. Select Y-BOCs Screener Tab
     const ybocsTab = page.getByTestId('tab-ybocs-screener');

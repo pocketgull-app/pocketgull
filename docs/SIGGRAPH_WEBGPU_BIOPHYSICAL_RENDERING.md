@@ -28,7 +28,7 @@ graph TD
 ### 1. WebGPU Compute & Fragment Shader Acceleration
 * **SIGGRAPH Principle**: Real-time 3D interactive graphics should offload procedural geometry instantiation, mesh deformation, and biophysical lighting pass computations directly to GPU unified memory via fragment and compute shaders.
 * **Pocket-Gull Application**:
-  - Implemented custom fragment shaders in [body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/anatomy-3d/body-3d-viewer.component.ts) and `GullRenderEngine` (`vesalian-woodcut.shader.ts`) for live anatomical pulse glow, mediastinum-anchored cardiac scaling, tri-paradigm spatial lens highlights, and thermal gradient overlays.
+  - Implemented custom fragment shaders in [body-3d-viewer.component.ts](src/components/anatomy-3d/body-3d-viewer.component.ts) and `GullRenderEngine` (`vesalian-woodcut.shader.ts`) for live anatomical pulse glow, mediastinum-anchored cardiac scaling, tri-paradigm spatial lens highlights, and thermal gradient overlays.
 
 ---
 
@@ -74,5 +74,5 @@ graph TD
 
 ## Technical Reference Links
 
-- **3D Spatial View Component**: [src/components/anatomy-3d/body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/anatomy-3d/body-3d-viewer.component.ts)
-- **3D Anatomy Skill**: [.agents/skills/threejs_anatomy/SKILL.md](file:///c:/Users/philg/Pocketgull/pocketgull/.agents/skills/threejs_anatomy/SKILL.md)
+- **3D Spatial View Component**: [src/components/anatomy-3d/body-3d-viewer.component.ts](src/components/anatomy-3d/body-3d-viewer.component.ts)
+- **3D Anatomy Skill**: [.agents/skills/threejs_anatomy/SKILL.md](.agents/skills/threejs_anatomy/SKILL.md)

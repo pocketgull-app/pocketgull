@@ -24,7 +24,7 @@ if ($Uninstall) {
 }
 $repoDir = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 if (-not (Test-Path $repoDir)) {
-    $repoDir = "C:\Users\philg\Pocketgull\pocketgull"
+    $repoDir = "."
 }
 $trayScript = Join-Path $repoDir "scripts\pocketgull_tray.ps1"
 $iconPath = Join-Path $repoDir "pocketgull_flutter\windows\runner\resources\app_icon.ico"

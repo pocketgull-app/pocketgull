@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TeledentistryService, ToothSurface, TWIGrade, IToothState } from '../../services/teledentistry.service';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-teledentistry-systemic-lens',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-6">
@@ -17,10 +18,10 @@ import { TeledentistryService, ToothSurface, TWIGrade, IToothState } from '../..
           <div>
             <div class="flex items-center gap-2">
               <span class="text-2xl">🦷</span>
-              <h3 class="text-xl font-bold text-zinc-100">Teledentistry & Systemic Health Cross-Talk</h3>
+              <h3 class="text-xl font-bold text-zinc-100">{{ 'Teledentistry & Systemic Health Cross-Talk' | pgT:'dental.title' }}</h3>
             </div>
             <p class="text-xs text-zinc-400 mt-1 max-w-xl">
-              FDI 32-Tooth Odontogram surface caries mapping, Smith & Knight TWI tooth wear index, and Periodontal Inflammatory Burden Index (SIBI) cross-talk to systemic cardiovascular & glycemic trajectory.
+              {{ 'FDI 32-Tooth Odontogram surface caries mapping, Smith & Knight TWI tooth wear index, and Periodontal Inflammatory Burden Index (SIBI) cross-talk to systemic cardiovascular & glycemic trajectory.' | pgT:'dental.subtitle' }}
             </p>
           </div>
 
@@ -28,13 +29,13 @@ import { TeledentistryService, ToothSurface, TWIGrade, IToothState } from '../..
           <div class="flex items-center gap-4">
             <!-- SIBI Score Badge -->
             <div class="text-center p-3 px-5 rounded-xl bg-zinc-950/80 border border-rose-500/40 backdrop-blur-md">
-              <div class="text-[10px] uppercase tracking-wider font-bold text-zinc-400">SIBI Score</div>
+              <div class="text-[10px] uppercase tracking-wider font-bold text-zinc-400">{{ 'SIBI Score' | pgT:'dental.sibi_score' }}</div>
               <div class="text-2xl font-black text-rose-400">{{ dental.sibiScore() }} <span class="text-xs font-normal text-zinc-500">/ 100</span></div>
             </div>
 
             <!-- CV Risk Multiplier Badge -->
             <div class="text-center p-3 px-4 rounded-xl bg-zinc-950/80 border border-amber-500/40 backdrop-blur-md">
-              <div class="text-[10px] uppercase tracking-wider font-bold text-zinc-400">CV Risk</div>
+              <div class="text-[10px] uppercase tracking-wider font-bold text-zinc-400">{{ 'CV Risk' | pgT:'dental.cv_risk' }}</div>
               <div class="text-xl font-black text-amber-400">{{ dental.cvRiskMultiplier() }}x</div>
             </div>
 
@@ -71,13 +72,13 @@ import { TeledentistryService, ToothSurface, TWIGrade, IToothState } from '../..
       <!-- FDI 32-Tooth Odontogram Grid -->
       <div class="p-6 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-6">
         <div class="flex items-center justify-between">
-          <h4 class="text-sm font-bold text-zinc-200 uppercase tracking-wider">FDI 32-Tooth Odontogram Grid (Teeth 11–48)</h4>
+          <h4 class="text-sm font-bold text-zinc-200 uppercase tracking-wider">{{ 'FDI 32-Tooth Odontogram Grid (Teeth 11–48)' | pgT:'dental.grid_title' }}</h4>
           <span class="text-xs text-zinc-500 font-mono">Click tooth to inspect or toggle caries surfaces (M, O, D, F, L)</span>
         </div>
 
         <!-- Maxillary Arch (Q1 & Q2) -->
         <div>
-          <div class="text-xs font-semibold text-zinc-400 mb-2 border-b border-zinc-800 pb-1">Maxillary Arch (Upper Jaw)</div>
+          <div class="text-xs font-semibold text-zinc-400 mb-2 border-b border-zinc-800 pb-1">{{ 'Maxillary Arch (Upper Jaw)' | pgT:'dental.maxillary_arch' }}</div>
           <div class="grid grid-cols-8 md:grid-cols-16 gap-1.5 overflow-x-auto pb-2">
             @for (tooth of dental.teeth().slice(0, 16); track tooth.fdiNumber) {
               <button (click)="selectedTooth.set(tooth)"

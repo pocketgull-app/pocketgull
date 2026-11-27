@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../../services/patient-state.service';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-functional-circadian-synergy-bridge',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 rounded-3xl p-6 sm:p-7 border border-amber-500/30 shadow-2xl font-sans text-zinc-100 relative overflow-hidden my-6">
@@ -19,7 +20,7 @@ import { PatientStateService } from '../../services/patient-state.service';
           <div class="flex items-center gap-3">
             <span class="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-amber-400 to-emerald-400 shadow-[0_0_12px_rgba(245,158,11,0.6)] animate-pulse"></span>
             <h3 class="text-base font-black text-zinc-100 uppercase tracking-wider flex items-center gap-2 font-mono">
-              <span>🔀</span> Functional-Circadian Cross-Lens Synergy Engine
+              <span>🔀</span> {{ 'Functional-Circadian Cross-Lens Synergy Engine' | pgT:'lens03.synergy_title' }}
             </h3>
             <span class="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 uppercase">
               IFM 7-Node × SCN Diurnal Cross-Talk
@@ -32,7 +33,7 @@ import { PatientStateService } from '../../services/patient-state.service';
 
         <div class="flex items-center gap-2">
           <div class="px-3.5 py-1.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 flex items-center gap-2 font-mono">
-            <span class="text-xs text-zinc-400">Synergy Burden:</span>
+            <span class="text-xs text-zinc-400">{{ 'Synergy Burden:' | pgT:'lens03.synergy_burden' }}</span>
             <span class="text-sm font-black" [ngClass]="{
               'text-emerald-400': synergy().score < 30,
               'text-amber-400': synergy().score >= 30 && synergy().score < 60,
@@ -49,7 +50,7 @@ import { PatientStateService } from '../../services/patient-state.service';
         <div class="p-5 bg-zinc-900/80 rounded-2xl border border-rose-500/20 flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-3">
-              <span class="text-xs font-bold font-mono text-zinc-400 uppercase tracking-wider">Systemic Inflammatory Node</span>
+              <span class="text-xs font-bold font-mono text-zinc-400 uppercase tracking-wider">{{ 'Systemic Inflammatory Node' | pgT:'lens03.inflammatory_node' }}</span>
               <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20">
                 IFM Matrix
               </span>
@@ -79,7 +80,7 @@ import { PatientStateService } from '../../services/patient-state.service';
         <div class="p-5 bg-zinc-900/80 rounded-2xl border border-amber-500/20 flex flex-col justify-between">
           <div>
             <div class="flex justify-between items-center mb-3">
-              <span class="text-xs font-bold font-mono text-zinc-400 uppercase tracking-wider">Circadian SCN Clock</span>
+              <span class="text-xs font-bold font-mono text-zinc-400 uppercase tracking-wider">{{ 'Circadian SCN Clock' | pgT:'lens03.scn_clock' }}</span>
               <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20">
                 Diurnal Rhythm
               </span>

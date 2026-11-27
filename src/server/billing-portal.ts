@@ -71,8 +71,24 @@ export interface ILicenseReceipt {
   digitalSealSha256: string;
 }
 
+let _ephemeralReceiptSecret: Buffer | null = null;
+
+function getReceiptSigningKey(): Buffer {
+  const configured =
+    process.env['LICENSE_RECEIPT_SECRET']?.trim() ||
+    process.env['SESSION_SIGNING_SECRET']?.trim();
+  if (configured && configured.length >= 16) {
+    return crypto.createHash('sha256').update(configured, 'utf8').digest();
+  }
+  if (!_ephemeralReceiptSecret) {
+    _ephemeralReceiptSecret = crypto.randomBytes(32);
+  }
+  return _ephemeralReceiptSecret;
+}
+
 /**
  * Generates an immutable, cryptographically attested license receipt under NIST SP 800-90A CSPRNG
+ * using HMAC-SHA256 keyed with a server-side secret.
  */
 export function generateLicenseReceipt(
   tierId: string,
@@ -87,7 +103,10 @@ export function generateLicenseReceipt(
   const issuedAt = new Date().toISOString();
 
   const sealPayload = `${receiptId}:${licenseKey}:${tier.id}:${tier.priceUsd}:${purchaserEmail}:${issuedAt}:POCKETGULL_LLC_OREGON_258869891`;
-  const digitalSealSha256 = crypto.createHash('sha256').update(sealPayload).digest('hex');
+  const digitalSealSha256 = crypto
+    .createHmac('sha256', getReceiptSigningKey())
+    .update(sealPayload, 'utf8')
+    .digest('hex');
 
   return {
     receiptId,
@@ -104,13 +123,16 @@ export function generateLicenseReceipt(
 
 /**
  * Renders the HTML checkout and payment portal for PocketGull on Google Cloud
+ * CSP3 compliant: zero inline event handler attributes (onclick/onsubmit/oninput);
+ * all handlers are bound via nonce-bearing <script> event listeners.
  */
 export function renderCheckoutPortalHtml(
   selectedTierId: string = 'founder_lifetime',
-  options?: { countryCode?: string }
+  options?: { countryCode?: string; nonce?: string }
 ): string {
   const tier = BILLING_TIERS[selectedTierId] || BILLING_TIERS['founder_lifetime'];
-  const country = (options?.countryCode || 'US').toUpperCase();
+  const safeNonce = typeof options?.nonce === 'string' ? options.nonce.replace(/[^a-zA-Z0-9+/=_-]/g, '') : '';
+  const nonceAttr = safeNonce ? ` nonce="${safeNonce}"` : '';
 
   const cadenceLabel = tier.billingCadence === 'one_time' 
     ? 'one-time investment' 
@@ -222,7 +244,7 @@ export function renderCheckoutPortalHtml(
         <h2 style="font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-bottom: 1rem;">Complete Your Order</h2>
 
         <!-- Google Pay Instant 1-Click Button -->
-        <button type="button" id="gpayBtn" onclick="handleGPayCheckout()" class="btn-pay btn-gpay">
+        <button type="button" id="gpayBtn" class="btn-pay btn-gpay">
           <span>Buy with</span>
           <svg style="height: 18px; width: auto; vertical-align: middle;" viewBox="0 0 60 25" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M10.02 12.01V16.89H8.38V2.8H12.7C13.88 2.8 14.88 3.2 15.68 4C16.48 4.8 16.9 5.8 16.9 7C16.9 8.2 16.48 9.2 15.68 10C14.88 10.8 13.88 11.2 12.7 11.2H10.02V12.01ZM10.02 4.35V9.65H12.77C13.51 9.65 14.12 9.4 14.61 8.9C15.1 8.4 15.34 7.77 15.34 7C15.34 6.23 15.1 5.6 14.61 5.1C14.12 4.6 13.51 4.35 12.77 4.35H10.02Z" fill="#FFFFFF"/>
@@ -237,7 +259,7 @@ export function renderCheckoutPortalHtml(
           <div style="flex: 1; height: 1px; background: var(--border);"></div>
         </div>
 
-        <form id="checkoutForm" onsubmit="handleFormCheckout(event)">
+        <form id="checkoutForm">
           <input type="hidden" id="tierIdInput" value="${tier.id}" />
 
           <div class="form-group">
@@ -337,7 +359,7 @@ export function renderCheckoutPortalHtml(
             <h3 style="font-size: 1.125rem; font-weight: 800; color: #ffffff;">Statement of Functional Expenses (US GAAP ASC 958-205)</h3>
             <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Projected allocations per $1.00 USD of software licensing &amp; consult revenue</p>
           </div>
-          <button type="button" onclick="downloadGaapCsvStatement()" class="btn-secondary">
+          <button type="button" id="downloadGaapBtn" class="btn-secondary">
             <span>📥 Download Statement (CSV)</span>
           </button>
         </div>
@@ -352,7 +374,7 @@ export function renderCheckoutPortalHtml(
               $49.00 / month (Clinic Pro)
             </div>
           </div>
-          <input type="range" id="gaapSlider" min="0" max="250" value="49" step="1" oninput="updateGaapCalculations(this.value)" style="width: 100%; accent-color: var(--teal-light); cursor: pointer;" />
+          <input type="range" id="gaapSlider" min="0" max="250" value="49" step="1" style="width: 100%; accent-color: var(--teal-light); cursor: pointer;" />
           <div style="display: flex; justify-content: space-between; font-size: 0.6875rem; font-family: ui-monospace, monospace; color: var(--text-muted); margin-top: 0.25rem;">
             <span>$0 (Solo Free)</span>
             <span>$49 (Clinic Pro)</span>
@@ -490,7 +512,7 @@ export function renderCheckoutPortalHtml(
     </div>
   </div>
 
-  <script>
+  <script${nonceAttr}>
     function updateGaapCalculations(amtStr) {
       const amt = parseFloat(amtStr) || 0;
       const sel = document.getElementById('gaapSelectedAmount');
@@ -574,6 +596,24 @@ export function renderCheckoutPortalHtml(
       document.getElementById('cvc').value = '999';
       handleFormCheckout({ preventDefault: () => {} });
     }
+
+    (function bindCheckoutListeners() {
+      const gpayBtn = document.getElementById('gpayBtn');
+      if (gpayBtn) gpayBtn.addEventListener('click', handleGPayCheckout);
+
+      const checkoutForm = document.getElementById('checkoutForm');
+      if (checkoutForm) checkoutForm.addEventListener('submit', handleFormCheckout);
+
+      const downloadGaapBtn = document.getElementById('downloadGaapBtn');
+      if (downloadGaapBtn) downloadGaapBtn.addEventListener('click', downloadGaapCsvStatement);
+
+      const gaapSlider = document.getElementById('gaapSlider');
+      if (gaapSlider) {
+        gaapSlider.addEventListener('input', function (evt) {
+          updateGaapCalculations(evt.target.value);
+        });
+      }
+    })();
   </script>
 </body>
 </html>`;

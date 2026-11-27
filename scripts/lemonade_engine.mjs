@@ -8,11 +8,12 @@
 
 import http from 'http';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { spawn, execSync } from 'child_process';
 
 const WORKSPACE_DIR = process.cwd();
-const LOCALAPPDATA = process.env.LOCALAPPDATA || 'C:\\Users\\philg\\AppData\\Local';
+const LOCALAPPDATA = process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
 const MODELS_DIR = path.join(LOCALAPPDATA, 'PocketGull', 'models');
 const PORT_LEMONADE = 13305;
 const PORT_OLLAMA = 11434;

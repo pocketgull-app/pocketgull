@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { PatientStateService } from './patient-state.service';
 import { NanoProvider } from './ai/nano.provider';
+import { computeFipsSha256Hex } from './clinical-defense-guard.service';
 
 export interface ITeaspoonExplanation {
   clinicalTerm: string;
@@ -140,24 +141,24 @@ export class PatientTrajectoryService {
     }
   ]);
 
-  // ── ACT 3: WHERE YOU'RE GOING (THE HORIZON MILESTONES) ──
+  // ── ACT 3: WHERE YOU'RE GOING (THREE ACTS TRAJECTORY HORIZONS) ──
   readonly horizonMilestones = signal<ITrajectoryHorizonMilestone[]>([
     {
       dayTarget: 30,
-      phaseTitle: 'Phase I: Cellular De-Escalation & Retinal Coherence',
-      targetObjective: 'Inflammation markers down, 50% reduction in lumbar spasm episodes, +15% scotopic contrast.',
-      clinicalMarker: 'SIBI Score & Retinal Contrast',
+      phaseTitle: 'Act I (Days 0–30): Metabolic Bridge & Cellular De-Escalation',
+      targetObjective: 'Metabolic stabilization, 50% reduction in lumbar spasm episodes, and baseline inflammatory de-escalation.',
+      clinicalMarker: 'SIBI Score & Metabolic Stability',
       baselineValue: 'SIBI 42 · 100% baseline',
-      targetValue: 'SIBI ≤ 25 · +15% contrast',
-      currentValue: 'SIBI 28 · +9.4% contrast',
+      targetValue: 'SIBI ≤ 25 · stabilized glycemic swing',
+      currentValue: 'SIBI 28 · improving trend',
       completionPercent: 78,
       isUnlocked: false
     },
     {
       dayTarget: 60,
-      phaseTitle: 'Phase II: Functional Biomechanical Restoration',
-      targetObjective: 'Restored pain-free lumbar flexion, normalized VOR smooth pursuit, deep sleep cycles uninterrupted.',
-      clinicalMarker: 'Lumbar ROM & Sleep Architecture',
+      phaseTitle: 'Act II (Weeks 2–12): Sleep, Glymphatic & Autonomic Pacing',
+      targetObjective: 'Restored pain-free lumbar flexion, circadian sleep consolidation, and parasympathetic autonomic pacing.',
+      clinicalMarker: 'Lumbar ROM, Sleep Architecture & HRV',
       baselineValue: 'Flexion 42° · 4.8h fragmented sleep',
       targetValue: 'Flexion ≥ 75° · 7.5h restorative sleep',
       currentValue: 'Flexion 64° · 6.8h sleep',
@@ -166,9 +167,9 @@ export class PatientTrajectoryService {
     },
     {
       dayTarget: 90,
-      phaseTitle: 'Phase III: Sustained Vitality & Long-Term Resilience',
-      targetObjective: 'L4-L5 disc stabilization, full daily vitality loop independence, FDA Part 11 Vitality Certificate.',
-      clinicalMarker: 'Composite Vitality Index',
+      phaseTitle: 'Act III (Months 6+): Stepped-Care Resilience & Sustained Vitality',
+      targetObjective: 'Long-term stepped-care resilience, L4-L5 biomechanical durability, and FDA 21 CFR Part 11 Vitality Certificate.',
+      clinicalMarker: 'Composite Resilience & Vitality Index',
       baselineValue: '54 / 100',
       targetValue: '≥ 90 / 100',
       currentValue: '86 / 100',
@@ -204,19 +205,32 @@ export class PatientTrajectoryService {
     );
   }
 
-  generateVitalityCertificate(patientName: string = 'Charles Darwin'): IVitalityCertificate {
+  generateVitalityCertificate(patientName: string = 'Safe Harbor Subject'): IVitalityCertificate {
+    const certificateId = `PG-VIT-${Date.now().toString(36).toUpperCase()}`;
+    const issueDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const completedMilestone = 'Three Acts Resilience & Functional Restoration (Act I–III)';
+    const clinicalAchievements = [
+      'Lumbar Disc L4-L5 Biomechanical Re-stabilization (+22° flexion gain)',
+      'Systemic Inflammatory Burden Index reduced from 42 to 24 (-42.8%)',
+      'Retinal Mitochondrial ATP Support via daily 670nm PBM dosing',
+      'Circadian Slow-Wave Sleep Latency normalized to <18 minutes'
+    ];
+    const sealPayload = JSON.stringify({
+      certificateId,
+      patientName,
+      issueDate,
+      completedMilestone,
+      clinicalAchievements
+    });
+    const sha256Hex = computeFipsSha256Hex(sealPayload);
+
     const cert: IVitalityCertificate = {
       patientName,
-      certificateId: `PG-VIT-${Date.now().toString(36).toUpperCase()}`,
-      issueDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-      completedMilestone: '90-Day Functional Restoration & Retinal-Circadian Coherence',
-      clinicalAchievements: [
-        'Lumbar Disc L4-L5 Biomechanical Re-stabilization (+22° flexion gain)',
-        'Systemic Inflammatory Burden Index reduced from 42 to 24 (-42.8%)',
-        'Retinal Mitochondrial ATP Elevation sustained via daily 670nm PBM dosing',
-        'Circadian Slow-Wave Sleep Latency normalized to <18 minutes'
-      ],
-      sha256IntegritySeal: `SHA-256: ${Math.random().toString(16).slice(2, 10)}${Math.random().toString(16).slice(2, 10)} (FDA 21 CFR Part 11 Compliant)`,
+      certificateId,
+      issueDate,
+      completedMilestone,
+      clinicalAchievements,
+      sha256IntegritySeal: `SHA-256: ${sha256Hex} (FDA 21 CFR Part 11 Compliant)`,
       regulatoryAttestation: 'Attested by PocketGull Clinical Intelligence Consensus Engine (HL7 FHIR R4 Compliant)'
     };
     this.vitalityCertificate.set(cert);
@@ -226,12 +240,15 @@ export class PatientTrajectoryService {
   /**
    * On-Device Edge Scribe Consult (Gemma 4 Dev Trial / Zero-Egress)
    * Evaluates patient voice or text notes locally and maps them to known anatomical scans.
+   * Truthfully labels source as 'Chrome Built-in AI (Gemma 4 Edge)' ONLY when nanoProvider
+   * actually executes; otherwise reports 'Deterministic Local Fallback'.
    */
   async consultEdgeScribe(patientNote: string): Promise<IEdgeScribeConsultResult> {
     const noteLower = patientNote.toLowerCase();
     let anatomicalLink = 'General Neuromuscular & Autonomic System';
     let teaspoon = 'Your nervous system is noticing postural tension. Take three slow diaphragmatic breaths.';
     let action = 'Perform 2 minutes of 0.1Hz rhythmic breathing and gentle neck rolls.';
+    let usedNanoInference = false;
 
     if (noteLower.includes('back') || noteLower.includes('lumbar') || noteLower.includes('sitting') || noteLower.includes('tight')) {
       anatomicalLink = 'Lumbar Spine (L4-L5 Disc & Paraspinal Musculature)';
@@ -247,8 +264,22 @@ export class PatientTrajectoryService {
       action = 'Switch on the Zero-Blue Ruby screen filter and engage the 0.5Hz Dichoptic Delta Beat before closing your eyes.';
     }
 
+    if (this.nanoProvider?.isAiSupported?.()) {
+      try {
+        const synthesized = await this.nanoProvider.synthesizeKnowledge(
+          `Map this patient note to a concise empowering insight (1 sentence): ${patientNote}`
+        );
+        if (synthesized?.synthesis && typeof synthesized.synthesis === 'string' && synthesized.synthesis.trim().length > 0) {
+          teaspoon = synthesized.synthesis.trim();
+          usedNanoInference = true;
+        }
+      } catch {
+        usedNanoInference = false;
+      }
+    }
+
     const result: IEdgeScribeConsultResult = {
-      source: this.nanoProvider?.isAiSupported() ? 'Chrome Built-in AI (Gemma 4 Edge)' : 'Deterministic Local Fallback',
+      source: usedNanoInference ? 'Chrome Built-in AI (Gemma 4 Edge)' : 'Deterministic Local Fallback',
       userNote: patientNote,
       anatomicalLinkage: anatomicalLink,
       teaspoonInsight: teaspoon,

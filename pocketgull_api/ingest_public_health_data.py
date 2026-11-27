@@ -49,12 +49,12 @@ def fetch_who_gho_data():
     except Exception as e:
         print(f"[WHO Ingestion Warning] Network query to WHO GHO failed ({e}). Loading verified public baseline...")
         return [
-            {'country_code': 'USA', 'prevalence_rate': 32.4, 'year': 2024},
-            {'country_code': 'CAN', 'prevalence_rate': 23.1, 'year': 2024},
-            {'country_code': 'GBR', 'prevalence_rate': 28.6, 'year': 2024},
-            {'country_code': 'JPN', 'prevalence_rate': 27.2, 'year': 2024},
-            {'country_code': 'IND', 'prevalence_rate': 30.7, 'year': 2024},
-            {'country_code': 'GLOBAL', 'prevalence_rate': 33.0, 'year': 2024}
+            {'spatial_dim': 'COUNTRY', 'country_code': 'USA', 'prevalence_rate': 32.4, 'year': 2024},
+            {'spatial_dim': 'COUNTRY', 'country_code': 'CAN', 'prevalence_rate': 23.1, 'year': 2024},
+            {'spatial_dim': 'COUNTRY', 'country_code': 'GBR', 'prevalence_rate': 28.6, 'year': 2024},
+            {'spatial_dim': 'COUNTRY', 'country_code': 'JPN', 'prevalence_rate': 27.2, 'year': 2024},
+            {'spatial_dim': 'COUNTRY', 'country_code': 'IND', 'prevalence_rate': 30.7, 'year': 2024},
+            {'spatial_dim': 'GLOBAL', 'country_code': 'GLOBAL', 'prevalence_rate': 33.0, 'year': 2024}
         ]
 
 def fetch_openfda_adverse_events():
@@ -128,9 +128,9 @@ def download_and_parse_cdc_nhanes_real_data():
     df_adults['LBXGLU'] = df_adults['LBXGLU'].fillna(102.0)
     df_adults['BPXPLS'] = df_adults['BPXPLS'].fillna(72.0)
 
-    # Standardize column names
+    # Standardize column names (HIPAA Safe Harbor §164.514(b)(2): top-code ages at 89.0)
     df_clean = pd.DataFrame({
-        'age': np.round(df_adults['RIDAGEYR'].values, 1),
+        'age': np.round(np.minimum(df_adults['RIDAGEYR'].values, 89.0), 1),
         'systolic_bp': np.round(df_adults['BPXSY1'].values, 1),
         'diastolic_bp': np.round(df_adults['BPXDI1'].values, 1),
         'fasting_glucose_mg_dl': np.round(df_adults['LBXGLU'].values, 1),
@@ -159,7 +159,7 @@ def download_and_parse_cdc_nhanes_real_data():
 def generate_cdc_nhanes_empirical_cohort(n_samples=5000):
     """Fallback empirical generator if offline."""
     np.random.seed(42)
-    age = np.clip(np.random.normal(48.2, 17.5, n_samples), 18, 90)
+    age = np.clip(np.random.normal(48.2, 17.5, n_samples), 18, 89)
     sbp = np.clip(105 + (age - 18) * 0.42 + np.random.normal(0, 12, n_samples), 85, 210)
     dbp = np.clip(70 + (age - 18) * 0.15 + np.random.normal(0, 8, n_samples), 50, 120)
     glucose = np.clip(np.exp(np.random.normal(4.62, 0.22, n_samples)), 65, 380)

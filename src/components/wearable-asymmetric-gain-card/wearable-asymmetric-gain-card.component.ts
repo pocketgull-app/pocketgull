@@ -20,7 +20,7 @@ import {
       <header class="card-header">
         <div>
           <span class="eyebrow-badge">
-            IEEE P2933™ TIPPSS • ASYMMETRIC CLINICAL GAIN
+            IEEE P2933™ TIPPSS • ASYMMETRIC CLINICAL GAIN • [EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC]
           </span>
           <h3 id="shock-trooper-title" class="card-title">
             Wearable Vanguard ("Shock Trooper") Readiness Loop
@@ -43,6 +43,13 @@ import {
             (click)="setPlatform('android_wear_health_connect')"
           >
             Android Wear OS (Health Connect)
+          </button>
+          <button
+            type="button"
+            class="platform-btn"
+            (click)="syncLiveHardware()"
+          >
+            ⚡ Sync Live IoMT
           </button>
         </div>
       </header>
@@ -157,8 +164,10 @@ import {
         max-width: 100%;
         overflow-wrap: anywhere;
         word-break: break-word;
-        background: var(--surface-elevated, #141013);
+        background: var(--surface-elevated, #0d090b);
         color: var(--text-primary, #ede3d2);
+        font-weight: 385 !important;
+        font-feature-settings: 'cv08' 1, 'cv05' 1, 'ss02' 1;
         border: 1px solid rgba(237, 227, 210, 0.16);
         border-radius: 12px;
         padding: 1.25rem;
@@ -292,5 +301,9 @@ export class WearableAsymmetricGainCardComponent {
     this.gainService.updateTelemetry({
       stoppedBeforeExhaustion: !this.telemetry().stoppedBeforeExhaustion,
     });
+  }
+
+  syncLiveHardware(): void {
+    this.gainService.syncFromLiveIomtHardware();
   }
 }

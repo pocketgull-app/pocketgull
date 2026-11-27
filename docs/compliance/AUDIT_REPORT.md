@@ -3,28 +3,28 @@
 **Standard**: ISO/IEC 25010 + SIG Maintainability + ATAM + DORA + Diátaxis
 **Audit Date**: 2026-08-05
 **Codebase Version**: v1.9.0 (312.98 KSLOC, 863 files)
-**Reconstruction Effort**: 1,052.13 Person-Months ($15.78M USD) — [COCOMO II](file:///c:/Users/philg/Pocketgull/pocketgull/cocomo2_report.md)
+**Reconstruction Effort**: 1,052.13 Person-Months ($15.78M USD) — [COCOMO II](cocomo2_report.md)
 
 ---
 
 ## Phase 1: Discovery Backlog (QUESTIONS.md)
 
-See [QUESTIONS.md](file:///c:/Users/philg/Pocketgull/pocketgull/QUESTIONS.md) for the full tagged backlog.
+See [QUESTIONS.md](QUESTIONS.md) for the full tagged backlog.
 
 ### Critical Structural Findings
 
 | # | Discovery Question | File | Tag |
 |---|---|---|---|
-| Q1 | `app.component.ts` (2,735 LOC) acts as the primary orchestrator for 30+ UI concerns — finalize preview, cognitive translation, animal therapy, theming, patient management. **Is this intentional monolith or decomposition candidate?** | [app.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/app.component.ts) | `caveat` |
-| Q2 | `analysis-report.component.ts` (4,153 LOC) is the single largest file in the codebase — 2x the size of the next largest. **Does this contain rendering logic that can be extracted into child lens components?** | [analysis-report.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report.component.ts) | `partial` |
-| Q3 | `export.service.ts` (2,813 LOC) handles PDF, FHIR, CSV, and print exports in a single service. **Should export formats be split into strategy-pattern handlers?** | [export.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/export.service.ts) | `partial` |
-| Q4 | `secure-splash.component.ts` (2,276 LOC) contains 4 swallowed catch blocks. **Are these intentional silent catches for resilience, or missed error paths?** | [secure-splash.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/secure-splash.component.ts) | `caveat` |
-| Q5 | The HybridProvider silently returns original text when ALL AI providers fail, masking translation failures. **The Cognitive Localization bug was a direct consequence — has this been addressed beyond the safety filter fix?** | [hybrid.provider.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ai/hybrid.provider.ts) | `partial` |
+| Q1 | `app.component.ts` (2,735 LOC) acts as the primary orchestrator for 30+ UI concerns — finalize preview, cognitive translation, animal therapy, theming, patient management. **Is this intentional monolith or decomposition candidate?** | [app.component.ts](src/app.component.ts) | `caveat` |
+| Q2 | `analysis-report.component.ts` (4,153 LOC) is the single largest file in the codebase — 2x the size of the next largest. **Does this contain rendering logic that can be extracted into child lens components?** | [analysis-report.component.ts](src/components/analysis-report.component.ts) | `partial` |
+| Q3 | `export.service.ts` (2,813 LOC) handles PDF, FHIR, CSV, and print exports in a single service. **Should export formats be split into strategy-pattern handlers?** | [export.service.ts](src/services/export.service.ts) | `partial` |
+| Q4 | `secure-splash.component.ts` (2,276 LOC) contains 4 swallowed catch blocks. **Are these intentional silent catches for resilience, or missed error paths?** | [secure-splash.component.ts](src/components/secure-splash.component.ts) | `caveat` |
+| Q5 | The HybridProvider silently returns original text when ALL AI providers fail, masking translation failures. **The Cognitive Localization bug was a direct consequence — has this been addressed beyond the safety filter fix?** | [hybrid.provider.ts](src/services/ai/hybrid.provider.ts) | `partial` |
 | Q6 | 19 innerHTML usages were detected across components. Of these, **which are sanitized via DOMPurify before injection?** Cross-reference against the 19 DOMPurify import sites. | Multiple files | `partial` |
-| Q7 | `server.ts` (1,507 LOC, 62 `:any` usages) is the most type-unsafe file in the codebase. **Should Express route handlers be extracted into typed controller modules?** | [server.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/server.ts) | `caveat` |
+| Q7 | `server.ts` (1,507 LOC, 62 `:any` usages) is the most type-unsafe file in the codebase. **Should Express route handlers be extracted into typed controller modules?** | [server.ts](src/server.ts) | `caveat` |
 | Q8 | localStorage is used in 17 files for patient state persistence. **Is there a centralized storage abstraction, or are raw localStorage calls scattered?** | Multiple files | `partial` |
-| Q9 | `gamification.service.ts` has 3 swallowed catches out of 3 total try blocks (100% suppression rate). **Is error swallowing intentional for non-critical gamification features?** | [gamification.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/gamification.service.ts) | `caveat` |
-| Q10 | `patient-state.service.ts` (1,371 LOC) manages the central patient state. **What is the planned boundary between PatientStateService, PatientManagementService (908 LOC), and StorageService?** | [patient-state.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts) | `partial` |
+| Q9 | `gamification.service.ts` has 3 swallowed catches out of 3 total try blocks (100% suppression rate). **Is error swallowing intentional for non-critical gamification features?** | [gamification.service.ts](src/services/gamification.service.ts) | `caveat` |
+| Q10 | `patient-state.service.ts` (1,371 LOC) manages the central patient state. **What is the planned boundary between PatientStateService, PatientManagementService (908 LOC), and StorageService?** | [patient-state.service.ts](src/services/patient-state.service.ts) | `partial` |
 
 ---
 
@@ -45,21 +45,21 @@ See [QUESTIONS.md](file:///c:/Users/philg/Pocketgull/pocketgull/QUESTIONS.md) fo
 
 | Rank | Lines | File | Risk Level |
 |---|---|---|---|
-| 1 | 4,153 | [analysis-report.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report.component.ts) | Critical |
-| 2 | 2,813 | [export.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/export.service.ts) | Critical |
-| 3 | 2,735 | [app.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/app.component.ts) | Critical |
-| 4 | 2,545 | [actuarial-longevity.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/actuarial-longevity.service.ts) | Critical |
-| 5 | 2,484 | [body-3d-viewer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/body-3d-viewer.component.ts) | Critical |
-| 6 | 2,276 | [secure-splash.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/secure-splash.component.ts) | Critical |
-| 7 | 1,772 | [medical-summary.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/medical-summary.component.ts) | High |
-| 8 | 1,560 | [summary-node.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/summary-node.component.ts) | High |
-| 9 | 1,507 | [server.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/server.ts) | High |
-| 10 | 1,371 | [patient-state.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts) | High |
-| 11 | 1,370 | [voice-assistant.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/voice-assistant.component.ts) | High |
-| 12 | 1,300 | [intake-form.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/intake-form.component.ts) | High |
-| 13 | 1,159 | [cost-benefit-analysis.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/cost-benefit-analysis.component.ts) | High |
-| 14 | 1,105 | [mood-consciousness-matrix.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/mood-consciousness-matrix.component.ts) | High |
-| 15 | 1,067 | [node-agent-dialog.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/node-agent-dialog.component.ts) | High |
+| 1 | 4,153 | [analysis-report.component.ts](src/components/analysis-report.component.ts) | Critical |
+| 2 | 2,813 | [export.service.ts](src/services/export.service.ts) | Critical |
+| 3 | 2,735 | [app.component.ts](src/app.component.ts) | Critical |
+| 4 | 2,545 | [actuarial-longevity.service.ts](src/services/actuarial-longevity.service.ts) | Critical |
+| 5 | 2,484 | [body-3d-viewer.component.ts](src/components/body-3d-viewer.component.ts) | Critical |
+| 6 | 2,276 | [secure-splash.component.ts](src/components/secure-splash.component.ts) | Critical |
+| 7 | 1,772 | [medical-summary.component.ts](src/components/medical-summary.component.ts) | High |
+| 8 | 1,560 | [summary-node.component.ts](src/components/summary-node.component.ts) | High |
+| 9 | 1,507 | [server.ts](src/server.ts) | High |
+| 10 | 1,371 | [patient-state.service.ts](src/services/patient-state.service.ts) | High |
+| 11 | 1,370 | [voice-assistant.component.ts](src/components/voice-assistant.component.ts) | High |
+| 12 | 1,300 | [intake-form.component.ts](src/components/intake-form.component.ts) | High |
+| 13 | 1,159 | [cost-benefit-analysis.component.ts](src/components/cost-benefit-analysis.component.ts) | High |
+| 14 | 1,105 | [mood-consciousness-matrix.component.ts](src/components/mood-consciousness-matrix.component.ts) | High |
+| 15 | 1,067 | [node-agent-dialog.component.ts](src/components/node-agent-dialog.component.ts) | High |
 
 ### 2.2 Type Safety Audit (`:any` Usage)
 
@@ -179,9 +179,9 @@ TDR = 42 / 1,052.13 = 3.99%
 
 | Artifact | Format | Status |
 |---|---|---|
-| [sbom.spdx.json](file:///c:/Users/philg/Pocketgull/pocketgull/sbom.spdx.json) | SPDX 2.3 | 44/45 packages have `licenseConcluded: NOASSERTION` |
-| [dependency-review-config.yml](file:///c:/Users/philg/Pocketgull/pocketgull/.github/dependency-review-config.yml) | GitHub DRA | Permissive-only allowlist (MIT, Apache-2.0, BSD, ISC, MPL-2.0) |
-| [DEPENDENCIES.md](file:///c:/Users/philg/Pocketgull/pocketgull/DEPENDENCIES.md) | Manual register | Apache 2.0 attribution with copyright holders |
+| [sbom.spdx.json](sbom.spdx.json) | SPDX 2.3 | 44/45 packages have `licenseConcluded: NOASSERTION` |
+| [dependency-review-config.yml](.github/dependency-review-config.yml) | GitHub DRA | Permissive-only allowlist (MIT, Apache-2.0, BSD, ISC, MPL-2.0) |
+| [DEPENDENCIES.md](DEPENDENCIES.md) | Manual register | Apache 2.0 attribution with copyright holders |
 | CycloneDX SBOM | -- | Not yet generated |
 
 ### 4.2 License Risk Scan

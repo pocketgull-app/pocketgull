@@ -138,16 +138,31 @@ import { FormsModule } from '@angular/forms';
       padding-left: 2.5rem;
     }
 
-    .variant-minimal {
+    .variant-minimal,
+    input.input-base.variant-minimal,
+    textarea.input-base.variant-minimal {
       background: transparent;
       border-color: transparent;
-      padding-left: 0;
-      padding-right: 0;
+      padding: 0.5rem 0.5rem;
       backdrop-filter: none;
       font-size: 14px;
+      box-shadow: none;
     }
 
-    .variant-minimal:focus {
+    .variant-minimal:focus,
+    input.input-base.variant-minimal:focus,
+    textarea.input-base.variant-minimal:focus {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    :host-context(.dark) input.input-base.variant-minimal,
+    :host-context(html.dark) input.input-base.variant-minimal,
+    :host-context(.dark) textarea.input-base.variant-minimal,
+    :host-context(html.dark) textarea.input-base.variant-minimal,
+    :host-context(.dark) input.input-base.variant-minimal:focus,
+    :host-context(html.dark) input.input-base.variant-minimal:focus {
       background: transparent;
       border-color: transparent;
       box-shadow: none;

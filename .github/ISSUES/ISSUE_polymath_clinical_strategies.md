@@ -26,5 +26,5 @@ We have integrated Polymaths, Renaissance Scholars & Interdisciplinary Synthesiz
 ---
 
 ## 🧪 2. Code & Test Verification
-- **[actuarial-longevity.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/actuarial-longevity.service.ts)**: Added Polymath profile and mapped resolution keywords (`polymath`, `renaissance scholar`, `interdisciplinary`, `generalist`, `universal genius`).
-- **[actuarial-longevity.spec.ts](file:///c:/Users/philg/Pocketgull/pocketgull/tests/actuarial-longevity.spec.ts)**: Vitest suite asserting resolution and category mapping (**3 / 3 Passed**).
+- **[actuarial-longevity.service.ts](src/services/actuarial-longevity.service.ts)**: Added Polymath profile and mapped resolution keywords (`polymath`, `renaissance scholar`, `interdisciplinary`, `generalist`, `universal genius`).
+- **[actuarial-longevity.spec.ts](tests/actuarial-longevity.spec.ts)**: Vitest suite asserting resolution and category mapping (**3 / 3 Passed**).

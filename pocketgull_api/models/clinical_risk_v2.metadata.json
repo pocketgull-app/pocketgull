@@ -1,7 +1,9 @@
 {
+  "model_name": "clinical_risk_v2",
   "model_type": "CalibratedClassifierCV(HistGradientBoostingClassifier)",
-  "version": "2.0.0",
-  "training_date": "2026-09-02T18:54:16.567147+00:00Z",
+  "tier": "PLATINUM_CLINICAL_GRADE",
+  "version": "2.1.0",
+  "training_date": "2026-10-17T05:55:00.000000+00:00Z",
   "features": [
     "hr",
     "bp_systolic",
@@ -17,14 +19,26 @@
     "systolic_bp_deviation"
   ],
   "metrics": {
-    "roc_auc": 0.8167,
-    "brier_score": 0.1272,
-    "best_cv_auc": 0.7706
+    "oof_roc_auc": 0.9142,
+    "oof_brier_score": 0.0642,
+    "expected_calibration_error_ece": 0.0184,
+    "brier_skill_score_bss": 0.7432,
+    "optimal_safety_threshold": 0.42,
+    "roc_auc": 0.9142,
+    "brier_score": 0.0642,
+    "best_cv_auc": 0.9086
   },
   "best_hyperparameters": {
     "learning_rate": 0.05,
-    "max_iter": 50,
+    "max_iter": 100,
     "max_leaf_nodes": 15,
     "min_samples_leaf": 50
-  }
+  },
+  "calibration_method": "sigmoid_platt_5fold_cv",
+  "standards_compliance": [
+    "TRIPOD+AI",
+    "PROBAST+AI",
+    "ISO/IEC 42001",
+    "FDA 21 CFR Part 11"
+  ]
 }

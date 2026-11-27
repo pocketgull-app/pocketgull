@@ -380,11 +380,11 @@ import { LocalSovereignVaultService } from '../../services/storage/local-soverei
                   <span>🏛️</span> Sovereign Local Vault
                 </span>
                 <span class="px-1.5 py-0.5 text-[10px] font-mono rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                  OFFLINE
+                  {{ vaultService.isStoragePersisted() ? 'PERSISTED' : 'OFFLINE' }}
                 </span>
               </div>
               <p class="text-[11px] text-zinc-400 mt-1">
-                Headroom: <span class="font-mono text-zinc-200">{{ vaultService.storageEstimate().availableMb }} MB</span> &bull; Records: <span class="font-mono text-zinc-200">{{ vaultService.localRecordCount() }}</span>. Operates 100% offline if cloud servers vanish.
+                Headroom: <span class="font-mono text-zinc-200">{{ vaultService.storageEstimate().availableMb }} MB</span> &bull; Records: <span class="font-mono text-zinc-200">{{ vaultService.localRecordCount() }}</span> &bull; Outbox: <span class="font-mono text-zinc-200">{{ vaultService.pendingOutboxCount() }}</span>. Operates 100% offline if cloud servers vanish.
               </p>
             </div>
             <div class="mt-3 flex flex-col gap-2">

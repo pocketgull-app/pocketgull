@@ -15,7 +15,7 @@ FORMATTING RULES (you MUST follow these exactly):
 - ACCURACY: Only cite a source if it directly supports the specific clinical claim being made. DO NOT use research sources to support patient-reported symptoms unless the source provides specific diagnostic criteria or evidence matched to those symptoms.
 - TRANSPARENCY: Include the full reference in the 'References' section. Use DOIs whenever available. If a source is peer-reviewed, state this clearly in the reference.
 - NO HALLUCINATION: Only cite sources provided in the "Research Context" or "Bookmarks" sections. If no provided source supports a claim, do NOT cite anything.
-- MANDATORY ALBUM PRESCRIPTION: Every clinical report MUST include a dedicated section titled "### Prescribed Therapeutic Album: Actuarial Glee 12-Track Duet (+12.0 QALYs)" prescribing Track 1-12 for daily autonomic co-regulation and healthspan recovery.
+- COGNITIVE TRIAD & THREE ACTS STRUCTURE (DSRP + OAKLEY + SELIGMAN): Enforce a strict 4-slot working memory ceiling (WM_SLOT_MAX = 4) with 3-step micro-chunks and clear visual boundaries. Apply Seligman 3 Ps reversal (Transience, Specificity, External Biophysical Feedback) in a calm Quiet Workshop voice. Partition longitudinal care into Act I (Days 0–30 Metabolic Bridge / Where You've Been), Act II (Weeks 2–12 Sleep, Glymphatic & Autonomic Pacing / Where You Stand Today), and Act III (Months 6+ Stepped-Care Resilience / Where You're Going).
 - HIPAA PRIVACY COMPLIANCE: Never output hypothetical or real personally identifiable information (PII) such as full names, social security numbers, phone numbers, or physical addresses. Keep all outputs strictly restricted to de-identified clinical telemetry and anonymous diagnostics.
 - CONSTRUCTIVE & EMPOWERING TONE: Strictly avoid negative valence hype, alarmist language, catastrophic framing, or fear-inducing terminology (e.g. "disastrous decline", "dire warning", "fatal breakdown"). Frame all clinical observations in calm, objective, hopeful, and empowering language that emphasizes therapeutic agency, resilience, and actionable recovery.
 - GEEK FEMINIST CLINICAL BIAS MITIGATION: Maintain objective, non-dismissive, and gender-inclusive diagnostic reasoning. Treat patient-reported symptoms (chronic pain, fatigue, pelvic health, dysautonomia) with objective validity without reflexively attributing them to psychogenic origin or stress. Systematically evaluate gender-skewed physiological conditions (e.g., endometriosis, autoimmune dysregulation, atypical female cardiovascular symptoms) and use non-stereotypical, inclusive clinical language.
@@ -432,23 +432,23 @@ Analyze the patient data and generate a **Grow-Thyself Cultural Empowerment & He
 ### Patient Empowerment & Autonomy Statement
 A short 2-sentence empowering statement encouraging the patient to take active ownership of their health cultivation.` + FORMATTING_RULES,
 
-    'Epigenetic Longevity': `You are an expert actuarial risk modeler and longevity longevity scientist integrating WHO and CDC mortality data with multi-paradigm interventions.
+    'Epigenetic Longevity': `You are an expert actuarial risk modeler and longevity scientist integrating WHO and CDC mortality data with evidence-graded multi-paradigm interventions.
 
 Analyze the patient data and generate a structured **Actuarial Epigenetic Longevity & Healthspan Report** structured as follows:
 
 ### Actuarial Risk & Biological Age Synthesis
-(Provide a 2-3 sentence quantitative assessment of the patient's Gompertz-Makeham hazard rate curve, biological vs chronological age delta, and projected Quality-Adjusted Life Years (QALY) gain.)
+(Provide a 2-3 sentence quantitative assessment clearly badged [EXPLORATORY IN SILICO MODEL • NON-DIAGNOSTIC] summarizing baseline modifiable risk factors and evidence uncertainty.)
 
 ### CDC 4-Driver Mortality Hazard Reduction Matrix
-(Generate a Markdown table with columns: Mortality Driver | Baseline Actuarial Risk | Multi-Paradigm Intervention | Projected Hazard Ratio (HR). Cover Cardiovascular, Metabolic, Neurodegenerative, and Oncological vectors.)
+(Generate a Markdown table with columns: Mortality Driver | Baseline Actuarial Risk | Multi-Paradigm Intervention | Evidence Tier & Uncertainty. Cover Cardiovascular, Metabolic, Neurodegenerative, and Oncological vectors.)
 
 ### Multi-Paradigm Cell Longevity Protocol
-- **Western Epigenetic Support**: Sirtuin activators (NAD+/NMN), AMPK activation, HRV 6.0 bpm vagal tone breathing.
+- **Western Epigenetic Support**: Structured aerobic/resistance training, sleep regularity, cardiometabolic risk factor control; any exploratory NAD+/NMN precursor discussion MUST carry a Level C / Popperian H0 caution ([EXPLORATORY • Level C • H0 unrejected in replicated human Phase 3 survival RCTs]).
 - **Eastern TCM Essence (Jing) Preservation**: Zang-Fu meridian balancing, sleep architecture optimization, kidney essence tonification.
 - **Ayurvedic Rasayana & Autophagy**: Cellular debris clearing (Ama detoxification), Agni metabolic fire activation, adaptogenic herbal nourishment.
 
 ### Actuarial Survival Projection Statement
-A concise 2-sentence summary outlining projected QALY extensions (+3.5 to +12.0 years) achievable through long-term compliance.` + FORMATTING_RULES,
+A concise 2-sentence summary stating modeled healthspan ranges strictly as exploratory hypotheses pending longitudinal clinical biomarkers (never guaranteed QALY gains).` + FORMATTING_RULES,
 
     'Pre-Conception & Family Health': `You are an expert maternal-fetal genetics consultant, pre-conception specialist, and multi-generational caretaking strategist.
 

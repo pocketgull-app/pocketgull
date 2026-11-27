@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.singleton.1.6.0.schema.json
+# SPDX-License-Identifier: Apache-2.0
+PackageIdentifier: PocketGull.AtaxiaSanctuary
+PackageVersion: 1.0.0
+PackageLocale: en-US
+Publisher: PocketGull LLC
+PublisherUrl: https://pocketgull.app
+PublisherSupportUrl: https://github.com/pocketgull-app/pocketgull/issues
+PackageName: PocketGull Ataxia Sanctuary
+License: Apache-2.0
+ShortDescription: Zero-dependency Windows motor-ergonomics shield, 64px high-contrast & 650nm scotopic cursors, and 4-slot circadian control deck for ataxia and tremor relief.
+Tags:
+  - accessibility
+  - ataxia
+  - tremor
+  - dysmetria
+  - cursors
+  - ergonomic
+Installers:
+  - Architecture: x64
+    InstallerType: zip
+    NestedInstallerType: portable
+    NestedInstallerFiles:
+      - RelativeFilePath: PocketGullSanctuary.exe
+        PortableCommandAlias: pocketgull-sanctuary
+    Scope: user
+    InstallerUrl: https://github.com/pocketgull-app/pocketgull/releases/download/sanctuary-v1.0.0/PocketGull-Ataxia-Sanctuary-v1.0.0-win-x64.zip
+    InstallerSha256: 50727bd30ab33508be0e42f66a50ad5cc297db3dfba80ff260e76a463f834094
+ManifestType: singleton
+ManifestVersion: 1.6.0

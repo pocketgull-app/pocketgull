@@ -21,7 +21,7 @@ if (-not (Test-Path $fontsDir)) {
     New-Item -ItemType Directory -Path $fontsDir -Force | Out-Null
 }
 
-$sourceDir = "C:\Users\philg\Pocketgull\pocketgull\public\brand\fonts"
+$sourceDir = "public\brand\fonts"
 $fontFiles = Get-ChildItem -Path $sourceDir -Filter "*.ttf"
 
 Write-Host "Installing PocketGull Typeface Superfamily ($($fontFiles.Count) font cuts)..." -ForegroundColor Cyan

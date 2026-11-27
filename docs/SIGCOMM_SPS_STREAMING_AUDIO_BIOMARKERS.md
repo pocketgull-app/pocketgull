@@ -28,14 +28,14 @@ graph TD
 ### 1. Zero-Copy Binary Frame Transport
 * **SIGCOMM Principle**: High-frequency streaming telemetry must avoid string serialization/deserialization over WebSocket framing layers.
 * **Pocket-Gull Application**:
-  - Encodes 16kHz PCM audio frames using zero-copy binary ArrayBuffers directly in [AdkLiveService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ai/adk-live.service.ts), eliminating V8 garbage collection allocation overhead during streaming consultations.
+  - Encodes 16kHz PCM audio frames using zero-copy binary ArrayBuffers directly in [AdkLiveService](src/services/ai/adk-live.service.ts), eliminating V8 garbage collection allocation overhead during streaming consultations.
 
 ---
 
 ### 2. WebAudio 16kHz Downsampling & Buffer Pacing
 * **IEEE SPS Principle**: Modern browser AudioContext defaults to 44.1kHz or 48kHz sampling rates. AI voice models require precise 16kHz 16-bit mono PCM. Downsampling must use linear interpolation or polyphase FIR filtering without phase distortion.
 * **Pocket-Gull Application**:
-  - Implements downsampling ring buffers with 32KB fixed strides in [AdkLiveService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ai/adk-live.service.ts), maintaining $<15\text{ ms}$ buffer packetization delay.
+  - Implements downsampling ring buffers with 32KB fixed strides in [AdkLiveService](src/services/ai/adk-live.service.ts), maintaining $<15\text{ ms}$ buffer packetization delay.
 
 ---
 
@@ -44,7 +44,7 @@ graph TD
 * **Spectral Centroid Formula**:
   $$C = \frac{\sum_{k=1}^{N} f(k) |X(k)|}{\sum_{k=1}^{N} |X(k)|}$$
 * **Pocket-Gull Application**:
-  - Processes WebAudio AnalyserNode spectral FFT data in real time, detecting respiratory pauses or acoustic strain during voice consultations and feeding indicators into [PatientStateService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts).
+  - Processes WebAudio AnalyserNode spectral FFT data in real time, detecting respiratory pauses or acoustic strain during voice consultations and feeding indicators into [PatientStateService](src/services/patient-state.service.ts).
 
 ---
 
@@ -74,5 +74,5 @@ graph TD
 
 ## Technical Reference Links
 
-- **Live Voice Consult Service**: [src/services/ai/adk-live.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ai/adk-live.service.ts)
-- **Voice Simulator Skill**: [.agents/skills/simulate_voice/SKILL.md](file:///c:/Users/philg/Pocketgull/pocketgull/.agents/skills/simulate_voice/SKILL.md)
+- **Live Voice Consult Service**: [src/services/ai/adk-live.service.ts](src/services/ai/adk-live.service.ts)
+- **Voice Simulator Skill**: [.agents/skills/simulate_voice/SKILL.md](.agents/skills/simulate_voice/SKILL.md)

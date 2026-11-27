@@ -9,7 +9,7 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-$PythonExe = "C:\Users\philg\anaconda3\python.exe"
+$PythonExe = "$env:USERPROFILE\anaconda3\python.exe"
 $StatusScript = Join-Path $PSScriptRoot "get_rsna_status.py"
 
 # Create Form

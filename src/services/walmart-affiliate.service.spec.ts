@@ -32,6 +32,6 @@ describe('WalmartAffiliateService Unit Suite', () => {
 
     expect(service.isLinkSafe(safeUrl)).toBe(true);
     expect(service.isLinkSafe(unsafeUrl)).toBe(false);
-    expect(service.isLinkSafe('http://unencrypted.com')).toBe(false);
+    expect(service.isLinkSafe('http://example.com')).toBe(false);
   });
 });

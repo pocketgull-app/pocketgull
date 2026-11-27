@@ -4,6 +4,7 @@ import { PatientStateService } from '../../services/patient-state.service';
 import { PocketGullBadgeComponent } from '../shared/pocket-gull-badge.component';
 import { LifePerilsParadigmMatrixComponent } from '../life-perils-paradigm-matrix.component';
 import { ClinicalMoERouterService } from '../../services/clinical-moe-router.service';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 export interface IChronoDoseStep {
   time: string;
@@ -37,7 +38,7 @@ export interface ICrossParadigmInteraction {
 @Component({
   selector: 'app-tri-paradigm-integrative-lens-tab',
   standalone: true,
-  imports: [CommonModule, PocketGullBadgeComponent, LifePerilsParadigmMatrixComponent],
+  imports: [CommonModule, PocketGullBadgeComponent, LifePerilsParadigmMatrixComponent, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="space-y-6 animate-in fade-in duration-300">
@@ -47,24 +48,24 @@ export interface ICrossParadigmInteraction {
         <div>
           <div class="flex items-center gap-2 mb-1">
             <span class="text-xl">☯️ 🌿 🔬</span>
-            <h2 class="text-lg font-bold">Tri-Paradigm Integrative Medicine Lens</h2>
+            <h2 class="text-lg font-bold">{{ 'Tri-Paradigm Integrative Medicine Lens' | pgT:'lens02.tri_title' }}</h2>
             <pocket-gull-badge label="HICK'S LAW DISTILLED" severity="info"></pocket-gull-badge>
           </div>
-          <p class="text-xs text-slate-300 font-mono">Unified Epistemological Harmony: 3 Invariants per Medical Tradition → 1 Unified Harmonization Card</p>
+          <p class="text-xs text-slate-300 font-mono">{{ 'Unified Epistemological Harmony: 3 Invariants per Medical Tradition → 1 Unified Harmonization Card' | pgT:'lens02.tri_subtitle' }}</p>
         </div>
 
         <div class="flex items-center gap-2">
           <button (click)="selectView('all')" [class.bg-cyan-600]="activeParadigmView() === 'all'" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition flex items-center gap-1">
-            <span>🏛️</span> Unified Tri-View
+            <span>🏛️</span> {{ 'Unified Tri-View' | pgT:'lens02.unified_view' }}
           </button>
           <button (click)="selectView('tcm')" [class.bg-emerald-600]="activeParadigmView() === 'tcm'" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition flex items-center gap-1">
-            <span>☯️</span> TCM Invariants
+            <span>☯️</span> {{ 'TCM Invariants' | pgT:'lens02.tcm_invariants' }}
           </button>
           <button (click)="selectView('ayurveda')" [class.bg-amber-600]="activeParadigmView() === 'ayurveda'" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition flex items-center gap-1">
-            <span>🌿</span> Ayurvedic Invariants
+            <span>🌿</span> {{ 'Ayurvedic Invariants' | pgT:'lens02.ayurvedic_invariants' }}
           </button>
           <button (click)="selectView('allopathic')" [class.bg-indigo-600]="activeParadigmView() === 'allopathic'" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer transition flex items-center gap-1">
-            <span>🔬</span> Allopathic Invariants
+            <span>🔬</span> {{ 'Allopathic Invariants' | pgT:'lens02.allopathic_invariants' }}
           </button>
         </div>
       </div>
@@ -75,7 +76,7 @@ export interface ICrossParadigmInteraction {
           <div class="flex items-center gap-2.5">
             <span class="text-2xl">🏛️</span>
             <div>
-              <h3 class="text-base font-bold text-slate-900 dark:text-zinc-100">Unified Harmonization Primary Card</h3>
+              <h3 class="text-base font-bold text-slate-900 dark:text-zinc-100">{{ 'Unified Harmonization Primary Card' | pgT:'lens02.unified_card_title' }}</h3>
               <p class="text-xs text-slate-500 dark:text-zinc-400">Cross-Paradigm Diagnostic Consensus & 24-Hour Chrono-Dosing Schedule</p>
             </div>
           </div>

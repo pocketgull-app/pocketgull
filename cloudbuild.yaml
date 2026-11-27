@@ -1,11 +1,11 @@
 steps:
-  # 1. Pull previous image for Docker layer caching
+  # 1. Pull previous image from Artifact Registry for Docker layer caching
   - name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        docker pull gcr.io/$PROJECT_ID/pocket-gull:latest || docker pull us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/pocket-gull-v2:latest || true
+        docker pull us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull:latest || true
 
   # 2. Build using cache to eliminate redundant npm install and apk updates
   - name: 'gcr.io/cloud-builders/docker'
@@ -14,13 +14,13 @@ steps:
     args:
       - 'build'
       - '--cache-from'
-      - 'gcr.io/$PROJECT_ID/pocket-gull:latest'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull:latest'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/pocket-gull:latest'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull:latest'
       - '.'
 
 images:
-  - 'gcr.io/$PROJECT_ID/pocket-gull:latest'
+  - 'us-central1-docker.pkg.dev/gen-lang-client-0540208645/cloud-run-source-deploy/pocketgull:latest'
 timeout: 1800s
 options:
   logging: CLOUD_LOGGING_ONLY

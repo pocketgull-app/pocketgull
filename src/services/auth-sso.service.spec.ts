@@ -145,21 +145,30 @@ describe('AuthSsoService (Battletest Client SSO & Session Lifecycle)', () => {
     expect(service.isAuthenticated()).toBe(true);
   });
 
-  it('authenticates with WebAuthn / FIDO2 Passkey', async () => {
+  it('authenticates with WebAuthn / FIDO2 Passkey including complete assertion payload and selected role', async () => {
     const passkeySession: IAuthenticatedUser = {
       ...mockGoogleSession,
       provider: 'webauthn',
-      roleTitle: 'FIDO2 / WebAuthn Biometric Clinician'
+      clinicalRole: 'roles/viewer',
+      roleTitle: 'FIDO2 Passkey — Sovereign Patient'
     };
 
-    const signInPromise = service.signInWithPasskey();
+    const signInPromise = service.signInWithPasskey('roles/viewer');
+    // Allow async WebCrypto P-256 key generation/signing microtasks to flush before HTTP POST
+    await new Promise((r) => setTimeout(r, 50));
     const req = httpMock.expectOne('/api/auth/sso/webauthn');
     expect(req.request.method).toBe('POST');
+    expect(req.request.body.credentialId).toBeTruthy();
+    expect(req.request.body.authenticatorData).toBeTruthy();
+    expect(req.request.body.signature).toBeTruthy();
+    expect(req.request.body.clientDataJSON).toBeTruthy();
+    expect(req.request.body.role).toBe('roles/viewer');
 
     req.flush({ success: true, session: passkeySession });
     const user = await signInPromise;
 
     expect(user.provider).toBe('webauthn');
+    expect(user.clinicalRole).toBe('roles/viewer');
     expect(service.isAuthenticated()).toBe(true);
   });
 

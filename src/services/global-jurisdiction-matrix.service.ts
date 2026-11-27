@@ -25,7 +25,7 @@ export interface IJurisdictionProfile {
   clinicalAiClassification: string;
   biometricConsentLaw: string;
   statutoryHealthAgency: string;
-  electronicHealthRecordStandard: 'FHIR_US_CORE_R4' | 'FHIR_EU_EHDS' | 'FHIR_UK_CORE' | 'FHIR_CA_BASELINE' | 'FHIR_AU_BASE' | 'ABDM_FHIR_INDIA' | 'HL7_V2_JAPAN';
+  electronicHealthRecordStandard: 'FHIR_US_CORE_R4' | 'FHIR_EU_EHDS' | 'FHIR_UK_CORE' | 'FHIR_CA_BASELINE' | 'FHIR_AU_BASE' | 'FHIR_NZ_BASE' | 'ABDM_FHIR_INDIA' | 'HL7_V2_JAPAN';
   approvedParadigms: string[];
   mandatoryConsents: IConsentRequirement[];
   emergencyDispatch: IEmergencyDispatch[];
@@ -48,8 +48,8 @@ export class GlobalJurisdictionMatrixService {
       regionType: 'US_STATE',
       countryCode: 'US',
       stateCode: 'CA',
-      dataPrivacyStatute: 'California Confidentiality of Medical Information Act (CMIA, Cal. Civ. Code § 56) & CCPA/CPRA',
-      clinicalAiClassification: 'FDA 21 CFR 860.7 & California CalAIM Clinical Decision Support',
+      dataPrivacyStatute: 'HIPAA §164.514 Safe Harbor, HITECH Act, California CMIA (Cal. Civ. Code § 56) & CCPA/CPRA',
+      clinicalAiClassification: 'FDA 21 CFR 860.7, ONC HTI-1 (45 CFR § 170.315(b)(11)) & California CalAIM Clinical Decision Support',
       biometricConsentLaw: 'CCPA § 1798.140(c) Biometric Definition & CMIA Medical Biometrics',
       statutoryHealthAgency: 'California Department of Public Health (CDPH) & DHCS (Medi-Cal)',
       electronicHealthRecordStandard: 'FHIR_US_CORE_R4',
@@ -262,10 +262,10 @@ export class GlobalJurisdictionMatrixService {
       approvedParadigms: ['NHS Conventional Allopathic', 'NICE Evidence-Based Clinical Pathways', 'Integrative & Herbal Medicine (Herbal Medicines Advisory Committee)'],
       mandatoryConsents: [
         {
-          statute: 'NHS DTAC (Digital Technology Assessment Criteria)',
-          requirementName: 'NHS Clinical Safety (DCB0129 / DCB0160) Compliance',
+          statute: 'NHS DTAC (Digital Technology Assessment Criteria) & NHS DSPT (Data Security and Protection Toolkit)',
+          requirementName: 'NHS Clinical Safety (DCB0129 / DCB0160) & NHS DSPT Compliance',
           isMandatory: true,
-          description: 'Clinical safety officer risk assessment and clinical risk management file compliance.',
+          description: 'Clinical safety officer risk assessment, clinical risk management file, and NHS DSPT cybersecurity attestation.',
           optInRequired: false
         },
         {
@@ -350,6 +350,35 @@ export class GlobalJurisdictionMatrixService {
       regulatoryNotes: 'ADHA My Health Record interoperates with Australian FHIR Base & AU Core for primary care and pathology reporting.'
     },
 
+    // 9b. New Zealand (NZ) — Five Eyes (FVEY) Partner
+    'NZ': {
+      jurisdictionId: 'NZ',
+      displayName: 'New Zealand (Aotearoa)',
+      regionType: 'NATION_STATE',
+      countryCode: 'NZ',
+      dataPrivacyStatute: 'Privacy Act 2020 & Health Information Privacy Code 2020 (HIPC 2020)',
+      clinicalAiClassification: 'Medsafe Medical Devices Regulations & Te Whatu Ora (Health New Zealand) Clinical AI Guidance',
+      biometricConsentLaw: 'HIPC 2020 Rule 1–13 Health Information Collection & Biometric Safeguards',
+      statutoryHealthAgency: 'Te Whatu Ora (Health New Zealand), Manatū Hauora & HISO',
+      electronicHealthRecordStandard: 'FHIR_NZ_BASE',
+      approvedParadigms: ['Te Whatu Ora Conventional Allopathic', 'Rongoā Māori (Traditional Māori Healing)', 'Integrative & Preventive Care'],
+      mandatoryConsents: [
+        {
+          statute: 'HIPC 2020 & NZ HISO 10029 / HISO 10064',
+          requirementName: 'HIPC 2020 Health Information Security & Interoperability Attestation',
+          isMandatory: true,
+          description: 'Enforces Health Information Privacy Code 2020 rules, NZ HISO 10029 Health Information Security Framework, and NZ HISO 10064 Health Information Governance Guidelines.',
+          optInRequired: true
+        }
+      ],
+      emergencyDispatch: [
+        { serviceName: '111 Emergency Services (Ambulance, Fire, Police)', number: '111', textSmsAvailable: true, specialtyType: 'General Emergency' },
+        { serviceName: '1737 Need to Talk? (24/7 Free Call or Text)', number: '1737', textSmsAvailable: true, specialtyType: 'Crisis & Suicide' },
+        { serviceName: 'National Poisons Centre NZ', number: '0800 764 766', textSmsAvailable: false, specialtyType: 'Poison Control' }
+      ],
+      regulatoryNotes: 'Aligned with NZ HISO 10029/10064, HIPC 2020, and HL7 NZ Base FHIR Implementation Guide for Aotearoa New Zealand health data sovereignty.'
+    },
+
     // 10. Japan (JP)
     'JP': {
       jurisdictionId: 'JP',
@@ -412,25 +441,34 @@ export class GlobalJurisdictionMatrixService {
 
   /** Computed active jurisdiction profile based on country & state signals */
   readonly activeProfile = computed<IJurisdictionProfile>(() => {
-    const country = this.countryCode().toUpperCase().trim();
-    const state = this.stateCode().toUpperCase().trim();
+    return this.getProfileForCountry(this.countryCode(), this.stateCode());
+  });
 
-    if (country === 'US') {
-      const stateKey = `US-${state}`;
-      if (this.JURISDICTION_CATALOG[stateKey]) {
+  /** Resolves a jurisdiction profile for an explicit country/state pair (supports UK -> GB alias). */
+  public getProfileForCountry(country: string, state?: string): IJurisdictionProfile {
+    const normalizedCountry = (country || 'US').toUpperCase().trim();
+    const normalizedState = (state || '').toUpperCase().trim();
+
+    if (normalizedCountry === 'UK') {
+      return this.JURISDICTION_CATALOG['GB'];
+    }
+
+    if (normalizedCountry === 'US') {
+      const stateKey = `US-${normalizedState}`;
+      if (normalizedState && this.JURISDICTION_CATALOG[stateKey]) {
         return this.JURISDICTION_CATALOG[stateKey];
       }
       // Fallback to California as baseline US state if specific state not customized
       return this.JURISDICTION_CATALOG['US-CA'];
     }
 
-    if (this.JURISDICTION_CATALOG[country]) {
-      return this.JURISDICTION_CATALOG[country];
+    if (this.JURISDICTION_CATALOG[normalizedCountry]) {
+      return this.JURISDICTION_CATALOG[normalizedCountry];
     }
 
     // Default to EU for international requests outside specific catalogs
     return this.JURISDICTION_CATALOG['EU'];
-  });
+  }
 
   /** Returns all available jurisdictions in catalog */
   public getAllJurisdictions(): IJurisdictionProfile[] {

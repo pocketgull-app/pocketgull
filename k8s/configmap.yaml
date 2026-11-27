@@ -3,10 +3,11 @@ kind: ConfigMap
 metadata:
   name: pocketgull-config
 data:
-  FRONTEND_ORIGIN: "http://localhost:4000"
+  FRONTEND_ORIGIN: "https://pocketgull.app"
   PYTHON_API_URL: "http://api-service:8080"
   NODE_ENV: "production"
   PYTHONUNBUFFERED: "1"
   OTEL_SERVICE_NAME: "pocketgull"
-  OTEL_TRACES_SAMPLER: "parentbased_always_on"
+  OTEL_TRACES_SAMPLER: "parentbased_traceidratio"
+  OTEL_TRACES_SAMPLER_ARG: "0.1"
   OTEL_SDK_DISABLED: "false"

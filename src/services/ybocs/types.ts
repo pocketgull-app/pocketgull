@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 export interface SymptomItem {
   id: number;
   text: string;
@@ -37,6 +38,31 @@ export interface PatientInfo {
   date: string;
 }
 
+export type YbocsOutcomeTier = 'subclinical' | 'mild' | 'moderate' | 'severe' | 'extreme';
+
+export type YbocsActionIntent = 'grounding' | 'visit_brief' | 'voice' | 'save';
+
+export interface YbocsNextStep {
+  label: string;
+  detail: string;
+  intent: YbocsActionIntent;
+}
+
+export interface IYbocsOutcomeValidation {
+  tier: YbocsOutcomeTier;
+  severityName: string;
+  badgeColor: string;
+  cardBorder: string;
+  headline: string;
+  validationMessage: string;
+  meaningInDailyLife: string;
+  patternNote: string | null;
+  insightNote: string | null;
+  egoDystonicReassurance: string | null;
+  showWarmSupportCard: boolean;
+  nextSteps: YbocsNextStep[];
+}
+
 export interface Assessment {
   id: string;
   patientInfo: PatientInfo;
@@ -47,6 +73,7 @@ export interface Assessment {
   obsessionSubtotal: number;
   compulsiveSubtotal: number;
   totalScore: number;
-  severityCategory: string; // Subclinical, Mild, Moderate, Severe, Extreme
+  insightScore?: number | null;
+  severityCategory: string; // Subclinical, Mild OCD, Moderate OCD, Severe OCD, Extreme OCD
   dateCreated: string;
 }

@@ -34,28 +34,28 @@ Completed a thorough, system-wide codebase refactor eliminating non-inclusive te
 
 ### 1. Inclusive Terminology Migration
 - **Components & Navigation**:
-  - Renamed `master-paradigm-synthesizer.component.ts` $\rightarrow$ [unified-paradigm-synthesizer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/suites/unified-paradigm-synthesizer.component.ts) and updated [domain-suites-navigator.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/suites/domain-suites-navigator.component.ts).
-  - [encrypted-vault-modal.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/shared/encrypted-vault-modal.component.ts): Replaced "Master Passphrase" with "Vault Passphrase".
-  - [main-header-nav.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/main-header-nav.component.ts): Replaced "Master Apps & Portals Hub" with "Clinical Apps & Portals Hub".
-  - [handoff-modal.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/modals/handoff-modal.component.ts): Replaced `tcm_master` with `tcm_herbalist` ("TCM Senior Herbalist").
-  - [analysis-report.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report.component.ts): Replaced `4608k_master` $\rightarrow$ `4608k_studio` ("4608 kbps • Studio Lossless").
-  - [family-health-quest.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/family/family-health-quest.component.ts): Replaced `Master of Nutrition` $\rightarrow$ `Lead Nutritionist`.
-  - [mood-consciousness-matrix.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/mood-consciousness-matrix.component.ts): Replaced "Master Audio Mute" with "Global Audio Mute".
-  - [genomic-variant-screener.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/genomic-variant-screener.component.ts): Replaced "Variant Master-Detail List" with "Variant Split-View List".
+  - Renamed `master-paradigm-synthesizer.component.ts` $\rightarrow$ [unified-paradigm-synthesizer.component.ts](src/components/suites/unified-paradigm-synthesizer.component.ts) and updated [domain-suites-navigator.component.ts](src/components/suites/domain-suites-navigator.component.ts).
+  - [encrypted-vault-modal.component.ts](src/components/shared/encrypted-vault-modal.component.ts): Replaced "Master Passphrase" with "Vault Passphrase".
+  - [main-header-nav.component.ts](src/components/main-header-nav.component.ts): Replaced "Master Apps & Portals Hub" with "Clinical Apps & Portals Hub".
+  - [handoff-modal.component.ts](src/components/modals/handoff-modal.component.ts): Replaced `tcm_master` with `tcm_herbalist` ("TCM Senior Herbalist").
+  - [analysis-report.component.ts](src/components/analysis-report.component.ts): Replaced `4608k_master` $\rightarrow$ `4608k_studio` ("4608 kbps • Studio Lossless").
+  - [family-health-quest.component.ts](src/components/family/family-health-quest.component.ts): Replaced `Master of Nutrition` $\rightarrow$ `Lead Nutritionist`.
+  - [mood-consciousness-matrix.component.ts](src/components/mood-consciousness-matrix.component.ts): Replaced "Master Audio Mute" with "Global Audio Mute".
+  - [genomic-variant-screener.component.ts](src/components/genomic-variant-screener.component.ts): Replaced "Variant Master-Detail List" with "Variant Split-View List".
 
 - **Audio & Clinical Services**:
-  - [avs-engine.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/avs-engine.service.ts) & [avs-engine.service.spec.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/avs-engine.service.spec.ts): Replaced `4608k_master` $\rightarrow$ `4608k_studio`, `masterGain` $\rightarrow$ `mainGain`, `isMaster` $\rightarrow$ `isStudio`.
-  - [ambient-flow-soundscape.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ambient-flow-soundscape.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`, `setupMasterBus` $\rightarrow$ `setupMainBus`.
-  - [actuarial-glee-audio.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/actuarial-glee-audio.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
-  - [pet-auditory.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/pet-auditory.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
-  - [bio-haptic-feedback.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/hardware/bio-haptic-feedback.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
-  - [clinical-intelligence.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/clinical-intelligence.service.ts): Replaced `MASTER_SNAPSHOT_V1` $\rightarrow$ `PRIMARY_SNAPSHOT_V1`.
-  - [wacom-crypto-ink.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/wacom-crypto-ink.service.ts): Replaced `Master Calligrapher 🌟` $\rightarrow$ `Virtuoso Calligrapher 🌟`.
-  - [tri-paradigm-swarm.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/tri-paradigm-swarm.service.ts): Replaced `Master Swoop` $\rightarrow$ `Elder Swoop`.
-  - [hobby-domain-companion.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/hobby-domain-companion.service.ts): Replaced non-inclusive titles with `Lead Botanical Specialist`, `Artisan Cabinetmaker`, `Symphony Principal Violinist`, `Lead Navigator`.
+  - [avs-engine.service.ts](src/services/avs-engine.service.ts) & [avs-engine.service.spec.ts](src/services/avs-engine.service.spec.ts): Replaced `4608k_master` $\rightarrow$ `4608k_studio`, `masterGain` $\rightarrow$ `mainGain`, `isMaster` $\rightarrow$ `isStudio`.
+  - [ambient-flow-soundscape.service.ts](src/services/ambient-flow-soundscape.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`, `setupMasterBus` $\rightarrow$ `setupMainBus`.
+  - [actuarial-glee-audio.service.ts](src/services/actuarial-glee-audio.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
+  - [pet-auditory.service.ts](src/services/pet-auditory.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
+  - [bio-haptic-feedback.service.ts](src/services/hardware/bio-haptic-feedback.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
+  - [clinical-intelligence.service.ts](src/services/clinical-intelligence.service.ts): Replaced `MASTER_SNAPSHOT_V1` $\rightarrow$ `PRIMARY_SNAPSHOT_V1`.
+  - [wacom-crypto-ink.service.ts](src/services/wacom-crypto-ink.service.ts): Replaced `Master Calligrapher 🌟` $\rightarrow$ `Virtuoso Calligrapher 🌟`.
+  - [tri-paradigm-swarm.service.ts](src/services/tri-paradigm-swarm.service.ts): Replaced `Master Swoop` $\rightarrow$ `Elder Swoop`.
+  - [hobby-domain-companion.service.ts](src/services/hobby-domain-companion.service.ts): Replaced non-inclusive titles with `Lead Botanical Specialist`, `Artisan Cabinetmaker`, `Symphony Principal Violinist`, `Lead Navigator`.
 
 - **Legal & Documentation**:
-  - Renamed [POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md) and updated references across [ip-patent-registry.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ip-patent-registry.service.ts) and [patent-claims-hud-modal.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/modals/patent-claims-hud-modal.component.ts).
+  - Renamed [POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md](docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md) and updated references across [ip-patent-registry.service.ts](src/services/ip-patent-registry.service.ts) and [patent-claims-hud-modal.component.ts](src/components/modals/patent-claims-hud-modal.component.ts).
 
 ---
 
@@ -171,12 +171,12 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 
 ## 📱 Section 32: Flutter Companion App Physical Genomics Mobile Sync (Option 2)
 - **Riverpod State Management Layer**:
-  - Created [`pocketgull_flutter/lib/models/physical_genomics_model.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/models/physical_genomics_model.dart) with immutable data models, JSON serialization, and conformal $95\%$ interval representations.
-  - Created [`pocketgull_flutter/lib/services/physical_genomics_mobile_service.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/services/physical_genomics_mobile_service.dart) bridging `/v1/genomics/physical/predict` with deterministic local offline simulation fallback for zero-network resilience.
-  - Created [`pocketgull_flutter/lib/providers/physical_genomics_provider.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/providers/physical_genomics_provider.dart) with `PhysicalGenomicsNotifier` handling parameter updates, paradigm switches, dual-view toggles, and async state streaming.
-  - Created [`pocketgull_flutter/lib/widgets/physical_genomics_hud_card.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/widgets/physical_genomics_hud_card.dart) with obsidian dark mode, LOINC 98253-8 badge, and live telemetry grid.
+  - Created [`pocketgull_flutter/lib/models/physical_genomics_model.dart`](pocketgull_flutter/lib/models/physical_genomics_model.dart) with immutable data models, JSON serialization, and conformal $95\%$ interval representations.
+  - Created [`pocketgull_flutter/lib/services/physical_genomics_mobile_service.dart`](pocketgull_flutter/lib/services/physical_genomics_mobile_service.dart) bridging `/v1/genomics/physical/predict` with deterministic local offline simulation fallback for zero-network resilience.
+  - Created [`pocketgull_flutter/lib/providers/physical_genomics_provider.dart`](pocketgull_flutter/lib/providers/physical_genomics_provider.dart) with `PhysicalGenomicsNotifier` handling parameter updates, paradigm switches, dual-view toggles, and async state streaming.
+  - Created [`pocketgull_flutter/lib/widgets/physical_genomics_hud_card.dart`](pocketgull_flutter/lib/widgets/physical_genomics_hud_card.dart) with obsidian dark mode, LOINC 98253-8 badge, and live telemetry grid.
 - **Testing & Verification**:
-  - Added unit test suite in [`pocketgull_flutter/test/physical_genomics_provider_test.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/test/physical_genomics_provider_test.dart) (**3 / 3 passed** in 3s).
+  - Added unit test suite in [`pocketgull_flutter/test/physical_genomics_provider_test.dart`](pocketgull_flutter/test/physical_genomics_provider_test.dart) (**3 / 3 passed** in 3s).
   - Verified zero static analysis issues via `dart analyze` (**0 errors, 0 warnings**).
 
 ---
@@ -218,28 +218,28 @@ Completed a thorough, system-wide codebase refactor eliminating non-inclusive te
 
 ### 1. Inclusive Terminology Migration
 - **Components & Navigation**:
-  - Renamed `master-paradigm-synthesizer.component.ts` $\rightarrow$ [unified-paradigm-synthesizer.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/suites/unified-paradigm-synthesizer.component.ts) and updated [domain-suites-navigator.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/suites/domain-suites-navigator.component.ts).
-  - [encrypted-vault-modal.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/shared/encrypted-vault-modal.component.ts): Replaced "Master Passphrase" with "Vault Passphrase".
-  - [main-header-nav.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/main-header-nav.component.ts): Replaced "Master Apps & Portals Hub" with "Clinical Apps & Portals Hub".
-  - [handoff-modal.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/modals/handoff-modal.component.ts): Replaced `tcm_master` with `tcm_herbalist` ("TCM Senior Herbalist").
-  - [analysis-report.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report.component.ts): Replaced `4608k_master` $\rightarrow$ `4608k_studio` ("4608 kbps • Studio Lossless").
-  - [family-health-quest.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/family/family-health-quest.component.ts): Replaced `Master of Nutrition` $\rightarrow$ `Lead Nutritionist`.
-  - [mood-consciousness-matrix.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/mood-consciousness-matrix.component.ts): Replaced "Master Audio Mute" with "Global Audio Mute".
-  - [genomic-variant-screener.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/genomic-variant-screener.component.ts): Replaced "Variant Master-Detail List" with "Variant Split-View List".
+  - Renamed `master-paradigm-synthesizer.component.ts` $\rightarrow$ [unified-paradigm-synthesizer.component.ts](src/components/suites/unified-paradigm-synthesizer.component.ts) and updated [domain-suites-navigator.component.ts](src/components/suites/domain-suites-navigator.component.ts).
+  - [encrypted-vault-modal.component.ts](src/components/shared/encrypted-vault-modal.component.ts): Replaced "Master Passphrase" with "Vault Passphrase".
+  - [main-header-nav.component.ts](src/components/main-header-nav.component.ts): Replaced "Master Apps & Portals Hub" with "Clinical Apps & Portals Hub".
+  - [handoff-modal.component.ts](src/components/modals/handoff-modal.component.ts): Replaced `tcm_master` with `tcm_herbalist` ("TCM Senior Herbalist").
+  - [analysis-report.component.ts](src/components/analysis-report.component.ts): Replaced `4608k_master` $\rightarrow$ `4608k_studio` ("4608 kbps • Studio Lossless").
+  - [family-health-quest.component.ts](src/components/family/family-health-quest.component.ts): Replaced `Master of Nutrition` $\rightarrow$ `Lead Nutritionist`.
+  - [mood-consciousness-matrix.component.ts](src/components/mood-consciousness-matrix.component.ts): Replaced "Master Audio Mute" with "Global Audio Mute".
+  - [genomic-variant-screener.component.ts](src/components/genomic-variant-screener.component.ts): Replaced "Variant Master-Detail List" with "Variant Split-View List".
 
 - **Audio & Clinical Services**:
-  - [avs-engine.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/avs-engine.service.ts) & [avs-engine.service.spec.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/avs-engine.service.spec.ts): Replaced `4608k_master` $\rightarrow$ `4608k_studio`, `masterGain` $\rightarrow$ `mainGain`, `isMaster` $\rightarrow$ `isStudio`.
-  - [ambient-flow-soundscape.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ambient-flow-soundscape.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`, `setupMasterBus` $\rightarrow$ `setupMainBus`.
-  - [actuarial-glee-audio.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/actuarial-glee-audio.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
-  - [pet-auditory.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/pet-auditory.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
-  - [bio-haptic-feedback.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/hardware/bio-haptic-feedback.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
-  - [clinical-intelligence.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/clinical-intelligence.service.ts): Replaced `MASTER_SNAPSHOT_V1` $\rightarrow$ `PRIMARY_SNAPSHOT_V1`.
-  - [wacom-crypto-ink.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/wacom-crypto-ink.service.ts): Replaced `Master Calligrapher 🌟` $\rightarrow$ `Virtuoso Calligrapher 🌟`.
-  - [tri-paradigm-swarm.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/tri-paradigm-swarm.service.ts): Replaced `Master Swoop` $\rightarrow$ `Elder Swoop`.
-  - [hobby-domain-companion.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/hobby-domain-companion.service.ts): Replaced non-inclusive titles with `Lead Botanical Specialist`, `Artisan Cabinetmaker`, `Symphony Principal Violinist`, `Lead Navigator`.
+  - [avs-engine.service.ts](src/services/avs-engine.service.ts) & [avs-engine.service.spec.ts](src/services/avs-engine.service.spec.ts): Replaced `4608k_master` $\rightarrow$ `4608k_studio`, `masterGain` $\rightarrow$ `mainGain`, `isMaster` $\rightarrow$ `isStudio`.
+  - [ambient-flow-soundscape.service.ts](src/services/ambient-flow-soundscape.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`, `setupMasterBus` $\rightarrow$ `setupMainBus`.
+  - [actuarial-glee-audio.service.ts](src/services/actuarial-glee-audio.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
+  - [pet-auditory.service.ts](src/services/pet-auditory.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
+  - [bio-haptic-feedback.service.ts](src/services/hardware/bio-haptic-feedback.service.ts): Replaced `masterGain` $\rightarrow$ `mainGain`.
+  - [clinical-intelligence.service.ts](src/services/clinical-intelligence.service.ts): Replaced `MASTER_SNAPSHOT_V1` $\rightarrow$ `PRIMARY_SNAPSHOT_V1`.
+  - [wacom-crypto-ink.service.ts](src/services/wacom-crypto-ink.service.ts): Replaced `Master Calligrapher 🌟` $\rightarrow$ `Virtuoso Calligrapher 🌟`.
+  - [tri-paradigm-swarm.service.ts](src/services/tri-paradigm-swarm.service.ts): Replaced `Master Swoop` $\rightarrow$ `Elder Swoop`.
+  - [hobby-domain-companion.service.ts](src/services/hobby-domain-companion.service.ts): Replaced non-inclusive titles with `Lead Botanical Specialist`, `Artisan Cabinetmaker`, `Symphony Principal Violinist`, `Lead Navigator`.
 
 - **Legal & Documentation**:
-  - Renamed [POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md) and updated references across [ip-patent-registry.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ip-patent-registry.service.ts) and [patent-claims-hud-modal.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/modals/patent-claims-hud-modal.component.ts).
+  - Renamed [POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md](docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md) and updated references across [ip-patent-registry.service.ts](src/services/ip-patent-registry.service.ts) and [patent-claims-hud-modal.component.ts](src/components/modals/patent-claims-hud-modal.component.ts).
 
 ---
 
@@ -348,25 +348,25 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 
 ## 📱 Section 32: Flutter Companion App Physical Genomics Mobile Sync (Option 2)
 - **Riverpod State Management Layer**:
-  - Created [`pocketgull_flutter/lib/models/physical_genomics_model.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/models/physical_genomics_model.dart) with immutable data models, JSON serialization, and conformal $95\%$ interval representations.
-  - Created [`pocketgull_flutter/lib/services/physical_genomics_mobile_service.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/services/physical_genomics_mobile_service.dart) bridging `/v1/genomics/physical/predict` with deterministic local offline simulation fallback for zero-network resilience.
-  - Created [`pocketgull_flutter/lib/providers/physical_genomics_provider.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/providers/physical_genomics_provider.dart) with `PhysicalGenomicsNotifier` handling parameter updates, paradigm switches, dual-view toggles, and async state streaming.
-  - Created [`pocketgull_flutter/lib/widgets/physical_genomics_hud_card.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/widgets/physical_genomics_hud_card.dart) with obsidian dark mode, LOINC 98253-8 badge, and live telemetry grid.
+  - Created [`pocketgull_flutter/lib/models/physical_genomics_model.dart`](pocketgull_flutter/lib/models/physical_genomics_model.dart) with immutable data models, JSON serialization, and conformal $95\%$ interval representations.
+  - Created [`pocketgull_flutter/lib/services/physical_genomics_mobile_service.dart`](pocketgull_flutter/lib/services/physical_genomics_mobile_service.dart) bridging `/v1/genomics/physical/predict` with deterministic local offline simulation fallback for zero-network resilience.
+  - Created [`pocketgull_flutter/lib/providers/physical_genomics_provider.dart`](pocketgull_flutter/lib/providers/physical_genomics_provider.dart) with `PhysicalGenomicsNotifier` handling parameter updates, paradigm switches, dual-view toggles, and async state streaming.
+  - Created [`pocketgull_flutter/lib/widgets/physical_genomics_hud_card.dart`](pocketgull_flutter/lib/widgets/physical_genomics_hud_card.dart) with obsidian dark mode, LOINC 98253-8 badge, and live telemetry grid.
 - **Testing & Verification**:
-  - Added unit test suite in [`pocketgull_flutter/test/physical_genomics_provider_test.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/test/physical_genomics_provider_test.dart) (**3 / 3 passed** in 3s).
+  - Added unit test suite in [`pocketgull_flutter/test/physical_genomics_provider_test.dart`](pocketgull_flutter/test/physical_genomics_provider_test.dart) (**3 / 3 passed** in 3s).
   - Verified zero static analysis issues via `dart analyze` (**0 errors, 0 warnings**).
 
 ---
 
 ## 🪟 Section 33: 3D WebGL Interactive Wipe Curtain Slider (Option 3)
 - **Unified 0%–100% Split Handle Viewport**:
-  - Added interactive `WIPE_CURTAIN` layout to [`LensPhysicalGenomicsComponent`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/turing/lens-physical-genomics.component.ts) alongside the 2-column side-by-side mode.
+  - Added interactive `WIPE_CURTAIN` layout to [`LensPhysicalGenomicsComponent`](src/components/turing/lens-physical-genomics.component.ts) alongside the 2-column side-by-side mode.
   - **Layer 1 (Bottom Full Layer)**: Perturbed somatic variant or targeted pharmacological rescue state ($100\%$ width).
   - **Layer 2 (Top Clipped Layer)**: Wild-Type homeostatic baseline ($0\%$ to `curtainPositionPct%` with hardware-accelerated CSS `clip-path: inset(0 (100 - pct)% 0 0)`).
   - **Layer 3 (Glowing Divider & Drag Handle)**: Gradient amber-teal divider line with draggable cursor handle (`◀ 50% ▶`).
   - **Preset Quick-Toolbar**: 1-click jump buttons (`0% Target`, `25% WT`, `50% Split`, `75% WT`, `100% WT`).
 - **Testing & Verification**:
-  - Added unit tests 8, 9, 10 in [`lens-physical-genomics.component.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/turing/lens-physical-genomics.component.spec.ts) (**10 / 10 passed**).
+  - Added unit tests 8, 9, 10 in [`lens-physical-genomics.component.spec.ts`](src/components/turing/lens-physical-genomics.component.spec.ts) (**10 / 10 passed**).
   - Total physical genomics Vitest suite: **40 / 40 passed** in 1.19s.
   - TypeScript typecheck: **0 errors**.
 
@@ -374,10 +374,10 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 
 ## 🔬 Section 34: Research Frame Active Lens Sync, UVA Inclusion & NCBI GEO (GSE) Ingestion
 - **University of Virginia (UVA) Academic & Clinical Inclusion**:
-  - Added **University of Virginia (UVA Cavaliers / UVA Health / Manning Institute of Biotechnology)** to `academicPartners` in [`NcaaSportsScienceService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ncaa-sports-science.service.ts) (ACC Network, R1 Carnegie Research Classification, iTHRIV NIH CTSA Hub, `IRB-UVA-2026-R1-MED-1928`).
-  - Added UVA into `researchInstitutions` in [`ResearchFrameComponent`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/research-frame.component.ts) (`virginia.edu`, `site:virginia.edu OR site:ithriv.org`).
+  - Added **University of Virginia (UVA Cavaliers / UVA Health / Manning Institute of Biotechnology)** to `academicPartners` in [`NcaaSportsScienceService`](src/services/ncaa-sports-science.service.ts) (ACC Network, R1 Carnegie Research Classification, iTHRIV NIH CTSA Hub, `IRB-UVA-2026-R1-MED-1928`).
+  - Added UVA into `researchInstitutions` in [`ResearchFrameComponent`](src/components/research-frame.component.ts) (`virginia.edu`, `site:virginia.edu OR site:ithriv.org`).
 - **GseExplorerService & Curated Genomic Accessions**:
-  - Created [`GseExplorerService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/gse-explorer.service.ts) with curated NCBI GEO accessions:
+  - Created [`GseExplorerService`](src/services/gse-explorer.service.ts) with curated NCBI GEO accessions:
     - `GSE131900`: Visium spatial transcriptomics in human cartilage regeneration (UVA Manning Institute).
     - `GSE165512`: Hi-C 3D chromatin architecture & CTCF TAD boundary disruption (UVA Health).
     - `GSE200155`: MED1/BRD4 super-enhancer LLPS condensate dynamics & JQ1 rescue (UVA/Purdue).
@@ -389,9 +389,9 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
   - Implemented dynamic **Smart Context Chips** computed from `activeLensName()` (Physical Genomics, RSNA Knee, Chronobiology Matrix, Treatment Matrix, Functional Medicine, Tri-Paradigm).
   - Added **`🧬 NCBI GSE` Search Engine Toggle & Accession Cards** with 1-click `[🚀 Ingest into 3D Physical Genomics]` and `[📜 Cite Dataset]`.
 - **Testing & Verification**:
-  - Unit tests in [`gse-explorer.service.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/gse-explorer.service.spec.ts) (**3 / 3 passed**).
-  - Unit tests in [`ncaa-sports-science.service.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/ncaa-sports-science.service.spec.ts) (**5 / 5 passed**).
-  - Unit tests in [`research-frame.component.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/research-frame.component.spec.ts) (**5 / 5 passed**).
+  - Unit tests in [`gse-explorer.service.spec.ts`](src/services/gse-explorer.service.spec.ts) (**3 / 3 passed**).
+  - Unit tests in [`ncaa-sports-science.service.spec.ts`](src/services/ncaa-sports-science.service.spec.ts) (**5 / 5 passed**).
+  - Unit tests in [`research-frame.component.spec.ts`](src/components/research-frame.component.spec.ts) (**5 / 5 passed**).
   - Combined suite: **23 / 23 passed** in 1.57s.
   - TypeScript typecheck: **0 errors**.
 
@@ -417,11 +417,11 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
   - Curated biomes: Appalachian Valley & Ridge (UVA Health), Pacific Northwest Maritime (UW/UO), Great Lakes Continental (Purdue), Sonoran Desert, Northeastern Coastal (Harvard/MGH).
   - 1-click **`[🌿 Ground Literature to Exposome]`** steering PubMed queries with regional biological pathway modifiers (e.g. Endothelial FMD, Nrf2 sulforaphane, HSP70 heat-shock).
 - **Research Frame Integration**:
-  - Added `'who_nih'` and `'exposome'` toggles to `searchEngine` toolbar and view panels in [`ResearchFrameComponent`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/research-frame.component.ts).
+  - Added `'who_nih'` and `'exposome'` toggles to `searchEngine` toolbar and view panels in [`ResearchFrameComponent`](src/components/research-frame.component.ts).
   - Implemented `onSteeredQuery(event)` seamlessly executing searches with one click from goal and exposome cards.
 - **Testing & Verification**:
-  - Unit tests in [`who-nih-goal-steering-hub.component.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/research-frame/who-nih-goal-steering-hub.component.spec.ts) (**4 / 4 passed**).
-  - Unit tests in [`geofenced-exposomics-radar.component.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/research-frame/geofenced-exposomics-radar.component.spec.ts) (**3 / 3 passed**).
+  - Unit tests in [`who-nih-goal-steering-hub.component.spec.ts`](src/components/research-frame/who-nih-goal-steering-hub.component.spec.ts) (**4 / 4 passed**).
+  - Unit tests in [`geofenced-exposomics-radar.component.spec.ts`](src/components/research-frame/geofenced-exposomics-radar.component.spec.ts) (**3 / 3 passed**).
   - Research Frame suite total: **20 / 20 passed** in 1.53s.
   - TypeScript typecheck: **0 errors**.
 
@@ -443,7 +443,7 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
     - Curated topics: AAP Pediatric Fever and Antipyretic Use, NIH NICHD Epiphyseal Growth Plate & ACL Biomechanics, Cochrane Reduced-Osmolarity ORS, AAP/NHLBI Pediatric Asthma Care.
     - 1-click **`[🎯 Steer Evidence]`** button seamlessly dispatching searches to the parent Research Frame.
 - **Research Frame Integration**:
-  - Added `'pediatrics'` to `searchEngine` signal union and toggle toolbar (`🧸 Pediatrics`) in [`ResearchFrameComponent`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/research-frame.component.ts).
+  - Added `'pediatrics'` to `searchEngine` signal union and toggle toolbar (`🧸 Pediatrics`) in [`ResearchFrameComponent`](src/components/research-frame.component.ts).
   - Vitest Research Frame suite: **16 / 16 passed** in 1.65s.
 
 ---
@@ -469,10 +469,10 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
     - USDA FoodData Central aligned whole-food prescription cards with culinary bioavailability preparation tips.
   - **1-Click Clinical Nutrition Evidence Steering**: Seamless dispatch to PubMed randomized clinical nutrition trials.
 - **Research Frame Integration**:
-  - Added `'geriatrics'` and `'nutrition'` to `searchEngine` signal union and toolbar buttons (`🧓 Elder Care`, `🥗 Food/Nutrition`) in [`ResearchFrameComponent`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/research-frame.component.ts).
+  - Added `'geriatrics'` and `'nutrition'` to `searchEngine` signal union and toolbar buttons (`🧓 Elder Care`, `🥗 Food/Nutrition`) in [`ResearchFrameComponent`](src/components/research-frame.component.ts).
 - **Testing & Verification**:
-  - Unit tests in [`geriatric-longevity-frailty-hub.component.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/research-frame/geriatric-longevity-frailty-hub.component.spec.ts) (**4 / 4 passed**).
-  - Unit tests in [`food-as-medicine-prescription-hub.component.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/research-frame/food-as-medicine-prescription-hub.component.spec.ts) (**4 / 4 passed**).
+  - Unit tests in [`geriatric-longevity-frailty-hub.component.spec.ts`](src/components/research-frame/geriatric-longevity-frailty-hub.component.spec.ts) (**4 / 4 passed**).
+  - Unit tests in [`food-as-medicine-prescription-hub.component.spec.ts`](src/components/research-frame/food-as-medicine-prescription-hub.component.spec.ts) (**4 / 4 passed**).
   - Complete Research Frame suite: **24 / 24 passed** in 1.61s.
   - TypeScript typecheck: **0 errors**.
 
@@ -535,7 +535,7 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 ## 🏥 Section 40: Specialist Clinical Decision Support Suite, Vertex AI Tuning Dispatcher & FHIR R4 Serializer
 
 ### 1. Interactive Specialist CDS Suite Component (`SpecialistCdsSuiteComponent`)
-- **Location**: [`src/components/specialist-cds/specialist-cds-suite.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/specialist-cds/specialist-cds-suite.component.ts).
+- **Location**: [`src/components/specialist-cds/specialist-cds-suite.component.ts`](src/components/specialist-cds/specialist-cds-suite.component.ts).
 - **Sub-Specialty Precision Adapters**:
   - 🫀 **Cardiology**: 4-Pillar GDMT Titrator & Safety Threshold Gating ($K^+ < 5.0$, $\text{eGFR} > 30$, SBP $> 100$).
   - 🔬 **Oncology**: NGS Kinase Variant Matcher (*EGFR* Exon 19 del / L858R $\to$ Osimertinib; *KRAS* G12C $\to$ Sotorasib; *ALK* $\to$ Alectinib; *BRAF* V600E $\to$ Dabrafenib/Trametinib) + Anti-PD-1 Toxicity Warning.
@@ -548,22 +548,22 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
   - 🧠 **Neurology**: AHA/ASA Acute Stroke Tenecteplase ($0.25\text{ mg/kg}$) 4.5h Golden Window Eligibility Checklist.
   - 🦴 **Rheumatology**: 2019 EULAR/ACR SLE Classifier, weight-based Hydroxychloroquine ($5\text{ mg/kg}$), and STAT renal biopsy.
 - **Research Frame Integration**: One-click **`[🎯 Steer Research Frame]`** button dispatches sub-specialty evidence queries directly to the Research Frame.
-- **Unit Tests**: [`src/components/specialist-cds/specialist-cds-suite.component.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/specialist-cds/specialist-cds-suite.component.spec.ts) (**4 / 4 passed**).
+- **Unit Tests**: [`src/components/specialist-cds/specialist-cds-suite.component.spec.ts`](src/components/specialist-cds/specialist-cds-suite.component.spec.ts) (**4 / 4 passed**).
 
 ### 2. Vertex AI & Gemini Fine-Tuning Job Dispatchers
-- **TypeScript Engine**: [`scripts/dispatch_gemini_tuning_job.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/dispatch_gemini_tuning_job.ts)
+- **TypeScript Engine**: [`scripts/dispatch_gemini_tuning_job.ts`](scripts/dispatch_gemini_tuning_job.ts)
   - Targets GCP project `gen-lang-client-0540208645` and `gemini-1.5-flash-002` base model.
   - Validates SFT and DPO JSONL line schemas and generates staging manifest `scratch/vertex_tuning_manifest.json`.
-- **Dart 3 High-Performance Dispatcher**: [`scripts/dart/dispatch_gemini_tuning_job.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/dart/dispatch_gemini_tuning_job.dart)
+- **Dart 3 High-Performance Dispatcher**: [`scripts/dart/dispatch_gemini_tuning_job.dart`](scripts/dart/dispatch_gemini_tuning_job.dart)
   - Validated 24/24 SFT records and 24/24 DPO preference pairs.
   - Staged `scratch/dart_vertex_tuning_manifest.json` in **38 ms**.
 
 ### 3. HL7 FHIR R4 Multi-Specialist Resource Bundle Serializer
-- **Service**: [`src/services/fhir-r4-bundle-export.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/fhir-r4-bundle-export.service.ts)
+- **Service**: [`src/services/fhir-r4-bundle-export.service.ts`](src/services/fhir-r4-bundle-export.service.ts)
 - **Method**: `generateSpecialistCdsBundle(params)`
   - Encapsulates `Observation` with sub-specialty findings, guideline body citations, and clinical recommendations.
   - Generates official `CarePlan` resource with cryptographic FDA 21 CFR Part 11 SHA-256 digital attestation seal (`valueSignature`).
-- **Unit Tests**: [`src/services/fhir-r4-bundle-export.service.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/fhir-r4-bundle-export.service.spec.ts) (**2 / 2 passed**).
+- **Unit Tests**: [`src/services/fhir-r4-bundle-export.service.spec.ts`](src/services/fhir-r4-bundle-export.service.spec.ts) (**2 / 2 passed**).
 
 ### 4. Comprehensive Pre-Flight Verification Audit
 - **TypeScript Typecheck**: **0 errors** (`tsc --noEmit`).
@@ -577,27 +577,27 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 ## 🫧 Section 41: Whispy Swarm Bioreactor CAD Exporter, Mobile Parity & Hands-Free Socratic Disconfirmation
 
 ### 1. Physical Hardware & 3D Bioprinter Exporter (`ScaffoldExporterService`)
-- **Service**: [`src/services/scaffold-exporter.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/scaffold-exporter.service.ts).
+- **Service**: [`src/services/scaffold-exporter.service.ts`](src/services/scaffold-exporter.service.ts).
 - **Zero-Dependency CAD Engine**:
   - **Standard ASCII STL**: Valid `solid` / `facet normal` / `outer loop vertex` coordinates.
   - **Standard Binary STL**: 80-byte header, uint32 facet count, and 50-byte IEEE-754 facet blocks.
   - **Khronos glTF 2.0**: Base64 embedded array buffers, accessors, bufferViews, and PBR metallic roughness materials (`#1FA4B8` gear teal).
   - **64-Channel Ultrasonic Phased-Array Phase Map**: Coordinates and calculated phase delays ($\theta_1 \dots \theta_{64}$) for dual 32-transducer annular rings ($z = \pm 35\text{ mm}$) to recreate acoustic radiation potential wells ($U < 0$) in air.
   - **Bioprinter G-code Profile**: $37.0^\circ\text{C}$ bed/nozzle temperature, vibrating-mesh nebulizer triggers, acoustic levitation dwell times, and atomized $1.2\text{ mM }\text{CaCl}_2$ crosslinking pulses.
-- **WebMCP Agentic Tool**: `export_scaffold_geometry` registered in [`WebMcpRegistrationService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/webmcp-registration.service.ts).
-- **3D Bioreactor UI**: Added **"📐 Export STL (CAD)"** and **"📦 Export glTF 2.0"** buttons to [`WhispySwarmBioreactor3dComponent`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/turing/whispy-swarm-bioreactor-3d.component.ts).
+- **WebMCP Agentic Tool**: `export_scaffold_geometry` registered in [`WebMcpRegistrationService`](src/services/webmcp-registration.service.ts).
+- **3D Bioreactor UI**: Added **"📐 Export STL (CAD)"** and **"📦 Export glTF 2.0"** buttons to [`WhispySwarmBioreactor3dComponent`](src/components/turing/whispy-swarm-bioreactor-3d.component.ts).
 
 ### 2. Hands-Free Bedside Voice Socratic Disconfirmation Integration
 - **Flutter Socratic Drawer**:
-  - Connected `CommandAction.challengeHypothesis` in [`pocketgull_flutter/lib/widgets/intake_form_widget.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/widgets/intake_form_widget.dart).
-  - Spoken phrases (*"Differential check"*, *"Challenge hypothesis"*, *"What disconfirms this?"*) automatically open the bottom sheet modal with [`AntiConfirmationBiasWidget`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/widgets/anti_confirmation_bias_widget.dart).
+  - Connected `CommandAction.challengeHypothesis` in [`pocketgull_flutter/lib/widgets/intake_form_widget.dart`](pocketgull_flutter/lib/widgets/intake_form_widget.dart).
+  - Spoken phrases (*"Differential check"*, *"Challenge hypothesis"*, *"What disconfirms this?"*) automatically open the bottom sheet modal with [`AntiConfirmationBiasWidget`](pocketgull_flutter/lib/widgets/anti_confirmation_bias_widget.dart).
   - Displays primary hypothesis, 3 orthogonal counter-hypotheses, physical exam checkboxes, and FDA 21 CFR Part 11 SHA-256 seal.
 
 ### 3. Mobile DICOM-to-Bioreactor Parity (Flutter / Pixel 9 Pro)
-- **Component**: [`pocketgull_flutter/lib/widgets/dicom_viewer_widget.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/widgets/dicom_viewer_widget.dart).
+- **Component**: [`pocketgull_flutter/lib/widgets/dicom_viewer_widget.dart`](pocketgull_flutter/lib/widgets/dicom_viewer_widget.dart).
 - **1-Tap Action Button**: Added **"🫧 Send Defect to Bioreactor"** with strict Fitts's Law touch target height ($\ge 44\text{ px}$) and WCAG AAA teal palette.
-- **State Provider**: Calls [`whispyBioreactorProvider.notifier.loadPatientScan()`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/lib/providers/whispy_bioreactor_provider.dart) with lesion UID and calculated voxel volume.
-- **Widget Test Suite**: [`pocketgull_flutter/test/widgets/dicom_viewer_widget_test.dart`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_flutter/test/widgets/dicom_viewer_widget_test.dart) verifies zero RenderFlex overflow on Pixel 9 Pro ($393 \times 852$), touch target compliance, and state dispatch (**3/3 passed**, all 99 Flutter tests passed).
+- **State Provider**: Calls [`whispyBioreactorProvider.notifier.loadPatientScan()`](pocketgull_flutter/lib/providers/whispy_bioreactor_provider.dart) with lesion UID and calculated voxel volume.
+- **Widget Test Suite**: [`pocketgull_flutter/test/widgets/dicom_viewer_widget_test.dart`](pocketgull_flutter/test/widgets/dicom_viewer_widget_test.dart) verifies zero RenderFlex overflow on Pixel 9 Pro ($393 \times 852$), touch target compliance, and state dispatch (**3/3 passed**, all 99 Flutter tests passed).
 
 ### 4. Positive Optical Innovations Strategy for AVS Therapy App
 - **Photobiomodulation (670 nm Deep Red Optic Bath)**: Recharges retinal pigment epithelium mitochondrial ATP via cytochrome c oxidase activation.
@@ -611,7 +611,7 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 ## ✨ Section 42: Positive Optical Innovations Suite & "My Prescribed Optical Day"
 
 ### 1. The Five Clinical Optical Paradigms
-- **`OpticalInnovationsService`** ([`src/services/optical-innovations.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/optical-innovations.service.ts) & [`companion-apps/avs-therapy/src/app/services/optical-innovations.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/services/optical-innovations.service.ts)):
+- **`OpticalInnovationsService`** ([`src/services/optical-innovations.service.ts`](src/services/optical-innovations.service.ts) & [`companion-apps/avs-therapy/src/app/services/optical-innovations.service.ts`](companion-apps/avs-therapy/src/app/services/optical-innovations.service.ts)):
   1. **670 nm Deep Red Retinal Photobiomodulation (PBM)**:
      - Grounded in UCL (Prof. Glen Jeffery) retinal research activating cytochrome c oxidase in high-metabolic retinal pigment epithelium (RPE) mitochondria.
      - Monochromatic calibrated $670\text{ nm}$ radiant wash (`#DC143C` / `#8B0000`).
@@ -631,7 +631,7 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
      - Homogeneous, borderless visual field paired with an empirical Optimal Recognition Point (ORP) red fixation dot ($1.0\text{ arcminute}$) to eliminate perceptual blackout and settle microsaccadic jitter.
 
 ### 2. Optical Chrono-Trajectory Service & Interactive AVS HUD
-- **`OpticalChronoTrajectoryService`** ([`src/services/optical-chrono-trajectory.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/optical-chrono-trajectory.service.ts) & [`companion-apps/avs-therapy/src/app/services/optical-chrono-trajectory.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/services/optical-chrono-trajectory.service.ts)):
+- **`OpticalChronoTrajectoryService`** ([`src/services/optical-chrono-trajectory.service.ts`](src/services/optical-chrono-trajectory.service.ts) & [`companion-apps/avs-therapy/src/app/services/optical-chrono-trajectory.service.ts`](companion-apps/avs-therapy/src/app/services/optical-chrono-trajectory.service.ts)):
   - **3 Daily Optical Chronotypes**:
     - *Morning*: 670nm Retinal PBM + Dawn Alert (285 EML) for energetic priming.
     - *Midday*: OKN/VOR Vestibular Grating (0.1Hz bilateral drift) + Ganzfeld ORP Anchor.
@@ -639,7 +639,7 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
   - **Closed-Loop Autonomic Titration**: Detects sympathetic surges (Rate-Pressure Product $>11,500$ or $\text{HR} > 85$) and auto-transitions the visual field to the Ganzfeld ORP 0.1Hz breathing anchor.
   - **Pre/Post Autonomic Feedback**: Computes $\Delta \text{HR}$, $\Delta \text{HRV}$, and parasympathetic gain $\%$, generating an FDA 21 CFR Part 11 SHA-256 seal.
   - **30 / 60 / 90-Day Milestones**: Scotopic Contrast Gain (+15%), Vestibular Harmony Index, and Sleep Onset Latency ($<15\text{ min}$).
-- **AVS Interactive HUD** ([`companion-apps/avs-therapy/src/app/components/optical-innovations-hud.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/optical-innovations-hud.component.ts)):
+- **AVS Interactive HUD** ([`companion-apps/avs-therapy/src/app/components/optical-innovations-hud.component.ts`](companion-apps/avs-therapy/src/app/components/optical-innovations-hud.component.ts)):
   - **"My Prescribed Optical Day"** interactive timeline with 1-click "▶ Launch Phase" buttons.
   - **"Closed-Loop Autonomic Coherence Feedback"** badge with real-time shift indicators.
   - **"30 / 60 / 90-Day Clinical Vitality Milestones"** progress cards.
@@ -649,7 +649,7 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 ## 🧭 Section 43: 3-Act Patient Trajectory & On-Device Gemma 4 Edge Scribe
 
 ### 1. Skunk Works 3-Act Trajectory Engine (`PatientTrajectoryService`)
-- **Service**: [`src/services/patient-trajectory.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-trajectory.service.ts).
+- **Service**: [`src/services/patient-trajectory.service.ts`](src/services/patient-trajectory.service.ts).
 - **Act 1: Where You've Been (The Foundation — Zero Shame)**:
   - Translates past MRIs, genetics, and lab history into empowering, plain-language "Teaspoon Explanations" (e.g., L4-L5 disc mechanical loading, systemic inflammation, circadian delay).
   - Identifies historical triggers with zero clinical fatalism.
@@ -667,15 +667,15 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 ### 2. Local On-Device AI Fine-Tuning (Gemma 4 Edge Scribe)
 - **Zero-Egress HIPAA Safe Harbor**: Leverages Chrome Built-in AI / Gemma 4 (`NanoProvider`) with zero cloud egress (`egressAuditedZeroEgress: true`).
 - **Contextual Adaptation**: Maps patient symptom queries (*"My lower back feels tight after sitting today"*) directly to known anatomical scans (L4-L5 disc bulge) and suggests immediate micro-actions without transmitting PHI across the internet.
-- **WebMCP Registration**: Registered **Tool 64 (`get_patient_3act_trajectory`)** in [`WebMcpRegistrationService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/webmcp-registration.service.ts).
-- **Patent Claims Cluster 16**: Added Claims 301–320 covering Closed-Loop Optical Chrono-Trajectory & On-Device Scribing in [`POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md`](file:///c:/Users/philg/Pocketgull/pocketgull/docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md) (Total: 16 clusters, 320 claims).
+- **WebMCP Registration**: Registered **Tool 64 (`get_patient_3act_trajectory`)** in [`WebMcpRegistrationService`](src/services/webmcp-registration.service.ts).
+- **Patent Claims Cluster 16**: Added Claims 301–320 covering Closed-Loop Optical Chrono-Trajectory & On-Device Scribing in [`POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md`](docs/research/POCKETGULL_PRIMARY_PATENT_CLAIMS_CHARTER.md) (Total: 16 clusters, 320 claims).
 
 ---
 
 ## 🌿 Section 44: Biophilic Vagal Odyssey & AVS Optical Innovations Synergy
 
 ### 1. The Integrated Biophilic Vagal Odyssey
-- **Enhanced Service**: [`src/services/movement-healing-quest.service.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/movement-healing-quest.service.ts).
+- **Enhanced Service**: [`src/services/movement-healing-quest.service.ts`](src/services/movement-healing-quest.service.ts).
 - **Synergistic Waypoints**:
   - **Waypoint 1: Canopy Immersion Gate & 480nm ipRGC Dawn Alert**:
     - 180 meters under green cedar leaves.
@@ -695,14 +695,14 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
     - Vagal points: $+60\text{ VP}$ (Target vagal shift: $+38.5\%$).
 
 ### 2. AVS Companion App Biophilic Vagal Odyssey HUD
-- **Component**: [`companion-apps/avs-therapy/src/app/components/biophilic-vagal-odyssey-hud.component.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/biophilic-vagal-odyssey-hud.component.ts).
-- **Integrated Navigation**: Added **`🌿 Biophilic Vagal Odyssey`** tab button and panel to [`avs-therapy.component.html`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/avs-therapy.component.html) and [`.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/avs-therapy.component.ts).
+- **Component**: [`companion-apps/avs-therapy/src/app/components/biophilic-vagal-odyssey-hud.component.ts`](companion-apps/avs-therapy/src/app/components/biophilic-vagal-odyssey-hud.component.ts).
+- **Integrated Navigation**: Added **`🌿 Biophilic Vagal Odyssey`** tab button and panel to [`avs-therapy.component.html`](companion-apps/avs-therapy/src/app/components/avs-therapy.component.html) and [`.ts`](companion-apps/avs-therapy/src/app/components/avs-therapy.component.ts).
 - **Contactless rPPG Vagal Shield**:
   - Displays live optical resting HR, HRV RMSSD, and Vagal Tone Score ($0\text{--}100$).
-  - **"📷 Measure Vagal Shift"** button simulates/measures pre-to-post session parasympathetic shift and records session coherence deltas in [`OpticalChronoTrajectoryService`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/services/optical-chrono-trajectory.service.ts).
+  - **"📷 Measure Vagal Shift"** button simulates/measures pre-to-post session parasympathetic shift and records session coherence deltas in [`OpticalChronoTrajectoryService`](companion-apps/avs-therapy/src/app/services/optical-chrono-trajectory.service.ts).
 - **Test Suite**:
-  - [`companion-apps/avs-therapy/src/app/components/biophilic-vagal-odyssey-hud.component.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/biophilic-vagal-odyssey-hud.component.spec.ts) (**5 / 5 passed**).
-  - [`src/services/movement-healing-quest.service.spec.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/movement-healing-quest.service.spec.ts) (**6 / 6 passed**).
+  - [`companion-apps/avs-therapy/src/app/components/biophilic-vagal-odyssey-hud.component.spec.ts`](companion-apps/avs-therapy/src/app/components/biophilic-vagal-odyssey-hud.component.spec.ts) (**5 / 5 passed**).
+  - [`src/services/movement-healing-quest.service.spec.ts`](src/services/movement-healing-quest.service.spec.ts) (**6 / 6 passed**).
 - **Terminal Proof Chain**:
   - Main App TypeScript Typecheck: **0 errors**.
   - AVS Therapy App TypeScript Typecheck: **0 errors**.
@@ -733,11 +733,11 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 - **`companion-apps/avs-therapy/src/app/services/avs-evidence-citations.ts`**:
   - Dedicated repository of clinical citations with PMIDs, DOIs, clinical takeaways, and evidence levels.
 - **Interactive UI Drawers**:
-  - Integrated expandable "📚 Clinical Evidence & Grounding" drawer with direct PubMed and DOI links into [`BiophilicVagalOdysseyHudComponent`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/biophilic-vagal-odyssey-hud.component.ts).
-  - Integrated expandable drawer into [`OpticalInnovationsHudComponent`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/components/optical-innovations-hud.component.ts).
+  - Integrated expandable "📚 Clinical Evidence & Grounding" drawer with direct PubMed and DOI links into [`BiophilicVagalOdysseyHudComponent`](companion-apps/avs-therapy/src/app/components/biophilic-vagal-odyssey-hud.component.ts).
+  - Integrated expandable drawer into [`OpticalInnovationsHudComponent`](companion-apps/avs-therapy/src/app/components/optical-innovations-hud.component.ts).
 
 ### 3. WebMCP Tool 65 Registration
-- Registered **Tool 65: `get_clinical_evidence_citations`** on `document.modelContext` in [`WebMcpRegistrationService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/webmcp-registration.service.ts).
+- Registered **Tool 65: `get_clinical_evidence_citations`** on `document.modelContext` in [`WebMcpRegistrationService`](src/services/webmcp-registration.service.ts).
 - Allows LLM agents and clinical assistants to query citations by category or exact PMID with APA/IEEE/Vancouver formatting.
 
 ### 4. Verification & Proof
@@ -755,15 +755,15 @@ Designed for patients managing daily stress, monitoring biometrics at home, and 
 ## 46. Release v1.33.0 — OpenSSF Pull Request #305, UKRIO Research Integrity & Scholarly Safe Harbor
 
 ### 1. Scholarly Safe Harbor & Institutional Protection Standard
-- **Safe Harbor Notices**: Added `SCHOLARLY_SAFE_HARBOR_NOTICE` in [`DataScienceCitationService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/data-science-citation.service.ts) and `AVS_SCHOLARLY_SAFE_HARBOR_NOTICE` in [`avs-evidence-citations.ts`](file:///c:/Users/philg/Pocketgull/pocketgull/companion-apps/avs-therapy/src/app/services/avs-evidence-citations.ts).
+- **Safe Harbor Notices**: Added `SCHOLARLY_SAFE_HARBOR_NOTICE` in [`DataScienceCitationService`](src/services/data-science-citation.service.ts) and `AVS_SCHOLARLY_SAFE_HARBOR_NOTICE` in [`avs-evidence-citations.ts`](companion-apps/avs-therapy/src/app/services/avs-evidence-citations.ts).
 - **Researcher & University Protection**:
   - Clarifies that cited peer-reviewed publications are referenced strictly as prior art under standard academic fair use.
   - Explicitly states that authors, laboratories, and universities (e.g., Cornell University, UCL, McGill) do not sponsor, endorse, or maintain financial affiliation with Pocket-Gull.
   - Safeguards researchers from Conflict of Interest (COI) reviews or institutional grant compliance friction.
 
 ### 2. UKRIO (UK Research Integrity Office) Code of Practice Alignment
-- **Statutory Profile**: Integrated the *UKRIO Code of Practice for Research* into the UK (`GB`) profile in [`GlobalJurisdictionMatrixService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/global-jurisdiction-matrix.service.ts).
-- **Approved Egress Whitelist**: Added `ukrio.org`, `startalkmedia.com`, `neildegrassetyson.com`, and `cabreraresearch.org` to [`scripts/sentinel_security_guard.mjs`](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/sentinel_security_guard.mjs).
+- **Statutory Profile**: Integrated the *UKRIO Code of Practice for Research* into the UK (`GB`) profile in [`GlobalJurisdictionMatrixService`](src/services/global-jurisdiction-matrix.service.ts).
+- **Approved Egress Whitelist**: Added `ukrio.org`, `startalkmedia.com`, `neildegrassetyson.com`, and `cabreraresearch.org` to [`scripts/sentinel_security_guard.mjs`](scripts/sentinel_security_guard.mjs).
 - **Deterministic DOI Grounding**: Eliminates AI hallucinated citations with cryptographically verifiable PubMed and CrossRef DOIs.
 
 ### 3. Release v1.33.0 Documentation in CHANGELOG.md
@@ -815,23 +815,23 @@ In this upgrade, Pocket-Gull successfully bridges all 7 comparative dimensions s
 ```
 
 ### 2. Implemented Services & Modules
-1. [`TemporalTelemetryDynamicsService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/temporal-telemetry-dynamics.service.ts):
+1. [`TemporalTelemetryDynamicsService`](src/services/temporal-telemetry-dynamics.service.ts):
    - Computes instantaneous physiological velocity ($\frac{dx}{dt}$) and acceleration ($\frac{d^2x}{dt^2}$) with an exponential time-decay kernel ($\lambda = 0.05$).
    - Calculates projected Time-to-Breach ($T_{\text{breach}}$) toward critical boundaries ($<54\text{ mg/dL}$ hypoglycemia, $\Delta T \ge 0.40^\circ\text{C}$ Uhthoff block).
-2. [`WaveformDspEngineService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/waveform-dsp-engine.service.ts):
+2. [`WaveformDspEngineService`](src/services/waveform-dsp-engine.service.ts):
    - Real-time 100 Hz digital signal processing: zero-phase baseline wander subtraction and high-frequency noise smoothing.
    - Refractory Pan-Tompkins peak detector, dicrotic notch locator, Augmentation Index ($AIx$), and Pulse Wave Velocity ($PWV$).
-3. [`CausalInferenceService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/causal-inference.service.ts) & [`causal_inference.py`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_api/engines/causal_inference.py):
+3. [`CausalInferenceService`](src/services/causal-inference.service.ts) & [`causal_inference.py`](pocketgull_api/engines/causal_inference.py):
    - Augmented Inverse Probability Weighting (AIPW) estimator eliminating confounding by indication across botanical de-escalation, anticholinergic deprescribing, and cooling suits.
-4. [`EpistemicOodDetectorService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/epistemic-ood-detector.service.ts) & [`mondrian_conformal.py`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_api/engines/mondrian_conformal.py):
+4. [`EpistemicOodDetectorService`](src/services/epistemic-ood-detector.service.ts) & [`mondrian_conformal.py`](pocketgull_api/engines/mondrian_conformal.py):
    - Mahalanobis distance scoring ($D_M^2$) against verified clinical cohorts with $\chi^2$ thresholding ($\alpha=0.001$), issuing an explicit `ABSTAIN` recommendation when inputs lie outside the training manifold.
-5. [`EdgeMlInferenceKernelService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/edge-ml-inference-kernel.service.ts) & [`export_models_to_onnx.py`](file:///c:/Users/philg/Pocketgull/pocketgull/pocketgull_api/export_models_to_onnx.py):
+5. [`EdgeMlInferenceKernelService`](src/services/edge-ml-inference-kernel.service.ts) & [`export_models_to_onnx.py`](pocketgull_api/export_models_to_onnx.py):
    - Pure client-side decision kernel executing in $<0.5\text{ ms}$ with zero network calls and 100% HIPAA privacy.
-6. [`cdsHooksRouter`](file:///c:/Users/philg/Pocketgull/pocketgull/src/server/routes/cds-hooks.routes.ts):
+6. [`cdsHooksRouter`](src/server/routes/cds-hooks.routes.ts):
    - Standard `/cds-services` discovery and hook endpoints mounted on Express SSR server for native Epic, Cerner, and Veradigm integration.
-7. [`MultimodalGroundingService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/multimodal-grounding.service.ts):
+7. [`MultimodalGroundingService`](src/services/multimodal-grounding.service.ts):
    - Fuses Three.js 3D coordinates, RSNA imaging tensors, and tabular labs into grounded prompt anchors for Google Gemini and Chrome Built-in AI.
-8. [`ActivePivotMonitorCardComponent`](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/active-pivot-monitor-card.component.ts):
+8. [`ActivePivotMonitorCardComponent`](src/components/active-pivot-monitor-card.component.ts):
    - Enhanced bedside HUD with velocity pre-breach alerts, OOD status badges, waveform morphology metrics, and AIPW causal ITE impact banners.
 
 ### 3. Verification & Proof-of-Work Chain

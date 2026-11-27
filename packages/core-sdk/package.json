@@ -4,12 +4,12 @@
   "version": "1.0.0",
   "description": "Zero-dependency TypeScript core clinical intelligence, scoring engines, FHIR R4 serialization, and Popperian statistical hypothesis evaluation for health systems.",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "require": "./dist/index.js"
     }
   },

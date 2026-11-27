@@ -39,20 +39,29 @@
               {
                 "glob": "**/*",
                 "input": "public",
-                "output": "/"
+                "output": "/",
+                "ignore": [
+                  "brand/**",
+                  "images/screenshots/**",
+                  "images/workflow/**",
+                  "images/social/**",
+                  "fonts/google_fonts_submission/**",
+                  "**/*.ttf"
+                ]
+              },
+              {
+                "glob": "*.woff2",
+                "input": "node_modules/@pocketgull/font/fonts/woff2",
+                "output": "/fonts"
               },
               {
                 "glob": "**/*",
                 "input": "src/assets/icons",
                 "output": "/icons"
-              },
-              {
-                "glob": "**/*",
-                "input": "src/assets/textures",
-                "output": "/assets/textures"
               }
             ],
             "styles": [
+              "node_modules/@pocketgull/font/css/npm/core.css",
               "src/styles.css"
             ],
             "allowedCommonJsDependencies": [
@@ -107,7 +116,6 @@
               "express",
               "compression",
               "@google-cloud/secret-manager",
-              "@google/generative-ai",
               "swagger-ui-express",
               "genkit",
               "@genkit-ai/googleai",
@@ -142,7 +150,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "2.5mb",
-                  "maximumError": "4mb"
+                  "maximumError": "3mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -150,11 +158,7 @@
                   "maximumError": "32kb"
                 }
               ],
-              "sourceMap": {
-                "scripts": true,
-                "styles": true,
-                "hidden": true
-              },
+              "sourceMap": false,
               "optimization": {
                 "scripts": true,
                 "styles": {

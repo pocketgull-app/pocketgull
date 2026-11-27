@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.42.0] - 2026-11-19
+
+**☁️ FinOps Zero-Idle-Burn Cloud Run Hardening, 3D Body Viewer Tap-Visibility Fix, Bulk Sync `413` Circuit Breaker & `/api/ai/metrics` Resilience**
+
+### Changed
+- **[Cloud Run FinOps & Direct VPC Egress Cleanup (`gen-lang-client-0540208645`)] (`scripts/teardown-gcp-idle-burn.mjs`)**:
+  - Torn down orphaned Global External Load Balancer (`35.186.221.122`), Cloud Armor policy (`pocket-gull-armor-policy`), backend service (`pocket-gull-backend`), forwarding rules, 4 unused SSL certificates, and 3 NEGs after verifying live DNS routes directly via Cloud Run Domain Mappings (`216.239.32.21`).
+  - Removed unused Direct VPC egress (`--clear-network`) from `pocket-gull-v2` (deployed revision `pocket-gull-v2-00262-lgt`), eliminating Google-managed connector VM churn (`aet-uscentral1-pocket--gull--connector`) while maintaining `minScale: 0` and Mozilla HTTP Observatory 125/100 headers across `pocketgull.app`, `pocketgull.com`, and `journal.pocketgull.com`.
+  - Aligned project billing to organizational account `011A25-87E995-C755A6` (`dpo@pocketgull.app`).
+
+### Fixed
+- **[3D Body Viewer Disappearing Layers on Tap] (`src/components/anatomy-3d/body-3d-viewer.component.ts`)**:
+  - Replaced 9 stale `this.anatomyViewMode()` calls (which stayed at the `@Input` default `'skin'`) with `this.effectiveAnatomyViewMode()` across `setCameraPreset()`, `toggleDermatomeLayer()`, AVS/philosophy effects, and model rebuild handlers so tapping a body part no longer resets layer opacity to `'skin'` and hides organs, bones, muscles, fluid dynamics, or shaders.
+  - Guarded `updatePartColors()` with `instanceof THREE.MeshStandardMaterial` so tapping in custom `ShaderMaterial` modes (`vesalian_woodcut`, `ghost`, `oregonator_turing`) never throws on missing `.color`/`.emissive` properties.
+- **[Patient Cloud Sync `413 PayloadTooLargeError` Loop] (`src/services/patient-management.service.ts`)**:
+  - Added an `8 MB` pre-flight payload size circuit breaker and sticky `413` fallback to `PUT /api/patients/:id` with serialized payload deduplication, eliminating the 5-second `PayloadTooLargeError` stderr flood and allowing Cloud Run to scale cleanly to zero.
+- **[Clinical Metrics AI Endpoint Resilience] (`src/server/genkit.ts`, `src/server/routes/ai.routes.ts`)**:
+  - Increased `generateMetricsFlow` `maxOutputTokens` from `128` to `512` to prevent `gemini-2.5-flash` JSON truncation, added markdown fence stripping and `[0, 10]` metric clamping, validated `body.text` (`400` on missing/empty input), and added sanitized server error logging on `/api/ai/metrics`.
+
 ## [1.41.2] - 2026-10-12
 
 **🛡️ Complete CodeQL Hardening (Zero Alerts), GullRenderEngine Direct-Curve Architectural Transition, Zero-Regex SAML Extraction, and Multi-Platform Companion Parity**
@@ -683,7 +702,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[Impact.com Affiliate Media Partner Channel Verification] (`ImpactPartnerChannelsService` & `ImpactMasterProgramAgreementService`)**:
   - Integrated Impact.com media partner checklist (`IMPACT_CHECKLIST_INSTANCE_CONFIGURED`), connected `pocketgull.app` primary domain, and enforced full Master Program Agreement (MPA) compliance.
 - **[Encapsulated `src/partners/` Module Suite] (Gitignored Commercial Partner Connectors)**:
-  - Created local `src/partners/` directory (added to `.gitignore`) containing official SeatGeek API/SDK compliance ([seatgeek.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/seatgeek.ts)), Ticketmaster/AXS ([ticketmaster.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/ticketmaster.ts)), Fly-Well Airlines ([airlines.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/airlines.ts)), and LegalZoom ([legalzoom.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/partners/legalzoom.ts)).
+  - Created local `src/partners/` directory (added to `.gitignore`) containing official SeatGeek API/SDK compliance ([seatgeek.ts](src/partners/seatgeek.ts)), Ticketmaster/AXS ([ticketmaster.ts](src/partners/ticketmaster.ts)), Fly-Well Airlines ([airlines.ts](src/partners/airlines.ts)), and LegalZoom ([legalzoom.ts](src/partners/legalzoom.ts)).
 
 ## [1.16.0] - 2026-08-11
 
@@ -753,7 +772,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added dynamic coordinate scale factors (`scaleX`, `scaleY`) to align touch/mouse drawing 1:1 with canvas pixel bounds.
   - Added direct **`🎨 Draw Gesture Lock`** button on initial splash screen to allow instant drawing access without pre-authentication.
 - **[Component Architecture] Analysis Report De-Monolithing (`analysis-report/`)**:
-  - Extracted 3 modular lens tab components ([summary-overview-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/summary-overview-lens-tab.component.ts), [epigenetic-longevity-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/epigenetic-longevity-lens-tab.component.ts), [patient-education-lens-tab.component.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/analysis-report/patient-education-lens-tab.component.ts)).
+  - Extracted 3 modular lens tab components ([summary-overview-lens-tab.component.ts](src/components/analysis-report/summary-overview-lens-tab.component.ts), [epigenetic-longevity-lens-tab.component.ts](src/components/analysis-report/epigenetic-longevity-lens-tab.component.ts), [patient-education-lens-tab.component.ts](src/components/analysis-report/patient-education-lens-tab.component.ts)).
 - **[Performance & ESM Optimization] Dynamic `jsPDF` Lazy-Loading (`hipaa-pdf-export.service.ts` & `angular.json`)**:
   - Converted static `jsPDF` import to on-demand `await import('jspdf')` dynamic chunk loading.
   - Added `"jspdf"`, `"fflate"`, `"dompurify"`, and `"canvg"` to `allowedCommonJsDependencies` in `angular.json` to eliminate build warnings.
@@ -862,8 +881,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Remediated 12 reported advisories across `@angular/core`, `@angular/common`, `@angular/platform-server`, `undici`, `ip-address`, `brace-expansion`, `fast-uri`, and `socket.io-parser`.
   - Updated Python FastAPI sidecar requirements (`pocketgull_api/requirements.txt`) for `pandas==3.0.5`, `fastapi==0.141.1`, `uvicorn==0.52.0`, and `joblib==1.5.3`.
 - **[OpenSSF Scorecard & CI Hardening] Scorecard 10/10 Verification**:
-  - Registered and linked active passing OpenSSF Best Practices badge (`#13644`) in [`README.md`](file:///c:/Users/philg/Pocketgull/pocketgull/README.md).
-  - Pinned GitHub Actions dependencies in [.github/workflows/ci.yml](file:///c:/Users/philg/Pocketgull/pocketgull/.github/workflows/ci.yml) to exact release SHA commit hashes.
+  - Registered and linked active passing OpenSSF Best Practices badge (`#13644`) in [`README.md`](README.md).
+  - Pinned GitHub Actions dependencies in [.github/workflows/ci.yml](.github/workflows/ci.yml) to exact release SHA commit hashes.
   - Enabled continuous container packaging (`docker/build-push-action` + SLSA provenance) and Atheris fuzz testing triggers on main branch pushes and pull requests.
   - Resolved CodeQL workflow matrix initialization parameters for Python and JS/TS.
 
@@ -896,10 +915,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security & Hardening
 - **[CodeQL & OpenSSF Scorecard] 23 Security Alert Remediation**:
-  - Replaced biased random modulo in [fhir-r5-telemetry.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/fhir-r5-telemetry.service.ts) with unbiased 32-bit `crypto.getRandomValues()` float calculations.
-  - Eliminated TOCTOU file system race condition in [scripts/pre-commit-check.cjs](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/pre-commit-check.cjs).
+  - Replaced biased random modulo in [fhir-r5-telemetry.service.ts](src/services/fhir-r5-telemetry.service.ts) with unbiased 32-bit `crypto.getRandomValues()` float calculations.
+  - Eliminated TOCTOU file system race condition in [scripts/pre-commit-check.cjs](scripts/pre-commit-check.cjs).
   - Sanitized patient IDs against strict regex `/^[a-zA-Z0-9_-]{1,64}$/` and added log injection stripping across server loggers.
-  - Hardened [.gitignore](file:///c:/Users/philg/Pocketgull/pocketgull/.gitignore) with `.env*` catch-all rules and updated approved network egress whitelist in [sentinel_security_guard.mjs](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/sentinel_security_guard.mjs).
+  - Hardened [.gitignore](.gitignore) with `.env*` catch-all rules and updated approved network egress whitelist in [sentinel_security_guard.mjs](scripts/sentinel_security_guard.mjs).
 - **[Container Security] Debian 12 Bookworm Base Image Upgrade (`Dockerfile`)**:
   - Upgraded builder and production base images to `node:24-bookworm-slim` with OS-level `apt-get upgrade` to eliminate container vulnerability warnings.
 

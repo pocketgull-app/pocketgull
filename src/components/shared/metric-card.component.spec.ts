@@ -132,5 +132,11 @@ describe('MetricCardComponent', () => {
     expect(component.unit()).toBe('ms');
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('ms');
+    const findBdiLtr = (node: any): boolean => {
+      if (!node) return false;
+      if (String(node.tagName || '').toUpperCase() === 'BDI' && node.getAttribute?.('dir') === 'ltr') return true;
+      return Array.from(node.childNodes || []).some((c: any) => findBdiLtr(c));
+    };
+    expect(findBdiLtr(el)).toBe(true);
   });
 });

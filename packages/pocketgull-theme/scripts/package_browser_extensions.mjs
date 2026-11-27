@@ -28,7 +28,7 @@ fs.mkdirSync(firefoxDistDir, { recursive: true });
 // Locate chrome.exe or msedge.exe
 const chromeCandidates = [
   'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-  'C:\\Users\\philg\\AppData\\Local\\Google\\Chrome SxS\\Application\\chrome.exe',
+  path.join(process.env.LOCALAPPDATA || '', 'Google', 'Chrome SxS', 'Application', 'chrome.exe'),
   'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
 ];
 const chromePath = chromeCandidates.find(p => fs.existsSync(p));

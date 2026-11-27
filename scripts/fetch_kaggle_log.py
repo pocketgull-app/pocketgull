@@ -7,7 +7,7 @@ api = KaggleApi()
 api.authenticate()
 
 kernel_slug = 'philgear/rsna-knee-2026-training-v5'
-output_dir = os.path.abspath('c:/Users/philg/Pocketgull/pocketgull/contests/rsna_knee_2026/kernel_output_v5')
+output_dir = os.path.abspath('contests/rsna_knee_2026/kernel_output_v5')
 os.makedirs(output_dir, exist_ok=True)
 
 # Monkeypatch builtins.open to force utf-8 encoding when writing .log files

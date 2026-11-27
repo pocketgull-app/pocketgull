@@ -91,11 +91,11 @@ flowchart TD
 
 ## Code Base Reference Links
 
-- [SECURITY.md](file:///c:/Users/philg/Pocketgull/pocketgull/SECURITY.md) — Security & Safety Filter Policy
-- [PRIVACY.md](file:///c:/Users/philg/Pocketgull/pocketgull/PRIVACY.md) — Anti-Surveillance & Ephemeral Data Policy
-- [cloud-cost-governance.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/cloud-cost-governance.md) — Infrastructure Cost Controls & Billing Kill-Switch
-- [defensive-guardrails.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/defensive-guardrails.service.ts) — Application Guardrails
-- [skeptical-epistemology.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/skeptical-epistemology.service.ts) — Popperian $H_0$ Testing
-- [periodontal-systemic-bridge.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/periodontal-systemic-bridge.service.ts) — Oral-Systemic SIBI Cross-Talk
-- [webmcp-registration.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/webmcp-registration.service.ts) — WebMCP Tool Registration
-- [research-lectures.service.ts](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/research-lectures.service.ts) — Cochrane RoB 2 & Socratic Literacy
+- [SECURITY.md](SECURITY.md) — Security & Safety Filter Policy
+- [PRIVACY.md](PRIVACY.md) — Anti-Surveillance & Ephemeral Data Policy
+- [cloud-cost-governance.md](docs/cloud-cost-governance.md) — Infrastructure Cost Controls & Billing Kill-Switch
+- [defensive-guardrails.service.ts](src/services/defensive-guardrails.service.ts) — Application Guardrails
+- [skeptical-epistemology.service.ts](src/services/skeptical-epistemology.service.ts) — Popperian $H_0$ Testing
+- [periodontal-systemic-bridge.service.ts](src/services/periodontal-systemic-bridge.service.ts) — Oral-Systemic SIBI Cross-Talk
+- [webmcp-registration.service.ts](src/services/webmcp-registration.service.ts) — WebMCP Tool Registration
+- [research-lectures.service.ts](src/services/research-lectures.service.ts) — Cochrane RoB 2 & Socratic Literacy

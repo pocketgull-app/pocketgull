@@ -2,9 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, effect, ElementRef, viewChi
 import { CommonModule } from '@angular/common';
 import { PatientStateService } from '../services/patient-state.service';
 import { PythonBridgeService } from '../services/python-bridge.service';
-import { Chart, registerables, ChartConfiguration } from 'chart.js';
-
-Chart.register(...registerables);
+import type { Chart, ChartConfiguration } from 'chart.js';
 
 @Component({
   selector: 'app-biometric-history-chart',
@@ -113,6 +111,8 @@ export class BiometricHistoryChartComponent implements OnDestroy {
   public pythonBridge = inject(PythonBridgeService);
   
   private chartInstance: Chart | null = null;
+  private chartModuleRegistered = false;
+  private destroyed = false;
   activeMetric = signal<'hr' | 'bp' | 'spO2' | 'hrv' | 'coherence' | 'breathing'>('hr');
   private mockIntervalId: any = null;
 
@@ -210,7 +210,8 @@ export class BiometricHistoryChartComponent implements OnDestroy {
     }, 2000);
   }
 
-  private renderChart(canvas: HTMLCanvasElement, allHistory: any[], activeType: string) {
+  private async renderChart(canvas: HTMLCanvasElement, allHistory: any[], activeType: string) {
+    if (this.destroyed) return;
     this.destroyChart(); // Cleanup previous instance
 
     // Filter points to active metric
@@ -351,6 +352,13 @@ export class BiometricHistoryChartComponent implements OnDestroy {
 
     const ctx = canvas.getContext('2d');
     if (ctx) {
+      const { Chart, registerables } = await import('chart.js');
+      if (this.destroyed) return;
+      if (!this.chartModuleRegistered) {
+        Chart.register(...registerables);
+        this.chartModuleRegistered = true;
+      }
+      this.destroyChart();
       this.chartInstance = new Chart(ctx, config);
     }
   }
@@ -363,6 +371,7 @@ export class BiometricHistoryChartComponent implements OnDestroy {
   }
 
    ngOnDestroy() {
+    this.destroyed = true;
     this.destroyChart();
     if (this.mockIntervalId) {
       clearInterval(this.mockIntervalId);

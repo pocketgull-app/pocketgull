@@ -8,9 +8,9 @@ Only the latest `main` branch and currently deployed production versions receive
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 1.42.x  | :white_check_mark: |
 | 1.41.x  | :white_check_mark: |
-| 1.40.x  | :white_check_mark: |
-| < 1.40  | :x:                |
+| < 1.41  | :x:                |
 
 ## Reporting a Vulnerability
 
@@ -30,7 +30,7 @@ As a clinical co-pilot, Pocket Gull operates under strict security and data-hand
 ### 1. Transient Data & No PHI Persistence
 - **No Remote Database**: Pocket Gull does **not** persist Protected Health Information (PHI) to any centralized database.
 - **Local Storage**: All patient state is stored locally within the browser (`localStorage` or IndexedDB) and is strictly constrained to the clinician's current device profile.
-- **Transient Inference**: Payloads sent to the Google Gemini API or other external AI inference engines are ephemeral. We strictly rely on enterprise or opt-out tiers to ensure data is **not** used to train foundation models.
+- **Transient Inference**: Payloads sent to external AI inference engines are ephemeral. Production clinical workloads strictly route through **Google Cloud Vertex AI (`aiplatform.googleapis.com`)** via Application Default Credentials / Workload Identity under a GCP HIPAA Business Associate Agreement (BAA) so clinical payloads never traverse consumer AI Studio tiers or train foundation models.
 
 ### 2. Generative AI Safeguards (Google Responsible AI)
 
@@ -55,7 +55,7 @@ All Genkit flows in `src/server/genkit.ts` reference this section for their safe
 |---|---|---|
 | All categories | **`OFF`** | Medical imaging (X-rays, dermatological photography, wound assessment, anatomical imaging) and clinical document OCR can trigger false positives across *all* safety categories. These flows require fully permissive settings to function. |
 
-**Affected Flows**:
+**Affected Flows (All 8 Genkit Flows in `src/server/genkit.ts`)**:
 - `generateMetricsFlow` — Text policy
 - `detectClinicalChangesFlow` — Text policy
 - `translateReadingLevelFlow` — Text policy
@@ -63,6 +63,7 @@ All Genkit flows in `src/server/genkit.ts` reference this section for their safe
 - `synthesizeKnowledgeFlow` — Text policy
 - `analyzeImageFlow` — Imaging policy (all `OFF`)
 - `scanDocumentFlow` — Imaging policy (all `OFF`)
+- `analyzeMedicalWoundDermatologyFlow` — Imaging policy (all `OFF`)
 
 #### Defense-in-Depth (Why Consumer Safety Filters Are Redundant)
 
@@ -172,7 +173,7 @@ Because the application runs on serverless Google Cloud Run (Compute as a Servic
 - **Resilient AI Interchanges**: Future roadmaps include automated Disaster Recovery and Chaos Engineering tests to ensure the UI gracefully handles dropped, throttled, or timed-out inference requests to the Google Gemini API.
 
 ### 3. Dependency Compatibility & Risk Management
-Modern web applications rely heavily on a complex web of packages (e.g., Angular v21.1, Three.js, Tailwind CSS, and Google GenAI SDK).
+Modern web applications rely heavily on a complex web of packages (e.g., Angular 22, Three.js, Tailwind CSS, and Google GenAI SDK).
 - **Stability Over "Live at Head"**: To safeguard clinical workflows from unexpected regressions, we actively track the "Compatibility Promises" of upstream frameworks and pin critical packages rather than automatically updating to the latest head.
 
 ### 4. Mitigating the "Bus Factor"

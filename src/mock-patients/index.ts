@@ -19,3 +19,7 @@ export * from './p_default_patient';
 export * from './p_poms_adolescent';
 export * from './p_loms_elder';
 export * from './p_ada_lovelace';
+export * from './p_who_oral_sibi';
+export * from './p_who_amr_exposome';
+export * from './p_nih_recover_heal';
+export * from './p_nih_pgx_circadian';

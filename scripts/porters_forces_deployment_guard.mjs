@@ -187,14 +187,19 @@ console.log('\n📋 Force 4: Threat of Substitutes (Deterministic Clinical Rigor
 
 // 4.1 Verify ISMP Medication Safety Guard is enforced
 const ismpGuardPath = path.join(ROOT_DIR, 'src/services/ismp-safety-guard.service.ts');
+const ismpPkgLinterPath = path.join(ROOT_DIR, 'packages/ismp-clinical-guard/src/linter.ts');
 if (fs.existsSync(ismpGuardPath)) {
-  const ismpContent = fs.readFileSync(ismpGuardPath, 'utf8');
-  const hasTrailingZeroRule = ismpContent.includes('trailing') || ismpContent.includes('nakedDecimal');
+  const ismpContent =
+    fs.readFileSync(ismpGuardPath, 'utf8') +
+    (fs.existsSync(ismpPkgLinterPath) ? '\n' + fs.readFileSync(ismpPkgLinterPath, 'utf8') : '');
+  const hasTrailingZeroRule =
+    (ismpContent.includes('trailing') || ismpContent.includes('TRAILING_ZERO') || ismpContent.includes('nakedDecimal')) &&
+    ismpContent.includes('@pocketgull/ismp-clinical-guard');
   recordCheck(
     'Force 4: Substitutes',
     'ISMP High-Risk Posology Rule Enforcement',
     hasTrailingZeroRule,
-    'ISMP safety guard missing trailing zero or naked decimal clinical checks.'
+    'ISMP safety guard missing trailing zero / naked decimal checks or @pocketgull/ismp-clinical-guard delegation.'
   );
 }
 

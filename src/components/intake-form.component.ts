@@ -13,6 +13,7 @@ import { PocketGullInputComponent } from './shared/pocket-gull-input.component';
 import { PocketGullBadgeComponent } from './shared/pocket-gull-badge.component';
 import { ContactlessVitalsScannerComponent } from './contactless-vitals-scanner.component';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 interface INoteTimelineItem extends IBodyPartIssue {
   date: string;
@@ -21,7 +22,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
 
 @Component({
   selector: 'app-intake-form',
-  imports: [CommonModule, PocketGullButtonComponent, PocketGullInputComponent, PocketGullBadgeComponent, ContactlessVitalsScannerComponent, SafeHtmlPipe],
+  imports: [CommonModule, PocketGullButtonComponent, PocketGullInputComponent, PocketGullBadgeComponent, ContactlessVitalsScannerComponent, SafeHtmlPipe, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="h-full flex flex-col bg-[#F9FAFB] dark:bg-zinc-950">
@@ -30,7 +31,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
         <div class="h-14 border-b border-gray-200 dark:border-zinc-800 flex items-center justify-between px-6 bg-white dark:bg-zinc-900 shrink-0 z-10">
           <div class="flex items-center gap-2">
             <div class="w-2 h-2 rounded-sm bg-[#689F38] dark:bg-[#8bc34a]"></div>
-            <span class="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">Assessment Panel</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">{{ 'Assessment Panel' | pgT:'intake.title' }}</span>
             <pocket-gull-badge label="HIPAA COMPLIANT" severity="success" class="ml-2"></pocket-gull-badge>
           </div>
           <div class="flex items-center gap-2">
@@ -40,7 +41,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
               (click)="state.toggleContactlessScanner(true)"
               class="flex items-center gap-1 px-2.5 py-1 bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-800 rounded-md text-[11px] font-bold uppercase tracking-wider hover:bg-cyan-100 dark:hover:bg-cyan-900/40 transition cursor-pointer"
               title="Launch Contactless Optical rPPG & Vocal Vitals Scanner">
-              <span>📹 Scan Vitals</span>
+              <span>📹 {{ 'Scan Vitals' | pgT:'intake.scan_vitals' }}</span>
             </button>
             <button 
               type="button"
@@ -48,7 +49,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
               (click)="state.toggleSocraticIntake(true)"
               class="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 rounded-md text-[11px] font-bold uppercase tracking-wider hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition cursor-pointer"
               title="Launch Socratic Patient Intake Studio">
-              <span>✨ Socratic Studio</span>
+              <span>✨ {{ 'Socratic Studio' | pgT:'intake.socratic_studio' }}</span>
             </button>
             <pocket-gull-button 
               variant="ghost" 
@@ -77,7 +78,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
               <div class="bg-gray-50/50 dark:bg-zinc-800/30 px-6 py-4 border-b border-gray-100 dark:border-zinc-800 flex justify-between items-start">
                 <div>
                   <span class="text-xs font-bold uppercase tracking-widest text-[#416B1F] dark:text-[#8bc34a] block mb-1">
-                    {{ note.isCurrent ? 'Active Input' : 'Historical Record' }}
+                    {{ note.isCurrent ? ('Active Input' | pgT:'intake.active_input') : ('Historical Record' | pgT:'intake.historical_record') }}
                   </span>
                   <h2 class="text-xl font-medium text-[#1C1C1C] dark:text-zinc-100">{{ state.selectedPartName() }}</h2>
                   <!-- TDM UI Integration -->
@@ -120,7 +121,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
                         {{ r5Telemetry.isStreaming() ? '⏸ Pause R5 Stream' : '▶ Live R5 Stream' }}
                       </button>
                       <button type="button" (click)="openLabModal()" class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-lime-600 text-white hover:bg-lime-700 rounded border border-lime-700 transition-all active:scale-95 shadow-2xs">
-                        ✏️ Edit Labs (CMP)
+                        ✏️ {{ 'Edit Labs (CMP)' | pgT:'intake.edit_labs' }}
                       </button>
                     </div>
                   </div>
@@ -130,7 +131,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
                     <div class="mb-3 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg flex flex-wrap items-center gap-1.5">
                       <span class="text-[10px] font-extrabold uppercase text-amber-700 dark:text-amber-400 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
-                        Abnormal Lab Flags:
+                        {{ 'Abnormal Lab Flags:' | pgT:'intake.abnormal_flags' }}
                       </span>
                       @for (alert of abnormalBiomarkers(); track alert) {
                         <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/40 rounded-full">
@@ -163,7 +164,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
                     <div class="pt-2 border-t border-gray-200/60 dark:border-zinc-800">
                       <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500 mb-1.5 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-lime-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                        One-Tap Symptom Shortcuts
+                        {{ 'One-Tap Symptom Shortcuts' | pgT:'intake.shortcuts' }}
                       </div>
                       <div class="flex flex-wrap gap-1.5">
                         @for (chip of organContext().symptomChips; track chip) {
@@ -184,7 +185,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
                   <div class="flex justify-between items-end mb-4">
                     <label for="painRange" class="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                        Pain Severity
+                        {{ 'Pain Severity' | pgT:'intake.pain_severity' }}
                     </label>
                     <div class="flex items-baseline gap-1">
                         <span class="text-3xl font-light text-[#1C1C1C] dark:text-zinc-100">{{ formState().painLevel }}</span>
@@ -220,9 +221,9 @@ interface INoteTimelineItem extends IBodyPartIssue {
                     </div>
                   </div>
                   <div class="flex justify-between text-xs text-gray-500 dark:text-zinc-400 font-medium uppercase tracking-wider px-1">
-                    <span>None</span>
-                    <span>Moderate</span>
-                    <span>Severe</span>
+                    <span>{{ 'None' | pgT:'intake.pain_none' }}</span>
+                    <span>{{ 'Moderate' | pgT:'intake.pain_moderate' }}</span>
+                    <span>{{ 'Severe' | pgT:'intake.pain_severe' }}</span>
                   </div>
                 </div>
 
@@ -230,7 +231,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
                 <div class="space-y-3">
                     <pocket-gull-input
                       type="textarea"
-                      label="Integrative Observations"
+                      [label]="'Integrative Observations' | pgT:'intake.observations'"
                       [value]="formState().description"
                       (valueChange)="updateDescManual($event)"
                       [disabled]="!note.isCurrent"
@@ -279,18 +280,18 @@ interface INoteTimelineItem extends IBodyPartIssue {
                     <div class="flex items-center gap-2">
                       <span class="text-xs font-bold uppercase tracking-widest text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 0 0 20z"/></svg>
-                        Paradigm Assessment Intake Protocol
+                        {{ 'Paradigm Assessment Intake Protocol' | pgT:'intake.protocol' }}
                       </span>
                     </div>
                     <div class="flex items-center gap-1 bg-white dark:bg-zinc-800 p-1 rounded-lg border border-slate-200 dark:border-zinc-700">
                       <button type="button" (click)="state.selectPhilosophy('western')" [class.bg-indigo-600]="state.activePhilosophy() === 'western'" [class.text-white]="state.activePhilosophy() === 'western'" class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded transition-colors cursor-pointer">
-                        🩺 Western
+                        🩺 {{ 'Western' | pgT:'container.western' }}
                       </button>
                       <button type="button" (click)="state.selectPhilosophy('eastern')" [class.bg-emerald-600]="state.activePhilosophy() === 'eastern'" [class.text-white]="state.activePhilosophy() === 'eastern'" class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded transition-colors cursor-pointer">
-                        🌿 Eastern TCM
+                        🌿 {{ 'Eastern' | pgT:'container.eastern' }}
                       </button>
                       <button type="button" (click)="state.selectPhilosophy('ayurvedic')" [class.bg-amber-600]="state.activePhilosophy() === 'ayurvedic'" [class.text-white]="state.activePhilosophy() === 'ayurvedic'" class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded transition-colors cursor-pointer">
-                        🧘 Ayurvedic
+                        🧘 {{ 'Ayurvedic' | pgT:'container.ayurvedic' }}
                       </button>
                     </div>
                   </div>
@@ -628,19 +629,19 @@ interface INoteTimelineItem extends IBodyPartIssue {
                                     </span>
                                 </div>
                                 <p class="text-xs font-medium text-gray-700 dark:text-zinc-300 line-clamp-2 leading-relaxed">
-                                    {{ timelineNote.description || 'No description provided.' }}
+                                    {{ timelineNote.description || ('No description provided.' | pgT:'review.no_description') }}
                                 </p>
                             </button>
                         </div>
                     } @empty {
-                        <div class="pl-8 text-xs text-gray-500 dark:text-zinc-400 italic py-4">No prior history for this body part.</div>
+                        <div class="pl-8 text-xs text-gray-500 dark:text-zinc-400 italic py-4">{{ 'No prior history for this body part.' | pgT:'intake.no_history' }}</div>
                     }
                 </div>
             </div>
 
         } @else {
            <div class="flex-1 flex flex-col items-center justify-center p-8 text-center opacity-40">
-              <p class="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">Select a note to edit.</p>
+              <p class="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">{{ 'Select a note to edit.' | pgT:'intake.select_note' }}</p>
            </div>
         }
           </div>
@@ -651,7 +652,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
            <div class="w-16 h-16 bg-gray-100 dark:bg-zinc-900 rounded-sm flex items-center justify-center mb-4 text-gray-300 dark:text-zinc-400">
              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
            </div>
-           <p class="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">Select a body part to begin assessment</p>
+           <p class="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">{{ 'Select a body part to begin assessment' | pgT:'intake.select_part' }}</p>
         </div>
       }
 
@@ -662,7 +663,7 @@ interface INoteTimelineItem extends IBodyPartIssue {
             <div class="p-4 border-b border-gray-200 dark:border-zinc-800 flex items-center justify-between bg-gray-50/50 dark:bg-zinc-900/50">
               <h3 class="text-sm font-bold text-gray-900 dark:text-zinc-100 uppercase tracking-wider flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-lime-500"></span>
-                Edit Comprehensive Metabolic Panel (CMP)
+                {{ 'Edit Comprehensive Metabolic Panel (CMP)' | pgT:'intake.cmp_title' }}
               </h3>
               <button (click)="closeLabModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 text-lg font-bold">✕</button>
             </div>
@@ -705,8 +706,8 @@ interface INoteTimelineItem extends IBodyPartIssue {
             </div>
 
             <div class="p-4 border-t border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50 flex justify-end gap-2">
-              <button (click)="closeLabModal()" class="px-4 py-2 text-xs font-bold text-gray-600 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-all">Cancel</button>
-              <button (click)="saveLabModal()" class="px-4 py-2 text-xs font-bold bg-lime-600 text-white hover:bg-lime-700 rounded-lg transition-all shadow-md">Save Biomarker Panel</button>
+              <button (click)="closeLabModal()" class="px-4 py-2 text-xs font-bold text-gray-600 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-all">{{ 'Cancel' | pgT:'intake.cancel' }}</button>
+              <button (click)="saveLabModal()" class="px-4 py-2 text-xs font-bold bg-lime-600 text-white hover:bg-lime-700 rounded-lg transition-all shadow-md">{{ 'Save Biomarker Panel' | pgT:'intake.save_panel' }}</button>
             </div>
           </div>
         </div>

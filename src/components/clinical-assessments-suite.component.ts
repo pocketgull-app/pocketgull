@@ -5,11 +5,12 @@ import { AssessmentType, IQuestionItem, ISeverityTier, IAssessmentDefinition } f
 import { getAssessment } from '../services/clinical-assessments/assessment-registry';
 import { PatientStateService } from '../services/patient-state.service';
 import { MocaSuiteComponent } from './moca/moca-suite.component';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-clinical-assessments-suite',
   standalone: true,
-  imports: [CommonModule, MocaSuiteComponent],
+  imports: [CommonModule, MocaSuiteComponent, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex flex-col gap-6 animate-in fade-in duration-300">
@@ -25,13 +26,13 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           <div class="p-6 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm backface-hidden">
             <div class="flex-1">
               <div class="flex items-center gap-2 mb-1.5 flex-wrap">
-                <span class="text-xs uppercase font-extrabold tracking-widest text-zinc-400">Clinical & Life Sovereignty Instrumentation</span>
+                <span class="text-xs uppercase font-extrabold tracking-widest text-zinc-400">{{ 'Clinical & Life Sovereignty Instrumentation' | pgT:'cas.subtitle' }}</span>
                 <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-850">
                   {{ currentAssessment().badge }}
                 </span>
                 <span role="button" tabindex="0" (keydown.enter)="toggleHeaderFlip($event)" (keydown.space)="$event.preventDefault(); toggleHeaderFlip($event)" (click)="toggleHeaderFlip($event)"
                       class="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition cursor-pointer select-none">
-                  dblclick 🔄 flip OARS
+                  {{ 'dblclick 🔄 flip OARS' | pgT:'cas.flip_oars' }}
                 </span>
               </div>
               <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-50">{{ currentAssessment().title }}</h2>
@@ -66,7 +67,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
               <div class="flex items-center justify-between border-b border-indigo-800 pb-2 mb-3 font-mono text-xs">
                 <div class="flex items-center gap-2 text-indigo-300 font-bold uppercase tracking-wider">
                   <span>💬</span>
-                  <span>Motivational Interviewing (OARS) & Patient Guidance</span>
+                  <span>{{ 'Motivational Interviewing (OARS) & Patient Guidance' | pgT:'cas.back_title' }}</span>
                 </div>
                 <span class="text-[10px] text-indigo-400 font-mono">dblclick flip back</span>
               </div>
@@ -106,7 +107,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-emerald-600]="svc.activeTab() === 'growthyself'"
           [class.text-zinc-400]="svc.activeTab() !== 'growthyself'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap bg-emerald-50/50 dark:bg-emerald-950/20">
-          <span>🌱 Grow-Thyself (Life Index)</span>
+          <span>🌱 {{ 'Grow-Thyself (Life Index)' | pgT:'cas.tab_growthyself' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('phq9')"
@@ -116,7 +117,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-sky-600]="svc.activeTab() === 'phq9'"
           [class.text-zinc-400]="svc.activeTab() !== 'phq9'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <span>🧠 PHQ-9 (Depression)</span>
+          <span>🧠 {{ 'PHQ-9 (Depression)' | pgT:'cas.tab_phq9' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('gad7')"
@@ -126,7 +127,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-emerald-600]="svc.activeTab() === 'gad7'"
           [class.text-zinc-400]="svc.activeTab() !== 'gad7'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <span>🌿 GAD-7 (Anxiety)</span>
+          <span>🌿 {{ 'GAD-7 (Anxiety)' | pgT:'cas.tab_gad7' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('isi')"
@@ -136,7 +137,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-amber-600]="svc.activeTab() === 'isi'"
           [class.text-zinc-400]="svc.activeTab() !== 'isi'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <span>🌙 ISI (Insomnia)</span>
+          <span>🌙 {{ 'ISI (Insomnia)' | pgT:'cas.tab_isi' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('cvsq')"
@@ -146,7 +147,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-cyan-600]="svc.activeTab() === 'cvsq'"
           [class.text-zinc-400]="svc.activeTab() !== 'cvsq'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <span>👁️ CVS-Q (Vision Strain)</span>
+          <span>👁️ {{ 'CVS-Q (Vision Strain)' | pgT:'cas.tab_cvsq' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('mbi')"
@@ -156,7 +157,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-rose-600]="svc.activeTab() === 'mbi'"
           [class.text-zinc-400]="svc.activeTab() !== 'mbi'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <span>🔥 MBI (Burnout)</span>
+          <span>🔥 {{ 'MBI (Burnout)' | pgT:'cas.tab_mbi' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('cssrs')"
@@ -166,7 +167,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-rose-600]="svc.activeTab() === 'cssrs'"
           [class.text-zinc-400]="svc.activeTab() !== 'cssrs'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <span>🚨 C-SSRS (Safety)</span>
+          <span>🚨 {{ 'C-SSRS (Safety)' | pgT:'cas.tab_cssrs' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('ros14')"
@@ -176,7 +177,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-indigo-600]="svc.activeTab() === 'ros14'"
           [class.text-zinc-400]="svc.activeTab() !== 'ros14'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <span>🩺 ROS-14 (Review Systems)</span>
+          <span>🩺 {{ 'ROS-14 (Review Systems)' | pgT:'cas.tab_ros14' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('phq15')"
@@ -186,7 +187,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-purple-600]="svc.activeTab() === 'phq15'"
           [class.text-zinc-400]="svc.activeTab() !== 'phq15'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <span>⚡ PHQ-15 (Somatic)</span>
+          <span>⚡ {{ 'PHQ-15 (Somatic)' | pgT:'cas.tab_phq15' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('prapare')"
@@ -196,7 +197,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-teal-600]="svc.activeTab() === 'prapare'"
           [class.text-zinc-400]="svc.activeTab() !== 'prapare'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <span>🏘️ PRAPARE (SDOH Risk)</span>
+          <span>🏘️ {{ 'PRAPARE (SDOH Risk)' | pgT:'cas.tab_prapare' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('ayurveda')"
@@ -206,7 +207,7 @@ import { MocaSuiteComponent } from './moca/moca-suite.component';
           [class.text-orange-600]="svc.activeTab() === 'ayurveda'"
           [class.text-zinc-400]="svc.activeTab() !== 'ayurveda'"
           class="pb-3 px-4 font-extrabold uppercase tracking-widest text-[11px] outline-none transition flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
-          <span>🛕 Ayurveda (Tridosha)</span>
+          <span>🛕 {{ 'Ayurveda (Tridosha)' | pgT:'cas.tab_ayurveda' }}</span>
         </button>
 
         <button type="button" (click)="switchTab('tcm')"

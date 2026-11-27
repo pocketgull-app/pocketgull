@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversionPathway } from '../services/counterfactual-simulation.service';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 @Component({
   selector: 'app-counterfactual-simulator',
@@ -113,7 +114,7 @@ import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversio
           </p>
           <button
             type="button"
-            (click)="sim.applySimulationToPatientState()"
+            (click)="applyAndRetireSimulation()"
             [disabled]="!sim.hasActiveSimulation()"
             class="mt-2.5 w-full min-h-[40px] px-3.5 py-2 text-xs font-pocketgull font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white transition rounded-xl disabled:opacity-30 disabled:cursor-not-allowed shadow-md cursor-pointer flex items-center justify-center gap-1.5 active:scale-[0.98]">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -132,8 +133,8 @@ import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversio
         </div>
       </div>
 
-      <!-- Tab 1: Socratic What-If Hypothesis Rail -->
-      @if (activeTab() === 'scenarios') {
+      <!-- Tab 1: Socratic What-If Hypothesis Rail (Auto-collapsed during Micro-Skill STAT / Digest Sparsity) -->
+      @if (!isExploratoryCollapsed() && activeTab() === 'scenarios') {
         <div class="space-y-3 font-pocketgull-mono">
           <div class="flex items-center justify-between">
             <span class="text-xs uppercase font-bold tracking-widest text-zinc-400">
@@ -164,7 +165,7 @@ import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversio
       }
 
       <!-- Tab 2: Goal-Backward Inversion ("What Would It Take?") -->
-      @if (activeTab() === 'inversion') {
+      @if (!isExploratoryCollapsed() && activeTab() === 'inversion') {
         <div class="space-y-3 font-pocketgull-mono">
           <div class="flex items-center justify-between">
             <span class="text-xs uppercase font-bold tracking-widest text-zinc-400">
@@ -208,8 +209,13 @@ import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversio
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
 
-          <!-- 1. HbA1c Slider Card (Flip-Ready) -->
-          <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200 dark:border-zinc-800 space-y-2.5 shadow-sm"
+          <!-- 1. HbA1c Slider Card (Flip-Ready + Synapse Highlighted on Glycemic-Renal Coupling) -->
+          <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/70 border space-y-2.5 shadow-sm transition-all"
+               [class.ring-2]="isGlycemicSynapseActive()"
+               [class.ring-emerald-400]="isGlycemicSynapseActive()"
+               [class.border-emerald-400]="isGlycemicSynapseActive()"
+               [class.border-zinc-200]="!isGlycemicSynapseActive()"
+               [class.dark:border-zinc-800]="!isGlycemicSynapseActive()"
                (dblclick)="toggleCardFlip('hba1c')"
                title="Double-click to flip for Motivational Interviewing (OARS) readiness questions">
             @if (!flippedCards()['hba1c']) {
@@ -218,6 +224,9 @@ import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversio
                   <span class="text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
                     <span>🩸</span>
                     <span>HbA1c Target (Baseline: {{ sim.baselineHbA1c() }}%)</span>
+                    @if (isGlycemicSynapseActive()) {
+                      <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono uppercase">⚡ Synapse</span>
+                    }
                   </span>
                   <span class="text-emerald-700 dark:text-emerald-300 font-pocketgull-mono font-bold">{{ sim.simulatedHbA1c() }}% ({{ formatDelta(sim.deltaHbA1c(), '%') }})</span>
                 </div>
@@ -227,7 +236,7 @@ import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversio
                   max="2.0"
                   step="0.1"
                   [value]="sim.deltaHbA1c()"
-                  (input)="sim.deltaHbA1c.set(getEventVal($event))"
+                  (input)="onHbA1cDeltaInput($event)"
                   class="w-full accent-emerald-500 cursor-pointer h-2 bg-zinc-200 dark:bg-zinc-800 rounded-lg mt-2"
                 >
                 <div class="flex justify-between text-[10px] font-pocketgull-mono text-zinc-400 mt-1">
@@ -414,6 +423,15 @@ import { CounterfactualSimulationService, ICounterfactualScenario, IGoalInversio
 })
 export class CounterfactualSimulatorComponent {
   sim = inject(CounterfactualSimulationService);
+  private readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
+
+  readonly isExploratoryCollapsed = computed<boolean>(() => {
+    return Boolean(this.moeRouter?.microSkillDisplayPolicy().collapseExploratorySubViews);
+  });
+
+  readonly isGlycemicSynapseActive = computed<boolean>(() => {
+    return this.moeRouter?.activeSynapseToken() === 'glycemic-renal-coupling';
+  });
 
   activeTab = signal<'scenarios' | 'inversion'>('scenarios');
   flippedCards = signal<Record<string, boolean>>({
@@ -422,6 +440,26 @@ export class CounterfactualSimulatorComponent {
     hrv: false,
     systolic: false
   });
+
+  onHbA1cDeltaInput(event: Event): void {
+    const val = this.getEventVal(event);
+    this.sim.deltaHbA1c.set(val);
+    this.moeRouter?.emitSynapseSignalPulse(
+      'glycemic-renal-coupling',
+      'counterfactual-simulator',
+      'ismp-posology',
+      'Simulated HbA1c',
+      `${this.sim.simulatedHbA1c()}%`
+    );
+  }
+
+  applyAndRetireSimulation(): void {
+    this.sim.applySimulationToPatientState();
+    this.moeRouter?.completeAndRetireSkillGoal(
+      'counterfactual-simulator',
+      `Counterfactual target applied (HbA1c ${this.sim.simulatedHbA1c()}%, CV Risk ${this.sim.simulatedCvRisk()}%)`
+    );
+  }
 
   toggleCardFlip(key: string): void {
     this.flippedCards.update(state => ({

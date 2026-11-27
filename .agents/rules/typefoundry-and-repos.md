@@ -2,9 +2,9 @@
 
 ## 1. PocketGull 4-Master Superfamily Architecture (`../pocketgull-typeface`)
 - **The 4-Master Taxonomy**:
-  - `PocketGull-Chiseltip` (900 Black Display): Parametric physical chisel nib simulation ($w(\varphi) = \sqrt{(a \cos(\varphi - \theta))^2 + (b \sin(\varphi - \theta))^2}$ at $45^\circ$ angle, 1000 UPM) for brand marks (`PocketGull` wordmark & legal footer imprint ONLY).
-  - `PocketGull-Bold` (700 Bold Clinical): High-contrast optical anchor for emergency alerts, telemetry headers, and Snellen 20/20 optotype verification.
-  - `PocketGull-Fineliner` (400 Regular Text): Proportional clinical reading face with deep inktraps, wide apertures, and generous counters for sustained diagnostic intake.
+  - `PocketGull-Chiseltip` (`'PocketGull Brand'`, 900 Black Display): Parametric physical chisel nib simulation ($w(\varphi) = \sqrt{(a \cos(\varphi - \theta))^2 + (b \sin(\varphi - \theta))^2}$ at $45^\circ$ angle, 1000 UPM) isolated exclusively to brand marks (`PocketGull` wordmark & legal footer imprint ONLY).
+  - `PocketGull-Bold` (700 Bold Clinical) & `PocketGull-Slab-Bold`: High-contrast optical anchor for headings, emergency alerts, telemetry headers, and Snellen 20/20 optotype verification.
+  - `PocketGull-Regular` (400 Regular UI Text — NEVER `PocketGull-Fineliner` for body UI `400`–`600` weight): Proportional clinical reading face with deep inktraps, wide apertures, and generous counters for sustained diagnostic intake. (`PocketGull-Black` serves unambiguous `'PocketGull'` 900 display weight; `PocketGull-Fineliner` is reserved strictly for explicit display/specimen accents.)
   - `PocketGullMono-Regular` (400 Monospace Telemetry): Strict 600 UPM fixed pitch with slashed zero (`cv08`), tabular alignment, and zero jitter for biometrics and dosage readouts.
 - **1000 UPM & Zero-Composite Invariant**: All procedural glyph contours MUST use integer coordinates on a strict 1000 UPM grid (`ascender: 800`, `descender: -200`), 0 duplicate nodes, verified winding order, and 0 composite glyph references.
 - **Directory-Pinned `uv` Execution**: Always run font compilation and validation inside the typeface environment:

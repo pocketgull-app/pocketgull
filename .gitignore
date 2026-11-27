@@ -196,6 +196,7 @@ documentation/fonts.css
 
 # Heavy Typography & Desktop Font Binaries (Hosted on https://font.pocketgull.app)
 *.ttf
+!pocketgull_flutter/assets/fonts/*.ttf
 public/brand/fonts/
 packages/**/*.vsix
 
@@ -239,6 +240,9 @@ build_error*.txt
 logs/
 *.log
 *log.txt
+build_log_*.txt
+analyze*.txt
+*.iml
 deploy_log.txt
 firebase-debug.log
 firebase-debug.*.log
@@ -260,6 +264,7 @@ scratch/
 *.hive
 *.hivec
 *patient*.json
+!data/patients.seed.json
 *session*.json
 *.edf
 *.mat
@@ -408,10 +413,16 @@ scripts/output/
 
 
 # ─── Repository front-door hygiene ─────────────────────────────────────────────
-# Confidential IP filings (USPTO provisional specs + generated PDFs) are
-# local-only and MUST NOT be published. See scripts/generate_uspto_pdf.mjs.
+# Confidential pre-filing USPTO provisional packets and competitive grant drafts
+# remain local-only; public IP charters & sanitized compliance dossiers stay tracked
+# per docs/patents/OPEN_PATENT_PLEDGE_AND_RESEARCH_COVENANT.md (§ 4.1).
 /USPTO_PROVISIONAL_*.pdf
 /docs/patents/USPTO_PROVISIONAL_*.md
+/docs/research/KAGGLE_BENCHMARKS_GRANT_PROPOSAL.md
+/docs/research/KAGGLE_COMPETITIONS_GRANT_APPLICATION.md
+
+# Local Lighthouse & scratch debug outputs
+sandbox/lighthouse_report.*
 
 # Generated local pipeline briefings (scripts/overnight_rsna_pipeline.ps1,
 # scripts/run_overnight_master_pipeline.ps1)
@@ -430,6 +441,11 @@ work/
 eng/
 casmi_output/
 /docs/DUAL_TRACK_ACQUISITION_PACKET.md
+
+# Generated SBOM artifacts (generated fresh in CI/Release; never commit stale snapshots)
+/sbom.cdx.json
+/sbom.prod.cdx.json
+/sbom.spdx.json
 
 
 

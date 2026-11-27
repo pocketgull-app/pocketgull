@@ -20,9 +20,9 @@ describe('PatentClaimsHudModalComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should default to inventions tab with 20 clusters', () => {
+  it('should default to inventions tab with 28 clusters', () => {
     expect(component.activeTab()).toBe('inventions');
-    expect(component.filteredClusters().length).toBe(20);
+    expect(component.filteredClusters().length).toBe(28);
   });
 
   it('should filter clusters based on search query', () => {
@@ -35,7 +35,7 @@ describe('PatentClaimsHudModalComponent', () => {
     component.activeTab.set('clauses');
     expect(component.filteredClauses().length).toBe(9);
 
-    component.searchQuery.set('Amazon');
+    component.searchQuery.set('FTC');
     expect(component.filteredClauses().length).toBe(1);
     expect(component.filteredClauses()[0].id).toBe('clause-ftc-affiliate-governance');
   });

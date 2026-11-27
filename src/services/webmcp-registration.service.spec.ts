@@ -1,7 +1,9 @@
 ﻿import '@angular/compiler';
-import { Injector, runInInjectionContext, NgZone, signal } from '@angular/core';
+import { Injector, runInInjectionContext, signal } from '@angular/core';
 import {
   WebMcpRegistrationService,
+  extractSerializableWebMcpTool,
+  inspectWebMcpToolHandle,
   normalizeToolInputSchema,
   normalizeToolOutputSchema,
   validateToolOutputAgainstSchema
@@ -32,6 +34,9 @@ import { DirectIomtWearablesService } from './hardware/direct-iomt-wearables.ser
 import { MimicOmopBenchmarkService } from './research/mimic-omop-benchmark.service';
 import { EhrWritebackService } from './fhir/ehr-writeback.service';
 import { EdgeAutonomousVoiceAgentService } from './voice/edge-autonomous-voice-agent.service';
+import { CmsBlueButtonService } from './fhir/cms-blue-button.service';
+import { MedicaidContinuityGuardService } from './mdcp/medicaid-continuity-guard.service';
+import { StateRegionalCrosswalkService } from './mdcp/state-regional-crosswalk.service';
 
 vi.mock('@mcp-b/webmcp-polyfill', () => ({
   initializeWebMCPPolyfill: vi.fn()
@@ -179,9 +184,6 @@ mathematicalModel: Softmax T=0.85`;
       activeCrossAttentionBridge: vi.fn().mockReturnValue({ id: 'bridge-01', title: 'Test Bridge' })
     };
 
-    const mockNgZone = {
-      run: (fn: Function) => fn()
-    };
 
     const mockTrajectory = {
       teaspoonExplanations: vi.fn().mockReturnValue([
@@ -374,17 +376,21 @@ mathematicalModel: Softmax T=0.85`;
         { provide: MimicOmopBenchmarkService, useClass: MimicOmopBenchmarkService },
         { provide: EhrWritebackService, useClass: EhrWritebackService },
         { provide: EdgeAutonomousVoiceAgentService, useClass: EdgeAutonomousVoiceAgentService },
-        { provide: NgZone, useValue: mockNgZone }
+        { provide: StateRegionalCrosswalkService, useClass: StateRegionalCrosswalkService },
+        { provide: CmsBlueButtonService, useClass: CmsBlueButtonService },
+        { provide: MedicaidContinuityGuardService, useClass: MedicaidContinuityGuardService }
       ]
     });
 
     service = runInInjectionContext(injector, () => new WebMcpRegistrationService());
   });
 
-  it('should register all 97 WebMCP agentic tools on modelContext', () => {
+  it('should register all 100 WebMCP agentic tools on modelContext', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(97);
+    expect(registeredTools.size).toBe(100);
+    expect(registeredTools.has('evaluate_medicaid_continuity_and_qmb_shield')).toBe(true);
+    expect(registeredTools.has('import_cms_blue_button_medicare_eob')).toBe(true);
     expect(registeredTools.has('evaluate_clinical_hypothesis_and_cohort')).toBe(true);
     expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
@@ -695,8 +701,32 @@ mathematicalModel: Softmax T=0.85`;
     const tool = registeredTools.get('evaluate_medicare_billing_and_gfe_eligibility');
 
     const result = await tool.execute({ annualRxCost: 3500, daysDeviceTransmitted: 18, clinicalMinutesLogged: 22, annualIncome: 25000 });
-    expect(result.content[0].text).toContain('Protected by Inflation Reduction Act');
+    expect(result.content[0].text).toContain('2026 Inflation Reduction Act $2,100 Part D cap');
     expect(result.content[0].text).toContain('100% Charity Care discount');
+    expect(result.content[0].text).toContain('G0557');
+  });
+
+  it('should execute evaluate_medicaid_continuity_and_qmb_shield tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('evaluate_medicaid_continuity_and_qmb_shield');
+
+    const result = await tool.execute({
+      stateCode: 'WA',
+      isDualEligibleQmb: true,
+      providerBilledAmountUsd: 215,
+      providerBillingEntity: 'Cascade Clinic Billing'
+    });
+    expect(result.content[0].text).toContain('42 U.S.C. § 1396a(n)(3)(B)');
+    expect(result.content[0].text).toContain('Washington');
+  });
+
+  it('should execute import_cms_blue_button_medicare_eob tool', async () => {
+    service.registerTools({});
+    const tool = registeredTools.get('import_cms_blue_button_medicare_eob');
+
+    const result = await tool.execute({ mode: 'sandbox_import', planYear: 2026 });
+    expect(result.content[0].text).toContain('CMS_BLUE_BUTTON_SANDBOX_SYNTHETIC');
+    expect(result.content[0].text).toContain('Empagliflozin');
   });
 
   it('should execute evaluate_hedis_quality_measures_and_care_gaps tool', async () => {
@@ -896,10 +926,10 @@ mathematicalModel: Softmax T=0.85`;
     expect(result.content[0].text).toContain('4.02');
   });
 
-  it('should register all 97 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
+  it('should register all 100 WebMCP agentic tools on modelContext including IP Patent Registry', () => {
     service.registerTools({});
 
-    expect(registeredTools.size).toBe(97);
+    expect(registeredTools.size).toBe(100);
     expect(registeredTools.has('evaluate_clinical_hypothesis_and_cohort')).toBe(true);
     expect(registeredTools.has('control_gullrender_spatial_substrate')).toBe(true);
     expect(registeredTools.has('start_edge_autonomous_voice_session')).toBe(true);
@@ -1139,7 +1169,7 @@ mathematicalModel: Softmax T=0.85`;
 
   it('should unregister all tools when unregisterTools is called', () => {
     service.registerTools({});
-    expect((service as any).mcpControllers.length).toBe(97);
+    expect((service as any).mcpControllers.length).toBe(100);
 
     service.unregisterTools();
     expect((service as any).mcpControllers.length).toBe(0);
@@ -1373,7 +1403,7 @@ mathematicalModel: Softmax T=0.85`;
       expect(res.isError).toBeFalsy();
       const parsed = JSON.parse(res.content[0].text);
       expect(parsed.framework).toBe('PocketGull Ambient Clinical Copilot');
-      expect(parsed.version).toBe('1.37.0');
+      expect(parsed.version).toBe('1.42.0');
       expect(parsed.patientState).toBeDefined();
       expect(parsed.security).toBeDefined();
       expect(parsed.security.mode).toBe('AUTONOMOUS_BACKGROUND');
@@ -1801,7 +1831,8 @@ mathematicalModel: Softmax T=0.85`;
 
       const webmcpState = service.getInternalState('webmcp');
       expect(webmcpState.webmcp.pr254OutputSchemaSupported).toBe(true);
-      expect(webmcpState.webmcp.runtime).toBe('native-chrome-159');
+      expect(webmcpState.webmcp.pr348ToolInterfaceSupported).toBe(true);
+      expect(webmcpState.webmcp.runtime).toBe('native-chrome-160');
     });
 
     it('should normalize stringified and object outputSchema in getRegisteredTools()', async () => {
@@ -1819,6 +1850,77 @@ mathematicalModel: Softmax T=0.85`;
       expect(typeof tools[0].outputSchema).toBe('object');
       expect(tools[0].outputSchema.properties.temperature.type).toBe('number');
       expect(normalizeToolOutputSchema(undefined)).toBeUndefined();
+    });
+
+    it('should extract non-enumerable Chrome 160 WebIDL Tool interface getters (PR #348) safely for both serialization and execution handles', async () => {
+      const mockWindow: Record<string, any> = {};
+      mockWindow.self = mockWindow;
+
+      // Simulate Chrome 160.0.8173.0+ WebIDL Tool prototype getters (non-own-enumerable properties + non-cloneable platform object)
+      class MockChrome160WebIdlTool extends WeakMap<object, unknown> {
+        get name() { return 'chrome_160_interface_tool'; }
+        get title() { return 'Chrome 160 Tool'; }
+        get description() { return 'Non-enumerable WebIDL Tool instance'; }
+        get origin() { return 'https://pocketgull.app'; }
+        get inputSchema() { return { type: 'object', properties: { query: { type: 'string' } } }; }
+        get outputSchema() { return null; }
+        get annotations() { return null; }
+        get source() { return mockWindow; }
+      }
+
+      const idlTool = new MockChrome160WebIdlTool();
+      // Confirm standard spread / JSON.stringify / structuredClone fail on WebIDL Tool or circular Window:
+      expect(JSON.stringify(idlTool)).toBe('{}');
+      expect({ ...(idlTool as any) }).toEqual({});
+      expect(() => structuredClone(idlTool)).toThrow();
+      expect(() => JSON.stringify(mockWindow)).toThrow();
+
+      mockModelContext.getTools = vi.fn().mockResolvedValue([idlTool]);
+      const tools = await service.getRegisteredTools();
+
+      expect(tools).toHaveLength(1);
+      expect(tools[0].name).toBe('chrome_160_interface_tool');
+      expect(tools[0].title).toBe('Chrome 160 Tool');
+      expect(tools[0].origin).toBe('https://pocketgull.app');
+      expect(tools[0].inputSchema.properties.query.type).toBe('string');
+      expect(tools[0].outputSchema).toBeNull();
+      expect(tools[0].annotations).toBeNull();
+      expect(tools[0].hasSource).toBe(true);
+      expect(tools[0].rawTool).toBeUndefined();
+      expect(tools[0].source).toBeUndefined();
+      expect(structuredClone(tools)).toEqual(tools);
+      expect(JSON.parse(JSON.stringify(tools))).toEqual(tools);
+
+      const handles = await service.getRegisteredToolHandles();
+      expect(handles).toHaveLength(1);
+      expect(handles[0].rawTool).toBe(idlTool);
+      expect(handles[0].source).toBe(mockWindow);
+      expect(handles[0].hasSource).toBe(true);
+      expect(JSON.parse(JSON.stringify(handles))).toEqual(tools);
+
+      const directHandle = inspectWebMcpToolHandle(idlTool);
+      expect(directHandle.rawTool).toBe(idlTool);
+      expect(directHandle.source).toBe(mockWindow);
+      expect(JSON.parse(JSON.stringify(directHandle))).toEqual(tools[0]);
+
+      // Also verify legacy tool.window fallback (< Chrome 160 Stable)
+      const legacyExtracted = extractSerializableWebMcpTool({
+        name: 'legacy_registered_tool',
+        description: 'Legacy dict',
+        window: mockWindow,
+      });
+      expect(legacyExtracted.hasSource).toBe(true);
+      expect(legacyExtracted.source).toBeUndefined();
+      expect(structuredClone(legacyExtracted)).toEqual(legacyExtracted);
+
+      const legacyHandle = inspectWebMcpToolHandle({
+        name: 'legacy_registered_tool',
+        description: 'Legacy dict',
+        window: mockWindow,
+      });
+      expect(legacyHandle.source).toBe(mockWindow);
+      expect(legacyHandle.hasSource).toBe(true);
+      expect(JSON.parse(JSON.stringify(legacyHandle))).toEqual(legacyExtracted);
     });
 
     it('should validate tool execution outputs against outputSchema and flag malformed payloads', async () => {

@@ -134,5 +134,26 @@ describe('ClinicalAssessmentsService', () => {
     service.resetAssessment('moca');
     expect(service.mocaScore()).toBe(0);
   });
+
+  it('should ALWAYS trigger STAT suicide-safety / C-SSRS / 988 escalation when PHQ-9 Item 9 >= 1 regardless of total score', () => {
+    // Only Item 9 (id 9) = 1 -> total PHQ-9 score is 1 (normally Minimal / None)
+    service.setAnswer('phq9', 9, 1);
+
+    expect(service.phq9Score()).toBe(1);
+    expect(service.phq9Item9Score()).toBe(1);
+    expect(service.phq9SuicidalIdeationTriggered()).toBe(true);
+
+    const escalation = service.statSuicideEscalation();
+    expect(escalation.isActive).toBe(true);
+    expect(escalation.acuity).toBe('STAT_EMERGENCY');
+    expect(escalation.triggerSource).toBe('PHQ9_ITEM_9');
+    expect(escalation.crisisNumber).toBe('988');
+    expect(escalation.protocolMarkdown).toContain('C-SSRS');
+    expect(escalation.protocolMarkdown).toContain('988');
+
+    expect(service.phq9Tier().label).toContain('STAT');
+    expect(service.phq9Tier().recommendation).toContain('C-SSRS');
+    expect(service.phq9Tier().recommendation).toContain('988');
+  });
 });
 

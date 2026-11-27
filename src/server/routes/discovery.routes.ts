@@ -312,17 +312,55 @@ function buildToolRegistry(): Record<string, unknown>[] {
     {
       name: 'evaluate_medicare_billing_and_gfe_eligibility',
       category: 'financial_health',
-      description: 'Evaluates IRA $2,000 Part D cap, MPPP smoothing, RPM/CCM CPT compliance, No Surprises Act GFE, and 501(r) Charity Care.',
+      description: 'Evaluates CMS-indexed IRA Part D cap ($2,100 in 2026 / $2,400 in 2027), M3P smoothing, 2026 Part D Extra Help (LIS) & MSP (QMB/SLMB/QI), APCM (G0556-G0558), G2211, Section 1115 Z-codes, RPM/CCM CPT compliance, No Surprises Act GFE, and 501(r) Charity Care.',
       inputSchema: {
         type: 'object',
         properties: {
           annualRxCost: { type: 'number', description: 'Annual out-of-pocket Rx cost.' },
+          planYear: { type: 'number', enum: [2025, 2026, 2027], description: 'Medicare plan year (default 2026).' },
+          remainingMonths: { type: 'number', description: 'Remaining months in plan year for M3P smoothing (1-12).' },
           daysDeviceTransmitted: { type: 'number', description: 'RPM physiological readings days in 30-day period.' },
           clinicalMinutesLogged: { type: 'number', description: 'Clinical staff management minutes.' },
           annualIncome: { type: 'number', description: 'Patient household annual income USD.' },
-          householdSize: { type: 'number', description: 'Household size (default 1).' }
+          householdSize: { type: 'number', description: 'Household size (default 1).' },
+          countableResourcesUsd: { type: 'number', description: 'Optional countable resources USD for Extra Help / MSP screening.' },
+          chronicConditionCount: { type: 'number', description: 'Number of qualifying chronic conditions for APCM tiering.' },
+          isQmbEnrolled: { type: 'boolean', description: 'Whether beneficiary is QMB dual-eligible.' }
         },
         required: ['annualRxCost', 'annualIncome']
+      },
+      executionTimeout: 2000
+    },
+    {
+      name: 'evaluate_medicaid_continuity_and_qmb_shield',
+      category: 'financial_health',
+      description: 'Evaluates Medicaid redetermination churn risk, Aid Paid Pending (42 C.F.R. § 431.230), 90-day procedural reinstatement (42 C.F.R. § 435.916), Federal QMB Illegal Balance-Billing Shield (42 U.S.C. § 1396a(n)(3)(B)), and 6th-grade Teaspoon checklists across all 57 US jurisdictions.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          stateCode: { type: 'string', description: '2-letter US state or territory code (e.g. WA, CA, TX).' },
+          renewalDueDateIso: { type: 'string', description: 'Medicaid renewal due date (YYYY-MM-DD).' },
+          effectiveTerminationDateIso: { type: 'string', description: 'Termination effective date if adverse notice received (YYYY-MM-DD).' },
+          isDualEligibleQmb: { type: 'boolean', description: 'Whether beneficiary holds Qualified Medicare Beneficiary (QMB) status.' },
+          providerBilledAmountUsd: { type: 'number', description: 'Improperly billed Medicare copay/deductible amount in USD.' },
+          providerBillingEntity: { type: 'string', description: 'Billing clinic or hospital name.' }
+        },
+        required: ['stateCode']
+      },
+      executionTimeout: 2000
+    },
+    {
+      name: 'import_cms_blue_button_medicare_eob',
+      category: 'interoperability',
+      description: 'Generates RFC 7636 PKCE OAuth2 launch URLs for CMS Blue Button 2.0 (Medicare FHIR R4) or parses ExplanationOfBenefit/Coverage bundles to reconcile Part D prescriptions, track 2026/2027 Part D cap spend, and detect QMB dual-eligible crossover.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          mode: { type: 'string', enum: ['authorize_url', 'sandbox_import', 'parse_bundle'], description: 'Operation mode.' },
+          environment: { type: 'string', enum: ['production', 'sandbox'], description: 'CMS Blue Button 2.0 environment.' },
+          planYear: { type: 'number', enum: [2025, 2026, 2027], description: 'Medicare plan year (default 2026).' },
+          fhirBundle: { type: 'object', description: 'Optional FHIR R4 Bundle JSON when mode is parse_bundle.' }
+        }
       },
       executionTimeout: 2000
     },
@@ -1113,7 +1151,9 @@ function buildArtifactSchemas(): Record<string, unknown>[] {
 export function createDiscoveryRouter(): Router {
   const router = Router();
 
-  router.use(expressJson({ limit: '100kb' }));
+  // Scope the 100kb JSON parser strictly to discovery POST endpoints so mounting
+  // this router at '/' never intercepts /api/patients or other larger API payloads.
+  const discoveryJsonParser = expressJson({ limit: '100kb' });
 
   // ── GET /v1/discovery/tools ───────────────────────────────────────────
   router.get('/v1/discovery/tools', (_req: Request, res: Response) => {
@@ -1190,7 +1230,7 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── POST /v1/discovery/resolve (metered: explorer+ with quota) ────────
-  router.post('/v1/discovery/resolve', requireTier('explorer', 'discovery_resolve', true), (req: Request, res: Response) => {
+  router.post('/v1/discovery/resolve', discoveryJsonParser, requireTier('explorer', 'discovery_resolve', true), (req: Request, res: Response) => {
     const body = req.body as IResolveRequest | undefined;
     if (!body?.query || typeof body.query !== 'string') {
       return res.status(400).json({ error: 'Missing required field: query (string).' });
@@ -1221,7 +1261,7 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── POST /v1/discovery/capabilities/probe (metered: explorer+ with quota) ──
-  router.post('/v1/discovery/capabilities/probe', requireTier('explorer', 'discovery_probe', true), (req: Request, res: Response) => {
+  router.post('/v1/discovery/capabilities/probe', discoveryJsonParser, requireTier('explorer', 'discovery_probe', true), (req: Request, res: Response) => {
     const body = req.body as ICapabilitiesProbeRequest | undefined;
     if (!body?.required_actions || !Array.isArray(body.required_actions)) {
       return res.status(400).json({ error: 'Missing required field: required_actions (string[]).' });
@@ -1288,11 +1328,12 @@ export function createDiscoveryRouter(): Router {
     });
   });
 
+  // Pinned canonical public base URL — never reflect untrusted req.get('host') into cached discovery metadata
+  const pinnedPublicBaseUrl = (process.env['PUBLIC_BASE_URL'] || 'https://pocketgull.app').replace(/\/+$/, '');
+
   // ── GET /.well-known/smart-configuration (SMART on FHIR v2 Discovery) ─────
-  router.get('/.well-known/smart-configuration', (req: Request, res: Response) => {
-    const host = req.get('host') || 'pocketgull.app';
-    const protocol = req.protocol || 'https';
-    const baseUrl = `${protocol}://${host}`;
+  router.get('/.well-known/smart-configuration', (_req: Request, res: Response) => {
+    const baseUrl = pinnedPublicBaseUrl;
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'public, max-age=3600');
@@ -1335,10 +1376,8 @@ export function createDiscoveryRouter(): Router {
   });
 
   // ── GET /api/fhir/metadata (HL7 FHIR R4 CapabilityStatement) ─────────────
-  router.get('/api/fhir/metadata', (req: Request, res: Response) => {
-    const host = req.get('host') || 'pocketgull.app';
-    const protocol = req.protocol || 'https';
-    const baseUrl = `${protocol}://${host}`;
+  router.get('/api/fhir/metadata', (_req: Request, res: Response) => {
+    const baseUrl = pinnedPublicBaseUrl;
 
     res.setHeader('Content-Type', 'application/fhir+json; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');

@@ -2,8 +2,10 @@
 **Document ID**: PG-SOP-IR-01 | **Version**: 2.4.0  
 **Governing Standard**: NIST SP 800-61 Rev. 2, HIPAA Breach Notification Rule (45 CFR §§ 164.400–414), CISA CIRCIA, FDA 21 CFR Part 11  
 **Incident Commander & Lead DPO**: `dpo@pocketgull.app`  
-**Security Notification Channel**: `projects/gen-lang-client-0540208645/notificationChannels/14170492235561525169`  
+**Security Notification Channel**: `projects/gen-lang-client-0540208645/notificationChannels/<REDACTED_CHANNEL_ID>`  
+**Automated SOAR Engine**: [`SoarOrchestratorService`](../../src/server/services/soar-orchestrator.service.ts) & `/api/soar/pubsub/webhook` (`npm run soar:audit`)  
 **Target Cloud Platform**: Google Cloud Platform (`gen-lang-client-0540208645`)  
+**Companion Continuity & DR SOP**: [BUSINESS_CONTINUITY_RECOVERY_PLAN.md](BUSINESS_CONTINUITY_RECOVERY_PLAN.md) (`PG-SOP-BCP-01`)
 
 ---
 
@@ -81,7 +83,7 @@ ORDER BY
 
 ### Phase 1: Immediate Clinical Safety Triage (< 5 Minutes)
 1. **Engage Application Containment Mode**:
-   - In [`ClinicalDefenseGuardService`](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/clinical-defense-guard.service.ts):
+   - In [`ClinicalDefenseGuardService`](../../src/services/clinical-defense-guard.service.ts):
      ```typescript
      clinicalDefenseGuardService.isContainmentModeActive.set(true);
      ```
@@ -122,7 +124,7 @@ ORDER BY
 
 1. **Factor 1: Nature and Extent of the PHI Involved**:
    - Were direct identifiers (names, SSNs, MRNs) exposed, or only clinical observations (heart rate, blood pressure)?
-   - *PocketGull Invariant*: If [`deIdentifyClinicalPayload`](file:///c:/Users/philg/Pocketgull/pocketgull/scripts/simulate_clinical_cyber_tabletop.mjs#L144) stripped all 18 identifiers, data is legally de-identified under Safe Harbor §164.514, and **no breach has occurred**.
+   - *PocketGull Invariant*: If [`deIdentifyClinicalPayload`](../../scripts/simulate_clinical_cyber_tabletop.mjs#L144) stripped all 18 identifiers, data is legally de-identified under Safe Harbor §164.514, and **no breach has occurred**.
 2. **Factor 2: Unauthorized Person Who Used or Received the PHI**:
    - Was data sent to an internal HIPAA BAA-covered service (Google Vertex AI) or an un-contracted third party?
 3. **Factor 3: Whether PHI Was Actually Acquired or Viewed**:

@@ -362,10 +362,13 @@ export class NanoProvider implements IIntelligenceProvider {
     throw new Error("On-device multimodal image analysis requires Chrome Canary 153+ with chrome://flags/#prompt-api-multimodal-input enabled. Please switch to Gemini Cloud provider for server-side visual analysis.");
   }
 
+  private pendingPatientContext: string | null = null;
+
   async startChat(patientData: string, context: string): Promise<void> {
     await this.ensureAiAvailable();
+    this.pendingPatientContext = (patientData || '').trim() || null;
     this.chatSession = await ai!.languageModel!.create({
-      systemPrompt: `Patient Context:\n${patientData}\n\nClinical Role:\n${context}`,
+      systemPrompt: `Clinical Role:\n${context}`,
       samplingMode: 'most-predictable'
     });
   }
@@ -377,9 +380,14 @@ export class NanoProvider implements IIntelligenceProvider {
         samplingMode: 'most-predictable'
       });
     }
-    
+
+    const contextPrefix = this.pendingPatientContext
+      ? `[CLINICAL DIRECTIVE CONTEXT — PATIENT DATA]\n${this.pendingPatientContext}\n\n`
+      : '';
+    this.pendingPatientContext = null;
+
     try {
-      const response = await this.chatSession.prompt(`User: ${message}\n\nPlease strictly fulfill this request. If asked to make a list or action items based on clinical data, provide it directly without disclaimers.`);
+      const response = await this.chatSession.prompt(`${contextPrefix}User: ${message}\n\nProvide clear, evidence-grounded clinical decision support with appropriate safety caveats and clinician-review reminders.`);
       return response;
     } catch (error) {
       console.error("On-Device Built-in AI Error:", error);

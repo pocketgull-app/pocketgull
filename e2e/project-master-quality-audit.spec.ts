@@ -52,7 +52,11 @@ test.describe('Comprehensive Project Quality & Agentic Readiness Audit', () => {
     // 3. Check client-side WebMCP registration after page load
     await page.goto('/');
     const hasWebMCP = await page.evaluate(() => {
-      return typeof (window as any).webmcp !== 'undefined' || typeof (navigator as any).modelContext !== 'undefined';
+      return (
+        typeof (document as any).modelContext !== 'undefined' ||
+        typeof (navigator as any).modelContext !== 'undefined' ||
+        typeof (window as any).webmcp !== 'undefined'
+      );
     });
     console.log('Client WebMCP Polyfill status:', hasWebMCP);
   });

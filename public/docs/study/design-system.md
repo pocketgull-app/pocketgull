@@ -125,8 +125,8 @@ Add this circadian loader to your `$PROFILE`:
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
     $shellType = if ($PSVersionTable.PSVersion.Major -ge 6) { 'pwsh' } else { 'powershell' }
     $h = (Get-Date).Hour
-    $washiTheme = "C:\Users\philg\Pocketgull\pocketgull\public\brand\terminal\pocketgull-washi.omp.json"
-    $ophthalmicTheme = "C:\Users\philg\Pocketgull\pocketgull\public\brand\terminal\pocketgull-ophthalmic.omp.json"
+    $washiTheme = "public\brand\terminal\pocketgull-washi.omp.json"
+    $ophthalmicTheme = "public\brand\terminal\pocketgull-ophthalmic.omp.json"
     
     $cfg = if ($h -ge 7 -and $h -lt 18 -and (Test-Path $washiTheme)) { $washiTheme } 
            elseif (Test-Path $ophthalmicTheme) { $ophthalmicTheme } 

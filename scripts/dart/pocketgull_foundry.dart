@@ -202,7 +202,7 @@ void runEmbed() {
 
   SpecimenEmbedder.embedFonts(typefaceDir: typefaceRoot, htmlFile: htmlFile);
 
-  final dlFile = File(r'C:\Users\philg\Downloads\PocketGull — The Clinical Typeface Superfamily & Interactive Specimen.html1.html');
+  final dlFile = File(r'~/Downloads\PocketGull — The Clinical Typeface Superfamily & Interactive Specimen.html1.html');
   if (dlFile.existsSync()) {
     SpecimenEmbedder.embedFonts(typefaceDir: typefaceRoot, htmlFile: dlFile);
     print('  [SUCCESS] Also embedded fonts into ${dlFile.path}');
@@ -350,7 +350,7 @@ void runInspect(String? fontPath, String? chars) {
 
   // Export visual proof SVG
   final svg = GlyphInspector.generateSvgSheet(fontFile, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789');
-  final outSvg = File(r'C:\Users\philg\.gemini\antigravity-ide\brain\555824f7-b8ba-4d8f-81d9-71abc72967cc\scratch\dart_full_alphabet_proof.svg');
+  final outSvg = File(r'~/.gemini\antigravity-ide\brain\555824f7-b8ba-4d8f-81d9-71abc72967cc\scratch\dart_full_alphabet_proof.svg');
   outSvg.writeAsStringSync(svg);
   print('\n[PROOF] Exported pure Dart alphabet proof to: ${outSvg.path}\n');
 }

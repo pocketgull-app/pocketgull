@@ -20,7 +20,7 @@ export class DefensiveGuardrailsService {
     /system\s+prompt\s+(override|reset)/i,
     /you\s+are\s+now\s+a/i,
     /disregard\s+all\s+rules/i,
-    /<script\b[^>]*>([\s\S]*?)<\/script[^>]*>/gi,
+    /<script\b[^>]*>([\s\S]*?)<\/script[^>]*>/i,
     /javascript:/i,
     /onload\s*=/i,
     /onerror\s*=/i
@@ -53,7 +53,11 @@ export class DefensiveGuardrailsService {
     for (const pattern of this.PROMPT_INJECTION_PATTERNS) {
       if (pattern.test(safeInput)) {
         isInjected = true;
-        safeInput = safeInput.replace(pattern, '[DEFENSIVE_GUARDRAIL_BLOCKED]');
+        const globalReplacer = new RegExp(
+          pattern.source,
+          pattern.flags.includes('g') ? pattern.flags : `${pattern.flags}g`
+        );
+        safeInput = safeInput.replace(globalReplacer, '[DEFENSIVE_GUARDRAIL_BLOCKED]');
       }
     }
 

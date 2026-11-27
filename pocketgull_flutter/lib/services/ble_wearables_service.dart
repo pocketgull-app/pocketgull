@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 enum BleConnectionState {
   disconnected,
@@ -73,6 +74,12 @@ class BleWearablesService {
   final _stateController = StreamController<BleConnectionState>.broadcast();
   final _ppgController = StreamController<List<double>>.broadcast();
   final _ecgController = StreamController<List<double>>.broadcast();
+  final _devicesController = StreamController<List<BleDiscoveredDevice>>.broadcast();
+
+  static const MethodChannel _methodChannel = MethodChannel('com.pocketgull.flutter/ble_wearables');
+  static const EventChannel _eventChannel = EventChannel('com.pocketgull.flutter/ble_wearables_events');
+  StreamSubscription<dynamic>? _nativeEventSub;
+  final Map<String, BleDiscoveredDevice> _discoveredDevices = {};
 
   bool _isSimulationActive = false;
   Timer? _simTimer;
@@ -133,29 +140,124 @@ class BleWearablesService {
   Stream<BleConnectionState> get stateStream => _stateController.stream;
   Stream<List<double>> get ppgStream => _ppgController.stream;
   Stream<List<double>> get ecgStream => _ecgController.stream;
+  Stream<List<BleDiscoveredDevice>> get discoveredDevicesStream => _devicesController.stream;
+  List<BleDiscoveredDevice> get discoveredDevices => List.unmodifiable(_discoveredDevices.values);
 
-  // Standard GATT UUIDs
+  // Standard GATT UUIDs + PocketGull Wear OS Companion
   static const String hrServiceUuid = '0000180d-0000-1000-8000-00805f9b34fb';
   static const String spo2ServiceUuid = '00001822-0000-1000-8000-00805f9b34fb';
   static const String tempServiceUuid = '00001809-0000-1000-8000-00805f9b34fb';
   static const String bpServiceUuid = '00001810-0000-1000-8000-00805f9b34fb';
   static const String cgmServiceUuid = '00001808-0000-1000-8000-00805f9b34fb';
+  static const String avsWearServiceUuid = '0000a750-0000-1000-8000-00805f9b34fb';
+
+  bool get _hasNativeBinding {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return false;
+    try {
+      ServicesBinding.instance;
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void _ensureNativeEventsSubscribed() {
+    if (_nativeEventSub != null || !_hasNativeBinding) return;
+    try {
+      _nativeEventSub = _eventChannel.receiveBroadcastStream().listen(
+        (dynamic raw) {
+          if (raw is! Map) return;
+          final event = Map<String, dynamic>.from(raw);
+          switch (event['type']) {
+            case 'deviceDiscovered':
+              final id = event['id']?.toString() ?? '';
+              if (id.isEmpty) return;
+              final device = BleDiscoveredDevice(
+                id: id,
+                name: event['name']?.toString() ?? 'Clinical BLE',
+                rssi: (event['rssi'] as num?)?.toInt() ?? -70,
+                serviceUuids: (event['serviceUuids'] as List<dynamic>?)
+                        ?.map((e) => e.toString())
+                        .toList() ??
+                    const [],
+              );
+              _discoveredDevices[id] = device;
+              _devicesController.add(discoveredDevices);
+              break;
+            case 'connectionState':
+              final stateName = event['state']?.toString();
+              final next = BleConnectionState.values.firstWhere(
+                (s) => s.name == stateName,
+                orElse: () => _state,
+              );
+              _state = next;
+              _stateController.add(_state);
+              break;
+            case 'vitals':
+              updateTelemetry(
+                hr: (event['hr'] as num?)?.toInt(),
+                spO2: (event['spO2'] as num?)?.toDouble(),
+                temp: (event['temp'] as num?)?.toDouble(),
+                sysBp: (event['sysBp'] as num?)?.toInt(),
+                diaBp: (event['diaBp'] as num?)?.toInt(),
+                cgm: (event['cgm'] as num?)?.toDouble(),
+              );
+              break;
+          }
+        },
+        onError: (_) {},
+      );
+    } catch (_) {
+      // Non-native platforms / unit tests ignore EventChannel binding
+    }
+  }
 
   void startScan() {
+    _discoveredDevices.clear();
+    _devicesController.add(const []);
     _state = BleConnectionState.scanning;
     _stateController.add(_state);
+    _ensureNativeEventsSubscribed();
+    _invokeNative('startScan');
     if (kDebugMode) {
       print('[BleWearablesService] Scanning for Bluetooth LE clinical GATT monitors...');
     }
   }
 
+  void stopScan() {
+    _invokeNative('stopScan');
+    if (_state == BleConnectionState.scanning) {
+      _state = BleConnectionState.disconnected;
+      _stateController.add(_state);
+    }
+  }
+
   void connectDevice(BleDiscoveredDevice device) {
+    stopSyntheticStream();
     _state = BleConnectionState.connecting;
     _stateController.add(_state);
     _activeDevice = device;
 
-    // Simulate connection establishment
+    if (!_hasNativeBinding) {
+      _simulateConnectFallback(device);
+      return;
+    }
+
+    _ensureNativeEventsSubscribed();
+    _methodChannel
+        .invokeMethod<bool>('connect', {'deviceId': device.id})
+        .then((started) {
+      if (started != true) {
+        _simulateConnectFallback(device);
+      }
+    }).catchError((_) {
+      _simulateConnectFallback(device);
+    });
+  }
+
+  void _simulateConnectFallback(BleDiscoveredDevice device) {
     Future.delayed(const Duration(milliseconds: 600), () {
+      if (_activeDevice?.id != device.id) return;
       _state = BleConnectionState.connected;
       _stateController.add(_state);
       if (kDebugMode) {
@@ -166,9 +268,19 @@ class BleWearablesService {
 
   void disconnect() {
     stopSyntheticStream();
+    _invokeNative('disconnect');
     _state = BleConnectionState.disconnected;
     _activeDevice = null;
     _stateController.add(_state);
+  }
+
+  void _invokeNative(String method, [Map<String, dynamic>? args]) {
+    if (!_hasNativeBinding) return;
+    try {
+      _methodChannel.invokeMethod<dynamic>(method, args).catchError((_) => null);
+    } catch (_) {
+      // Ignore in unit tests / non-Android runtimes
+    }
   }
 
   void startSyntheticStream() {
@@ -258,9 +370,11 @@ class BleWearablesService {
 
   void dispose() {
     stopSyntheticStream();
+    _nativeEventSub?.cancel();
     _vitalsController.close();
     _stateController.close();
     _ppgController.close();
     _ecgController.close();
+    _devicesController.close();
   }
 }

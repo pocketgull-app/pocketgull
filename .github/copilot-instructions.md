@@ -76,5 +76,5 @@ Every pull request, commit, and deployment must verify all 4 required status che
 - **Enterprise Fallback Guarantee**: Any feature utilizing `window.ai.*` (`ai.languageModel`, `ai.proofreader`, `ai.classifier`, `ai.semanticEmbedder`) MUST verify `typeof window !== 'undefined'` and implement deterministic TypeScript local fallbacks (regex ISMP proofreader, n-gram hash projection for 256-dim embeddings, rule-based triage classifier).
 - **Prohibition of Direct Un-Guarded Flags**: Never assume experimental Chrome flags are present in production or enterprise environments. Zero runtime crashes on standard browsers.
 - **ISMP Medication Safety Rules**: Strictly enforce trailing zero (`5.0 mg` -> `5 mg`) and naked decimal (`.5 mg` -> `0.5 mg`) linters on all prescription and dosage generation logic.
-- **Cross-Disciplinary Reference**: Adhere strictly to the architectural framework in [`docs/GEMMA4_EDGE_ARCHITECTURE.md`](file:///c:/Users/philg/Pocketgull/pocketgull/docs/GEMMA4_EDGE_ARCHITECTURE.md).
+- **Cross-Disciplinary Reference**: Adhere strictly to the architectural framework in [`docs/GEMMA4_EDGE_ARCHITECTURE.md`](docs/GEMMA4_EDGE_ARCHITECTURE.md).
 

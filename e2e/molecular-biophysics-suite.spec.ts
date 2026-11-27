@@ -1,14 +1,16 @@
 import { test, expect } from '@playwright/test';
-import { setupE2ePage, enterDemoMode } from './utils/setup';
+import { setupE2ePage, enterDemoMode, ensureAnalysisViewVisible } from './utils/setup';
 
 test.describe('Frontier Molecular Biophysics & Chemical Systems Suite E2E', () => {
   test.beforeEach(async ({ page }) => {
     test.setTimeout(90000);
     await page.addInitScript(() => {
-      window.localStorage.setItem('pg_tour_seen', '1');
-      window.localStorage.setItem('pg_data_consent_v1', 'true');
-      window.localStorage.setItem('pocketgull_pin_unlocked', 'true');
-      window.localStorage.setItem('pg_splash_dismissed', 'true');
+      try {
+        window.localStorage.setItem('pg_tour_seen', '1');
+        window.localStorage.setItem('pg_data_consent_v1', 'true');
+        window.localStorage.setItem('pocketgull_pin_unlocked', 'true');
+        window.localStorage.setItem('pg_splash_dismissed', 'true');
+      } catch {}
     });
     await setupE2ePage(page);
   });
@@ -16,6 +18,7 @@ test.describe('Frontier Molecular Biophysics & Chemical Systems Suite E2E', () =
   test('should open Molecular Biophysics suite via [⚛️ BIOPHYSICS] toolbar button and exercise all 4 solvers', async ({ page }) => {
     // 1. Enter demo mode
     await enterDemoMode(page);
+    await ensureAnalysisViewVisible(page);
 
     // 2. Locate and click the [⚛️ BIOPHYSICS] button in AnalysisContainerComponent
     const biophysicsBtn = page.locator('button', { hasText: /\[⚛️ BIOPHYSICS\]/i }).first();

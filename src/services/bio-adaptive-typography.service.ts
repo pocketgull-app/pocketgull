@@ -132,20 +132,51 @@ export class BioAdaptiveTypographyService {
   });
 
   /**
-   * Real-time compiled Bedside 203 DPI Thermal Label Data generated directly
-   * from active patient chart medications, allergies, and vitals.
+   * Real-time compiled Bedside 203 DPI Thermal Label Data generated reactively
+   * from active PatientStateService chart medications, allergies, and vitals.
+   * Explicitly emits a [SAMPLE / NON-CLINICAL] badge when no live patient chart is loaded.
    */
   readonly thermalLabelPayload = computed<IThermalLabelData>(() => {
-    const patientName = 'SAPIENS, H. (34y F)';
-    const mrn = '#9842-01';
-    const bed = 'BED 04 (NEURO-ICU)';
-    const primaryRx = 'STAT RX: CEFAZOLIN 2 g IV';
-    const dosageSchedule = 'DOSE: 2000 mg Q8H • ⌀18G IV';
-    const ivCannula = '⌀18G IV CANNULA';
-    const allergyAlert = 'ALLERGY ALERT: PENICILLIN (ANAPHYLAXIS)';
-    const brailleMrn = '⠠⠓⠠⠎ ⠼⠉⠙';
+    const rawName = (this.patientState.patientName?.() || '').trim();
+    const rawId = (this.patientState.patientId?.() || '').trim();
+    const rawAge = this.patientState.patientAge?.();
+    const rawGender = (this.patientState.patientGender?.() || '').trim();
+    const meds = this.patientState.medications?.() || [];
+    const vitals = this.patientState.vitals?.();
+    const isDemo = Boolean(this.patientState.isDemoMode?.());
+    const hasLivePatient = rawName.length > 0 && rawId.length > 0 && !isDemo;
+
+    const genderAbbr = rawGender ? rawGender.charAt(0).toUpperCase() : 'U';
+    const safeAgeDisplay = typeof rawAge === 'number' && rawAge > 89 ? '90+' : (rawAge ? `${rawAge}y` : 'Age N/A');
+
+    const patientName = hasLivePatient
+      ? `${rawName.toUpperCase()} (${safeAgeDisplay} ${genderAbbr})`
+      : `[SAMPLE / NON-CLINICAL] ${rawName ? `${rawName.toUpperCase()} (${safeAgeDisplay} ${genderAbbr})` : 'NO LIVE PATIENT LOADED'}`;
+
+    const mrn = hasLivePatient ? `#${rawId}` : `#SAMPLE-${rawId || 'UNASSIGNED'}`;
+    const bed = hasLivePatient
+      ? `HR ${vitals?.hr || '--'} • SpO2 ${vitals?.spO2 || '--'} • BP ${vitals?.bp || '--'}`
+      : '[SAMPLE / NON-CLINICAL] PREVIEW ONLY';
+
+    const firstMed = meds[0];
+    const primaryRx = hasLivePatient
+      ? (firstMed ? `ACTIVE RX: ${firstMed.name.toUpperCase()} ${firstMed.value || ''}`.trim() : 'ACTIVE RX: VERIFY ORDER IN eMAR')
+      : '[SAMPLE / NON-CLINICAL] NO ACTIVE CLINICAL ORDER';
+
+    const dosageSchedule = hasLivePatient
+      ? (firstMed ? `SCHEDULE: ${firstMed.value || 'PER CHART'} • VERIFY 5 RIGHTS` : 'DOSE: CONSULT ACTIVE MEDICATION RECORD')
+      : '[SAMPLE / NON-CLINICAL] DO NOT USE FOR ADMINISTRATION';
+
+    const ivCannula = hasLivePatient ? 'ACCESS: VERIFY SITE & GAUGE' : '[SAMPLE / NON-CLINICAL]';
+
+    const allergyAlert = hasLivePatient
+      ? 'ALLERGY STATUS: VERIFY ACTIVE ALLERGY LIST IN EHR'
+      : '[SAMPLE / NON-CLINICAL] VERIFY ALLERGIES BEFORE ADMINISTRATION';
+
+    const brailleMrn = '⠠⠏⠠⠛ ⠼⠚⠁';
     const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
     const sloanApertureStatus = `SLOAN 5:1 APERTURE DILATION: ${this.sloanDilationFactor().toFixed(2)}x`;
+    const barcodeValue = mrn.replace(/[^A-Za-z0-9-]/g, '');
 
     // Authentic Zebra ZPL II Code Calibrated for 203 DPI thermal heads (3.5" x 2" label)
     const zplCode = `^XA
@@ -154,9 +185,9 @@ export class BioAdaptiveTypographyService {
 ^LL406
 ^LH0,0
 ^FO30,25^GB651,0,3^FS
-^FO30,35^A0N,22,22^FDPOCKETGULL HEALTH SYSTEM - 203 DPI BEDSIDE eMAR^FS
+^FO30,35^A0N,22,22^FDPOCKETGULL HEALTH SYSTEM - 203 DPI BEDSIDE eMAR${hasLivePatient ? '' : ' [SAMPLE / NON-CLINICAL]'}^FS
 ^FO30,62^A0N,20,20^FDPATIENT: ${patientName}  ${bed}^FS
-^FO30,90^BY2,3,40^BCN,40,Y,N,N^FD9842-01-STAT^FS
+^FO30,90^BY2,3,40^BCN,40,Y,N,N^FD${barcodeValue}^FS
 ^FO30,158^GB651,44,44^FS
 ^FO40,168^FR^A0N,24,24^FD${primaryRx}^FS
 ^FO30,220^A0N,22,22^FD${dosageSchedule}^FS

@@ -7,7 +7,7 @@ api = KaggleApi()
 api.authenticate()
 
 kernel_slug = 'philgear/rsna-knee-2026-pytorch-inference'
-output_dir = os.path.abspath('c:/Users/philg/Pocketgull/pocketgull/contests/rsna_knee_2026/inference_output_v4')
+output_dir = os.path.abspath('contests/rsna_knee_2026/inference_output_v4')
 os.makedirs(output_dir, exist_ok=True)
 
 # Monkeypatch builtins.open to force utf-8 encoding when writing .log files

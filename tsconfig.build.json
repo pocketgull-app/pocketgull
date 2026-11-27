@@ -7,6 +7,7 @@
     { "path": "./packages/clinical-parquet-duckdb" },
     { "path": "./packages/open-sanctuary" },
     { "path": "./packages/open-scribe" },
+    { "path": "./packages/sidecar-proxy" },
     { "path": "./pocketgull_api" }
   ]
 }

@@ -1,4 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
 import { Injectable } from '@angular/core';
+import { computeFipsSha256Bytes } from './clinical-defense-guard.service';
 
 export type EhrVendor = 'EPIC' | 'CERNER' | 'ATHENAHEALTH' | 'GENERIC_FHIR';
 
@@ -45,18 +47,31 @@ export class SmartOnFhirLaunchService {
   };
 
   /**
-   * Generates PKCE code verifier string using cryptographic entropy.
+   * Generates PKCE code verifier string using OS CSPRNG cryptographic entropy.
+   * Fails closed if Web/Node Crypto CSPRNG is unavailable.
    */
   public generateCodeVerifier(): string {
-    const array = new Uint8Array(32);
-    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
-      globalThis.crypto.getRandomValues(array);
-    } else {
-      for (let i = 0; i < 32; i++) {
-        array[i] = (Date.now() + i * 17) & 0xff;
-      }
+    if (typeof globalThis === 'undefined' || typeof globalThis.crypto?.getRandomValues !== 'function') {
+      throw new Error('NIST SP 800-90A CSPRNG unavailable: cannot generate PKCE code_verifier.');
     }
+    const array = new Uint8Array(32);
+    globalThis.crypto.getRandomValues(array);
     return 'pg_pkce_' + Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  /**
+   * Computes genuine RFC 7636 S256 PKCE code_challenge: BASE64URL(SHA256(ASCII(code_verifier))).
+   */
+  public computePkceCodeChallengeS256(codeVerifier: string): string {
+    const digest = computeFipsSha256Bytes(codeVerifier);
+    let binary = '';
+    for (let i = 0; i < digest.byteLength; i++) {
+      binary += String.fromCharCode(digest[i]);
+    }
+    const base64 = typeof btoa === 'function'
+      ? btoa(binary)
+      : Buffer.from(digest).toString('base64');
+    return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
 
   /**
@@ -66,17 +81,14 @@ export class SmartOnFhirLaunchService {
     const vendorEndpoints = this.defaultVendorEndpoints[config.vendor] || this.defaultVendorEndpoints.GENERIC_FHIR;
     const fhirBaseUrl = config.fhirBaseUrl || vendorEndpoints.defaultBaseUrl;
     const scopes = config.scope || 'patient/*.read launch/patient openid fhirUser';
-    const stateArray = new Uint8Array(8);
-    if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
-      globalThis.crypto.getRandomValues(stateArray);
-    } else {
-      for (let i = 0; i < 8; i++) {
-        stateArray[i] = (Date.now() + i * 13) & 0xff;
-      }
+    if (typeof globalThis === 'undefined' || typeof globalThis.crypto?.getRandomValues !== 'function') {
+      throw new Error('NIST SP 800-90A CSPRNG unavailable: cannot generate OAuth2 anti-CSRF state nonce.');
     }
+    const stateArray = new Uint8Array(16);
+    globalThis.crypto.getRandomValues(stateArray);
     const state = 'state_' + Array.from(stateArray, b => b.toString(16).padStart(2, '0')).join('');
     const codeVerifier = this.generateCodeVerifier();
-    const codeChallenge = 'S256_' + codeVerifier; // Simplified PKCE S256 challenge string
+    const codeChallenge = this.computePkceCodeChallengeS256(codeVerifier);
 
     const params = new URLSearchParams({
       response_type: 'code',

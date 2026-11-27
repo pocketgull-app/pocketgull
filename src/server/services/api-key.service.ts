@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import { Firestore, Timestamp } from '@google-cloud/firestore';
 import * as crypto from 'node:crypto';
 
@@ -21,11 +22,33 @@ export interface ApiKeyDocument {
   status: 'active' | 'revoked';
 }
 
-const KEY_SALT = process.env['API_KEY_SALT'] || 'pocketgull_clinical_api_key_salt_2026';
+export type SafeApiKeySummary = Omit<ApiKeyDocument, 'keyHash'> & { id: string };
+
+let _ephemeralKeySalt: string | null = null;
+let _warnedMissingApiKeySalt = false;
+
+/**
+ * Resolves the scrypt salt strictly from Secret Manager / `API_KEY_SALT` env var,
+ * falling back to a per-boot 256-bit CSPRNG hex salt (zero static string literals).
+ */
+function getApiKeySalt(): string {
+  const configured = process.env['API_KEY_SALT']?.trim();
+  if (configured && configured.length >= 16) {
+    return configured;
+  }
+  if (!_ephemeralKeySalt) {
+    _ephemeralKeySalt = crypto.randomBytes(32).toString('hex');
+    if ((process.env['NODE_ENV'] === 'production' || Boolean(process.env['K_SERVICE'])) && !_warnedMissingApiKeySalt) {
+      _warnedMissingApiKeySalt = true;
+      console.warn('[ApiKeyService] API_KEY_SALT env secret not configured; using ephemeral per-boot CSPRNG salt.');
+    }
+  }
+  return _ephemeralKeySalt;
+}
 
 function hashApiKey(rawKey: string): string {
-  // Use memory-hard scrypt algorithm (N=16384, r=8, p=1, keylen=64) to satisfy CodeQL cryptographic hash requirements (CWE-916)
-  return crypto.scryptSync(rawKey, KEY_SALT, 64, { N: 16384, r: 8, p: 1 }).toString('hex');
+  // Memory-hard scrypt (N=16384, r=8, p=1, keylen=64) to satisfy CodeQL CWE-916 requirements
+  return crypto.scryptSync(rawKey, getApiKeySalt(), 64, { N: 16384, r: 8, p: 1 }).toString('hex');
 }
 
 export class ApiKeyService {
@@ -77,7 +100,7 @@ export class ApiKeyService {
 
     const doc = snapshot.docs[0];
     const data = doc.data() as ApiKeyDocument;
-    
+
     // Update lastUsedAt in the background (fire and forget)
     doc.ref.update({ lastUsedAt: Timestamp.now() }).catch(console.error);
 
@@ -85,14 +108,17 @@ export class ApiKeyService {
   }
 
   /**
-   * Lists all keys for a tenant (without the raw keys).
+   * Lists all keys for a tenant (strictly omitting raw keys and cryptographic keyHash).
    */
-  async listKeys(tenantId: string) {
+  async listKeys(tenantId: string): Promise<SafeApiKeySummary[]> {
     const snapshot = await this.collection.where('tenantId', '==', tenantId).get();
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...(doc.data() as ApiKeyDocument)
-    }));
+    return snapshot.docs.map(doc => {
+      const { keyHash: _omittedHash, ...safeFields } = doc.data() as ApiKeyDocument;
+      return {
+        id: doc.id,
+        ...safeFields
+      };
+    });
   }
 
   /**
@@ -101,12 +127,12 @@ export class ApiKeyService {
   async revokeKey(keyId: string, tenantId: string): Promise<boolean> {
     const docRef = this.collection.doc(keyId);
     const doc = await docRef.get();
-    
+
     if (!doc.exists) return false;
-    
+
     const data = doc.data() as ApiKeyDocument;
     if (data.tenantId !== tenantId) return false;
-    
+
     await docRef.update({ status: 'revoked' });
     return true;
   }

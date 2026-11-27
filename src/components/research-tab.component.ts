@@ -2,6 +2,7 @@ import { Component, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AwsOpenDataBrowserComponent } from './research/aws-open-data-browser.component';
 import { TriCloudCarePlanConsensusComponent } from './clinical/tri-cloud-care-plan-consensus.component';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 export interface IProteinHit {
   id: string;
@@ -16,7 +17,8 @@ export interface IProteinHit {
   imports: [
     CommonModule,
     AwsOpenDataBrowserComponent,
-    TriCloudCarePlanConsensusComponent
+    TriCloudCarePlanConsensusComponent,
+    PgTranslatePipe
   ],
   template: `
     <div class="h-full flex flex-col gap-4 overflow-y-auto p-4 sm:p-6 bg-zinc-50/50 dark:bg-zinc-950/50">
@@ -25,7 +27,7 @@ export interface IProteinHit {
         <div class="flex items-center gap-2">
           <div class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></div>
           <h2 class="text-sm font-black tracking-wide text-zinc-900 dark:text-zinc-100 uppercase font-pocketgull">
-            Tri-Cloud Clinical Research &amp; Open Data Hub
+            {{ 'Tri-Cloud Clinical Research & Open Data Hub' | pgT:'rtab.title' }}
           </h2>
         </div>
 
@@ -40,7 +42,7 @@ export interface IProteinHit {
             [class.dark:text-zinc-300]="activeSubTab() !== 'open-data'"
             class="px-3 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap inline-flex items-center gap-1.5 shadow-xs"
           >
-            <span>🌐 Open Data Federation</span>
+            <span>🌐 {{ 'Open Data Federation' | pgT:'rtab.tab_open_data' }}</span>
           </button>
 
           <button
@@ -53,7 +55,7 @@ export interface IProteinHit {
             [class.dark:text-zinc-300]="activeSubTab() !== 'tri-cloud-consensus'"
             class="px-3 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap inline-flex items-center gap-1.5 shadow-xs"
           >
-            <span>⚖️ Tri-Cloud Consensus</span>
+            <span>⚖️ {{ 'Tri-Cloud Consensus' | pgT:'rtab.tab_consensus' }}</span>
           </button>
 
           <button
@@ -66,7 +68,7 @@ export interface IProteinHit {
             [class.dark:text-zinc-300]="activeSubTab() !== 'structural'"
             class="px-3 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap inline-flex items-center gap-1.5 shadow-xs"
           >
-            <span>🧬 Protein Targets</span>
+            <span>🧬 {{ 'Protein Targets' | pgT:'rtab.tab_structural' }}</span>
           </button>
         </div>
       </div>
@@ -89,18 +91,18 @@ export interface IProteinHit {
               <svg class="w-12 h-12 text-zinc-300 dark:text-zinc-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
               </svg>
-              <p class="text-sm font-bold text-zinc-700 dark:text-zinc-300">No active protein structural search requests.</p>
-              <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">When the AI agent invokes science skills (like Foldseek or UniProt), target results will appear here.</p>
+              <p class="text-sm font-bold text-zinc-700 dark:text-zinc-300">{{ 'No active protein structural search requests.' | pgT:'rtab.no_requests' }}</p>
+              <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">{{ 'When the AI agent invokes science skills (like Foldseek or UniProt), target results will appear here.' | pgT:'rtab.no_requests_sub' }}</p>
             </div>
           } @else {
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr class="bg-zinc-100 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800">
-                    <th class="py-3 px-4 font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Target ID</th>
-                    <th class="py-3 px-4 font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Protein Name</th>
-                    <th class="py-3 px-4 font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Identity</th>
-                    <th class="py-3 px-4 font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">E-Value</th>
+                    <th class="py-3 px-4 font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">{{ 'Target ID' | pgT:'rtab.col_target' }}</th>
+                    <th class="py-3 px-4 font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">{{ 'Protein Name' | pgT:'rtab.col_name' }}</th>
+                    <th class="py-3 px-4 font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">{{ 'Identity' | pgT:'rtab.col_identity' }}</th>
+                    <th class="py-3 px-4 font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">{{ 'E-Value' | pgT:'rtab.col_evalue' }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">

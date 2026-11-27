@@ -97,12 +97,15 @@ def run_all_tests():
             print(f"  Running {name}... ", end="")
             total_run += 1
             try:
-                test_case.run()
-                print("\033[92mPASS\033[0m")
-            except AssertionError as e:
-                total_failed += 1
-                print("\033[91mFAIL (Assertion Error)\033[0m")
-                print(f"    Details: {e}")
+                res = unittest.TestResult()
+                test_case.run(res)
+                if res.wasSuccessful():
+                    print("\033[92mPASS\033[0m")
+                else:
+                    total_failed += 1
+                    print("\033[91mFAIL (unittest.TestCase)\033[0m")
+                    for _, tb in res.failures + res.errors:
+                        print(f"    Details:\n{tb}")
             except Exception as e:
                 total_failed += 1
                 print("\033[91mFAIL (Unexpected Exception)\033[0m")

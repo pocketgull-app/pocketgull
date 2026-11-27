@@ -204,7 +204,7 @@ export class GlobalHealthInitiativesService {
    */
   assessNihGeroscienceAndVagalTone(patient: IPatient): INihHealthspanAssessment {
     const chronAge = patient.age || 44;
-    const hr = Number(patient.vitals?.hr) || 72;
+    const hr = this.parseNumericVital(patient.vitals?.hr) ?? 72;
     const systolicBp = this.parseSystolic(patient.vitals?.bp) || 120;
     const diastolicBp = this.parseDiastolic(patient.vitals?.bp) || 80;
 
@@ -250,8 +250,8 @@ export class GlobalHealthInitiativesService {
    * 4. ARPA-H Resilient Point-of-Care: Mass-Casualty SALT / START Triage Engine
    */
   assessArpahEmergencyTriage(patient: IPatient): IArpahTriageResult {
-    const hr = Number(patient.vitals?.hr) || 75;
-    const spO2 = Number(patient.vitals?.spO2) || 98;
+    const hr = this.parseNumericVital(patient.vitals?.hr) ?? 75;
+    const spO2 = this.parseNumericVital(patient.vitals?.spO2) ?? 98;
     const issues = Object.values(patient.issues || {}).flat();
     const maxPain = issues.reduce((m, i) => Math.max(m, i.painLevel || 0), 0);
 
@@ -305,8 +305,8 @@ export class GlobalHealthInitiativesService {
       ...(patient.history || []).map(h => h.summary || '')
     ].join(' ').toLowerCase();
 
-    const weightKg = parseFloat(patient.vitals?.weight || '70') || 70;
-    const heightM = (parseFloat(patient.vitals?.height || '170') || 170) / 100;
+    const weightKg = this.parseWeightKg(patient.vitals?.weight);
+    const heightM = this.parseHeightMeters(patient.vitals?.height);
     const bmi = heightM > 0 ? parseFloat((weightKg / (heightM * heightM)).toFixed(1)) : 23.0;
 
     const domains: IWhoIcopeDomain[] = [];
@@ -333,8 +333,9 @@ export class GlobalHealthInitiativesService {
         : 'Prescribe >=150 min/week moderate aerobic and balance exercises.'
     });
 
-    // 3. Nutrition / Vitality
-    const nutDecline = bmi < 20 || bmi > 32 || textCorpus.includes('malnutrition') || textCorpus.includes('weight loss') || textCorpus.includes('anorexia') || textCorpus.includes('appetite');
+    // 3. Nutrition / Vitality (adult WHO ICOPE threshold < 20 kg/m² guarded by age >= 18)
+    const isAdult = (patient.age ?? 44) >= 18;
+    const nutDecline = (isAdult && bmi < 20) || bmi > 32 || textCorpus.includes('malnutrition') || textCorpus.includes('weight loss') || textCorpus.includes('anorexia') || textCorpus.includes('appetite');
     domains.push({
       domain: 'Nutrition',
       status: nutDecline ? 'Decline Flagged' : 'Intact',
@@ -439,9 +440,19 @@ export class GlobalHealthInitiativesService {
       { name: 'Sleep Disturbance / Insomnia', weight: 1, keywords: ['insomnia', 'sleep', 'waking', 'non-restorative', 'night sweats'], note: 'Disrupted sleep architecture and circadian misalignment.' }
     ];
 
+    const orthoDrop = this.parseOrthostaticBpDrop(patient.vitals?.bp);
     let totalScore = 0;
     const evaluatedSymptoms: INihRecoverSymptom[] = symptomDefinitions.map(def => {
-      const isPresent = def.keywords.some(kw => textCorpus.includes(kw));
+      let isPresent = def.keywords.some(kw => textCorpus.includes(kw));
+      let clinicalNote = def.note;
+      if (
+        def.name.includes('Orthostatic Intolerance') &&
+        orthoDrop &&
+        (orthoDrop.systolicDrop >= 20 || orthoDrop.diastolicDrop >= 10)
+      ) {
+        isPresent = true;
+        clinicalNote = `${def.note} Orthostatic vitals delta: ΔSBP -${orthoDrop.systolicDrop} mmHg (${orthoDrop.supineSbp}/${orthoDrop.supineDbp} -> ${orthoDrop.standingSbp}/${orthoDrop.standingDbp}).`;
+      }
       if (isPresent) {
         totalScore += def.weight;
       }
@@ -449,7 +460,7 @@ export class GlobalHealthInitiativesService {
         name: def.name,
         weight: def.weight,
         present: isPresent,
-        clinicalNote: def.note
+        clinicalNote
       };
     });
 
@@ -484,6 +495,69 @@ export class GlobalHealthInitiativesService {
       thresholdMet,
       symptoms: evaluatedSymptoms,
       pacingAndRecoveryDirectives: directives
+    };
+  }
+
+  parseNumericVital(val?: string | number): number | null {
+    if (typeof val === 'number') return Number.isFinite(val) ? val : null;
+    if (!val) return null;
+    const match = val.match(/-?\d+(?:\.\d+)?/);
+    if (!match) return null;
+    const parsed = parseFloat(match[0]);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  parseWeightKg(weightStr?: string): number {
+    if (!weightStr) return 70;
+    const lower = weightStr.toLowerCase();
+    const num = this.parseNumericVital(lower);
+    if (num === null || num <= 0) return 70;
+    if (lower.includes('lb')) {
+      return Math.round(num * 0.45359237 * 100) / 100;
+    }
+    return num;
+  }
+
+  parseHeightMeters(heightStr?: string): number {
+    if (!heightStr) return 1.7;
+    const trimmed = heightStr.trim().toLowerCase();
+    const ftInMatch = trimmed.match(/(\d+)\s*['’]\s*(\d+(?:\.\d+)?)?/);
+    if (ftInMatch) {
+      const feet = parseInt(ftInMatch[1], 10);
+      const inches = ftInMatch[2] ? parseFloat(ftInMatch[2]) : 0;
+      const meters = (feet * 12 + inches) * 0.0254;
+      return meters > 0 ? Math.round(meters * 1000) / 1000 : 1.7;
+    }
+    const num = this.parseNumericVital(trimmed);
+    if (num === null || num <= 0) return 1.7;
+    if (trimmed.includes('in')) {
+      return Math.round(num * 0.0254 * 1000) / 1000;
+    }
+    return num > 3 ? num / 100 : num;
+  }
+
+  parseOrthostaticBpDrop(bpStr?: string): {
+    supineSbp: number;
+    supineDbp: number;
+    standingSbp: number;
+    standingDbp: number;
+    systolicDrop: number;
+    diastolicDrop: number;
+  } | null {
+    if (!bpStr) return null;
+    const matches = [...bpStr.matchAll(/(\d{2,3})\s*\/\s*(\d{2,3})/g)];
+    if (matches.length < 2) return null;
+    const supineSbp = parseInt(matches[0][1], 10);
+    const supineDbp = parseInt(matches[0][2], 10);
+    const standingSbp = parseInt(matches[1][1], 10);
+    const standingDbp = parseInt(matches[1][2], 10);
+    return {
+      supineSbp,
+      supineDbp,
+      standingSbp,
+      standingDbp,
+      systolicDrop: supineSbp - standingSbp,
+      diastolicDrop: supineDbp - standingDbp,
     };
   }
 

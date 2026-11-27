@@ -136,7 +136,10 @@ for (const entry of themeEntries) {
     browser_specific_settings: {
       gecko: {
         id: `${slug}@theme.pocketgull.app`,
-        strict_min_version: '58.0'
+        strict_min_version: '128.0',
+        data_collection_permissions: {
+          required: ['none']
+        }
       }
     },
     theme: {
@@ -194,7 +197,10 @@ const circadianManifest = {
   browser_specific_settings: {
     gecko: {
       id: 'circadian-auto@theme.pocketgull.app',
-      strict_min_version: '58.0'
+      strict_min_version: '128.0',
+      data_collection_permissions: {
+        required: ['none']
+      }
     }
   },
   permissions: ['theme', 'alarms'],

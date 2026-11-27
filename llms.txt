@@ -15,21 +15,21 @@ Pocket Gull is an Angular progressive web application. It combines a Three.js in
 ## Architecture & Codebase Design ("How the Sauce is Made")
 
 ### 1. State Management (Angular Signals)
-- **Centralized State**: All patient details, vitals, issues, and active diagnostics are managed reactively in [PatientStateService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/patient-state.service.ts) using Angular Signals (`computed`, `signal`, `effect`).
+- **Centralized State**: All patient details, vitals, issues, and active diagnostics are managed reactively in [PatientStateService](src/services/patient-state.service.ts) using Angular Signals (`computed`, `signal`, `effect`).
 - **Demo Mode**: When launching sandbox demo mode, the application pre-selects the **Charles Darwin** historical patient case (`p_charles_darwin`), populating his symptoms and historical clinical analysis report synchronously without requiring remote calls.
 
 ### 2. Clinician Authorization & Lock System
-- **Registered Clinicians Store**: Clinicians are registered locally. Their details are managed in `localStorage` under `pg_registered_clinicians` via [FirestoreSyncService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/firestore-sync.service.ts). The default clinician is `dpo@pocketgull.app` (PIN: `1234`).
+- **Registered Clinicians Store**: Clinicians are registered locally. Their details are managed in `localStorage` under `pg_registered_clinicians` via [FirestoreSyncService](src/services/firestore-sync.service.ts). The default clinician is `dpo@pocketgull.app` (PIN: `1234`).
 - **Restricted Entry Gateway**: If a user is not authorized, the login page displays a restricted access banner prompting them to sign in or create an account. The sign-up form creates a local profile.
-- **Session Locking (Idle Protection)**: [SessionStateService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/session-state.service.ts) tracks user activity. After 10 minutes of inactivity, the session is locked.
+- **Session Locking (Idle Protection)**: [SessionStateService](src/services/session-state.service.ts) tracks user activity. After 10 minutes of inactivity, the session is locked.
 - **Gesture/PIN Unlock Pad**: Authorized clinicians can resume their locked session by typing their 4-digit PIN or drawing any beach item (e.g. wave, palm tree, "X") on the canvas lock screen. Unauthenticated users are bypassed to the registration gateway.
 
 ### 3. AI Orchestration Layer
-- **Multi-Agent Synthesizer**: [ClinicalIntelligenceService](file:///c:/Users/philg/Pocketgull/pocketgull/src/services/clinical-intelligence.service.ts) calls the Google Gemini API. It uses `@google/adk` `InMemoryRunner` to parallelize multiple sub-agents, each processing one diagnostic lens (Overview, Protocols, Nutrition, Monitoring, Education).
+- **Multi-Agent Synthesizer**: [ClinicalIntelligenceService](src/services/clinical-intelligence.service.ts) calls the Google Gemini API. It uses `@google/adk` `InMemoryRunner` to parallelize multiple sub-agents, each processing one diagnostic lens (Overview, Protocols, Nutrition, Monitoring, Education).
 - **Fallback Modalities**: Automatically falls back to mock responses if Google Gemini API keys are configured with placeholder values.
 
 ### 4. Interactive 3D Mapping & Annotation
-- **Three.js Body Map**: [Body3dViewerComponent](file:///c:/Users/philg/Pocketgull/pocketgull/src/components/body-3d-viewer.component.ts) renders a procedural skeleton and muscular mesh. Clicking anatomical zones correlates symptoms directly to the patient issues state.
+- **Three.js Body Map**: [Body3dViewerComponent](src/components/body-3d-viewer.component.ts) renders a procedural skeleton and muscular mesh. Clicking anatomical zones correlates symptoms directly to the patient issues state.
 - **Task Bracketing**: Double-clicking clinical items shifts them through a validation cycle (Normal → Added → Removed) so clinicians manually vet recommendations.
 
 ---

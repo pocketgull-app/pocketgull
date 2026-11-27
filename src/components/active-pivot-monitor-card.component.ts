@@ -2,11 +2,12 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivePivotMonitorService, IActivePivotTrigger, IWhatIfSimulationResult } from '../services/active-pivot-monitor.service';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-active-pivot-monitor-card',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PgTranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="p-6 rounded-3xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-teal-500/30 shadow-2xl space-y-6 animate-in fade-in duration-300">
@@ -19,7 +20,7 @@ import { ActivePivotMonitorService, IActivePivotTrigger, IWhatIfSimulationResult
           </div>
           <div>
             <h3 class="text-base font-black uppercase tracking-wider text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-              Pivot &amp; Pulse: Real-Time Cybernetic Telemetry
+              {{ 'Pivot & Pulse: Real-Time Cybernetic Telemetry' | pgT:'analysis.active_pivot' }}
               <span class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-teal-500/10 text-teal-700 dark:text-teal-300 rounded-full border border-teal-500/30">
                 FDA Part 11 &amp; HIPAA Sealed
               </span>

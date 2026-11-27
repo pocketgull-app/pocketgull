@@ -9,6 +9,8 @@ import { TypographicAnatomyService } from '../../services/typographic-anatomy.se
 import { QuadPhilosophyMatrixComponent } from '../shared/quad-philosophy-matrix.component';
 import { InstantBodyCarePlanSheetComponent } from './instant-body-care-plan-sheet.component';
 import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-healing-spectrum.component';
+import { ClinicalMoERouterService } from '../../services/clinical-moe-router.service';
+import { PgTranslatePipe } from '../../pipes/pg-translate.pipe';
 
 @Component({
   selector: 'app-body-viewer',
@@ -18,7 +20,8 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
     Body3DViewerComponent, 
     QuadPhilosophyMatrixComponent,
     InstantBodyCarePlanSheetComponent,
-    GlobalDecadHealingSpectrumComponent
+    GlobalDecadHealingSpectrumComponent,
+    PgTranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `    
@@ -40,8 +43,8 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
         <div class="flex items-center gap-2">
           <span class="text-lg">👤</span>
           <div>
-            <h3 class="text-sm font-extrabold text-gray-900 dark:text-zinc-100 uppercase tracking-wide">Interactive Body Twin &amp; Multi-Scale Suite</h3>
-            <p class="text-[10px] text-gray-500 dark:text-zinc-400 font-mono">Macro Anatomy • Cellular Biophysics • Quad-Tradition Crosswalk • Immuno-Oncology</p>
+            <h3 class="text-sm font-extrabold text-gray-900 dark:text-zinc-100 uppercase tracking-wide">{{ 'Interactive Body Twin & Multi-Scale Suite' | pgT:'body.suite_title' }}</h3>
+            <p class="text-[10px] text-gray-500 dark:text-zinc-400 font-mono">{{ 'Macro Anatomy • Cellular Biophysics • Quad-Tradition Crosswalk • Immuno-Oncology' | pgT:'body.suite_subtitle' }}</p>
           </div>
         </div>
 
@@ -54,7 +57,7 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
                     [class.text-gray-700]="state.bodyViewerMode() !== '3d'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== '3d'" 
                     class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
-              <span>🧊</span> 3D Whole-Body
+              <span>🧊</span> {{ '3D Whole-Body' | pgT:'body.whole_body_3d' }}
             </button>
             <button (click)="state.bodyViewerMode.set('2d')" 
                     [class.bg-sky-800]="state.bodyViewerMode() === '2d'" 
@@ -62,31 +65,33 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
                     [class.text-gray-700]="state.bodyViewerMode() !== '2d'" 
                     [class.dark:text-zinc-300]="state.bodyViewerMode() !== '2d'" 
                     class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
-              <span>🗺️</span> 2D Atlas
+              <span>🗺️</span> {{ '2D Atlas' | pgT:'body.atlas_2d' }}
             </button>
-            <button (click)="state.bodyViewerMode.set('quad')" 
-                    [class.bg-purple-800]="state.bodyViewerMode() === 'quad'" 
-                    [class.text-white]="state.bodyViewerMode() === 'quad'" 
-                    [class.text-gray-700]="state.bodyViewerMode() !== 'quad'" 
-                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'quad'" 
-                    class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
-              <span>🏛️</span> 4-Way Matrix
-            </button>
-            <button (click)="state.bodyViewerMode.set('decad')" 
-                    [class.bg-teal-800]="state.bodyViewerMode() === 'decad'" 
-                    [class.text-white]="state.bodyViewerMode() === 'decad'" 
-                    [class.text-gray-700]="state.bodyViewerMode() !== 'decad'" 
-                    [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'decad'" 
-                    class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
-              <span>🌿</span> 10-Decad
-            </button>
+            @if (!isExploratoryCollapsed()) {
+              <button (click)="state.bodyViewerMode.set('quad')" 
+                      [class.bg-purple-800]="state.bodyViewerMode() === 'quad'" 
+                      [class.text-white]="state.bodyViewerMode() === 'quad'" 
+                      [class.text-gray-700]="state.bodyViewerMode() !== 'quad'" 
+                      [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'quad'" 
+                      class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+                <span>🏛️</span> {{ '4-Way Matrix' | pgT:'body.matrix_4way' }}
+              </button>
+              <button (click)="state.bodyViewerMode.set('decad')" 
+                      [class.bg-teal-800]="state.bodyViewerMode() === 'decad'" 
+                      [class.text-white]="state.bodyViewerMode() === 'decad'" 
+                      [class.text-gray-700]="state.bodyViewerMode() !== 'decad'" 
+                      [class.dark:text-zinc-300]="state.bodyViewerMode() !== 'decad'" 
+                      class="min-h-[36px] px-2.5 py-1 text-[12px] font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center gap-1">
+                <span>🌿</span> {{ '10-Decad' | pgT:'body.decad_10' }}
+              </button>
+            }
           </div>
 
           <!-- ⚡ 1-Tap Instant 4-Lens Care Plan Launch Button -->
           <button (click)="openInstantCarePlan()" 
                   title="Tap or speak to generate instant Quad-Philosophy care plan"
                   class="min-h-[36px] px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer bg-teal-800 hover:bg-teal-700 text-white border border-teal-500/50 shadow-xs flex items-center justify-center gap-1.5 shrink-0">
-            <span>⚡</span> Instant 4-Lens Plan
+            <span>⚡</span> {{ 'Instant 4-Lens Plan' | pgT:'body.instant_4lens' }}
           </button>
 
           <!-- Search Bar with Keyboard & Autocomplete -->
@@ -99,7 +104,7 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
               (keydown)="onSearchKeyDown($event)"
               (focus)="isSearchOpen.set(true)"
               aria-label="Search organ, acupoint, or symptom"
-              placeholder="Search organ, acupoint, symptom..." 
+              [placeholder]="'Search organ, acupoint, symptom...' | pgT:'body.search_placeholder'" 
               class="w-full bg-transparent text-xs text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 outline-none font-medium" />
             @if (searchQuery()) {
               <button (click)="clearSearch()" aria-label="Clear Search Query" class="p-0.5 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-xs text-gray-400 hover:text-gray-600 dark:text-zinc-400 dark:hover:text-zinc-200 cursor-pointer">
@@ -121,22 +126,22 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
                   [class.border-purple-400]="handednessMode() === 'left'"
                   class="min-h-[36px] px-2.5 py-1 text-xs font-bold rounded-xs transition-all cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 shadow-xs flex items-center gap-1.5 shrink-0"
                   title="Toggle Left-Handed / Right-Handed Ergonomic Layout (Mirror Floating Controls & Stylus Palette)">
-            <span>{{ handednessMode() === 'left' ? '🫲 Left-Handed' : '🫱 Right-Handed' }}</span>
+            <span class="text-xs">{{ handednessMode() === 'left' ? ('🫲 ' + ('Left-Handed' | pgT:'body.left_handed')) : ('🫱 ' + ('Right-Handed' | pgT:'body.right_handed')) }}</span>
           </button>
 
           <!-- Paradigm Lens Selector Bar (Precision Segmented Rail) -->
           <div class="flex items-center gap-1 bg-gray-200/80 dark:bg-zinc-950 p-1 rounded-xs border border-gray-300/80 dark:border-zinc-800 text-xs">
             <button (click)="state.selectPhilosophy('western')" [class.bg-sky-800]="state.activePhilosophy() === 'western'" [class.text-white]="state.activePhilosophy() === 'western'" [class.text-gray-700]="state.activePhilosophy() !== 'western'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'western'" class="min-h-[36px] px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
-              🩺 Western
+              🩺 {{ 'Western' | pgT:'body.western' }}
             </button>
             <button (click)="state.selectPhilosophy('eastern')" [class.bg-emerald-800]="state.activePhilosophy() === 'eastern'" [class.text-white]="state.activePhilosophy() === 'eastern'" [class.text-gray-700]="state.activePhilosophy() !== 'eastern'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'eastern'" class="min-h-[36px] px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
-              🌿 TCM
+              🌿 {{ 'TCM' | pgT:'body.tcm' }}
             </button>
             <button (click)="state.selectPhilosophy('ayurvedic')" [class.bg-amber-800]="state.activePhilosophy() === 'ayurvedic'" [class.text-white]="state.activePhilosophy() === 'ayurvedic'" [class.text-gray-700]="state.activePhilosophy() !== 'ayurvedic'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'ayurvedic'" class="min-h-[36px] px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
-              🪷 Ayurvedic
+              🪷 {{ 'Ayurvedic' | pgT:'body.ayurvedic' }}
             </button>
             <button (click)="state.selectPhilosophy('osteopathic')" [class.bg-purple-800]="state.activePhilosophy() === 'osteopathic'" [class.text-white]="state.activePhilosophy() === 'osteopathic'" [class.text-gray-700]="state.activePhilosophy() !== 'osteopathic'" [class.dark:text-zinc-300]="state.activePhilosophy() !== 'osteopathic'" class="min-h-[36px] px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xs transition-all cursor-pointer border-0 shadow-xs flex items-center justify-center">
-              🦴 Osteopathic
+              🦴 {{ 'Osteopathic' | pgT:'body.osteopathic' }}
             </button>
           </div>
         </div>
@@ -159,7 +164,7 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
                 [class.bg-zinc-800]="activeSystemFilter() !== 'all'"
                 [class.text-zinc-300]="activeSystemFilter() !== 'all'"
                 class="px-2 py-0.5 rounded-md font-bold transition">
-                All ({{ allParts.length }})
+                {{ 'All' | pgT:'body.filter_all' }} ({{ allParts.length }})
               </button>
               <button 
                 type="button"
@@ -169,7 +174,7 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
                 [class.bg-zinc-800]="activeSystemFilter() !== 'western'"
                 [class.text-zinc-300]="activeSystemFilter() !== 'western'"
                 class="px-2 py-0.5 rounded-md font-bold transition">
-                🩺 Western
+                🩺 {{ 'Western' | pgT:'body.filter_western' }}
               </button>
               <button 
                 type="button"
@@ -179,7 +184,7 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
                 [class.bg-zinc-800]="activeSystemFilter() !== 'eastern'"
                 [class.text-zinc-300]="activeSystemFilter() !== 'eastern'"
                 class="px-2 py-0.5 rounded-md font-bold transition">
-                🌿 TCM Acupoints
+                🌿 {{ 'TCM Acupoints' | pgT:'body.filter_tcm_acupoints' }}
               </button>
               <button 
                 type="button"
@@ -189,7 +194,7 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
                 [class.bg-zinc-800]="activeSystemFilter() !== 'ayurvedic'"
                 [class.text-zinc-300]="activeSystemFilter() !== 'ayurvedic'"
                 class="px-2 py-0.5 rounded-md font-bold transition">
-                🪷 Marmas
+                🪷 {{ 'Marmas' | pgT:'body.filter_marmas' }}
               </button>
               <button 
                 type="button"
@@ -199,7 +204,7 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
                 [class.bg-zinc-800]="activeSystemFilter() !== 'cellular'"
                 [class.text-zinc-300]="activeSystemFilter() !== 'cellular'"
                 class="px-2 py-0.5 rounded-md font-bold transition">
-                🔬 Cellular
+                🔬 {{ 'Cellular' | pgT:'body.filter_cellular' }}
               </button>
               <button 
                 type="button"
@@ -209,10 +214,10 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
                 [class.bg-zinc-800]="activeSystemFilter() !== 'osteopathic'"
                 [class.text-zinc-300]="activeSystemFilter() !== 'osteopathic'"
                 class="px-2 py-0.5 rounded-md font-bold transition">
-                🦴 Osteopathic
+                🦴 {{ 'Osteopathic' | pgT:'body.filter_osteopathic' }}
               </button>
             </div>
-            <button (click)="clearSearch()" class="text-zinc-400 hover:text-zinc-200 text-[10px]">Close ✕</button>
+            <button (click)="clearSearch()" class="text-zinc-400 hover:text-zinc-200 text-[10px]">{{ 'Close' | pgT:'body.close' }} ✕</button>
           </div>
 
           <!-- Autocomplete Results List -->
@@ -568,38 +573,40 @@ import { GlobalDecadHealingSpectrumComponent } from '../shared/global-decad-heal
         <!-- Viewport & Layer Switcher -->
         <div class="flex items-center gap-2 overflow-x-auto py-1">
           <div class="flex items-center bg-zinc-950 p-1 rounded-xl border border-zinc-800">
-            <button (click)="state.bodyViewerMode.set('3d')" [class.bg-indigo-800]="state.bodyViewerMode() === '3d'" [class.text-white]="state.bodyViewerMode() === '3d'" [class.text-zinc-400]="state.bodyViewerMode() !== '3d'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🧊 3D</button>
-            <button (click)="state.bodyViewerMode.set('2d')" [class.bg-indigo-800]="state.bodyViewerMode() === '2d'" [class.text-white]="state.bodyViewerMode() === '2d'" [class.text-zinc-400]="state.bodyViewerMode() !== '2d'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🗺️ 2D</button>
+            <button (click)="state.bodyViewerMode.set('3d')" [class.bg-indigo-800]="state.bodyViewerMode() === '3d'" [class.text-white]="state.bodyViewerMode() === '3d'" [class.text-zinc-400]="state.bodyViewerMode() !== '3d'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🧊 {{ '3D' | pgT:'body.layer_3d' }}</button>
+            <button (click)="state.bodyViewerMode.set('2d')" [class.bg-indigo-800]="state.bodyViewerMode() === '2d'" [class.text-white]="state.bodyViewerMode() === '2d'" [class.text-zinc-400]="state.bodyViewerMode() !== '2d'" class="px-3 py-1.5 text-xs font-bold rounded-lg transition min-h-[36px] cursor-pointer">🗺️ {{ '2D' | pgT:'body.layer_2d' }}</button>
           </div>
 
           <!-- Layers Strip -->
           <div class="flex items-center gap-1">
-            <button (click)="state.anatomyViewMode.set('skin')" [class.bg-amber-500]="state.anatomyViewMode() === 'skin'" [class.text-zinc-950]="state.anatomyViewMode() === 'skin'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'skin'" [class.text-zinc-300]="state.anatomyViewMode() !== 'skin'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">📄 Skin</button>
-            <button (click)="state.anatomyViewMode.set('muscle')" [class.bg-teal-800]="state.anatomyViewMode() === 'muscle'" [class.text-white]="state.anatomyViewMode() === 'muscle'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'muscle'" [class.text-zinc-300]="state.anatomyViewMode() !== 'muscle'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🦾 Muscle</button>
-            <button (click)="state.anatomyViewMode.set('skeleton')" [class.bg-rose-800]="state.anatomyViewMode() === 'skeleton'" [class.text-white]="state.anatomyViewMode() === 'skeleton'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'skeleton'" [class.text-zinc-300]="state.anatomyViewMode() !== 'skeleton'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🦴 Skeleton</button>
-            <button (click)="state.anatomyViewMode.set('organs')" [class.bg-purple-800]="state.anatomyViewMode() === 'organs'" [class.text-white]="state.anatomyViewMode() === 'organs'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'organs'" [class.text-zinc-300]="state.anatomyViewMode() !== 'organs'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🫀 Organ</button>
-            <button (click)="state.anatomyViewMode.set('typographic')" [class.bg-cyan-800]="state.anatomyViewMode() === 'typographic'" [class.text-white]="state.anatomyViewMode() === 'typographic'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'typographic'" [class.text-zinc-300]="state.anatomyViewMode() !== 'typographic'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🔤 Typo</button>
-            <button (click)="state.anatomyViewMode.set('vesalian_woodcut')" [class.bg-amber-700]="state.anatomyViewMode() === 'vesalian_woodcut'" [class.text-white]="state.anatomyViewMode() === 'vesalian_woodcut'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'vesalian_woodcut'" [class.text-zinc-300]="state.anatomyViewMode() !== 'vesalian_woodcut'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer" title="Andreas Vesalius 1543 Chiaroscuro Woodcut Hatching">📜 Vesalius</button>
-            <button (click)="state.anatomyViewMode.set('ghost')" [class.bg-teal-700]="state.anatomyViewMode() === 'ghost'" [class.text-white]="state.anatomyViewMode() === 'ghost'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'ghost'" [class.text-zinc-300]="state.anatomyViewMode() !== 'ghost'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer" title="Fresnel Ghost Silhouette with Cutaway Rehabilitation Lantern">👻 Ghost Mentor</button>
+            <button (click)="state.anatomyViewMode.set('skin')" [class.bg-amber-500]="state.anatomyViewMode() === 'skin'" [class.text-zinc-950]="state.anatomyViewMode() === 'skin'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'skin'" [class.text-zinc-300]="state.anatomyViewMode() !== 'skin'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">📄 {{ 'Skin' | pgT:'body.skin' }}</button>
+            <button (click)="state.anatomyViewMode.set('muscle')" [class.bg-teal-800]="state.anatomyViewMode() === 'muscle'" [class.text-white]="state.anatomyViewMode() === 'muscle'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'muscle'" [class.text-zinc-300]="state.anatomyViewMode() !== 'muscle'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🦾 {{ 'Muscle' | pgT:'body.muscle' }}</button>
+            <button (click)="state.anatomyViewMode.set('skeleton')" [class.bg-rose-800]="state.anatomyViewMode() === 'skeleton'" [class.text-white]="state.anatomyViewMode() === 'skeleton'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'skeleton'" [class.text-zinc-300]="state.anatomyViewMode() !== 'skeleton'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🦴 {{ 'Skeleton' | pgT:'body.skeleton' }}</button>
+            <button (click)="state.anatomyViewMode.set('organs')" [class.bg-purple-800]="state.anatomyViewMode() === 'organs'" [class.text-white]="state.anatomyViewMode() === 'organs'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'organs'" [class.text-zinc-300]="state.anatomyViewMode() !== 'organs'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🫀 {{ 'Organ' | pgT:'body.organ' }}</button>
+            @if (!isExploratoryCollapsed()) {
+              <button (click)="state.anatomyViewMode.set('typographic')" [class.bg-cyan-800]="state.anatomyViewMode() === 'typographic'" [class.text-white]="state.anatomyViewMode() === 'typographic'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'typographic'" [class.text-zinc-300]="state.anatomyViewMode() !== 'typographic'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer">🔤 {{ 'Typo' | pgT:'body.typo' }}</button>
+              <button (click)="state.anatomyViewMode.set('vesalian_woodcut')" [class.bg-amber-700]="state.anatomyViewMode() === 'vesalian_woodcut'" [class.text-white]="state.anatomyViewMode() === 'vesalian_woodcut'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'vesalian_woodcut'" [class.text-zinc-300]="state.anatomyViewMode() !== 'vesalian_woodcut'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer" title="Andreas Vesalius 1543 Chiaroscuro Woodcut Hatching">📜 {{ 'Vesalius' | pgT:'body.vesalius' }}</button>
+              <button (click)="state.anatomyViewMode.set('ghost')" [class.bg-teal-700]="state.anatomyViewMode() === 'ghost'" [class.text-white]="state.anatomyViewMode() === 'ghost'" [class.bg-zinc-800]="state.anatomyViewMode() !== 'ghost'" [class.text-zinc-300]="state.anatomyViewMode() !== 'ghost'" class="px-2.5 py-1.5 text-[11px] font-bold rounded-lg border border-zinc-700 transition min-h-[36px] cursor-pointer" title="Fresnel Ghost Silhouette with Cutaway Rehabilitation Lantern">👻 {{ 'Ghost Mentor' | pgT:'body.ghost_mentor' }}</button>
+            }
           </div>
         </div>
 
         <!-- Biometric Organ Spotlight Banner -->
         @if (state.selectedPartId()) {
           <div class="flex items-center gap-2 pl-3 border-l border-zinc-700 font-mono text-xs">
-            <span class="text-[10px] text-zinc-400">Target:</span>
+            <span class="text-[10px] text-zinc-400">{{ 'Target:' | pgT:'body.target' }}</span>
             <span class="text-teal-300 font-bold">{{ selectedPartName() }}</span>
             @if (state.recommendedDrilldownForSelectedPart(); as recDrill) {
               <button
                 (click)="state.openDrilldownForCurrentOrgan()"
                 class="px-2 py-1 rounded bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-[10px] uppercase tracking-wider transition flex items-center gap-1 cursor-pointer shadow-md active:scale-95">
-                <span>🔬</span> {{ recDrill }} Deep-Dive
+                <span>🔬</span> {{ recDrill }} {{ 'Deep-Dive' | pgT:'body.deep_dive' }}
               </button>
             }
             <button
               (click)="openInstantCarePlan()"
               class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 font-bold text-[10px] uppercase tracking-wider transition flex items-center gap-1 cursor-pointer shadow-md active:scale-95">
-              <span>📋</span> 3-Act Care Sheet
+              <span>📋</span> {{ '3-Act Care Sheet' | pgT:'body.care_sheet_3act' }}
             </button>
           </div>
         }
@@ -630,6 +637,11 @@ export class BodyViewerComponent implements OnDestroy {
   patientManagement = inject(PatientManagementService);
   themeService = inject(ThemeService);
   typographicAnatomy = inject(TypographicAnatomyService);
+  moeRouter = inject(ClinicalMoERouterService, { optional: true });
+
+  readonly isExploratoryCollapsed = computed(() =>
+    Boolean(this.moeRouter?.microSkillDisplayPolicy().collapseExploratorySubViews)
+  );
 
   view = signal<'front' | 'back' | 'side_right' | 'side_left'>('front');
 
@@ -1061,6 +1073,16 @@ export class BodyViewerComponent implements OnDestroy {
 
   select(id: string, name: string) {
     this.tempSelectedId.set(id);
+    if (this.moeRouter) {
+      const lower = id.toLowerCase();
+      const token =
+        lower.includes('kidney') || lower.includes('liver') || lower.includes('abdomen')
+          ? 'glycemic-renal-coupling'
+          : lower.includes('shin') || lower.includes('foot') || lower.includes('spine') || lower.includes('pelvis')
+            ? 'kinematic-shear-coupling'
+            : 'visceral-cardiopulmonary-coupling';
+      this.moeRouter.emitSynapseSignalPulse(token, 'spatial-body-twin', 'ismp-posology', 'Body Twin Selection', name);
+    }
 
     // 1. Auto-align active philosophy paradigm & intake fields on touch target tap
     if (id.startsWith('acupoint_')) {

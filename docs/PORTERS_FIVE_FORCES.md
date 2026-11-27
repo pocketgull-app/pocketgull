@@ -38,7 +38,7 @@ This report evaluates Pocket Gull's competitive positioning and strategic defens
    * Compliance alignment with FDA CDS Class I SaMD exemption guidelines (FD&C Act §520(o)(1)(E)).
 
 3. **Multidisciplinary Tri-Paradigm & Conformal Clinical IP Portfolio**:
-   * Complete USPTO Provisional Patent Application Binder: *System and Method for Tri-Paradigm Consilience and Finite-Sample Conformal Clinical Intervals with Epistemic Abstention* (Docket `PG-PAT-2026-CONF-001`, [USPTO_PROVISIONAL_TRI_PARADIGM_CONFORMAL_SEPSIS.md](file:///c:/Users/philg/Pocketgull/pocketgull/docs/patents/USPTO_PROVISIONAL_TRI_PARADIGM_CONFORMAL_SEPSIS.md)).
+   * Complete USPTO Provisional Patent Application Binder: *System and Method for Tri-Paradigm Consilience and Finite-Sample Conformal Clinical Intervals with Epistemic Abstention* (Docket `PG-PAT-2026-CONF-001`, [USPTO_PROVISIONAL_TRI_PARADIGM_CONFORMAL_SEPSIS.md](docs/patents/USPTO_PROVISIONAL_TRI_PARADIGM_CONFORMAL_SEPSIS.md)).
    * **340 formal staked patent claims across 17 invention clusters**, establishing indisputable prior art and legal defensibility against Big EHR (Epic, Oracle) and Big Tech new entrants.
    * Proprietary consilience algorithms (`InfiniteClinicalSynthesisService`, `MimicOmopBenchmarkService`) linking Western Allopathic biomarkers $\leftrightarrow$ TCM Zang-Fu organ meridians $\leftrightarrow$ Ayurvedic Vata/Pitta/Kapha doshic balances under CYP450 constraints, with 95% finite-sample conformal prediction sets eliminating clinical alarm fatigue.
 

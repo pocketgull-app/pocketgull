@@ -1,4 +1,4 @@
-import { Injectable, inject, NgZone } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { PatientStateService, BODY_PART_NAMES } from './patient-state.service';
 import { IPatient } from './patient.types';
 import { ClinicalIntelligenceService } from './clinical-intelligence.service';
@@ -8,7 +8,9 @@ import { GcpHealthcareApiService } from './fhir/gcp-healthcare-api.service';
 import { SkepticalEpistemologyService } from './skeptical-epistemology.service';
 import { ClinicalMoERouterService } from './clinical-moe-router.service';
 import { IrmaaDecisionService } from './irmaa-decision.service';
-import { MedicareBillingBestPracticesService } from './medicare-billing-best-practices.service';
+import { MedicareBillingBestPracticesService, MedicarePlanYear } from './medicare-billing-best-practices.service';
+import { CmsBlueButtonService, BlueButtonEnvironment } from './fhir/cms-blue-button.service';
+import { MedicaidContinuityGuardService } from './mdcp/medicaid-continuity-guard.service';
 import { HedisStarRatingService } from './hedis-star-rating.service';
 import { FhirPriorAuthService } from './fhir-prior-auth.service';
 import { SnomedIcdCrosswalkService } from './snomed-icd-crosswalk.service';
@@ -53,6 +55,7 @@ import { MimicOmopBenchmarkService, BenchmarkCohortType } from './research/mimic
 import { EhrWritebackService } from './fhir/ehr-writeback.service';
 import { EdgeAutonomousVoiceAgentService } from './voice/edge-autonomous-voice-agent.service';
 import { ClinicalDriftCalibratorService } from './interpretability/clinical-drift-calibrator.service';
+import { WearableAsymmetricGainService, TWatchPlatform } from './wearable-asymmetric-gain.service';
 import { initializeWebMCPPolyfill } from '@mcp-b/webmcp-polyfill';
 
 @Injectable({
@@ -70,6 +73,8 @@ export class WebMcpRegistrationService {
   private moeRouter = inject(ClinicalMoERouterService);
   private irmaaService = inject(IrmaaDecisionService, { optional: true });
   private medicareBillingService = inject(MedicareBillingBestPracticesService, { optional: true });
+  private cmsBlueButtonService = inject(CmsBlueButtonService, { optional: true });
+  private medicaidContinuityService = inject(MedicaidContinuityGuardService, { optional: true });
   private hedisService = inject(HedisStarRatingService, { optional: true });
   private priorAuthService = inject(FhirPriorAuthService, { optional: true });
   private snomedCrosswalkService = inject(SnomedIcdCrosswalkService, { optional: true });
@@ -112,7 +117,7 @@ export class WebMcpRegistrationService {
   private ehrWritebackService = inject(EhrWritebackService, { optional: true });
   private edgeVoiceService = inject(EdgeAutonomousVoiceAgentService, { optional: true });
   private driftCalibratorService = inject(ClinicalDriftCalibratorService, { optional: true });
-  private ngZone = inject(NgZone);
+  private wearableAcgService = inject(WearableAsymmetricGainService, { optional: true });
 
   private mcpControllers: { name: string; controller: AbortController }[] = [];
 
@@ -210,12 +215,10 @@ export class WebMcpRegistrationService {
       execute: async (params: any) => {
         try {
           if (BODY_PART_NAMES[params.partId]) {
-            this.ngZone.run(() => {
-              this.state.selectPart(params.partId);
-              if (callbacks.onNavigateToBodyPart) {
-                callbacks.onNavigateToBodyPart(params.partId);
-              }
-            });
+            this.state.selectPart(params.partId);
+            if (callbacks.onNavigateToBodyPart) {
+              callbacks.onNavigateToBodyPart(params.partId);
+            }
             return { content: [{ type: 'text', text: `Successfully navigated to ${BODY_PART_NAMES[params.partId]}` }] };
           } else {
             throw new Error(`Invalid body part ID: ${params.partId}`);
@@ -256,11 +259,9 @@ export class WebMcpRegistrationService {
             symptoms: [],
             recommendation: params.recommendation || ''
           };
-          this.ngZone.run(() => {
-            this.state.updateIssue(params.partId, newNote);
-            this.state.selectPart(params.partId);
-            this.state.selectNote(newNoteId);
-          });
+          this.state.updateIssue(params.partId, newNote);
+          this.state.selectPart(params.partId);
+          this.state.selectNote(newNoteId);
           return { content: [{ type: 'text', text: `Successfully injected clinical note for ${partName}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to inject note: ${e.message}` }], isError: true };
@@ -284,10 +285,8 @@ export class WebMcpRegistrationService {
       },
       execute: async (params: any) => {
         try {
-          this.ngZone.run(() => {
-            this.state.requestResearchUrl(params.url);
-            this.state.toggleResearchFrame(true);
-          });
+          this.state.requestResearchUrl(params.url);
+          this.state.toggleResearchFrame(true);
           return { content: [{ type: 'text', text: `Loaded URL: ${params.url}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to load URL: ${e.message}` }], isError: true };
@@ -316,11 +315,9 @@ export class WebMcpRegistrationService {
       },
       execute: async (params: any) => {
         try {
-          this.ngZone.run(() => {
-            if (callbacks.onAddBookmark) {
-              callbacks.onAddBookmark(params);
-            }
-          });
+          if (callbacks.onAddBookmark) {
+            callbacks.onAddBookmark(params);
+          }
           return { content: [{ type: 'text', text: `Added bookmark: ${params.title}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to add bookmark: ${e.message}` }], isError: true };
@@ -345,9 +342,7 @@ export class WebMcpRegistrationService {
         try {
           const patientData = this.state.getCurrentState();
           if (params?.downloadFile) {
-            this.ngZone.run(() => {
-              this.exportService.exportCsvReport(patientData);
-            });
+            this.exportService.exportCsvReport(patientData);
           }
           const csvText = (this.exportService as any).csvStrategy.generatePatientCsv(patientData);
           return { content: [{ type: 'text', text: csvText }] };
@@ -374,9 +369,7 @@ export class WebMcpRegistrationService {
         try {
           const patientData = this.state.getCurrentState();
           if (params?.downloadFile) {
-            this.ngZone.run(() => {
-              this.exportService.exportHl7v2Report(patientData);
-            });
+            this.exportService.exportHl7v2Report(patientData);
           }
           const hl7Text = (this.exportService as any).hl7v2Strategy.generateHl7v2Message(patientData);
           return { content: [{ type: 'text', text: hl7Text }] };
@@ -512,9 +505,7 @@ export class WebMcpRegistrationService {
       execute: async () => {
         try {
           let res: { timestamp: string; purgedItemsCount: number } = { timestamp: '', purgedItemsCount: 0 };
-          this.ngZone.run(() => {
-            res = this.state.purgeTransientPatientState();
-          });
+          res = this.state.purgeTransientPatientState();
           return { content: [{ type: 'text', text: `Successfully purged ${res.purgedItemsCount} transient items at ${res.timestamp}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to purge transient patient state: ${e.message}` }], isError: true };
@@ -538,9 +529,7 @@ export class WebMcpRegistrationService {
       execute: async (params: any) => {
         try {
           let nextState = true;
-          this.ngZone.run(() => {
-            nextState = this.state.toggleEphemeralPrivacyMode(params?.enabled);
-          });
+          nextState = this.state.toggleEphemeralPrivacyMode(params?.enabled);
           return { content: [{ type: 'text', text: `Ephemeral Privacy Mode set to: ${nextState ? 'ENABLED (Strict Edge Isolation)' : 'DISABLED'}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to toggle privacy mode: ${e.message}` }], isError: true };
@@ -597,20 +586,18 @@ export class WebMcpRegistrationService {
           if (!fdi || fdi < 11 || fdi > 48) {
             throw new Error(`Invalid FDI tooth number: ${params.fdiNumber}`);
           }
-          this.ngZone.run(() => {
-            if (typeof params.probingDepthMm === 'number') {
-              this.teledentistryService.setProbingDepth(fdi, params.probingDepthMm);
+          if (typeof params.probingDepthMm === 'number') {
+            this.teledentistryService.setProbingDepth(fdi, params.probingDepthMm);
+          }
+          if (typeof params.hasBleedingOnProbing === 'boolean') {
+            const currentTooth = this.teledentistryService.teeth().find(t => t.fdiNumber === fdi);
+            if (currentTooth && currentTooth.hasBleedingOnProbing !== params.hasBleedingOnProbing) {
+              this.teledentistryService.toggleBOP(fdi);
             }
-            if (typeof params.hasBleedingOnProbing === 'boolean') {
-              const currentTooth = this.teledentistryService.teeth().find(t => t.fdiNumber === fdi);
-              if (currentTooth && currentTooth.hasBleedingOnProbing !== params.hasBleedingOnProbing) {
-                this.teledentistryService.toggleBOP(fdi);
-              }
-            }
-            if (typeof params.twiGrade === 'number' && params.twiGrade >= 0 && params.twiGrade <= 4) {
-              this.teledentistryService.setTWIGrade(fdi, params.twiGrade as any);
-            }
-          });
+          }
+          if (typeof params.twiGrade === 'number' && params.twiGrade >= 0 && params.twiGrade <= 4) {
+            this.teledentistryService.setTWIGrade(fdi, params.twiGrade as any);
+          }
           return { content: [{ type: 'text', text: `Successfully updated FDI Tooth ${fdi} periodontal status. Recalculated SIBI score: ${this.teledentistryService.sibiScore()}` }] };
         } catch (e: any) {
           return { content: [{ type: 'text', text: `Failed to update tooth status: ${e.message}` }], isError: true };
@@ -697,9 +684,7 @@ export class WebMcpRegistrationService {
       },
       execute: async (params: any) => {
         try {
-          this.ngZone.run(() => {
-            this.moeRouter.setCustomThinkingBudget(params.enabled === false ? 0 : params.thinkingBudget);
-          });
+          this.moeRouter.setCustomThinkingBudget(params.enabled === false ? 0 : params.thinkingBudget);
           const currentConfig = this.moeRouter.currentThinkingConfig();
           return { content: [{ type: 'text', text: `Gemini 2.5 Thinking model budget updated: ${JSON.stringify(currentConfig)}` }] };
         } catch (e: any) {
@@ -834,38 +819,130 @@ export class WebMcpRegistrationService {
     const billingCtrl = new AbortController();
     const billingTool = {
       name: 'evaluate_medicare_billing_and_gfe_eligibility',
-      description: 'Evaluates Inflation Reduction Act $2,000 Part D prescription cap, MPPP monthly smoothing, RPM/CCM CPT compliance (CPT 99454/99457), No Surprises Act Good Faith Estimates, and IRS Section 501(r) Charity Care FPL eligibility.',
+      description: 'Evaluates CMS-indexed Inflation Reduction Act Part D prescription cap ($2,100 in 2026 / $2,400 in 2027), M3P monthly smoothing, 2026 Part D Extra Help (LIS) & MSP (QMB/SLMB/QI), APCM (G0556-G0558), G2211, Section 1115 Z-codes, RPM/CCM CPT compliance, No Surprises Act GFE, and IRS Section 501(r) Charity Care.',
       inputSchema: {
         type: 'object',
         properties: {
           annualRxCost: { type: 'number', description: 'Annual out-of-pocket prescription medication cost' },
+          planYear: { type: 'number', enum: [2025, 2026, 2027], description: 'Medicare plan year (default 2026)' },
+          remainingMonths: { type: 'number', description: 'Remaining months in calendar year for M3P smoothing (1-12)' },
           daysDeviceTransmitted: { type: 'number', description: 'Days of RPM physiological telemetry readings in 30-day period (16+ required)' },
           clinicalMinutesLogged: { type: 'number', description: 'Minutes of clinical staff management time in month (20+ required)' },
           annualIncome: { type: 'number', description: 'Patient household annual income in USD' },
-          householdSize: { type: 'number', description: 'Household size (default 1)' }
+          householdSize: { type: 'number', description: 'Household size (default 1)' },
+          countableResourcesUsd: { type: 'number', description: 'Optional countable resources USD for Extra Help / MSP screening' },
+          chronicConditionCount: { type: 'number', description: 'Qualifying chronic conditions count for APCM tiering' },
+          isQmbEnrolled: { type: 'boolean', description: 'Whether beneficiary holds QMB dual-eligible status' }
         },
         required: ['annualRxCost', 'annualIncome']
       },
       execute: async (params: any) => {
         const annualRxCost = Number(params.annualRxCost) || 0;
+        const planYear: MedicarePlanYear = [2025, 2026, 2027].includes(Number(params.planYear))
+          ? (Number(params.planYear) as MedicarePlanYear)
+          : 2026;
+        const remainingMonths = Number(params.remainingMonths) || 12;
         const daysDeviceTransmitted = Number(params.daysDeviceTransmitted) || 0;
         const clinicalMinutesLogged = Number(params.clinicalMinutesLogged) || 0;
         const annualIncome = Number(params.annualIncome) || 30000;
         const householdSize = Number(params.householdSize) || 1;
+        const countableResourcesUsd = params.countableResourcesUsd !== undefined ? Number(params.countableResourcesUsd) : null;
+        const chronicConditionCount = params.chronicConditionCount !== undefined ? Number(params.chronicConditionCount) : 2;
+        const isQmbEnrolled = typeof params.isQmbEnrolled === 'boolean' ? params.isQmbEnrolled : undefined;
 
         const svc = this.medicareBillingService || new MedicareBillingBestPracticesService();
         const res = svc.assessMedicareBilling({
           annualRxCost,
+          planYear,
+          remainingMonths,
           daysDeviceTransmitted,
           clinicalMinutesLogged,
           annualIncome,
-          householdSize
+          householdSize,
+          countableResourcesUsd,
+          chronicConditionCount,
+          isQmbEnrolled
         });
         return { content: [{ type: 'text', text: JSON.stringify(res, null, 2) }] };
       }
     };
     try { modelContext.registerTool(billingTool, { signal: billingCtrl.signal }); } catch (e) { console.warn("Tool already registered:", billingTool.name); }
     this.mcpControllers.push({ name: billingTool.name, controller: billingCtrl });
+
+    // 22b. evaluate_medicaid_continuity_and_qmb_shield
+    const medicaidContinuityCtrl = new AbortController();
+    const medicaidContinuityTool = {
+      name: 'evaluate_medicaid_continuity_and_qmb_shield',
+      description: 'Evaluates Medicaid redetermination churn risk, Aid Paid Pending (42 C.F.R. § 431.230), 90-day procedural reinstatement (42 C.F.R. § 435.916), Federal QMB Illegal Balance-Billing Shield (42 U.S.C. § 1396a(n)(3)(B)), and 6th-grade Teaspoon checklists.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          stateCode: { type: 'string', description: '2-letter US state or territory code (e.g. WA, CA, TX)' },
+          renewalDueDateIso: { type: 'string', description: 'Medicaid renewal due date (YYYY-MM-DD)' },
+          effectiveTerminationDateIso: { type: 'string', description: 'Effective termination date if adverse notice received (YYYY-MM-DD)' },
+          isDualEligibleQmb: { type: 'boolean', description: 'Whether beneficiary holds Qualified Medicare Beneficiary (QMB) status' },
+          providerBilledAmountUsd: { type: 'number', description: 'Improperly billed Medicare copay/deductible amount in USD' },
+          providerBillingEntity: { type: 'string', description: 'Billing clinic or hospital name' }
+        },
+        required: ['stateCode']
+      },
+      execute: async (params: any) => {
+        const svc = this.medicaidContinuityService;
+        if (!svc) {
+          return { content: [{ type: 'text', text: 'MedicaidContinuityGuardService unavailable' }], isError: true };
+        }
+        const pkg = svc.evaluateContinuityAndQmbShield({
+          stateCode: String(params.stateCode || 'TX'),
+          renewalDueDateIso: params.renewalDueDateIso,
+          effectiveTerminationDateIso: params.effectiveTerminationDateIso,
+          isDualEligibleQmb: Boolean(params.isDualEligibleQmb),
+          providerBilledAmountUsd: Number(params.providerBilledAmountUsd) || 0,
+          providerBillingEntity: params.providerBillingEntity
+        });
+        return { content: [{ type: 'text', text: JSON.stringify(pkg, null, 2) }] };
+      }
+    };
+    try { modelContext.registerTool(medicaidContinuityTool, { signal: medicaidContinuityCtrl.signal }); } catch (e) { console.warn("Tool already registered:", medicaidContinuityTool.name); }
+    this.mcpControllers.push({ name: medicaidContinuityTool.name, controller: medicaidContinuityCtrl });
+
+    // 22c. import_cms_blue_button_medicare_eob
+    const blueButtonCtrl = new AbortController();
+    const blueButtonTool = {
+      name: 'import_cms_blue_button_medicare_eob',
+      description: 'Generates RFC 7636 PKCE OAuth2 URLs for CMS Blue Button 2.0 (Medicare FHIR R4) or parses ExplanationOfBenefit/Coverage bundles into Part D medication reconciliation and YTD cap tracking.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          mode: { type: 'string', enum: ['authorize_url', 'sandbox_import', 'parse_bundle'], description: 'Operation mode (default sandbox_import)' },
+          environment: { type: 'string', enum: ['production', 'sandbox'], description: 'CMS Blue Button 2.0 environment' },
+          planYear: { type: 'number', enum: [2025, 2026, 2027], description: 'Medicare plan year (default 2026)' },
+          fhirBundle: { type: 'object', description: 'Optional FHIR R4 Bundle JSON when mode is parse_bundle' }
+        }
+      },
+      execute: async (params: any) => {
+        const svc = this.cmsBlueButtonService;
+        if (!svc) {
+          return { content: [{ type: 'text', text: 'CmsBlueButtonService unavailable' }], isError: true };
+        }
+        const mode = String(params.mode || 'sandbox_import');
+        const env: BlueButtonEnvironment = params.environment === 'production' ? 'production' : 'sandbox';
+        const planYear: MedicarePlanYear = [2025, 2026, 2027].includes(Number(params.planYear))
+          ? (Number(params.planYear) as MedicarePlanYear)
+          : 2026;
+        if (mode === 'authorize_url') {
+          const authReq = svc.buildAuthorizeRequest({ environment: env });
+          return { content: [{ type: 'text', text: JSON.stringify(authReq, null, 2) }] };
+        }
+        if (mode === 'parse_bundle' && params.fhirBundle) {
+          const parsed = svc.parseBlueButtonBundle(params.fhirBundle, 'PATIENT_UPLOADED_FHIR_R4', planYear);
+          return { content: [{ type: 'text', text: JSON.stringify(parsed, null, 2) }] };
+        }
+        const sandboxSummary = svc.loadSandboxMedicareBundle(planYear);
+        return { content: [{ type: 'text', text: JSON.stringify(sandboxSummary, null, 2) }] };
+      }
+    };
+    try { modelContext.registerTool(blueButtonTool, { signal: blueButtonCtrl.signal }); } catch (e) { console.warn("Tool already registered:", blueButtonTool.name); }
+    this.mcpControllers.push({ name: blueButtonTool.name, controller: blueButtonCtrl });
 
     // 23. evaluate_hedis_quality_measures_and_care_gaps
     const hedisCtrl = new AbortController();
@@ -1474,9 +1551,7 @@ export class WebMcpRegistrationService {
       },
       execute: async () => {
         if (this.zenService) {
-          this.ngZone.run(() => {
-            this.zenService?.openSanctuary();
-          });
+          this.zenService?.openSanctuary();
         }
         return {
           content: [
@@ -1843,7 +1918,7 @@ export class WebMcpRegistrationService {
     const ipCtrl = new AbortController();
     const ipTool = {
       name: 'get_staked_patent_claims_summary',
-      description: 'Returns a summary of PocketGull 200 formal staked patent claims across 10 core invention clusters and 7 statutory copyright & invention clauses.',
+      description: 'Returns a summary of PocketGull 560 formal staked patent claims across 28 core invention clusters and 9 statutory copyright & invention clauses.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -2437,17 +2512,15 @@ export class WebMcpRegistrationService {
             };
           }
 
-          this.ngZone.run(() => {
-            if (args?.mode) optical.setMode(args.mode);
-            if (args?.pbmAction === 'start') optical.startPbmSession();
-            if (args?.pbmAction === 'pause') optical.pausePbmSession();
-            if (args?.pbmAction === 'reset') optical.resetPbmSession();
-            if (args?.circadianPhase) optical.setCircadianPhase(args.circadianPhase);
-            if (args?.oknDirection) optical.updateOknDirection(args.oknDirection);
-            if (typeof args?.dichopticLeftHz === 'number' && typeof args?.dichopticRightHz === 'number') {
-              optical.updateDichopticFrequencies(args.dichopticLeftHz, args.dichopticRightHz);
-            }
-          });
+          if (args?.mode) optical.setMode(args.mode);
+          if (args?.pbmAction === 'start') optical.startPbmSession();
+          if (args?.pbmAction === 'pause') optical.pausePbmSession();
+          if (args?.pbmAction === 'reset') optical.resetPbmSession();
+          if (args?.circadianPhase) optical.setCircadianPhase(args.circadianPhase);
+          if (args?.oknDirection) optical.updateOknDirection(args.oknDirection);
+          if (typeof args?.dichopticLeftHz === 'number' && typeof args?.dichopticRightHz === 'number') {
+            optical.updateDichopticFrequencies(args.dichopticLeftHz, args.dichopticRightHz);
+          }
 
           const result = {
             activeMode: optical.activeMode(),
@@ -2508,9 +2581,7 @@ export class WebMcpRegistrationService {
 
           let cert: any = null;
           if (args?.generateCertificate) {
-            this.ngZone.run(() => {
-              cert = traj.generateVitalityCertificate();
-            });
+            cert = traj.generateVitalityCertificate();
           }
 
           const response = {
@@ -2738,15 +2809,11 @@ export class WebMcpRegistrationService {
           const flexion = typeof params?.flexionAngleDegrees === 'number' ? params.flexionAngleDegrees : undefined;
 
           if (callbacks.onSetKneeSlicingPlane) {
-            this.ngZone.run(() => {
-              callbacks.onSetKneeSlicingPlane!(plane, targetKey, flexion);
-            });
+            callbacks.onSetKneeSlicingPlane!(plane, targetKey, flexion);
           }
 
           // Also focus part in state
-          this.ngZone.run(() => {
-            this.state.selectPart('leg_left');
-          });
+          this.state.selectPart('leg_left');
 
           return {
             content: [{
@@ -2982,9 +3049,7 @@ export class WebMcpRegistrationService {
       },
       execute: async ({ patientId }: { patientId: string }) => {
         try {
-          this.ngZone.run(() => {
-            this.moeRouter.loadShiftPatient(patientId);
-          });
+          this.moeRouter.loadShiftPatient(patientId);
           const patient = this.moeRouter.activeShiftPatient();
           return {
             content: [{ type: 'text', text: `Activated clinical shift patient: ${patient?.name || patientId} (${patient?.clinicalDomain || ''}). SMoE canvas successfully routed to Top-1 primary slot: ${this.moeRouter.primaryUiExpert()?.expert.name}.` }]
@@ -4263,7 +4328,7 @@ export class WebMcpRegistrationService {
       execute: async (params: { action: 'inspect' | 'evaluate_utterance' | 'apply_steering' | 'open_hud'; utterance?: string }) => {
         try {
           if (params.action === 'open_hud') {
-            this.ngZone.run(() => this.navService?.openDriftCalibrator());
+            this.navService?.openDriftCalibrator();
           } else if (params.action === 'evaluate_utterance' && params.utterance && this.driftCalibratorService) {
             await this.driftCalibratorService.evaluateCustomUtterance(params.utterance);
           } else if (params.action === 'apply_steering' && this.driftCalibratorService) {
@@ -4289,6 +4354,76 @@ export class WebMcpRegistrationService {
     };
     try { modelContext.registerTool(driftCalibratorTool, { signal: driftCalibratorCtrl.signal }); } catch (e) { console.warn("Tool already registered:", driftCalibratorTool.name); }
     this.mcpControllers.push({ name: driftCalibratorTool.name, controller: driftCalibratorCtrl });
+
+    // 98. evaluate_wearable_asymmetric_gain (Tri-Modal Asymmetric Clinical Gain & MST SpO2 Debiasing)
+    const wearableAcgCtrl = new AbortController();
+    const wearableAcgTool = {
+      name: 'evaluate_wearable_asymmetric_gain',
+      description: 'Evaluates Wearable Vanguard Tri-Modal Asymmetric Clinical Gain (Doing, Feeling, Not Doing), Monk Skin Tone (MST 1-10) SpO2 optical debiasing, and 72h PEM crash shielding, with optional live IoMT synchronization.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          watchPlatform: {
+            type: 'string',
+            enum: ['apple_watch_healthkit', 'android_wear_health_connect'],
+            description: 'Target smartwatch telemetry source'
+          },
+          pacedBreathingMinutes: { type: 'number', description: 'Daily 0.1 Hz Mayer wave paced breathing duration (min)' },
+          monkSkinToneScale: { type: 'number', description: 'Monk Skin Tone optical PPG calibration scale (1-10)' },
+          stoppedBeforeExhaustion: { type: 'boolean', description: 'Strategic PEM pacing stop engaged prior to anaerobic threshold' },
+          syncFromHardware: { type: 'boolean', description: 'Synchronize live telemetry from DirectIomtWearablesService before scoring' }
+        }
+      },
+      outputSchema: {
+        type: 'object',
+        properties: {
+          watchPlatform: { type: 'string' },
+          mstCalibratedSpo2Percent: { type: 'number' },
+          doingHormeticVagalGain: { type: 'number' },
+          feelingInteroceptiveCalibrationGain: { type: 'number' },
+          notDoingRestraintPemShieldGain: { type: 'number' },
+          totalShockTrooperReadinessGain: { type: 'number' },
+          estimatedPemCrashHoursSaved: { type: 'number' },
+          seligman3pCoachingInsight: { type: 'string' }
+        },
+        required: ['totalShockTrooperReadinessGain', 'mstCalibratedSpo2Percent', 'estimatedPemCrashHoursSaved']
+      },
+      execute: async (params: {
+        watchPlatform?: TWatchPlatform;
+        pacedBreathingMinutes?: number;
+        monkSkinToneScale?: number;
+        stoppedBeforeExhaustion?: boolean;
+        syncFromHardware?: boolean;
+      }) => {
+        try {
+          if (!this.wearableAcgService) {
+            return {
+              content: [{ type: 'text', text: JSON.stringify({ error: 'WearableAsymmetricGainService unavailable' }) }],
+              isError: true
+            };
+          }
+          if (params?.syncFromHardware) {
+            this.wearableAcgService.syncFromLiveIomtHardware();
+          }
+          const patch: Record<string, any> = {};
+          if (params?.watchPlatform) patch['watchPlatform'] = params.watchPlatform;
+          if (typeof params?.pacedBreathingMinutes === 'number') patch['pacedBreathingMinutes'] = params.pacedBreathingMinutes;
+          if (typeof params?.monkSkinToneScale === 'number') patch['monkSkinToneScale'] = params.monkSkinToneScale;
+          if (typeof params?.stoppedBeforeExhaustion === 'boolean') patch['stoppedBeforeExhaustion'] = params.stoppedBeforeExhaustion;
+          if (Object.keys(patch).length > 0) {
+            this.wearableAcgService.updateTelemetry(patch);
+          }
+          const score = this.wearableAcgService.gainEvaluation();
+          return {
+            content: [{ type: 'text', text: JSON.stringify(score, null, 2) }]
+          };
+        } catch (e: any) {
+          return { content: [{ type: 'text', text: `Wearable ACG evaluation failed: ${e.message}` }], isError: true };
+        }
+      }
+    };
+    try { modelContext.registerTool(wearableAcgTool, { signal: wearableAcgCtrl.signal }); } catch (e) { console.warn("Tool already registered:", wearableAcgTool.name); }
+    this.mcpControllers.push({ name: wearableAcgTool.name, controller: wearableAcgCtrl });
   }
 
   /**
@@ -4301,7 +4436,7 @@ export class WebMcpRegistrationService {
       timestamp: new Date().toISOString(),
       componentId: cid,
       framework: 'PocketGull Ambient Clinical Copilot',
-      version: '1.37.0',
+      version: '1.42.0',
     };
 
     if (cid === 'all' || cid === 'patientstate' || cid === 'patient') {
@@ -4364,11 +4499,15 @@ export class WebMcpRegistrationService {
     }
 
     if (cid === 'all' || cid === 'webmcp') {
+      const hasNativeModelContext =
+        (typeof document !== 'undefined' && 'modelContext' in document) ||
+        (typeof navigator !== 'undefined' && 'modelContext' in navigator);
       result.webmcp = {
         registeredToolsCount: this.mcpControllers.length,
         pr253DebuggingSupported: true,
         pr254OutputSchemaSupported: true,
-        runtime: typeof window !== 'undefined' && 'modelContext' in navigator ? 'native-chrome-159' : 'polyfilled',
+        pr348ToolInterfaceSupported: true,
+        runtime: hasNativeModelContext ? 'native-chrome-160' : 'polyfilled',
       };
     }
 
@@ -4458,6 +4597,17 @@ export class WebMcpRegistrationService {
       }
     }
 
+    if (cid === 'all' || cid === 'wearable' || cid === 'acg' || cid === 'shock_trooper') {
+      try {
+        result.wearableAsymmetricGain = {
+          telemetry: this.wearableAcgService?.telemetry() || null,
+          gainEvaluation: this.wearableAcgService?.gainEvaluation() || null
+        };
+      } catch (err: any) {
+        result.wearableAsymmetricGain = { error: err.message };
+      }
+    }
+
     return result;
   }
 
@@ -4471,31 +4621,95 @@ export class WebMcpRegistrationService {
     this.mcpControllers = [];
   }
 
-  /**
-   * Retrieves all registered WebMCP tools from document.modelContext / navigator.modelContext,
-   * safely normalizing inputSchema and outputSchema (Chrome 159.0.8140.0+ PR #254) to JavaScript
-   * objects regardless of browser version (supporting both legacy DOMString returns and updated
-   * native JavaScript object returns).
-   */
-  public async getRegisteredTools(): Promise<any[]> {
+  private async readModelContextTools(mapper: (tool: any) => any): Promise<any[]> {
     if (typeof window === 'undefined' || typeof document === 'undefined') return [];
     const modelContext = (document as any).modelContext || (navigator as any).modelContext;
     if (!modelContext || typeof modelContext.getTools !== 'function') return [];
     try {
       const tools = await modelContext.getTools();
-      return (tools || []).map((tool: any) => ({
-        ...tool,
-        inputSchema: normalizeToolInputSchema(tool.inputSchema),
-        ...(tool.outputSchema ? { outputSchema: normalizeToolOutputSchema(tool.outputSchema) } : {}),
-      }));
+      return (tools || []).map(mapper);
     } catch {
       return [];
     }
   }
+
+  /**
+   * Retrieves all registered WebMCP tools from document.modelContext / navigator.modelContext
+   * as strictly `JSON.stringify`- and `structuredClone()`-safe payloads, safely extracting
+   * explicit attributes from Chrome 160.0.8173.0+ `Tool` WebIDL interface objects (W3C WebMCP PR #348 —
+   * where `{...tool}` copies nothing, `JSON.stringify(tool)` returns `"{}"`, `tool.window` moved to
+   * `tool.source`, and unset `inputSchema` / `outputSchema` / `annotations` are `null`) while
+   * maintaining backward compatibility with legacy `RegisteredTool` dictionaries.
+   */
+  public async getRegisteredTools(): Promise<any[]> {
+    return this.readModelContextTools((tool: any) => extractSerializableWebMcpTool(tool));
+  }
+
+  /**
+   * Retrieves in-memory WebMCP tool handles preserving `source` and `rawTool` so
+   * `document.modelContext.executeTool(entry.rawTool, args)` retains its internal execution ID.
+   */
+  public async getRegisteredToolHandles(): Promise<any[]> {
+    return this.readModelContextTools((tool: any) => inspectWebMcpToolHandle(tool));
+  }
+}
+
+function resolveWebMcpToolSource(tool: any): any {
+  // TODO: Remove `tool.window` fallback when Chrome 160 reaches Stable (January 5, 2027).
+  return tool?.source ?? tool?.window ?? null;
 }
 
 /**
- * Helper to normalize WebMCP RegisteredTool inputSchema across browser implementations.
+ * Extracts explicit attributes from a Chrome 160.0.8173.0+ `Tool` WebIDL interface instance
+ * (W3C WebMCP PR #348) or legacy `RegisteredTool` dictionary into a strictly `JSON.stringify`-
+ * and `structuredClone()`-safe plain object (omitting `rawTool` and `Window` references).
+ */
+export function extractSerializableWebMcpTool(tool: any): Record<string, any> {
+  if (!tool || typeof tool !== 'object') {
+    return {
+      name: '',
+      title: null,
+      description: '',
+      origin: null,
+      inputSchema: { type: 'object', properties: {} },
+      outputSchema: null,
+      annotations: null,
+      hasSource: false,
+    };
+  }
+
+  const source = resolveWebMcpToolSource(tool);
+  const normalizedOutput = normalizeToolOutputSchema(tool.outputSchema);
+
+  return {
+    name: tool.name ?? '',
+    title: tool.title ?? null,
+    description: tool.description ?? '',
+    origin: tool.origin ?? null,
+    inputSchema: normalizeToolInputSchema(tool.inputSchema),
+    outputSchema: normalizedOutput ?? null,
+    annotations: tool.annotations ?? null,
+    hasSource: Boolean(source),
+  };
+}
+
+/**
+ * Composes `extractSerializableWebMcpTool(tool)` with in-memory `source` and `rawTool` so
+ * `document.modelContext.executeTool(entry.rawTool, args)` keeps its internal execution ID
+ * (PR #348), while `toJSON()` ensures `JSON.stringify(entry)` remains circular-safe.
+ */
+export function inspectWebMcpToolHandle(tool: any): Record<string, any> {
+  const source = tool && typeof tool === 'object' ? resolveWebMcpToolSource(tool) : null;
+  return {
+    ...extractSerializableWebMcpTool(tool),
+    source,
+    rawTool: tool ?? null,
+    toJSON: () => extractSerializableWebMcpTool(tool),
+  };
+}
+
+/**
+ * Helper to normalize WebMCP Tool / legacy RegisteredTool inputSchema across browser implementations.
  * Handles both stringified DOMString schemas and native JS Object schemas (Chrome Model Context API update).
  */
 export function normalizeToolInputSchema(schema: unknown): Record<string, any> {
@@ -4511,7 +4725,7 @@ export function normalizeToolInputSchema(schema: unknown): Record<string, any> {
 }
 
 /**
- * Helper to normalize WebMCP RegisteredTool outputSchema (Chrome 159.0.8140.0+, W3C WebMCP PR #254).
+ * Helper to normalize WebMCP Tool / legacy RegisteredTool outputSchema (Chrome 159.0.8140.0+, W3C WebMCP PR #254).
  */
 export function normalizeToolOutputSchema(schema: unknown): Record<string, any> | undefined {
   if (!schema) return undefined;

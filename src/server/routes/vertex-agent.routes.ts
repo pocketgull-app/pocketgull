@@ -10,6 +10,7 @@ import { GoogleAuth } from 'google-auth-library';
 import { rateLimit } from 'express-rate-limit';
 
 import { isSafeSubdomainUrl } from '../../utils/security-sanitizer';
+import { isStrictProductionEnv } from '../middleware/auth-guard';
 
 export interface IVertexSearchRequest {
   query: string;
@@ -55,11 +56,12 @@ const APPROVED_ENGINES: Record<string, string> = {
   'trials-search': 'trials-search',
 };
 
-const ALLOWED_ORIGINS = [
-  'https://pocketgull.app',
-  'https://pocketgull.com',
-  'https://www.pocketgull.com',
-];
+const ALLOWED_HOSTNAMES = new Set<string>([
+  'pocketgull.app',
+  'www.pocketgull.app',
+  'pocketgull.com',
+  'www.pocketgull.com'
+]);
 
 /**
  * Anti-scraping rate limiter for Vertex Agent Builder.
@@ -68,6 +70,7 @@ const ALLOWED_ORIGINS = [
 const agentBuilderRateLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 10,
+  validate: { trustProxy: false },
   message: {
     error: 'Rate limit exceeded. Maximum 10 Agent Builder search requests per minute per IP.',
     code: 'RATE_LIMIT_EXCEEDED',
@@ -78,10 +81,10 @@ const agentBuilderRateLimiter = rateLimit({
 
 /**
  * Strict domain security validator.
- * Ensures GenAI Agent Builder queries only originate from authorized PocketGull domains.
+ * Uses exact `Set.has(parsedUrl.hostname)` (zero substring `.includes()`) and disallows `localhost` in production.
  */
 function verifyAgentBuilderDomain(req: Request, res: Response, next: NextFunction) {
-  if (process.env['NODE_ENV'] !== 'production' || process.env['POCKETGULL_LIVE_DEMO'] === 'true') {
+  if (!isStrictProductionEnv() || process.env['POCKETGULL_LIVE_DEMO'] === 'true') {
     return next();
   }
 
@@ -89,23 +92,33 @@ function verifyAgentBuilderDomain(req: Request, res: Response, next: NextFunctio
   const referer = req.headers['referer'] as string | undefined;
   const host = req.headers['host'] as string | undefined;
 
-  const isAllowed = (urlStr: string) => isSafeSubdomainUrl(urlStr, ['pocketgull.app', 'pocketgull.com', 'localhost']);
+  const isAllowedOriginUrl = (urlStr: string): boolean => {
+    try {
+      const parsedUrl = new URL(urlStr);
+      if (parsedUrl.protocol !== 'https:') return false;
+      const hostname = parsedUrl.hostname.toLowerCase();
+      return ALLOWED_HOSTNAMES.has(hostname) || isSafeSubdomainUrl(urlStr, ['pocketgull.app', 'pocketgull.com']);
+    } catch {
+      return false;
+    }
+  };
 
-  if (origin && !isAllowed(origin)) {
+  if (origin && !isAllowedOriginUrl(origin)) {
     return res.status(403).json({
       error: 'Access Denied: Vertex Agent Builder requests must originate from pocketgull.app or pocketgull.com',
       code: 'UNAUTHORIZED_ORIGIN',
     });
   }
 
-  if (referer && !isAllowed(referer)) {
+  if (referer && !isAllowedOriginUrl(referer)) {
     return res.status(403).json({
       error: 'Access Denied: Invalid referer for Vertex Agent Builder.',
       code: 'UNAUTHORIZED_REFERER',
     });
   }
 
-  if (!origin && !referer && host && !ALLOWED_ORIGINS.some(allowed => allowed.includes(host))) {
+  const normalizedHost = (host || '').split(':')[0].trim().toLowerCase();
+  if (!origin && !referer && (!normalizedHost || !ALLOWED_HOSTNAMES.has(normalizedHost))) {
     return res.status(403).json({
       error: 'Access Denied: Direct programmatic bot queries without origin headers are prohibited.',
       code: 'MISSING_REQUIRED_HEADERS',
@@ -160,8 +173,9 @@ vertexAgentRouter.post('/search', async (req: Request, res: Response) => {
 
     const sanitizedQuery = query.trim().slice(0, 500);
 
-    // If live GCP auth is unavailable (local dev without ADC / demo mode), return clinical grounded mock
-    if (process.env['POCKETGULL_LIVE_DEMO'] === 'true' || !process.env['GOOGLE_APPLICATION_CREDENTIALS']) {
+    // Only short-circuit for explicit demo mode or unit tests without GCP runtime; never bypass Cloud Run ADC
+    const isOfflineUnitTest = Boolean((process.env['NODE_ENV'] === 'test' || process.env['VITEST']) && !process.env['K_SERVICE'] && !process.env['GOOGLE_APPLICATION_CREDENTIALS']);
+    if (process.env['POCKETGULL_LIVE_DEMO'] === 'true' || isOfflineUnitTest) {
       return res.json(getSimulatedGroundedResponse(sanitizedQuery));
     }
 
@@ -255,9 +269,9 @@ function getSimulatedGroundedResponse(query: string): IVertexSearchResponse {
         evidenceTier: 'Tier A (RCT)',
       },
       {
-        title: 'Cochrane Systematic Review: Pharmacological Interventions for Cardiometabolic Risk',
-        uri: 'https://doi.org/10.1002/14651858.CD012345.pub2',
-        snippet: 'High-certainty evidence demonstrates consistent risk reduction across multi-ethnic cohorts when combined with structured Mediterranean dietary intervention.',
+        title: 'Estruch et al. (PREDIMED Study): Primary Prevention of Cardiovascular Disease with a Mediterranean Diet',
+        uri: 'https://doi.org/10.1056/NEJMoa1800389',
+        snippet: 'Among persons at high cardiovascular risk, a Mediterranean diet supplemented with extra-virgin olive oil or nuts reduced the incidence of major cardiovascular events compared with a reduced-fat diet.',
         relevanceScore: 0.92,
         evidenceTier: 'Tier A (RCT)',
       },

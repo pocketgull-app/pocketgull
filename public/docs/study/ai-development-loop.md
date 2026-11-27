@@ -19,7 +19,7 @@ flowchart TD
 ### Phase 1: Intent Synthesis & Domain Mapping
 * **Human Prompt**: Conversational clinical directives (e.g., *"How could we have a Lyrica-based jukebox in the mood area to generate music for healing?"* or *"Explore a local event or social approach to who to gravitate towards"*).
 * **AI Agent Role**:
-  * Scans workspace rules ([GEMINI.md](file:///c:/Users/philg/Pocketgull/pocketgull/GEMINI.md) and [AGENTS.md](file:///c:/Users/philg/Pocketgull/pocketgull/.agents/AGENTS.md)).
+  * Scans workspace rules ([GEMINI.md](GEMINI.md) and [AGENTS.md](.agents/AGENTS.md)).
   * Maps medical intent against clinical ontologies (SNOMED CT, LOINC, RxNorm, TCM Shen/Jing, Ayurvedic Gunas, Vagal nerve physiology).
   * Formulates standalone component blueprints using Angular Signals and strict TypeScript interfaces.
 
@@ -44,7 +44,7 @@ Never declare success without empirical evidence. The AI agent executes verifica
 
 ### Phase 4: Security Hardening & Compliance
 * **Zero Dependency Vulnerabilities**: Executes `npm audit fix --legacy-peer-deps` to eliminate security advisories down to **0 vulnerabilities**.
-* **GitHub CodeQL Matrix**: Configures [.github/workflows/codeql.yml](file:///c:/Users/philg/Pocketgull/pocketgull/.github/workflows/codeql.yml) across `actions`, `javascript-typescript`, and `python` streams.
+* **GitHub CodeQL Matrix**: Configures [.github/workflows/codeql.yml](.github/workflows/codeql.yml) across `actions`, `javascript-typescript`, and `python` streams.
 * **HIPAA/FHIR R4 Guardrails**: Enforces DOMPurify sanitization and FHIR R4 Bundle validation on all patient payloads.
 
 ---

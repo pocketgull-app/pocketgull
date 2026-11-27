@@ -1,10 +1,26 @@
 import { Injectable, inject, signal, computed, Injector } from '@angular/core';
 import { AssessmentType, IAssessmentPayload, ISeverityTier, IAssessmentDefinition } from './types';
 import { getAssessment } from './assessment-registry';
+import { hasPhq9Item9SuicidalIdeation, PHQ9_ITEM_9_ID, resolvePhq9SeverityTier } from './instruments/phq9.assessment';
+import { EmergencyRedFlagGuard, IEmergencyRedFlagEvaluation } from '../emergency-red-flag.guard';
 import { PatientManagementService } from '../patient-management.service';
 import { PatientStateService } from '../patient-state.service';
 import { StorageService } from '../storage.service';
 import { HistoryEntry } from '../patient.types';
+
+export interface IStatSuicideEscalation {
+  isActive: boolean;
+  acuity: 'STAT_EMERGENCY' | 'ROUTINE';
+  triggerSource: 'PHQ9_ITEM_9' | 'CSSRS' | 'PHQ9_ITEM_9_AND_CSSRS' | null;
+  phq9Item9Score: number;
+  cssrsScore: number;
+  crisisNumber: string;
+  crisisServiceName: string;
+  emergencyNumber: string;
+  jurisdictionId: string;
+  protocolMarkdown: string;
+  evaluation: IEmergencyRedFlagEvaluation | null;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +29,7 @@ export class ClinicalAssessmentsService {
   private injector = inject(Injector);
   private patientState = inject(PatientStateService);
   private storage = inject(StorageService);
+  private emergencyGuard = inject(EmergencyRedFlagGuard, { optional: true }) || new EmergencyRedFlagGuard();
 
   readonly activeTab = signal<AssessmentType>('phq9');
 
@@ -50,9 +67,8 @@ export class ClinicalAssessmentsService {
 
   readonly currentTier = computed<ISeverityTier>(() => {
     const type = this.activeTab();
-    const def = getAssessment(type);
     const score = this.currentScore();
-    return def.tiers.find(t => score >= t.min && score <= t.max) || def.tiers[0];
+    return this.calcTier(type, score, this.answersMap()[type] || {});
   });
 
   // Backward-compatible individual signal accessors
@@ -93,8 +109,51 @@ export class ClinicalAssessmentsService {
   readonly dn4Score = computed(() => getAssessment('dn4').calculateScore(this.answersMap().dn4));
   readonly sibiScore = computed(() => getAssessment('sibi').calculateScore(this.answersMap().sibi));
 
+  // STAT Suicide Safety & Crisis Escalation (PHQ-9 Item 9 >= 1 or positive C-SSRS)
+  readonly phq9Item9Score = computed(() => Number(this.answersMap().phq9[PHQ9_ITEM_9_ID]) || 0);
+  readonly phq9SuicidalIdeationTriggered = computed(() => hasPhq9Item9SuicidalIdeation(this.answersMap().phq9));
+  readonly statSuicideEscalation = computed<IStatSuicideEscalation>(() => {
+    const phq9Item9 = this.phq9Item9Score();
+    const cssrs = this.cssrsScore();
+    const dispatch = this.emergencyGuard.resolveDispatchGuidance();
+    const triggeredByPhq9 = phq9Item9 >= 1;
+    const triggeredByCssrs = cssrs >= 1;
+    const isActive = triggeredByPhq9 || triggeredByCssrs;
+    const triggerSource =
+      triggeredByPhq9 && triggeredByCssrs
+        ? 'PHQ9_ITEM_9_AND_CSSRS'
+        : triggeredByPhq9
+          ? 'PHQ9_ITEM_9'
+          : triggeredByCssrs
+            ? 'CSSRS'
+            : null;
+    const evaluation = isActive
+      ? this.emergencyGuard.evaluate(
+          {
+            phq9Item9Score: phq9Item9,
+            cssrsScore: cssrs
+          },
+          { recordState: false }
+        )
+      : null;
+
+    return {
+      isActive,
+      acuity: isActive ? 'STAT_EMERGENCY' : 'ROUTINE',
+      triggerSource,
+      phq9Item9Score: phq9Item9,
+      cssrsScore: cssrs,
+      crisisNumber: dispatch.crisisNumber,
+      crisisServiceName: dispatch.crisisServiceName,
+      emergencyNumber: dispatch.emergencyNumber,
+      jurisdictionId: dispatch.jurisdictionId,
+      protocolMarkdown: evaluation?.deterministicProtocolMarkdown || '',
+      evaluation
+    };
+  });
+
   // Backward-compatible computed tiers
-  readonly phq9Tier = computed(() => this.calcTier('phq9', this.phq9Score()));
+  readonly phq9Tier = computed(() => this.calcTier('phq9', this.phq9Score(), this.answersMap().phq9));
   readonly gad7Tier = computed(() => this.calcTier('gad7', this.gad7Score()));
   readonly isiTier = computed(() => this.calcTier('isi', this.isiScore()));
   readonly cssrsTier = computed(() => this.calcTier('cssrs', this.cssrsScore()));
@@ -118,7 +177,14 @@ export class ClinicalAssessmentsService {
   readonly growThyselfBreakdown = computed(() => getAssessment('growthyself').calculateBreakdown?.(this.answersMap().growthyself) || { purpose: 0, somatic: 0, nutrition: 0, emotional: 0, cognitive: 0 });
   readonly mbiBreakdown = computed(() => getAssessment('mbi').calculateBreakdown?.(this.answersMap().mbi) || { ee: 0, dp: 0, pa: 0 });
 
-  private calcTier(type: AssessmentType, score: number): ISeverityTier {
+  private calcTier(type: AssessmentType, score: number, answers?: Record<number, number>): ISeverityTier {
+    if (type === 'phq9') {
+      const phq9Answers = answers ?? this.answersMap().phq9;
+      if (hasPhq9Item9SuicidalIdeation(phq9Answers)) {
+        const dispatch = this.emergencyGuard.resolveDispatchGuidance();
+        return resolvePhq9SeverityTier(phq9Answers, score, dispatch);
+      }
+    }
     const def = getAssessment(type);
     return def.tiers.find(t => score >= t.min && score <= t.max) || def.tiers[0];
   }
@@ -158,7 +224,7 @@ export class ClinicalAssessmentsService {
     const answers = this.answersMap()[type] || {};
     const totalScore = def.calculateScore(answers);
     const maxScore = def.maxScore;
-    const tier = def.tiers.find(t => totalScore >= t.min && totalScore <= t.max) || def.tiers[0];
+    const tier = this.calcTier(type, totalScore, answers);
     const breakdown = def.calculateBreakdown?.(answers);
 
     const payload: IAssessmentPayload = {

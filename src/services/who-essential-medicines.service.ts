@@ -242,7 +242,7 @@ export const WHO_ESSENTIAL_MEDICINES_CATALOG: IWhoEssentialMedicine[] = [
   {
     id: 'who-eml-salbutamol',
     name: 'Salbutamol Inhaler (Albuterol)',
-    genericInn: 'Salbutanolum',
+    genericInn: 'Salbutamolum',
     category: 'RESPIRATORY',
     dosageForms: ['100 mcg/dose pressurized metered-dose inhaler (200 actuations)'],
     atcCode: 'R03AC02',
@@ -595,8 +595,16 @@ export class WhoEssentialMedicinesService {
 
       if (matched) {
         const originalCost = matched.standardRetailBenchmarkMonthlyCostUsd || matched.typicalUsMonopolyMonthlyCostUsd || 0;
-        // 30 days * daily dose
-        const genericMonthly = Math.round(matched.medianGlobalCostPerDoseUsd * 30 * 100) / 100;
+        // Acute course dosing vs. 30-day chronic maintenance normalization
+        const ACUTE_COURSE_UNITS: Record<string, number> = {
+          'who-eml-artemether-lumefantrine': 6,
+          'who-eml-ors': 5,
+          'who-eml-amoxicillin': 10,
+          'who-eml-azithromycin': 10,
+          'who-eml-zinc-sulfate': 10
+        };
+        const courseUnits = ACUTE_COURSE_UNITS[matched.id] ?? 30;
+        const genericMonthly = Math.round(matched.medianGlobalCostPerDoseUsd * courseUnits * 100) / 100;
         const savings = Math.max(0, Math.round((originalCost - genericMonthly) * 100) / 100);
 
         totalMonopolyCost += originalCost;

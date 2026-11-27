@@ -1,6 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { PatientStateService } from '../patient-state.service';
 import { FhirBundleFactoryService } from './fhir-bundle-factory.service';
+import { getSecureRandomId } from '../../utils/security-helper';
 import * as DOMPurify from 'dompurify';
 
 export interface IGcpHealthcareConfig {
@@ -88,7 +89,7 @@ export class GcpHealthcareApiService {
       if (obj.telecom) delete obj.telecom;
       if (obj.address) delete obj.address;
       if (obj.identifier) {
-        obj.identifier = [{ system: 'urn:ietf:rfc:3986', value: `urn:uuid:${Math.random().toString(36).substring(2, 10)}` }];
+        obj.identifier = [{ system: 'urn:ietf:rfc:3986', value: `urn:uuid:${getSecureRandomId()}` }];
       }
 
       // Safe Harbor date truncation (retain birth year only)

@@ -1,4 +1,4 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { IPatientState } from './patient.types';
 
@@ -33,7 +33,40 @@ export class StorageService {
 
   private readonly DB_NAME = 'PocketGullDB';
   private readonly STORE_NAME = 'patients';
+  private readonly MIGRATION_BACKUP_KEY = 'pocketgull_db_migration_backup_v2';
   private readonly VERSION = 2;
+
+  readonly isStoragePersisted = signal<boolean>(false);
+
+  /**
+   * Requests persistent storage (`navigator.storage.persist()`) on first clinical write
+   * so OS/browser quota pressure never silently evicts AES-GCM IndexedDB patient state.
+   */
+  async ensurePersistentStorage(): Promise<boolean> {
+    if (!this.isBrowser || typeof navigator === 'undefined' || !navigator.storage) {
+      return false;
+    }
+    if (this.isStoragePersisted()) {
+      return true;
+    }
+    try {
+      if (typeof navigator.storage.persisted === 'function') {
+        const persisted = await navigator.storage.persisted();
+        if (persisted) {
+          this.isStoragePersisted.set(true);
+          return true;
+        }
+      }
+      if (typeof navigator.storage.persist === 'function') {
+        const granted = await navigator.storage.persist();
+        this.isStoragePersisted.set(Boolean(granted));
+        return Boolean(granted);
+      }
+    } catch {
+      this.isStoragePersisted.set(false);
+    }
+    return false;
+  }
 
   /**
    * Encrypts data using AES-GCM via the native Web Crypto API.
@@ -90,8 +123,29 @@ export class StorageService {
       const request = window.indexedDB.open(this.DB_NAME, this.VERSION);
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
-      request.onupgradeneeded = (event: any) => {
-        const db = event.target.result;
+      request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+        const target = event.target as IDBOpenDBRequest;
+        const db = target.result;
+        const tx = target.transaction;
+
+        // Defensive Schema Migration Guard: back up existing encrypted records prior to upgrade
+        if (event.oldVersion > 0 && tx && db.objectStoreNames.contains(this.STORE_NAME)) {
+          try {
+            const snapshotReq = tx.objectStore(this.STORE_NAME).getAll();
+            snapshotReq.onsuccess = () => {
+              if (typeof window !== 'undefined' && window.localStorage && snapshotReq.result?.length) {
+                try {
+                  window.localStorage.setItem(this.MIGRATION_BACKUP_KEY, JSON.stringify(snapshotReq.result));
+                } catch {
+                  // Ignore auxiliary localStorage quota limits
+                }
+              }
+            };
+          } catch {
+            // Non-blocking snapshot guard
+          }
+        }
+
         if (!db.objectStoreNames.contains(this.STORE_NAME)) {
           db.createObjectStore(this.STORE_NAME, { keyPath: 'id' });
         }
@@ -138,6 +192,7 @@ export class StorageService {
 
   async saveState(id: string, state: IPatientState): Promise<void> {
     if (!this.isBrowser) return;
+    await this.ensurePersistentStorage();
     if (this.isE2e || !this.hasIndexedDb) {
       const current = this.memDb.get(id) || { state: null, chatHistory: [] };
       current.state = state;
@@ -255,6 +310,7 @@ export class StorageService {
 
   async savePatient(patient: any): Promise<void> {
     if (!this.isBrowser) return;
+    await this.ensurePersistentStorage();
     if (this.isE2e || !this.hasIndexedDb) {
       const roster = this.memDb.get('roster') || [];
       const index = roster.findIndex((p: any) => p.id === patient.id);

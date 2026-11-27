@@ -1,5 +1,12 @@
 """Unit tests for DoublyRobustCausalEstimator in pocketgull_api."""
 
+import sys
+from pathlib import Path
+
+_API_DIR = str(Path(__file__).resolve().parent)
+if _API_DIR not in sys.path:
+    sys.path.insert(0, _API_DIR)
+
 import numpy as np
 from engines.causal_inference import DoublyRobustCausalEstimator
 

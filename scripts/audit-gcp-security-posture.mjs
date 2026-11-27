@@ -248,3 +248,10 @@ if (audit.findings.length > 0) {
     console.log(`     👉 ${f.remediation}\n`);
   });
 }
+
+const hasHardFailure = audit.checks.some(c => c.status === 'FAIL') || audit.score < 90;
+if (hasHardFailure) {
+  console.error(`❌ [GCP AUDIT FAILED] Posture score ${Math.max(0, audit.score)}/100 below Grade A threshold or hard FAIL present.`);
+  process.exit(1);
+}
+process.exit(0);

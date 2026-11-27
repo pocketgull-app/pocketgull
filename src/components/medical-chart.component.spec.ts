@@ -95,7 +95,7 @@ describe('MedicalChartComponent', () => {
     expect(chart.bioTypography.sloanDilationFactor()).toBe(1.20);
 
     const payload = chart.bioTypography.thermalLabelPayload();
-    expect(payload.mrn).toBe('#9842-01');
+    expect(payload.mrn).toBe('#SAMPLE-UNASSIGNED');
     expect(payload.zplCode).toContain('^XA');
   });
 });

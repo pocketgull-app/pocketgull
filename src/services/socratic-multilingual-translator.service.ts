@@ -131,13 +131,21 @@ const CLINICAL_JARGON_MAP: Record<string, { plain: string; phonetic: string }> =
 export class SocraticMultilingualTranslatorService {
   readonly supportedLanguages = signal<ILanguageSpec[]>(GLOBAL_50_LANGUAGES);
   readonly selectedLanguageCode = signal<string>('es');
+  readonly uiLanguageCode = signal<string>('en');
+  readonly explicitSelectionCount = signal<number>(0);
 
   readonly activeLanguage = computed<ILanguageSpec>(() => {
     const code = this.selectedLanguageCode();
     return this.supportedLanguages().find((l) => l.code === code) || GLOBAL_50_LANGUAGES[1];
   });
 
+  readonly activeUiLanguage = computed<ILanguageSpec>(() => {
+    const code = this.uiLanguageCode();
+    return this.supportedLanguages().find((l) => l.code === code) || GLOBAL_50_LANGUAGES[0];
+  });
+
   readonly isRtl = computed<boolean>(() => this.activeLanguage().direction === 'rtl');
+  readonly isUiRtl = computed<boolean>(() => this.activeUiLanguage().direction === 'rtl');
 
   readonly isAiTranslating = signal<boolean>(false);
 
@@ -232,6 +240,8 @@ export class SocraticMultilingualTranslatorService {
   setLanguage(code: string): void {
     if (this.supportedLanguages().some((l) => l.code === code)) {
       this.selectedLanguageCode.set(code);
+      this.uiLanguageCode.set(code);
+      this.explicitSelectionCount.update((n) => n + 1);
     }
   }
 

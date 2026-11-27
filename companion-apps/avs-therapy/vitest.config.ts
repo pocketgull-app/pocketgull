@@ -6,7 +6,12 @@ export default defineConfig({
   root: __dirname,
   test: {
     globals: true,
-    environment: 'node',
+    environment: 'jsdom',
+    environmentOptions: {
+      jsdom: {
+        url: 'http://localhost:4200/'
+      }
+    },
     hookTimeout: 30000,
     testTimeout: 30000,
     setupFiles: [

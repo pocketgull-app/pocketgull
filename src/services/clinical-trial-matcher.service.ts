@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { getSecureRandomFraction } from '../utils/security-helper';
 
 export interface IClinicalTrialMatch {
   nctId: string; // e.g. NCT04523456
@@ -74,6 +75,42 @@ export class ClinicalTrialMatcherService {
       eligibilitySummary: 'Adults age 18-65 with elevated fecal calprotectin (> 150 mcg/g) and active gut inflammation.',
       matchScorePercent: 90,
       clinicalTrialsGovUrl: 'https://clinicaltrials.gov/study/NCT05341209'
+    },
+    {
+      nctId: 'NCT05841920',
+      title: 'Non-Opioid Selective NaV1.8 Blockade + Graded Motor Imagery for Refractory Neuropathic & Chronic Back Pain',
+      condition: 'Neuropathic Pain / Chronic Lower Back Pain / Central Sensitization',
+      phase: 'Phase 3',
+      overallStatus: 'RECRUITING',
+      interventionName: 'VX-548 (Suzetrigine) + Somatic Mirror Neuromodulation',
+      leadSponsor: 'NIH HEAL Initiative Pain Research Network',
+      eligibilitySummary: 'Adults age 18-80 with chronic neuropathic, radicular, or centralized pain (VAS >= 5/10 or DN4 >= 4) seeking non-opioid analgesic sparing.',
+      matchScorePercent: 95,
+      clinicalTrialsGovUrl: 'https://clinicaltrials.gov/study/NCT05841920'
+    },
+    {
+      nctId: 'NCT06041288',
+      title: 'CYP2D6 & HLA-DRB1 Stratified Remyelination and Pain Sparing in Relapsing Multiple Sclerosis',
+      condition: 'Multiple Sclerosis / Demyelinating Pain / MTHFR Methylation',
+      phase: 'Phase 2',
+      overallStatus: 'RECRUITING',
+      interventionName: 'Clemastine Fumarate + L-Methylfolate Precision Regimen',
+      leadSponsor: 'UCSF Weill Institute for Neurosciences',
+      eligibilitySummary: 'Adults age 21-65 with MRI-confirmed demyelinating lesions, visual/sensory conduction delay, or neuropathic paresthesia.',
+      matchScorePercent: 93,
+      clinicalTrialsGovUrl: 'https://clinicaltrials.gov/study/NCT06041288'
+    },
+    {
+      nctId: 'NCT05783104',
+      title: 'Transcutaneous Auricular Vagal Neuromodulation for Autonomic Dysautonomia & Postprandial Gastroparesis',
+      condition: 'Autonomic Dysautonomia / Gastroparesis / Chronic Postprandial Dyspepsia',
+      phase: 'Phase 2',
+      overallStatus: 'RECRUITING',
+      interventionName: 'taVNS Closed-Loop 25Hz/0.1Hz Respiratory Pacing',
+      leadSponsor: 'Stanford Autonomic Disorders Consortium',
+      eligibilitySummary: 'Adults age 18-75 with orthostatic intolerance, low vagal HRV (SDNN < 45ms), or delayed gastric emptying.',
+      matchScorePercent: 91,
+      clinicalTrialsGovUrl: 'https://clinicaltrials.gov/study/NCT05783104'
     }
   ];
 
@@ -81,11 +118,17 @@ export class ClinicalTrialMatcherService {
    * Searches and matches active clinical trials for a patient condition.
    */
   public searchClinicalTrials(req: ITrialSearchRequest): IClinicalTrialMatch[] {
-    const q = (req.conditionName || '').toLowerCase();
+    const q = (req.conditionName || '').toLowerCase().trim();
+    const queryTokens = q.split(/[\s/,;+-]+/).filter(tok => tok.length >= 3);
     const recruitingOnly = req.recruitingOnly ?? true;
 
     let matches = this.mockTrialCatalog.filter(t => {
-      const condMatch = t.condition.toLowerCase().includes(q) || q.includes(t.condition.toLowerCase());
+      const condLower = t.condition.toLowerCase();
+      const titleLower = t.title.toLowerCase();
+      const condMatch =
+        condLower.includes(q) ||
+        q.includes(condLower) ||
+        queryTokens.some(tok => condLower.includes(tok) || titleLower.includes(tok));
       const statusMatch = recruitingOnly ? t.overallStatus === 'RECRUITING' : true;
       return condMatch && statusMatch;
     });
@@ -93,7 +136,7 @@ export class ClinicalTrialMatcherService {
     // If no exact match in catalog, generate dynamic tailored trial record
     if (matches.length === 0 && req.conditionName) {
       matches = [{
-        nctId: `NCT0${Math.floor(1000000 + Math.random() * 9000000)}`,
+        nctId: `NCT0${Math.floor(1000000 + getSecureRandomFraction() * 9000000)}`,
         title: `Innovative Targeted Protocol for ${req.conditionName}`,
         condition: req.conditionName,
         phase: 'Phase 2',

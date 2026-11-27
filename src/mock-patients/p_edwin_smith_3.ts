@@ -2,10 +2,10 @@ import { IPatient } from '../services/patient.types';
 
 export const p_edwin_smith_3: IPatient = {
   id: "p_edwin_smith_3",
-  name: "Edwin Smith Case 3",
+  name: "Homo Sapiens (Male, Edwin Smith Papyrus Case 3, 30y)",
   age: 30,
   gender: "Male",
-  lastVisit: "-1600.01.01",
+  lastVisit: "2026.01.15",
   preexistingConditions: [
     "Traumatic Skull Fracture",
     "Meningeal exposure",

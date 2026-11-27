@@ -1,7 +1,7 @@
 [
   {
     "id": "p001",
-    "name": "Homo Sapiens (Male, Metabolic",
+    "name": "Homo Sapiens (Male, Metabolic Syndrome, 58y)",
     "clinicalDomain": "Metabolic & Cardiometabolic Medicine",
     "intakeNote": "Patient presents for 6-month metabolic follow-up. Reports ongoing difficulty with CPAP compliance (apnea episodes > 15/hr), fasting glucose fluctuating between 145-170 mg/dL, and bilateral lower extremity edema.",
     "intakeGoal": "Titrate GLP-1/GIP co-agonist therapy, achieve HbA1c < 7.0%, and optimize CPAP bilevel pressure support.",
@@ -13,18 +13,21 @@
       "Functional Protocols"
     ],
     "researchQuery": "metabolic syndrome GLP-1 dual agonist renal protection",
+    "researchGroundedCount": 2,
+    "researchSavedToChart": true,
     "cognitiveLevel": "simplified",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p001-care-plan.pdf",
+    "pdfSizeBytes": 853731,
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p001-care-plan.html",
-    "timestamp": "2026-10-01T04:02:20.702Z",
+    "timestamp": "2026-11-16T20:59:29.531Z",
     "status": "EXPORTED"
   },
   {
     "id": "p002",
-    "name": "Homo Sapiens (Female, Asthma",
-    "clinicalDomain": "Pulmonary & Environmental Exposomics",
-    "intakeNote": "34yo female presenting with acute nocturnal wheezing, chest tightness following regional wildfire smoke exposure, and elevated absolute eosinophil count (580 cells/uL).",
-    "intakeGoal": "Establish asthma action plan, consider biologic dupilumab initiation, and deploy HEPA environmental filtration.",
+    "name": "Homo Sapiens (Female, Asthma & Respiratory, 42y)",
+    "clinicalDomain": "Pulmonary Pain & Non-Opioid Rehabilitation",
+    "intakeNote": "42yo female with Chronic Lower Back Pain (VAS 6/10) and Opioid Use Disorder (in remission) seeking non-opioid analgesic strategies alongside acute wildfire smoke airway reactivity.",
+    "intakeGoal": "Implement non-opioid pain modulation, avoid opioid relapse triggers, establish asthma action plan, and deploy HEPA environmental filtration.",
     "assessmentTab": "ros14",
     "assessmentName": "ROS-14 (Review of Systems - Pulmonary/Allergy)",
     "paradigms": [
@@ -32,19 +35,22 @@
       "Functional Protocols",
       "Monitoring & Follow-up"
     ],
-    "researchQuery": "severe eosinophilic asthma dupilumab particulate matter PM2.5",
+    "researchQuery": "chronic back pain non-opioid NaV1.8 asthma PM2.5",
+    "researchGroundedCount": 2,
+    "researchSavedToChart": true,
     "cognitiveLevel": "dyslexia",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p002-care-plan.pdf",
+    "pdfSizeBytes": 882500,
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p002-care-plan.html",
-    "timestamp": "2026-10-01T04:02:46.843Z",
+    "timestamp": "2026-11-16T20:59:55.547Z",
     "status": "EXPORTED"
   },
   {
     "id": "p003",
-    "name": "Homo Sapiens (Male, Cognitive",
-    "clinicalDomain": "Neurogeriatrics & Glymphatic Health",
-    "intakeNote": "71yo male accompanied by spouse reporting progressive short-term recall difficulties over 14 months, nocturnal sleep fragmentation, and autonomic orthostatic lightheadedness.",
-    "intakeGoal": "Perform MoCA baseline screening, optimize slow-wave sleep glymphatic clearance, and screen for vascular vs neurodegenerative etiology.",
+    "name": "Homo Sapiens (Male, Geriatric Cardiac, 81y)",
+    "clinicalDomain": "Neurogeriatrics, Osteoarthritis Pain & Glymphatic Health",
+    "intakeNote": "81yo male reporting progressive short-term recall difficulties, right hip and knee osteoarthritis discomfort, nocturnal sleep fragmentation, and autonomic orthostatic lightheadedness.",
+    "intakeGoal": "Perform MoCA baseline screening, optimize slow-wave sleep glymphatic clearance, and deploy joint-sparing geriatric analgesia.",
     "assessmentTab": "moca",
     "assessmentName": "MoCA (Montreal Cognitive Assessment 30-Point)",
     "paradigms": [
@@ -53,30 +59,36 @@
       "Skeptical Epistemology & Socratic Audit"
     ],
     "researchQuery": "glymphatic system slow wave sleep cognitive decline prevention",
+    "researchGroundedCount": 2,
+    "researchSavedToChart": true,
     "cognitiveLevel": "child",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p003-care-plan.pdf",
+    "pdfSizeBytes": 755934,
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p003-care-plan.html",
-    "timestamp": "2026-10-01T04:03:06.349Z",
+    "timestamp": "2026-11-16T21:00:15.575Z",
     "status": "EXPORTED"
   },
   {
     "id": "p004",
-    "name": "Homo Sapiens (Female, Autoimmune",
-    "clinicalDomain": "Neuro-Endocrine & Functional Immunology",
-    "intakeNote": "42yo female presenting with persistent afternoon exhaustion, cold intolerance, widespread fibro-myalgic tenderness, and elevated anti-TPO antibodies (> 400 IU/mL).",
-    "intakeGoal": "Implement low-dose naltrexone (LDN) trial, anti-inflammatory micronutrient protocol, and stress-induced HPA axis pacing.",
+    "name": "Pongo Pygmaeus (Orangutan, Arboreal Hominid, 16y)",
+    "clinicalDomain": "Comparative Cardiopulmonary & Renal Physiology",
+    "intakeNote": "16yo arboreal hominid presenting with cardiopulmonary strain (IHD & COPD pattern) and cardiometabolic renal intolerance requiring comparative electrolyte and autonomic conservation pacing.",
+    "intakeGoal": "Stabilize cardiopulmonary hemodynamics, renal filtration margin, and anti-inflammatory phytotherapeutic diet.",
     "assessmentTab": "gad7",
-    "assessmentName": "GAD-7 (Generalized Anxiety Screener)",
+    "assessmentName": "GAD-7 (Behavioral & Autonomic Screener)",
     "paradigms": [
       "Functional Protocols",
       "Treatment Matrix",
       "Patient Education"
     ],
-    "researchQuery": "hashimoto thyroiditis low dose naltrexone gut permeability",
+    "researchQuery": "cardiopulmonary strain renal syndrome inflammatory autonomic pacing",
+    "researchGroundedCount": 2,
+    "researchSavedToChart": true,
     "cognitiveLevel": "standard",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p004-care-plan.pdf",
+    "pdfSizeBytes": 746737,
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p004-care-plan.html",
-    "timestamp": "2026-10-01T04:03:24.979Z",
+    "timestamp": "2026-11-16T21:00:34.537Z",
     "status": "EXPORTED"
   },
   {
@@ -93,10 +105,13 @@
       "Skeptical Epistemology & Socratic Audit"
     ],
     "researchQuery": "postprandial dysautonomia vagal nerve stimulation gastroparesis",
+    "researchGroundedCount": 2,
+    "researchSavedToChart": true,
     "cognitiveLevel": "simplified",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_charles_darwin-care-plan.pdf",
+    "pdfSizeBytes": 754220,
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_charles_darwin-care-plan.html",
-    "timestamp": "2026-10-01T04:03:37.287Z",
+    "timestamp": "2026-11-16T21:00:48.004Z",
     "status": "EXPORTED"
   },
   {
@@ -113,15 +128,18 @@
       "Patient Education"
     ],
     "researchQuery": "neuropathic pain central sensitization mirror visual feedback",
+    "researchGroundedCount": 2,
+    "researchSavedToChart": true,
     "cognitiveLevel": "standard",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_frida_kahlo-care-plan.pdf",
+    "pdfSizeBytes": 709890,
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_frida_kahlo-care-plan.html",
-    "timestamp": "2026-10-01T04:03:54.638Z",
+    "timestamp": "2026-11-16T21:01:05.670Z",
     "status": "EXPORTED"
   },
   {
     "id": "p_marie_curie",
-    "name": "Marie Curie",
+    "name": "Madame Marie Curie",
     "clinicalDomain": "Hematology & Radiation Toxicology",
     "intakeNote": "Profound fatigue, petechial hemorrhages on distal forearms, normocytic normochromic anemia, and chronic cumulative ionizing radiation exposure.",
     "intakeGoal": "Prevent bone marrow hypoplasia, administer cellular antioxidant scavengers, and institute protective environmental shields.",
@@ -133,15 +151,18 @@
       "Treatment Matrix"
     ],
     "researchQuery": "ionizing radiation aplastic anemia hematopoietic stem cell protection",
+    "researchGroundedCount": 2,
+    "researchSavedToChart": true,
     "cognitiveLevel": "simplified",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_marie_curie-care-plan.pdf",
+    "pdfSizeBytes": 718545,
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_marie_curie-care-plan.html",
-    "timestamp": "2026-10-01T04:04:06.893Z",
+    "timestamp": "2026-11-16T21:01:18.860Z",
     "status": "EXPORTED"
   },
   {
     "id": "p_edwin_smith_3",
-    "name": "Edwin Smith",
+    "name": "Homo Sapiens (Male, Edwin Smith Papyrus Case 3, 30y)",
     "clinicalDomain": "Spinal Biomechanics & Osteopathic Ergonomics",
     "intakeNote": "C5-C6 and C6-C7 radiculopathy with progressive thenar atrophy, intermittent numbness along the C6 dermatome, and severe paraspinal muscle hypertonicity.",
     "intakeGoal": "Biomechanical cervical mobilization, postural ergonomic realignment, and neuroforaminal decompression.",
@@ -152,31 +173,37 @@
       "Global Health & WHO Initiatives",
       "Summary Overview"
     ],
-    "researchQuery": "cervical radiculopathy conservative biomechanical decompression",
+    "researchQuery": "cervical radiculopathy conservative biomechanical decompression pain",
+    "researchGroundedCount": 2,
+    "researchSavedToChart": true,
     "cognitiveLevel": "standard",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_edwin_smith_3-care-plan.pdf",
+    "pdfSizeBytes": 712550,
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_edwin_smith_3-care-plan.html",
-    "timestamp": "2026-10-01T04:04:24.254Z",
+    "timestamp": "2026-11-16T21:01:36.581Z",
     "status": "EXPORTED"
   },
   {
     "id": "p_mara_santos",
-    "name": "Mara Santos",
-    "clinicalDomain": "Pediatric Pulmonology & Rare Disease Genetics",
-    "intakeNote": "Adolescent female with Cystic Fibrosis (delta-F508 homozygous) presenting with sticky mucopurulent sputum, productive cough, and weight velocity plateauing.",
-    "intakeGoal": "Optimize highly effective CFTR modulator therapy (elexacaftor/tezacaftor/ivacaftor), airway clearance vibrating vest, and high-calorie pancreatic enzyme dosing.",
+    "name": "Homo Sapiens (Female, Neurological & Methylation, 34y)",
+    "clinicalDomain": "Neuroimmunology, MTHFR Methylation & CYP2D6 Pharmacogenomics",
+    "intakeNote": "34yo female with Relapsing-Remitting Multiple Sclerosis (HLA-DRB1*15:01), compound MTHFR C677T methylation deficit (homocysteine 14.1 umol/L), mitochondrial CoQ10 depletion, and CYP2D6 pharmacogenomic constraints on neuropathic pain analgesia.",
+    "intakeGoal": "Optimize remyelination neuroprotection, replace L-methylfolate & ubiquinol CoQ10, avoid CYP2D6-incompatible opioids/SSRIs, and align baclofen safety.",
     "assessmentTab": "growthyself",
-    "assessmentName": "Grow-Thyself (Pediatric Wellness & Growth Screener)",
+    "assessmentName": "Grow-Thyself (Holistic Neuro-Metabolic & Pain Screener)",
     "paradigms": [
       "Summary Overview",
       "Functional Protocols",
       "Global Health & WHO Initiatives"
     ],
-    "researchQuery": "cystic fibrosis CFTR modulators pancreatic enzyme replacement therapy",
+    "researchQuery": "multiple sclerosis MTHFR CYP2D6 remyelination pain",
+    "researchGroundedCount": 2,
+    "researchSavedToChart": true,
     "cognitiveLevel": "child",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_mara_santos-care-plan.pdf",
+    "pdfSizeBytes": 1218875,
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_mara_santos-care-plan.html",
-    "timestamp": "2026-10-01T04:04:36.364Z",
+    "timestamp": "2026-11-16T21:01:48.862Z",
     "status": "EXPORTED"
   },
   {
@@ -193,10 +220,13 @@
       "Patient Education"
     ],
     "researchQuery": "amebic liver abscess nutritional rehabilitation hepatic recovery",
+    "researchGroundedCount": 2,
+    "researchSavedToChart": true,
     "cognitiveLevel": "dyslexia",
     "pdfPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_srinivasa_ramanujan-care-plan.pdf",
+    "pdfSizeBytes": 695500,
     "htmlPath": "C:\\Users\\philg\\Pocketgull\\pocketgull\\artifacts\\shift-care-plans\\patient-p_srinivasa_ramanujan-care-plan.html",
-    "timestamp": "2026-10-01T04:05:01.315Z",
+    "timestamp": "2026-11-16T21:02:14.379Z",
     "status": "EXPORTED"
   }
 ]

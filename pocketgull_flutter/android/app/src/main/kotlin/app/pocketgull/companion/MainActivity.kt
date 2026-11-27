@@ -7,9 +7,13 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterFragmentActivity() {
     private val CHANNEL = "app.pocketgull.companion/telemetry"
+    private val healthConnectBridge = HealthConnectBridge(this)
+    private val bleWearablesBridge = BleWearablesBridge(this)
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        healthConnectBridge.attach(flutterEngine)
+        bleWearablesBridge.attach(flutterEngine)
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
@@ -32,5 +36,11 @@ class MainActivity : FlutterFragmentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        healthConnectBridge.dispose()
+        bleWearablesBridge.dispose()
+        super.onDestroy()
     }
 }

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import crypto from 'crypto';
+import { SoarOrchestratorService } from '../services/soar-orchestrator.service';
 
 export interface ICanaryThreatEvent {
   id: string;
@@ -89,12 +90,26 @@ export function createCanaryRouter(): Router {
   // Handler for honeypot traps
   const handleHoneypot = (trapName: string) => (req: Request, res: Response) => {
     const event = recordCanaryHit(req, trapName);
+    const isLocalLoopback =
+      event.remoteIp === '127.0.0.1' || event.remoteIp === '::1' || event.remoteIp === 'localhost';
+
+    // Dispatch event-driven SOAR Playbook 4 (DRY_RUN on local loopback to preserve dev ergonomics)
+    void SoarOrchestratorService.orchestrateAlert({
+      alertId: event.id,
+      source: 'CANARY_HONEYPOT',
+      playbookId: 'PB-04_INFRASTRUCTURE_DOS_HONEYPOT',
+      eventCategory: 'CANARY_PROBE_SURGE',
+      severity: 'P2_HIGH',
+      offendingIp: event.remoteIp,
+      mode: isLocalLoopback ? 'DRY_RUN' : 'AUTOMATED_CONTAINMENT'
+    });
     
     // Return synthetic decoy payload with forensic marker
     res.status(403).json({
       error: 'Access Denied: Restricted Clinical Boundary',
       incidentTraceId: event.forensicTraceId,
       classification: event.threatActorClassification,
+      soarPlaybookTriggered: 'PB-04_INFRASTRUCTURE_DOS_HONEYPOT',
       notice: 'This honeypot interaction has been recorded in the Mandiant forensic threat ledger (HIPAA §164.312(b)).',
     });
   };

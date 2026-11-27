@@ -206,7 +206,7 @@ export class CmsRpmSuperbillService {
     const conditions = (patient?.preexistingConditions || []).map(c => typeof c === 'string' ? c.toLowerCase() : String(c).toLowerCase());
     const symptoms = (patient?.symptoms || []).map(s => {
       if (typeof s === 'string') return s.toLowerCase();
-      if (s && typeof s === 'object') return (s.name || s.description || JSON.stringify(s)).toLowerCase();
+      if (s && typeof s === 'object') return String(s.name || s.description || JSON.stringify(s)).toLowerCase();
       return String(s).toLowerCase();
     });
     const mappings: IIcd10Mapping[] = [];

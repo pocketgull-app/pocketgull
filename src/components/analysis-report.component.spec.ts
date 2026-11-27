@@ -19,6 +19,7 @@ import { AvsEngineService } from '../services/avs-engine.service';
 import { AiCacheService } from '../services/ai-cache.service';
 import { MarkdownService } from '../services/markdown.service';
 import { BionicReadingService } from '../services/bionic-reading.service';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 describe('AnalysisReportComponent Unit Suite', () => {
   let component: AnalysisReportComponent;
@@ -162,5 +163,38 @@ describe('AnalysisReportComponent Unit Suite', () => {
   it('8. Updates AVS engine bitrate tier', () => {
     component.setAvsBitrate('ultra' as any);
     expect(mockAvsService.setBitrateTier).toHaveBeenCalledWith('ultra');
+  });
+
+  it('9. Enforces SMoE microSkillDisplayPolicy, emits FHIR-SOAP Synapse pulse on lens shift, and records 64-char hex attestation receipt', () => {
+    const moeRouter = TestBed.inject(ClinicalMoERouterService);
+    moeRouter.clearOverrides();
+
+    expect(component.isExploratoryCollapsed()).toBe(false);
+    moeRouter.setMicroSkillDensityOverride('stat-focused');
+    expect(component.isExploratoryCollapsed()).toBe(true);
+
+    component.changeLens('Treatment Matrix');
+    expect(component.isFhirSoapSynapseActive()).toBe(true);
+    expect(moeRouter.activeSynapsePulse()?.token).toBe('fhir-soap-coupling');
+
+    component.attestAndRetireAnalysisReport();
+    const receipt = moeRouter.completedSkillReceipts().find(r => r.expertId === 'analysis-report');
+    expect(receipt).toBeDefined();
+    expect(receipt?.sha256DigestHex).toMatch(/^[0-9a-f]{64}$/);
+
+    moeRouter.clearOverrides();
+  });
+
+  it('resets isEmergencyMode on exitEmergencyMode and switches safely to PhysioNet Telemetry without a report', () => {
+    const state = TestBed.inject(PatientStateService) as unknown as {
+      isEmergencyMode: { (): boolean; set(v: boolean): void };
+    };
+    state.isEmergencyMode.set(true);
+    component.changeLens('PhysioNet Telemetry');
+    expect(component.activeLens()).toBe('PhysioNet Telemetry');
+    expect(component.reportSections()).toBeFalsy();
+
+    component.exitEmergencyMode();
+    expect(state.isEmergencyMode()).toBe(false);
   });
 });

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-import { Component, ElementRef, viewChild, input, model, effect, AfterViewInit, OnDestroy, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ElementRef, viewChild, input, model, effect, inject, AfterViewInit, OnDestroy, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { ClinicalMoERouterService } from '../services/clinical-moe-router.service';
 
 export interface IKneeAbnormalityLocus {
   id: string;
@@ -47,6 +48,17 @@ export interface IAnatomicalCallout {
               <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                 WebGL Procedural PBR
               </span>
+              @if (isKinematicSynapseActive()) {
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                      title="Cross-Component Synapse Active: Kinematic shear load coupled with Counterfactual / Body Twin">
+                  ⚡ Kinematic Synapse
+                </span>
+              }
+              @if (isExploratoryCollapsed()) {
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-200 border border-amber-500/40">
+                  ⚡ Focused Density
+                </span>
+              }
             </div>
             <p class="text-xs text-zinc-400 mt-0.5">
               RSNA Multi-Plane Abnormality Detection, Extensor/Flexor Myotendinous Complex & Tibiofibular Kinematics
@@ -98,47 +110,58 @@ export interface IAnatomicalCallout {
             <span>{{ showSoftTissueLayer() ? 'Muscles & Tendons ON' : 'Osteology Only' }}</span>
           </button>
 
-          <button 
-            (click)="toggleAnatomicalLabels()"
-            [attr.aria-pressed]="showAnatomicalLabels()"
-            [class.bg-emerald-500]="showAnatomicalLabels()"
-            [class.text-zinc-950]="showAnatomicalLabels()"
-            [class.bg-zinc-900]="!showAnatomicalLabels()"
-            [class.text-zinc-400]="!showAnatomicalLabels()"
-            class="px-3 py-2 rounded-xl border border-zinc-800 transition text-[11px] min-h-[44px] font-mono font-bold flex items-center gap-1.5 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none">
-            <span>🏷️</span>
-            <span>{{ showAnatomicalLabels() ? 'Callouts ON' : 'Callouts OFF' }}</span>
-          </button>
+          @if (!isExploratoryCollapsed()) {
+            <button 
+              (click)="toggleAnatomicalLabels()"
+              [attr.aria-pressed]="showAnatomicalLabels()"
+              [class.bg-emerald-500]="showAnatomicalLabels()"
+              [class.text-zinc-950]="showAnatomicalLabels()"
+              [class.bg-zinc-900]="!showAnatomicalLabels()"
+              [class.text-zinc-400]="!showAnatomicalLabels()"
+              class="px-3 py-2 rounded-xl border border-zinc-800 transition text-[11px] min-h-[44px] font-mono font-bold flex items-center gap-1.5 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-none">
+              <span>🏷️</span>
+              <span>{{ showAnatomicalLabels() ? 'Callouts ON' : 'Callouts OFF' }}</span>
+            </button>
 
-          <button 
-            (click)="toggleStressHeatmap()"
-            [attr.aria-pressed]="showStressHeatmap()"
-            [class.bg-rose-500]="showStressHeatmap()"
-            [class.text-white]="showStressHeatmap()"
-            [class.bg-zinc-900]="!showStressHeatmap()"
-            [class.text-zinc-400]="!showStressHeatmap()"
-            class="px-3 py-2 rounded-xl border border-zinc-800 transition text-[11px] min-h-[44px] font-mono font-bold flex items-center gap-1.5 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none">
-            <span>🔥</span>
-            <span>{{ showStressHeatmap() ? 'FEA Stress ON' : 'FEA Stress OFF' }}</span>
-          </button>
+            <button 
+              (click)="toggleStressHeatmap()"
+              [attr.aria-pressed]="showStressHeatmap()"
+              [class.bg-rose-500]="showStressHeatmap()"
+              [class.text-white]="showStressHeatmap()"
+              [class.bg-zinc-900]="!showStressHeatmap()"
+              [class.text-zinc-400]="!showStressHeatmap()"
+              class="px-3 py-2 rounded-xl border border-zinc-800 transition text-[11px] min-h-[44px] font-mono font-bold flex items-center gap-1.5 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none">
+              <span>🔥</span>
+              <span>{{ showStressHeatmap() ? 'FEA Stress ON' : 'FEA Stress OFF' }}</span>
+            </button>
 
-          <button 
-            (click)="toggleGaitSimulation()"
-            [attr.aria-pressed]="isGaitSimulating()"
-            [class.bg-cyan-500]="isGaitSimulating()"
-            [class.text-zinc-950]="isGaitSimulating()"
-            [class.bg-zinc-900]="!isGaitSimulating()"
-            [class.text-zinc-300]="!isGaitSimulating()"
-            class="px-3 py-2 rounded-xl border border-zinc-800 transition text-[11px] min-h-[44px] font-mono font-bold flex items-center gap-1.5 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
-            <span>🚶</span>
-            <span>{{ isGaitSimulating() ? 'Gait ON (' + gaitPhaseLabel() + ')' : 'OpenSim Gait' }}</span>
-          </button>
+            <button 
+              (click)="toggleGaitSimulation()"
+              [attr.aria-pressed]="isGaitSimulating()"
+              [class.bg-cyan-500]="isGaitSimulating()"
+              [class.text-zinc-950]="isGaitSimulating()"
+              [class.bg-zinc-900]="!isGaitSimulating()"
+              [class.text-zinc-300]="!isGaitSimulating()"
+              class="px-3 py-2 rounded-xl border border-zinc-800 transition text-[11px] min-h-[44px] font-mono font-bold flex items-center gap-1.5 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
+              <span>🚶</span>
+              <span>{{ isGaitSimulating() ? 'Gait ON (' + gaitPhaseLabel() + ')' : 'OpenSim Gait' }}</span>
+            </button>
+          }
 
           <button 
             (click)="toggleAutoRotate()"
             class="px-3 py-2 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-300 hover:text-cyan-300 transition text-[11px] min-h-[44px] cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">
             {{ isAutoRotating() ? '⏸ Pause Spin' : '▶ 360° Spin' }}
           </button>
+
+          @if (moeRouter) {
+            <button
+              type="button"
+              (click)="attestAndRetireKneeHud()"
+              class="px-3 py-2 rounded-xl border border-emerald-500/40 bg-emerald-900/60 hover:bg-emerald-800 text-emerald-100 transition text-[11px] min-h-[44px] font-bold cursor-pointer">
+              ✓ Attest Joint HUD
+            </button>
+          }
         </div>
       </div>
 
@@ -328,6 +351,15 @@ export interface IAnatomicalCallout {
 })
 export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
   readonly rendererContainer = viewChild<ElementRef<HTMLDivElement>>('rendererContainer');
+  readonly moeRouter = inject(ClinicalMoERouterService, { optional: true });
+
+  readonly isExploratoryCollapsed = computed(() =>
+    Boolean(this.moeRouter?.microSkillDisplayPolicy().collapseExploratorySubViews)
+  );
+
+  readonly isKinematicSynapseActive = computed(() =>
+    this.moeRouter?.activeSynapseToken() === 'kinematic-shear-coupling'
+  );
 
   // Input from parent lens or standalone HUD
   readonly selectedTargetKey = input<string | null>(null);
@@ -726,6 +758,13 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
     this.isGaitSimulating.set(false);
     this.flexionAngle.set(val);
     this.updateJointKinematics(val);
+    this.moeRouter?.emitSynapseSignalPulse(
+      'kinematic-shear-coupling',
+      'knee-hologram',
+      'counterfactual-simulator',
+      'Knee Flexion / Shear',
+      `${val}° (${this.peakVonMisesMpa()} MPa)`
+    );
   }
 
   private updateJointKinematics(angleDeg: number): void {
@@ -761,11 +800,24 @@ export class KneeHologramHudComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  attestAndRetireKneeHud(): void {
+    const locus = this.selectedLocus();
+    const summary = `3D Joint Slicer (${this.activePlane()} • ${locus?.name || 'ACL'} • ${this.peakVonMisesMpa()} MPa)`;
+    this.moeRouter?.completeAndRetireSkillGoal('knee-hologram', summary);
+  }
+
   selectLocus(locus: IKneeAbnormalityLocus): void {
     this.selectedLocus.set(locus);
     this.activePlane.set(locus.plane);
     this.updatePlanePositions(locus.position);
     this.updateSlicerVisibility();
+    this.moeRouter?.emitSynapseSignalPulse(
+      'kinematic-shear-coupling',
+      'knee-hologram',
+      'counterfactual-simulator',
+      '3D Joint Locus',
+      `${locus.name} (${locus.severity})`
+    );
     if (this.targetReticle) {
       this.targetReticle.position.set(...locus.position);
       this.targetReticle.visible = true;

@@ -22,6 +22,7 @@ import { PocketGullBadgeComponent } from './shared/pocket-gull-badge.component';
 import { MetricCardComponent } from './shared/metric-card.component';
 import { ClinicalDataCardComponent } from './clinical-data-card.component';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
+import { PgTranslatePipe } from '../pipes/pg-translate.pipe';
 import { DocDrillService } from '../services/doc-drill.service';
 
 @Component({
@@ -29,6 +30,7 @@ import { DocDrillService } from '../services/doc-drill.service';
   standalone: true,
   imports: [
     CommonModule, 
+    PgTranslatePipe,
     PocketGullButtonComponent, 
     PocketGullInputComponent, 
     PocketGullBadgeComponent, 
@@ -98,7 +100,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                   <div class="flex justify-between items-center mb-3">
                     <h2 class="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-[0.15em] flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                        Current Visit / Chief Complaint
+                        {{ 'Current Visit / Chief Complaint' | pgT:'summary.chief_complaint' }}
                     </h2>
                     <pocket-gull-button 
                       variant="ghost" 
@@ -115,7 +117,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                       [value]="newVisitReason()"
                       (valueChange)="newVisitReason.set($event)"
                       [rows]="3"
-                      placeholder="Enter reason for today's visit or primary health goal..."
+                      [placeholder]="'Enter reason for today\\'s visit or primary health goal...' | pgT:'summary.visit_placeholder'"
                       class="w-full">
                     </pocket-gull-input>
                   </div>
@@ -124,7 +126,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                       (click)="saveNewVisit()" 
                       [disabled]="!newVisitReason().trim()"
                       size="sm">
-                      Save Visit Note
+                      {{ 'Save Visit Note' | pgT:'summary.save_visit_note' }}
                     </pocket-gull-button>
                   </div>
                 </div>
@@ -136,7 +138,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                     <div class="flex items-center gap-2">
                       <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
-                        🏷️ PAIR Data Cards & Healthsheet Transparency
+                        🏷️ {{ 'PAIR Data Cards & Healthsheet Transparency' | pgT:'summary.pair_cards' }}
                       </span>
                       <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-900/60 text-indigo-300 font-mono">
                         arXiv:2202.13028
@@ -144,7 +146,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                     </div>
 
                     <div class="flex items-center gap-1 text-zinc-400 group-hover:text-zinc-200 text-xs font-bold transition">
-                      <span>{{ showHealthsheet() ? 'Hide Healthsheet' : 'Inspect Dataset Lineage' }}</span>
+                      <span>{{ showHealthsheet() ? ('Hide Healthsheet' | pgT:'summary.hide_healthsheet') : ('Inspect Dataset Lineage' | pgT:'summary.inspect_lineage') }}</span>
                       <span [class.rotate-180]="showHealthsheet()" class="inline-block transition-transform duration-200 text-sm">▼</span>
                     </div>
                   </button>
@@ -162,20 +164,20 @@ import { DocDrillService } from '../services/doc-drill.service';
                     class="w-full flex items-center justify-between gap-2 text-left cursor-pointer group">
                     <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                       <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-[0.15em]">Live Biometric Telemetry</span>
+                        <span class="text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-[0.15em]">{{ 'Live Biometric Telemetry' | pgT:'summary.live_biometrics' }}</span>
                         <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-bold">
-                          {{ isBiometricsExpanded() ? 'EXPANDED' : 'COLLAPSED' }}
+                          {{ isBiometricsExpanded() ? ('EXPANDED' | pgT:'summary.expanded') : ('COLLAPSED' | pgT:'summary.collapsed') }}
                         </span>
                       </div>
                       @if (!isBiometricsExpanded()) {
                         <span class="text-xs font-mono text-slate-600 dark:text-zinc-400 truncate">
-                          BP {{ state.vitals().bp || '120/80' }} • HR {{ state.vitals().hr || '72' }} bpm • SpO2 {{ state.vitals().spO2 || '98%' }}
+                          BP <bdi dir="ltr">{{ state.vitals().bp || '120/80' }}</bdi> • HR <bdi dir="ltr">{{ state.vitals().hr || '72' }} bpm</bdi> • SpO2 <bdi dir="ltr">{{ state.vitals().spO2 || '98%' }}</bdi>
                         </span>
                       }
                     </div>
 
                     <div class="flex items-center gap-1 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-zinc-200 text-xs font-bold transition">
-                      <span>{{ isBiometricsExpanded() ? 'Hide Readouts' : 'Expand Biometrics' }}</span>
+                      <span>{{ isBiometricsExpanded() ? ('Hide Readouts' | pgT:'summary.hide_readouts') : ('Expand Biometrics' | pgT:'summary.expand_biometrics') }}</span>
                       <span [class.rotate-180]="isBiometricsExpanded()" class="inline-block transition-transform duration-200 text-sm">▼</span>
                     </div>
                   </button>
@@ -184,7 +186,7 @@ import { DocDrillService } from '../services/doc-drill.service';
                     <div class="mt-4 pt-4 border-t border-gray-100 dark:border-zinc-800 grid grid-cols-2 md:grid-cols-4 gap-4 animate-in">
                     <div role="button" tabindex="0" aria-label="Drill down on Blood Pressure with Doc Drill" (keydown.enter)="docDrill.openDrill('Mean Arterial Pressure (MAP)', { category: 'VITALS' })" (keydown.space)="$event.preventDefault(); docDrill.openDrill('Mean Arterial Pressure (MAP)', { category: 'VITALS' })" class="cursor-pointer transition hover:scale-[1.02] rounded-xl focus-visible:ring-2 focus-visible:ring-sky-500" (click)="docDrill.openDrill('Mean Arterial Pressure (MAP)', { category: 'VITALS' })" title="Click to drill down on Blood Pressure with Doc Drill">
                       <app-metric-card
-                        title="Blood Pressure"
+                        [title]="'Blood Pressure' | pgT:'summary.blood_pressure'"
                         [value]="state.vitals().bp || '--'"
                         unit="mmHg"
                         [status]="state.vitals().bp === '120/80' ? 'normal' : 'warning'"
@@ -247,9 +249,9 @@ import { DocDrillService } from '../services/doc-drill.service';
                               </button>
                             </div>
                             <div class="flex items-center gap-2">
-                              <span class="text-3xl font-light tracking-tight text-gray-900 dark:text-zinc-100">
+                              <bdi dir="ltr" class="text-3xl font-light tracking-tight text-gray-900 dark:text-zinc-100">
                                 {{ ((risk.risk_score ?? 0) * 100) | number:'1.0-1' }}%
-                              </span>
+                              </bdi>
                               <span class="text-xs text-gray-400 dark:text-zinc-500 font-medium">score</span>
                             </div>
                           </div>
@@ -762,12 +764,14 @@ import { DocDrillService } from '../services/doc-drill.service';
                                         </pocket-gull-input>
                                     </div>
                                     <div class="w-32">
-                                        <pocket-gull-input
-                                            [value]="med.value"
-                                            (valueChange)="state.updateMedication(med.id, 'value', $event)"
-                                            placeholder="Dosage"
-                                            class="w-full">
-                                        </pocket-gull-input>
+                                        <bdi dir="ltr" class="block w-full">
+                                          <pocket-gull-input
+                                              [value]="med.value"
+                                              (valueChange)="state.updateMedication(med.id, 'value', $event)"
+                                              placeholder="Dosage"
+                                              class="w-full">
+                                          </pocket-gull-input>
+                                        </bdi>
                                     </div>
                                     <pocket-gull-button 
                                         variant="ghost" 

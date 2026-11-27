@@ -63,7 +63,7 @@ import { OsceTrainerService, IOsceScenario } from '../services/osce-trainer.serv
               </span>
               <span class="text-xs text-teal-400 font-mono font-bold">{{ scenario.category }}</span>
             </div>
-            <div class="text-xs font-bold text-zinc-200 line-clamp-1">
+            <div class="text-xs font-bold text-zinc-200 line-clamp-2 leading-snug">
               {{ scenario.title }}
             </div>
           </button>

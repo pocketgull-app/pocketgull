@@ -1,4 +1,16 @@
-const root: any = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global);
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2026 PocketGull LLC & Phillip Gear
+
+import '@angular/compiler';
+import { webcrypto } from 'node:crypto';
+
+const root: any =
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof window !== 'undefined'
+      ? window
+      : global;
+
 root.ng = root.ng || { config: { production: false } };
 if (!root.ng.config) {
   root.ng.config = { production: false };
@@ -15,48 +27,273 @@ if (typeof window !== 'undefined') {
   (window as any).ngDevMode = true;
 }
 
-import '@angular/compiler';
-
-class MockNode {
-  static ELEMENT_NODE = 1;
-  static ATTRIBUTE_NODE = 2;
-  static TEXT_NODE = 3;
-  static COMMENT_NODE = 8;
-  static DOCUMENT_NODE = 9;
-  static DOCUMENT_TYPE_NODE = 10;
-  static DOCUMENT_FRAGMENT_NODE = 11;
-  nodeType = 1;
-  nodeName = 'DIV';
-  childNodes: any[] = [];
-  parentNode: any = null;
-}
-class MockElement extends MockNode {
-  tagName = 'DIV';
-  attributes: any = {};
-}
-class MockHTMLElement extends MockElement {}
-class MockHTMLDivElement extends MockHTMLElement {}
-class MockHTMLInputElement extends MockHTMLElement { value = ''; }
-class MockHTMLButtonElement extends MockHTMLElement { disabled = false; }
-class MockHTMLAnchorElement extends MockHTMLElement { href = ''; }
-class MockHTMLCanvasElement extends MockHTMLElement {
-  width = 300;
-  height = 150;
-  toDataURL() {
-    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+// --- WebCrypto fallback when jsdom omits crypto.subtle ---
+try {
+  if (typeof globalThis.crypto === 'undefined' || typeof globalThis.crypto.subtle === 'undefined') {
+    Object.defineProperty(globalThis, 'crypto', {
+      value: webcrypto,
+      writable: true,
+      configurable: true
+    });
   }
-  getContext(type?: string) {
-    if (type && (type.includes('webgl') || type.includes('experimental'))) {
-      return null;
+  if (typeof window !== 'undefined' && (typeof window.crypto === 'undefined' || typeof window.crypto.subtle === 'undefined')) {
+    Object.defineProperty(window, 'crypto', {
+      value: globalThis.crypto,
+      writable: true,
+      configurable: true
+    });
+  }
+} catch {}
+
+// --- Real browser-API shims not implemented by jsdom ---
+
+if (typeof (globalThis as any).ResizeObserver === 'undefined') {
+  class ResizeObserverShim {
+    observe(_target: Element): void {}
+    unobserve(_target: Element): void {}
+    disconnect(): void {}
+  }
+  (globalThis as any).ResizeObserver = ResizeObserverShim;
+  if (typeof window !== 'undefined') {
+    (window as any).ResizeObserver = ResizeObserverShim;
+  }
+}
+
+if (typeof (globalThis as any).IntersectionObserver === 'undefined') {
+  class IntersectionObserverShim {
+    readonly root: Element | Document | null = null;
+    readonly rootMargin = '0px';
+    readonly thresholds: ReadonlyArray<number> = [0];
+    observe(_target: Element): void {}
+    unobserve(_target: Element): void {}
+    disconnect(): void {}
+    takeRecords(): IntersectionObserverEntry[] {
+      return [];
     }
-    const baseCtx: any = {
-      canvas: this,
+  }
+  (globalThis as any).IntersectionObserver = IntersectionObserverShim;
+  if (typeof window !== 'undefined') {
+    (window as any).IntersectionObserver = IntersectionObserverShim;
+  }
+}
+
+if (typeof (globalThis as any).matchMedia === 'undefined') {
+  const matchMediaShim = (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false
+  });
+  (globalThis as any).matchMedia = matchMediaShim;
+  if (typeof window !== 'undefined') {
+    (window as any).matchMedia = matchMediaShim;
+  }
+}
+
+if (typeof (globalThis as any).AudioContext === 'undefined') {
+  const createAudioParam = (initial = 0) => ({
+    value: initial,
+    setValueAtTime: () => {},
+    linearRampToValueAtTime: () => {},
+    exponentialRampToValueAtTime: () => {},
+    setTargetAtTime: () => {},
+    cancelScheduledValues: () => {}
+  });
+
+  const createAudioNode = () => ({
+    connect: () => createAudioNode(),
+    disconnect: () => {},
+    start: () => {},
+    stop: () => {},
+    gain: createAudioParam(1),
+    frequency: createAudioParam(440),
+    detune: createAudioParam(0),
+    Q: createAudioParam(1),
+    pan: createAudioParam(0),
+    delayTime: createAudioParam(0),
+    threshold: createAudioParam(-24),
+    knee: createAudioParam(30),
+    ratio: createAudioParam(12),
+    attack: createAudioParam(0.003),
+    release: createAudioParam(0.25),
+    positionX: createAudioParam(0),
+    positionY: createAudioParam(0),
+    positionZ: createAudioParam(0),
+    orientationX: createAudioParam(1),
+    orientationY: createAudioParam(0),
+    orientationZ: createAudioParam(0),
+    setPosition: () => {},
+    setOrientation: () => {},
+    panningModel: 'HRTF',
+    distanceModel: 'inverse',
+    refDistance: 1,
+    maxDistance: 10000,
+    rolloffFactor: 1,
+    coneInnerAngle: 360,
+    coneOuterAngle: 360,
+    coneOuterGain: 0,
+    curve: null as Float32Array | null,
+    oversample: 'none',
+    type: 'sine',
+    fftSize: 2048,
+    smoothingTimeConstant: 0.8,
+    frequencyBinCount: 1024,
+    getByteTimeDomainData: (arr: Uint8Array) => arr.fill(128),
+    getByteFrequencyData: (arr: Uint8Array) => arr.fill(0),
+    getFloatTimeDomainData: (arr: Float32Array) => arr.fill(0)
+  });
+
+  class AudioContextShim {
+    state: AudioContextState = 'running';
+    sampleRate = 44100;
+    currentTime = 0;
+    destination = createAudioNode();
+    listener = {
+      positionX: createAudioParam(0),
+      positionY: createAudioParam(0),
+      positionZ: createAudioParam(0),
+      forwardX: createAudioParam(0),
+      forwardY: createAudioParam(0),
+      forwardZ: createAudioParam(-1),
+      upX: createAudioParam(0),
+      upY: createAudioParam(1),
+      upZ: createAudioParam(0),
+      setPosition: () => {},
+      setOrientation: () => {}
+    };
+    createOscillator = () => createAudioNode();
+    createGain = () => createAudioNode();
+    createBiquadFilter = () => createAudioNode();
+    createAnalyser = () => createAudioNode();
+    createDynamicsCompressor = () => createAudioNode();
+    createPanner = () => createAudioNode();
+    createStereoPanner = () => createAudioNode();
+    createWaveShaper = () => createAudioNode();
+    createDelay = (_maxDelayTime?: number) => createAudioNode();
+    createChannelMerger = (_numberOfInputs?: number) => createAudioNode();
+    createChannelSplitter = (_numberOfOutputs?: number) => createAudioNode();
+    createBuffer = (channels: number, length: number, sampleRate: number) => ({
+      numberOfChannels: channels,
+      length,
+      sampleRate,
+      duration: length / sampleRate,
+      getChannelData: () => new Float32Array(length)
+    });
+    createBufferSource = () => ({
+      ...createAudioNode(),
+      buffer: null,
+      loop: false
+    });
+    createMediaStreamSource = () => createAudioNode();
+    createScriptProcessor = () => ({
+      ...createAudioNode(),
+      onaudioprocess: null
+    });
+    decodeAudioData = async () => ({
+      numberOfChannels: 1,
+      length: 1,
+      sampleRate: 44100,
+      duration: 0,
+      getChannelData: () => new Float32Array(1)
+    });
+    resume = async () => { this.state = 'running'; };
+    suspend = async () => { this.state = 'suspended'; };
+    close = async () => { this.state = 'closed'; };
+  }
+
+  (globalThis as any).AudioContext = AudioContextShim;
+  (globalThis as any).webkitAudioContext = AudioContextShim;
+  if (typeof window !== 'undefined') {
+    (window as any).AudioContext = AudioContextShim;
+    (window as any).webkitAudioContext = AudioContextShim;
+  }
+}
+
+if (typeof (globalThis as any).SpeechSynthesisUtterance === 'undefined') {
+  class SpeechSynthesisUtteranceShim {
+    text: string;
+    lang = 'en-US';
+    rate = 1;
+    pitch = 1;
+    volume = 1;
+    voice: SpeechSynthesisVoice | null = null;
+    onstart: ((ev: any) => void) | null = null;
+    onend: ((ev: any) => void) | null = null;
+    onerror: ((ev: any) => void) | null = null;
+    constructor(text = '') {
+      this.text = text;
+    }
+  }
+  (globalThis as any).SpeechSynthesisUtterance = SpeechSynthesisUtteranceShim;
+  if (typeof window !== 'undefined') {
+    (window as any).SpeechSynthesisUtterance = SpeechSynthesisUtteranceShim;
+  }
+}
+
+if (typeof window !== 'undefined' && typeof (window as any).speechSynthesis === 'undefined') {
+  const synthShim = {
+    speaking: false,
+    pending: false,
+    paused: false,
+    onvoiceschanged: null,
+    getVoices: () => [],
+    speak: (utterance: any) => {
+      try { utterance?.onstart?.({}); } catch {}
+      try { utterance?.onend?.({}); } catch {}
+    },
+    cancel: () => {},
+    pause: () => {},
+    resume: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false
+  };
+  (window as any).speechSynthesis = synthShim;
+  (globalThis as any).speechSynthesis = synthShim;
+}
+
+if (typeof (globalThis as any).requestAnimationFrame === 'undefined') {
+  (globalThis as any).requestAnimationFrame = (cb: FrameRequestCallback) =>
+    setTimeout(() => cb(Date.now()), 0) as unknown as number;
+  (globalThis as any).cancelAnimationFrame = (id: number) => clearTimeout(id);
+}
+
+if (typeof URL !== 'undefined') {
+  try {
+    if (typeof (URL as any).createObjectURL !== 'function') {
+      (URL as any).createObjectURL = (_blob: unknown) => `blob:jsdom-${Date.now()}`;
+    }
+    if (typeof (URL as any).revokeObjectURL !== 'function') {
+      (URL as any).revokeObjectURL = (_url: string) => {};
+    }
+  } catch {}
+}
+
+// --- Real HTMLCanvasElement 2D/WebGL context stub (jsdom omits canvas backend) ---
+if (typeof HTMLCanvasElement !== 'undefined') {
+  const createCanvas2dContext = (canvas: HTMLCanvasElement) => {
+    const baseCtx: Record<string, unknown> = {
+      canvas,
       fillRect: () => {},
       clearRect: () => {},
-      getImageData: () => ({ data: new Uint8Array(4) }),
+      strokeRect: () => {},
+      getImageData: (_x: number, _y: number, w = 1, h = 1) => ({
+        data: new Uint8ClampedArray(Math.max(1, w) * Math.max(1, h) * 4),
+        width: w,
+        height: h
+      }),
       putImageData: () => {},
-      createImageData: () => ({ data: new Uint8Array(4) }),
+      createImageData: (w = 1, h = 1) => ({
+        data: new Uint8ClampedArray(Math.max(1, w) * Math.max(1, h) * 4),
+        width: w,
+        height: h
+      }),
       setTransform: () => {},
+      resetTransform: () => {},
       drawImage: () => {},
       save: () => {},
       fillText: () => {},
@@ -73,7 +310,10 @@ class MockHTMLCanvasElement extends MockHTMLElement {
       arc: () => {},
       ellipse: () => {},
       rect: () => {},
+      roundRect: () => {},
       clip: () => {},
+      setLineDash: () => {},
+      getLineDash: () => [],
       bezierCurveTo: () => {},
       quadraticCurveTo: () => {},
       fill: () => {},
@@ -86,537 +326,117 @@ class MockHTMLCanvasElement extends MockHTMLElement {
       }),
       createLinearGradient: () => ({ addColorStop: () => {} }),
       createRadialGradient: () => ({ addColorStop: () => {} }),
-      createPattern: () => null,
+      createPattern: () => null
     };
     return new Proxy(baseCtx, {
-      get(target: any, prop: string) {
+      get(target, prop: string) {
         if (prop in target) {
           return target[prop];
         }
         return () => {};
       }
     });
-  }
-}
-class MockSVGElement extends MockElement {}
-class MockDocumentFragment extends MockNode {}
-
-if (typeof (globalThis as any).Node === 'undefined') {
-  (globalThis as any).Node = MockNode;
-}
-if (typeof (globalThis as any).Element === 'undefined') {
-  (globalThis as any).Element = MockElement;
-}
-if (typeof (globalThis as any).HTMLElement === 'undefined') {
-  (globalThis as any).HTMLElement = MockHTMLElement;
-}
-if (typeof (globalThis as any).HTMLDivElement === 'undefined') {
-  (globalThis as any).HTMLDivElement = MockHTMLDivElement;
-}
-if (typeof (globalThis as any).HTMLInputElement === 'undefined') {
-  (globalThis as any).HTMLInputElement = MockHTMLInputElement;
-}
-if (typeof (globalThis as any).HTMLButtonElement === 'undefined') {
-  (globalThis as any).HTMLButtonElement = MockHTMLButtonElement;
-}
-if (typeof (globalThis as any).HTMLAnchorElement === 'undefined') {
-  (globalThis as any).HTMLAnchorElement = MockHTMLAnchorElement;
-}
-if (typeof (globalThis as any).HTMLCanvasElement === 'undefined') {
-  (globalThis as any).HTMLCanvasElement = MockHTMLCanvasElement;
-}
-if (typeof (globalThis as any).SVGElement === 'undefined') {
-  (globalThis as any).SVGElement = MockSVGElement;
-}
-if (typeof (globalThis as any).DocumentFragment === 'undefined') {
-  (globalThis as any).DocumentFragment = MockDocumentFragment;
-}
-
-if (typeof (globalThis as any).addEventListener === 'undefined') {
-  const listeners = new Map<string, Function[]>();
-  (globalThis as any).addEventListener = (type: string, handler: any) => {
-    if (!listeners.has(type)) listeners.set(type, []);
-    listeners.get(type)!.push(handler);
   };
-  (globalThis as any).removeEventListener = (type: string, handler: any) => {
-    const list = listeners.get(type);
-    if (list) {
-      listeners.set(type, list.filter(fn => fn !== handler));
+
+  Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+    configurable: true,
+    writable: true,
+    value: function (this: HTMLCanvasElement, type: string) {
+      if (type && (type.includes('webgl') || type.includes('experimental'))) {
+        return null;
+      }
+      return createCanvas2dContext(this);
     }
-  };
-  (globalThis as any).dispatchEvent = (event: any) => {
-    const list = listeners.get(event?.type);
-    if (list) {
-      list.forEach(fn => {
-        try { fn(event); } catch {}
-      });
-      return true;
-    }
-    return false;
-  };
-}
+  });
 
-if (typeof (globalThis as any).requestAnimationFrame === 'undefined') {
-  (globalThis as any).requestAnimationFrame = (cb: FrameRequestCallback) => setTimeout(() => cb(Date.now()), 0) as any;
-  (globalThis as any).cancelAnimationFrame = (id: number) => clearTimeout(id);
-}
-
-if (typeof (globalThis as any).matchMedia === 'undefined') {
-  (globalThis as any).matchMedia = (query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => false,
+  Object.defineProperty(HTMLCanvasElement.prototype, 'toDataURL', {
+    configurable: true,
+    writable: true,
+    value: () =>
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
   });
 }
 
-if (typeof URL !== 'undefined') {
-  try {
-    if (typeof (URL as any).createObjectURL === 'undefined') {
-      (URL as any).createObjectURL = (_blob: any) => `blob:mock-${Date.now()}`;
-    }
-    if (typeof (URL as any).revokeObjectURL === 'undefined') {
-      (URL as any).revokeObjectURL = (_url: string) => {};
-    }
-  } catch {}
-}
-
-if (typeof (globalThis as any).window === 'undefined') {
-  (globalThis as any).window = globalThis;
-}
-
-if (typeof (globalThis as any).navigator === 'undefined') {
-  (globalThis as any).navigator = {
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    language: 'en-US',
-    languages: ['en-US'],
-    onLine: true,
-  };
-}
-
-if (typeof (globalThis as any).KeyboardEvent === 'undefined') {
-  (globalThis as any).KeyboardEvent = class KeyboardEvent extends Event {
-    key: string;
-    code: string;
-    ctrlKey: boolean;
-    shiftKey: boolean;
-    altKey: boolean;
-    metaKey: boolean;
-    constructor(type: string, dict: any = {}) {
-      super(type, dict);
-      this.key = dict.key || '';
-      this.code = dict.code || '';
-      this.ctrlKey = !!dict.ctrlKey;
-      this.shiftKey = !!dict.shiftKey;
-      this.altKey = !!dict.altKey;
-      this.metaKey = !!dict.metaKey;
-    }
-  };
-}
-
-if (typeof (globalThis as any).ProgressEvent === 'undefined') {
-  (globalThis as any).ProgressEvent = class ProgressEvent extends Event {
-    loaded: number;
-    total: number;
-    lengthComputable: boolean;
-    constructor(type: string, dict: any = {}) {
-      super(type, dict);
-      this.loaded = dict.loaded || 0;
-      this.total = dict.total || 0;
-      this.lengthComputable = !!dict.lengthComputable;
-    }
-  };
-}
-
-if (typeof (globalThis as any).MouseEvent === 'undefined') {
-  (globalThis as any).MouseEvent = class MouseEvent extends Event {
-    clientX: number;
-    clientY: number;
-    button: number;
-    constructor(type: string, dict: any = {}) {
-      super(type, dict);
-      this.clientX = dict.clientX || 0;
-      this.clientY = dict.clientY || 0;
-      this.button = dict.button || 0;
-    }
-  };
-}
-
-if (typeof (globalThis as any).document === 'undefined') {
-  const elementsById = new Map<string, any>();
-
-  function createMockElement(tagName = 'div', id = '') {
-    const el: any = {
-      tagName: tagName.toUpperCase(),
-      id: id,
-      nodeType: 1,
-      ownerDocument: null as any,
-      attributes: {} as Record<string, string>,
-      setAttribute: (name: string, val: string) => {
-        el.attributes[name] = String(val);
-        if (name === 'id') {
-          el.id = String(val);
-          elementsById.set(el.id, el);
-        }
-        if (name === 'class') {
-          String(val).split(/\s+/).filter(Boolean).forEach(c => el.classList.add(c));
-        }
-      },
-      getAttribute: (name: string) => (name === 'id' ? el.id : el.attributes[name] || null),
-      removeAttribute: (name: string) => {
-        delete el.attributes[name];
-        if (name === 'id') {
-          elementsById.delete(el.id);
-          el.id = '';
-        }
-      },
-      childNodes: [] as any[],
-      children: [] as any[],
-      _textContent: '',
-      get textContent() {
-        if (el.childNodes.length === 0) {
-          return el._textContent || '';
-        }
-        return el.childNodes.map((c: any) => c.textContent ?? '').join('');
-      },
-      set textContent(val: string) {
-        el._textContent = String(val ?? '');
-        el.childNodes = [];
-        el.children = [];
-      },
-      get innerText() {
-        return el.textContent;
-      },
-      set innerText(val: string) {
-        el.textContent = val;
-      },
-      appendChild: (child: any) => {
-        if (child) {
-          child.parentNode = el;
-          el.childNodes.push(child);
-          if (child.nodeType === 1) el.children.push(child);
-        }
-        return child;
-      },
-      removeChild: (child: any) => {
-        if (child) {
-          child.parentNode = null;
-          el.childNodes = el.childNodes.filter((c: any) => c !== child);
-          el.children = el.children.filter((c: any) => c !== child);
-        }
-        return child;
-      },
-      insertBefore: (newNode: any, refNode: any) => {
-        if (newNode) {
-          newNode.parentNode = el;
-          const idx = el.childNodes.indexOf(refNode);
-          if (idx >= 0) {
-            el.childNodes.splice(idx, 0, newNode);
-          } else {
-            el.childNodes.push(newNode);
-          }
-          if (newNode.nodeType === 1) {
-            const elemIdx = el.children.indexOf(refNode);
-            if (elemIdx >= 0) {
-              el.children.splice(elemIdx, 0, newNode);
-            } else {
-              el.children.push(newNode);
-            }
-          }
-        }
-        return newNode;
-      },
-      cloneNode: () => createMockElement(tagName),
-      remove: () => {
-        if (el.parentNode && el.parentNode.removeChild) {
-          el.parentNode.removeChild(el);
-        }
-      },
-      scrollIntoView: () => {},
-      focus: () => {},
-      blur: () => {},
-      click: () => {},
-      classList: {
-        _classes: new Set<string>(),
-        add(...tokens: string[]) { tokens.forEach(t => this._classes.add(t)); },
-        remove(...tokens: string[]) { tokens.forEach(t => this._classes.delete(t)); },
-        contains(token: string) { return this._classes.has(token); },
-        toggle(token: string, force?: boolean) {
-          if (force === true) { this._classes.add(token); return true; }
-          if (force === false) { this._classes.delete(token); return false; }
-          if (this._classes.has(token)) { this._classes.delete(token); return false; }
-          this._classes.add(token); return true;
-        },
-      },
-      style: {
-        setProperty: (_name: string, _val: string) => {},
-        getPropertyValue: (_name: string) => '',
-        removeProperty: (_name: string) => '',
-      },
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => true,
-      querySelector: (sel: string) => querySelector(sel, el),
-      querySelectorAll: (sel: string) => querySelectorAll(sel, el),
-      getElementsByTagName: (tag: string) => querySelectorAll(tag, el),
-      getElementsByClassName: (cls: string) => querySelectorAll(`.${cls}`, el),
-      contains: (node: any) => {
-        let curr = node;
-        while (curr) {
-          if (curr === el) return true;
-          curr = curr.parentNode;
-        }
-        return false;
-      },
-      innerHTML: '',
-    };
-    if (id) {
-      elementsById.set(id, el);
-    }
-    return el;
-  }
-
-  function matchesSelector(node: any, sel: string): boolean {
-    if (!sel || !node || node.nodeType !== 1) return false;
-    if (sel.startsWith('.')) {
-      const cls = sel.slice(1).replace(/\\/g, '');
-      return typeof node.classList?.contains === 'function' && node.classList.contains(cls);
-    }
-    if (sel.startsWith('[') && sel.endsWith(']')) {
-      const inner = sel.slice(1, -1);
-      if (inner.includes('=')) {
-        const [attr, rawVal] = inner.split('=');
-        const val = rawVal.replace(/['"]/g, '');
-        return typeof node.getAttribute === 'function' && node.getAttribute(attr.trim()) === val;
-      }
-      return typeof node.hasAttribute === 'function' ? node.hasAttribute(inner.trim()) : !!node.getAttribute?.(inner.trim());
-    }
-    return (node.tagName || '').toUpperCase() === sel.toUpperCase();
-  }
-
-  function querySelector(selector: string, root?: any): any {
-    if (!selector) return null;
-    if (selector.startsWith('#root')) {
-      const id = selector.slice(1);
-      if (!elementsById.has(id)) {
-        const el = createMockElement('div', id);
-        elementsById.set(id, el);
-      }
-      return elementsById.get(id);
-    }
-    const searchRoot = root || doc;
-    if (searchRoot && searchRoot.childNodes) {
-      for (const child of searchRoot.childNodes) {
-        if (child.nodeType === 1) {
-          if (matchesSelector(child, selector)) return child;
-          const found = querySelector(selector, child);
-          if (found) return found;
-        }
-      }
-    }
-    return null;
-  }
-
-  function querySelectorAll(selector: string, root?: any): any[] {
-    const matches: any[] = [];
-    const searchRoot = root || doc;
-    if (searchRoot && searchRoot.childNodes) {
-      for (const child of searchRoot.childNodes) {
-        if (child.nodeType === 1) {
-          if (matchesSelector(child, selector)) matches.push(child);
-          matches.push(...querySelectorAll(selector, child));
-        }
-      }
-    }
-    return matches;
-  }
-
-  const mockBody = createMockElement('body');
-  const mockHead = createMockElement('head');
-  const mockDocElement = createMockElement('html');
-
-  mockDocElement.appendChild(mockHead);
-  mockDocElement.appendChild(mockBody);
-
-  const doc: any = {
-    createElement: (tag: string) => {
-      const el = createMockElement(tag);
-      el.ownerDocument = doc;
-      return el;
-    },
-    createElementNS: (_ns: string, tag: string) => {
-      const el = createMockElement(tag);
-      el.ownerDocument = doc;
-      return el;
-    },
-    createTextNode: (text: string) => {
-      let _t = String(text ?? '');
-      const node: any = {
-        nodeType: 3,
-        nodeName: '#text',
-        ownerDocument: doc,
-        parentNode: null as any,
-        get textContent() { return _t; },
-        set textContent(v: string) { _t = String(v ?? ''); },
-        get nodeValue() { return _t; },
-        set nodeValue(v: string) { _t = String(v ?? ''); },
-        remove: () => {
-          if (node.parentNode && node.parentNode.removeChild) {
-            node.parentNode.removeChild(node);
-          }
-        }
-      };
-      return node;
-    },
-    createComment: (text = '') => {
-      const node: any = {
-        nodeType: 8,
-        nodeName: '#comment',
-        ownerDocument: doc,
-        parentNode: null as any,
-        textContent: String(text ?? ''),
-        remove: () => {
-          if (node.parentNode && node.parentNode.removeChild) {
-            node.parentNode.removeChild(node);
-          }
-        }
-      };
-      return node;
-    },
-    createDocumentFragment: () => createMockElement('fragment'),
-    head: mockHead,
-    body: mockBody,
-    documentElement: mockDocElement,
-    implementation: {
-      createHTMLDocument: (_title?: string) => {
-        const d: any = { ...doc };
-        const b = createMockElement('body');
-        const h = createMockElement('head');
-        d.body = b;
-        d.head = h;
-        return d;
-      },
-    },
-    childNodes: [mockDocElement],
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    querySelector: (sel: string) => querySelector(sel, doc),
-    querySelectorAll: (sel: string) => querySelectorAll(sel, doc),
-    getElementById: (id: string) => {
-      if (!elementsById.has(id)) {
-        const el = createMockElement('div', id);
-        elementsById.set(id, el);
-      }
-      return elementsById.get(id);
-    },
-    getElementsByTagName: (tag: string) => {
-      if (tag.toLowerCase() === 'head') return [mockHead];
-      if (tag.toLowerCase() === 'body') return [mockBody];
-      return [];
-    },
-    getElementsByClassName: () => [],
-  };
-
-  mockBody.ownerDocument = doc;
-  mockHead.ownerDocument = doc;
-  mockDocElement.ownerDocument = doc;
-  doc.defaultView = globalThis;
-
-  (globalThis as any).document = doc;
-}
-
-if (typeof (globalThis as any).window === 'undefined') {
-  (globalThis as any).window = globalThis;
-}
-if ((globalThis as any).document && !(globalThis as any).document.defaultView) {
-  (globalThis as any).document.defaultView = (globalThis as any).window || globalThis;
-}
-
-if (typeof (globalThis as any).localStorage === 'undefined') {
-  const store = new Map<string, string>();
-  (globalThis as any).localStorage = {
-    getItem: (key: string) => store.get(key) || null,
-    setItem: (key: string, value: string) => store.set(key, String(value)),
-    removeItem: (key: string) => store.delete(key),
-    clear: () => store.clear(),
-    get length() { return store.size; },
-    key: (index: number) => Array.from(store.keys())[index] || null,
-  };
+// --- Element / Window UI stubs missing or throwing "Not implemented" in jsdom ---
+if (typeof Element !== 'undefined' && typeof Element.prototype.scrollIntoView !== 'function') {
+  Element.prototype.scrollIntoView = () => {};
 }
 
 if (typeof window !== 'undefined') {
-
-  // Implement browser UI and navigation stubs
   try {
-    window.alert = (msg?: string) => {};
-    window.confirm = (msg?: string) => true;
-    window.prompt = (msg?: string) => null;
-    window.open = (url?: string | URL, target?: string, features?: string) => null;
+    window.alert = () => {};
+    window.confirm = () => true;
+    window.prompt = () => null;
+    window.open = () => null;
     window.print = () => {};
-    window.scrollTo = (options?: ScrollToOptions | number, y?: number) => {};
-    window.scroll = (options?: ScrollToOptions | number, y?: number) => {};
+    window.scrollTo = () => {};
+    window.scroll = () => {};
 
-    // Stateful location mock to prevent JSDOM "navigation to another Document"
+    // Stateful location wrapper to prevent jsdom "Not implemented: navigation" on href/search mutations
     let currentUrl = 'http://localhost:4000/';
+    let currentSearch = '';
+    let currentPathname = '/';
+    let currentHash = '';
+    const locationShim = {
+      get href() { return currentUrl; },
+      set href(val: string) {
+        currentUrl = String(val);
+        try {
+          const parsed = new URL(currentUrl, 'http://localhost:4000');
+          currentPathname = parsed.pathname;
+          currentSearch = parsed.search;
+          currentHash = parsed.hash;
+        } catch {}
+      },
+      assign: (url: string) => { locationShim.href = url; },
+      replace: (url: string) => { locationShim.href = url; },
+      reload: () => {},
+      toString: () => currentUrl,
+      origin: 'http://localhost:4000',
+      protocol: 'http:',
+      host: 'localhost:4000',
+      hostname: 'localhost',
+      port: '4000',
+      get pathname() { return currentPathname; },
+      set pathname(val: string) { currentPathname = String(val); },
+      get search() { return currentSearch; },
+      set search(val: string) { currentSearch = String(val); },
+      get hash() { return currentHash; },
+      set hash(val: string) { currentHash = String(val); }
+    };
     try {
       delete (window as any).location;
-      (window as any).location = {
-        get href() { return currentUrl; },
-        set href(val: string) { currentUrl = val; },
-        assign: (url: string) => { currentUrl = url; },
-        replace: (url: string) => { currentUrl = url; },
-        reload: () => {},
-        origin: 'http://localhost:4000',
-        protocol: 'http:',
-        host: 'localhost:4000',
-        hostname: 'localhost',
-        port: '4000',
-        pathname: '/',
-        search: '',
-        hash: ''
-      };
+      (window as any).location = locationShim;
     } catch {
-      // If location is read-only, define property
       Object.defineProperty(window, 'location', {
-        value: {
-          get href() { return currentUrl; },
-          set href(val: string) { currentUrl = val; },
-          assign: (url: string) => { currentUrl = url; },
-          replace: (url: string) => { currentUrl = url; },
-          reload: () => {},
-          origin: 'http://localhost:4000',
-          protocol: 'http:',
-          host: 'localhost:4000',
-          hostname: 'localhost',
-          port: '4000',
-          pathname: '/',
-          search: '',
-          hash: ''
-        },
+        value: locationShim,
         writable: true,
         configurable: true
       });
     }
 
-    // Prevent jsdom "navigation to another Document" by capturing link and form navigations
+    // Prevent jsdom "Not implemented: navigation" on anchor clicks and form submits
     if (typeof document !== 'undefined') {
-      document.addEventListener('click', (e: MouseEvent) => {
-        const target = (e.target as HTMLElement)?.closest?.('a');
-        if (target && target.getAttribute('href')) {
-          e.preventDefault();
-        }
-      }, true);
+      document.addEventListener(
+        'click',
+        (e: MouseEvent) => {
+          const target = (e.target as HTMLElement)?.closest?.('a');
+          if (target && target.getAttribute('href')) {
+            e.preventDefault();
+          }
+        },
+        true
+      );
 
-      document.addEventListener('submit', (e: Event) => {
-        e.preventDefault();
-      }, true);
+      document.addEventListener(
+        'submit',
+        (e: Event) => {
+          e.preventDefault();
+        },
+        true
+      );
     }
   } catch {
-    // Ignore setup in non-DOM contexts
+    // Ignore in non-DOM contexts
   }
-
 }
