@@ -289,46 +289,179 @@ export function createAuthRouter(deps?: { oauthClient?: Pick<OAuth2Client, 'veri
   });
 
   /**
+   * POST /api/auth/sso/webauthn/challenge
+   * Issues a fresh 32-byte NIST SP 800-90A CSPRNG WebAuthn challenge for browser passkeys.
+   */
+  router.post('/sso/webauthn/challenge', (req: Request, res: Response) => {
+    const challenge = crypto.randomBytes(32).toString('base64url');
+    const rpId = typeof req.hostname === 'string' && req.hostname.length > 0 ? req.hostname : 'pocketgull.app';
+    return res.status(200).json({
+      challenge,
+      rpId,
+      rpName: 'PocketGull Clinical Suite',
+      timeout: 60_000
+    });
+  });
+
+  /**
    * POST /api/auth/sso/webauthn
-   * FIDO2 / WebAuthn Biometric Passkey Authentication.
-   * Requires WebAuthn authenticator assertion fields in production.
+   * FIDO2 / WebAuthn Biometric Passkey Authentication (all 4 clinical roles).
+   * Requires complete WebAuthn assertion fields in production and cryptographically verifies
+   * ECDSA P-256 signatures when publicKeyJwk is supplied.
    */
   router.post('/sso/webauthn', (req: Request, res: Response) => {
     try {
-      const { credentialId, authenticatorData, signature, clientDataJSON } = req.body || {};
+      const {
+        credentialId,
+        authenticatorData,
+        signature,
+        clientDataJSON,
+        publicKeyJwk,
+        assertionType,
+        role
+      } = req.body || {};
 
-      if (isStrictProductionEnv() && (!credentialId || !authenticatorData || !signature || !clientDataJSON)) {
+      const hasCompleteAssertion =
+        typeof credentialId === 'string' &&
+        credentialId.trim().length > 0 &&
+        typeof authenticatorData === 'string' &&
+        authenticatorData.trim().length > 0 &&
+        typeof signature === 'string' &&
+        signature.trim().length > 0 &&
+        typeof clientDataJSON === 'string' &&
+        clientDataJSON.trim().length > 0;
+
+      if (isStrictProductionEnv() && !hasCompleteAssertion) {
         return res.status(401).json({
           error: 'Unauthorized: Complete WebAuthn FIDO2 assertion (credentialId, authenticatorData, signature, clientDataJSON) is required.'
         });
       }
 
+      // Validate clientDataJSON envelope whenever supplied
+      if (typeof clientDataJSON === 'string' && clientDataJSON.trim().length > 0) {
+        let parsedClientData: Record<string, unknown>;
+        try {
+          const decoded = Buffer.from(clientDataJSON, 'base64url').toString('utf8');
+          parsedClientData = JSON.parse(decoded) as Record<string, unknown>;
+        } catch {
+          return res.status(401).json({ error: 'Unauthorized: Malformed WebAuthn clientDataJSON.' });
+        }
+
+        const cdType = parsedClientData['type'];
+        const cdChallenge = parsedClientData['challenge'];
+        if (
+          (cdType !== 'webauthn.get' && cdType !== 'webauthn.create') ||
+          typeof cdChallenge !== 'string' ||
+          cdChallenge.trim().length < 16
+        ) {
+          return res.status(401).json({
+            error: 'Unauthorized: Invalid WebAuthn clientDataJSON type or challenge.'
+          });
+        }
+
+        // If client provided a WebCrypto ECDSA P-256 public key JWK, verify the cryptographic signature over authenticatorData || SHA-256(clientDataJSON)
+        if (publicKeyJwk && typeof publicKeyJwk === 'object') {
+          try {
+            const pubKey = crypto.createPublicKey({ key: publicKeyJwk as JsonWebKey, format: 'jwk' });
+            const authDataBuf = Buffer.from(String(authenticatorData), 'base64url');
+            const clientDataHash = crypto.createHash('sha256').update(Buffer.from(clientDataJSON, 'base64url')).digest();
+            const signedPayload = Buffer.concat([authDataBuf, clientDataHash]);
+            const sigBuf = Buffer.from(String(signature), 'base64url');
+            const validP1363 = crypto.verify(
+              'sha256',
+              signedPayload,
+              { key: pubKey, dsaEncoding: 'ieee-p1363' },
+              sigBuf
+            );
+            const validDer = !validP1363
+              ? crypto.verify('sha256', signedPayload, { key: pubKey, dsaEncoding: 'der' }, sigBuf)
+              : true;
+
+            if (!validP1363 && !validDer) {
+              return res.status(401).json({
+                error: 'Unauthorized: Invalid WebAuthn / ECDSA P-256 passkey signature.'
+              });
+            }
+          } catch {
+            return res.status(401).json({
+              error: 'Unauthorized: Unable to verify WebAuthn passkey cryptographic signature.'
+            });
+          }
+        }
+      }
+
+      const VALID_PASSKEY_ROLES: Record<
+        ISsoUserSession['clinicalRole'],
+        { email: string; name: string; roleTitle: string; roles: string[] }
+      > = {
+        'roles/aiplatform.user': {
+          email: 'passkey-clinician@pocketgull.app',
+          name: 'Biometric Authenticated Clinician',
+          roleTitle: 'FIDO2 Passkey — Attending Clinician (CDS)',
+          roles: ['roles/aiplatform.user', 'CLINICIAN']
+        },
+        'roles/healthcare.datasetAdmin': {
+          email: 'passkey-director@pocketgull.app',
+          name: 'Biometric Authenticated Medical Director',
+          roleTitle: 'FIDO2 Passkey — Medical Director (EHR & FHIR)',
+          // Destructive server actions still enforce cryptographic M-of-N Dual-Custody tokens
+          roles: ['roles/healthcare.datasetAdmin', 'CLINICIAN']
+        },
+        'roles/bigquery.jobUser': {
+          email: 'passkey-researcher@pocketgull.app',
+          name: 'Biometric Authenticated Researcher',
+          roleTitle: 'FIDO2 Passkey — Clinical Researcher (Trials)',
+          roles: ['roles/bigquery.jobUser', 'CLINICIAN', 'RESEARCHER']
+        },
+        'roles/viewer': {
+          email: 'passkey-patient@pocketgull.app',
+          name: 'Biometric Authenticated Patient',
+          roleTitle: 'FIDO2 Passkey — Sovereign Patient',
+          roles: ['roles/viewer', 'PATIENT']
+        }
+      };
+
+      const requestedRole =
+        typeof role === 'string' && role in VALID_PASSKEY_ROLES
+          ? (role as ISsoUserSession['clinicalRole'])
+          : 'roles/aiplatform.user';
+      const roleMeta = VALID_PASSKEY_ROLES[requestedRole];
+
       const now = Date.now();
-      const uid = 'usr_fido_' + crypto.randomBytes(8).toString('hex');
+      const credHash = crypto
+        .createHash('sha256')
+        .update(String(credentialId || crypto.randomBytes(8).toString('hex')))
+        .digest('hex')
+        .substring(0, 16);
+      const uid = `usr_fido_${credHash}`;
       const tenantId = 'tenant_webauthn_passkey';
       const ttlSeconds = 12 * 3600;
 
       const sessionToken = signSessionToken({
         sub: uid,
-        email: 'passkey-clinician@pocketgull.app',
+        email: roleMeta.email,
         tenantId,
-        role: 'roles/aiplatform.user',
-        roles: ['roles/aiplatform.user', 'CLINICIAN'],
+        role: requestedRole,
+        roles: roleMeta.roles,
         ttlSeconds
       });
 
       const session: ISsoUserSession = {
         uid,
-        email: 'passkey-clinician@pocketgull.app',
-        name: 'Biometric Authenticated Clinician',
+        email: roleMeta.email,
+        name: roleMeta.name,
         provider: 'webauthn',
-        clinicalRole: 'roles/aiplatform.user',
-        roleTitle: 'FIDO2 / WebAuthn Biometric Clinician',
+        clinicalRole: requestedRole,
+        roleTitle: roleMeta.roleTitle,
         tenantId,
         issuedAt: now,
         expiresAt: now + ttlSeconds * 1000,
         sessionToken
       };
+
+      console.info(
+        `[Auth SSO] WebAuthn Passkey authenticated (${sanitizeLogInput(String(assertionType || 'fido2'))}): ${roleMeta.email} (${requestedRole})`
+      );
 
       return res.status(200).json({
         success: true,

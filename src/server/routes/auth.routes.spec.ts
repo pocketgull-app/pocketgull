@@ -172,11 +172,75 @@ describe('Auth SSO Security & Login Routes (Hardened OIDC + Signed Session Token
   });
 
   describe('4. POST /api/auth/sso/webauthn & kinetic-zkp & logout', () => {
-    it('mints verifiable HMAC session tokens for WebAuthn and Kinetic ZKP', () => {
-      const w = createMockReqRes({ credentialId: 'fido2_passkey_test_token_123' });
-      postWebAuthnHandler(w.req, w.res);
-      expect(w.res.status).toHaveBeenCalledWith(200);
-      expect(verifySessionToken(w.res.getJson().session.sessionToken)).not.toBeNull();
+    it('mints verifiable HMAC session tokens for WebAuthn across all 4 roles in strict production and rejects forged/incomplete assertions', async () => {
+      const prevNodeEnv = process.env['NODE_ENV'];
+      process.env['NODE_ENV'] = 'production';
+      try {
+        // 1. Incomplete passkey payload MUST be rejected with 401 in production
+        const incomplete = createMockReqRes({ credentialId: 'fido2_incomplete_only' });
+        postWebAuthnHandler(incomplete.req, incomplete.res);
+        expect(incomplete.res.status).toHaveBeenCalledWith(401);
+
+        // 2. Real cryptographic ECDSA P-256 passkey assertion MUST succeed for ALL 4 clinical roles
+        const cryptoMod = await import('node:crypto');
+        const { privateKey, publicKey } = cryptoMod.generateKeyPairSync('ec', { namedCurve: 'prime256v1' });
+        const publicKeyJwk = publicKey.export({ format: 'jwk' });
+        const clientDataJSON = Buffer.from(
+          JSON.stringify({
+            type: 'webauthn.get',
+            challenge: cryptoMod.randomBytes(32).toString('base64url'),
+            origin: 'https://pocketgull.app',
+            crossOrigin: false
+          }),
+          'utf8'
+        ).toString('base64url');
+        const rpHash = cryptoMod.createHash('sha256').update('pocketgull.app').digest();
+        const authData = Buffer.concat([rpHash, Buffer.from([0x05, 0, 0, 0, 1])]);
+        const signedPayload = Buffer.concat([
+          authData,
+          cryptoMod.createHash('sha256').update(Buffer.from(clientDataJSON, 'base64url')).digest()
+        ]);
+        const validSignature = cryptoMod
+          .sign('sha256', signedPayload, { key: privateKey, dsaEncoding: 'ieee-p1363' })
+          .toString('base64url');
+
+        for (const expectedRole of [
+          'roles/aiplatform.user',
+          'roles/healthcare.datasetAdmin',
+          'roles/bigquery.jobUser',
+          'roles/viewer'
+        ] as const) {
+          const validReq = createMockReqRes({
+            credentialId: 'fido2_p256_valid_cred',
+            authenticatorData: authData.toString('base64url'),
+            signature: validSignature,
+            clientDataJSON,
+            publicKeyJwk,
+            assertionType: 'webcrypto-p256',
+            role: expectedRole
+          });
+          postWebAuthnHandler(validReq.req, validReq.res);
+          expect(validReq.res.status).toHaveBeenCalledWith(200);
+          const session = validReq.res.getJson().session;
+          expect(session.clinicalRole).toBe(expectedRole);
+          expect(verifySessionToken(session.sessionToken)?.role).toBe(expectedRole);
+        }
+
+        // 3. Forged signature MUST be rejected with 401
+        const forgedReq = createMockReqRes({
+          credentialId: 'fido2_p256_forged',
+          authenticatorData: authData.toString('base64url'),
+          signature: Buffer.from('forged-invalid-signature-bytes-0000').toString('base64url'),
+          clientDataJSON,
+          publicKeyJwk,
+          assertionType: 'webcrypto-p256',
+          role: 'roles/aiplatform.user'
+        });
+        postWebAuthnHandler(forgedReq.req, forgedReq.res);
+        expect(forgedReq.res.status).toHaveBeenCalledWith(401);
+      } finally {
+        process.env['NODE_ENV'] = prevNodeEnv;
+      }
 
       const k = createMockReqRes({
         zkpKineticHash: 'sha256:abcd1234efgh5678ijkl9012mnop3456qrst7890',

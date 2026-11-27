@@ -1537,6 +1537,16 @@ export class VoiceAssistantComponent implements OnDestroy {
             // Listen to voice mode changes
             window.addEventListener('voice-mode-change', this.boundVoiceModeChange);
 
+            // Honor pending Y-BOCS / AVS / Chrono mode handoff when freshly mounted by PatientStateService.toggleLiveAgent(true)
+            const pendingVoiceMode = this.secureStorage?.getItem('voice_assistant_mode');
+            if (pendingVoiceMode === 'ybocs') {
+                queueMicrotask(() => this.activateYbocsInterview());
+            } else if (pendingVoiceMode === 'chrono') {
+                queueMicrotask(() => this.activateChronoVoiceConsultation());
+            } else if (pendingVoiceMode === 'avs') {
+                queueMicrotask(() => this.activateAvsVoiceCoRegulation());
+            }
+
 
             // 1. Hydrate Chat History
             this.storage.loadState('current_patient').then(data => {
@@ -2019,14 +2029,21 @@ Only include a rich-media block when the user explicitly requests visual or rese
 
         const message = this.messageText().trim();
         const files = this.selectedFiles();
-        if ((!message && files.length === 0) || this.agentState() !== 'idle') return;
+        if (!message && files.length === 0) return;
 
-        if (this.voiceAssistantMode() === 'ybocs') {
+        // Allow typed answers during guided Y-BOCS interviews even while voice recognition is listening
+        if (this.voiceAssistantMode() === 'ybocs' && message) {
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+            this.agentState.set('idle');
             this.messageText.set('');
             this._appendUser(message);
             this.handleYbocsInput(message);
             return;
         }
+
+        if (this.agentState() !== 'idle') return;
 
         if (this.live.isSpeaking()) {
             this.live.interrupt();
@@ -2241,8 +2258,9 @@ To enable full interactive consultations, custom question answering, and live vo
         this.panelMode.set('chat');
         this.ybocsQuestionIndex.set(1);
         this.chatHistory.set([]);
+        this.secureStorage?.removeItem?.('voice_assistant_mode');
         
-        const welcomeText = "Hello, I am Mindful Macaw, your Y-BOCs Neuropsychiatric Diagnostic guide. I will help you assess your obsessive-compulsive symptom severity. Let's start with Question 1: Time Occupied by Obsessive Thoughts. How much of your day is occupied by obsessive thoughts? (Options: None, Mild (less than 1 hour), Moderate (1 to 3 hours), Severe (3 to 8 hours), or Extreme (more than 8 hours)).";
+        const welcomeText = "Welcome — I'm Mindful Macaw, your Y-BOCS guided check-in companion. Take this at your own pace; every answer stays private and is an exploratory reflection tool, never a judgment. Question 1 of 10: Time Occupied by Obsessive Thoughts. Roughly how much of your day has been taken up by unwanted intrusive thoughts? You can say or type 0 (None), 1 (Mild, under 1 hour), 2 (Moderate, 1 to 3 hours), 3 (Severe, 3 to 8 hours), or 4 (Extreme, more than 8 hours).";
         this.chatHistory.set([{ role: 'model', text: welcomeText, htmlContent: `<p>${welcomeText}</p>` }]);
         this.scrollToBottom();
         this.speakClientSide(welcomeText);
@@ -2334,27 +2352,42 @@ To enable full interactive consultations, custom question answering, and live vo
 
     parseYbocsScore(text: string): number {
         const lower = text.toLowerCase().trim();
-        
-        if (lower.includes('four') || lower.includes('4') || lower.includes('extreme') || lower.includes('constant') || lower.includes('more than 8') || lower.includes('greater than 8')) {
+        if (!lower) return -1;
+
+        // 1. Explicit time ranges first so "1 to 3 hours" never falsely matches "3" (Severe)
+        if (/\b(?:more than|over|greater than|>)\s*8\b/.test(lower) || /\bnear[- ]constant\b/.test(lower)) {
             return 4;
         }
-        if (lower.includes('three') || lower.includes('3') || lower.includes('severe') || lower.includes('very frequent') || lower.includes('3 to 8') || lower.includes('3-8')) {
+        if (/\b3\s*(?:-|to|–)\s*8\b/.test(lower)) {
             return 3;
         }
-        if (lower.includes('two') || lower.includes('2') || lower.includes('moderate') || lower.includes('1 to 3') || lower.includes('1-3')) {
+        if (/\b1\s*(?:-|to|–)\s*3\b/.test(lower)) {
             return 2;
         }
-        if (lower.includes('one') || lower.includes('1') || lower.includes('mild') || lower.includes('occasional') || lower.includes('less than 1') || lower.includes('under 1')) {
+        if (/\b(?:less than|under|<)\s*1\b/.test(lower)) {
             return 1;
         }
-        if (lower.includes('zero') || lower.includes('0') || lower.includes('none') || lower.includes('no') || lower.includes('never') || lower.includes('not at all')) {
-            return 0;
+
+        // 2. Strip negated severity phrases ("not severe, just mild" -> remove "not severe")
+        const sanitized = lower.replace(/\b(?:not|no|never|hardly|don't have|do not have|aren't|isn't)\s+(?:extreme|severe|moderate|mild|four|three|two|one|4|3|2|1)\b/g, ' ').trim();
+
+        // 3. Explicit numeric word or standalone digit 0-4
+        const exactDigit = sanitized.match(/\b([0-4])\b/);
+        if (exactDigit) {
+            return parseInt(exactDigit[1], 10);
         }
-        
-        const match = lower.match(/[0-4]/);
-        if (match) {
-            return parseInt(match[0], 10);
-        }
+        if (/\bfour\b/.test(sanitized)) return 4;
+        if (/\bthree\b/.test(sanitized)) return 3;
+        if (/\btwo\b/.test(sanitized)) return 2;
+        if (/\bone\b/.test(sanitized)) return 1;
+        if (/\bzero\b/.test(sanitized)) return 0;
+
+        // 4. Semantic severity keywords (evaluated on negation-cleaned text)
+        if (/\b(?:extreme|constant|incapacitating|completely yielded|no control)\b/.test(sanitized)) return 4;
+        if (/\b(?:severe|very frequent|rarely resist|little control)\b/.test(sanitized)) return 3;
+        if (/\b(?:moderate|some effort|manageable)\b/.test(sanitized)) return 2;
+        if (/\b(?:mild|occasional|slight|most of the time|much control)\b/.test(sanitized)) return 1;
+        if (/\b(?:none|never|not at all|complete control|always resist)\b/.test(lower) || /^no\b/.test(lower)) return 0;
 
         return -1;
     }
@@ -2364,7 +2397,7 @@ To enable full interactive consultations, custom question answering, and live vo
         const score = this.parseYbocsScore(text);
         
         if (score === -1) {
-            const errorText = "I couldn't quite score that answer. Please say or type a rating from 0 (None) to 4 (Extreme) or describe the severity (e.g. Mild, Moderate, Severe).";
+            const errorText = "No rush — I wasn't sure which rating fit best. You can say or type a number from 0 (None) to 4 (Extreme), or a word like Mild, Moderate, or Severe.";
             this.chatHistory.update(h => [...h, { role: 'model', text: errorText, htmlContent: `<p>${errorText}</p>` }]);
             this.scrollToBottom();
             this.speakClientSide(errorText);
@@ -2374,9 +2407,10 @@ To enable full interactive consultations, custom question answering, and live vo
         // Set the score
         this.ybocsService.setSeverityScore(qId, score);
 
-        // Print confirmation bubble
-        const confirmationText = `Got it. Question ${qId} score is set to ${score}.`;
-        this.chatHistory.update(h => [...h, { role: 'model', text: confirmationText, htmlContent: `<p>${confirmationText}</p>` }]);
+        const ack = score >= 3
+            ? `Thank you for sharing that honestly — carrying that level of intensity takes real stamina. Recorded ${score}/4 for Question ${qId}.`
+            : `Recorded ${score}/4 for Question ${qId}. Thank you for checking in.`;
+        this.chatHistory.update(h => [...h, { role: 'model', text: ack, htmlContent: `<p>${ack}</p>` }]);
 
         // Advance question
         const nextQId = qId + 1;
@@ -2385,23 +2419,33 @@ To enable full interactive consultations, custom question answering, and live vo
         if (nextQId <= 11) {
             const nextQ = severityQuestions.find(q => q.id === nextQId);
             if (nextQ) {
-                const questionText = `Question ${nextQId}: ${nextQ.title}. ${nextQ.subtitle} (${nextQ.options.map(o => `${o.label} (score ${o.score})`).join(', ')})`;
+                const insightPrefix = nextQId === 11
+                    ? 'Final optional reflection (Question 11, Insight — tracked separately and does not change your /40 total): '
+                    : `Question ${nextQId} of 10: `;
+                const questionText = `${insightPrefix}${nextQ.title}. ${nextQ.subtitle} (${nextQ.options.map(o => `${o.score}: ${o.label}`).join(', ')})`;
                 this.chatHistory.update(h => [...h, { role: 'model', text: questionText, htmlContent: `<p>${questionText}</p>` }]);
                 this.scrollToBottom();
                 this.speakClientSide(questionText);
             }
         } else {
-            // Finished!
+            // Finished! Persist cleanly and deliver warm outcome-based validation.
+            const saveResult = this.ybocsService.saveCurrentAssessment?.();
             const total = this.ybocsService.totalScore();
+            const validation = this.ybocsService.outcomeValidation?.();
             const severity = this.ybocsService.severityDetails();
-            const finishedText = `Thank you. We have completed the Y-BOCs severity assessment. Your total score is ${total}/40, which indicates a severity of ${severity.name}. I have successfully updated the patient record.`;
+            const savedWhere = saveResult?.persistedTo === 'patient_timeline'
+                ? 'saved cleanly to the Patient FHIR Timeline'
+                : 'saved privately in local session storage';
+            const headline = validation?.headline ? `${validation.headline}. ` : '';
+            const warmth = validation?.validationMessage ? `${validation.validationMessage} ` : '';
+            const finishedText = `Thank you for walking through all the questions. Your Y-BOCS score is ${total}/40 (${severity.name}), ${savedWhere}. ${headline}${warmth}You can copy your 30-second Visit Prep Brief or open the Somatic Grounding Loop anytime.`;
             
             this.chatHistory.update(h => [...h, { role: 'model', text: finishedText, htmlContent: `<p>${finishedText}</p>` }]);
             this.scrollToBottom();
             this.speakClientSide(finishedText);
             
             this.voiceAssistantMode.set('standard');
-            this.secureStorage.removeItem('voice_assistant_mode');
+            this.secureStorage?.removeItem?.('voice_assistant_mode');
         }
     }
 

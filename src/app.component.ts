@@ -2208,6 +2208,17 @@ export class AppComponent implements OnDestroy {
     this.showDocsStudy.set(false);
   }
 
+  @HostListener('window:somatic-grounding-activate')
+  onExternalSomaticGroundingActivate(): void {
+    this.zamecznikRequested.set(true);
+    const canvas = this.zamecznikCanvas();
+    if (canvas) {
+      canvas.open();
+    } else {
+      this.pendingZamecznikOpen.set(true);
+    }
+  }
+
   readonly zamecznikCanvas = viewChild<{ open(): void }>('zamecznikCanvas');
 
   openEncryptedVaultModal(): void {
@@ -2247,9 +2258,6 @@ export class AppComponent implements OnDestroy {
       canvas.open();
     } else {
       this.pendingZamecznikOpen.set(true);
-    }
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('somatic-grounding-activate'));
     }
   }
 

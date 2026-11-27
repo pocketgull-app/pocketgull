@@ -4340,7 +4340,7 @@ export class WebMcpRegistrationService {
       timestamp: new Date().toISOString(),
       componentId: cid,
       framework: 'PocketGull Ambient Clinical Copilot',
-      version: '1.37.0',
+      version: '1.42.0',
     };
 
     if (cid === 'all' || cid === 'patientstate' || cid === 'patient') {

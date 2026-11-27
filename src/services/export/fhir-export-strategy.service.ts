@@ -212,6 +212,42 @@ export class FhirExportStrategyService {
       });
     }
 
+    // Y-BOCS Neuropsychiatric Assessment Observations (LOINC 82290-8)
+    const ybocsEntries = (patient.history || []).filter((h) => h?.type === 'Y-BOCsAssessment');
+    ybocsEntries.forEach((entry, idx) => {
+      const assessment =
+        (entry as { assessment?: { totalScore?: number; obsessionSubtotal?: number; compulsiveSubtotal?: number; insightScore?: number | null; severityCategory?: string; dateCreated?: string } }).assessment ||
+        (entry as { report?: { totalScore?: number; obsessionSubtotal?: number; compulsiveSubtotal?: number; insightScore?: number | null; severityCategory?: string; dateCreated?: string } }).report;
+      if (!assessment) return;
+      entries.push({
+        resource: {
+          resourceType: 'Observation',
+          id: `obs-ybocs-${cleanId}-${idx}`,
+          status: 'final',
+          category: [{ coding: [{ system: 'http://terminology.hl7.org/CodeSystem/observation-category', code: 'survey', display: 'Survey' }] }],
+          code: {
+            coding: [{ system: 'http://loinc.org', code: '82290-8', display: 'Yale-Brown Obsessive Compulsive Scale total score' }],
+            text: 'Yale-Brown Obsessive-Compulsive Scale (Y-BOCS)'
+          },
+          subject: { reference: `Patient/${cleanId}` },
+          effectiveDateTime: assessment.dateCreated || timestamp,
+          valueQuantity: {
+            value: assessment.totalScore ?? 0,
+            unit: '{score}',
+            system: 'http://unitsofmeasure.org'
+          },
+          interpretation: [{ text: sanitize(assessment.severityCategory || 'Subclinical') }],
+          component: [
+            { code: { text: 'Obsessions Subtotal' }, valueQuantity: { value: assessment.obsessionSubtotal ?? 0, unit: '{score}', system: 'http://unitsofmeasure.org' } },
+            { code: { text: 'Compulsions Subtotal' }, valueQuantity: { value: assessment.compulsiveSubtotal ?? 0, unit: '{score}', system: 'http://unitsofmeasure.org' } },
+            ...(typeof assessment.insightScore === 'number'
+              ? [{ code: { text: 'Insight Specifier (Q11)' }, valueQuantity: { value: assessment.insightScore, unit: '{score}', system: 'http://unitsofmeasure.org' } }]
+              : [])
+          ]
+        }
+      });
+    });
+
     return {
       resourceType: 'Bundle',
       id: `bundle-${cleanId}-${Date.now()}`,

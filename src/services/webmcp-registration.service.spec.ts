@@ -1371,7 +1371,7 @@ mathematicalModel: Softmax T=0.85`;
       expect(res.isError).toBeFalsy();
       const parsed = JSON.parse(res.content[0].text);
       expect(parsed.framework).toBe('PocketGull Ambient Clinical Copilot');
-      expect(parsed.version).toBe('1.37.0');
+      expect(parsed.version).toBe('1.42.0');
       expect(parsed.patientState).toBeDefined();
       expect(parsed.security).toBeDefined();
       expect(parsed.security.mode).toBe('AUTONOMOUS_BACKGROUND');

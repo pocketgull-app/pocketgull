@@ -488,6 +488,12 @@ export interface IStatEmergencyBypassPayload {
                      </button>
                    }
 
+                   @if (errorMsg() || authSso.authError()) {
+                     <div role="alert" class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-[11px] text-rose-700 dark:text-rose-300 text-center leading-snug">
+                       {{ errorMsg() || authSso.authError() }}
+                     </div>
+                   }
+
                    <!-- 1-Click Synthetic Demo & Triaged Situation Entry (Zero-Drawing Ataxia Fast Path) -->
                    <div class="grid grid-cols-1 gap-1.5 pt-1">
                      <button
@@ -3547,14 +3553,16 @@ export class SecureSplashComponent implements OnInit {
   }
 
   /**
-   * FIDO2 / WebAuthn Biometric Passkey SSO
+   * FIDO2 / WebAuthn Biometric Passkey SSO (honors selected clinical role)
    */
   async loginWithWebAuthnPasskey() {
     this.isChecking.set(true);
+    this.errorMsg.set('');
     this.ssoProviderStatus.set('authenticating');
 
     try {
-      await this.authSso.signInWithPasskey();
+      await this.authSso.signInWithPasskey(this.selectedIamRole);
+      this.syncIamRoleToSmoePathway(this.selectedIamRole);
 
       this.triggerParticleBurst(110, 110, '#06b6d4', 35);
       this.playSuccessChime();
@@ -3567,8 +3575,12 @@ export class SecureSplashComponent implements OnInit {
         this.handleUnlockSession();
         this.isChecking.set(false);
       }, 400);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('[Passkey SSO] Error:', err);
+      const httpErr = err as { error?: { error?: string }; message?: string };
+      this.errorMsg.set(
+        httpErr?.error?.error || this.authSso.authError() || 'Passkey sign-in failed. Please retry or use Demo Mode.'
+      );
       this.isChecking.set(false);
       this.ssoProviderStatus.set('ready');
     }

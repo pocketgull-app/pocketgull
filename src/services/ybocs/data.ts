@@ -1,4 +1,12 @@
-import { SymptomItem, SymptomCategory, SeverityQuestion } from "./types";
+import { SymptomItem, SymptomCategory, SeverityQuestion, IYbocsOutcomeValidation } from "./types";
+
+/**
+ * Symptom item IDs involving unwanted harm, violent, or taboo intrusive thoughts.
+ * In OCD these are characteristically ego-dystonic: distress signals a clash with the
+ * person's values, NOT character or intent.
+ */
+export const EGO_DYSTONIC_INTRUSIVE_IDS: ReadonlySet<number> = new Set([1, 2, 3, 6, 18, 19, 20, 21]);
+export const HARM_CONCERN_IDS: ReadonlySet<number> = new Set([1, 2, 6]);
 
 export const symptomCategories: SymptomCategory[] = [
   { id: "aggressive", name: "Aggressive Obsessions", isObsession: true },
@@ -601,8 +609,8 @@ export const severityQuestions: SeverityQuestion[] = [
       { score: 0, label: "Excellent Insight", desc: "I think my obsessions or compulsions are unreasonable or excessive." },
       { score: 1, label: "Good/Fair Insight", desc: "I think my obsessions or compulsions are unreasonable or excessive, but I'm not completely convinced that they aren't necessary." },
       { score: 2, label: "Moderate Insight", desc: "I think my obsessions or compulsions may be unreasonable or excessive." },
-      { score: 3, label: "Poor Insight", desc: "I don't think my obsessions or compulsions are unreasonable or excessive." },
-      { score: 4, label: "No Insight/Delusional", desc: "I am sure my obsessions or compulsions are reasonable, no matter what anyone says." }
+      { score: 3, label: "Poor Insight", desc: "I mostly feel my obsessions or compulsions are reasonable or necessary." },
+      { score: 4, label: "Absent Insight / Fixed Conviction", desc: "I feel completely convinced my obsessions or compulsions are reasonable, regardless of outside evidence." }
     ]
   }
 ];
@@ -611,32 +619,193 @@ export function getSeverityCategory(totalScore: number): { name: string; color: 
   if (totalScore <= 7) {
     return {
       name: "Subclinical",
-      color: "text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-950/30 dark:border-emerald-800",
-      description: "Symptoms are present but do not meet the full threshold for mild impairment. This generally indicates either complete recovery or very high functioning control over symptoms."
+      color: "text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-800",
+      description: "Symptoms are quiet or minimal right now and sit below the threshold for daily impairment."
     };
   } else if (totalScore <= 15) {
     return {
       name: "Mild OCD",
-      color: "text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-950/30 dark:border-blue-800",
-      description: "Symptoms are noticeable and may occupy 1-3 hours of your day. There is mild distress or mild interference in daily life, but they remain manageable."
+      color: "text-sky-700 bg-sky-50 border-sky-200 dark:text-sky-300 dark:bg-sky-950/40 dark:border-sky-800",
+      description: "Symptoms are noticeable and may take under an hour to a couple of hours a day, with mild distress that remains manageable."
     };
   } else if (totalScore <= 23) {
     return {
       name: "Moderate OCD",
-      color: "text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-950/30 dark:border-amber-800",
-      description: "Symptoms are definitive and cause clear interference with daily, social, or occupational activities. They may consume 3-8 hours of your day and require concentrated effort to manage."
+      color: "text-amber-800 bg-amber-50 border-amber-300 dark:text-amber-300 dark:bg-amber-950/40 dark:border-amber-800",
+      description: "Symptoms clearly interrupt daily, social, or work routines and demand steady mental energy to carry."
     };
   } else if (totalScore <= 31) {
     return {
       name: "Severe OCD",
-      color: "text-orange-600 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-950/30 dark:border-orange-800",
-      description: "Symptoms are highly intrusive, occupying significant portions of the day (>8 hours) and generating substantial distress. Performance in work, social, or family roles is heavily impaired."
+      color: "text-orange-800 bg-orange-50 border-orange-300 dark:text-orange-300 dark:bg-orange-950/40 dark:border-orange-800",
+      description: "Intrusive loops and rituals are occupying a heavy share of the day and creating substantial fatigue and disruption."
     };
   } else {
     return {
       name: "Extreme OCD",
-      color: "text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-950/30 dark:border-rose-800",
-      description: "Symptoms are near-constant, causing incapacitating distress and rendering almost all daily activities extremely difficult. This level suggests an urgent need for professional support."
+      color: "text-rose-800 bg-rose-50 border-rose-300 dark:text-rose-300 dark:bg-rose-950/40 dark:border-rose-800",
+      description: "Symptoms feel near-constant and exhausting, making everyday tasks very hard to carry alone."
     };
   }
+}
+
+export function getInsightExplanation(insightScore: number | null | undefined): string | null {
+  if (insightScore === null || insightScore === undefined) return null;
+  switch (insightScore) {
+    case 0:
+      return "Question 11 (Insight: Excellent) — You recognize these loops as excessive even when they feel loud. Knowing a thought is OCD noise is a strong anchor for Exposure & Response Prevention (ERP).";
+    case 1:
+      return "Question 11 (Insight: Good/Fair) — Part of you knows the loop is excessive while another part feels pulled by doubt. That tug-of-war is completely normal in OCD.";
+    case 2:
+      return "Question 11 (Insight: Moderate) — When anxiety spikes, OCD can make fears feel remarkably convincing. Naming the doubt with a clinician helps separate real risk from false alarm.";
+    case 3:
+      return "Question 11 (Insight: Poor) — Right now these worries feel very real and urgent. You deserve a patient, skilled clinician who listens without arguing or dismissing how intense this feels.";
+    case 4:
+      return "Question 11 (Insight: Fixed Conviction) — These thoughts feel completely undeniable right now. Sharing this honestly takes courage—a specialist trained in OCD care can help gently explore relief at your pace.";
+    default:
+      return null;
+  }
+}
+
+export function getOutcomeValidation(params: {
+  totalScore: number;
+  obsessionSubtotal: number;
+  compulsiveSubtotal: number;
+  insightScore?: number | null;
+  hasEgoDystonicChecked?: boolean;
+  hasHarmConcernCurrent?: boolean;
+  answeredCoreCount?: number;
+}): IYbocsOutcomeValidation {
+  const {
+    totalScore,
+    obsessionSubtotal,
+    compulsiveSubtotal,
+    insightScore = null,
+    hasEgoDystonicChecked = false,
+    hasHarmConcernCurrent = false,
+    answeredCoreCount = 0
+  } = params;
+
+  const base = getSeverityCategory(totalScore);
+  const insightNote = getInsightExplanation(insightScore);
+
+  const egoDystonicReassurance = hasEgoDystonicChecked
+    ? "You checked one or more unwanted intrusive-thought items (harm, violent, or taboo themes). In OCD, these thoughts are ego-dystonic—the horror, guilt, or disgust you feel is proof they go against your values, not proof of your character or intent."
+    : null;
+
+  let patternNote: string | null = null;
+  if (answeredCoreCount >= 4 && totalScore >= 8) {
+    if (obsessionSubtotal - compulsiveSubtotal >= 5) {
+      patternNote = "Your ratings point mostly toward intrusive thoughts or mental loops (sometimes called 'Pure-O' or covert mental checking). Mental rituals are real effort too—you are not 'making it up.'";
+    } else if (compulsiveSubtotal - obsessionSubtotal >= 5) {
+      patternNote = "Your ratings show heavy time spent on physical or repetitive relief rituals. Compulsions bring brief relief while quietly keeping the alarm wired—gentle, paced ERP helps break that cycle.";
+    }
+  }
+
+  if (totalScore <= 7) {
+    return {
+      tier: 'subclinical',
+      severityName: base.name,
+      badgeColor: base.color,
+      cardBorder: 'border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/40 dark:bg-emerald-950/20',
+      headline: answeredCoreCount === 0
+        ? "Take this at your own pace — every answer stays private on your device"
+        : "Your alarm system is relatively quiet right now",
+      validationMessage: answeredCoreCount === 0
+        ? "Checking in on intrusive thoughts or habits can feel vulnerable. You can rate as many or as few items as feel helpful today; this scale is an exploratory reflection tool, never a verdict."
+        : "A low score today reflects real steadiness—and it doesn't erase how exhausting past spikes may have felt. Recording a calm baseline makes it much easier to notice early shifts later.",
+      meaningInDailyLife: base.description,
+      patternNote,
+      insightNote,
+      egoDystonicReassurance,
+      showWarmSupportCard: hasHarmConcernCurrent,
+      nextSteps: [
+        { label: "Record Baseline", detail: "Save this calm snapshot so you can compare future check-ins over time.", intent: 'save' },
+        { label: "Brief Somatic Reset", detail: "Try 60 seconds of 0.1 Hz paced breathing to reinforce nervous-system ease.", intent: 'grounding' },
+        { label: "Copy Visit Prep Note", detail: "Keep a clean summary handy if you want to review past patterns with a clinician.", intent: 'visit_brief' }
+      ]
+    };
+  }
+
+  if (totalScore <= 15) {
+    return {
+      tier: 'mild',
+      severityName: base.name,
+      badgeColor: base.color,
+      cardBorder: 'border-sky-200 dark:border-sky-900/60 bg-sky-50/40 dark:bg-sky-950/20',
+      headline: "Noticing these loops early is a genuine strength",
+      validationMessage: "Even 'mild' obsessive-compulsive loops quietly drain energy and focus. What you're experiencing is a specific, changeable threat-detection habit in the brain—not a personal flaw—and mild symptoms respond especially well to steady, early support.",
+      meaningInDailyLife: base.description,
+      patternNote,
+      insightNote,
+      egoDystonicReassurance,
+      showWarmSupportCard: hasHarmConcernCurrent,
+      nextSteps: [
+        { label: "Calm the Alarm First", detail: "Use the 0.1 Hz Somatic Grounding Loop before trying to resist an urge.", intent: 'grounding' },
+        { label: "Copy Visit Prep Brief", detail: "Bring a clear 30-second summary to a therapist or primary care clinician.", intent: 'visit_brief' },
+        { label: "Record to Timeline", detail: "Save today's rating to track whether small daily shifts ease the load.", intent: 'save' }
+      ]
+    };
+  }
+
+  if (totalScore <= 23) {
+    return {
+      tier: 'moderate',
+      severityName: base.name,
+      badgeColor: base.color,
+      cardBorder: 'border-amber-300 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/20',
+      headline: "Carrying this much mental noise every day is genuinely exhausting",
+      validationMessage: "Spending hours each day wrestling with unwanted thoughts or rituals takes immense stamina. This is a well-understood neurological loop—not a lack of willpower—and evidence-based care like Exposure & Response Prevention (ERP) with an OCD-trained clinician has strong, measurable outcomes.",
+      meaningInDailyLife: base.description,
+      patternNote,
+      insightNote,
+      egoDystonicReassurance,
+      showWarmSupportCard: hasHarmConcernCurrent,
+      nextSteps: [
+        { label: "Prepare Clinician Brief", detail: "Copy a structured summary of your scores and focus themes for an ERP/OCD consult.", intent: 'visit_brief' },
+        { label: "Guided Somatic Grounding", detail: "Downshift acute anxiety spikes with paced 4s-in / 6s-out breathing.", intent: 'grounding' },
+        { label: "Save Outcome Snapshot", detail: "Store this score in your FHIR timeline to measure treatment progress.", intent: 'save' }
+      ]
+    };
+  }
+
+  if (totalScore <= 31) {
+    return {
+      tier: 'severe',
+      severityName: base.name,
+      badgeColor: base.color,
+      cardBorder: 'border-orange-300 dark:border-orange-900/60 bg-orange-50/50 dark:bg-orange-950/25',
+      headline: "You have been carrying a very heavy load — you don't have to white-knuckle this alone",
+      validationMessage: "When intrusive loops consume this much of your waking hours, pure willpower isn't supposed to be enough. Reaching this score is not a failure; it is clear evidence that your nervous system deserves dedicated, specialized support (ERP and/or psychiatric evaluation).",
+      meaningInDailyLife: base.description,
+      patternNote,
+      insightNote,
+      egoDystonicReassurance,
+      showWarmSupportCard: true,
+      nextSteps: [
+        { label: "Pause & Ground Right Now", detail: "Take two slow minutes in Somatic Grounding—no effort required beyond breathing.", intent: 'grounding' },
+        { label: "Copy Specialist Visit Brief", detail: "Let this 1-page summary speak for you so you don't have to re-explain everything from scratch.", intent: 'visit_brief' },
+        { label: "Save to FHIR Timeline", detail: "Preserve today's record cleanly for your care team.", intent: 'save' }
+      ]
+    };
+  }
+
+  return {
+    tier: 'extreme',
+    severityName: base.name,
+    badgeColor: base.color,
+    cardBorder: 'border-rose-300 dark:border-rose-900/60 bg-rose-50/50 dark:bg-rose-950/25',
+    headline: "It took real courage to complete this while hurting this much",
+    validationMessage: "Living with near-constant intrusive distress is one of the heaviest invisible burdens a person can carry. You are not broken and you are not alone—intensive, specialized OCD treatment exists and helps people recover real breathing room even from extreme scores.",
+    meaningInDailyLife: base.description,
+    patternNote,
+    insightNote,
+    egoDystonicReassurance,
+    showWarmSupportCard: true,
+    nextSteps: [
+      { label: "Immediate Somatic Grounding", detail: "Step out of the numbers and steady your breath for 60 seconds right now.", intent: 'grounding' },
+      { label: "Copy Urgent Specialist Brief", detail: "Hand this structured summary directly to a clinician, urgent care, or trusted support person.", intent: 'visit_brief' },
+      { label: "Save to FHIR Timeline", detail: "Keep an accurate, timestamped record ready for your care team.", intent: 'save' }
+    ]
+  };
 }

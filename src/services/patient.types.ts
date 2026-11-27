@@ -678,11 +678,25 @@ export interface IBookmark {
 }
 
 export interface IYbocsAssessmentData {
-    checklistAnswers?: Record<string, { past: boolean; current: boolean }>;
-    severityAnswers?: Record<string, number>;
+    id?: string;
+    patientInfo?: { name: string; dob: string; date: string };
+    checklistAnswers?: Record<number, { past: boolean; current: boolean }> & Record<string, { past: boolean; current: boolean }>;
+    upsettingObsessionId?: number | null;
+    upsettingCompulsionId?: number | null;
+    severityAnswers?: Record<number, number> & Record<string, number>;
+    obsessionSubtotal?: number;
+    compulsiveSubtotal?: number;
+    insightScore?: number | null;
     dateCreated?: string;
     totalScore?: number;
     severityCategory?: string;
+}
+
+export interface IYbocsHistoryEntry {
+    type: 'Y-BOCsAssessment';
+    date: string;
+    summary: string;
+    assessment: IYbocsAssessmentData;
 }
 
 export type HistoryEntry = {
@@ -727,12 +741,7 @@ export type HistoryEntry = {
     summary: string;
     report: Partial<Record<AnalysisLens, string>>;
     annotations: Record<string, Record<string, { note: string, bracketState: 'normal' | 'added' | 'removed' }>>;
-} | {
-    type: 'Y-BOCsAssessment';
-    date: string;
-    summary: string;
-    assessment: IYbocsAssessmentData;
-};
+} | IYbocsHistoryEntry;
 
 export interface IPatient extends IPatientState {
     id: string;

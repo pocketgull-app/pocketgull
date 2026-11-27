@@ -2652,7 +2652,7 @@ export class ExportService {
       patient.history
         .forEach((entry, i) => {
           if (entry.type !== 'Y-BOCsAssessment') return;
-          const assessment = entry.assessment;
+          const assessment = entry.assessment || (entry as unknown as { report?: typeof entry.assessment }).report;
           if (!assessment) return;
 
           // Add QuestionnaireResponse
