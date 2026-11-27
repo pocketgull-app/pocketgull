@@ -1037,67 +1037,68 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
 
               @if (state.liveAgentWindowMode() === 'minimized') {
                 <!-- Minimized Floating Live Consult Dock -->
-                <div id="tour-voice-agent-window" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] animate-in slide-in-from-bottom-5 duration-300 pointer-events-auto">
+                <div id="tour-voice-agent-window" class="live-consult-dock fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] pointer-events-auto">
                   <div class="bg-zinc-950/95 text-white border border-teal-500/40 shadow-2xl rounded-full px-4 py-2.5 flex items-center gap-3 backdrop-blur-xl ring-1 ring-teal-500/20">
                     <button type="button" (click)="state.setLiveAgentWindowMode('compact')" class="flex items-center gap-2 cursor-pointer text-xs font-mono font-bold hover:text-teal-300 transition">
                       <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                       <span>Live Consult Active</span>
                     </button>
-                    <button type="button" (click)="state.setLiveAgentWindowMode('compact')" class="p-1 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs transition cursor-pointer" title="Expand Session">
+                    <button type="button" (click)="state.setLiveAgentWindowMode('compact')" class="p-1.5 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs transition cursor-pointer" title="Expand Session">
                       <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
                     </button>
-                    <button type="button" (click)="state.toggleLiveAgent(false)" class="p-1 rounded-full bg-zinc-800 hover:bg-red-900/60 text-zinc-400 hover:text-red-400 text-xs transition cursor-pointer" title="End Session">
+                    <button type="button" (click)="state.toggleLiveAgent(false)" class="p-1.5 rounded-full bg-zinc-800 hover:bg-red-900/60 text-zinc-400 hover:text-red-400 text-xs transition cursor-pointer" title="End Session">
                       <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                   </div>
                 </div>
-              } @else {
-                <!-- The Pocket Container (Compact or Expanded) -->
-                <div id="tour-voice-agent-window" 
-                     class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] flex flex-col transition-all duration-300 animate-in slide-in-from-bottom-10 fade-in pointer-events-none"
-                     [ngClass]="state.liveAgentWindowMode() === 'expanded' ? 'w-[calc(100%-2rem)] sm:w-[780px] lg:w-[860px] h-[820px] max-h-[calc(100dvh-2.5rem)]' : 'w-[calc(100%-2rem)] sm:w-[460px] h-[680px] max-h-[calc(100dvh-3.5rem)]'">
-                   
-                   <!-- Perched Origami Seagull -->
-                   <div class="relative w-full h-24 pointer-events-auto flex justify-center items-end pb-0 translate-y-[4px] z-[101]" style="perspective: 1000px;">
-                      <svg class="w-28 h-28 drop-shadow-[0_10px_10px_rgba(20,50,90,0.3)] fly-out" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                          <g fill-rule="evenodd" stroke="#1E3A5F" stroke-width="2.5" stroke-linejoin="round">
-                              <!-- Right Wing (Back) -->
-                              <polygon points="107,95 140,50 115,85" fill="#C5D9ED" class="origami-fold fold-4 origin-[60%_45%]" />
-                              <polygon points="140,50 115,85 130,100" fill="#E6F0FA" class="origami-fold fold-3 origin-[60%_45%]" />
-
-                              <!-- Left Wing (Front raised) -->
-                              <polygon points="40,35 60,65 30,55" fill="#FFFFFF" class="origami-fold fold-4 origin-[35%_35%]" />
-                              <polygon points="40,35 85,60 60,65" fill="#FFFFFF" class="origami-fold fold-3 origin-[40%_35%]" />
-                              <polygon points="85,60 107,95 60,65" fill="#DAE8F5" class="origami-fold fold-2 origin-[40%_35%]" />
-                              <polygon points="60,65 107,95 90,115" fill="#FFFFFF" class="origami-fold fold-1 origin-[50%_50%]" />
-
-                              <!-- Tail -->
-                              <polygon points="45,130 65,110 55,145" fill="#FFFFFF" class="origami-fold fold-4 origin-[30%_65%]" />
-                              <polygon points="65,110 55,145 90,115" fill="#E6F0FA" class="origami-fold fold-3 origin-[35%_65%]" />
-
-                              <!-- Body -->
-                              <polygon points="65,110 90,115 107,95" fill="#FFFFFF" class="origami-fold origin-[50%_60%]" />
-                              <polygon points="90,115 107,95 125,105" fill="#FFFFFF" class="origami-fold origin-[50%_60%]" />
-                              <polygon points="90,115 125,105 120,130" fill="#C5D9ED" class="origami-fold origin-[55%_60%]" />
-
-                              <!-- Head/Beak -->
-                              <polygon points="107,95 122,90 125,105" fill="#FFFFFF" class="origami-fold fold-1 origin-[60%_50%]" />
-                              <polygon points="122,90 135,93 125,105" fill="#FFFFFF" class="origami-fold fold-2 origin-[60%_50%]" />
-                              <polygon points="125,105 135,93 140,110" fill="#E6F0FA" class="origami-fold fold-2 origin-[60%_50%]" />
-                              <polygon points="135,93 150,100 133,102" fill="#E6F0FA" class="origami-fold fold-3 origin-[65%_50%]" />
-                          </g>
-                      </svg>
-                   </div>
-                   
-                   <!-- The Pocket Window styled like the Origami Theme -->
-                   <div class="flex-1 w-full bg-gradient-to-br from-[#E1EAF4] to-[#C9DEEE] dark:from-[#0F172A] dark:to-[#1E293B] rounded-[2rem] shadow-[0_30px_60px_-15px_rgba(30,58,95,0.4)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] border-[3px] border-white dark:border-[#334155] overflow-hidden pointer-events-auto flex flex-col relative ring-1 ring-[#1E3A5F]/10 dark:ring-black/50">
-                      <!-- Embedded Voice Assistant logic takes over inner bounds transparently -->
-                      @defer (on immediate) {
-                        <app-voice-assistant id="tour-voice-assistant" class="block h-full w-full mix-blend-normal bg-white/70 dark:bg-black/50 backdrop-blur-md"></app-voice-assistant>
-                      }
-                   </div>
-                 </div>
               }
+
+              <!-- The Pocket Container (Compact or Expanded; kept mounted while minimized so voice stream & draft persist) -->
+              <div [attr.id]="state.liveAgentWindowMode() !== 'minimized' ? 'tour-voice-agent-window' : null"
+                   [class.hidden]="state.liveAgentWindowMode() === 'minimized'"
+                   class="live-consult-shell fixed z-[100] flex flex-col transition-all duration-300 animate-in fade-in pointer-events-none"
+                   [ngClass]="state.liveAgentWindowMode() === 'expanded' ? 'live-consult-shell--expanded sm:w-[780px] lg:w-[860px]' : 'live-consult-shell--compact sm:w-[460px]'">
+
+                 <!-- Perched Origami Seagull (compact perch; empty flanks pass clicks through to backdrop) -->
+                 <div class="live-consult-gull relative w-full pointer-events-none flex justify-center items-end pb-0 shrink-0 z-[101]" style="perspective: 1000px;">
+                    <svg class="w-16 h-16 sm:w-20 sm:h-20 pointer-events-auto fly-out" style="filter: drop-shadow(0 8px 10px rgba(20, 50, 90, 0.28));" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <g fill-rule="evenodd" stroke="#1E3A5F" stroke-width="2.5" stroke-linejoin="round">
+                            <!-- Right Wing (Back) -->
+                            <polygon points="107,95 140,50 115,85" fill="#C5D9ED" class="origami-fold fold-4 origin-[60%_45%]" />
+                            <polygon points="140,50 115,85 130,100" fill="#E6F0FA" class="origami-fold fold-3 origin-[60%_45%]" />
+
+                            <!-- Left Wing (Front raised) -->
+                            <polygon points="40,35 60,65 30,55" fill="#FFFFFF" class="origami-fold fold-4 origin-[35%_35%]" />
+                            <polygon points="40,35 85,60 60,65" fill="#FFFFFF" class="origami-fold fold-3 origin-[40%_35%]" />
+                            <polygon points="85,60 107,95 60,65" fill="#DAE8F5" class="origami-fold fold-2 origin-[40%_35%]" />
+                            <polygon points="60,65 107,95 90,115" fill="#FFFFFF" class="origami-fold fold-1 origin-[50%_50%]" />
+
+                            <!-- Tail -->
+                            <polygon points="45,130 65,110 55,145" fill="#FFFFFF" class="origami-fold fold-4 origin-[30%_65%]" />
+                            <polygon points="65,110 55,145 90,115" fill="#E6F0FA" class="origami-fold fold-3 origin-[35%_65%]" />
+
+                            <!-- Body -->
+                            <polygon points="65,110 90,115 107,95" fill="#FFFFFF" class="origami-fold origin-[50%_60%]" />
+                            <polygon points="90,115 107,95 125,105" fill="#FFFFFF" class="origami-fold origin-[50%_60%]" />
+                            <polygon points="90,115 125,105 120,130" fill="#C5D9ED" class="origami-fold origin-[55%_60%]" />
+
+                            <!-- Head/Beak -->
+                            <polygon points="107,95 122,90 125,105" fill="#FFFFFF" class="origami-fold fold-1 origin-[60%_50%]" />
+                            <polygon points="122,90 135,93 125,105" fill="#FFFFFF" class="origami-fold fold-2 origin-[60%_50%]" />
+                            <polygon points="125,105 135,93 140,110" fill="#E6F0FA" class="origami-fold fold-2 origin-[60%_50%]" />
+                            <polygon points="135,93 150,100 133,102" fill="#E6F0FA" class="origami-fold fold-3 origin-[65%_50%]" />
+                        </g>
+                    </svg>
+                 </div>
+
+                 <!-- The Pocket Window styled like the Origami Theme -->
+                 <div class="live-consult-window flex-1 min-h-0 w-full bg-gradient-to-br from-[#E1EAF4] to-[#C9DEEE] dark:from-[#0F172A] dark:to-[#1E293B] border-[3px] border-white dark:border-[#334155] overflow-hidden pointer-events-auto flex flex-col relative ring-1 ring-[#1E3A5F]/10 dark:ring-black/50">
+                    <!-- Embedded Voice Assistant logic takes over inner bounds cleanly -->
+                    @defer (on immediate) {
+                      <app-voice-assistant id="tour-voice-assistant" class="flex flex-col flex-1 min-h-0 h-full w-full mix-blend-normal bg-white/95 dark:bg-obsidian backdrop-blur-md"></app-voice-assistant>
+                    }
+                 </div>
+              </div>
             }
           }
         </div>
@@ -2166,6 +2167,62 @@ import { UiSelfRepairHudComponent } from './components/ui-self-repair-hud.compon
     @keyframes intro-fullscreen {
       0% { opacity: 0; transform: translateY(20px); }
       100% { opacity: 1; transform: translateY(0); }
+    }
+    .live-consult-shell {
+      bottom: 1rem;
+      right: 1rem;
+      box-sizing: border-box;
+      max-width: calc(100vw - 1.5rem);
+      max-height: calc(100dvh - 1.5rem);
+    }
+    .live-consult-shell--compact {
+      width: min(460px, calc(100vw - 1.5rem));
+      height: min(680px, calc(100dvh - 2rem));
+    }
+    .live-consult-shell--expanded {
+      width: min(860px, calc(100vw - 2rem));
+      height: min(820px, calc(100dvh - 2rem));
+    }
+    .live-consult-gull {
+      height: 3.25rem;
+      transform: translateY(6px);
+    }
+    .live-consult-window {
+      border-radius: 1.5rem;
+      box-shadow: 0 24px 56px -14px rgba(15, 23, 42, 0.35);
+      min-height: 0;
+    }
+    :host-context(.dark) .live-consult-window {
+      box-shadow: 0 28px 64px -14px rgba(0, 0, 0, 0.7);
+    }
+    @media (min-width: 640px) {
+      .live-consult-shell {
+        bottom: 1.5rem;
+        right: 1.5rem;
+      }
+      .live-consult-gull {
+        height: 3.75rem;
+      }
+      .live-consult-window {
+        border-radius: 1.75rem;
+      }
+    }
+    @media (max-width: 639px) {
+      .live-consult-shell {
+        left: 0.75rem;
+        right: 0.75rem;
+        bottom: 0.75rem;
+        width: auto !important;
+        max-width: none;
+        height: calc(100dvh - 1.5rem) !important;
+        max-height: calc(100dvh - 1.5rem);
+      }
+      .live-consult-gull {
+        height: 2.5rem;
+      }
+      .live-consult-window {
+        border-radius: 1.25rem;
+      }
     }
   `]
 })

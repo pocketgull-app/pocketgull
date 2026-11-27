@@ -426,6 +426,32 @@ describe('VoiceAssistantComponent - Multimodal Voice Consultation & Speech Contr
     await component.speakVernacular('Joto la mwili ni la kawaida.');
     expect(speakSpy).toHaveBeenCalledWith('Joto la mwili ni la kawaida.');
   });
+
+  it('15. Coordinates header dropdown menus mutually exclusively and dismisses all menus on Escape', () => {
+    component.toggleHeaderMenu('voice');
+    expect(component.isVoiceMenuOpen()).toBe(true);
+    expect(component.isSocraticMenuOpen()).toBe(false);
+    expect(component.isVernacularVoiceMenuOpen()).toBe(false);
+
+    component.toggleHeaderMenu('socratic');
+    expect(component.isVoiceMenuOpen()).toBe(false);
+    expect(component.isSocraticMenuOpen()).toBe(true);
+    expect(component.isVernacularVoiceMenuOpen()).toBe(false);
+
+    component.toggleHeaderMenu('vernacular');
+    expect(component.isVoiceMenuOpen()).toBe(false);
+    expect(component.isSocraticMenuOpen()).toBe(false);
+    expect(component.isVernacularVoiceMenuOpen()).toBe(true);
+
+    // Escape closes the open vernacular dropdown instead of minimizing the consult window
+    mockPatientState.setLiveAgentWindowMode.mockClear();
+    const esc = new KeyboardEvent('keydown', { key: 'Escape' });
+    const preventSpy = vi.spyOn(esc, 'preventDefault');
+    component.handleGlobalKeydown(esc);
+    expect(component.isVernacularVoiceMenuOpen()).toBe(false);
+    expect(preventSpy).toHaveBeenCalled();
+    expect(mockPatientState.setLiveAgentWindowMode).not.toHaveBeenCalled();
+  });
 });
 
 

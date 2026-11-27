@@ -4392,6 +4392,13 @@ html.theme-curie .thematic-3d-container {
     -webkit-transform: none !important;
   }
 
+  /* Hide back face instantly when card is NOT flipped under reduced motion */
+  .transform-style-3d:not(.rotate-y-180) > .rotate-y-180 {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
   /* Hide front face instantly when container has .rotate-y-180 class under reduced motion */
   .transform-style-3d.rotate-y-180 > .backface-hidden:not(.rotate-y-180) {
     opacity: 0 !important;
@@ -4399,7 +4406,7 @@ html.theme-curie .thematic-3d-container {
     pointer-events: none !important;
   }
 
-  /* Hide back face instantly when container has .rotate-y-180 class under reduced motion */
+  /* Show back face instantly when container has .rotate-y-180 class under reduced motion */
   .transform-style-3d.rotate-y-180 > .rotate-y-180 {
     opacity: 1 !important;
     visibility: visible !important;

@@ -45,56 +45,67 @@ export interface IChatEntry {
     imports: [CommonModule, FormsModule, PocketGullInputComponent, SafeHtmlPipe],
     changeDetection: ChangeDetectionStrategy.OnPush,
     styles: [`
-        .prose {
-            --tw-prose-body: theme(colors.gray.700);
-            --tw-prose-headings: theme(colors.gray.900);
-            --tw-prose-lead: theme(colors.gray.600);
-            --tw-prose-links: theme(colors.blue.600);
-            --tw-prose-bold: theme(colors.gray.900);
-            --tw-prose-counters: theme(colors.gray.500);
-            --tw-prose-bullets: theme(colors.gray.300);
-            --tw-prose-hr: theme(colors.gray.200);
-            --tw-prose-quotes: theme(colors.gray.900);
-            --tw-prose-quote-borders: theme(colors.gray.200);
-            --tw-prose-captions: theme(colors.gray.500);
-            --tw-prose-code: theme(colors.indigo.600);
-            --tw-prose-pre-code: theme(colors.indigo.200);
-            --tw-prose-pre-bg: theme(colors.gray.800);
-            --tw-prose-th-borders: theme(colors.gray.300);
-            --tw-prose-td-borders: theme(colors.gray.200);
+        :host {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+            min-height: 0;
+            height: 100%;
+            width: 100%;
+        }
 
-            --tw-prose-invert-body: theme(colors.gray.300);
-            --tw-prose-invert-headings: theme(colors.white);
-            --tw-prose-invert-lead: theme(colors.gray.400);
-            --tw-prose-invert-links: theme(colors.blue.400);
-            --tw-prose-invert-bold: theme(colors.white);
-            --tw-prose-invert-counters: theme(colors.gray.400);
-            --tw-prose-invert-bullets: theme(colors.gray.600);
-            --tw-prose-invert-hr: theme(colors.gray.700);
-            --tw-prose-invert-quotes: theme(colors.gray.100);
-            --tw-prose-invert-quote-borders: theme(colors.gray.700);
-            --tw-prose-invert-captions: theme(colors.gray.400);
-            --tw-prose-invert-code: theme(colors.indigo.400);
-            --tw-prose-invert-pre-code: theme(colors.indigo.300);
-            --tw-prose-invert-pre-bg: theme(colors.gray.900);
-            --tw-prose-invert-th-borders: theme(colors.gray.600);
-            --tw-prose-invert-td-borders: theme(colors.gray.700);
+        .prose {
+            --tw-prose-body: #374151;
+            --tw-prose-headings: #111827;
+            --tw-prose-lead: #4b5563;
+            --tw-prose-links: #2563eb;
+            --tw-prose-bold: #111827;
+            --tw-prose-counters: #6b7280;
+            --tw-prose-bullets: #d1d5db;
+            --tw-prose-hr: #e5e7eb;
+            --tw-prose-quotes: #111827;
+            --tw-prose-quote-borders: #e5e7eb;
+            --tw-prose-captions: #6b7280;
+            --tw-prose-code: #4f46e5;
+            --tw-prose-pre-code: #c7d2fe;
+            --tw-prose-pre-bg: #1f2937;
+            --tw-prose-th-borders: #d1d5db;
+            --tw-prose-td-borders: #e5e7eb;
+
+            --tw-prose-invert-body: #d1d5db;
+            --tw-prose-invert-headings: #ffffff;
+            --tw-prose-invert-lead: #9ca3af;
+            --tw-prose-invert-links: #60a5fa;
+            --tw-prose-invert-bold: #ffffff;
+            --tw-prose-invert-counters: #9ca3af;
+            --tw-prose-invert-bullets: #4b5563;
+            --tw-prose-invert-hr: #374151;
+            --tw-prose-invert-quotes: #f3f4f6;
+            --tw-prose-invert-quote-borders: #374151;
+            --tw-prose-invert-captions: #9ca3af;
+            --tw-prose-invert-code: #818cf8;
+            --tw-prose-invert-pre-code: #a5b4fc;
+            --tw-prose-invert-pre-bg: #111827;
+            --tw-prose-invert-th-borders: #4b5563;
+            --tw-prose-invert-td-borders: #374151;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .prose :where(p):not(:where([class~="not-prose"] *)) {
-            margin-top: 0.8em;
-            margin-bottom: 0.8em;
+            margin-top: 0.7em;
+            margin-bottom: 0.7em;
         }
         
         .prose :where(ul):not(:where([class~="not-prose"] *)) {
-            margin-top: 0.8em;
-            margin-bottom: 0.8em;
+            margin-top: 0.7em;
+            margin-bottom: 0.7em;
         }
 
         .prose :where(h2):not(:where([class~="not-prose"] *)) {
-            font-size: 1.1em;
-            margin-top: 1.2em;
-            margin-bottom: 0.5em;
+            font-size: 1.05em;
+            margin-top: 1em;
+            margin-bottom: 0.45em;
         }
 
         .prose.prose-sm :where(h3):not(:where([class~="not-prose"] *)) {
@@ -107,294 +118,401 @@ export interface IChatEntry {
         .prose :where(ul):last-child { margin-bottom: 0; }
         .prose :where(h2, h3):first-child { margin-top: 0; }
 
+        /* Active-face-driven 3D flip card: prevents 0px / 80px collapse AND prevents hidden back-face from stretching short messages */
+        .chat-flip-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            width: 100%;
+        }
+        .chat-flip-face {
+            grid-area: 1 / 1;
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .va-face-inactive {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* Safe bounded scrollable drawers & chrome */
+        .va-win-btn {
+            min-width: 36px;
+            min-height: 36px;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.625rem;
+            flex-shrink: 0;
+        }
+        .va-ctrl-btn {
+            min-height: 34px;
+            padding: 0.25rem 0.55rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            border-radius: 0.625rem;
+            flex-shrink: 0;
+        }
+        .va-dropdown-panel {
+            max-width: calc(100vw - 3rem);
+        }
+        .va-truncate-pill {
+            max-width: 5.5rem;
+        }
+        .va-avatar-orb {
+            width: 8rem;
+            height: 8rem;
+        }
+        @media (min-width: 640px) {
+            .va-avatar-orb {
+                width: 10rem;
+                height: 10rem;
+            }
+        }
+        .va-hud-scroll {
+            max-height: 40%;
+            overflow-y: auto;
+        }
+        .va-shelf-scroll {
+            max-height: 14rem;
+            overflow-y: auto;
+        }
+        .va-no-scrollbar {
+            scrollbar-width: none;
+        }
+        .va-no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
         @keyframes fadeUpRams {
-            from { opacity: 0; transform: translateY(12px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .chat-entry {
-            animation: fadeUpRams 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+            animation: fadeUpRams 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .chat-entry {
+                animation: none;
+            }
         }
     `],
     template: `
-        <div class="h-full bg-white dark:bg-obsidian z-10 flex flex-col no-print w-full spark-theme">
-            
-            <!-- Live Multimodal Clinical Consult Cockpit Header -->
-            <div class="flex items-center justify-between px-3.5 py-2.5 shrink-0 z-20 relative bg-white/95 dark:bg-obsidian/95 border-b border-gray-200/80 dark:border-zinc-800/80 backdrop-blur-md">
-                <div class="flex items-center gap-2 min-w-0">
-                    <!-- Live Connection Pulse Status -->
-                    <span class="flex h-2.5 w-2.5 relative shrink-0">
-                        @if (live.isConnected()) {
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                        } @else if (live.isListening()) {
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
-                        } @else {
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-zinc-400 dark:bg-zinc-600"></span>
-                        }
-                    </span>
+        <div class="h-full min-h-0 bg-white dark:bg-obsidian z-10 flex flex-col no-print w-full spark-theme relative overflow-hidden">
 
-                    <div class="flex items-center gap-1.5 min-w-0">
-                        <span class="font-mono font-bold text-gray-800 dark:text-zinc-200 tracking-wider text-xs uppercase truncate">
-                            Live Session
+            <!-- Click-outside dismiss overlay for header dropdowns -->
+            @if (isVoiceMenuOpen() || isSocraticMenuOpen() || isVernacularVoiceMenuOpen()) {
+                <div class="absolute inset-0 z-30 bg-black/10" role="presentation" aria-hidden="true" (click)="closeAllHeaderMenus()"></div>
+            }
+
+            <!-- Live Multimodal Clinical Consult Cockpit Header (Two-Tier Zero-Overflow Chrome) -->
+            <div class="shrink-0 z-40 relative bg-white/95 dark:bg-obsidian/95 border-b border-gray-200/80 dark:border-zinc-800/80 backdrop-blur-md">
+                <!-- Row 1: Window Title & Always-Visible Window Controls -->
+                <div class="flex items-center justify-between gap-2 px-3 py-2">
+                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                        <!-- Live Connection Pulse Status -->
+                        <span class="flex h-2.5 w-2.5 relative shrink-0">
+                            @if (live.isConnected()) {
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                            } @else if (live.isListening()) {
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                            } @else {
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-zinc-400 dark:bg-zinc-600"></span>
+                            }
                         </span>
-                        @if (live.isConnected()) {
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1 shrink-0">
-                                <span>⚡ <span class="tabular-nums">{{ live.latencyMs() }}</span>ms</span>
-                                <span class="hidden sm:inline text-zinc-400">• Live Audio</span>
+
+                        <div class="flex items-center gap-1.5 min-w-0">
+                            <span class="font-mono font-bold text-gray-800 dark:text-zinc-200 tracking-wider text-xs uppercase truncate">
+                                Live Session
                             </span>
-                        } @else {
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 shrink-0">
-                                Standby
-                            </span>
-                        }
-                    </div>
-
-                    @if (telemetryService.isHudActive()) {
-                        <span class="hidden md:inline px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 animate-pulse shrink-0">
-                            HUD (<span class="tabular-nums">{{ telemetryService.overallNeuroVascularScore() }}</span>/100)
-                        </span>
-                    }
-                </div>
-
-                <div class="flex items-center gap-1.5 shrink-0">
-                    <!-- Gemini Live Voice Selector Dropdown -->
-                    <div class="relative">
-                        <button
-                            type="button"
-                            (click)="isVoiceMenuOpen.set(!isVoiceMenuOpen()); isSocraticMenuOpen.set(false)"
-                            class="flex items-center gap-1.5 transition-all min-h-[44px] px-3 py-2 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/80 hover:bg-gray-100 dark:hover:bg-zinc-700 text-xs font-mono font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer shadow-xs touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                            title="Select Gemini Live HD Voice">
-                            <span>🎙️</span>
-                            <span class="hidden sm:inline">{{ live.selectedVoice() }}</span>
-                            <span class="text-[8px] text-zinc-400">▼</span>
-                        </button>
-                        @if (isVoiceMenuOpen()) {
-                            <div class="absolute right-0 mt-1 w-32 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-gray-200 dark:border-zinc-800 py-1 z-50 font-mono text-xs animate-in fade-in zoom-in-95">
-                                @for (v of availableVoices; track v) {
-                                    <button type="button" (click)="setVoice(v)"
-                                            class="w-full text-left px-3 py-2 hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:text-teal-600 dark:hover:text-teal-400 flex items-center justify-between cursor-pointer min-h-[44px] touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                                            [class.font-bold]="live.selectedVoice() === v">
-                                        <span>{{ v }}</span>
-                                        @if (live.selectedVoice() === v) { <span class="text-teal-500 font-bold">✓</span> }
-                                    </button>
-                                }
-                            </div>
-                        }
-                    </div>
-
-                    <!-- Socratic Persona & Bio-Rhythmic Pacing Options -->
-                    <div class="relative">
-                        <button
-                            type="button"
-                            (click)="isSocraticMenuOpen.set(!isSocraticMenuOpen()); isVoiceMenuOpen.set(false)"
-                            class="flex items-center gap-1.5 transition-all min-h-[44px] px-3 py-2 rounded-xl border border-teal-500/30 bg-teal-500/10 hover:bg-teal-500/20 text-xs font-mono font-bold text-teal-700 dark:text-teal-300 cursor-pointer shadow-xs touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                            title="Socratic Companion & Autonomic Vagal Pacing Options">
-                            <span>🌿</span>
-                            <span class="hidden md:inline">{{ socraticVoice.activePersona().name.split(' ')[0] }} ({{ socraticVoice.activePersona().speechRate }}x)</span>
-                            <span class="text-[8px] text-teal-500">▼</span>
-                        </button>
-                        @if (isSocraticMenuOpen()) {
-                            <div class="absolute right-0 mt-1 w-72 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-gray-200 dark:border-zinc-800 p-2 z-50 text-xs animate-in fade-in zoom-in-95 space-y-2">
-                                <div class="px-1 py-0.5 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between font-mono text-[10px] text-zinc-500 uppercase tracking-wider">
-                                    <span>Gull Squadron Voice Personas</span>
-                                    <span class="text-teal-600 dark:text-teal-400 font-bold">0.1 Hz Pacing</span>
-                                </div>
-                                <div class="space-y-1 max-h-80 overflow-y-auto pr-1">
-                                    @for (p of socraticVoice.allPersonas(); track p.id) {
-                                        <button
-                                            type="button"
-                                            (click)="selectSocraticPersona(p.id)"
-                                            class="w-full text-left p-2 rounded-lg border text-xs transition cursor-pointer flex flex-col gap-0.5 min-h-[44px] touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                                            [class.bg-teal-50]="socraticVoice.selectedPersonaId() === p.id"
-                                            [class.dark:bg-teal-950/40]="socraticVoice.selectedPersonaId() === p.id"
-                                            [class.border-teal-500]="socraticVoice.selectedPersonaId() === p.id"
-                                            [class.border-gray-100]="socraticVoice.selectedPersonaId() !== p.id"
-                                            [class.dark:border-zinc-800]="socraticVoice.selectedPersonaId() !== p.id">
-                                            <div class="flex items-center justify-between font-bold text-zinc-800 dark:text-zinc-200 text-[11px]">
-                                                <span>{{ p.name }}</span>
-                                                <span class="font-mono text-[10px] text-teal-600 dark:text-teal-400">{{ p.speechRate }}x</span>
-                                            </div>
-                                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1">{{ p.description }}</span>
-                                        </button>
+                            @if (live.isConnected()) {
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1 shrink-0">
+                                    <span>⚡ <span class="tabular-nums">{{ live.latencyMs() }}</span>ms</span>
+                                    @if (state.liveAgentWindowMode() === 'expanded') {
+                                        <span class="hidden sm:inline text-zinc-400">• Live Audio</span>
                                     }
-                                </div>
-                                <div class="pt-2 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-between px-1">
-                                    <label class="flex items-center gap-1.5 text-[11px] font-mono font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            [checked]="isSocraticDemystifierActive()"
-                                            (change)="isSocraticDemystifierActive.set(!isSocraticDemystifierActive())"
-                                            class="rounded text-teal-600 focus:ring-teal-500 h-3.5 w-3.5">
-                                        <span>Jargon Demystifier</span>
-                                    </label>
-                                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-mono font-bold">
-                                        {{ isSocraticDemystifierActive() ? 'ANALOGIES ON' : 'RAW' }}
-                                    </span>
-                                </div>
-                            </div>
+                                </span>
+                            } @else {
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 shrink-0">
+                                    Standby
+                                </span>
+                            }
+                        </div>
+
+                        @if (telemetryService.isHudActive()) {
+                            <span class="hidden sm:inline px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 animate-pulse shrink-0">
+                                HUD (<span class="tabular-nums">{{ telemetryService.overallNeuroVascularScore() }}</span>/100)
+                            </span>
                         }
                     </div>
 
-                    <!-- Vernacular Voice Language Selector Dropdown -->
-                    <div class="relative">
+                    <!-- Primary Window Chrome Controls (Pinned Right — Never Clipped) -->
+                    <div class="flex items-center gap-1 shrink-0">
+                        <!-- Toggle Sound / Mute -->
                         <button
                             type="button"
-                            (click)="isVernacularVoiceMenuOpen.set(!isVernacularVoiceMenuOpen())"
-                            id="btn-chat-vernacular-lang"
-                            class="flex items-center gap-1.5 transition-all min-h-[44px] px-3 py-2 rounded-xl border text-xs font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                            [ngClass]="vernacularVoice.isSpeaking() ? 'bg-teal-500/20 text-teal-700 dark:text-teal-300 border-teal-500/50 shadow-xs' : 'bg-gray-50 dark:bg-zinc-800/80 text-gray-700 dark:text-zinc-300 border-gray-200 dark:border-zinc-700'"
-                            [title]="'Frontline Vernacular Voice: ' + vernacularVoice.activeLanguage().name + ' (' + vernacularVoice.activeLanguage().nativeName + ')'">
-                            <span class="text-xs">{{ vernacularVoice.activeLanguage().flagEmoji }}</span>
-                            <span class="font-mono uppercase">{{ vernacularVoice.activeLanguageCode() }}</span>
-                            @if (vernacularVoice.isSpeaking()) {
-                                <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+                            (click)="isMuted.set(!isMuted())"
+                            class="va-win-btn text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                            [attr.aria-label]="isMuted() ? 'Unmute Sound' : 'Mute Sound'"
+                            [title]="isMuted() ? 'Unmute Sound' : 'Mute Sound'">
+                            @if (isMuted()) {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                                </svg>
+                            } @else {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                                </svg>
                             }
                         </button>
 
-                        @if (isVernacularVoiceMenuOpen()) {
-                            <div class="fixed inset-0 z-40 bg-black/20" role="presentation" aria-hidden="true" (click)="isVernacularVoiceMenuOpen.set(false)"></div>
-                            <div class="absolute right-0 mt-1 w-52 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl shadow-xl p-2 z-50 animate-in fade-in zoom-in-95 duration-100 font-sans text-xs">
-                                <div class="px-2 py-1 text-[10px] font-mono font-bold uppercase text-zinc-500 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center mb-1">
-                                    <span>Frontline Voice Prompts</span>
-                                    <span class="text-teal-500 font-bold">Offline TTS</span>
-                                </div>
-                                <div class="space-y-1">
-                                    @for (lang of vernacularVoice.languages(); track lang.code) {
-                                        <button
-                                            type="button"
-                                            (click)="selectVernacularLanguage(lang.code)"
-                                            [class.bg-teal-50]="vernacularVoice.activeLanguageCode() === lang.code"
-                                            [class.dark:bg-teal-950/60]="vernacularVoice.activeLanguageCode() === lang.code"
-                                            [class.text-teal-800]="vernacularVoice.activeLanguageCode() === lang.code"
-                                            [class.dark:text-teal-200]="vernacularVoice.activeLanguageCode() === lang.code"
-                                            [class.font-bold]="vernacularVoice.activeLanguageCode() === lang.code"
-                                            class="w-full text-left px-2.5 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition flex items-center justify-between text-xs cursor-pointer min-h-[44px] touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
-                                            <div class="flex items-center gap-2">
-                                                <span>{{ lang.flagEmoji }}</span>
-                                                <span>{{ lang.nativeName }}</span>
-                                            </div>
-                                            <span class="text-[10px] font-mono opacity-70">({{ lang.code.toUpperCase() }})</span>
+                        <!-- Window Mode: Expand / Collapse Cockpit -->
+                        <button
+                            type="button"
+                            (click)="state.toggleLiveAgentExpand()"
+                            class="va-win-btn text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                            [attr.aria-label]="state.liveAgentWindowMode() === 'expanded' ? 'Collapse to Pocket' : 'Expand to Clinical Cockpit'"
+                            [title]="state.liveAgentWindowMode() === 'expanded' ? 'Collapse to Pocket' : 'Expand to Clinical Cockpit'">
+                            @if (state.liveAgentWindowMode() === 'expanded') {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9L4 4m0 0h5m-5 0v5m11 0l5-5m0 0h-5m5 0v5M9 15l-5 5m0 0h5m-5 0v-5m11 0l5 5m0 0h-5m5 0v-5" /></svg>
+                            } @else {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+                            }
+                        </button>
+
+                        <!-- Minimize to Floating Dock -->
+                        <button
+                            type="button"
+                            (click)="state.setLiveAgentWindowMode('minimized')"
+                            class="va-win-btn text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                            aria-label="Minimize Window"
+                            title="Minimize Window (Keep Voice Stream Active)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12" stroke-width="2" stroke-linecap="round"/></svg>
+                        </button>
+
+                        <!-- Close & End Session -->
+                        <button
+                            type="button"
+                            (click)="endLiveConsult()"
+                            class="va-win-btn text-gray-500 dark:text-zinc-400 hover:text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30 border border-gray-200 dark:border-zinc-700 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
+                            aria-label="Close Session"
+                            title="Close Session">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 2: Voice, Persona, Language, Tele-HUD & Session Utilities (Wraps Cleanly, Zero Clipping) -->
+                <div class="flex flex-wrap items-center justify-between gap-1.5 px-3 py-1.5 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/70 dark:bg-zinc-900/40">
+                    <div class="flex flex-wrap items-center gap-1.5 min-w-0">
+                        <!-- Gemini Live Voice Selector Dropdown -->
+                        <div class="relative">
+                            <button
+                                type="button"
+                                (click)="toggleHeaderMenu('voice')"
+                                class="va-ctrl-btn transition-all border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 hover:bg-gray-100 dark:hover:bg-zinc-700 text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                                title="Select Gemini Live HD Voice">
+                                <span>🎙️</span>
+                                <span>{{ live.selectedVoice() }}</span>
+                                <span class="text-[8px] text-zinc-400">▼</span>
+                            </button>
+                            @if (isVoiceMenuOpen()) {
+                                <div class="va-dropdown-panel absolute left-0 mt-1 w-36 bg-white dark:bg-zinc-900 rounded-xl shadow-xl border border-gray-200 dark:border-zinc-800 py-1 z-50 font-mono text-xs animate-in fade-in">
+                                    @for (v of availableVoices; track v) {
+                                        <button type="button" (click)="setVoice(v)"
+                                                class="w-full text-left px-3 py-2 hover:bg-teal-50 dark:hover:bg-teal-950/40 hover:text-teal-600 dark:hover:text-teal-400 flex items-center justify-between cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                                                [class.font-bold]="live.selectedVoice() === v">
+                                            <span>{{ v }}</span>
+                                            @if (live.selectedVoice() === v) { <span class="text-teal-500 font-bold">✓</span> }
                                         </button>
                                     }
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
+
+                        <!-- Socratic Persona & Bio-Rhythmic Pacing Options -->
+                        <div class="relative">
+                            <button
+                                type="button"
+                                (click)="toggleHeaderMenu('socratic')"
+                                class="va-ctrl-btn transition-all border border-teal-500/30 bg-teal-500/10 hover:bg-teal-500/20 text-[11px] font-mono font-bold text-teal-700 dark:text-teal-300 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                                title="Socratic Companion & Autonomic Vagal Pacing Options">
+                                <span>🌿</span>
+                                <span class="truncate va-truncate-pill">{{ socraticVoice.activePersona().name.replace('Dr. ', '').split(' ')[0] }}</span>
+                                <span class="text-[8px] text-teal-500">▼</span>
+                            </button>
+                            @if (isSocraticMenuOpen()) {
+                                <div class="va-dropdown-panel absolute left-0 mt-1 w-72 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-gray-200 dark:border-zinc-800 p-2 z-50 text-xs animate-in fade-in flex flex-col gap-2">
+                                    <div class="px-1 py-0.5 border-b border-gray-100 dark:border-zinc-800 flex items-center justify-between font-mono text-[10px] text-zinc-500 uppercase tracking-wider">
+                                        <span>Gull Squadron Personas</span>
+                                        <span class="text-teal-600 dark:text-teal-400 font-bold">0.1 Hz</span>
+                                    </div>
+                                    <div class="flex flex-col gap-1 max-h-60 overflow-y-auto pr-1">
+                                        @for (p of socraticVoice.allPersonas(); track p.id) {
+                                            <button
+                                                type="button"
+                                                (click)="selectSocraticPersona(p.id)"
+                                                class="w-full text-left p-2 rounded-lg border text-xs transition cursor-pointer flex flex-col gap-0.5 touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                                                [class.bg-teal-50]="socraticVoice.selectedPersonaId() === p.id"
+                                                [class.dark:bg-teal-950/40]="socraticVoice.selectedPersonaId() === p.id"
+                                                [class.border-teal-500]="socraticVoice.selectedPersonaId() === p.id"
+                                                [class.border-gray-100]="socraticVoice.selectedPersonaId() !== p.id"
+                                                [class.dark:border-zinc-800]="socraticVoice.selectedPersonaId() !== p.id">
+                                                <div class="flex items-center justify-between font-bold text-zinc-800 dark:text-zinc-200 text-[11px]">
+                                                    <span>{{ p.name }}</span>
+                                                    <span class="font-mono text-[10px] text-teal-600 dark:text-teal-400">{{ p.speechRate }}x</span>
+                                                </div>
+                                                <span class="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1">{{ p.description }}</span>
+                                            </button>
+                                        }
+                                    </div>
+                                    <div class="pt-2 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-between px-1">
+                                        <label class="flex items-center gap-1.5 text-[11px] font-mono font-medium text-zinc-700 dark:text-zinc-300 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                [checked]="isSocraticDemystifierActive()"
+                                                (change)="isSocraticDemystifierActive.set(!isSocraticDemystifierActive())"
+                                                class="rounded text-teal-600 focus:ring-teal-500 h-3.5 w-3.5">
+                                            <span>Jargon Demystifier</span>
+                                        </label>
+                                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-mono font-bold">
+                                            {{ isSocraticDemystifierActive() ? 'ANALOGIES ON' : 'RAW' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Vernacular Voice Language Selector Dropdown -->
+                        <div class="relative">
+                            <button
+                                type="button"
+                                (click)="toggleHeaderMenu('vernacular')"
+                                id="btn-chat-vernacular-lang"
+                                class="va-ctrl-btn transition-all border text-[11px] font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                                [ngClass]="vernacularVoice.isSpeaking() ? 'bg-teal-500/20 text-teal-700 dark:text-teal-300 border-teal-500/50' : 'bg-white dark:bg-zinc-800/80 text-gray-700 dark:text-zinc-300 border-gray-200 dark:border-zinc-700'"
+                                [title]="'Frontline Vernacular Voice: ' + vernacularVoice.activeLanguage().name + ' (' + vernacularVoice.activeLanguage().nativeName + ')'">
+                                <span class="text-xs">{{ vernacularVoice.activeLanguage().flagEmoji }}</span>
+                                <span class="font-mono uppercase">{{ vernacularVoice.activeLanguageCode() }}</span>
+                                @if (vernacularVoice.isSpeaking()) {
+                                    <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
+                                }
+                            </button>
+
+                            @if (isVernacularVoiceMenuOpen()) {
+                                <div class="va-dropdown-panel absolute left-0 mt-1 w-52 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl shadow-xl p-2 z-50 animate-in fade-in duration-100 font-sans text-xs">
+                                    <div class="px-2 py-1 text-[10px] font-mono font-bold uppercase text-zinc-500 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center mb-1">
+                                        <span>Frontline Voice Prompts</span>
+                                        <span class="text-teal-500 font-bold">Offline TTS</span>
+                                    </div>
+                                    <div class="flex flex-col gap-1 max-h-56 overflow-y-auto">
+                                        @for (lang of vernacularVoice.languages(); track lang.code) {
+                                            <button
+                                                type="button"
+                                                (click)="selectVernacularLanguage(lang.code)"
+                                                [class.bg-teal-50]="vernacularVoice.activeLanguageCode() === lang.code"
+                                                [class.dark:bg-teal-950/60]="vernacularVoice.activeLanguageCode() === lang.code"
+                                                [class.text-teal-800]="vernacularVoice.activeLanguageCode() === lang.code"
+                                                [class.dark:text-teal-200]="vernacularVoice.activeLanguageCode() === lang.code"
+                                                [class.font-bold]="vernacularVoice.activeLanguageCode() === lang.code"
+                                                class="w-full text-left px-2.5 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition flex items-center justify-between text-xs cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
+                                                <div class="flex items-center gap-2">
+                                                    <span>{{ lang.flagEmoji }}</span>
+                                                    <span>{{ lang.nativeName }}</span>
+                                                </div>
+                                                <span class="text-[10px] font-mono opacity-70">({{ lang.code.toUpperCase() }})</span>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Telemetry HUD Toggle -->
+                        <button
+                            type="button"
+                            (click)="telemetryService.toggleHud()"
+                            [ngClass]="telemetryService.isHudActive() ? 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/40' : 'bg-white dark:bg-zinc-800/80 text-gray-600 dark:text-zinc-400 border-gray-200 dark:border-zinc-700'"
+                            class="va-ctrl-btn transition-all border text-[11px] font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
+                            title="Toggle Multimodal Camera & Voice Live Tele-Consult HUD">
+                            <span>👁️</span> <span>HUD</span>
+                        </button>
                     </div>
 
-                    <!-- Telemetry HUD Toggle -->
-                    <button
-                        type="button"
-                        (click)="telemetryService.toggleHud()"
-                        [ngClass]="telemetryService.isHudActive() ? 'bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-500/40 shadow-xs' : 'bg-gray-50 dark:bg-zinc-800/80 text-gray-600 dark:text-zinc-400 border-gray-200 dark:border-zinc-700'"
-                        class="flex items-center gap-1.5 transition-all min-h-[44px] px-3 py-2 rounded-xl border text-xs font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none"
-                        title="Toggle Multimodal Camera & Voice Live Tele-Consult HUD">
-                        <span>👁️</span> <span class="hidden sm:inline">Tele-HUD</span>
-                    </button>
+                    <!-- Session Utility Actions -->
+                    <div class="flex items-center gap-1 ml-auto shrink-0">
+                        <!-- Export Transcript -->
+                        <button
+                            type="button"
+                            (click)="exportTranscript()"
+                            [disabled]="chatHistory().length === 0"
+                            class="va-ctrl-btn text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors bg-white dark:bg-zinc-800/80 hover:bg-gray-100 dark:hover:bg-zinc-700 border border-gray-200 dark:border-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                            aria-label="Export Consultation Transcript"
+                            title="Export Consultation Transcript (Download Markdown & Copy to Clipboard)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </button>
 
-                    <!-- Export Transcript -->
-                    <button
-                        type="button"
-                        (click)="exportTranscript()"
-                        [disabled]="chatHistory().length === 0"
-                        class="min-w-[44px] min-h-[44px] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                        title="Export Consultation Transcript (Download Markdown & Copy to Clipboard)">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    </button>
+                        <!-- Clear Session -->
+                        <button
+                            type="button"
+                            (click)="confirmClearSession()"
+                            [disabled]="chatHistory().length === 0"
+                            [class.bg-red-500]="pendingClearConfirm()"
+                            [class.text-white]="pendingClearConfirm()"
+                            [class.border-red-600]="pendingClearConfirm()"
+                            [class.bg-white]="!pendingClearConfirm()"
+                            [class.dark:bg-zinc-800/80]="!pendingClearConfirm()"
+                            [class.text-zinc-600]="!pendingClearConfirm()"
+                            [class.dark:text-zinc-400]="!pendingClearConfirm()"
+                            class="va-ctrl-btn hover:text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30 border border-gray-200 dark:border-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none text-[11px] font-mono font-bold"
+                            [attr.aria-label]="pendingClearConfirm() ? 'Confirm clearing consultation history' : 'Clear Chat History'"
+                            [title]="pendingClearConfirm() ? 'Click again to confirm clearing consultation history' : 'Clear Chat History & Start New Consult'">
+                            @if (pendingClearConfirm()) {
+                                <span>Clear?</span>
+                            } @else {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            }
+                        </button>
 
-                    <!-- Clear Session -->
-                    <button
-                        type="button"
-                        (click)="confirmClearSession()"
-                        [disabled]="chatHistory().length === 0"
-                        [class.bg-red-500]="pendingClearConfirm()"
-                        [class.text-white]="pendingClearConfirm()"
-                        [class.border-red-600]="pendingClearConfirm()"
-                        [class.text-zinc-600]="!pendingClearConfirm()"
-                        [class.dark:text-zinc-400]="!pendingClearConfirm()"
-                        class="min-w-[44px] min-h-[44px] hover:text-red-500 flex items-center justify-center gap-1 transition-colors px-2.5 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 border border-gray-200 dark:border-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none text-xs font-mono font-bold"
-                        [title]="pendingClearConfirm() ? 'Click again to confirm clearing consultation history' : 'Clear Chat History & Start New Consult'">
-                        @if (pendingClearConfirm()) {
-                            <span>Clear?</span>
-                        } @else {
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                        }
-                    </button>
-
-                    <!-- Discord Dispatch -->
-                    <button
-                        type="button"
-                        (click)="dispatchDiscordTranscript()"
-                        class="hidden md:flex min-h-[44px] text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 items-center justify-center gap-1.5 transition-all px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-xs font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:outline-none"
-                        title="Dispatch Transcript to Discord Webhook">
-                        <span>💬</span> <span class="hidden lg:inline">Discord</span>
-                    </button>
-
-                    <!-- Toggle Sound / Mute -->
-                    <button
-                        type="button"
-                        (click)="isMuted.set(!isMuted())"
-                        class="min-w-[44px] min-h-[44px] text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                        [title]="isMuted() ? 'Unmute Sound' : 'Mute Sound'">
-                        @if (isMuted()) {
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-                            </svg>
-                        } @else {
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                            </svg>
-                        }
-                    </button>
-
-                    <!-- Window Mode: Expand / Collapse Cockpit -->
-                    <button
-                        type="button"
-                        (click)="state.toggleLiveAgentExpand()"
-                        class="min-w-[44px] min-h-[44px] text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                        [title]="state.liveAgentWindowMode() === 'expanded' ? 'Collapse to Pocket' : 'Expand to Clinical Cockpit'">
-                        @if (state.liveAgentWindowMode() === 'expanded') {
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 9L4 4m0 0h5m-5 0v5m11 0l5-5m0 0h-5m5 0v5M9 15l-5 5m0 0h5m-5 0v-5m11 0l5 5m0 0h-5m5 0v-5" /></svg>
-                        } @else {
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
-                        }
-                    </button>
-
-                    <!-- Minimize to Floating Dock -->
-                    <button
-                        type="button"
-                        (click)="state.setLiveAgentWindowMode('minimized')"
-                        class="min-w-[44px] min-h-[44px] text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 border border-gray-200 dark:border-zinc-700 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                        title="Minimize Window (Keep Voice Stream Active)">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12" stroke-width="2" stroke-linecap="round"/></svg>
-                    </button>
-
-                    <!-- Close & End Session -->
-                    <button
-                        type="button"
-                        (click)="endLiveConsult()"
-                        class="min-w-[44px] min-h-[44px] text-gray-400 dark:text-zinc-500 hover:text-red-500 flex items-center justify-center transition-colors p-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
-                        title="Close Session">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
+                        <!-- Discord Dispatch -->
+                        <button
+                            type="button"
+                            (click)="dispatchDiscordTranscript()"
+                            [disabled]="chatHistory().length === 0"
+                            class="va-ctrl-btn text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-all bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-[11px] font-bold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                            aria-label="Dispatch Transcript to Discord"
+                            title="Dispatch Transcript to Discord Webhook">
+                            <span>💬</span>
+                            @if (state.liveAgentWindowMode() === 'expanded') {
+                                <span class="hidden sm:inline">Discord</span>
+                            }
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Toast Notification for Export / Copy -->
             @if (isCopiedToastVisible()) {
-                <div class="px-4 py-1.5 bg-emerald-600 text-white text-xs font-mono font-bold text-center animate-in fade-in slide-in-from-top-2 duration-200 shrink-0">
+                <div class="px-4 py-1.5 bg-emerald-600 text-white text-xs font-mono font-bold text-center animate-in fade-in duration-200 shrink-0">
                     ✓ Full consultation transcript copied to clipboard and downloaded!
                 </div>
             }
 
             <!-- MULTIMODAL CAMERA & VOICE LIVE TELE-CONSULT HUD OVERLAY -->
             @if (telemetryService.isHudActive()) {
-                <div class="px-4 py-3 bg-zinc-950/95 border-b border-cyan-500/30 text-zinc-100 font-mono shadow-2xl backdrop-blur-xl shrink-0 space-y-3 animate-in fade-in slide-in-from-top duration-300">
-                    <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
-                        <div class="flex items-center gap-2">
+                <div class="va-hud-scroll px-3.5 py-3 bg-zinc-950/95 border-b border-cyan-500/30 text-zinc-100 font-mono shadow-2xl backdrop-blur-xl shrink-0 flex flex-col gap-2.5 animate-in fade-in duration-300">
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div class="flex flex-wrap items-center gap-1.5">
                             <span class="text-cyan-400 font-bold uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                                <span>👁️🎙️</span> Multimodal Tele-Consult Cockpit HUD
+                                <span>👁️🎙️</span> Multimodal Tele-Consult HUD
                             </span>
                             <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
                                 60 FPS Edge Vision
@@ -402,44 +520,44 @@ export interface IChatEntry {
                         </div>
 
                         <!-- Mode Switcher -->
-                        <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                            <button (click)="telemetryService.setTelemetryMode('ALL')"
+                        <div class="flex flex-wrap items-center gap-1 text-[11px]">
+                            <button type="button" (click)="telemetryService.setTelemetryMode('ALL')"
                                     [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'ALL'"
-                                    class="min-h-[44px] px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center">ALL</button>
-                            <button (click)="telemetryService.setTelemetryMode('OCULAR')"
+                                    class="va-ctrl-btn bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">ALL</button>
+                            <button type="button" (click)="telemetryService.setTelemetryMode('OCULAR')"
                                     [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'OCULAR'"
-                                    class="min-h-[44px] px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center">OCULAR</button>
-                            <button (click)="telemetryService.setTelemetryMode('VOCAL')"
+                                    class="va-ctrl-btn bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">OCULAR</button>
+                            <button type="button" (click)="telemetryService.setTelemetryMode('VOCAL')"
                                     [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'VOCAL'"
-                                    class="min-h-[44px] px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center">VOCAL</button>
-                            <button (click)="telemetryService.setTelemetryMode('RPPG')"
+                                    class="va-ctrl-btn bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">VOCAL</button>
+                            <button type="button" (click)="telemetryService.setTelemetryMode('RPPG')"
                                     [class.bg-cyan-600]="telemetryService.selectedTelemetryMode() === 'RPPG'"
-                                    class="min-h-[44px] px-3.5 py-2 rounded-xl bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none flex items-center justify-center">rPPG</button>
+                                    class="va-ctrl-btn bg-zinc-800 text-zinc-200 hover:bg-zinc-700 font-bold cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:outline-none">rPPG</button>
                         </div>
                     </div>
 
                     <!-- Telemetry Meters Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="grid gap-2.5" [ngClass]="state.liveAgentWindowMode() === 'expanded' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2'">
                         <!-- 1. Pupillometry & Neuro-Safety -->
-                        <div class="p-3 rounded-2xl bg-zinc-900/90 border border-cyan-500/20 space-y-1">
-                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                        <div class="p-2.5 rounded-xl bg-zinc-900/90 border border-cyan-500/20 flex flex-col gap-1">
+                            <div class="flex items-center justify-between text-[10px] text-zinc-400 gap-1">
                                 <span class="uppercase font-bold text-cyan-300">Pupillometry</span>
-                                <span class="font-bold text-emerald-400 font-mono tabular-nums">L:{{ telemetryService.ocular().leftPupilDiameterMm }}mm / R:{{ telemetryService.ocular().rightPupilDiameterMm }}mm</span>
+                                <span class="font-bold text-emerald-400 font-mono tabular-nums">L:{{ telemetryService.ocular().leftPupilDiameterMm }} / R:{{ telemetryService.ocular().rightPupilDiameterMm }}mm</span>
                             </div>
-                            <div class="text-xs font-bold text-zinc-100 flex items-center justify-between">
+                            <div class="text-xs font-bold text-zinc-100 flex items-center justify-between gap-1">
                                 <span>Asymmetry: <span class="font-mono tabular-nums">{{ telemetryService.ocular().anisocoriaAsymmetryPct }}</span>%</span>
                                 <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">{{ telemetryService.ocular().isPupilSymmetric ? 'Symmetric' : 'Anisocoria Flag' }}</span>
                             </div>
-                            <div class="text-[10px] text-zinc-400 font-sans">Blink Rate: <span class="font-mono tabular-nums">{{ telemetryService.ocular().blinkRatePerMin }}</span>/min &bull; Saccade: <span class="font-mono tabular-nums">{{ telemetryService.ocular().saccadicStabilityScore }}</span>%</div>
+                            <div class="text-[10px] text-zinc-400 font-sans">Blink: <span class="font-mono tabular-nums">{{ telemetryService.ocular().blinkRatePerMin }}</span>/min &bull; Saccade: <span class="font-mono tabular-nums">{{ telemetryService.ocular().saccadicStabilityScore }}</span>%</div>
                         </div>
 
                         <!-- 2. Vocal Acoustics & Micro-Tremor -->
-                        <div class="p-3 rounded-2xl bg-zinc-900/90 border border-purple-500/20 space-y-1">
-                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                        <div class="p-2.5 rounded-xl bg-zinc-900/90 border border-purple-500/20 flex flex-col gap-1">
+                            <div class="flex items-center justify-between text-[10px] text-zinc-400 gap-1">
                                 <span class="uppercase font-bold text-purple-300">Vocal Acoustics</span>
                                 <span class="font-bold text-amber-300 font-mono tabular-nums">F0: {{ telemetryService.vocal().fundamentalFrequencyHz }} Hz</span>
                             </div>
-                            <div class="text-xs font-bold text-zinc-100 flex items-center justify-between">
+                            <div class="text-xs font-bold text-zinc-100 flex items-center justify-between gap-1">
                                 <span>Jitter: <span class="font-mono tabular-nums">{{ telemetryService.vocal().microTremorJitterPct }}</span>%</span>
                                 <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono tabular-nums">HNR: {{ telemetryService.vocal().harmonicToNoiseRatioDb }} dB</span>
                             </div>
@@ -447,21 +565,21 @@ export interface IChatEntry {
                         </div>
 
                         <!-- 3. rPPG Capillary Pulse & Perfusion -->
-                        <div class="p-3 rounded-2xl bg-zinc-900/90 border border-rose-500/20 space-y-1">
-                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                        <div class="p-2.5 rounded-xl bg-zinc-900/90 border border-rose-500/20 flex flex-col gap-1">
+                            <div class="flex items-center justify-between text-[10px] text-zinc-400 gap-1">
                                 <span class="uppercase font-bold text-rose-300">rPPG Perfusion</span>
                                 <span class="font-bold text-rose-400 font-mono tabular-nums">{{ telemetryService.rppg().heartRateBpm }} BPM</span>
                             </div>
-                            <div class="text-xs font-bold text-zinc-100 flex items-center justify-between">
-                                <span>HRV RMSSD: <span class="font-mono tabular-nums">{{ telemetryService.rppg().hrvRmssdMs }}</span> ms</span>
+                            <div class="text-xs font-bold text-zinc-100 flex items-center justify-between gap-1">
+                                <span>HRV: <span class="font-mono tabular-nums">{{ telemetryService.rppg().hrvRmssdMs }}</span> ms</span>
                                 <span class="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono tabular-nums">PWV: {{ telemetryService.rppg().pulseWaveVelocityMps }} m/s</span>
                             </div>
-                            <div class="text-[10px] text-zinc-400 font-sans">Capillary SNR: <span class="font-mono tabular-nums">{{ telemetryService.rppg().signalToNoiseRatioDb }}</span> dB &bull; Quality: <span class="font-mono tabular-nums">{{ telemetryService.rppg().perfusionQualityIndex }}</span>%</div>
+                            <div class="text-[10px] text-zinc-400 font-sans">SNR: <span class="font-mono tabular-nums">{{ telemetryService.rppg().signalToNoiseRatioDb }}</span> dB &bull; Quality: <span class="font-mono tabular-nums">{{ telemetryService.rppg().perfusionQualityIndex }}</span>%</div>
                         </div>
 
                         <!-- 4. Neuro-Vascular Synthesis Score -->
-                        <div class="p-3 rounded-2xl bg-zinc-900/90 border border-amber-500/20 space-y-1">
-                            <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                        <div class="p-2.5 rounded-xl bg-zinc-900/90 border border-amber-500/20 flex flex-col gap-1">
+                            <div class="flex items-center justify-between text-[10px] text-zinc-400 gap-1">
                                 <span class="uppercase font-bold text-amber-300">Autonomic Index</span>
                                 <span class="font-bold text-amber-400 font-mono tabular-nums">{{ telemetryService.overallNeuroVascularScore() }} / 100</span>
                             </div>
@@ -469,7 +587,7 @@ export interface IChatEntry {
                                 <div class="bg-gradient-to-r from-teal-500 via-cyan-400 to-indigo-500 h-2 rounded-full transition-all duration-500" [style.width.%]="telemetryService.overallNeuroVascularScore()"></div>
                             </div>
                             <div class="text-[10px] text-emerald-400 font-sans flex items-center justify-between pt-0.5">
-                                <span>WebRTC Sync: Sub-200ms</span>
+                                <span>WebRTC: &lt;200ms</span>
                                 <span>Zero PHI Egress</span>
                             </div>
                         </div>
@@ -479,100 +597,102 @@ export interface IChatEntry {
 
             <!-- MODE: SELECTION Placeholder -->
             @if (panelMode() === 'selection') {
-                <div class="flex-1 flex flex-col items-center justify-center gap-6 p-8 bg-white dark:bg-obsidian w-full"></div>
+                <div class="flex-1 min-h-0 flex flex-col items-center justify-center gap-6 p-8 bg-white dark:bg-obsidian w-full"></div>
             }
 
             <!-- MODE: CHAT -->
             @if (panelMode() === 'chat') {
                 <div class="flex-1 flex flex-col min-h-0 overflow-hidden bg-white dark:bg-obsidian w-full relative">
-                    
-                    <!-- Centerpiece: Agent Avatar & Status (shown when empty) -->
-                    @if (chatHistory().length === 0) {
-                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0">
-                            <div class="relative w-44 h-44 md:w-56 md:h-56 transition-all duration-500">
-                                <!-- Glowing Orb -->
-                                <div class="absolute inset-0 rounded-full transition-all duration-75" 
-                                     [class.bg-green-400/10]="agentState() === 'idle'"
-                                     [class.bg-blue-400/20]="agentState() === 'listening'"
-                                     [class.bg-purple-400/20]="agentState() === 'processing'"
-                                     [class.blur-2xl]="agentState() === 'idle' || agentState() === 'processing'"
-                                     [class.blur-xl]="agentState() === 'listening'"
-                                     [style.transform]="agentState() === 'listening' ? 'scale(' + (1.25 + (live.volumeLevel() / 150)) + ')' : (agentState() === 'idle' ? 'scale(1)' : 'scale(1.25)')">
-                                </div>
-
-                                <!-- Animated SVG Avatar -->
-                                <svg class="w-full h-full" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="40" fill="transparent" stroke="#E5E7EB" stroke-width="0.5"/>
-                                    @if (agentState() === 'listening') {
-                                        <path d="M 20 50 Q 35 40, 50 50 T 80 50" fill="none" stroke="#60A5FA" stroke-width="1.5" stroke-linecap="round">
-                                            <animate attributeName="d" dur="1.5s" repeatCount="indefinite" values="M 20 50 Q 35 40, 50 50 T 80 50; M 20 50 Q 35 60, 50 50 T 80 50; M 20 50 Q 35 40, 50 50 T 80 50" />
-                                        </path>
-                                    }
-                                    @if (agentState() === 'processing') {
-                                        <circle cx="50" cy="50" r="30" fill="none" stroke="#C084FC" stroke-width="2" stroke-dasharray="15 10" stroke-linecap="round">
-                                            <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite" />
-                                        </circle>
-                                    }
-                                    @if (agentState() === 'idle') {
-                                        <circle cx="50" cy="50" r="10" fill="#34D399" >
-                                            <animate attributeName="r" dur="2s" repeatCount="indefinite" values="10;12;10" />
-                                            <animate attributeName="opacity" dur="2s" repeatCount="indefinite" values="1;0.7;1" />
-                                        </circle>
-                                    }
-                                </svg>
-                            </div>
-                            <div class="text-center -mt-6 transition-all duration-300">
-                                <h2 class="text-base font-bold text-gray-800 dark:text-gray-200">Pocket Gull Live AI Consult</h2>
-                                <p class="text-xs text-gray-500">Live Multimodal Clinical Co-Pilot</p>
-                            </div>
-                        </div>
-                    }
 
                     <!-- Transcript Scroll Area (flex-1 min-h-0: zero occlusion & ARIA live region) -->
-                    <div #transcriptContainer (scroll)="onTranscriptScroll()" role="log" aria-live="polite" aria-atomic="false" aria-relevant="additions text" class="relative z-10 flex-1 min-h-0 overflow-y-auto w-full scroll-smooth p-4 space-y-4">
-                        <div class="max-w-3xl mx-auto space-y-4">
+                    <div #transcriptContainer (scroll)="onTranscriptScroll()" role="log" aria-live="polite" aria-atomic="false" aria-relevant="additions text" class="relative z-10 flex-1 min-h-0 overflow-y-auto overflow-x-hidden w-full scroll-smooth p-3.5 sm:p-4 flex flex-col gap-3">
+                        <!-- Centerpiece: Agent Avatar & Status (shown cleanly in flow when empty) -->
+                        @if (chatHistory().length === 0) {
+                            <div class="flex-1 flex flex-col items-center justify-center py-6 px-4 text-center select-none">
+                                <div class="va-avatar-orb relative transition-all duration-500">
+                                    <!-- Glowing Orb -->
+                                    <div class="absolute inset-0 rounded-full transition-all duration-75"
+                                         [class.bg-green-400/10]="agentState() === 'idle'"
+                                         [class.bg-blue-400/20]="agentState() === 'listening'"
+                                         [class.bg-purple-400/20]="agentState() === 'processing'"
+                                         [class.blur-2xl]="agentState() === 'idle' || agentState() === 'processing'"
+                                         [class.blur-xl]="agentState() === 'listening'"
+                                         [style.transform]="agentState() === 'listening' ? 'scale(' + (1.2 + (live.volumeLevel() / 160)) + ')' : (agentState() === 'idle' ? 'scale(1)' : 'scale(1.18)')">
+                                    </div>
+
+                                    <!-- Animated SVG Avatar -->
+                                    <svg class="w-full h-full" viewBox="0 0 100 100" aria-hidden="true">
+                                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#E5E7EB" stroke-width="0.5"/>
+                                        @if (agentState() === 'listening') {
+                                            <path d="M 20 50 Q 35 40, 50 50 T 80 50" fill="none" stroke="#60A5FA" stroke-width="1.5" stroke-linecap="round">
+                                                <animate attributeName="d" dur="1.5s" repeatCount="indefinite" values="M 20 50 Q 35 40, 50 50 T 80 50; M 20 50 Q 35 60, 50 50 T 80 50; M 20 50 Q 35 40, 50 50 T 80 50" />
+                                            </path>
+                                        }
+                                        @if (agentState() === 'processing') {
+                                            <circle cx="50" cy="50" r="30" fill="none" stroke="#C084FC" stroke-width="2" stroke-dasharray="15 10" stroke-linecap="round">
+                                                <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite" />
+                                            </circle>
+                                        }
+                                        @if (agentState() === 'idle') {
+                                            <circle cx="50" cy="50" r="10" fill="#34D399">
+                                                <animate attributeName="r" dur="2s" repeatCount="indefinite" values="10;12;10" />
+                                                <animate attributeName="opacity" dur="2s" repeatCount="indefinite" values="1;0.7;1" />
+                                            </circle>
+                                        }
+                                    </svg>
+                                </div>
+                                <div class="mt-1 transition-all duration-300">
+                                    <h2 class="text-base font-bold text-gray-800 dark:text-gray-200">Pocket Gull Live AI Consult</h2>
+                                    <p class="text-xs text-gray-500 dark:text-zinc-400">Live Multimodal Clinical Co-Pilot</p>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="w-full max-w-3xl mx-auto flex flex-col gap-3">
                             @if (isPediatricMinor()) {
-                                <div class="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-between gap-3 text-xs font-mono animate-in fade-in duration-200">
-                                    <div class="flex items-center gap-2.5">
-                                        <span class="text-xl">🧸</span>
-                                        <div>
+                                <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex flex-wrap items-center justify-between gap-2 text-xs font-mono animate-in fade-in duration-200">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <span class="text-lg shrink-0">🧸</span>
+                                        <div class="min-w-0">
                                             <span class="font-bold text-emerald-600 dark:text-emerald-400 block text-xs">
                                                 Child Life Voice Mode Active
                                             </span>
                                             <span class="text-[11px] text-gray-600 dark:text-zinc-400 font-sans">
-                                                Gentle pediatric analogies &bull; 100% Edge-only voice processing &bull; Zero remote voiceprints
+                                                Gentle pediatric analogies &bull; 100% Edge-only voice processing
                                             </span>
                                         </div>
                                     </div>
-                                    <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold border border-emerald-500/30 shrink-0">
+                                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold border border-emerald-500/30 shrink-0">
                                         🔒 COPPA Safe Harbor
                                     </span>
                                 </div>
                             }
 
                             <!-- Telemetry Transcript -->
-                            <div class="space-y-4">
+                            <div class="flex flex-col gap-3">
                                 @for (entry of chatHistory(); track $index; let idx = $index) {
                                     @let isEntryFlipped = isChatEntryFlipped(idx);
                                     <div (dblclick)="toggleChatEntryFlip(idx); $event.stopPropagation()"
-                                         class="chat-entry relative perspective-1000 group cursor-pointer mb-3 min-h-[80px]"
+                                         class="chat-entry relative perspective-1000 group cursor-pointer w-full"
                                          title="Double-click or click [Audit] to flip over for Multimodal Telemetry & Evidence Trail">
-                                        
-                                        <div [class.rotate-y-180]="isEntryFlipped"
-                                             class="relative w-full h-full transition-transform duration-500 transform-style-3d">
 
-                                            <!-- FRONT FACE -->
-                                            <div class="p-4 rounded-2xl border flex flex-col justify-between h-full w-full absolute inset-0 backface-hidden shadow-xs font-sans"
+                                        <div [class.rotate-y-180]="isEntryFlipped"
+                                             class="chat-flip-grid relative transition-transform duration-500 transform-style-3d">
+
+                                            <!-- FRONT FACE (In-flow when active so short bubbles stay compact and long messages grow naturally) -->
+                                            <div class="chat-flip-face p-3.5 sm:p-4 rounded-2xl border flex flex-col gap-2 backface-hidden shadow-sm font-sans overflow-hidden"
+                                                 [class.va-face-inactive]="isEntryFlipped"
+                                                 [attr.aria-hidden]="isEntryFlipped ? 'true' : null"
                                                  [class.bg-blue-500\/5]="entry.role === 'model'"
                                                  [class.dark:bg-blue-500\/10]="entry.role === 'model'"
                                                  [class.border-blue-500\/30]="entry.role === 'model'"
                                                  [class.bg-emerald-500\/5]="entry.role === 'user'"
-                                                 [class.dark:bg-emerald-500\/10]="entry.role === 'user'"
+                                                 [class.dark:bg-emerald-950\/30]="entry.role === 'user'"
                                                  [class.border-emerald-500\/30]="entry.role === 'user'">
-                                                
-                                                <!-- Header line -->
-                                                <div class="text-[11px] font-mono uppercase font-bold tracking-wider mb-2 flex justify-between items-center opacity-90">
-                                                    <span class="flex items-center gap-1.5">
+
+                                                <!-- Header line (Wraps cleanly in compact 460px & mobile widths) -->
+                                                <div class="text-[11px] font-mono uppercase font-bold tracking-wider mb-2 flex flex-wrap justify-between items-center gap-2 opacity-90">
+                                                    <span class="flex items-center gap-1.5 shrink-0">
                                                         @if (entry.role === 'model') {
                                                             <span class="text-xs">🤖</span>
                                                             <span class="text-blue-600 dark:text-blue-400 font-bold">PocketGull AI</span>
@@ -582,31 +702,31 @@ export interface IChatEntry {
                                                             <span class="text-emerald-600 dark:text-emerald-400 font-bold">Clinician</span>
                                                         }
                                                     </span>
-                                                    
-                                                    <div class="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
-                                                        <button type="button" (click)="actionCopy(entry.text); $event.stopPropagation()" 
-                                                                class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 cursor-pointer transition" 
+
+                                                    <div class="flex flex-wrap items-center gap-1 text-[10px] font-mono">
+                                                        <button type="button" (click)="actionCopy(entry.text); $event.stopPropagation()"
+                                                                class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 cursor-pointer transition"
                                                                 title="Copy message to clipboard">
                                                             📋 Copy
                                                         </button>
                                                         @if (entry.role === 'model') {
-                                                            <button type="button" (click)="speakVernacular(entry.text); $event.stopPropagation()" 
-                                                                    class="px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-300 border border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-900/60 cursor-pointer flex items-center gap-1 font-mono text-[10px]" 
+                                                            <button type="button" (click)="speakVernacular(entry.text); $event.stopPropagation()"
+                                                                    class="px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-300 border border-teal-500/30 hover:bg-teal-100 dark:hover:bg-teal-900/60 cursor-pointer flex items-center gap-1 font-mono text-[10px]"
                                                                     [title]="'Listen in ' + vernacularVoice.activeLanguage().nativeName">
-                                                                <span>🔊</span> <span>{{ vernacularVoice.activeLanguage().nativeName }}</span>
+                                                                <span>🔊</span> <span class="truncate va-truncate-pill">{{ vernacularVoice.activeLanguage().nativeName }}</span>
                                                             </button>
-                                                            <button type="button" (click)="speakPersona(entry.text, 'gulliver'); $event.stopPropagation()" 
-                                                                    class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-100 cursor-pointer" 
+                                                            <button type="button" (click)="speakPersona(entry.text, 'gulliver'); $event.stopPropagation()"
+                                                                    class="hidden sm:inline-block px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-100 cursor-pointer"
                                                                     title="Speak with Gulliver voice">
                                                                 🔭 Gulliver
                                                             </button>
-                                                            <button type="button" (click)="actionInsert(entry.text); $event.stopPropagation()" 
-                                                                    class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 cursor-pointer" 
+                                                            <button type="button" (click)="actionInsert(entry.text); $event.stopPropagation()"
+                                                                    class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-zinc-800 hover:bg-gray-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 cursor-pointer"
                                                                     title="Insert into patient chart notes">
                                                                 📝 Chart
                                                             </button>
-                                                            <button type="button" (click)="actionAnchor(entry.text); $event.stopPropagation()" 
-                                                                    class="px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 border border-teal-500/30 hover:bg-teal-100 cursor-pointer" 
+                                                            <button type="button" (click)="actionAnchor(entry.text); $event.stopPropagation()"
+                                                                    class="px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 border border-teal-500/30 hover:bg-teal-100 cursor-pointer"
                                                                     title="Anchor to Memory Palace">
                                                                 🏛️ Anchor
                                                             </button>
@@ -621,7 +741,7 @@ export interface IChatEntry {
                                                 </div>
 
                                                 <!-- Content -->
-                                                <div class="prose prose-sm md:prose-base dark:prose-invert max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-a:text-blue-500 text-gray-800 dark:text-gray-200 text-xs md:text-sm leading-relaxed">
+                                                <div class="prose prose-sm md:prose-base dark:prose-invert max-w-none min-w-0 break-words prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-a:text-blue-500 text-gray-800 dark:text-gray-200 text-xs sm:text-sm leading-relaxed">
                                                     <div [innerHTML]="getFormattedChatText(entry) | safeHtml"></div>
                                                 </div>
 
@@ -650,7 +770,7 @@ export interface IChatEntry {
                                                 @if (entry.richCards && entry.richCards.length > 0) {
                                                      <div class="rm-panel mt-3 opacity-90">
                                                          @for (card of entry.richCards; track card.query) {
-                                                            <div class="text-xs bg-black/5 dark:bg-white/5 p-2 rounded border border-black/10 dark:border-white/10 my-1 font-mono">
+                                                            <div class="text-xs bg-black/5 dark:bg-white/5 p-2 rounded border border-black/10 dark:border-white/10 my-1 font-mono break-all">
                                                                 [MEDIA_LINK: {{ card.kind }} | {{ card.query }}]
                                                             </div>
                                                          }
@@ -658,25 +778,27 @@ export interface IChatEntry {
                                                  }
                                             </div>
 
-                                            <!-- BACK FACE -->
-                                            <div class="p-4 rounded-2xl bg-zinc-950 text-white border border-purple-500/40 shadow-2xl flex flex-col justify-between h-full w-full absolute inset-0 rotate-y-180 backface-hidden font-sans text-xs">
+                                            <!-- BACK FACE (Takes flow height only when flipped; never stretches unflipped bubbles) -->
+                                            <div class="chat-flip-face p-3.5 sm:p-4 rounded-2xl bg-zinc-950 text-white border border-purple-500/40 shadow-2xl flex flex-col justify-between rotate-y-180 backface-hidden font-sans text-xs overflow-hidden"
+                                                 [class.va-face-inactive]="!isEntryFlipped"
+                                                 [attr.aria-hidden]="!isEntryFlipped ? 'true' : null">
                                                 <div>
-                                                    <div class="flex items-center justify-between border-b border-purple-800 pb-1.5 mb-2 font-mono text-xs">
+                                                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-800 pb-1.5 mb-2 font-mono text-xs">
                                                         <span class="text-purple-300 font-bold uppercase flex items-center gap-1">
-                                                            <span>🎙️</span> Multimodal Telemetry & Evidence Audit
+                                                            <span>🎙️</span> Multimodal Telemetry &amp; Audit
                                                         </span>
                                                         <button type="button" (click)="toggleChatEntryFlip(idx); $event.stopPropagation()" class="px-2 py-0.5 rounded bg-purple-900/60 hover:bg-purple-800 text-purple-200 font-mono text-[10px] cursor-pointer">
                                                             ← Return
                                                         </button>
                                                     </div>
-                                                    <div class="space-y-1.5 font-mono text-[11px] text-purple-100">
+                                                    <div class="flex flex-col gap-1.5 font-mono text-[11px] text-purple-100 break-words">
                                                         <p><strong>Gemini Engine:</strong> Gemini Live Multimodal Audio (REST WebSocket Live)</p>
                                                         <p><strong>Audio Buffer:</strong> 16kHz PCM Web Audio API Input &bull; Latency: {{ live.latencyMs() }}ms</p>
                                                         <p><strong>Evidence Trail:</strong> FHIR R4 Bundle State Verified &bull; DOMPurify HIPAA Clean</p>
                                                         <p><strong>MDCP Standards:</strong> IEEE 11073-10101 RTMMS &bull; Form 2603 ISP &bull; ITA 15 U.S.C. § 4723</p>
                                                     </div>
                                                 </div>
-                                                <div class="pt-1.5 border-t border-purple-900 font-mono text-[9px] text-purple-400 flex justify-between items-center">
+                                                <div class="pt-2 mt-2 border-t border-purple-900 font-mono text-[9px] text-purple-400 flex flex-wrap justify-between items-center gap-2">
                                                     <span>Live Multimodal Telemetry Verified</span>
                                                     <button type="button" (click)="toggleChatEntryFlip(idx); $event.stopPropagation()" class="text-purple-300 underline cursor-pointer">
                                                         Back to Message
@@ -687,7 +809,7 @@ export interface IChatEntry {
                                         </div>
                                     </div>
                                 }
-                                
+
                                 <!-- Thinking Indicator -->
                                 @if (agentState() === 'processing') {
                                     <div class="pl-4 border-l-2 border-purple-500 chat-entry">
@@ -697,7 +819,7 @@ export interface IChatEntry {
                                         <div class="text-gray-500 dark:text-zinc-400 animate-pulse">
                                             <span class="inline-block w-1.5 h-3 bg-purple-500 mr-1 animate-bounce"></span>
                                             <span class="inline-block w-1.5 h-3 bg-purple-500 mr-1 animate-bounce" style="animation-delay: 0.1s"></span>
-                                            <span class="inline-block w-1.5 h-3 bg-purple-500 animate-bounce" style="animation-delay: 0.2s"></span>
+                                            <span class="inline-block w-1.5 h-3 bg-purple-500 mr-1 animate-bounce" style="animation-delay: 0.2s"></span>
                                         </div>
                                     </div>
                                 }
@@ -706,7 +828,7 @@ export interface IChatEntry {
 
                         <!-- Floating New Messages Badge (Intelligent Scroll Pinning) -->
                         @if (hasNewUnseenMessages() && isUserScrolledUp()) {
-                            <div class="sticky bottom-2 inset-x-0 flex justify-center z-30 pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-200">
+                            <div class="sticky bottom-2 inset-x-0 flex justify-center z-30 pointer-events-none animate-in fade-in duration-200">
                                 <button type="button"
                                         (click)="scrollToBottom(true); $event.stopPropagation()"
                                         class="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-600 hover:bg-teal-500 text-white font-mono font-bold text-xs rounded-full shadow-lg border border-teal-400/40 animate-bounce cursor-pointer transition-all">
@@ -718,58 +840,86 @@ export interface IChatEntry {
                     </div>
 
                     <!-- Input & Controls Shelf: SHRINK-0 (Zero Overlap with transcript!) -->
-                    <div class="shrink-0 z-20 border-t border-gray-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-obsidian/95 backdrop-blur-md p-3 space-y-2">
-                        
-                        <!-- Toolbar row: Quick Prompts Toggle, Bedside AAC, Barge-in Stop, SOAP Note -->
-                        <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500">
-                            <div class="flex items-center gap-3">
-                                <button type="button" (click)="showPromptShelf.set(!showPromptShelf())" class="flex items-center gap-1.5 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer font-bold">
+                    <div class="shrink-0 z-20 border-t border-gray-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-obsidian/95 backdrop-blur-md p-3 flex flex-col gap-2">
+
+                        <!-- Toolbar row: Quick Prompts, Bedside AAC, Multimodal Attach Tools, Barge-in Stop, SOAP Note -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" (click)="showPromptShelf.set(!showPromptShelf())" class="flex items-center gap-1 hover:text-zinc-800 dark:hover:text-zinc-200 cursor-pointer font-bold">
                                     <span>{{ showPromptShelf() ? '▾' : '▸' }}</span>
                                     <span>💡 Clinical Quick-Prompts</span>
                                 </button>
 
-                                <button type="button" (click)="showAacShelf.set(!showAacShelf())" 
-                                        class="flex items-center gap-1.5 cursor-pointer font-bold transition"
+                                <button type="button" (click)="showAacShelf.set(!showAacShelf())"
+                                        class="flex items-center gap-1 cursor-pointer font-bold transition"
                                         [class.text-teal-600]="showAacShelf()"
                                         [class.dark:text-teal-400]="showAacShelf()"
                                         [class.hover:text-zinc-800]="!showAacShelf()"
                                         [class.dark:hover:text-zinc-200]="!showAacShelf()">
                                     <span>{{ showAacShelf() ? '▾' : '▸' }}</span>
-                                    <span>🏥 Bedside AAC &amp; Pain</span>
+                                    <span>🏥 Bedside AAC</span>
                                 </button>
                             </div>
-                            
-                            <div class="flex items-center gap-2">
+
+                            <div class="flex flex-wrap items-center gap-1 ml-auto">
+                                <!-- Research Grounding Mode -->
+                                <button type="button"
+                                        class="px-2 py-1 rounded-lg border transition-colors cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none inline-flex items-center gap-1 text-[10.5px] font-bold"
+                                        (click)="isResearchMode.set(!isResearchMode())"
+                                        [class.bg-blue-100]="isResearchMode()" [class.dark:bg-blue-900]="isResearchMode()" [class.text-blue-600]="isResearchMode()" [class.dark:text-blue-300]="isResearchMode()" [class.border-blue-400]="isResearchMode()"
+                                        [class.bg-gray-50]="!isResearchMode()" [class.dark:bg-zinc-900]="!isResearchMode()" [class.text-gray-600]="!isResearchMode()" [class.dark:text-zinc-400]="!isResearchMode()" [class.border-gray-200]="!isResearchMode()" [class.dark:border-zinc-800]="!isResearchMode()"
+                                        [disabled]="agentState() !== 'idle'" title="Toggle Research Grounding"
+                                        aria-label="Toggle clinical research grounding mode">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                </button>
+
+                                <!-- Capture 3D Anatomy Viewport -->
+                                <button type="button"
+                                        class="px-2 py-1 rounded-lg border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-600 dark:text-zinc-400 hover:bg-gray-200 dark:hover:bg-zinc-800 disabled:opacity-50 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none inline-flex items-center"
+                                        (click)="captureActive3DViewport()" [disabled]="agentState() !== 'idle'" title="Capture & Attach 3D Anatomy Viewport"
+                                        aria-label="Capture and attach active 3D anatomy viewport snapshot">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                                </button>
+
+                                <!-- Attach Clinical Files -->
+                                <button type="button"
+                                        class="px-2 py-1 rounded-lg border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-600 dark:text-zinc-400 hover:bg-gray-200 dark:hover:bg-zinc-800 disabled:opacity-50 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none inline-flex items-center"
+                                        (click)="triggerFileInput()" [disabled]="agentState() !== 'idle'" title="Attach Files"
+                                        aria-label="Attach clinical files, images, or documents">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                                </button>
+                                <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*,application/pdf" multiple class="hidden">
+
                                 @if (live.isSpeaking()) {
                                     <button type="button" (click)="live.interrupt(); live.clearPlaybackQueue()"
-                                            class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[10.5px] font-bold flex items-center gap-1 animate-pulse cursor-pointer">
-                                        <span>⏹️</span> <span>Stop Speaking</span>
+                                            class="px-2 py-1 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-[10.5px] font-bold flex items-center gap-1 animate-pulse cursor-pointer">
+                                        <span>⏹️</span> <span>Stop</span>
                                     </button>
                                 }
                                 <button type="button" (click)="generateSoapNote()" [disabled]="chatHistory().length === 0 && !messageText().trim()"
-                                        class="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 rounded-md font-bold text-[10.5px] cursor-pointer transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1">
-                                    <span>📝</span> <span>SOAP Note</span>
+                                        class="px-2 py-1 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 rounded-lg font-bold text-[10.5px] cursor-pointer transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1">
+                                    <span>📝</span> <span>SOAP</span>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Prompts Drawer (when expanded) -->
                         @if (showPromptShelf()) {
-                            <div class="space-y-1.5 animate-in fade-in duration-200">
-                                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs font-mono">
-                                    <button type="button" (click)="sendQuickPrompt('What is the most critical evidence here?')" class="shrink-0 px-2.5 py-1 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition shadow-xs cursor-pointer">
+                            <div class="animate-in fade-in duration-200">
+                                <div class="flex items-center gap-1.5 overflow-x-auto va-no-scrollbar py-0.5 text-xs font-mono">
+                                    <button type="button" (click)="sendQuickPrompt('What is the most critical evidence here?')" class="shrink-0 px-2.5 py-1 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer">
                                         📌 Critical Evidence
                                     </button>
-                                    <button type="button" (click)="sendQuickPrompt('Summarize the primary treatment plan and safety guardrails.')" class="shrink-0 px-2.5 py-1 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition shadow-xs cursor-pointer">
+                                    <button type="button" (click)="sendQuickPrompt('Summarize the primary treatment plan and safety guardrails.')" class="shrink-0 px-2.5 py-1 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer">
                                         🛡️ Treatment &amp; Safety
                                     </button>
-                                    <button type="button" (click)="sendQuickPrompt('What are the key lab biomarker targets for this patient?')" class="shrink-0 px-2.5 py-1 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition shadow-xs cursor-pointer">
+                                    <button type="button" (click)="sendQuickPrompt('What are the key lab biomarker targets for this patient?')" class="shrink-0 px-2.5 py-1 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition cursor-pointer">
                                         🧬 Biomarker Targets
                                     </button>
-                                    <button type="button" (click)="sendQuickPrompt('Evaluate pediatric MDCP waiver requirements, SK-SAI nursing acuity, and Form 2603 PDN hours.')" class="shrink-0 px-2.5 py-1 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 text-[11px] font-medium text-teal-700 dark:text-teal-300 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900 transition shadow-xs cursor-pointer">
+                                    <button type="button" (click)="sendQuickPrompt('Evaluate pediatric MDCP waiver requirements, SK-SAI nursing acuity, and Form 2603 PDN hours.')" class="shrink-0 px-2.5 py-1 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 text-[11px] font-medium text-teal-700 dark:text-teal-300 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900 transition cursor-pointer">
                                         🧸 MDCP Waiver &amp; PDN
                                     </button>
-                                    <button type="button" (click)="sendQuickPrompt('Query live ISO/IEEE 11073 medical device communication telemetry.')" class="shrink-0 px-2.5 py-1 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 text-[11px] font-medium text-teal-700 dark:text-teal-300 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900 transition shadow-xs cursor-pointer">
+                                    <button type="button" (click)="sendQuickPrompt('Query live ISO/IEEE 11073 medical device communication telemetry.')" class="shrink-0 px-2.5 py-1 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 text-[11px] font-medium text-teal-700 dark:text-teal-300 rounded-lg hover:bg-teal-100 dark:hover:bg-teal-900 transition cursor-pointer">
                                         📡 IEEE 11073
                                     </button>
                                 </div>
@@ -778,18 +928,18 @@ export interface IChatEntry {
 
                         <!-- Bedside AAC & Wong-Baker Pain Vocalizer Drawer -->
                         @if (showAacShelf()) {
-                            <div class="p-2.5 bg-gray-50/90 dark:bg-zinc-900/90 border border-teal-500/20 rounded-xl space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <div class="va-shelf-scroll p-2.5 bg-gray-50/90 dark:bg-zinc-900/90 border border-teal-500/20 rounded-xl flex flex-col gap-2 animate-in fade-in duration-200">
                                 <!-- Wong-Baker FACES Pain Row -->
-                                <div class="space-y-1">
-                                    <div class="flex items-center justify-between text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
-                                        <span class="font-bold flex items-center gap-1"><span>😣</span> Wong-Baker FACES Pain Vocalizer</span>
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex flex-wrap items-center justify-between gap-1 text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+                                        <span class="font-bold flex items-center gap-1"><span>😣</span> Wong-Baker FACES Pain</span>
                                         <span class="text-teal-600 dark:text-teal-400 flex items-center gap-1 font-bold">
                                             <span>{{ vernacularVoice.activeLanguage().flagEmoji }}</span>
                                             <span>{{ vernacularVoice.activeLanguage().nativeName }}</span>
                                             <span class="opacity-75">({{ vernacularVoice.activeLanguageCode().toUpperCase() }})</span>
                                         </span>
                                     </div>
-                                    <div class="grid grid-cols-6 gap-1 font-mono text-xs">
+                                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-1 font-mono text-xs">
                                         @for (face of aacFaces; track face.score) {
                                             <button
                                                 type="button"
@@ -805,11 +955,11 @@ export interface IChatEntry {
                                 </div>
 
                                 <!-- Bedside Need Tiles -->
-                                <div class="space-y-1 pt-1 border-t border-gray-200/60 dark:border-zinc-800/60">
+                                <div class="flex flex-col gap-1 pt-1 border-t border-gray-200/60 dark:border-zinc-800/60">
                                     <div class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider font-bold flex items-center gap-1">
                                         <span>🛏️</span> Immediate Bedside Needs
                                     </div>
-                                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-1 text-[11px]">
+                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-1 text-[11px]">
                                         @for (tile of aacTiles; track tile.id) {
                                             <button
                                                 type="button"
@@ -827,7 +977,7 @@ export interface IChatEntry {
 
                         <!-- Permission Error Alert -->
                         @if (permissionError()) {
-                          <div class="px-3 py-1.5 bg-red-100 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl text-xs text-red-600 dark:text-red-400 font-medium text-center animate-in fade-in slide-in-from-top-1 duration-200">
+                          <div class="px-3 py-1.5 bg-red-100 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl text-xs text-red-600 dark:text-red-400 font-medium text-center animate-in fade-in duration-200">
                             {{ permissionError() }}
                           </div>
                         }
@@ -835,11 +985,11 @@ export interface IChatEntry {
                         <!-- Real-time WebAudio RMS Waveform Visualizer -->
                         @if (live.isListening()) {
                           <div class="flex items-center justify-between px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-500/20 rounded-xl text-[11px] text-emerald-700 dark:text-emerald-300 font-mono">
-                            <div class="flex items-center gap-2">
-                              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                              <span class="font-bold">Live Audio Stream Active:</span>
+                            <div class="flex items-center gap-2 min-w-0">
+                              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0"></span>
+                              <span class="font-bold truncate">Live Audio Stream Active:</span>
                               <!-- Dynamic RMS Audio Bars based on volumeLevel (0-100) -->
-                              <div class="flex items-center gap-1 h-4">
+                              <div class="flex items-center gap-1 h-4 shrink-0">
                                 <span class="w-1 bg-emerald-500 rounded-full transition-all duration-75" [style.height.px]="Math.max(4, Math.min(16, live.volumeLevel() * 0.16))"></span>
                                 <span class="w-1 bg-teal-500 rounded-full transition-all duration-75" [style.height.px]="Math.max(4, Math.min(18, live.volumeLevel() * 0.22))"></span>
                                 <span class="w-1 bg-emerald-400 rounded-full transition-all duration-75" [style.height.px]="Math.max(4, Math.min(20, live.volumeLevel() * 0.28))"></span>
@@ -847,7 +997,7 @@ export interface IChatEntry {
                                 <span class="w-1 bg-emerald-500 rounded-full transition-all duration-75" [style.height.px]="Math.max(4, Math.min(14, live.volumeLevel() * 0.14))"></span>
                               </div>
                             </div>
-                            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold font-mono">16kHz PCM</span>
+                            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold font-mono shrink-0">16kHz PCM</span>
                           </div>
                         }
 
@@ -855,20 +1005,20 @@ export interface IChatEntry {
                         @if (selectedFiles().length > 0) {
                             <div class="flex flex-wrap gap-1.5 px-1 py-0.5">
                                 @for (f of selectedFiles(); track f.name; let fIdx = $index) {
-                                    <span class="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-[10.5px] font-mono text-zinc-700 dark:text-zinc-300 rounded-md border border-zinc-200 dark:border-zinc-700 flex items-center gap-1">
-                                        <span>📎 {{ f.name }}</span>
-                                        <button type="button" (click)="removeFile(fIdx)" class="text-red-500 hover:text-red-700 font-bold ml-1 cursor-pointer">✕</button>
+                                    <span class="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-[10.5px] font-mono text-zinc-700 dark:text-zinc-300 rounded-md border border-zinc-200 dark:border-zinc-700 flex items-center gap-1 max-w-full">
+                                        <span class="truncate">📎 {{ f.name }}</span>
+                                        <button type="button" (click)="removeFile(fIdx)" class="text-red-500 hover:text-red-700 font-bold ml-1 cursor-pointer shrink-0">✕</button>
                                     </span>
                                 }
                             </div>
                         }
 
-                        <!-- Form -->
-                        <form (submit)="sendMessage($event)" class="w-full flex items-center gap-2 bg-gray-50/80 dark:bg-zinc-900/90 border border-gray-200 dark:border-zinc-700/80 rounded-2xl p-1.5 focus-within:border-teal-500/50 dark:focus-within:border-teal-500/50 transition-all shadow-xs">
+                        <!-- Compose Form (Clean 3-Slot Row: Mic | Full-Width Minimal Input | Send) -->
+                        <form (submit)="sendMessage($event)" class="w-full flex items-center gap-1.5 bg-gray-50/90 dark:bg-zinc-900/90 border border-gray-200 dark:border-zinc-700/80 rounded-2xl p-1.5 focus-within:border-teal-500/50 dark:focus-within:border-teal-500/50 transition-all shadow-sm">
                             <button type="button" (click)="toggleListening()" [disabled]="agentState() !== 'idle' || !!permissionError()"
                                     title="Start/Stop Voice Capture"
                                     aria-label="Toggle voice microphone capture"
-                                    class="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
+                                    class="w-10 h-10 flex items-center justify-center rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
                                     [class.bg-red-500]="live.isListening()" [class.text-white]="live.isListening()"
                                     [class.bg-white]="!live.isListening()" [class.dark:bg-zinc-800]="!live.isListening()" [class.text-gray-600]="!live.isListening()" [class.dark:text-zinc-300]="!live.isListening()"
                                     [class.hover:bg-red-600]="live.isListening()" [class.hover:bg-gray-100]="!live.isListening()" [class.dark:hover:bg-zinc-700]="!live.isListening()">
@@ -879,42 +1029,20 @@ export interface IChatEntry {
                                 <pocket-gull-input
                                     #chatInput
                                     type="text"
+                                    variant="minimal"
                                     [value]="messageText()"
                                     (valueChange)="messageText.set($event)"
                                     placeholder="Ask follow-up, speak clinical order, or say 'Done'..."
-                                    className="!border-transparent !bg-transparent !shadow-none !ring-0 !px-2 !py-1.5 text-sm"
                                     [disabled]="agentState() !== 'idle'"
                                     (keydown)="handleKeydown($event)">
                                 </pocket-gull-input>
                             </div>
 
-                            <button type="button" class="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-xl transition-colors cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:outline-none"
-                                    (click)="isResearchMode.set(!isResearchMode())"
-                                    [class.bg-blue-100]="isResearchMode()" [class.dark:bg-blue-900]="isResearchMode()" [class.text-blue-600]="isResearchMode()" [class.dark:text-blue-300]="isResearchMode()"
-                                    [class.text-gray-500]="!isResearchMode()" [class.hover:bg-gray-200]="!isResearchMode()" [class.dark:hover:bg-zinc-800]="!isResearchMode()"
-                                    [disabled]="agentState() !== 'idle'" title="Toggle Research Grounding"
-                                    aria-label="Toggle clinical research grounding mode">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                            </button>
-
-                            <button type="button" class="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-800 disabled:opacity-50 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                                    (click)="captureActive3DViewport()" [disabled]="agentState() !== 'idle'" title="Capture & Attach 3D Anatomy Viewport"
-                                    aria-label="Capture and attach active 3D anatomy viewport snapshot">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
-                            </button>
-
-                            <button type="button" class="min-w-[44px] min-h-[44px] w-11 h-11 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-200 dark:hover:bg-zinc-800 disabled:opacity-50 cursor-pointer touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none"
-                                    (click)="triggerFileInput()" [disabled]="agentState() !== 'idle'" title="Attach Files"
-                                    aria-label="Attach clinical files, images, or documents">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                            </button>
-                            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*,application/pdf" multiple class="hidden">
-
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 [disabled]="!messageText().trim() && selectedFiles().length === 0 || agentState() !== 'idle'"
                                 aria-label="Send message to clinical AI"
-                                class="min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl flex items-center justify-center bg-teal-600 text-white disabled:bg-gray-300 dark:disabled:bg-zinc-700 hover:bg-teal-500 transition-colors shrink-0 cursor-pointer shadow-xs touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
+                                class="w-10 h-10 rounded-xl flex items-center justify-center bg-teal-600 text-white disabled:bg-gray-300 dark:disabled:bg-zinc-700 hover:bg-teal-500 transition-colors shrink-0 cursor-pointer shadow-sm touch-manipulation focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:outline-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                             </button>
                         </form>
@@ -922,26 +1050,26 @@ export interface IChatEntry {
                 </div>
             }
 
-            <!-- 4-Paradigm SOAP Note Modal -->
+            <!-- 4-Paradigm SOAP Note Modal (Scoped cleanly inside window frame so ancestor blur/transform never clips it) -->
             @if (isSoapModalOpen() && activeSoapNote()) {
-              <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-                <div class="bg-zinc-950 text-zinc-100 border border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-3xl w-full shadow-2xl font-sans max-h-[85vh] overflow-y-auto space-y-4">
-                  <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                    <div class="flex items-center gap-2">
-                      <span class="text-2xl">📝</span>
-                      <div>
-                        <h3 class="text-base font-bold text-zinc-100">4-Paradigm Clinical SOAP Note</h3>
+              <div class="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+                <div class="bg-zinc-950 text-zinc-100 border border-zinc-800 rounded-2xl p-4 sm:p-6 max-w-2xl w-full shadow-2xl font-sans max-h-full overflow-y-auto flex flex-col gap-3">
+                  <div class="flex items-center justify-between border-b border-zinc-800 pb-2.5 gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="text-xl shrink-0">📝</span>
+                      <div class="min-w-0">
+                        <h3 class="text-sm sm:text-base font-bold text-zinc-100 truncate">4-Paradigm Clinical SOAP Note</h3>
                         <p class="text-[10.5px] text-zinc-400 font-mono">Ambient Voice Scribe Extraction</p>
                       </div>
                     </div>
-                    <button type="button" (click)="isSoapModalOpen.set(false)" class="text-zinc-400 hover:text-white text-lg font-bold cursor-pointer">✕</button>
+                    <button type="button" (click)="isSoapModalOpen.set(false)" class="va-win-btn text-zinc-400 hover:text-white text-base font-bold cursor-pointer" aria-label="Close SOAP Note Modal">✕</button>
                   </div>
 
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                     <!-- Subjective -->
-                    <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-1.5">
+                    <div class="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 flex flex-col gap-1.5">
                       <div class="font-bold text-emerald-400 uppercase tracking-wide text-[11px]">1. Subjective (S)</div>
-                      <div class="text-zinc-300 text-[11px] space-y-1">
+                      <div class="text-zinc-300 text-[11px] flex flex-col gap-1">
                         <div><strong>🩺 Western:</strong> {{ activeSoapNote()?.subjective?.western?.join(' ') }}</div>
                         <div><strong>🌿 TCM:</strong> {{ activeSoapNote()?.subjective?.eastern?.join(' ') }}</div>
                         <div><strong>🪷 Ayurvedic:</strong> {{ activeSoapNote()?.subjective?.ayurvedic?.join(' ') }}</div>
@@ -950,9 +1078,9 @@ export interface IChatEntry {
                     </div>
 
                     <!-- Objective -->
-                    <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-1.5">
+                    <div class="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 flex flex-col gap-1.5">
                       <div class="font-bold text-sky-400 uppercase tracking-wide text-[11px]">2. Objective (O)</div>
-                      <div class="text-zinc-300 text-[11px] space-y-1">
+                      <div class="text-zinc-300 text-[11px] flex flex-col gap-1">
                         <div><strong>🩺 Western:</strong> {{ activeSoapNote()?.objective?.western?.join(' ') }}</div>
                         <div><strong>🌿 TCM:</strong> {{ activeSoapNote()?.objective?.eastern?.join(' ') }}</div>
                         <div><strong>🪷 Ayurvedic:</strong> {{ activeSoapNote()?.objective?.ayurvedic?.join(' ') }}</div>
@@ -961,9 +1089,9 @@ export interface IChatEntry {
                     </div>
 
                     <!-- Assessment -->
-                    <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-1.5">
+                    <div class="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 flex flex-col gap-1.5">
                       <div class="font-bold text-amber-400 uppercase tracking-wide text-[11px]">3. Assessment (A)</div>
-                      <div class="text-zinc-300 text-[11px] space-y-1">
+                      <div class="text-zinc-300 text-[11px] flex flex-col gap-1">
                         <div><strong>🩺 Western:</strong> {{ activeSoapNote()?.assessment?.western?.join(' ') }}</div>
                         <div><strong>🌿 TCM:</strong> {{ activeSoapNote()?.assessment?.eastern?.join(' ') }}</div>
                         <div><strong>🪷 Ayurvedic:</strong> {{ activeSoapNote()?.assessment?.ayurvedic?.join(' ') }}</div>
@@ -972,9 +1100,9 @@ export interface IChatEntry {
                     </div>
 
                     <!-- Plan -->
-                    <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-zinc-800 space-y-1.5">
+                    <div class="p-3 rounded-xl bg-zinc-900/90 border border-zinc-800 flex flex-col gap-1.5">
                       <div class="font-bold text-purple-400 uppercase tracking-wide text-[11px]">4. Plan (P)</div>
-                      <div class="text-zinc-300 text-[11px] space-y-1">
+                      <div class="text-zinc-300 text-[11px] flex flex-col gap-1">
                         <div><strong>🩺 Western:</strong> {{ activeSoapNote()?.plan?.western?.join(' ') }}</div>
                         <div><strong>🌿 TCM:</strong> {{ activeSoapNote()?.plan?.eastern?.join(' ') }}</div>
                         <div><strong>🪷 Ayurvedic:</strong> {{ activeSoapNote()?.plan?.ayurvedic?.join(' ') }}</div>
@@ -983,7 +1111,7 @@ export interface IChatEntry {
                     </div>
                   </div>
 
-                  <div class="flex justify-end gap-2 pt-2 border-t border-zinc-800">
+                  <div class="flex flex-wrap justify-end gap-2 pt-2 border-t border-zinc-800">
                     <button type="button" (click)="copySoapMarkdown()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs rounded-xl cursor-pointer transition">
                       📋 Copy Markdown
                     </button>
@@ -995,18 +1123,18 @@ export interface IChatEntry {
               </div>
             }
 
-            <!-- Anchor Modal -->
+            <!-- Anchor Modal (Scoped cleanly inside window frame) -->
             @if (isAnchorModalOpen()) {
-              <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm">
-                <form (submit)="submitAnchor($event)" class="bg-white dark:bg-zinc-950 rounded-lg shadow-2xl border border-gray-200 dark:border-zinc-800 w-full max-w-md overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+              <div class="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+                <form (submit)="submitAnchor($event)" class="bg-white dark:bg-zinc-950 rounded-2xl shadow-2xl border border-gray-200 dark:border-zinc-800 w-full max-w-md max-h-full overflow-y-auto flex flex-col animate-in fade-in duration-200">
                   <!-- Header -->
-                  <div class="px-6 py-4 border-b border-gray-100 dark:border-zinc-800 flex justify-between items-center bg-gray-50/50 dark:bg-zinc-900/50">
+                  <div class="px-5 py-3.5 border-b border-gray-100 dark:border-zinc-800 flex justify-between items-center bg-gray-50/50 dark:bg-zinc-900/50">
                     <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Anchor to Memory Palace</h3>
-                    <button type="button" (click)="isAnchorModalOpen.set(false)" class="text-gray-400 hover:text-gray-500">✕</button>
+                    <button type="button" (click)="isAnchorModalOpen.set(false)" class="va-win-btn text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 cursor-pointer" aria-label="Close Anchor Modal">✕</button>
                   </div>
 
                   <!-- Content -->
-                  <div class="p-6 space-y-4 text-left">
+                  <div class="p-5 flex flex-col gap-3.5 text-left">
                     <div>
                       <label class="block text-xs font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-wider mb-1">Chamber</label>
                       <select name="anchorRoom" [(ngModel)]="anchorRoom" class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-lg bg-transparent text-sm focus:outline-none focus:border-green-500">
@@ -1029,9 +1157,9 @@ export interface IChatEntry {
                   </div>
 
                   <!-- Footer -->
-                  <div class="px-6 py-4 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50 flex justify-end gap-3">
-                    <button type="button" (click)="isAnchorModalOpen.set(false)" class="px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-700">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-bold uppercase tracking-wider bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 rounded-lg hover:bg-black dark:hover:bg-white transition">Anchor Memory</button>
+                  <div class="px-5 py-3.5 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/50 flex justify-end gap-3">
+                    <button type="button" (click)="isAnchorModalOpen.set(false)" class="px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-gray-700 cursor-pointer">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-xs font-bold uppercase tracking-wider bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-950 rounded-lg hover:bg-black dark:hover:bg-white transition cursor-pointer">Anchor Memory</button>
                   </div>
                 </form>
               </div>
@@ -1070,6 +1198,21 @@ export class VoiceAssistantComponent implements OnDestroy {
     isCopiedToastVisible = signal<boolean>(false);
     readonly availableVoices = ['Aoede', 'Puck', 'Charon', 'Fenrir', 'Kore'] as const;
     protected readonly Math = Math;
+
+    toggleHeaderMenu(menu: 'voice' | 'socratic' | 'vernacular'): void {
+      const nextVoice = menu === 'voice' ? !this.isVoiceMenuOpen() : false;
+      const nextSocratic = menu === 'socratic' ? !this.isSocraticMenuOpen() : false;
+      const nextVernacular = menu === 'vernacular' ? !this.isVernacularVoiceMenuOpen() : false;
+      this.isVoiceMenuOpen.set(nextVoice);
+      this.isSocraticMenuOpen.set(nextSocratic);
+      this.isVernacularVoiceMenuOpen.set(nextVernacular);
+    }
+
+    closeAllHeaderMenus(): void {
+      this.isVoiceMenuOpen.set(false);
+      this.isSocraticMenuOpen.set(false);
+      this.isVernacularVoiceMenuOpen.set(false);
+    }
 
     // Wong-Baker FACES pain vocalizer dataset
     readonly aacFaces = [
@@ -1301,8 +1444,8 @@ export class VoiceAssistantComponent implements OnDestroy {
 
         // Escape: close open dropdowns/modals or minimize window
         if (event.key === 'Escape') {
-            if (this.isVoiceMenuOpen()) {
-                this.isVoiceMenuOpen.set(false);
+            if (this.isVoiceMenuOpen() || this.isSocraticMenuOpen() || this.isVernacularVoiceMenuOpen()) {
+                this.closeAllHeaderMenus();
                 event.preventDefault();
                 return;
             }
